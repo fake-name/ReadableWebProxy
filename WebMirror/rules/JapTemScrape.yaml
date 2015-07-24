@@ -1,0 +1,82 @@
+
+
+feeds: [
+	'http://japtem.com/feed/'
+]
+
+
+baseUrl: [
+		"http://japtem.com/",
+		"http://www.japtem.com/",
+	]
+
+badwords: [
+			"/viewtopic.php",
+			"/memberlist.php",
+			"/search.php",
+			"/wp-content/plugins/",
+			"/styles/prosilver/theme/",
+			"/forums/",
+			"/forum/",
+			"/cdn-cgi/",
+			"/help/",
+			"?share=",
+			"?popup=",
+			"viewforum.php",
+			"/wp-login.php",
+			"/#comments",      # Ignore in-page anchor tags
+			"/staff/"]
+
+positive_keywords: ['main_content']
+
+negative_keywords: ['mw-normal-catlinks',
+					"printfooter",
+					"mw-panel",
+					'portal']
+
+
+
+
+decomposeBefore: [
+	{'id'      :'disqus_thread'},
+]
+
+
+decompose: [
+	{'class' : 'slider-container'},
+	{'class' : 'secondarymenu-container'},
+	{'class' : 'mainmenu-container'},
+	{'class' : 'mobile-menu'},
+	{'class' : 'footer'},
+	{'class' : 'sidebar'},
+	{'class' : 'disqus_thread'},
+	{'class' : 'sharedaddy'},
+	{'class' : 'pagination'},
+	{'class' : 'scrollUp'},
+	{'class' : 'fusion-footer'},
+	{'class' : 'share-box'},
+	{'class' : 'fusion-page-title-bar-breadcrumbs'},
+	{'class' : 'slidingbar-area'},
+	{'class' : 'fusion-header-wrapper'},
+
+	{'id' : 'slider-container'},
+	{'id' : 'secondarymenu-container'},
+	{'id' : 'mainmenu-container'},
+	{'id' : 'mobile-menu'},
+	{'id' : 'footer'},
+	{'id' : 'sidebar'},
+	{'id' : 'home'},
+	{'id' : 'sliders-container'},
+	{'id' : 'disqus_thread'},
+	{'id' : 'sharedaddy'},
+	{'id' : 'scrollUp'},
+
+	{'class' : 'sticky-header'},
+	{'class' : 'header-wrapper'},
+	{'class' : 'footer-area'},
+	{'class' : 'share-box'},
+	{'id'    : 'slidingbar-area'},
+	{'id'    : 'footer'},
+	{'id'    : 'sliders-container'},
+]
+

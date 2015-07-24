@@ -1,0 +1,473 @@
+
+
+IGNORE_MALFORMED_URLS: True
+
+itemGenre: Eastern
+
+baseUrl: [
+	'http://gekkahimethetranslation.wordpress.com',
+	'http://gravitytranslations.wordpress.com',
+	'http://kobatochandaisuki.wordpress.com',
+	'http://nanodesutranslations.wordpress.com',
+	'http://sakurahonyaku.wordpress.com',
+	'http://setsuna86blog.wordpress.com',
+	'http://stcon.wordpress.com',
+	'http://tusjecht.wordpress.com',
+	'http://yoraikun.wordpress.com',
+	'https://9ethtranslations.wordpress.com',
+	'https://aflappyteddybird.wordpress.com',
+	'https://alcsel.wordpress.com',
+	'https://aldnoahextrathetranslation.wordpress.com',
+	'https://alyschu.wordpress.com',
+	'https://amaburithetranslation.wordpress.com',
+	'https://asherahbluenotebook.wordpress.com',
+	'https://bingnovels.wordpress.com',
+	'https://binhjamin.wordpress.com',
+	'https://bluesilvertranslations.wordpress.com',
+	'https://bureidanworks.wordpress.com',
+	'https://calicoxtabby.wordpress.com',
+	'https://choukun.wordpress.com',
+	'https://clover7snook.wordpress.com',
+	'https://ctrlalcala.wordpress.com',
+	'https://darkfishoftherevolution.wordpress.com',
+	'https://darktranslations.wordpress.com',
+	'https://defiring.wordpress.com',
+	'https://dlingson.wordpress.com',
+	'https://durandaru.wordpress.com',
+	'https://durasama.wordpress.com',
+	'https://ensjtrans.wordpress.com',
+	'https://eztranslations.wordpress.com',
+	'https://fateapocryphathetranslation.wordpress.com',
+	'https://flowerbridgetoo.wordpress.com',
+	'https://forgetfuldreamer.wordpress.com',
+	'https://fudgetranslations.wordpress.com',
+	'https://fuyuugakuenthetranslation.wordpress.com',
+	'https://gekkahimethetranslation.wordpress.com',
+	'https://gilatranslationmonster.wordpress.com',
+	'https://gjbuthetranslation.wordpress.com',
+	'https://grimgalthetranslation.wordpress.com',
+	'https://hajiko.wordpress.com',
+	'https://heartcrusadescans.wordpress.com',
+	'https://hellotranslations.wordpress.com',
+	'https://hendricksensama.wordpress.com',
+	'https://hennekothetranslation.wordpress.com',
+	'https://henoujikun.wordpress.com',
+	'https://hokagetranslations.wordpress.com',
+	'https://hui3r.wordpress.com',
+	'https://insigniapierce.wordpress.com',
+	'https://isekaicyborg.wordpress.com',
+	'https://isekaimahou.wordpress.com',
+	'https://itranslateln.wordpress.com',
+	'https://izra709.wordpress.com',
+	'https://kamitranslation.wordpress.com',
+	'https://kerambitnosakki.wordpress.com',
+	'https://kirikotranslations.wordpress.com',
+	'https://kirileaves.wordpress.com',
+	'https://kobatochandaisuki.wordpress.com',
+	'https://koongkoongtranslations.wordpress.com',
+	'https://korezombiethetranslation.wordpress.com',
+	'https://kurenaithetranslation.wordpress.com',
+	'https://kyakka.wordpress.com',
+	'https://kyakka.wordpress.com',
+	'https://larvyde.wordpress.com',
+	'https://lazyneet.wordpress.com',
+	'https://lnaddiction.wordpress.com',
+	'https://loliquent.wordpress.com',
+	'https://lorcromwell.wordpress.com',
+	'https://lordofscrubs.wordpress.com',
+	'https://loveyouthetranslation.wordpress.com',
+	'https://lygartranslations.wordpress.com',
+	'https://madospicy.wordpress.com',
+	'https://mahoutsuki.wordpress.com',
+	'https://manga0205.wordpress.com',
+	'https://maoyuuthetranslation.wordpress.com',
+	'https://mayochikithetranslation.wordpress.com',
+	'https://metalhaguremt.wordpress.com',
+	'https://nanodesutranslations.wordpress.com',
+	'https://natsutl.wordpress.com',
+	'https://neettranslations.wordpress.com',
+	'https://netblazer.wordpress.com',
+	'https://nightraccoon.wordpress.com',
+	'https://nohohontranslations.wordpress.com',
+	'https://novicetranslator.wordpress.com',
+	'https://ohanashimi.wordpress.com',
+	'https://ojamajothetranslation.wordpress.com',
+	'https://omegaharem.wordpress.com',
+	'https://oniichanyamete.wordpress.com',
+	'https://oregairuthetranslation.wordpress.com',
+	'https://oreimothetranslation.wordpress.com',
+	'https://otterspacetranslation.wordpress.com',
+	'https://pandafuqtranslations.wordpress.com',
+	'https://pikatranslations.wordpress.com',
+	'https://pirateyoshi.wordpress.com',
+	'https://pummels.wordpress.com',
+	'https://putttytranslations.wordpress.com',
+	'https://reantoanna.wordpress.com',
+	'https://rebirthonlinelightnovel.wordpress.com',
+	'https://reddragontranslations.wordpress.com',
+	'https://rhinabolla.wordpress.com',
+	'https://risingdragons.wordpress.com',
+	'https://rokkathetranslation.wordpress.com',
+	'https://ruzetranslations.wordpress.com',
+	'https://saekanothetranslation.wordpress.com',
+	'https://sakurahonyaku.wordpress.com',
+	'https://sasamisanthetranslation.wordpress.com',
+	'https://scryatranslations.wordpress.com',
+	'https://seizonthetranslation.wordpress.com',
+	'https://sekaigamethetranslation.wordpress.com',
+	'https://selkinnovel.wordpress.com',
+	'https://setsuna86blog.wordpress.com',
+	'https://shikkakutranslations.wordpress.com',
+	'https://shincodezeroblog.wordpress.com',
+	'https://shintranslations.wordpress.com',
+	'https://shokyuutranslations.wordpress.com',
+	'https://skyworldthetranslation.wordpress.com',
+	'https://sotranslations.wordpress.com',
+	'https://stcon.wordpress.com',
+	'https://stltranslations.wordpress.com',
+	'https://superpotatotrans.wordpress.com',
+	'https://sylver135.wordpress.com',
+	'https://tensaitranslations.wordpress.com',
+	'https://thatguywhosthere.wordpress.com',
+	'https://theworsttranslation.wordpress.com',
+	'https://thundertranslations.wordpress.com',
+	'https://tomorolls.wordpress.com',
+	'https://tototrans.wordpress.com',
+	'https://translatedbyaclown.wordpress.com',
+	'https://translationraven.wordpress.com',
+	'https://trippingoverwn.wordpress.com',
+	'https://tsaltranslation.wordpress.com',
+	'https://tsuigeki.wordpress.com',
+	'https://typemoondb.wordpress.com',
+	'https://unbreakablemachinedoll.wordpress.com',
+	'https://unchainedtranslation.wordpress.com',
+	'https://undecentlnt.wordpress.com',
+	'https://vaancruze.wordpress.com',
+	'https://voidtranslations.wordpress.com',
+	'https://wartdf.wordpress.com',
+	'https://wcctranslation.wordpress.com',
+	'https://xantbos.wordpress.com',
+	'https://yoraikun.wordpress.com',
+	'https://youtsubasilver.wordpress.com',
+	'https://zmunjali.wordpress.com',
+	'https://zoengsaiwaa.wordpress.com',
+	'https://infinitenoveltranslations.wordpress.com',
+	'https://entruce.wordpress.com',
+	'https://hotcocoatranslations.wordpress.com',
+	'https://rainbowtranslationsblog.wordpress.com',
+	'https://superpotatotrans.wordpress.com',
+
+
+
+	 # Non explicitly wordpress blogs (that use wordpress internally)
+	'http://avertranslation.com',
+	'http://giraffecorps.liamak.net',
+	# The wordpress address redirects to the plain URL,
+	'http://gravitytranslations.com',
+	'http://hellping.org',
+	'http://shinsekai.cadet-nine.org',
+	'http://worldofwatermelons.com',
+	'http://www.taptaptaptaptap.net',
+	'http://nightbreezetranslations.com',
+	'http://www.lingson.com',
+	'http://shintranslations.com',
+	'http://risingdragons.co',
+	'http://www.translationnations.com',
+	'http://www.wuxiatranslations.com',
+	'http://pandatranslations.net',
+	'http://shiroyukitranslations.com',
+	'http://wuxiaworld.com',
+	'http://thundertranslations.com',
+	'http://pikatranslations.com',
+	'http://ruzetranslations.org',
+
+	'http://www.deadlylegends.com/translations/',
+
+	 # This is WP, but it uses an custom theme I haven't tested against.
+	'http://arkmachinetranslations.com',
+	'http://flowerbridgetoo.com',
+
+	 # Seriously bro, you can change your A record:
+	 # 'http://tototr.com'
+	'http://tototrans.com',
+	'http://totobro.com',
+	"https://wartdf.wordpress.com/",
+	]
+
+
+
+feedPostfix: "/feed/"
+
+
+
+# Any url containing any of the words in the `badwords` list will be ignored.
+badwords: [
+	"/manga/",
+	"/recruitment/",
+	"wpmp_switcher=mobile",
+	"account/begin_password_reset",
+	"/comment-page-",
+
+	 # Why do people think they need a fucking comment system?
+	'/?replytocom=',
+	'#comments',
+	"_wpnonce=",
+	'public-api.wordpress.com',
+	 # Mask out the PDFs
+	"-online-pdf-viewer/",
+
+	 # Who the fuck shares shit like this anyways?
+	"?share=",
+
+	"//page/",
+
+	"giraffecorps.liamak.net/pdf/",
+	"giraffecorps.liamak.net/contact/",
+	"giraffecorps.liamak.net/extras/",
+	"wp-comments-post",
+	"/page/page/",
+	'/feed',
+
+	'rejecthero.wordpress.com',
+	'farmerbob1.wordpress.com',
+	'pactwebserial.wordpress.com',
+
+
+	'https://docs.google.com/forms/d',
+
+
+
+	 "/manga/",
+	 "/recruitment/",
+	 "wpmp_switcher=mobile",
+	 "account/begin_password_reset",
+	 "/comment-page-",
+
+	# Why do people think they need a fucking comment system?
+	 '/?replytocom=',
+	 '#comments',
+
+	# Mask out the PDFs
+	 "-online-pdf-viewer/",
+
+	# Who the fuck shares shit like this anyways?
+	 "?share=",
+	 "/feed/",
+	]
+
+decompose: [
+	{'class'           : 'authorpost'},
+	{'class'           : 'bit'},
+	{'class'           : 'blog-feeds'},
+	{'class'           : 'blog-pager'},
+	{'class'           : 'btop'},
+	{'class'           : 'column-left-outer'},
+	{'class'           : 'column-right-outer'},
+	{'class'           : 'commentlist'},
+	{'class'           : 'comments'},
+	{'class'           : 'comments-link'},
+	{'class'           : 'date-header'},
+	{'class'           : 'entry-meta'},
+	{'class'           : 'entry-utility'},
+	{'class'           : 'footer'},
+	{'class'           : 'footer-outer'},
+	{'class'           : 'header-outer'},
+	{'class'           : 'headerbg'},
+	{'class'           : 'komensamping'},
+	{'class'           : 'loggedout-follow-normal'},
+	{'class'           : 'menujohanes'},
+	{'class'           : 'nav-menu'},
+	{'class'           : 'navbar'},
+	{'class'           : 'photo-meta'},
+	{'class'           : 'post-feeds'},
+	{'class'           : 'post-footer'},
+	{'class'           : 'quickedit'},
+	{'class'           : 'sd-content'},
+	{'class'           : 'sd-title'},
+	{'class'           : 'sidebar'},
+	{'class'           : 'site-header'},
+	{'class'           : 'tabs-outer'},
+	{'class'           : 'widget-area'},
+	{'class'           : 'widget-container'},
+	{'class'           : 'widget-content'},
+	# Ads, I think.
+	{'class'           : 'wpa'},
+	{'class'           : 'wpcnt'},
+	{'class'           : 'wpcom-follow-bubbles'},
+	{'class'           : 'xoxo'},
+	{'class'           : 'meta'},
+	{'id'              : 'access'},
+	{'id'              : 'bit'},
+	{'id'              : 'branding'},
+	{'id'              : 'calendar_wrap'},
+	{'id'              : 'carousel-reblog-box'},
+	{'id'              : 'colophon'},
+	{'id'              : 'comments'},
+	{'id'              : 'conversation'},
+	{'id'              : 'credit-wrapper'},
+	{'id'              : 'entry-author-info'},
+	{'id'              : 'footer'},
+	{'id'              : 'header'},
+	{'id'              : 'layout'},
+	{'id'              : 'masthead'},
+	{'id'              : 'global-alert'},
+	{'id'              : 'main-nav'},
+	{'id'              : 'header-meta'},
+	{'id'              : 'headerimg'},
+	{'id'              : 'infinite-footer'},
+	{'id'              : 'jp-post-flair'},
+	{'id'              : 'likes-other-gravatars'},
+	{'id'              : 'nav-above'},
+	{'id'              : 'nav-below'},
+	{'id'              : 'respond'},
+	{'id'              : 'secondary'},
+	{'id'              : 'conversation'},
+	{'id'              : 'sidebar'},
+	{'id'              : 'disqus-threadData'},
+	{'id'              : 'sidebar-wrapper'},
+	{'id'              : 'sidebar-wrapper1'},    # Yes, two `sidebar-wrapper` ids. Gah.
+	{'id'              : 'site-header'},
+	{'id'              : 'commentlist'},
+	{'id'              : 'comments'},
+	{'id'              : 'bitsubscribe'},
+	{'id'              : 'site-navigation'},
+	{'name'            : 'likes-master'},
+	{'style'           : 'display:none'},
+	{'role'            : 'banner'},
+
+	 # More Disqus bullshit
+	{'data-tracking-area'            : 'layout'},
+	{'id'    :'header'},
+	{'class' : 'widget-area'},
+	{'id'    : 'footer'},
+	{'class' : 'photo-meta'},
+	{'class' : 'page-header'},
+	{'class' : 'wpcnt'},
+	{'class' : 'bit'},
+	{'id'    : 'bit'},
+	{'id'    : 'author-info'},
+	{'id'    : 'secondary'},
+	{'id'    : 'colophon'},
+	{'id'    : 'branding'},
+	{'id'    : 'nav-single'},
+	{'id'    : 'likes-other-gravatars'},
+	{'id'    : 'sidebar'},
+	{'id'    : 'carousel-reblog-box'},
+	{'id'    : 'infinite-footer'},
+	{'id'    : 'nav-above'},
+	{'id'    : 'nav-below'},
+	{'id'    : 'jp-post-flair'},
+	{'id'    : 'comments'},
+	{'class' : 'entry-utility'},
+	{'name'  : 'likes-master'},
+	]
+
+
+decomposeBefore: [
+	{'name'  : 'likes-master'},   # Bullshit sharing widgets
+	{'class' : 'comments'},
+	{'class' : 'comments-area'},
+	{'class' : 'wpcnt'},
+	{'id'    : 'addthis-share'},
+	{'id'    : 'comments'},
+	{'id'    : 'info-bt'},
+	{'id'    : 'jp-post-flair'},
+	]
+
+stripTitle: [
+	"| KobatoChanDaiSukiScan",
+	"| Hokage Translations",
+	"| 1HP",
+	"| Blue Silver Translations",
+	"| Krytyk's translations",
+	"| Light Novel translations",
+	"| LorCromwell",
+	"| mahoutsuki translation",
+	"| Novel Translation",
+	"| TheLazy9",
+	"| Tomorolls",
+	"| Ziru's Musings",
+	'| Gravity translation',
+	'| HaruPARTY Translation Group',
+	'| Kyakka',
+	'| manga0205',
+	'| SETSUNA86BLOG',
+	'| Solitary Translation',
+	'| Sousetsuka',
+	'| Tsuigeki Translations',
+	'| Unbreakable Machine Doll',
+	'| Unlimited Novel Failures',
+	'| なのですよ！',
+	'| 桜翻訳!',
+	'(NanoDesu)',
+	'A Translation of the',
+	'Roxism HQ |',
+	'| SETSUNA86BLOG',
+	'mahoutsuki translation |',
+	'&#124; Giraffe Corps',
+	'| Giraffe Corps',
+	'| Shin Sekai Yori &#8211; From the New World',
+	'| Shin Sekai YoriFrom the New World',
+	'| Shin Sekai Yori – From the New World',
+	':: tappity tappity tap.',
+	'Fanatical |',
+	'| A fish once said this to me:',
+	'| Fanatical',
+	'Raising the Dead |',
+	'Paztok |',
+	'| Paztok',
+
+	]
+
+titleTweakLut:  [
+	{
+		'contain' : ['yuusha party no kawaii ko ga ita no de, kokuhaku shite mita',
+					 '告白してみた'],
+		'badUrl'  : ['1ljoXDy-ti5N7ZYPbzDsj5kvYFl3lEWaJ1l3Lzv1cuuM'],
+		'url'     : 'docs.google.com',
+		'add'    : 'Yuusha Party no Kawaii Ko ga ita no de, Kokuhaku Shite Mita',
+	},
+	{
+		'contain' : ['tang san'],
+		'badUrl'  : [],
+		'url'     : 'docs.google.com',
+		'add'    : 'Douluo Dalu',
+	}
+	]
+#   # Methods to allow the child-class to modify the content at various points.
+#   def extractTitle(self, srcSoup, doc, url):
+#       title = doc.title()
+
+#       if not title:
+#           title = srcSoup.title.get_text().strip()
+
+#       content = str(srcSoup).lower()
+#       for tweakDict in self.titleTweakLut:
+
+#           # print()
+#           # print(tweakDict)
+#           # print()
+
+#           # print('contain', any([item.lower() in content.lower() for item in tweakDict['contain']]))
+#           # print('badUrl', not any([item in url for item in tweakDict['badUrl']]))
+#           # print('url', tweakDict['url'] in url)
+
+#           if any([item in content for item in tweakDict['contain']]) and \
+#               (not any([item in url for item in tweakDict['badUrl']])) and \
+#               tweakDict['url'] in url:
+
+#               self.log.info("Need to tweak title for url '%s', adding '%s'", url, tweakDict['add'])
+#               title = tweakDict['add'] + title
+
+#       return title
+
+#   def postprocessBody(self, soup):
+#       for style_tag in soup.find_all('style'):
+#           style_tag.decompose()
+#       for mid_span in soup.find_all("span", _class="c3"):
+#           mid_span.unwrap()
+#       return soup
+
+
+
+

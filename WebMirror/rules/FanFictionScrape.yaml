@@ -1,0 +1,40 @@
+
+# This appears to be hosted by the same people as FictionPress.
+# The website sure looks to be the same codebase, in any event.
+
+
+
+FOLLOW_GOOGLE_LINKS: False
+allImages:           False
+
+
+baseUrl: [ "https://www.fanfiction.net/" ]
+
+badwords:
+     - "/about/"
+     - "/join-us/"
+     - "/chat/"
+     - '&format=pdf'
+     - '?format=pdf'
+     - '?replytocom='
+     - "/forum/"
+     - "/forum"
+     - "/forums/"
+     - "/forums"
+     - "/games/"
+     - "/betareaders/"
+     - # Really
+     - "/poetry/"
+
+     - "/post.php?"
+     - "/author.php?"
+
+# Content Stripping needs to be determined.
+decomposeBefore: []
+decompose: []
+
+
+stripTitle: ['| FanFiction']
+
+
+

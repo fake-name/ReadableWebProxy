@@ -1,0 +1,50 @@
+
+
+feeds: [
+	'http://guhehe.net/feed/'
+]
+
+baseUrl: [
+	"http://guhehe.net/",
+	"http://www.guhehe.net/"
+	]
+extraStartUrl: ['http://guhehe.net/volumes/']
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			]
+
+# positive_keywords: ['main_content']
+
+# negative_keywords: ['mw-normal-catlinks',
+# 					"printfooter",
+# 					"mw-panel",
+# 					'portal']
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+]
+
+decompose: [
+
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: ['guhehe.TRANSLATIONS |']
+
+
+

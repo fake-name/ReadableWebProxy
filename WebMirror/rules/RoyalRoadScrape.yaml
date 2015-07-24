@@ -1,0 +1,36 @@
+
+
+FOLLOW_GOOGLE_LINKS: False
+allImages: False
+
+
+baseUrl: [
+	"http://www.royalroadl.com/",
+	]
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			"/forum/",
+			"/forum",
+			"/games/",
+			]
+
+# Content Stripping needs to be determined.
+decomposeBefore: [
+
+]
+
+decompose: [
+
+]
+
+stripTitle: ['guhehe.TRANSLATIONS |']
+
+
+
+

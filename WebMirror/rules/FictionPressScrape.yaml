@@ -1,0 +1,42 @@
+
+
+FOLLOW_GOOGLE_LINKS: False
+allImages: False
+
+
+baseUrl: [
+	"https://www.fictionpress.com/",
+	]
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			"/forum/",
+			"/forum",
+			"/forums/",
+			"/forums",
+			"/games/",
+			"/betareaders/",
+			"/poetry/", # Really?
+
+			"/post.php?",
+			"/author.php?",
+			]
+
+# Content Stripping needs to be determined.
+decomposeBefore: [
+
+]
+
+decompose: [
+
+]
+
+stripTitle: []
+
+
+

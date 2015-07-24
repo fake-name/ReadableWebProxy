@@ -1,0 +1,241 @@
+
+
+# Grab all images, ignoring host domain
+allImages: True
+
+
+FOLLOW_GOOGLE_LINKS: True
+
+baseUrl: [
+
+
+	'http://a0132.blogspot.ca',
+	'http://ahoujicha.blogspot.ca',
+	'http://azureskytls.blogspot.ca',
+	'http://azureskytls.blogspot.com.au',
+	'http://bakadogeza.blogspot.com',
+	'http://cetranslation.blogspot.ca',
+	'http://cetranslation.blogspot.com',
+	'http://cetranslation.blogspot.sg',
+	'http://clickyclicktranslation.blogspot.co.uk',
+	'http://dreadfuldecoding.blogspot.com',
+	'http://ecwebnovel.blogspot.ca',
+	'http://erosworkshop.blogspot.com',
+	'http://gurotranslation.blogspot.com',
+	'http://hereticlnt.blogspot.ca',
+	'http://hikuosan.blogspot.com',
+	'http://imoutoliciouslnt.blogspot.ca',
+	'http://imoutoliciouslnt.blogspot.com.au',
+	'http://istlovesu.blogspot.com',
+	'http://jawztranslations.blogspot.ca',
+	'http://jawztranslations.blogspot.com',
+	'http://kaezartranslations.blogspot.com',
+	'http://kurotsuki-novel.blogspot.ca',
+	'http://kurotsuki-novel.blogspot.com',
+	'http://mahoukoukoku.blogspot.com.au',
+	'http://nakulas.blogspot.com',
+	'http://noitl.blogspot.com',
+	'http://panofitrans.blogspot.com',
+	'http://royalroadweed.blogspot.co.il',
+	'http://skythewood.blogspot.com',
+	'http://skythewood.blogspot.sg',
+	'http://sousetsuka.blogspot.ca',
+	'http://swordandgame.blogspot.ca',
+	'http://swordandgame.blogspot.it',
+	'http://thenakedsol.blogspot.com',
+	'http://thenakedsol.blogspot.com.au',
+	'http://tony-yon-ka.blogspot.com',
+	'http://tony-yon-ka.blogspot.com.au',
+	'http://tu-shu-guan.blogspot.com',
+	'http://turb0translation.blogspot.com',
+	'http://untuned-strings.blogspot.ca',
+	'http://untuned-strings.blogspot.com',
+	'http://webnoveltranslations.blogspot.in',
+	'http://webnoveltranslations.blogspot.se',
+	'http://xcrossj.blogspot.com.au',
+
+	'http://dreamsleeper87.blogspot.com',
+
+
+	# Dead:
+	# 'http://hereticlnt.blogspot.ca',
+	# 'http://hereticlnt.blogspot.com',
+
+]
+
+feedPostfix: "/feeds/posts/default"
+
+extraStartUrls: [
+	'https://drive.google.com/folderview?id=0B8UYgI2TD_nmMjE2ZnFodjZ1Y3c&usp=drive_web',
+	'https://docs.google.com/document/d/1LKdA3x0k3I3Hbemmp5tc_xu0IMGyhwjV7y6UV5bUhXU',
+	'http://imoutoliciouslnt.blogspot.ca/p/projects.html',
+	'http://cetranslation.blogspot.com/p/projects.html',
+
+	]
+
+fileDomains: [
+	'bp.blogspot.com'
+	]
+
+tld: ['com', 'ca', 'fr', 'sg', 'it', 'co.uk']
+
+# Any url containing any of the words in the `badwords` list will be ignored.
+badwords: [
+
+			"-online-pdf-viewer/",
+			".yahoo.com",
+			"/comment-page-",
+			"/manga/",
+			"/recruitment/",
+			"?share=",
+			"_wpnonce=",
+			"account/begin_password_reset",
+			"facebook.com",
+			"like_comment=",
+			"mailto:",
+			"plus.google.com",
+			"showComment=",
+			"twitter.com",
+			"wpmp_switcher=mobile",
+			'#comment-form',
+			'#comments',
+			'.googleusercontent.com',
+			'/?replytocom=',
+			'/comments/default',
+			'/feeds/',
+			'/search/',
+			'/search/label/',
+			'/search?',
+			'p.opt.fimserve.com',
+			'showComment=',
+			'the-imouto-petter.html',
+			'tinypic.com',
+			'updated-max',
+			'/page/page/',
+
+			# I don't know why the scrape is walking over to taptaptap content, but it's fucking annoying.
+			'www.taptaptaptaptap.net',
+
+			"/manga/",
+			"/recruitment/",
+			"wpmp_switcher=mobile",
+			"account/begin_password_reset",
+			"/comment-page-",
+
+			# Why do people think they need a fucking comment system?
+			'/?replytocom=',
+			'#comments',
+			'/comments/',
+
+			# Mask out the PDFs
+			"-online-pdf-viewer/",
+
+			# Who the fuck shares shit like this anyways?
+			"?share=",
+			'wp-login.php',
+			'/feeds/'
+
+
+			]
+
+decomposeBefore: [
+
+	{'class' : 'comments'},
+	{'class' : 'comments-area'},
+	{'class' : 'post-share-buttons'},
+	{'class' : 'wpcnt'},
+	{'id'    : 'addthis-share'},
+	{'id'    : 'comments'},
+	{'id'    : 'info-bt'},
+	{'id'    : 'jp-post-flair'},
+	{'class' : 'footer-outer'},
+	{'class' : 'feed-links'},
+	{'class' : 'post-feeds'},
+	{'class' : 'comments'},
+
+]
+
+decompose: [
+
+	{'class'  : 'authorpost'},
+	{'class'  : 'bit'},
+	{'class'  : 'blog-feeds'},
+	{'class'  : 'blog-pager'},
+	{'class'  : 'btop'},
+	{'class'  : 'column-left-outer'},
+	{'class'  : 'column-right-outer'},
+	{'class'  : 'comments'},
+	{'class'  : 'date-header'},
+	{'class'  : 'entry-utility'},
+	{'class'  : 'footer'},
+	{'class'  : 'footer-outer'},
+	{'class'  : 'header-outer'},
+	{'class'  : 'headerbg'},
+	{'class'  : 'komensamping'},
+	{'class'  : 'menucodenirvana'},
+	{'class'  : 'menujohanes'},
+	{'class'  : 'navbar'},
+	{'class'  : 'photo-meta'},
+	{'class'  : 'post-feeds'},
+	{'class'  : 'post-footer'},
+	{'class'  : 'quickedit'},
+	{'class'  : 'sidebar'},
+	{'class'  : 'sidebar-wrapper'},
+	{'class'  : 'tabs-outer'},
+	{'class'  : 'widget-area'},
+	{'class'  : 'widget-container'},
+	{'class'  : 'widget-content'},
+	{'class'  : 'wpcnt'},
+	{'class'  : 'wpcom-follow-bubbles'},
+	{'id'     : 'addthis-share'},
+	{'id'     : 'bit'},
+	{'id'     : 'carousel-reblog-box'},
+	{'id'     : 'comments'},
+	{'id'     : 'credit'},
+	{'id'     : 'credit-wrapper'},
+	{'id'     : 'footer'},
+	{'id'     : 'header'},
+	{'id'     : 'headerimg'},
+	{'id'     : 'infinite-footer'},
+	{'id'     : 'jp-post-flair'},
+	{'id'     : 'likes-other-gravatars'},
+	{'id'     : 'nav-above'},
+	{'id'     : 'nav-below'},
+	{'id'     : 'postFooterGadgets'},
+	{'id'     : 'sidebar'},
+	{'id'     : 'sidebar-wrapper'},
+	{'id'     : 'sidebar-wrapper1'}, # Yes, two `sidebar-wrapper` ids. Gah.
+	{'id'     : 'site-navigation'},
+
+	{'class' : 'widget-content'},
+	{'class' : 'titlewrapper'},
+	{'class' : 'title'},
+	{'class' : 'post-footer'},
+	{'class' : 'post-footer-line'},
+	{'class' : 'cap-bottom'},
+	{'class' : 'header-outer'},
+	{'class' : 'column-right-outer'},
+	{'class' : 'column-left-outer'},
+	{'class' : 'widget-item-control'},
+	{'class' : 'fauxcolumn-right-outer'},
+	{'class' : 'fauxcolumn-left-outer'},
+	{'id'    : 'LinkList1'},
+
+
+]
+
+stripTitle: [
+	"Untuned Translation Blog:",
+	'| Sousetsuka',
+	'Skythewood translations:',
+	"Translations From Outer Space:",
+	"Translation Treasure Box:",
+	'Imoutolicious Light Novel Translations:',
+	"EC Webnovel:",
+	'C.E. Light Novel Translations:',
+	"There's a cockroach in your soul and a little homunculus in your brain:",
+	"Istian's Workshop:",
+
+]
+
+
