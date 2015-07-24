@@ -1,0 +1,11 @@
+__pycache__
+/bak
+/*.lwp
+/ctntCache
+/settings.py
+/*.pyc
+*.pyc
+/flask
+/tmp
+/covers
+/FeedFeeder/cert
