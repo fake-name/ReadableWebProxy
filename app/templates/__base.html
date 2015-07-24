@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% if title %}
+			<title>{{ title }} - WLN Updates</title>
+		{% else %}
+			<title>WLN Updates</title>
+		{% endif %}
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		{% block header %}{% endblock %}
+	</head>
+	<body>
+		<div id='segment_container'>
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="/">Web & Light Novel Updates!</a>
+					</div>
+					<div class="col-sm-5 col-md-5 col-lg-5 pull-right" style="display:inline;">
+						<form class="navbar-form" role="/search" action='/search'>
+							<div class="input-group" style="width: 100%">
+								<input type="text" class="form-control input-large" placeholder="Search" name="title" id="srch-term">
+								<div class="input-group-btn"><button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button></div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</nav>
+			<div id='segment_body'>
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-10">
+							{% block content %}{% endblock %}
+						</div>
+						<div class="col-md-2">
+							{% include '_block_nav.html' %}
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div id='segment_footer'>
+				<div class="navbar navbar-default">
+					<div class="container">
+						<div class="navbar-header">
+
+						</div>
+						<ul class="nav navbar-nav">
+							<li><a href='/about'>About this site</a></li>
+							<li><a href="/help">Help</a></li>
+							<li><a href="/legal">Abuse and Legal</a></li>
+						</ul>
+					</nav>
+
+				</div>
+			</div>
+		</div>
+
+
+
+	</body>
+
+	<link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/static/css/custom.css" rel="stylesheet" media="screen">
+	<script src="/static/js/jquery-latest.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	{% block footer %}{% endblock %}
+</html>

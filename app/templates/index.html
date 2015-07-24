@@ -1,0 +1,19 @@
+<!-- extend base layout -->
+{% extends "__base.html" %}
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well">
+		<h3>News</h3>
+
+	</div>
+
+{% endblock %}
+
+
+{% block footer %}
+	{% if g.user.is_mod() %}
+		{% include '_block_admin_scripts.html' %}
+	{% endif %}
+{% endblock %}
+

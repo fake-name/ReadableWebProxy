@@ -1,0 +1,110 @@
+<!-- extend base layout -->
+
+
+
+<script src="/static/js/jquery.contextMenu.js" type="text/javascript"></script>
+<link href="/static/css/jquery.contextMenu.css" rel="stylesheet" type="text/css" />
+<script>
+
+	var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+	$.ajaxSetup({
+		beforeSend: function(xhr, settings) {
+			if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+				xhr.setRequestHeader("X-CSRFToken", csrftoken)
+			}
+		}
+	})
+
+
+	function updateCallback(result)
+	{
+		console.log("Callback!")
+		if (!result.hasOwnProperty("error"))
+		{
+			console.log("No error result?")
+		}
+		if (result['error'])
+		{
+			alert("Error on update!\n\n"+result["message"])
+		}
+		else
+		{
+			location.reload();
+		}
+		console.log(result)
+
+	}
+
+	function delete_release(key, opt)
+	{
+		var itemdat = opt.$trigger.data()
+
+		var params = {
+			"mode"      : "release-ctrl",
+			"op"        : "delete",
+			"id"        : itemdat['id'],
+			"count"     : itemdat['counted'],
+		}
+		if (confirm('Are you sure you want to delete that release?'))
+		{
+			$.ajax({
+				url : "/api",
+				success : updateCallback,
+				data: JSON.stringify(params),
+				method: "POST",
+				dataType: 'json',
+				contentType: "application/json;",
+			});
+		}
+
+
+	}
+	function toggle_count_release(key, opt)
+	{
+		var itemdat = opt.$trigger.data()
+
+		var params = {
+			"mode"      : "release-ctrl",
+			"op"        : "toggle-counted",
+			"id"        : itemdat['id'],
+			"count"     : itemdat['counted'],
+		}
+
+		$.ajax({
+			url : "/api",
+			success : updateCallback,
+			data: JSON.stringify(params),
+			method: "POST",
+			dataType: 'json',
+			contentType: "application/json;",
+		});
+
+
+	}
+
+	$(function(){
+		$.contextMenu({
+			selector: "#release-entry-cell",
+			build: function(trigger, e) {
+				var dat = trigger.parent().data()
+				var addedBy  = dat.addedBy
+				var addedOn  = dat.addedOn
+				var addedAgo = dat.addedAgo
+				return {
+
+					items: {
+						del       : {name:'Delete Release',      icon:'remove', callback:delete_release },
+						toggle    : {name:'Toggle Countability', icon:'ok',     callback:toggle_count_release },
+						"sep1"    : "---------",
+						"addedby" : {name: "Added by: "+addedBy, disabled:true},
+						"addedon" : {name: "Added on: "+addedOn, disabled:true},
+						"addedago": {name: "(Ago: "+addedAgo+")", disabled:true},
+					}
+				};
+			}
+		});
+	});
+
+
+</script>
