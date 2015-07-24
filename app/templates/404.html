@@ -1,0 +1,10 @@
+<!-- extend base layout -->
+{% extends "__base.html" %}
+
+{% block content %}
+
+	<div class="well">
+		<h1>{{ _('File Not Found') }}</h1>
+		<p><a href="{{ url_for('index') }}">{{ _('Back to home.') }}</a></p>
+	</div>
+{% endblock %}

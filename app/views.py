@@ -31,22 +31,8 @@ def get_locale():
 
 @app.before_request
 def before_request():
-	# req = HttpRequestLog(
-	# 	path           = request.path,
-	# 	user_agent     = request.headers.get('User-Agent'),
-	# 	referer        = request.headers.get('Referer'),
-	# 	forwarded_for  = request.headers.get('X-Originating-IP'),
-	# 	originating_ip = request.headers.get('X-Forwarded-For'),
-	# 	)
-	# db.session.add(req)
 
 	g.user = current_user
-	# g.search_form = SearchForm()
-	# if g.user.is_authenticated():
-	# 	g.user.last_seen = datetime.utcnow()
-	# 	db.session.add(g.user)
-
-	# db.session.commit()
 	g.locale = get_locale()
 
 
@@ -82,11 +68,25 @@ def internal_error(dummy_error):
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
-# @login_required
-def index(page=1):
+def index():
 	return render_template('index.html',
 						   title               = 'Home',
 						   )
+
+
+@app.route('/view', methods=['GET'])
+def view():
+	req_url = request.args.get('url')
+	if not req_url:
+		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+	return render_template('index.html', title = 'Home')
+
+@app.route('/render', methods=['GET'])
+def render():
+	req_url = request.args.get('url')
+	if not req_url:
+		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+	return render_template('index.html', title = 'Home')
 
 
 
