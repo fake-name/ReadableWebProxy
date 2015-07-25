@@ -14,6 +14,7 @@ class RemoteContentObject(object):
 
 	def fetch(self):
 		self.fetched = True
+		self.job = self.archiver.synchronousJobRequest(self.url)
 
 	def getTitle(self):
 		assert self.fetched

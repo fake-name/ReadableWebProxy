@@ -1,5 +1,5 @@
 
-import json
+import traceback
 import os
 import os.path
 import yaml
@@ -9,11 +9,20 @@ import urllib.parse
 class ValidationError(Exception):
 	pass
 
+RULE_CACHE = None
+
 def getStartURLs(ruleset):
 	if not 'baseUrl' in ruleset:
 		raise ValidationError("No 'baseUrl' values in ruleset!")
 	ret = []
+
+	# Allow the special-case "Generic" ruleset, which matches all
+	# sites not matched by a more specific case.
+	if ruleset['baseUrl'] == 'None':
+		return None
+
 	if not isinstance(ruleset['baseUrl'], list):
+		print("BaseUrl type:", type(ruleset['baseUrl']))
 		raise ValidationError("'baseUrl' is not a list!")
 	ret += ruleset['baseUrl']
 
@@ -89,6 +98,9 @@ def getPossibleNetLocs(ruleset):
 	TLDs that the scrape can walk to.
 	'''
 
+	if ruleset['baseUrl'] == 'None':
+		return None
+
 	inTlds = set()
 	if 'tld' in ruleset and ruleset['tld']:
 		assert isinstance(ruleset['tld'], list)
@@ -104,6 +116,8 @@ def getPossibleNetLocs(ruleset):
 
 
 	def genBaseUrlPermutations(url):
+
+
 		netloc = urllib.parse.urlsplit(url.lower()).netloc
 		if not netloc:
 			raise ValueError("One of the scanned domains collapsed down to an empty string: '%s'!" % url)
@@ -236,6 +250,11 @@ def get_rules():
 				rules = load_validate_rules(item, dat)
 				if rules:
 					ret.append(rules)
+
+				# print(item)
+				assert 'starturls' in rules
+				# print(rules['starturls'])
+
 			except (yaml.scanner.ScannerError, yaml.parser.ParserError):
 				print("ERROR!")
 				print("Attempting to load file: '{}'".format(item))
@@ -251,9 +270,14 @@ def get_rules():
 				traceback.print_exc()
 				print(dat)
 
-	print()
+	# for ruleset in ret:
+	# 	print(type(ruleset['starturls']))
+	assert [True for ruleset in ret if 'starturls' in ruleset and ruleset['starturls'] == None], "You must have a base ruleset for matching generic sites (with a baseurl value of `None`)"
+
 	print("Loaded rulesets ({}):".format(len(ret)))
 	print()
+
+	# traceback.print_exc()
 	# for ruleset in ret:
 	# 	print(ruleset)
 	# 	print()
@@ -261,5 +285,14 @@ def get_rules():
 
 
 def load_rules():
-	rules = get_rules()
+	global RULE_CACHE
+
+	if not RULE_CACHE:
+		print("Need to load rules")
+		rules = get_rules()
+		RULE_CACHE = rules
+	else:
+		print("Using cached rules")
+		rules = RULE_CACHE
+
 	return rules

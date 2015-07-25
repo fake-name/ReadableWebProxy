@@ -9,17 +9,19 @@ import WebMirror.LogBase as LogBase
 import runStatus
 import time
 
+import sqlalchemy.exc
+
 from sqlalchemy import desc
 
 import WebMirror.util.urlFuncs
 import urllib.parse
 import traceback
 import datetime
-import sqlalchemy.exc
 
 import WebMirror.Fetch
 
 MAX_DISTANCE = 1000 * 1000
+CACHE_DURATION = 60 * 5
 
 # import sql.operators as sqlo
 
@@ -70,14 +72,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 		import WebMirror.database as db
 		self.db = db
 
-		ruleset = WebMirror.rules.get_rules()
+		ruleset = WebMirror.rules.load_rules()
 		self.ruleset = ruleset
 		self.fetcher = WebMirror.Fetch.ItemFetcher
 
 		self.relinkable = set()
 		for item in ruleset:
 			[self.relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
-			[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
+			if item['netlocs'] != None:
+				[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
 
 
 
@@ -229,6 +232,53 @@ class SiteArchiver(LogBase.LoggerMixin):
 				time.sleep(5)
 
 		self.log.info("Task exiting.")
+
+	def synchronousJobRequest(self, url):
+		"""
+		trigger an immediate, synchronous dispatch of a job for url `url`,
+		and return the fetched row upon completion
+
+		"""
+
+		self.log.info("Manually initiated request for content at '%s'", url)
+		start = urllib.parse.urlsplit(url).netloc
+
+		row = self.db.WebPages(
+			url       = url,
+			starturl  = url,
+			netloc    = start,
+			distance  = MAX_DISTANCE-2,
+			is_text   = True,
+			priority  = self.db.DB_REALTIME_PRIORITY,
+			type      = "unknown",
+			fetchtime = datetime.datetime.now(),
+			)
+
+		try:
+			self.db.session.add(row)
+			self.db.session.commit()
+		except sqlalchemy.exc.IntegrityError:
+			self.db.session.rollback()
+			row =  query = self.db.session.query(self.db.WebPages) \
+				.filter(self.db.WebPages.url == url)               \
+				.one()
+		print()
+		print("Row:")
+		print(row)
+		if row.state == "complete" and row.fetchtime > datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION):
+			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
+			return row
+		row.state     = 'new'
+		row.distance  = MAX_DISTANCE-2
+		row.priority  = self.db.DB_REALTIME_PRIORITY
+
+		# dispatchRequest modifies the row contents directly.
+		self.dispatchRequest(row)
+
+		# Commit, because why not
+		self.db.session.commit()
+
+		return row
 
 
 # 	def queueLoop(self):

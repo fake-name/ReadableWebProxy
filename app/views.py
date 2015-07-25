@@ -27,7 +27,7 @@ from flask.ext.sqlalchemy import get_debug_queries
 from app import AnonUser
 import traceback
 from app import app
-from app import db
+
 from app import lm
 from app import babel
 import time
@@ -71,7 +71,6 @@ def not_found_error(dummy_error):
 
 @app.errorhandler(500)
 def internal_error(dummy_error):
-	db.session.rollback()
 	print("Internal Error!")
 	print(dummy_error)
 	print(traceback.format_exc())

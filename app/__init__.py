@@ -1,7 +1,6 @@
 import os
 from flask import Flask
 from flask.json import JSONEncoder
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 
 from flask.ext.babel import Babel, lazy_gettext
@@ -36,7 +35,7 @@ if "debug" in sys.argv:
 	print("Flask running in debug mode!")
 	app.debug = True
 app.config.from_object('config.BaseConfig')
-db = SQLAlchemy(app)
+
 lm = LoginManager()
 lm.anonymous_user = AnonUser
 lm.init_app(app)
