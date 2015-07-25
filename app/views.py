@@ -1,23 +1,34 @@
-from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_file, abort
-from flask.ext.login import login_user, logout_user, current_user, login_required
-from itsdangerous import URLSafeTimedSerializer, BadSignature
-from flask.ext.sqlalchemy import get_debug_queries
+
+from flask import flash
+from flask import redirect
+from flask import session
+from flask import url_for
+from flask import jsonify
+from flask import abort
+from flask.ext.login import login_user
+from flask.ext.login import logout_user
+from flask.ext.login import login_required
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import BadSignature
 from flask.ext.babel import gettext
 from datetime import datetime
 # from guess_language import guess_language
-from app import app, db, lm, babel
-from .forms import  SearchForm
 
 
-import sqlalchemy.sql.expression
-
-import os.path
-from sqlalchemy.sql.expression import func
-from sqlalchemy import desc
-from sqlalchemy.orm import joinedload
+from flask import render_template
+from flask import send_file
+from flask import request
+from flask import g
+from flask.ext.login import current_user
+from flask.ext.sqlalchemy import get_debug_queries
 
 from app import AnonUser
 import traceback
+from app import app
+from app import db
+from app import lm
+from app import babel
+import time
 
 @lm.user_loader
 def load_user(id):
@@ -79,16 +90,18 @@ def view():
 	req_url = request.args.get('url')
 	if not req_url:
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
-	return render_template('index.html', title = 'Home')
+	return render_template('view.html', title = 'Home', req_url = req_url)
 
 @app.route('/render', methods=['GET'])
 def render():
 	req_url = request.args.get('url')
 	if not req_url:
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
-	return render_template('index.html', title = 'Home')
-
-
+	return render_template('render.html',
+		title    = 'Home',
+		contents = "Oh hai?",
+		req_url  = req_url,
+		)
 
 
 @app.route('/favicon.ico')

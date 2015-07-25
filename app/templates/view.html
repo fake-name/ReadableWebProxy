@@ -3,10 +3,16 @@
 
 {% block content %}
 	{% include '_block_flash.html' %}
-	<div class="well">
-		<h3>Item</h3>
-
-
+	<div class="well" id='content'>
+		<div class="center-block text-center">
+			<h4>Loading</h4>
+			<p>Please Wait.</p>
+			<img src="/static/loading.gif">
+			<br>
+			<br>
+			<p>Remote URL: <a href='{{req_url}}'>{{req_url}}</a></p>
+		</div>
+		<a href=>link</a>
 	</div>
 
 {% endblock %}
@@ -16,5 +22,8 @@
 	{% if g.user.is_mod() %}
 		{% include '_block_admin_scripts.html' %}
 	{% endif %}
+	<script>
+		$("#content").load("/render?{{ {"url" : req_url} | urlencode }}")
+	</script>
 {% endblock %}
 
