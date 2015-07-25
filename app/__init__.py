@@ -62,7 +62,7 @@ if not app.debug:
 	app.logger.info('wlnupdates startup')
 
 
-from app import views, models
+from app import views
 
 
 @app.context_processor

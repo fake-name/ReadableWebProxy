@@ -10,10 +10,8 @@ runStatus.preloadDicts = False
 
 import WebMirror.util.urlFuncs as urlFuncs
 import urllib.parse
-import LogBase
-import TextScrape.gDocParse as gdp
+import WebMirror.LogBase as LogBase
 import abc
-
 
 
 
@@ -118,7 +116,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 							link[attr] = self.convertToReaderUrl(link[attr])
 
 						if "google.com" in urllib.parse.urlsplit(link[attr].lower()).netloc:
-							link[attr] = gdp.trimGDocUrl(link[attr])
+							link[attr] = urlFuncs.trimGDocUrl(link[attr])
 							# print("Relinked", link[attr])
 					except KeyError:
 						continue
@@ -193,8 +191,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 
 	def processLinkItem(self, url, baseUrl):
-		url = gdp.clearOutboundProxy(url)
-		url = gdp.clearBitLy(url)
+		url = urlFuncs.clearOutboundProxy(url)
+		url = urlFuncs.clearBitLy(url)
 
 		# Filter by domain
 		if not self.checkDomain(url):
@@ -217,7 +215,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		url = urlFuncs.urlClean(url)
 
 		if "google.com" in urllib.parse.urlsplit(url.lower()).netloc:
-			url = gdp.trimGDocUrl(url)
+			url = urlFuncs.trimGDocUrl(url)
 
 			if url.startswith('https://docs.google.com/document/d/images'):
 				return
@@ -229,9 +227,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		else:
 			# Remove any URL fragments causing multiple retreival of the same resource.
-			if url != gdp.trimGDocUrl(url):
+			if url != urlFuncs.trimGDocUrl(url):
 				print('Old URL: "%s"' % url)
-				print('Trimmed: "%s"' % gdp.trimGDocUrl(url))
+				print('Trimmed: "%s"' % urlFuncs.trimGDocUrl(url))
 				raise ValueError("Wat? Url change? Url: '%s'" % url)
 			ret = self.processNewUrl(url, baseUrl)
 			# print("Returning:", ret)
@@ -314,8 +312,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				return
 			else:
 				raise ValueError("Url isn't a url: '%s'" % url)
-		if gdp.isGdocUrl(url) or gdp.isGFileUrl(url):
-			if gdp.trimGDocUrl(url) != url:
+		if urlFuncs.isGdocUrl(url) or urlFuncs.isGFileUrl(url):
+			if urlFuncs.trimGDocUrl(url) != url:
 				raise ValueError("Invalid link crept through! Link: '%s'" % url)
 
 

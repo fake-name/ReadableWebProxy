@@ -5,7 +5,7 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 
 import WebMirror.rules
-import LogBase
+import WebMirror.LogBase as LogBase
 import runStatus
 import time
 
@@ -33,8 +33,6 @@ MAX_DISTANCE = 1000 * 1000
 
 # import os.path
 # import os
-
-import TextScrape.gDocParse as gdp
 
 class DownloadException(Exception):
 	pass

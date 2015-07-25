@@ -12,6 +12,8 @@ from itsdangerous import URLSafeTimedSerializer
 from itsdangerous import BadSignature
 from flask.ext.babel import gettext
 from datetime import datetime
+
+
 # from guess_language import guess_language
 
 
@@ -29,6 +31,8 @@ from app import db
 from app import lm
 from app import babel
 import time
+
+import WebMirror.API
 
 @lm.user_loader
 def load_user(id):
@@ -92,15 +96,20 @@ def view():
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
 	return render_template('view.html', title = 'Home', req_url = req_url)
 
+
 @app.route('/render', methods=['GET'])
 def render():
 	req_url = request.args.get('url')
 	if not req_url:
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+
+	title, content, cachestate = WebMirror.API.getPage(req_url)
+
 	return render_template('render.html',
-		title    = 'Home',
-		contents = "Oh hai?",
-		req_url  = req_url,
+		title      = title,
+		contents   = content,
+		cachestate = cachestate,
+		req_url    = req_url,
 		)
 
 

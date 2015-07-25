@@ -7,12 +7,16 @@ from settings import DATABASE_PASS          as C_DATABASE_PASS
 from settings import SECRET_KEY             as C_SECRET_KEY
 from settings import WTF_CSRF_SECRET_KEY    as C_WTF_CSRF_SECRET_KEY
 from settings import SECURITY_PASSWORD_SALT as C_SECURITY_PASSWORD_SALT
+from settings import RELINK_SECRET          as C_RELINK_SECRET
 
 import os
 import sys
+import hashlib
 if len(sys.argv) > 1 and "debug" in sys.argv:
 	SQLALCHEMY_ECHO = True
 
+
+relink_secret = hashlib.sha1(C_RELINK_SECRET.encode("ascii")).hexdigest()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

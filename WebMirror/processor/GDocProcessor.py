@@ -16,12 +16,11 @@ import os.path
 
 import traceback
 
-from . import ProcessorBase
+from WebMirror.processor.ProcessorBase import PageProcessor
 # import TextScrape.SiteArchiver
 
 
 import WebMirror.util.urlFuncs as urlFuncs
-from . import gDocParse as gdp
 
 # import TextScrape.RelinkLookup
 # import TextScrape.RELINKABLE as RELINKABLE
@@ -43,7 +42,7 @@ from . import gDocParse as gdp
 
 
 
-class GdocPageProcessor(ProcessorBase.PageProcessor):
+class GdocPageProcessor(PageProcessor):
 
 	loggerPath = "Main.Text.GdocPageProcessor"
 
@@ -234,7 +233,7 @@ class GdocPageProcessor(ProcessorBase.PageProcessor):
 		soup = self.relink(soup, imRelink=self.convertToGdocReaderImage)
 
 		url = self.preprocessGdocReaderUrl(url)
-		url = gdp.trimGDocUrl(url)
+		url = urlFuncs.trimGDocUrl(url)
 		# Since the content we're extracting will be embedded into another page, we want to
 		# strip out the <body> and <html> tags. `unwrap()`  replaces the soup with the contents of the
 		# tag it's called on. We end up with just the contents of the <body> tag.
@@ -252,7 +251,7 @@ class GdocPageProcessor(ProcessorBase.PageProcessor):
 
 
 		self.log.info("Should fetch google doc at '%s'", url)
-		doc = gdp.GDocExtractor(url)
+		doc = urlFuncs.GDocExtractor(url)
 
 
 
@@ -270,7 +269,7 @@ class GdocPageProcessor(ProcessorBase.PageProcessor):
 					self.log.critical(line.strip())
 
 
-					raise gdp.CannotAccessGDocException("Cannot access google doc! Is it protected?")
+					raise urlFuncs.CannotAccessGDocException("Cannot access google doc! Is it protected?")
 
 			if mainPage:
 				break
