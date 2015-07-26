@@ -201,7 +201,7 @@ class WebGetRobust:
 		if isinstance(page, bytes):
 			raise ValueError("Received content not decoded! Cannot parse!")
 
-		soup = bs4.BeautifulSoup(page)
+		soup = bs4.BeautifulSoup(page, "lxml")
 		return soup
 
 

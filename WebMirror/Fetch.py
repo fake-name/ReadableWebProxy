@@ -17,7 +17,7 @@ import WebMirror.processor.HtmlProcessor
 import WebMirror.processor.GDriveDirProcessor
 import WebMirror.processor.GDocProcessor
 
-import WebMirror.util.urlFuncs
+import WebMirror.util.urlFuncs as url_util
 import urllib.parse
 import traceback
 import WebMirror.util.webFunctions as webFunctions
@@ -38,10 +38,9 @@ MAX_DISTANCE = 1000 * 1000
 # import os.path
 # import os
 
-import WebMirror.processor.gDocParse as gdp
 
-class DownloadException(Exception):
-	pass
+
+
 
 ########################################################################################################################
 #
@@ -73,6 +72,10 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		self.wg = webFunctions.WebGetRobust()
 
+
+		baseRules = [ruleset for ruleset in rules if ruleset['netlocs'] == None].pop(0)
+
+		rules = [ruleset for ruleset in rules if ruleset['netlocs'] != None]
 		rules.sort(key=lambda x:x['netlocs'])
 
 		self.ruleset = rules
@@ -89,6 +92,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 		for ruleset in self.ruleset:
 			if netloc in ruleset['netlocs']:
 				self.rules = ruleset
+
+		if not self.rules:
+			self.rules = baseRules
 		assert self.rules
 
 		self.job = job
@@ -262,6 +268,53 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 
+		# with self.transaction() as cur:
+		# 	cur.execute("SELECT fspath  FROM {tableName} WHERE fhash=%s;".format(tableName=self.tableName), (fHash, ))
+		# 	row = cur.fetchone()
+		# 	if row:
+		# 		self.log.info("Already downloaded file. Not creating duplicates.")
+		# 		hadFile = True
+		# 		fqPath = row[0]
+
+		# with self.transaction() as cur:
+
+		# 	cur.execute("SELECT dbid, fspath, contents, mimetype  FROM {tableName} WHERE url=%s;".format(tableName=self.tableName), (url, ))
+		# 	row = cur.fetchone()
+		# 	if not row:
+		# 		self.log.critical("Failure when saving file for URL '%s'", url)
+		# 		self.log.critical("File name: '%s'", fileName)
+		# 		return
+
+		# 	dbid, dummy_havePath, dummy_haveCtnt, dummy_haveMime = row
+		# 	# self.log.info('havePath, haveCtnt, haveMime - %s, %s, %s', havePath, haveCtnt, haveMime)
+
+		# 	if not hadFile:
+		# 		fqPath = self.getFilenameFromIdName(dbid, fileName)
+
+		# 	newRowDict = {  "dlstate" : 2,
+		# 					"series"  : None,
+		# 					"contents": len(content),
+		# 					"istext"  : False,
+		# 					"mimetype": mimetype,
+		# 					"fspath"  : fqPath,
+		# 					"fhash"   : fHash}
+
+
+		# self.updateDbEntry(url=url, commit=False, **newRowDict)
+
+
+		# if not hadFile:
+		# 	try:
+		# 		with open(fqPath, "wb") as fp:
+		# 			fp.write(content)
+		# 	except OSError:
+		# 		self.log.error("Error when attempting to save file. ")
+		# 		with self.transaction() as cur:
+		# 			newRowDict = {"dlstate" : -1}
+		# 			self.updateDbEntry(url=url, commit=False, **newRowDict)
+
+
+
 # 	########################################################################################################################
 # 	#
 # 	#	##     ## #### ##     ## ########         ######## ##    ## ########  ########
@@ -325,8 +378,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 			elif mimeType in ["application/octet-stream", "application/x-mobipocket-ebook", "application/pdf", "application/zip"]:
 				self.log.info("Processing '%s' as an binary file.", url)
 
-			self.saveFile(url, mimeType, fName, content)
-			return self.getEmptyRet()
+			# self.saveFile(url, mimeType, fName, content)
+			ret = {"file" : True, "url" : url, "mimeType" : mimeType, "fName" : fName, "content" : content}
+			return ret
 
 
 		elif mimeType in ['text/html']:
@@ -418,14 +472,14 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# Retreive remote content at `url`, call the appropriate handler for the
 	# transferred content (e.g. is it an image/html page/binary file)
 	def fetch(self):
-		self.job.url = WebMirror.util.urlFuncs.urlClean(self.job.url)
+		self.job.url = url_util.urlClean(self.job.url)
 
 		# print('Dispatch URL', url)
 
 		netloc = urllib.parse.urlsplit(self.job.url.lower()).netloc
 
-		isGdoc,  realUrl = gdp.isGdocUrl(self.job.url)
-		isGfile, fileUrl = gdp.isGFileUrl(self.job.url)
+		isGdoc,  realUrl = url_util.isGdocUrl(self.job.url)
+		isGfile, fileUrl = url_util.isGFileUrl(self.job.url)
 
 		# print('Fetching: ', self.job.url, 'distance', self.job.distance)
 		# print(isGdoc, isGfile)

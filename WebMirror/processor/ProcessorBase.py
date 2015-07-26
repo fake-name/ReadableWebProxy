@@ -13,6 +13,7 @@ import urllib.parse
 import WebMirror.LogBase as LogBase
 import abc
 
+import config
 
 
 class DownloadException(Exception):
@@ -80,21 +81,27 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 	_scannedDomains = []
 	_badwords       = []
 
+
 	# Hook so plugins can modify the internal URLs as part of the relinking process
 	def preprocessReaderUrl(self, inUrl):
 		return inUrl
 
 
-	def convertToReaderUrl(self, inUrl):
+	def convertToReaderUrl(self, inUrl, resource=False):
 		inUrl = urlFuncs.urlClean(inUrl)
 		inUrl = self.preprocessReaderUrl(inUrl)
 		# The link will have been canonized at this point
-		url = '/books/render?url=%s' % urllib.parse.quote(inUrl)
+
+		if resource:
+			prefix = "RESOURCE:{}".format(config.relink_secret)
+		else:
+			prefix = "CONTENT:{}".format(config.relink_secret)
+		url = '%s%s' % (prefix.lower(), urllib.parse.quote(inUrl))
 		return url
 
 	def convertToReaderImage(self, inStr):
 		inStr = urlFuncs.urlClean(inStr)
-		return self.convertToReaderUrl(inStr)
+		return self.convertToReaderUrl(inStr, resource=True)
 
 	def relink(self, soup, imRelink=None):
 		# The google doc reader relinking mechanisms requires overriding the
@@ -112,8 +119,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				for link in soup.findAll(tag):
 					try:
 						# print("Link!", self.checkRelinkDomain(link[attr]), link[attr])
-						if self.checkRelinkDomain(link[attr]):
-							link[attr] = self.convertToReaderUrl(link[attr])
+						# if self.checkRelinkDomain(link[attr]):
+						link[attr] = self.convertToReaderUrl(link[attr])
 
 						if "google.com" in urllib.parse.urlsplit(link[attr].lower()).netloc:
 							link[attr] = urlFuncs.trimGDocUrl(link[attr])

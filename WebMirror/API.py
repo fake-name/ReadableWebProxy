@@ -1,5 +1,5 @@
 
-import WebMirror.database
+import config
 from config import relink_secret
 
 from WebMirror.Engine import SiteArchiver
@@ -15,14 +15,29 @@ class RemoteContentObject(object):
 	def fetch(self):
 		self.fetched = True
 		self.job = self.archiver.synchronousJobRequest(self.url)
+		print(self.job)
 
 	def getTitle(self):
 		assert self.fetched
-		return "haaaaai"
+		return self.job.title
 
 	def getContent(self, relink_key, relink_replace):
+		"""
+		At this point, we have the page content, but we need to
+		replace the url/resource keys with the proper paths
+		so that the page will render properly
+		"""
 		assert self.fetched
-		return "wat"
+
+		content = self.job.content
+		if content:
+			rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
+			ctnt_key = "CONTENT:{}".format(config.relink_secret).lower()
+
+			content = content.replace(ctnt_key, "/view?url=")
+			content = content.replace(rsc_key, "/render_rsc?url=")
+
+		return content
 
 	def getCacheState(self):
 		assert self.fetched

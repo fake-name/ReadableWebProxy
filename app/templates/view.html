@@ -12,7 +12,7 @@
 			<br>
 			<p>Remote URL: <a href='{{req_url}}'>{{req_url}}</a></p>
 		</div>
-		<a href=>link</a>
+		<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a>
 	</div>
 
 {% endblock %}

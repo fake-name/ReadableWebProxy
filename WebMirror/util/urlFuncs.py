@@ -1,6 +1,7 @@
 
-
+import re
 import urllib.parse
+import WebMirror.util.webFunctions
 
 # All tags you need to look into to do link canonization
 # source: http://stackoverflow.com/q/2725156/414272
@@ -200,7 +201,7 @@ def canonizeUrls(soup, pageUrl):
 def urlClean(url):
 	# Google docs can be accessed with or without the '/preview' postfix
 	# We want to remove this if it's present, so we don't duplicate content.
-	url = WebMirror.processor.GDocProcessor.trimGDocUrl(url)
+	url = trimGDocUrl(url)
 
 	while True:
 		url2 = urllib.parse.unquote(url)

@@ -1,5 +1,9 @@
 #!flask/bin/python
 
+if __name__ == "__main__":
+	import logSetup
+	logSetup.initLogging()
+
 from app import app
 import threading
 import time
@@ -7,6 +11,7 @@ import calendar
 
 # import FeedFeeder.FeedFeeder
 import flags
+
 
 def thread_run():
 	interface = None
@@ -41,10 +46,10 @@ def go():
 		app.run(host='0.0.0.0', port=5001)
 	elif "all" in sys.argv:
 		print("Running in all IP mode.")
-		app.run(host='0.0.0.0', port=5001)
+		app.run(host='0.0.0.0', port=5001, processes=10)
 	else:
 		print("Running in normal mode.")
-		app.run(port=5001)
+		app.run(port=5001, processes=10)
 
 
 	print()

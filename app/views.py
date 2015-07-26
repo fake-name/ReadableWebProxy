@@ -111,6 +111,21 @@ def render():
 		req_url    = req_url,
 		)
 
+@app.route('/render_rsc', methods=['GET'])
+def render_resource():
+	req_url = request.args.get('url')
+	if not req_url:
+		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+
+	title, content, cachestate = WebMirror.API.getPage(req_url)
+
+	return render_template('render.html',
+		title      = title,
+		contents   = content,
+		cachestate = cachestate,
+		req_url    = req_url,
+		)
+
 
 @app.route('/favicon.ico')
 def sendFavIcon():

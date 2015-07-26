@@ -18,10 +18,12 @@ import urllib.parse
 import traceback
 import datetime
 
+import hashlib
 import WebMirror.Fetch
 
 MAX_DISTANCE = 1000 * 1000
-CACHE_DURATION = 60 * 5
+# CACHE_DURATION = 60 * 5
+CACHE_DURATION = 1
 
 # import sql.operators as sqlo
 
@@ -38,6 +40,14 @@ CACHE_DURATION = 60 * 5
 
 class DownloadException(Exception):
 	pass
+
+
+def getHash(fCont):
+
+	m = hashlib.md5()
+	m.update(fCont)
+	return m.hexdigest()
+
 
 ########################################################################################################################
 #
@@ -103,7 +113,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fetcher = self.fetcher(self.ruleset, job)
 		response = fetcher.fetch()
 
-		self.upsertResponseLinks(job, response)
+		if "file" in response:
+			self.upsertFileResponse(job, response)
+		else:
+			self.upsertResponseLinks(job, response)
 
 
 	def upsertResponseLinks(self, job, response):
@@ -152,6 +165,24 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.db.session.commit()
 		self.log.info("New links: %s, retriggered links: %s.", newlinks, retriggerLinks)
 
+
+
+	def upsertFileResponse(self, job, response):
+		# Response dict structure:
+		# {"file" : True, "url" : url, "mimeType" : mimeType, "fName" : fName, "content" : content}
+
+		# Yeah, I'm hashing twice in lots of cases. Bite me
+		fHash = getHash(response['content'])
+
+
+		# Look for existing files with the same MD5sum. If there are any, just point the new file at the
+		# fsPath of the existing one, rather then creating a new file on-disk.
+
+		have = self.db.session.query(self.db.WebFiles) \
+			.filter(self.db.WebFiles.fhash == fHash)   \
+			.limit(1)                                  \
+			.scalar()
+		print("have:", have)
 
 	########################################################################################################################
 	#
@@ -254,14 +285,27 @@ class SiteArchiver(LogBase.LoggerMixin):
 			fetchtime = datetime.datetime.now(),
 			)
 
-		try:
-			self.db.session.add(row)
-			self.db.session.commit()
-		except sqlalchemy.exc.IntegrityError:
-			self.db.session.rollback()
-			row =  query = self.db.session.query(self.db.WebPages) \
-				.filter(self.db.WebPages.url == url)               \
-				.one()
+		# Because we can have parallel operations happening here, we spin on adding&committing the new
+		# row untill the commit either succeeds, or we get an integrity error, and then successfully
+		# fetch the row inserted by another thread at the same time.
+		while 1:
+			try:
+				self.db.session.add(row)
+				self.db.session.commit()
+				break
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db.session.rollback()
+				self.db.session.add(row)
+				self.db.session.commit()
+			except sqlalchemy.exc.IntegrityError:
+				self.db.session.rollback()
+				row =  query = self.db.session.query(self.db.WebPages) \
+					.filter(self.db.WebPages.url == url)               \
+					.one()
+				self.db.session.commit()
+				break
+
+
 		print()
 		print("Row:")
 		print(row)
@@ -279,140 +323,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.db.session.commit()
 
 		return row
-
-
-# 	def queueLoop(self):
-# 		self.log.info("Fetch thread starting")
-
-# 		# Timeouts is used to track when queues are empty
-# 		# Since I have multiple threads, and there are known
-# 		# situations where we can be certain that there will be
-# 		# only one request (such as at startup), we need to
-# 		# have a mechanism for retrying fetches from a queue a few
-# 		# times before concluding there is nothing left to do
-# 		timeouts = 0
-# 		while runStatus.run:
-# 			try:
-# 				newTodo = self.getToDo(self.FETCH_DISTANCE)
-# 				if newTodo:
-# 					url, distance = newTodo
-
-# 					self.newLinkQueue.put(
-# 							{
-# 								'url'          : url,
-# 								'isText'       : None,
-# 								'distance'     : None,
-# 								'shouldUpsert' : False
-# 							}
-# 						)
-
-# 					try:
-# 						self.dispatchRequest(url, distance)
-# 					except urllib.error.URLError:
-# 						content = "DOWNLOAD FAILED"
-# 						content += "<br>"
-# 						content += traceback.format_exc()
-# 						self.upsert(url, dlstate=-1, contents=content, distance=distance)
-# 						self.log.error("`urllib.error.URLError` Exception when downloading.")
-# 					except DownloadException:
-# 						content = "DOWNLOAD FAILED"
-# 						content += "<br>"
-# 						content += traceback.format_exc()
-# 						self.upsert(url, dlstate=-1, contents=content, distance=distance)
-# 						self.log.error("`DownloadException` Exception when downloading.")
-
-
-# 				else:
-# 					timeouts += 1
-# 					time.sleep(1)
-# 					self.log.info("Fetch task waiting for any potential items to flush to the DB.")
-
-# 				if timeouts > 5:
-# 					break
-
-# 			except Exception:
-# 				traceback.print_exc()
-# 		self.log.info("Fetch thread exiting!")
-
-# 	def crawl(self, shallow=False, checkOnly=False):
-
-# 		self.resetStuckItems()
-
-# 		if hasattr(self, 'preFlight'):
-# 			self.preFlight()
-
-
-# 		# Reset the dlstate on the starting URLs, so thing start up.
-# 		haveUrls = set()
-
-# 		if not checkOnly:
-# 			if isinstance(self.startUrl, (list, set)):
-# 				for url in self.startUrl:
-# 					self.log.info("Start URL: '%s'", url)
-# 					self.upsert(url, dlstate=0, distance=0, walklimit=-1)
-# 			else:
-# 				self.upsert(self.startUrl, dlstate=0, distance=0, walklimit=-1)
-
-# 		# with self.transaction():
-# 		# 	print('transaction test!')
-
-# 		if shallow:
-# 			self.FETCH_DISTANCE = 1
-
-
-# 		with ThreadPoolExecutor(max_workers=self.threads) as executor:
-
-# 			processes = []
-# 			for dummy_x in range(self.threads):
-# 				self.log.info("Starting child-thread!")
-# 				processes.append(executor.submit(self.queueLoop))
-
-
-# 			todoIntegrator = time.time()
-# 			printInterval = 15  # Print items in queue every 10 seconds
-# 			while runStatus.run:
-
-# 				# Every 15 seconds, print how many items remain todo.
-# 				if time.time() > (todoIntegrator + printInterval):
-# 					self.log.info("Items remaining in todo queue: %s", self.getTodoCount())
-# 					todoIntegrator += printInterval
-
-# 				try:
-# 					got = self.newLinkQueue.get_nowait()
-# 					if not got:
-# 						continue
-# 					if len(got) == 4:
-# 						if not got['url'] in haveUrls:
-
-# 							if got['url'].lower().startswith('http'):
-# 								self.log.info("New URL: '%s', distance: %s", got['url'], got['distance'])
-# 								# Only reset the downloadstate for content, not
-# 								# resources
-# 								if got['shouldUpsert']:
-# 									if got['isText']:
-# 										self.upsert(got['url'], istext=got['isText'], dlstate=0, distance=got['distance'])
-# 									else:
-# 										self.upsert(got['url'], istext=got['isText'], distance=got['distance'])
-# 								haveUrls.add(got['url'])
-# 							else:
-# 								raise ValueError("Invalid URL added: '%s'", got)
-# 					else:
-# 						raise ValueError("Data from queue is not a 4-dict? '%s'" % got)
-
-# 				except queue.Empty:
-# 					time.sleep(0.01)
-
-
-
-
-# 				if not any([proc.running() for proc in processes]):
-# 					self.log.info("All threads stopped. Main thread exiting.")
-# 					break
-# 			if not runStatus.run:
-# 				self.log.warn("Execution stopped because of user-interrupt!")
-
-# 		self.log.info("Crawler scanned a total of '%s' pages", len(haveUrls))
-# 		self.log.info("Queue Feeder thread exiting!")
 
 
 if __name__ == "__main__":

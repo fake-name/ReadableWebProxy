@@ -283,15 +283,18 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	def decomposeItems(self, soup, toDecompose):
 		# Decompose all the parts we don't want
 		for key in toDecompose:
-			for instance in soup.find_all(True, attrs=key):
+			try:
+				for instance in soup.find_all(True, attrs=key):
 
-				# So.... yeah. At least one blogspot site has EVERY class used in the
-				# <body> tag, for no coherent reason. Therefore, *never* decompose the <body>
-				# tag, even if it has a bad class in it.
-				if instance.name == 'body':
-					continue
+					# So.... yeah. At least one blogspot site has EVERY class used in the
+					# <body> tag, for no coherent reason. Therefore, *never* decompose the <body>
+					# tag, even if it has a bad class in it.
+					if instance.name == 'body':
+						continue
 
-				instance.decompose() # This call permutes the tree!
+					instance.decompose() # This call permutes the tree!
+			except AttributeError:
+				pass
 
 		return soup
 
@@ -321,7 +324,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		except lxml.etree.ParserError:
 			content = "Page failed to load!"
 
-		soup = bs4.BeautifulSoup(content)
+		soup = bs4.BeautifulSoup(content, "lxml")
 		soup = self.relink(soup)
 		contents = ''
 
@@ -357,7 +360,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	# readability, and finally saves the processed HTML into the database
 	def extractContent(self):
 		self.log.info("Processing '%s' as HTML.", self.pageUrl)
-		soup = bs4.BeautifulSoup(self.content)
+		soup = bs4.BeautifulSoup(self.content, "lxml")
 
 
 		# Allow child-class hooking
