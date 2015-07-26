@@ -98,6 +98,7 @@ class WebPages(Base):
 	addtime     = Column(DateTime, default=datetime.datetime.utcnow)
 
 
+	file_item   = relationship("WebFiles")
 
 # File table doesn't know anything about URLs, since they're kept in the
 # WebPages table entirely.

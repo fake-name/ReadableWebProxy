@@ -7,7 +7,9 @@ from settings import DATABASE_PASS          as C_DATABASE_PASS
 from settings import SECRET_KEY             as C_SECRET_KEY
 from settings import WTF_CSRF_SECRET_KEY    as C_WTF_CSRF_SECRET_KEY
 from settings import SECURITY_PASSWORD_SALT as C_SECURITY_PASSWORD_SALT
+
 from settings import RELINK_SECRET          as C_RELINK_SECRET
+from settings import RESOURCE_DIR           as C_RESOURCE_DIR
 
 import os
 import sys
@@ -54,3 +56,4 @@ class BaseConfig(object):
 
 	SECURITY_PASSWORD_SALT = C_SECURITY_PASSWORD_SALT
 
+	RESOURCE_DIR = C_RESOURCE_DIR

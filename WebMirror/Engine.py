@@ -8,7 +8,8 @@ import WebMirror.rules
 import WebMirror.LogBase as LogBase
 import runStatus
 import time
-
+import os.path
+import os
 import sqlalchemy.exc
 
 from sqlalchemy import desc
@@ -20,6 +21,8 @@ import datetime
 
 import hashlib
 import WebMirror.Fetch
+
+from app import app
 
 MAX_DISTANCE = 1000 * 1000
 # CACHE_DURATION = 60 * 5
@@ -47,6 +50,54 @@ def getHash(fCont):
 	m = hashlib.md5()
 	m.update(fCont)
 	return m.hexdigest()
+
+
+
+
+def saveCoverFile(filecont, fHash, filename):
+	# use the first 3 chars of the hash for the folder name.
+	# Since it's hex-encoded, that gives us a max of 2^12 bits of
+	# directories, or 4096 dirs.
+	fHash = fHash.upper()
+	dirName = fHash[:3]
+
+	dirPath = os.path.join(app.config['RESOURCE_DIR'], dirName)
+	if not os.path.exists(dirPath):
+		os.makedirs(dirPath)
+
+	ext = os.path.splitext(filename)[-1]
+	ext   = ext.lower()
+
+	# The "." is part of the ext.
+	filename = '{filename}{ext}'.format(filename=fHash, ext=ext)
+
+
+	# The "." is part of the ext.
+	filename = '{filename}{ext}'.format(filename=fHash, ext=ext)
+
+	# Flask config values have specious "/./" crap in them. Since that gets broken through
+	# the abspath canonization, we pre-canonize the config path so it compares
+	# properly.
+	confpath = os.path.abspath(app.config['RESOURCE_DIR'])
+
+	fqpath = os.path.join(dirPath, filename)
+	fqpath = os.path.abspath(fqpath)
+
+	if not fqpath.startswith(confpath):
+		raise ValueError("Generating the file path to save a cover produced a path that did not include the storage directory?")
+
+	locpath = fqpath[len(confpath):]
+	if not os.path.exists(fqpath):
+		print("Saving file to path: '{fqpath}'!".format(fqpath=fqpath))
+		with open(fqpath, "wb") as fp:
+			fp.write(filecont)
+	else:
+		print("File '{fqpath}' already exists!".format(fqpath=fqpath))
+
+	if locpath.startswith("/"):
+		locpath = locpath[1:]
+	return locpath
+
 
 
 ########################################################################################################################
@@ -182,7 +233,44 @@ class SiteArchiver(LogBase.LoggerMixin):
 			.filter(self.db.WebFiles.fhash == fHash)   \
 			.limit(1)                                  \
 			.scalar()
+
+		if have:
+			match = self.db.session.query(self.db.WebFiles)              \
+				.filter(self.db.WebFiles.fhash == fHash)                \
+				.filter(self.db.WebFiles.filename == response['fName']) \
+				.limit(1)                                               \
+				.scalar()
+			if match:
+				job.file = match.id
+			else:
+				new = self.db.WebFiles(
+					filename = response['fName'],
+					fhash    = fHash,
+					fspath   = have.fsPath,
+					)
+				self.db.session.add(new)
+				self.db.session.commit()
+				job.file = new.id
+
+		else:
+
+			savedpath = saveCoverFile(response['content'], fHash, response['fName'])
+			new = self.db.WebFiles(
+				filename = response['fName'],
+				fhash    = fHash,
+				fspath   = savedpath,
+				)
+			self.db.session.add(new)
+			self.db.session.commit()
+			job.file = new.id
+
+		job.mimetype = response['mimeType']
+		self.db.session.commit()
+
 		print("have:", have)
+
+
+
 
 	########################################################################################################################
 	#
@@ -270,46 +358,65 @@ class SiteArchiver(LogBase.LoggerMixin):
 		and return the fetched row upon completion
 
 		"""
-
 		self.log.info("Manually initiated request for content at '%s'", url)
-		start = urllib.parse.urlsplit(url).netloc
 
-		row = self.db.WebPages(
-			url       = url,
-			starturl  = url,
-			netloc    = start,
-			distance  = MAX_DISTANCE-2,
-			is_text   = True,
-			priority  = self.db.DB_REALTIME_PRIORITY,
-			type      = "unknown",
-			fetchtime = datetime.datetime.now(),
-			)
+		# Rather then trying to add, and rolling back if it exists,
+		# just do a simple check for the row first. That'll
+		# probably be faster in the /great/ majority of cases.
+		row =  query = self.db.session.query(self.db.WebPages) \
+			.filter(self.db.WebPages.url == url)               \
+			.one()
 
-		# Because we can have parallel operations happening here, we spin on adding&committing the new
-		# row untill the commit either succeeds, or we get an integrity error, and then successfully
-		# fetch the row inserted by another thread at the same time.
-		while 1:
-			try:
-				self.db.session.add(row)
-				self.db.session.commit()
-				break
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db.session.rollback()
-				self.db.session.add(row)
-				self.db.session.commit()
-			except sqlalchemy.exc.IntegrityError:
-				self.db.session.rollback()
-				row =  query = self.db.session.query(self.db.WebPages) \
-					.filter(self.db.WebPages.url == url)               \
-					.one()
-				self.db.session.commit()
-				break
+		if row:
+			self.log.info("Item already exists in database.")
+		else:
+			self.log.info("Row does not exist in DB")
+			start = urllib.parse.urlsplit(url).netloc
+
+			row = self.db.WebPages(
+				url       = url,
+				starturl  = url,
+				netloc    = start,
+				distance  = MAX_DISTANCE-2,
+				is_text   = True,
+				priority  = self.db.DB_REALTIME_PRIORITY,
+				type      = "unknown",
+				fetchtime = datetime.datetime.now(),
+				)
+
+			# Because we can have parallel operations happening here, we spin on adding&committing the new
+			# row untill the commit either succeeds, or we get an integrity error, and then successfully
+			# fetch the row inserted by another thread at the same time.
+			while 1:
+				try:
+					self.db.session.add(row)
+					self.db.session.commit()
+					print("Row added?")
+					break
+				except sqlalchemy.exc.InvalidRequestError:
+					print("InvalidRequest error!")
+					self.db.session.rollback()
+					self.db.session.add(row)
+					self.db.session.commit()
+				except sqlalchemy.exc.IntegrityError:
+					print("Integrity error!")
+					self.db.session.rollback()
+					row =  query = self.db.session.query(self.db.WebPages) \
+						.filter(self.db.WebPages.url == url)               \
+						.one()
+					self.db.session.commit()
+					break
 
 
 		print()
 		print("Row:")
 		print(row)
 		if row.state == "complete" and row.fetchtime > datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION):
+			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
+			return row
+		if row.state == "complete" and  \
+			row.fetchtime > datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION) and\
+			"text" not in row.mimeType.lower():
 			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
 			return row
 		row.state     = 'new'

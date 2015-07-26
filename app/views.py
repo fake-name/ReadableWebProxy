@@ -18,6 +18,7 @@ from datetime import datetime
 
 
 from flask import render_template
+from flask import make_response
 from flask import send_file
 from flask import request
 from flask import g
@@ -117,14 +118,19 @@ def render_resource():
 	if not req_url:
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
 
-	title, content, cachestate = WebMirror.API.getPage(req_url)
+	mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url)
 
-	return render_template('render.html',
-		title      = title,
-		contents   = content,
-		cachestate = cachestate,
-		req_url    = req_url,
-		)
+	response = make_response(content)
+	response.headers['Content-Type'] = mimetype
+	response.headers["Content-Disposition"] = "attachment; filename={}".format(fname)
+
+	return response
+	# return render_template('render.html',
+	# 	title      = title,
+	# 	contents   = content,
+	# 	cachestate = cachestate,
+	# 	req_url    = req_url,
+	# 	)
 
 
 @app.route('/favicon.ico')

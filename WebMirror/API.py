@@ -1,5 +1,6 @@
-
+from app import app
 import config
+import os.path
 from config import relink_secret
 
 from WebMirror.Engine import SiteArchiver
@@ -29,6 +30,7 @@ class RemoteContentObject(object):
 		"""
 		assert self.fetched
 
+
 		content = self.job.content
 		if content:
 			rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
@@ -38,6 +40,21 @@ class RemoteContentObject(object):
 			content = content.replace(rsc_key, "/render_rsc?url=")
 
 		return content
+
+	def getResource(self):
+		"""
+		At this point, we have the page content, but we need to
+		replace the url/resource keys with the proper paths
+		so that the page will render properly
+		"""
+		assert self.fetched
+		assert self.job.file
+
+		itempath = os.path.join(app.config['RESOURCE_DIR'], self.job.file_item.fspath)
+		fname = self.job.file_item.filename
+		with open(itempath, "rb") as fp:
+			contents = fp.read()
+		return self.job.mimetype, fname, contents
 
 	def getCacheState(self):
 		assert self.fetched
@@ -54,3 +71,14 @@ def getPage(url):
 	cachestate = page.getCacheState()
 
 	return title, content, cachestate
+
+
+def getResource(url):
+	page = RemoteContentObject(url)
+
+	page.fetch()
+
+	mimetype, fname, content = page.getResource()
+	cachestate        = page.getCacheState()
+
+	return mimetype, fname, content, cachestate
