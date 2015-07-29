@@ -18,6 +18,9 @@
 				<label style='width: 120px'>View address</label><input type="text" style='width: 550px' name="url"><input type="submit" value="Submit">
 			</form>
 		</div>
+		<div class="well">
+			{{ interesting_links | safe }}
+		</div>
 	</div>
 
 {% endblock %}

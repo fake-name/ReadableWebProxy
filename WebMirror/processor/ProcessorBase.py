@@ -92,6 +92,15 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		inUrl = self.preprocessReaderUrl(inUrl)
 		# The link will have been canonized at this point
 
+		# Fix protocol-relative URLs
+		if inUrl.startswith("//"):
+			if hasattr(self, "pageUrl"):
+				scheme = urllib.parse.urlsplit(self.pageUrl).scheme
+			else:
+				self.log.warning("No pageUrl member variable? Guessing about the protocol type!")
+				scheme = "http"
+			inUrl = "{}:{}".format(scheme, inUrl)
+
 		if resource:
 			prefix = "RESOURCE:{}".format(config.relink_secret)
 		else:
@@ -289,10 +298,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 
 	# Methods to allow the child-class to modify the content at various points.
-	def extractTitle(self, srcSoup, doc, url):
-		title = doc.title()
-		if title:
-			return title
+	def extractTitle(self, srcSoup, url):
+
 		if srcSoup.title:
 			return srcSoup.title.get_text().strip()
 

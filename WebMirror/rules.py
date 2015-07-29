@@ -1,6 +1,7 @@
 
 import traceback
 import os
+import sys
 import os.path
 import yaml
 import traceback
@@ -287,7 +288,7 @@ def get_rules():
 def load_rules():
 	global RULE_CACHE
 
-	if not RULE_CACHE:
+	if not RULE_CACHE or "debug" in sys.argv:
 		print("Need to load rules")
 		rules = get_rules()
 		RULE_CACHE = rules

@@ -5,6 +5,7 @@ import bs4
 import copy
 import readability.readability
 import lxml.etree
+import traceback
 
 import WebMirror.util.urlFuncs as urlFuncs
 from . import ProcessorBase
@@ -174,7 +175,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			self.installBaseUrl(self.scannedDomains)
 
 
-
 		tmp = list(self._scannedDomains)
 		tmp.sort()
 		# for url in tmp:
@@ -281,11 +281,16 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 
 	def decomposeItems(self, soup, toDecompose):
+		# print("Decomposing", toDecompose)
 		# Decompose all the parts we don't want
 		for key in toDecompose:
 			try:
-				for instance in soup.find_all(True, attrs=key):
+				if not soup:
+					print("Soup is false? Wat?")
+				have = soup.find_all(True, attrs=key)
 
+				for instance in have:
+					# print("Need to decompose for ", key)
 					# So.... yeah. At least one blogspot site has EVERY class used in the
 					# <body> tag, for no coherent reason. Therefore, *never* decompose the <body>
 					# tag, even if it has a bad class in it.
@@ -293,7 +298,16 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 						continue
 
 					instance.decompose() # This call permutes the tree!
+				# if not have:
+				# 	print("No items found for ", key)
 			except AttributeError:
+				# print("decomposition error?")
+				# traceback.print_exc()
+				# print()
+				# print()
+				# print(soup.prettify())
+				# print()
+				# print()
 				pass
 
 		return soup
@@ -308,30 +322,29 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		for instance in soup.find_all('style'):
 			instance.decompose()
 
+		# And all remote scripts
+		for item in soup.find_all("script"):
+			item.decompose()
+
+		# Link tags
+		for item in soup.find_all("link"):
+			item.decompose()
+
+		# Meta tags
+		for item in soup.find_all("meta"):
+			item.decompose()
+
+		# Comments
+		for item in soup.findAll(text=lambda text:isinstance(text, bs4.Comment)):
+			item.extract()
+
 		return soup
 
-	def cleanHtmlPage(self, srcSoup, url=None):
+	def cleanHtmlPage(self, soup, url=None):
 
-		# since readability strips tag attributes, we preparse with BS4,
-		# parse with readability, and then do reformatting *again* with BS4
-		# Yes, this is ridiculous.
-
-		ctnt = srcSoup.prettify()
-		doc = readability.readability.Document(ctnt)
-		try:
-			doc.parse()
-			content = doc.content()
-		except lxml.etree.ParserError:
-			content = "Page failed to load!"
-
-		soup = bs4.BeautifulSoup(content, "lxml")
 		soup = self.relink(soup)
-		contents = ''
 
-
-
-
-		title = self.extractTitle(soup, doc, url)
+		title = self.extractTitle(soup, url)
 
 
 		if isinstance(self.stripTitle, (list, set)):
@@ -346,10 +359,27 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# strip out the <body> and <html> tags. `unwrap()`  replaces the soup with the contents of the
 		# tag it's called on. We end up with just the contents of the <body> tag.
 		soup.body.unwrap()
+
 		contents = soup.prettify()
 
 		return title, contents
 
+
+
+	def removeClasses(self, soup):
+		cnt = 0
+
+		validattrs = [
+			'href',
+			'src',
+		]
+
+		for item in [item for item in soup.find_all(True) if item]:
+			for attr in list(item.attrs.keys()):
+				if attr not in validattrs:
+					del item[attr]
+
+		return soup
 
 	# Process a plain HTML page.
 	# This call does a set of operations to permute and clean a HTML page.
@@ -386,8 +416,11 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		soup = self.decomposeAdditional(soup)
 
+
 		# Allow child-class hooking
 		soup = self.postprocessBody(soup)
+
+		soup = self.removeClasses(soup)
 
 		# Process page with readability, extract title.
 		pgTitle, pgBody = self.cleanHtmlPage(soup, url=self.pageUrl)

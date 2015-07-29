@@ -68,6 +68,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 	FETCH_DISTANCE = 1000 * 1000
 
 	def __init__(self, rules, job):
+		# print("Fetcher init()")
 		super().__init__()
 
 		self.wg = webFunctions.WebGetRobust()
@@ -91,10 +92,14 @@ class ItemFetcher(LogBase.LoggerMixin):
 		self.rules = None
 		for ruleset in self.ruleset:
 			if netloc in ruleset['netlocs']:
+				self.log.info("Found specific ruleset!")
 				self.rules = ruleset
 
 		if not self.rules:
+			self.log.warn("Using base ruleset!")
 			self.rules = baseRules
+
+
 		assert self.rules
 
 		self.job = job

@@ -10,6 +10,7 @@ import runStatus
 import time
 import os.path
 import os
+import sys
 import sqlalchemy.exc
 
 from sqlalchemy import desc
@@ -25,8 +26,14 @@ import WebMirror.Fetch
 from app import app
 
 MAX_DISTANCE = 1000 * 1000
-# CACHE_DURATION = 60 * 5
-CACHE_DURATION = 1
+
+if "debug" in sys.argv:
+	CACHE_DURATION = 1
+	RSC_CACHE_DURATION = 1
+else:
+	CACHE_DURATION = 60 * 5
+	RSC_CACHE_DURATION = 60 * 60 * 6
+
 
 # import sql.operators as sqlo
 
@@ -267,7 +274,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		job.mimetype = response['mimeType']
 		self.db.session.commit()
 
-		print("have:", have)
+		# print("have:", have)
 
 
 
@@ -365,7 +372,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# probably be faster in the /great/ majority of cases.
 		row =  query = self.db.session.query(self.db.WebPages) \
 			.filter(self.db.WebPages.url == url)               \
-			.one()
+			.scalar()
 
 		if row:
 			self.log.info("Item already exists in database.")
@@ -407,18 +414,17 @@ class SiteArchiver(LogBase.LoggerMixin):
 					self.db.session.commit()
 					break
 
+		text_ago = datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION)
+		bin_ago  = datetime.datetime.now() - datetime.timedelta(seconds=RSC_CACHE_DURATION)
 
-		print()
-		print("Row:")
-		print(row)
-		if row.state == "complete" and row.fetchtime > datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION):
+		if row.state == "complete" and row.fetchtime > bin_ago:
+			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", RSC_CACHE_DURATION)
+			return row
+		elif row.state == "complete" and row.fetchtime > text_ago and "text" not in row.mimeType.lower():
 			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
 			return row
-		if row.state == "complete" and  \
-			row.fetchtime > datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION) and\
-			"text" not in row.mimeType.lower():
-			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
-			return row
+		else:
+			self.log.info("Item has exceeded cache time by text: %s, rsc: %s. Re-acquiring.", datetime.datetime.now()-text_ago, datetime.datetime.now()-bin_ago)
 		row.state     = 'new'
 		row.distance  = MAX_DISTANCE-2
 		row.priority  = self.db.DB_REALTIME_PRIORITY

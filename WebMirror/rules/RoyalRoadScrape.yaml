@@ -22,14 +22,57 @@ badwords: [
 
 # Content Stripping needs to be determined.
 decomposeBefore: [
+	{"class" : "review-body-wrapper"},
+	{"class" : "review-list"},
 
 ]
 
 decompose: [
+	{"class" : "widget-wrapper"},
+	{"class" : "search"},
+	{"class" : "subscribe"},
+	{"class" : "widget-title"},
+	{"class" : "review-body-wrapper"},
+	{"class" : "review"},
+	{"class" : "header"},
+	{"class" : "top_panel"},
+	{"class" : "bam_announcements"},
+	{"class" : "dropdown_menu"},
+	{"class" : "button_group"},
+	{"class" : "pagination"},
+	{"class" : "adcontainer"},
+	{"class" : "footer_row"},
+	{"class" : "footer_column_wrapper"},
+	{"class" : "copyright"},
+	{"class" : "slidebar"},
+	{"class" : "modal"},
+	{"class" : "usersbrowsing"},
+	{"class" : "nav-menu"},
+	{"class" : "postbit_footer"},
+	{"class" : "add-to-list"},
+
+	# I /think/ this is probably a source typo. Whoops?
+	{"class" : "none"},
+
+	# Seriously, all the social network bs can go fuck itself.
+	{"class" : "author_avatar"},
+	{"class" : "postbit_signature"},
+	{"class" : "postbit_usertitle"},
+	{"class" : "postbit_author_details"},
+
+
+	{"id"    : "main-top"},
+	{"id"    : "recent-posts"},
+	{"id"    : "reviews"},
+	{"id"    : "sidebar"},
+	{"id"    : "header-nav"},
+
+	{"title"    : "Offline"},
+	{"title"    : "Online"},
 
 ]
 
-stripTitle: ['guhehe.TRANSLATIONS |']
+stripTitle: ['guhehe.TRANSLATIONS |', " - Royal Road"]
 
 
 

@@ -16,6 +16,8 @@ from datetime import datetime
 
 # from guess_language import guess_language
 
+import markdown
+import os.path
 
 from flask import render_template
 from flask import make_response
@@ -84,8 +86,15 @@ def internal_error(dummy_error):
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
+
+	interesting = ""
+	if os.path.exists("reading_list.txt"):
+		with open("reading_list.txt", "r") as fp:
+			raw_text = fp.read()
+		interesting = markdown.markdown(raw_text)
 	return render_template('index.html',
 						   title               = 'Home',
+						   interesting_links   = interesting,
 						   )
 
 

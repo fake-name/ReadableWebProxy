@@ -3,16 +3,21 @@
 
 {% block content %}
 	{% include '_block_flash.html' %}
-	<div class="well" id='content'>
-		<div class="center-block text-center">
-			<h4>Loading</h4>
-			<p>Please Wait.</p>
-			<img src="/static/loading.gif">
-			<br>
-			<br>
-			<p>Remote URL: <a href='{{req_url}}'>{{req_url}}</a></p>
+	<div class="well">
+		<div id='content' class='easyreading'>
+			<div class="center-block text-center">
+				<h4>Loading</h4>
+				<p>Please Wait.</p>
+				<img src="/static/loading.gif">
+				<br>
+				<br>
+			</div>
 		</div>
-		<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a>
+		<hr>
+		<div>
+			<p>Remote URL: <a href='{{req_url}}'>{{req_url}}</a></p>
+			<p><a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> | <a href='{{req_url}}'>Original content</a></p>
+		</div>
 	</div>
 
 {% endblock %}
@@ -25,5 +30,14 @@
 	<script>
 		$("#content").load("/render?{{ {"url" : req_url} | urlencode }}")
 	</script>
+	<style>
+		div.easyreading
+		{
+			margin:0 auto;
+			width: 500px;
+			font-family: Arial;
+			font-size: large;
+		}
+	</style>
 {% endblock %}
 
