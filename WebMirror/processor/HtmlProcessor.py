@@ -372,6 +372,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		validattrs = [
 			'href',
 			'src',
+			'style',
+			
 		]
 
 		for item in [item for item in soup.find_all(True) if item]:

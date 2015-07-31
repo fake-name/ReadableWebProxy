@@ -27,6 +27,8 @@ from flask import g
 from flask.ext.login import current_user
 from flask.ext.sqlalchemy import get_debug_queries
 
+import WebMirror.Engine
+
 from app import AnonUser
 import traceback
 from app import app
@@ -91,7 +93,10 @@ def index():
 	if os.path.exists("reading_list.txt"):
 		with open("reading_list.txt", "r") as fp:
 			raw_text = fp.read()
-		interesting = markdown.markdown(raw_text)
+		interesting = markdown.markdown(raw_text, extensions=["linkify"])
+
+		interesting = WebMirror.API.processRaw(interesting)
+
 	return render_template('index.html',
 						   title               = 'Home',
 						   interesting_links   = interesting,

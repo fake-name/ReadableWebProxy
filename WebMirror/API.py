@@ -5,6 +5,14 @@ from config import relink_secret
 
 from WebMirror.Engine import SiteArchiver
 
+def replace_links(content):
+	rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
+	ctnt_key = "CONTENT:{}".format(config.relink_secret).lower()
+
+	content = content.replace(ctnt_key, "/view?url=")
+	content = content.replace(rsc_key, "/render_rsc?url=")
+	return content
+
 class RemoteContentObject(object):
 	def __init__(self, url):
 		self.url = url
@@ -33,12 +41,7 @@ class RemoteContentObject(object):
 
 		content = self.job.content
 		if content:
-			rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
-			ctnt_key = "CONTENT:{}".format(config.relink_secret).lower()
-
-			content = content.replace(ctnt_key, "/view?url=")
-			content = content.replace(rsc_key, "/render_rsc?url=")
-
+			content = replace_links(content)
 		return content
 
 	def getResource(self):
@@ -59,6 +62,26 @@ class RemoteContentObject(object):
 	def getCacheState(self):
 		assert self.fetched
 		return "hurp durp"
+
+
+	def processRaw(self, content):
+
+		# Abuse the fact that functions (including lambda) are fully formed objects
+		job = lambda:None
+
+		job.url      = "http://www.example.org"
+		job.starturl = "http://www.example.org"
+		fetcher      = self.archiver.fetcher(self.archiver.ruleset, job)
+		ret          = fetcher.processHtmlPage("http://www.example.org", content)
+		content = ret['contents']
+		content = replace_links(content)
+		return content
+
+
+def processRaw(content):
+	page = RemoteContentObject("http://www.example.org")
+	return page.processRaw(content)
+
 
 
 def getPage(url):

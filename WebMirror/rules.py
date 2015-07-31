@@ -4,13 +4,13 @@ import os
 import sys
 import os.path
 import yaml
-import traceback
+import flags
 import urllib.parse
 
 class ValidationError(Exception):
 	pass
 
-RULE_CACHE = None
+
 
 def getStartURLs(ruleset):
 	if not 'baseUrl' in ruleset:
@@ -276,7 +276,6 @@ def get_rules():
 	assert [True for ruleset in ret if 'starturls' in ruleset and ruleset['starturls'] == None], "You must have a base ruleset for matching generic sites (with a baseurl value of `None`)"
 
 	print("Loaded rulesets ({}):".format(len(ret)))
-	print()
 
 	# traceback.print_exc()
 	# for ruleset in ret:
@@ -286,14 +285,12 @@ def get_rules():
 
 
 def load_rules():
-	global RULE_CACHE
 
-	if not RULE_CACHE or "debug" in sys.argv:
-		print("Need to load rules")
+	if flags.RULE_CACHE == None or "debug" in sys.argv:
+		print("Need to load rules (%s, %s)" % (flags.RULE_CACHE == None, "debug" in sys.argv))
 		rules = get_rules()
-		RULE_CACHE = rules
+		flags.RULE_CACHE = rules
 	else:
 		print("Using cached rules")
-		rules = RULE_CACHE
-
+		rules = flags.RULE_CACHE
 	return rules
