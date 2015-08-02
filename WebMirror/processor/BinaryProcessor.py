@@ -11,7 +11,8 @@ class DownloadException(Exception):
 
 class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 
-
+	# This is the last-resort option.
+	want_priority    = 1
 
 	wanted_mimetypes = [
 						"image/gif",
@@ -22,7 +23,6 @@ class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 						"image/vnd.djvu",
 						"application/octet-stream"
 						]
-	want_priority    = 1
 
 
 	loggerPath = "Main.Text.FileProc"

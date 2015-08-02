@@ -170,15 +170,33 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# Retreive remote content at `url`, call the appropriate handler for the
 	# transferred content (e.g. is it an image/html page/binary file)
 	def dispatchRequest(self, job):
-		fetcher = self.fetcher(self.ruleset, job)
+		fetcher = self.fetcher(self.ruleset, job.url, job.starturl)
 		response = fetcher.fetch()
 
 		if "file" in response:
+			print("File response!")
 			self.upsertFileResponse(job, response)
 		else:
+			print("Text response!")
+			self.upsertReponseContent(job, response)
 			self.upsertResponseLinks(job, response)
 
 		self.db.session.commit()
+
+	# Update the row with the item contents
+	def upsertReponseContent(self, job, response):
+
+		job.title    = response['title']
+		job.content  = response['contents']
+		job.mimetype = response['mimetype']
+		job.is_text  = True
+		job.state    = 'complete'
+
+		if 'rawcontent' in response:
+			job.raw_content = response['rawcontent']
+
+		print("job id:", job.id)
+		self.db.session.flush()
 
 	def upsertResponseLinks(self, job, response):
 		plain = set(response['plainLinks'])

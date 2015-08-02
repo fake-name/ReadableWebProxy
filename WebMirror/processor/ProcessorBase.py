@@ -386,8 +386,11 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		instance = cls(**params)
 		ret = instance.extractContent()
 
+		# Copy the mime-type into the return, since bothering to round-trip
+		# it through the processor class is silly.
+		ret['mimetype'] = params['mimeType']
 
-		text_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents']
+		text_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimetype']
 		file_ret_expected = ['file', 'content', 'fName', 'mimeType']
 		if "file" in ret and ret['file'] == True:
 			assert len(ret) == len(file_ret_expected)

@@ -59,7 +59,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, rules, job):
+	def __init__(self, rules, target_url, start_url):
 		# print("Fetcher init()")
 		super().__init__()
 
@@ -91,7 +91,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 			[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
 
 
-		netloc = urllib.parse.urlsplit(job.url).netloc
+		netloc = urllib.parse.urlsplit(target_url).netloc
 
 		self.rules = None
 		for ruleset in self.ruleset:
@@ -106,7 +106,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		assert self.rules
 
-		self.job = job
+		self.target_url = target_url
+		self.start_url = start_url
 
 	########################################################################################################################
 
@@ -130,223 +131,6 @@ class ItemFetcher(LogBase.LoggerMixin):
 		return {'plainLinks' : [], 'rsrcLinks' : []}
 
 
-	def processHtmlPage(self, url, content):
-		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(
-									pageUrl         = url,
-									pgContent       = content,
-									baseUrls        = self.job.starturl,
-									loggerPath      = self.loggerPath,
-									badwords        = self.rules['badwords'],
-									decompose       = self.rules['decompose'],
-									decomposeBefore = self.rules['decomposeBefore'],
-									fileDomains     = self.rules['fileDomains'],
-									allImages       = self.rules['allImages'],
-									ignoreBadLinks  = self.rules['IGNORE_MALFORMED_URLS'],
-									stripTitle      = self.rules['stripTitle'],
-									relinkable      = self.relinkable
-								)
-		extracted = scraper.extractContent()
-		# print(extracted)
-		return extracted
-
-
-# 	def processReturnedFileResources(self, resources):
-
-# 		# fMap = {}
-
-
-# 		for fName, mimeType, content, fHash in resources:
-# 			# m = hashlib.md5()
-# 			# m.update(content)
-# 			# fHash = m.hexdigest()
-
-# 			hashName = self.tableKey+fHash
-
-# 			# fMap[fName] = fHash
-
-# 			fName = os.path.split(fName)[-1]
-
-# 			self.log.info("Resource = '%s', '%s', '%s'", fName, mimeType, hashName)
-# 			if mimeType in ["image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/vnd.djvu"]:
-# 				self.log.info("Processing resource '%s' as an image file. (mimetype: %s)", fName, mimeType)
-# 				self.upsert(hashName, istext=False)
-# 				self.saveFile(hashName, mimeType, fName, content)
-# 			elif mimeType in ["application/octet-stream"]:
-# 				self.log.info("Processing '%s' as an binary file.", fName)
-# 				self.upsert(hashName, istext=False)
-# 				self.saveFile(hashName, mimeType, fName, content)
-# 			else:
-# 				self.log.warn("Unknown MIME Type? '%s', FileName: '%s'", mimeType, fName)
-
-# 		if len(resources) == 0:
-# 			self.log.info("File had no resource content!")
-
-
-
-
-	# def extractGoogleDriveFolder(self, url):
-	# 	scraper = self.gdriveClass(
-	# 								pageUrl         = url,
-	# 								loggerPath      = self.loggerPath,
-	# 								relinkable      = self.relinkable
-	# 							)
-	# 	extracted = scraper.extractContent()
-	# 	return extracted
-
-
-# 	def retreiveGoogleDoc(self, url):
-# 		# pageUrl, loggerPath, tableKey, scannedDomains=None, tlds=None
-
-# 		try:
-# 			scraper = self.gDocClass(
-# 										pageUrl         = url,
-# 										loggerPath      = self.loggerPath,
-# 										tableKey        = self.tableKey,
-# 										scannedDomains  = self.baseUrl,
-# 										tlds            = self.tld,
-# 										relinkable      = self.relinkable
-# 									)
-# 			extracted, resources = scraper.extractContent()
-# 			self.processReturnedFileResources(resources)
-# 		except TextScrape.gDocParse.CannotAccessGDocException:
-# 			self.log.warning("Cannot access google doc content. Attempting to access as a plain HTML resource via /pub interface")
-# 			url = url + "/pub"
-# 			extracted = self.retreivePlainResource(url)
-# 			if "This document is not published." in extracted['contents']:
-# 				raise ValueError("Could not extract google document!")
-
-# 		return extracted
-
-# 	def processAsMarkdown(self, url, content):
-# 		pbLut = getattr(self, 'pasteBinLut', {})
-
-# 		scraper = self.markdownClass(
-# 									pageUrl         = url,
-# 									loggerPath      = self.loggerPath,
-# 									content         = content,
-# 									pbLut           = pbLut
-# 								)
-# 		extracted = scraper.extractContent()
-
-# 		return extracted
-
-# 	def retreiveGoogleFile(self, url):
-
-
-# 		self.log.info("Should fetch google file at '%s'", url)
-# 		doc = gdp.GFileExtractor(url)
-
-# 		attempts = 0
-
-# 		while 1:
-# 			attempts += 1
-# 			try:
-# 				content, fName, mType = doc.extract()
-# 			except TypeError:
-# 				self.log.critical('Extracting item failed!')
-# 				for line in traceback.format_exc().strip().split("\n"):
-# 					self.log.critical(line.strip())
-# 				return self.getEmptyRet()
-# 			if content:
-# 				break
-# 			if attempts > 3:
-# 				raise DownloadException
-
-
-# 			self.log.error("No content? Retrying!")
-
-# 		scraper = self.htmlProcClass(
-# 									baseUrls        = self.baseUrl,
-# 									pageUrl         = url,
-# 									pgContent       = content,
-# 									loggerPath      = self.loggerPath,
-# 									badwords        = self.badwords,
-# 									decompose       = self.decompose,
-# 									decomposeBefore = self.decomposeBefore,
-# 									fileDomains     = self.fileDomains,
-# 									allImages       = self.allImages,
-# 									followGLinks    = self.FOLLOW_GOOGLE_LINKS,
-# 									ignoreBadLinks  = self.IGNORE_MALFORMED_URLS,
-# 									tld             = self.tld,
-# 									stripTitle      = self.stripTitle
-# 								)
-# 		extracted = scraper.extractContent()
-
-# 		return extracted
-
-
-# 		raise NotImplementedError("TODO: FIX ME!")
-
-
-
-		# with self.transaction() as cur:
-		# 	cur.execute("SELECT fspath  FROM {tableName} WHERE fhash=%s;".format(tableName=self.tableName), (fHash, ))
-		# 	row = cur.fetchone()
-		# 	if row:
-		# 		self.log.info("Already downloaded file. Not creating duplicates.")
-		# 		hadFile = True
-		# 		fqPath = row[0]
-
-		# with self.transaction() as cur:
-
-		# 	cur.execute("SELECT dbid, fspath, contents, mimetype  FROM {tableName} WHERE url=%s;".format(tableName=self.tableName), (url, ))
-		# 	row = cur.fetchone()
-		# 	if not row:
-		# 		self.log.critical("Failure when saving file for URL '%s'", url)
-		# 		self.log.critical("File name: '%s'", fileName)
-		# 		return
-
-		# 	dbid, dummy_havePath, dummy_haveCtnt, dummy_haveMime = row
-		# 	# self.log.info('havePath, haveCtnt, haveMime - %s, %s, %s', havePath, haveCtnt, haveMime)
-
-		# 	if not hadFile:
-		# 		fqPath = self.getFilenameFromIdName(dbid, fileName)
-
-		# 	newRowDict = {  "dlstate" : 2,
-		# 					"series"  : None,
-		# 					"contents": len(content),
-		# 					"istext"  : False,
-		# 					"mimetype": mimetype,
-		# 					"fspath"  : fqPath,
-		# 					"fhash"   : fHash}
-
-
-		# self.updateDbEntry(url=url, commit=False, **newRowDict)
-
-
-		# if not hadFile:
-		# 	try:
-		# 		with open(fqPath, "wb") as fp:
-		# 			fp.write(content)
-		# 	except OSError:
-		# 		self.log.error("Error when attempting to save file. ")
-		# 		with self.transaction() as cur:
-		# 			newRowDict = {"dlstate" : -1}
-		# 			self.updateDbEntry(url=url, commit=False, **newRowDict)
-
-
-
-# 	########################################################################################################################
-# 	#
-# 	#	##     ## #### ##     ## ########         ######## ##    ## ########  ########
-# 	#	###   ###  ##  ###   ### ##                  ##     ##  ##  ##     ## ##
-# 	#	#### ####  ##  #### #### ##                  ##      ####   ##     ## ##
-# 	#	## ### ##  ##  ## ### ## ######   #######    ##       ##    ########  ######
-# 	#	##     ##  ##  ##     ## ##                  ##       ##    ##        ##
-# 	#	##     ##  ##  ##     ## ##                  ##       ##    ##        ##
-# 	#	##     ## #### ##     ## ########            ##       ##    ##        ########
-# 	#
-# 	#	########  ####  ######  ########     ###    ########  ######  ##     ## ######## ########
-# 	#	##     ##  ##  ##    ## ##     ##   ## ##      ##    ##    ## ##     ## ##       ##     ##
-# 	#	##     ##  ##  ##       ##     ##  ##   ##     ##    ##       ##     ## ##       ##     ##
-# 	#	##     ##  ##   ######  ########  ##     ##    ##    ##       ######### ######   ########
-# 	#	##     ##  ##        ## ##        #########    ##    ##       ##     ## ##       ##   ##
-# 	#	##     ##  ##  ##    ## ##        ##     ##    ##    ##    ## ##     ## ##       ##    ##
-# 	#	########  ####  ######  ##        ##     ##    ##     ######  ##     ## ######## ##     ##
-# 	#
-# 	########################################################################################################################
-
-
 
 	def plugin_dispatch(self, plugin, url, content, fName, mimeType):
 		self.log.info("Dispatching file '%s' with mime-type '%s'", fName, mimeType)
@@ -357,7 +141,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'pageUrl'         : url,
 									'pgContent'       : content,
 									'mimeType'        : mimeType,
-									'baseUrls'        : self.job.starturl,
+									'baseUrls'        : self.start_url,
 									'loggerPath'      : self.loggerPath,
 									'badwords'        : self.rules['badwords'],
 									'decompose'       : self.rules['decompose'],
@@ -370,75 +154,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 		}
 
 		ret = plugin.process(params)
+
 		return ret
 
-		# if mimeType in ['text/html']:
-		# 	ret = self.processHtmlPage(url, content)
-
-		# elif mimeType in ['text/plain']:
-		# 	ret = self.processAsMarkdown(url, content)
-
-		# elif mimeType in ['text/xml', 'text/atom+xml', 'application/atom+xml', 'application/xml', 'text/css', 'application/x-javascript', 'application/javascript']:
-
-		# 	if mimeType in ['text/xml', 'text/atom+xml', 'application/atom+xml', 'application/xml']:
-		# 		self.log.info("XML File?")
-		# 		self.log.info("URL: '%s'", url)
-
-		# 	elif mimeType in ['text/css']:
-		# 		self.log.info("CSS!")
-		# 		self.log.info("URL: '%s'", url)
-
-		# 	elif mimeType in ['application/x-javascript', 'application/javascript']:
-		# 		self.log.info("Javascript Resource!")
-		# 		self.log.info("URL: '%s'", url)
-
-		# 	assert self.job.url == url
-		# 	self.job.title    = ''
-		# 	self.job.contents = content
-		# 	self.job.mimetype = mimeType
-		# 	self.job.state    = 'complete'
-		# 	self.job.is_text  = True
-		# 	return self.getEmptyRet()
-
-
-
-
-		# elif mimeType in ["image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/vnd.djvu",
-		# 	"application/octet-stream", "application/x-mobipocket-ebook", "application/pdf", "application/zip"]:
-		# 	if mimeType in ["image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/vnd.djvu"]:
-		# 		self.log.info("Processing '%s' as an image file.", url)
-		# 	elif mimeType in ["application/octet-stream", "application/x-mobipocket-ebook", "application/pdf", "application/zip"]:
-		# 		self.log.info("Processing '%s' as an binary file.", url)
-
-		# 	# self.saveFile(url, mimeType, fName, content)
-		# 	ret = {"file" : True, "url" : url, "mimeType" : mimeType, "fName" : fName, "content" : content}
-		# 	return ret
-
-
-		# else:
-		# 	self.log.error("Unknown MIME Type: '%s', Url: '%s'", mimeType, url)
-		# 	self.log.error("Not saving file!")
-		# 	return self.getEmptyRet()
-
-
-
-
-
-
-	# def retreivePlainResource(self, job):
-	# 	self.log.info("Fetching Simple Resource: '%s'", job.url)
-	# 	try:
-	# 		content, fName, mimeType = self.getItem(self.job.url)
-	# 	except ValueError:
-
-	# 		for line in traceback.format_exc().split("\n"):
-	# 			self.log.critical(line)
-	# 		job.state = "error"
-	# 		job.errno = -1
-
-	# 		return self.getEmptyRet()
-
-	# 	return self.dispatchContent(job.url, content, fName, mimeType)
 
 
 
@@ -501,24 +219,26 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# Retreive remote content at `url`, call the appropriate handler for the
 	# transferred content (e.g. is it an image/html page/binary file)
 	def fetch(self):
-		self.job.url = url_util.urlClean(self.job.url)
+		self.target_url = url_util.urlClean(self.target_url)
 
-		print('Dispatch URL', self.job.url)
+		print('Dispatch URL', self.target_url)
 		keys = list(self.plugin_modules.keys())
 		keys.sort(reverse=True)
 		print(keys)
 
-		content, fName, mimeType = self.getItem(self.job.url)
+		content, fName, mimeType = self.getItem(self.target_url)
 
 
 		for key in keys:
 			for plugin in self.plugin_modules[key]:
-				if mimeType.lower() in plugin.wanted_mimetypes and plugin.wantsUrl(self.job.url):
-					print("plugin", plugin, "wants", self.job.url)
-					return self.plugin_dispatch(plugin, self.job.url, content, fName, mimeType)
+				if mimeType.lower() in plugin.wanted_mimetypes and plugin.wantsUrl(self.target_url):
+					print("plugin", plugin, "wants", self.target_url)
+					ret = self.plugin_dispatch(plugin, self.target_url, content, fName, mimeType)
+					if not "file" in ret:
+						ret['rawcontent'] = content
+					return ret
 
-
-		self.log.error("Did not know how to dispatch request for url: '%s', mimetype: '%s'!", self.job.url, mimeType)
+		self.log.error("Did not know how to dispatch request for url: '%s', mimetype: '%s'!", self.target_url, mimeType)
 		return self.getEmptyRet()
 
 		# self.upsertResponseLinks(job, response)
