@@ -71,8 +71,8 @@ class RemoteContentObject(object):
 
 		job.url      = "http://www.example.org"
 		job.starturl = "http://www.example.org"
-		fetcher      = self.archiver.fetcher(self.archiver.ruleset, job)
-		ret          = fetcher.processHtmlPage("http://www.example.org", content)
+		fetcher      = self.archiver.fetcher(self.archiver.ruleset, job.url, job.starturl)
+		ret          = fetcher.dispatchContent(content, "None", "text/html")
 		content = ret['contents']
 		content = replace_links(content)
 		return content

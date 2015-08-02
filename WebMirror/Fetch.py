@@ -200,8 +200,19 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 
+	def dispatchContent(self, content, fName, mimeType):
 
+		keys = list(self.plugin_modules.keys())
+		keys.sort(reverse=True)
 
+		for key in keys:
+			for plugin in self.plugin_modules[key]:
+				if mimeType.lower() in plugin.wanted_mimetypes and plugin.wantsUrl(self.target_url):
+					print("plugin", plugin, "wants", self.target_url)
+					ret = self.plugin_dispatch(plugin, self.target_url, content, fName, mimeType)
+					if not "file" in ret:
+						ret['rawcontent'] = content
+					return ret
 
 	########################################################################################################################
 	#
@@ -221,22 +232,11 @@ class ItemFetcher(LogBase.LoggerMixin):
 	def fetch(self):
 		self.target_url = url_util.urlClean(self.target_url)
 
-		print('Dispatch URL', self.target_url)
-		keys = list(self.plugin_modules.keys())
-		keys.sort(reverse=True)
-		print(keys)
 
 		content, fName, mimeType = self.getItem(self.target_url)
 
+		self.dispatchContent(content, fName, mimeType)
 
-		for key in keys:
-			for plugin in self.plugin_modules[key]:
-				if mimeType.lower() in plugin.wanted_mimetypes and plugin.wantsUrl(self.target_url):
-					print("plugin", plugin, "wants", self.target_url)
-					ret = self.plugin_dispatch(plugin, self.target_url, content, fName, mimeType)
-					if not "file" in ret:
-						ret['rawcontent'] = content
-					return ret
 
 		self.log.error("Did not know how to dispatch request for url: '%s', mimetype: '%s'!", self.target_url, mimeType)
 		return self.getEmptyRet()
