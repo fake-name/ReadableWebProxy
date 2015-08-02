@@ -21,6 +21,7 @@ from WebMirror.processor.ProcessorBase import PageProcessor
 
 
 import WebMirror.util.urlFuncs as urlFuncs
+import WebMirror.processor.gDocParse as gdp
 
 # import TextScrape.RelinkLookup
 # import TextScrape.RELINKABLE as RELINKABLE
@@ -54,10 +55,10 @@ class GdocPageProcessor(PageProcessor):
 
 	loggerPath = "Main.Text.GdocPageProcessor"
 
-	def __init__(self, pageUrl, loggerPath, tableKey, relinkable, scannedDomains=None, tlds=None):
+	def __init__(self, pageUrl, pgContent, loggerPath, relinkable, scannedDomains=None, tlds=None, **kwargs):
 		self.loggerPath = loggerPath+".GDocExtract"
 		self.pageUrl    = pageUrl
-		self.tableKey = tableKey
+
 
 		self._relinkDomains = set()
 		for url in relinkable:
@@ -159,7 +160,7 @@ class GdocPageProcessor(PageProcessor):
 			fHash = m.hexdigest()
 
 
-			pseudoUrl = self.tableKey+fHash
+			pseudoUrl = "gdoc-"+fHash
 
 			self.fMap[fName] = fHash
 
@@ -183,8 +184,8 @@ class GdocPageProcessor(PageProcessor):
 
 
 	def cleanGdocPage(self, soup, url):
-		doc = readability.readability.Document(str(soup))
-		title = self.extractTitle(soup, doc, url)
+		# doc = readability.readability.Document(str(soup))
+		title = self.extractTitle(soup, url)
 
 		for span in soup.find_all("span"):
 			span.unwrap()
@@ -230,7 +231,6 @@ class GdocPageProcessor(PageProcessor):
 
 	def processGdocPage(self, url, content):
 		dummy_fName, content = content
-		print("Page size: ", len(content))
 		soup = bs4.BeautifulSoup(content)
 		urlFuncs.canonizeUrls(soup, url)
 
@@ -259,7 +259,7 @@ class GdocPageProcessor(PageProcessor):
 
 
 		self.log.info("Should fetch google doc at '%s'", url)
-		doc = urlFuncs.GDocExtractor(url)
+		doc = gdp.GDocExtractor(url)
 
 
 
@@ -303,7 +303,9 @@ class GdocPageProcessor(PageProcessor):
 		ret['title']      = pgTitle
 		ret['contents']   = pgBody
 
-		return ret, resources
+		ret['resources'] = resources
+
+		return ret
 
 
 def test():

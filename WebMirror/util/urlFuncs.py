@@ -113,8 +113,6 @@ def trimGDocUrl(rawUrl):
 	return url
 
 def isGdocUrl(url):
-	# This is messy, because it has to work through bit.ly redirects.
-	# I'm just resolving them here, rather then keeping them around because it makes things easier.
 	gdocBaseRe = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+)')
 	simpleCheck = gdocBaseRe.search(url)
 	if simpleCheck and not url.endswith("/pub"):
@@ -125,12 +123,22 @@ def isGdocUrl(url):
 
 
 def isGFileUrl(url):
-	# This is messy, because it has to work through bit.ly redirects.
-	# I'm just resolving them here, rather then keeping them around because it makes things easier.
+
 	gFileBaseRe = re.compile(r'(https?://docs.google.com/file/d/[-_0-9a-zA-Z]+)')
 	simpleCheck = gFileBaseRe.search(url)
 	if simpleCheck and not url.endswith("/pub"):
 		return True, trimGDocUrl(url)
+
+	scheme, netloc, path, params, query, fragment = urllib.parse.urlparse(url)
+
+	if netloc == 'drive.google.com' and path == '/folderview':
+		query = urllib.parse.parse_qsl(query)
+		query = [item for item in query if item[0] != "usp"]
+		query.sort()
+		query = urllib.parse.urlencode(query)
+
+		url = urllib.parse.urlunparse((scheme, netloc, path, params, query, fragment))
+		return True, url
 
 	return False, url
 
@@ -220,3 +228,8 @@ def getNetLoc(url):
 	if not parsed.netloc:
 		raise ValueError("No netloc in url: '{}'".format(url))
 	return parsed.netloc
+
+if __name__ == "__main__":
+	print('wat')
+
+	print(isGFileUrl('https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web'))

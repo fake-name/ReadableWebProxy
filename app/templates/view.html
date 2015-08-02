@@ -16,7 +16,12 @@
 		<hr>
 		<div>
 			<p>Remote URL: <a href='{{req_url}}'>{{req_url}}</a></p>
-			<p><a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> | <a href='{{req_url}}'>Original content</a></p>
+			<p>
+				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
+				<a href='{{req_url}}'>Original content</a> |
+				Ignore-cache: {{"no" if not ignore_cache else "yes"}}
+				(<a href='/view?{{ {"url" : req_url, "nocache" : "true"} | urlencode }}'>yes</a>, <a href='/view?{{ {"url" : req_url} | urlencode | safe }}'>no</a>)</p>
+
 		</div>
 	</div>
 
@@ -28,7 +33,13 @@
 		{% include '_block_admin_scripts.html' %}
 	{% endif %}
 	<script>
-		$("#content").load("/render?{{ {"url" : req_url} | urlencode }}")
+		{% if ignore_cache %}
+			$("#content").load("/render?{{ {"url" : req_url, "nocache" : "true"} | urlencode | safe }}")
+		{% else %}
+			$("#content").load("/render?{{ {"url" : req_url} | urlencode | safe }}")
+		{% endif %}
+
+
 	</script>
 	<style>
 		div.easyreading

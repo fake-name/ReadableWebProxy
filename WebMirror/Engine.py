@@ -28,10 +28,10 @@ from app import app
 MAX_DISTANCE = 1000 * 1000
 
 if "debug" in sys.argv:
-	CACHE_DURATION = 1
-	RSC_CACHE_DURATION = 1
-	# CACHE_DURATION = 60 * 5
-	# RSC_CACHE_DURATION = 60 * 60 * 5
+	# CACHE_DURATION = 1
+	# RSC_CACHE_DURATION = 1
+	CACHE_DURATION = 60 * 5
+	RSC_CACHE_DURATION = 60 * 60 * 5
 else:
 	CACHE_DURATION = 60 * 5
 	RSC_CACHE_DURATION = 60 * 60 * 6
@@ -174,12 +174,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 		response = fetcher.fetch()
 
 		if "file" in response:
-			print("File response!")
+			# print("File response!")
 			self.upsertFileResponse(job, response)
 		else:
-			print("Text response!")
+			# print("Text response!")
 			self.upsertReponseContent(job, response)
 			self.upsertResponseLinks(job, response)
+
+		# Reset the fetch time download
+		job.fetchtime = datetime.datetime.now()
 
 		self.db.session.commit()
 
@@ -188,7 +191,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		job.title    = response['title']
 		job.content  = response['contents']
-		job.mimetype = response['mimetype']
+		job.mimetype = response['mimeType']
 		job.is_text  = True
 		job.state    = 'complete'
 
@@ -249,7 +252,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def upsertFileResponse(self, job, response):
 		# Response dict structure:
 		# {"file" : True, "url" : url, "mimeType" : mimeType, "fName" : fName, "content" : content}
-		print("File response!")
+		# print("File response!")
 		# Yeah, I'm hashing twice in lots of cases. Bite me
 		fHash = getHash(response['content'])
 
@@ -381,7 +384,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		self.log.info("Task exiting.")
 
-	def synchronousJobRequest(self, url):
+	def synchronousJobRequest(self, url, ignore_cache=False):
 		"""
 		trigger an immediate, synchronous dispatch of a job for url `url`,
 		and return the fetched row upon completion
@@ -439,14 +442,24 @@ class SiteArchiver(LogBase.LoggerMixin):
 		thresh_text_ago = datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION)
 		thresh_bin_ago  = datetime.datetime.now() - datetime.timedelta(seconds=RSC_CACHE_DURATION)
 
-		if row.state == "complete" and row.fetchtime > thresh_text_ago:
-			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", RSC_CACHE_DURATION)
-			return row
-		elif row.state == "complete" and row.fetchtime > thresh_bin_ago and "text" not in row.mimetype.lower():
-			self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
-			return row
+		# print("now                             ", datetime.datetime.now())
+		# print("row.fetchtime                   ", row.fetchtime)
+		# print("thresh_text_ago                 ", thresh_text_ago)
+		# print("thresh_bin_ago                  ", thresh_bin_ago)
+		# print("row.fetchtime > thresh_text_ago ", row.fetchtime > thresh_text_ago)
+		# print("row.fetchtime > thresh_bin_ago  ", row.fetchtime > thresh_bin_ago)
+
+		if ignore_cache:
+			self.log.info("Cache ignored due to override")
 		else:
-			self.log.info("Item has exceeded cache time by text: %s, rsc: %s. Re-acquiring.", row.fetchtime-thresh_text_ago, row.fetchtime-thresh_bin_ago)
+			if row.state == "complete" and row.fetchtime > thresh_text_ago:
+				self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", RSC_CACHE_DURATION)
+				return row
+			elif row.state == "complete" and row.fetchtime > thresh_bin_ago and "text" not in row.mimetype.lower():
+				self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
+				return row
+			else:
+				self.log.info("Item has exceeded cache time by text: %s, rsc: %s. (fetchtime: %s) Re-acquiring.", thresh_text_ago, thresh_bin_ago, row.fetchtime)
 
 		row.state     = 'new'
 		row.distance  = MAX_DISTANCE-2

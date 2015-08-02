@@ -388,18 +388,25 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		# Copy the mime-type into the return, since bothering to round-trip
 		# it through the processor class is silly.
-		ret['mimetype'] = params['mimeType']
+		ret['mimeType'] = params['mimeType']
 
-		text_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimetype']
+		gdoc_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimeType', 'resources']
+		text_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimeType']
 		file_ret_expected = ['file', 'content', 'fName', 'mimeType']
 		if "file" in ret and ret['file'] == True:
-			assert len(ret) == len(file_ret_expected)
+			assert len(ret) == len(file_ret_expected), "File response length mismatch! Expect: %s, received %s (expect keys: '%s', received keys '%s')" % (len(file_ret_expected), len(ret), file_ret_expected, list(ret.keys()))
 			for expect in file_ret_expected:
-				assert expect in ret
+				assert expect in ret, "Expected key '%s' in ret (keys: '%s')" % (expect, list(ret.keys()))
 		else:
-			assert len(ret) == len(text_ret_expected)
-			for expect in text_ret_expected:
-				assert expect in ret
+
+			if len(ret) == len(text_ret_expected):
+				for expect in text_ret_expected:
+					assert expect in ret, "Expected key '%s' in ret (keys: '%s')" % (expect, list(ret.keys()))
+			elif len(ret) == len(gdoc_ret_expected):
+				for expect in gdoc_ret_expected:
+					assert expect in ret, "Expected key '%s' in ret (keys: '%s')" % (expect, list(ret.keys()))
+			else:
+				raise ValueError("Invalid number of items in ret. Keys = '%s'" % list(ret.keys()))
 
 		return ret
 

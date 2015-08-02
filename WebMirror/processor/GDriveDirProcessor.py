@@ -94,7 +94,7 @@ class GDriveDirProcessor(ProcessorBase.PageProcessor):
 
 	loggerPath = "Main.Text.GDriveDirProcessor"
 
-	def __init__(self, pageUrl, loggerPath, relinkable):
+	def __init__(self, pageUrl, loggerPath, relinkable, **kwargs):
 		self.loggerPath = loggerPath+".GDrvDirExtract"
 
 		self.pageUrl  = pageUrl
@@ -145,7 +145,7 @@ class GDriveDirProcessor(ProcessorBase.PageProcessor):
 		docReferences, pgTitle = gdp.GDocExtractor.getDriveFileUrls(driveUrl)
 		# print('docReferences', docReferences)
 		for dummy_title, url in docReferences:
-			url = gdp.trimGDocUrl(url)
+			url = urlFuncs.trimGDocUrl(url)
 			if url not in newLinks:
 				newLinks.append(url)
 

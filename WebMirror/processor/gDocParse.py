@@ -13,6 +13,7 @@ import urllib.parse
 import urllib.error
 
 from . import jsLiteralParse
+import WebMirror.util.urlFuncs as urlFuncs
 
 
 class GDocExtractor(object):
@@ -22,11 +23,11 @@ class GDocExtractor(object):
 
 	def __init__(self, targetUrl):
 
-		isGdoc, url = isGdocUrl(targetUrl)
+		isGdoc, url = urlFuncs.isGdocUrl(targetUrl)
 		if not isGdoc:
 			raise ValueError("Passed URL '%s' is not a google document?" % targetUrl)
 
-		url = trimGDocUrl(url)
+		url = urlFuncs.trimGDocUrl(url)
 		self.url = url+'/export?format=zip'
 		self.refererUrl = targetUrl
 
@@ -46,9 +47,9 @@ class GDocExtractor(object):
 		# which tells us if we redirected to a plain google doc, and just return that if the redirect occured.
 		handleUrl = handle.geturl()
 		if handleUrl != url:
-			if isGdocUrl(handleUrl):
+			if urlFuncs.isGdocUrl(handleUrl):
 				cls.log.info("Direct read redirect: '%s'", handleUrl)
-				handleUrl = trimGDocUrl(handleUrl)
+				handleUrl = urlFuncs.trimGDocUrl(handleUrl)
 				return [(title, handleUrl)], title
 
 		jsRe = re.compile('var data = (.*?); _initFolderLandingPageApplication\(config, data\)', re.DOTALL)
@@ -86,7 +87,7 @@ class GDocExtractor(object):
 			itemTitle = page[2]
 			itemUrl   = page[17].encode('ascii').decode('unicode_escape')
 
-			itemUrl = trimGDocUrl(itemUrl)
+			itemUrl = urlFuncs.trimGDocUrl(itemUrl)
 
 			items.append((itemTitle, itemUrl))
 

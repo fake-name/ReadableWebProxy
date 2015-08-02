@@ -108,7 +108,10 @@ def view():
 	req_url = request.args.get('url')
 	if not req_url:
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
-	return render_template('view.html', title = 'Home', req_url = req_url)
+
+	ignore_cache = request.args.get("nocache")
+
+	return render_template('view.html', title = 'Home', req_url = req_url, ignore_cache = ignore_cache)
 
 
 @app.route('/render', methods=['GET'])
@@ -116,8 +119,11 @@ def render():
 	req_url = request.args.get('url')
 	if not req_url:
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+	req_url = request.args.get('url')
 
-	title, content, cachestate = WebMirror.API.getPage(req_url)
+	ignore_cache = request.args.get("nocache")
+	print("Rendering with nocache=", ignore_cache)
+	title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache)
 
 	return render_template('render.html',
 		title      = title,
@@ -132,7 +138,9 @@ def render_resource():
 	if not req_url:
 		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
 
-	mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url)
+	ignore_cache = request.args.get("nocache")
+
+	mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url, ignore_cache=ignore_cache)
 
 	response = make_response(content)
 	response.headers['Content-Type'] = mimetype

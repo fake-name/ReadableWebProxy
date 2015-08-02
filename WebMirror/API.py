@@ -21,9 +21,10 @@ class RemoteContentObject(object):
 		self.archiver = SiteArchiver()
 
 
-	def fetch(self):
+	def fetch(self, ignore_cache=False):
 		self.fetched = True
-		self.job = self.archiver.synchronousJobRequest(self.url)
+		self.job = self.archiver.synchronousJobRequest(self.url, ignore_cache)
+
 		# print(self.job)
 
 	def getTitle(self):
@@ -84,10 +85,10 @@ def processRaw(content):
 
 
 
-def getPage(url):
+def getPage(url, ignore_cache=False):
 	page = RemoteContentObject(url)
 
-	page.fetch()
+	page.fetch(ignore_cache)
 
 	title      = page.getTitle()
 	content    = page.getContent(relink_secret, "/view?url=")
@@ -96,10 +97,10 @@ def getPage(url):
 	return title, content, cachestate
 
 
-def getResource(url):
+def getResource(url, ignore_cache=False):
 	page = RemoteContentObject(url)
 
-	page.fetch()
+	page.fetch(ignore_cache)
 
 	mimetype, fname, content = page.getResource()
 	cachestate        = page.getCacheState()

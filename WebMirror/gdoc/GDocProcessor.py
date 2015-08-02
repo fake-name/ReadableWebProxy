@@ -223,7 +223,7 @@ class GdocPageProcessor(TextScrape.ProcessorBase.PageProcessor):
 
 	def processGdocPage(self, url, content):
 		dummy_fName, content = content
-		print("Page size: ", len(content))
+
 		soup = bs4.BeautifulSoup(content)
 		TextScrape.urlFuncs.canonizeUrls(soup, url)
 

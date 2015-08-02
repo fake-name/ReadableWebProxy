@@ -128,7 +128,14 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 	def getEmptyRet(self):
-		return {'plainLinks' : [], 'rsrcLinks' : []}
+		return {
+			'plainLinks' : [],
+			'rsrcLinks'  : [],
+
+			'title'      : "Error: Unknown dispatch type",
+			'contents'   : "Error. Could not dispatch properly",
+			'mimetype'   : "text/html",
+			}
 
 
 
@@ -208,11 +215,12 @@ class ItemFetcher(LogBase.LoggerMixin):
 		for key in keys:
 			for plugin in self.plugin_modules[key]:
 				if mimeType.lower() in plugin.wanted_mimetypes and plugin.wantsUrl(self.target_url):
-					print("plugin", plugin, "wants", self.target_url)
+					# print("plugin", plugin, "wants", self.target_url)
 					ret = self.plugin_dispatch(plugin, self.target_url, content, fName, mimeType)
 					if not "file" in ret:
 						ret['rawcontent'] = content
 					return ret
+		return self.getEmptyRet()
 
 	########################################################################################################################
 	#
@@ -235,7 +243,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		content, fName, mimeType = self.getItem(self.target_url)
 
-		self.dispatchContent(content, fName, mimeType)
+		return self.dispatchContent(content, fName, mimeType)
 
 
 		self.log.error("Did not know how to dispatch request for url: '%s', mimetype: '%s'!", self.target_url, mimeType)
