@@ -14,28 +14,28 @@ Overall data-flow:
      |         +----------------------+   |                   |
      |         |                      |   |  Process          |
      |         |  Generate update     |   |  retrieved        |
-     +---------+  based on processed  +<--+  content using    |
-               |  content.            |   |  plugin LUT       |
-               |                      |   |                   |
-               +----------------------+   +---------+---------+
-                                                    ^          
-                                                    |          
-                                            +-------+------+   
-                                            |              |   
-                                            |   Build      |   
-                                            |   Plugin     |   
-                                            |    LUT       |   
-                                            |              |   
-                                            +------+-------+   
-                                                   ^           
-                                                   |           
-                                                   |           
-                                            +------+--------+   
-                                            |               |   
-                                            |    Plugin     |   
-                                            |  Definitions  |   
-                                            |               |   
-                                            +---------------+   
+     +--(-)----+  based on processed  +<--+  content using    |
+         |     |  content.            |   |  plugin LUT       |
+         |     |                      |   |                   |
+         |     +----------------------+   +---------+---------+
+         |                                          ^          
+         |                                          |          
+    +----+----+                             +-------+------+   
+    | Update  |                             |              |   
+    | Filter  |                             |   Build      |   
+    | System  |                             |   Plugin     |   
+    +----+----+                             |    LUT       |   
+         |                                  |              |   
+         |                                  +------+-------+   
+         v                                         ^           
+     (  AMQP )                                     |           
+     ( Stuff )                                     |           
+                      +---------------+     +------+--------+   
+                      |               |     |               |   
+                      |      Rule     +---->+    Plugin     |   
+                      |     files     |     |  Definitions  |   
+                      |               |     |               |   
+                      +---------------+     +---------------+   
 
 Crawl limit is 1000000.
 Shallow updates can be achived by upserting entries close to the limit. E.g. 
