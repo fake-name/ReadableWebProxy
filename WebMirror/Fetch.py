@@ -14,6 +14,7 @@ import WebMirror.processor.HtmlProcessor
 import WebMirror.processor.GDriveDirProcessor
 import WebMirror.processor.GDocProcessor
 import WebMirror.processor.MarkdownProcessor
+import WebMirror.processor.BinaryProcessor
 
 import WebMirror.util.urlFuncs as url_util
 import urllib.parse
@@ -43,6 +44,7 @@ PLUGINS = [
 	WebMirror.processor.GDriveDirProcessor.GDriveDirProcessor,
 	WebMirror.processor.GDocProcessor.GdocPageProcessor,
 	WebMirror.processor.MarkdownProcessor.MarkdownProcessor,
+	WebMirror.processor.BinaryProcessor.BinaryResourceProcessor,
 ]
 
 class ItemFetcher(LogBase.LoggerMixin):

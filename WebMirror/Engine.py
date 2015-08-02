@@ -256,14 +256,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 				new = self.db.WebFiles(
 					filename = response['fName'],
 					fhash    = fHash,
-					fspath   = have.fsPath,
+					fspath   = have.fspath,
 					)
 				self.db.session.add(new)
 				self.db.session.commit()
 				job.file = new.id
-
 		else:
-
 			savedpath = saveCoverFile(response['content'], fHash, response['fName'])
 			new = self.db.WebFiles(
 				filename = response['fName'],

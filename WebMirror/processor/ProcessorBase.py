@@ -359,9 +359,10 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		return url
 
 
+
+	# Proxy call for enforcing call-correctness
 	@classmethod
 	def process(cls, params):
-		print("Cls = ", cls)
 		expected = [
 			'pageUrl',
 			'pgContent',
@@ -384,5 +385,18 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		instance = cls(**params)
 		ret = instance.extractContent()
+
+
+		text_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents']
+		file_ret_expected = ['file', 'content', 'fName', 'mimeType']
+		if "file" in ret and ret['file'] == True:
+			assert len(ret) == len(file_ret_expected)
+			for expect in file_ret_expected:
+				assert expect in ret
+		else:
+			assert len(ret) == len(text_ret_expected)
+			for expect in text_ret_expected:
+				assert expect in ret
+
 		return ret
 
