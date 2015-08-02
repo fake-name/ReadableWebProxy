@@ -19,6 +19,7 @@ import WebMirror.processor.ProcessorBase as ProcessorBase
 
 
 from . import gDocParse as gdp
+import WebMirror.util.urlFuncs as urlFuncs
 
 # import TextScrape.RELINKABLE as RELINKABLE
 # import TextScrape.RelinkLookup
@@ -82,6 +83,14 @@ GLOBAL_DECOMPOSE_BEFORE = [
 GLOBAL_DECOMPOSE_AFTER = []
 
 class GDriveDirProcessor(ProcessorBase.PageProcessor):
+
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 91
+
+	@staticmethod
+	def wantsUrl(url):
+		return urlFuncs.isGFileUrl(url)[0]
 
 	loggerPath = "Main.Text.GDriveDirProcessor"
 

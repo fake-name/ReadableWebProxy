@@ -31,6 +31,10 @@ import markdown
 
 class MarkdownProcessor(ProcessorBase.PageProcessor):
 
+
+	wanted_mimetypes = ['text/plain']
+	want_priority    = 50
+
 	loggerPath = "Main.Text.MarkdownProcessor"
 
 	def __init__(self, pageUrl, loggerPath, content, pbLut):

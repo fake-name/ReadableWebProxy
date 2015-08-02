@@ -44,6 +44,14 @@ import WebMirror.util.urlFuncs as urlFuncs
 
 class GdocPageProcessor(PageProcessor):
 
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 90
+
+	@staticmethod
+	def wantsUrl(url):
+		return urlFuncs.isGdocUrl(url)[0]
+
 	loggerPath = "Main.Text.GdocPageProcessor"
 
 	def __init__(self, pageUrl, loggerPath, tableKey, relinkable, scannedDomains=None, tlds=None):

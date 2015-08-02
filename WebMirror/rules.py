@@ -284,6 +284,7 @@ def get_rules():
 	return ret
 
 
+
 def load_rules():
 
 	if flags.RULE_CACHE == None or "debug" in sys.argv:
@@ -294,3 +295,6 @@ def load_rules():
 		print("Using cached rules")
 		rules = flags.RULE_CACHE
 	return rules
+
+# Trigger cache-loading of the ruleset.
+load_rules()

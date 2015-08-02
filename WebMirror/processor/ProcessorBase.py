@@ -77,6 +77,23 @@ GLOBAL_DECOMPOSE_AFTER = []
 class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 
+	@abc.abstractproperty
+	def wanted_mimetypes(self):
+		pass
+
+	@abc.abstractproperty
+	def want_priority(self):
+		pass
+
+
+	@abc.abstractmethod
+	def extractContent(self):
+		pass
+
+	@staticmethod
+	def wantsUrl(url):
+		return True
+
 	_relinkDomains  = []
 	_scannedDomains = []
 	_badwords       = []
@@ -340,4 +357,32 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if '/view/export?format=zip' in url:
 			raise ValueError("Wat?")
 		return url
+
+
+	@classmethod
+	def process(cls, params):
+		print("Cls = ", cls)
+		expected = [
+			'pageUrl',
+			'pgContent',
+			'mimeType',
+			'baseUrls',
+			'loggerPath',
+			'badwords',
+			'decompose',
+			'decomposeBefore',
+			'fileDomains',
+			'allImages',
+			'ignoreBadLinks',
+			'stripTitle',
+			'relinkable',
+		]
+
+		assert len(params) == len(expected)
+		for expect in expected:
+			assert expect in params
+
+		instance = cls(**params)
+		ret = instance.extractContent()
+		return ret
 

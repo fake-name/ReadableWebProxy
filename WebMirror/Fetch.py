@@ -6,16 +6,14 @@ if __name__ == "__main__":
 
 import WebMirror.rules
 import WebMirror.LogBase as LogBase
-import runStatus
-import time
 
-import multiprocessing
-from sqlalchemy import desc
+import datetime
 
 
 import WebMirror.processor.HtmlProcessor
 import WebMirror.processor.GDriveDirProcessor
 import WebMirror.processor.GDocProcessor
+import WebMirror.processor.MarkdownProcessor
 
 import WebMirror.util.urlFuncs as url_util
 import urllib.parse
@@ -23,22 +21,7 @@ import traceback
 import WebMirror.util.webFunctions as webFunctions
 import bs4
 
-MAX_DISTANCE = 1000 * 1000
-
-# import sql.operators as sqlo
-
-# import TextScrape.urlFuncs
-# import inspect
-# import collections
-# import queue
-# import bs4
-# from concurrent.futures import ThreadPoolExecutor
-
-
-# import os.path
-# import os
-
-
+import WebMirror.processor.ProcessorBase
 
 
 
@@ -55,12 +38,19 @@ MAX_DISTANCE = 1000 * 1000
 ########################################################################################################################
 
 
+PLUGINS = [
+	WebMirror.processor.HtmlProcessor.HtmlPageProcessor,
+	WebMirror.processor.GDriveDirProcessor.GDriveDirProcessor,
+	WebMirror.processor.GDocProcessor.GdocPageProcessor,
+	WebMirror.processor.MarkdownProcessor.MarkdownProcessor,
+]
+
 class ItemFetcher(LogBase.LoggerMixin):
 
 
 	loggerPath = "Main.SiteArchiver"
 
-	threads = 2
+
 
 	# Fetch items up to 1,000,000 (1 million) links away from the root source
 	# This (functionally) equates to no limit.
@@ -73,6 +63,18 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		self.wg = webFunctions.WebGetRobust()
 
+		# Validate the plugins implement the proper interface
+		for item in PLUGINS:
+			assert issubclass(item, WebMirror.processor.ProcessorBase.PageProcessor), "Item '%s' does not inherit from '%s'" % (item, WebMirror.processor.ProcessorBase.PageProcessor)
+
+
+		self.plugin_modules = {}
+		for item in PLUGINS:
+			key = item.want_priority
+			if key in self.plugin_modules:
+				self.plugin_modules[key].append(item)
+			else:
+				self.plugin_modules[key] = [item]
 
 		baseRules = [ruleset for ruleset in rules if ruleset['netlocs'] == None].pop(0)
 
@@ -120,15 +122,17 @@ class ItemFetcher(LogBase.LoggerMixin):
 	#
 	########################################################################################################################
 
+
+
 	def getEmptyRet(self):
 		return {'plainLinks' : [], 'rsrcLinks' : []}
 
 
 	def processHtmlPage(self, url, content):
 		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(
-									baseUrls        = self.job.starturl,
 									pageUrl         = url,
 									pgContent       = content,
+									baseUrls        = self.job.starturl,
 									loggerPath      = self.loggerPath,
 									badwords        = self.rules['badwords'],
 									decompose       = self.rules['decompose'],
@@ -140,7 +144,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									relinkable      = self.relinkable
 								)
 		extracted = scraper.extractContent()
-
+		# print(extracted)
 		return extracted
 
 
@@ -178,14 +182,14 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 
-	def extractGoogleDriveFolder(self, url):
-		scraper = self.gdriveClass(
-									pageUrl         = url,
-									loggerPath      = self.loggerPath,
-									relinkable      = self.relinkable
-								)
-		extracted = scraper.extractContent()
-		return extracted
+	# def extractGoogleDriveFolder(self, url):
+	# 	scraper = self.gdriveClass(
+	# 								pageUrl         = url,
+	# 								loggerPath      = self.loggerPath,
+	# 								relinkable      = self.relinkable
+	# 							)
+	# 	extracted = scraper.extractContent()
+	# 	return extracted
 
 
 # 	def retreiveGoogleDoc(self, url):
@@ -342,65 +346,97 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 
-	def dispatchContent(self, url, content, fName, mimeType):
+	def plugin_dispatch(self, plugin, url, content, fName, mimeType):
 		self.log.info("Dispatching file '%s' with mime-type '%s'", fName, mimeType)
 
-		# *sigh*. So minus.com is fucking up their http headers, and apparently urlencoding the
-		# mime type, because apparently they're shit at things.
-		# Anyways, fix that.
-		if '%2F' in  mimeType:
-			mimeType = mimeType.replace('%2F', '/')
-
-		if mimeType in ['text/xml', 'text/atom+xml', 'application/atom+xml', 'application/xml', 'text/css', 'application/x-javascript', 'application/javascript']:
-
-			if mimeType in ['text/xml', 'text/atom+xml', 'application/atom+xml', 'application/xml']:
-				self.log.info("XML File?")
-				self.log.info("URL: '%s'", url)
-
-			elif mimeType in ['text/css']:
-				self.log.info("CSS!")
-				self.log.info("URL: '%s'", url)
-
-			elif mimeType in ['application/x-javascript', 'application/javascript']:
-				self.log.info("Javascript Resource!")
-				self.log.info("URL: '%s'", url)
-
-			assert self.job.url == url
-			self.job.title    = ''
-			self.job.contents = content
-			self.job.mimetype = mimeType
-			self.job.state    = 'complete'
-			self.job.is_text  = True
-			return self.getEmptyRet()
 
 
+		params = {
+									'pageUrl'         : url,
+									'pgContent'       : content,
+									'mimeType'        : mimeType,
+									'baseUrls'        : self.job.starturl,
+									'loggerPath'      : self.loggerPath,
+									'badwords'        : self.rules['badwords'],
+									'decompose'       : self.rules['decompose'],
+									'decomposeBefore' : self.rules['decomposeBefore'],
+									'fileDomains'     : self.rules['fileDomains'],
+									'allImages'       : self.rules['allImages'],
+									'ignoreBadLinks'  : self.rules['IGNORE_MALFORMED_URLS'],
+									'stripTitle'      : self.rules['stripTitle'],
+									'relinkable'      : self.relinkable
+		}
 
-
-		elif mimeType in ["image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/vnd.djvu",
-			"application/octet-stream", "application/x-mobipocket-ebook", "application/pdf", "application/zip"]:
-			if mimeType in ["image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/vnd.djvu"]:
-				self.log.info("Processing '%s' as an image file.", url)
-			elif mimeType in ["application/octet-stream", "application/x-mobipocket-ebook", "application/pdf", "application/zip"]:
-				self.log.info("Processing '%s' as an binary file.", url)
-
-			# self.saveFile(url, mimeType, fName, content)
-			ret = {"file" : True, "url" : url, "mimeType" : mimeType, "fName" : fName, "content" : content}
-			return ret
-
-
-		elif mimeType in ['text/html']:
-			ret = self.processHtmlPage(url, content)
-
-		elif mimeType in ['text/plain']:
-			ret = self.processAsMarkdown(url, content)
-
-		else:
-			self.log.error("Unknown MIME Type: '%s', Url: '%s'", mimeType, url)
-			self.log.error("Not saving file!")
-			return self.getEmptyRet()
-
-
+		ret = plugin.process(params)
 		return ret
+
+		# if mimeType in ['text/html']:
+		# 	ret = self.processHtmlPage(url, content)
+
+		# elif mimeType in ['text/plain']:
+		# 	ret = self.processAsMarkdown(url, content)
+
+		# elif mimeType in ['text/xml', 'text/atom+xml', 'application/atom+xml', 'application/xml', 'text/css', 'application/x-javascript', 'application/javascript']:
+
+		# 	if mimeType in ['text/xml', 'text/atom+xml', 'application/atom+xml', 'application/xml']:
+		# 		self.log.info("XML File?")
+		# 		self.log.info("URL: '%s'", url)
+
+		# 	elif mimeType in ['text/css']:
+		# 		self.log.info("CSS!")
+		# 		self.log.info("URL: '%s'", url)
+
+		# 	elif mimeType in ['application/x-javascript', 'application/javascript']:
+		# 		self.log.info("Javascript Resource!")
+		# 		self.log.info("URL: '%s'", url)
+
+		# 	assert self.job.url == url
+		# 	self.job.title    = ''
+		# 	self.job.contents = content
+		# 	self.job.mimetype = mimeType
+		# 	self.job.state    = 'complete'
+		# 	self.job.is_text  = True
+		# 	return self.getEmptyRet()
+
+
+
+
+		# elif mimeType in ["image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/vnd.djvu",
+		# 	"application/octet-stream", "application/x-mobipocket-ebook", "application/pdf", "application/zip"]:
+		# 	if mimeType in ["image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/vnd.djvu"]:
+		# 		self.log.info("Processing '%s' as an image file.", url)
+		# 	elif mimeType in ["application/octet-stream", "application/x-mobipocket-ebook", "application/pdf", "application/zip"]:
+		# 		self.log.info("Processing '%s' as an binary file.", url)
+
+		# 	# self.saveFile(url, mimeType, fName, content)
+		# 	ret = {"file" : True, "url" : url, "mimeType" : mimeType, "fName" : fName, "content" : content}
+		# 	return ret
+
+
+		# else:
+		# 	self.log.error("Unknown MIME Type: '%s', Url: '%s'", mimeType, url)
+		# 	self.log.error("Not saving file!")
+		# 	return self.getEmptyRet()
+
+
+
+
+
+
+	# def retreivePlainResource(self, job):
+	# 	self.log.info("Fetching Simple Resource: '%s'", job.url)
+	# 	try:
+	# 		content, fName, mimeType = self.getItem(self.job.url)
+	# 	except ValueError:
+
+	# 		for line in traceback.format_exc().split("\n"):
+	# 			self.log.critical(line)
+	# 		job.state = "error"
+	# 		job.errno = -1
+
+	# 		return self.getEmptyRet()
+
+	# 	return self.dispatchContent(job.url, content, fName, mimeType)
 
 
 
@@ -430,31 +466,17 @@ class ItemFetcher(LogBase.LoggerMixin):
 		# If there is an encoding in the content-type (or any other info), strip it out.
 		# We don't care about the encoding, since WebFunctions will already have handled that,
 		# and returned a decoded unicode object.
-
 		if mType and ";" in mType:
 			mType = mType.split(";")[0].strip()
 
+		# *sigh*. So minus.com is fucking up their http headers, and apparently urlencoding the
+		# mime type, because apparently they're shit at things.
+		# Anyways, fix that.
+		if '%2F' in  mType:
+			mType = mType.replace('%2F', '/')
 
 		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
 		return content, fileN, mType
-
-
-	def retreivePlainResource(self, job):
-		self.log.info("Fetching Simple Resource: '%s'", job.url)
-		try:
-			content, fName, mimeType = self.getItem(self.job.url)
-		except ValueError:
-
-			for line in traceback.format_exc().split("\n"):
-				self.log.critical(line)
-			job.state = "error"
-			job.errno = -1
-
-			return self.getEmptyRet()
-
-		return self.dispatchContent(job.url, content, fName, mimeType)
-
-
 
 
 
@@ -479,35 +501,22 @@ class ItemFetcher(LogBase.LoggerMixin):
 	def fetch(self):
 		self.job.url = url_util.urlClean(self.job.url)
 
-		# print('Dispatch URL', url)
+		print('Dispatch URL', self.job.url)
+		keys = list(self.plugin_modules.keys())
+		keys.sort(reverse=True)
+		print(keys)
 
-		netloc = urllib.parse.urlsplit(self.job.url.lower()).netloc
-
-		isGdoc,  realUrl = url_util.isGdocUrl(self.job.url)
-		isGfile, fileUrl = url_util.isGFileUrl(self.job.url)
-
-		# print('Fetching: ', self.job.url, 'distance', self.job.distance)
-		# print(isGdoc, isGfile)
-		if 'drive.google.com' in netloc:
-			self.log.info("Google Drive content!")
-			response = self.extractGoogleDriveFolder(self.job)
-		elif isGdoc:
-			self.log.info("Google Docs content!")
-			response = self.retreiveGoogleDoc(self.job, realUrl)
-		elif isGfile:
-			self.log.info("Google File content!")
-			response = self.retreiveGoogleFile(self.job, realUrl)
-
-		else:
-			response = self.retreivePlainResource(self.job)
-
-		if 'title' in response and 'contents' in response:
-			self.job.title    = response['title']
-			self.job.content  = response['contents']
-			self.job.mimetype = 'text/html'
-			self.job.is_text  = True
-			self.job.state    = 'complete'
+		content, fName, mimeType = self.getItem(self.job.url)
 
 
-		return response
+		for key in keys:
+			for plugin in self.plugin_modules[key]:
+				if mimeType.lower() in plugin.wanted_mimetypes and plugin.wantsUrl(self.job.url):
+					print("plugin", plugin, "wants", self.job.url)
+					return self.plugin_dispatch(plugin, self.job.url, content, fName, mimeType)
+
+
+		self.log.error("Did not know how to dispatch request for url: '%s', mimetype: '%s'!", self.job.url, mimeType)
+		return self.getEmptyRet()
+
 		# self.upsertResponseLinks(job, response)

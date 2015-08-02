@@ -73,6 +73,10 @@ GLOBAL_DECOMPOSE_AFTER = []
 
 class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 50
+
 	loggerPath = "Main.Text.HtmlProc"
 
 	def __init__(self, baseUrls, pageUrl, pgContent, loggerPath, relinkable, **kwargs):
@@ -373,7 +377,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			'href',
 			'src',
 			'style',
-			
+
 		]
 
 		for item in [item for item in soup.find_all(True) if item]:
