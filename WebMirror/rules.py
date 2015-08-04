@@ -82,6 +82,17 @@ def getFileDomains(ruleset):
 		assert isinstance(item, str)
 	return ruleset['fileDomains']
 
+def getDestyles(ruleset):
+	if not 'destyle' in ruleset:
+		return []
+	assert isinstance(ruleset['destyle'], list)
+	for item in ruleset['destyle']:
+		assert isinstance(item, list)
+		assert len(item) == 2
+		assert isinstance(item[0], str)
+		assert isinstance(item[1], dict)
+	return ruleset['destyle']
+
 
 def checkBadValues(ruleset):
 	assert 'wg' not in ruleset
@@ -207,6 +218,8 @@ def load_validate_rules(fname, dat):
 	rules['cloudflare']            = getCloudflare(dat)
 	rules['IGNORE_MALFORMED_URLS'] = getIgnoreMalformed(dat)
 	rules['type']                  = getGenreType(dat)
+
+	rules['destyle']               = getDestyles(dat)
 
 	# itemGenre
 	# allowQueryStr

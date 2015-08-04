@@ -157,7 +157,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'allImages'       : self.rules['allImages'],
 									'ignoreBadLinks'  : self.rules['IGNORE_MALFORMED_URLS'],
 									'stripTitle'      : self.rules['stripTitle'],
-									'relinkable'      : self.relinkable
+									'relinkable'      : self.relinkable,
+									'destyle'         : self.rules['destyle'],
 		}
 
 		ret = plugin.process(params)

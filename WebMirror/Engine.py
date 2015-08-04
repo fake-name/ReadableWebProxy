@@ -28,27 +28,45 @@ from app import app
 MAX_DISTANCE = 1000 * 1000
 
 if "debug" in sys.argv:
-	# CACHE_DURATION = 1
-	# RSC_CACHE_DURATION = 1
-	CACHE_DURATION = 60 * 5
-	RSC_CACHE_DURATION = 60 * 60 * 5
+	CACHE_DURATION = 1
+	RSC_CACHE_DURATION = 1
+	# CACHE_DURATION = 60 * 5
+	# RSC_CACHE_DURATION = 60 * 60 * 5
 else:
 	CACHE_DURATION = 60 * 5
 	RSC_CACHE_DURATION = 60 * 60 * 6
 
 
-# import sql.operators as sqlo
 
-# import TextScrape.urlFuncs
-# import inspect
-# import collections
-# import queue
-# import bs4
-# from concurrent.futures import ThreadPoolExecutor
-
-
-# import os.path
-# import os
+GLOBAL_BAD = [
+			'gprofiles.js',
+			'netvibes.com',
+			'accounts.google.com',
+			'edit.yahoo.com',
+			'add.my.yahoo.com',
+			'public-api.wordpress.com',
+			'r-login.wordpress.com',
+			'twitter.com',
+			'facebook.com',
+			'public-api.wordpress.com',
+			'wretch.cc',
+			'ws-na.amazon-adsystem.com',
+			'delicious.com',
+			'paypal.com',
+			'digg.com',
+			'topwebfiction.com',
+			'/page/page/',
+			'addtoany.com',
+			'stumbleupon.com',
+			'delicious.com',
+			'reddit.com',
+			'newsgator.com',
+			'technorati.com',
+			'pixel.wp.com',
+			'a.wikia-beacon.com',
+			'b.scorecardresearch.com',
+			'//mail.google.com',
+	]
 
 class DownloadException(Exception):
 	pass
@@ -201,9 +219,18 @@ class SiteArchiver(LogBase.LoggerMixin):
 		print("job id:", job.id)
 		self.db.session.flush()
 
+	# Todo: FIXME
+	def filterContentLinks(self, job, links):
+		return []
+	def filterResourceLinks(self, job, links):
+		return []
+
 	def upsertResponseLinks(self, job, response):
 		plain = set(response['plainLinks'])
 		resource = set(response['rsrcLinks'])
+
+		plain    = self.filterContentLinks(job, plain)
+		resource = self.filterContentLinks(job, resource)
 
 		items = []
 		[items.append((link, True))  for link in plain]

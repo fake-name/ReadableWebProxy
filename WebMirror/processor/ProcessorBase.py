@@ -377,6 +377,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'ignoreBadLinks',
 			'stripTitle',
 			'relinkable',
+			'destyle',
 		]
 
 		assert len(params) == len(expected)

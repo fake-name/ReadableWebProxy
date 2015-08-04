@@ -58,6 +58,7 @@ Allowed directives:
  - allImages
  - cloudflare
  - fileDomains
+ - destyle
 
 Planned directives:
  - TagReplace

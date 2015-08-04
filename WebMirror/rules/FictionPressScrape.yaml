@@ -6,6 +6,7 @@ allImages: False
 
 baseUrl: [
 	"https://www.fictionpress.com/",
+	"http://www.fictionpress.com/",
 	]
 
 badwords: [
@@ -33,10 +34,19 @@ decomposeBefore: [
 ]
 
 decompose: [
-
+	{'id' : "top"},
+	{'id' : "p_footer"},
+	{'id' : "profile_top"},
+	{'id' : "review"},
+	{'class' : "zmenu"},
+	{'class' : "lc-wrapper"},
 ]
 
 stripTitle: []
 
 
+destyle : [
+	["div",  {}],
+	["span", {}],
+]
 
