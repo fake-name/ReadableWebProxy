@@ -61,6 +61,7 @@ GLOBAL_BAD = [
 			'newsgator.com',
 			'technorati.com',
 			'feeds.wordpress.com',
+			'www.addtoany.com'
 	]
 
 GLOBAL_DECOMPOSE_BEFORE = [
@@ -227,23 +228,10 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		url = urlFuncs.clearOutboundProxy(url)
 		url = urlFuncs.clearBitLy(url)
 
-		# Filter by domain
-		if not self.checkDomain(url):
-			# print("Filtering", self.checkDomain(url), url)
-			return
-
-
-		# and by blocked words
 		for badword in self._badwords:
 			if badword in url:
-				# print("hadbad", self.checkDomain(url), url)
-
 				return
 
-
-
-		if not self.checkFollowGoogleUrl(url):
-			return
 
 		url = urlFuncs.urlClean(url)
 
@@ -273,6 +261,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 	def extractLinks(self, soup, baseUrl):
 		# All links have been resolved to fully-qualified paths at this point.
 		ret = []
+		print("Extracting links!")
 		for (dummy_isImg, tag, attr) in urlFuncs.urlContainingTargets:
 
 			for link in soup.findAll(tag):
@@ -351,11 +340,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if not url.lower().startswith('http'):
 			raise ValueError("Failure adding scheme to URL: '%s'" % url)
 
-		if not self.checkDomain(url) and istext:
-			raise ValueError("Invalid url somehow got through: '%s'" % url)
-
 		if '/view/export?format=zip' in url:
 			raise ValueError("Wat?")
+
 		return url
 
 

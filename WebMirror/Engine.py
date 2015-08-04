@@ -221,8 +221,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	# Todo: FIXME
 	def filterContentLinks(self, job, links):
+		print('filterContentLinks')
+		print(links)
 		return []
 	def filterResourceLinks(self, job, links):
+		print('filterResourceLinks')
+		print(links)
 		return []
 
 	def upsertResponseLinks(self, job, response):
@@ -230,7 +234,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		resource = set(response['rsrcLinks'])
 
 		plain    = self.filterContentLinks(job, plain)
-		resource = self.filterContentLinks(job, resource)
+		resource = self.filterResourceLinks(job, resource)
 
 		items = []
 		[items.append((link, True))  for link in plain]

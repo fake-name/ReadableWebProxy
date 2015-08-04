@@ -71,17 +71,6 @@ GLOBAL_BAD = [
 			'technorati.com',
 	]
 
-GLOBAL_DECOMPOSE_BEFORE = [
-			{'name'     : 'likes-master'},  # Bullshit sharing widgets
-			{'id'       : 'jp-post-flair'},
-			{'class'    : 'post-share-buttons'},
-			{'class'    : 'commentlist'},  # Scrub out the comments so we don't try to fetch links from them
-			{'class'    : 'comments'},
-			{'id'       : 'comments'},
-		]
-
-GLOBAL_DECOMPOSE_AFTER = []
-
 class GDriveDirProcessor(ProcessorBase.PageProcessor):
 
 

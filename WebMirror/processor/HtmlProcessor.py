@@ -1,18 +1,12 @@
 
-import urllib.parse
-
 import bs4
 import copy
-import readability.readability
-import lxml.etree
-import traceback
 
 import WebMirror.util.urlFuncs as urlFuncs
 from . import ProcessorBase
 
 class DownloadException(Exception):
 	pass
-
 
 
 ########################################################################################################################
@@ -29,17 +23,6 @@ class DownloadException(Exception):
 
 
 
-
-GLOBAL_DECOMPOSE_BEFORE = [
-			{'name'     : 'likes-master'},  # Bullshit sharing widgets
-			{'id'       : 'jp-post-flair'},
-			{'class'    : 'post-share-buttons'},
-			{'class'    : 'commentlist'},  # Scrub out the comments so we don't try to fetch links from them
-			{'class'    : 'comments'},
-			{'id'       : 'comments'},
-		]
-
-GLOBAL_DECOMPOSE_AFTER = []
 
 class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
@@ -70,11 +53,12 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# kwargs.setdefault("ignoreMissingTitle", False)
 		# kwargs.setdefault("destyle",            [])
 
-		self._badwords        = set()
 		# `_decompose` and `_decomposeBefore` are the actual arrays of items to decompose, that are loaded with the contents of
 		# `decompose` and `decomposeBefore` on plugin initialization
-		self._decompose       = copy.copy(GLOBAL_DECOMPOSE_AFTER)
-		self._decomposeBefore = copy.copy(GLOBAL_DECOMPOSE_BEFORE)
+
+
+		self._decompose       = copy.copy(ProcessorBase.GLOBAL_DECOMPOSE_AFTER)
+		self._decomposeBefore = copy.copy(ProcessorBase.GLOBAL_DECOMPOSE_BEFORE)
 		self.stripTitle       = copy.copy(kwargs['stripTitle'])
 		self.destyle          = copy.copy(kwargs['destyle'])
 
@@ -83,21 +67,11 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			(kwargs["decompose"],       self._decompose),
 			(kwargs["decomposeBefore"], self._decomposeBefore),
 		]
-		adds = [
-			(kwargs["badwords"],        self._badwords),
-
-		]
 
 		# Move the plugin-defined decompose calls into the control lists
 		for src, dst in appends:
 			for item in src:
 				dst.append(item)
-
-
-		for src, dst in adds:
-			for item in src:
-				dst.add(item)
-
 
 
 
@@ -289,14 +263,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Make all the page URLs fully qualified, so they're unambiguous
 		soup = urlFuncs.canonizeUrls(soup, self.pageUrl)
 
-		# Conditionally pull out the page content and enqueue it.
-		if self.checkDomain(self.pageUrl):
-			plainLinks = self.extractLinks(soup, self.pageUrl)
-			imageLinks = self.extractImages(soup, self.pageUrl)
-		else:
-			self.log.warn("Not extracting images or links for url '%s'", self.pageUrl)
-			plainLinks = []
-			imageLinks = []
+		# pull out the page content and enqueue it. Filtering is
+		# done in the parent.
+		plainLinks = self.extractLinks(soup, self.pageUrl)
+		imageLinks = self.extractImages(soup, self.pageUrl)
 
 		# Do the later cleanup to prep the content for local rendering.
 		soup = self.decomposeItems(soup, self._decompose)
