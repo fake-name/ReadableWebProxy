@@ -74,7 +74,7 @@ extraStartUrls: [
 	]
 
 fileDomains: [
-	'bp.blogspot.com'
+	'http://bp.blogspot.com',
 	]
 
 tld: ['com', 'ca', 'fr', 'sg', 'it', 'co.uk']

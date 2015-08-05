@@ -74,13 +74,16 @@ def getDecomposeAfter(ruleset):
 		assert isinstance(item, dict)
 	return ruleset['decompose']
 
-def getFileDomains(ruleset):
-	if not 'fileDomains' in ruleset:
+def getFileDomains(ruleset, extant):
+	if not 'fileDomains' in ruleset and not extant:
 		return []
+	if not 'fileDomains' in ruleset:
+		return extant
 	assert isinstance(ruleset['fileDomains'], list)
 	for item in ruleset['fileDomains']:
 		assert isinstance(item, str)
-	return ruleset['fileDomains']
+
+	return ruleset['fileDomains']+extant
 
 def getDestyles(ruleset):
 	if not 'destyle' in ruleset:
@@ -214,7 +217,7 @@ def load_validate_rules(fname, dat):
 	rules['netlocs']               = getPossibleNetLocs(dat)
 
 	rules['allImages']             = getAllImages(dat)
-	rules['fileDomains']           = getFileDomains(dat)
+	rules['fileDomains']           = getFileDomains(dat, rules['netlocs'])
 	rules['cloudflare']            = getCloudflare(dat)
 	rules['IGNORE_MALFORMED_URLS'] = getIgnoreMalformed(dat)
 	rules['type']                  = getGenreType(dat)

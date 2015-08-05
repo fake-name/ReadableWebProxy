@@ -171,6 +171,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 				[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
 
 
+		self.ctnt_filters = {}
+		self.rsc_filters  = {}
+
+
+		for item in ruleset:
+
+			if not item['netlocs']:
+				continue
+
+			for netloc in item['netlocs']:
+				self.ctnt_filters[netloc] = item['netlocs']
+
+			for netloc in item['fileDomains']:
+				self.rsc_filters[netloc]  = item['fileDomains']
+
+			# print("processing rsc")
+			# print(item['fileDomains'])
+			# rsc_vals  = self.buildUrlPermutations(item['fileDomains'], item['netlocs'])
+		self.log.info("Content filter size: %s. Resource filter size %s.", len(self.ctnt_filters), len(self.rsc_filters))
 
 	########################################################################################################################
 	#
@@ -216,18 +235,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if 'rawcontent' in response:
 			job.raw_content = response['rawcontent']
 
-		print("job id:", job.id)
 		self.db.session.flush()
 
 	# Todo: FIXME
 	def filterContentLinks(self, job, links):
-		print('filterContentLinks')
-		print(links)
-		return []
+		ret = set()
+		for link in links:
+			netloc = urllib.parse.urlsplit(link).netloc
+			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
+				ret.add(link)
+
+		return ret
+
 	def filterResourceLinks(self, job, links):
-		print('filterResourceLinks')
-		print(links)
-		return []
+		ret = set()
+		for link in links:
+			netloc = urllib.parse.urlsplit(link).netloc
+			if netloc in self.rsc_filters:
+				ret.add(link)
+		return ret
 
 	def upsertResponseLinks(self, job, response):
 		plain = set(response['plainLinks'])
@@ -239,6 +265,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 		items = []
 		[items.append((link, True))  for link in plain]
 		[items.append((link, False)) for link in resource]
+
+		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
 
 		newlinks = 0
 		retriggerLinks = 0
