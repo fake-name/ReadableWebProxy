@@ -29,49 +29,52 @@
 {% block sub_footer %}
 
 		<script>
-			var inputs = $('input');
-			inputs.each(
-				function( idx )
-				{
-					function checkboxEvent(e)
+			function reattach_tree_triggers()
+			{
+				var inputs = $('input');
+				inputs.each(
+					function( idx )
 					{
-						input = $( this );
-						console.log("Checkbox clicked:", input, input.attr('id'));
-						wantid = "li#"+input.attr('id');
-						console.log("Want: ", wantid)
-
-
-
-						if (input.is(':checked') && input.attr("loaded") == 0)
+						function checkboxEvent(e)
 						{
-							input.attr("loaded", 1)
-							var target = $(wantid);
-							var netloc = target.data('netloc');
-							var tgturl = target.data('url');
-							if (typeof netloc !== "undefined")
-							{
-								console.log("Netloc value");
-								target.load("/pages/branch/"+encodeURIComponent(netloc))
-							}
-							else if (typeof tgturl !== "undefined")
-							{
-								console.log("Netloc value");
-								target.load("/pages/leaf/"+encodeURIComponent(tgturl))
-							}
-							else
-							{
-								alert("Wat? Couldn't render!");
-							}
+							input = $( this );
+							console.log("Checkbox clicked:", input, input.attr('id'));
+							wantid = "li#"+input.attr('id');
+							console.log("Want: ", wantid)
 
+
+
+							if (input.is(':checked') && input.attr("loaded") == 0)
+							{
+								input.attr("loaded", 1)
+								var target = $(wantid);
+								var netloc = target.data('netloc');
+								var prefix = target.data('prefix');
+								if (typeof prefix !== "undefined" && typeof netloc !== "undefined")
+								{
+									console.log("Netloc value");
+									target.load("/pages/leaf/"+encodeURIComponent(netloc)+"/"+encodeURIComponent(prefix))
+								}
+								else if (typeof netloc !== "undefined")
+								{
+									console.log("Netloc value");
+									target.load("/pages/branch/"+encodeURIComponent(netloc))
+								}
+								else
+								{
+									alert("Wat? Couldn't render!");
+								}
+
+							}
+							// $('input#id${itemId}').trigger('click');
 						}
-						// $('input#id${itemId}').trigger('click');
+
+						$( this ).on('change', checkboxEvent);
+
 					}
-
-					$( this ).on('change', checkboxEvent);
-
-				}
-			)
-
+				)
+			}
+			reattach_tree_triggers();
 		</script>
 
 {% endblock %}

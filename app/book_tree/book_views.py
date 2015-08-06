@@ -45,6 +45,7 @@ import app.book_tree.trie_tools as trie_tools
 
 
 from sqlalchemy import distinct
+from sqlalchemy import func
 
 # This may wind up with performance issues when the DB gets HUEG. We'll see.
 def getDistinctNetlocs():
@@ -58,6 +59,27 @@ def getDistinctNetlocs():
 	vals = query.all()
 	return vals
 
+
+def getNetlocPrefixes(netloc, length=2):
+	print("Netloc prefixes")
+	# SELECT DISTINCT(substring(title for {len})) FROM book_items WHERE lower(title) LIKE %s AND src=%s;
+
+	# So... the .distinct() operator on a query apparently cannot take a function
+	# as a parameter, because stupid or something. As such, we hack the query we
+	# want together as a return entity
+	substr_chunk  = func.substring(func.upper(database.WebPages.title), 0, length)
+	# distinct_hack = func.distinct(substr_chunk)
+
+	query = database.session.query(database.WebPages)                 \
+		.filter(database.WebPages.is_text == True)                    \
+		.filter(database.WebPages.file == None)                       \
+		.filter(database.WebPages.state == 'complete')                \
+		.filter(database.WebPages.netloc == netloc)                   \
+		.group_by(substr_chunk)                                       \
+		.with_entities(substr_chunk, func.min(database.WebPages.id), func.min(database.WebPages.netloc))
+
+	vals = query.all()
+	return vals
 
 @app.route('/pages/', defaults={'driver_netloc': None})
 @app.route('/pages/<driver_netloc>')
@@ -77,12 +99,22 @@ def pages_root(driver_netloc):
 @app.route('/pages/branch/<netloc>', methods=['GET'])
 def pages_branch(netloc):
 
-	return render_template('tree-pages/book-tree-limb.html')
+	ret = getNetlocPrefixes(netloc)
+
+	return render_template(
+			'tree-pages/book-tree-limb.html',
+			vals = ret
+
+			)
 
 
-@app.route('/pages/leaf/<netloc>', methods=['GET'])
-def pages_leaf(netloc):
+@app.route('/pages/leaf/<netloc>/<prefix>', methods=['GET'])
+def pages_leaf(netloc, prefix):
 
-	return render_template('tree-pages/book-tree-limb.html')
+	return render_template(
+		'tree-pages/book-tree-leaf.html',
+		netloc = netloc,
+		prefix = prefix,
+		)
 
 
