@@ -1,0 +1,79 @@
+
+{% extends "tree-pages/book-tree-base.html" %}
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well">
+		<h3>BookTrie</h3>
+
+
+		<div class="css-treeview">
+			{%- for dbid, netloc in netlocs %}
+				<div>
+					<ul>
+						<li><input type="checkbox" id="id{{dbid}}" loaded=0 /><label for="id{{dbid}}">{{netloc | title}}</label>
+							<ul>
+								<li id="id{{dbid}}" data-netloc='{{netloc}}'><img src='/static/img/loading-bar.gif' /></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<hr>
+			{%- endfor %}
+
+		</div>
+
+	</div>
+{% endblock %}
+
+{% block sub_footer %}
+
+		<script>
+			var inputs = $('input');
+			inputs.each(
+				function( idx )
+				{
+					function checkboxEvent(e)
+					{
+						input = $( this );
+						console.log("Checkbox clicked:", input, input.attr('id'));
+						wantid = "li#"+input.attr('id');
+						console.log("Want: ", wantid)
+
+
+
+						if (input.is(':checked') && input.attr("loaded") == 0)
+						{
+							input.attr("loaded", 1)
+							var target = $(wantid);
+							var netloc = target.data('netloc');
+							var tgturl = target.data('url');
+							if (typeof netloc !== "undefined")
+							{
+								console.log("Netloc value");
+								target.load("/pages/branch/"+encodeURIComponent(netloc))
+							}
+							else if (typeof tgturl !== "undefined")
+							{
+								console.log("Netloc value");
+								target.load("/pages/leaf/"+encodeURIComponent(tgturl))
+							}
+							else
+							{
+								alert("Wat? Couldn't render!");
+							}
+
+						}
+						// $('input#id${itemId}').trigger('click');
+					}
+
+					$( this ).on('change', checkboxEvent);
+
+				}
+			)
+
+		</script>
+
+{% endblock %}
+
+

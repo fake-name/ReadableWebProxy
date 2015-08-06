@@ -1,0 +1,14 @@
+## -*- coding: utf-8 -*-
+
+{% extends "tree-pages/book-tree-base.html" %}
+
+
+<%def name="badId()">
+	Error: Bad Page Reference!<br>
+	Page either not archived, or invalid.
+</%def>
+
+<%def name="needId()">
+	Treeview Requests require a valid source site key.
+</%def>
+

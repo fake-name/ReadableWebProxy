@@ -39,6 +39,8 @@ import time
 
 import WebMirror.API
 
+import app.book_tree.book_views as book_views
+
 @lm.user_loader
 def load_user(id):
 	return AnonUser()

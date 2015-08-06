@@ -33,8 +33,8 @@ if "debug" in sys.argv:
 	# CACHE_DURATION = 60 * 5
 	# RSC_CACHE_DURATION = 60 * 60 * 5
 else:
-	CACHE_DURATION = 60 * 5
-	RSC_CACHE_DURATION = 60 * 60 * 6
+	CACHE_DURATION = 60 * 60 * 8
+	RSC_CACHE_DURATION = 60 * 60 * 24
 
 
 
@@ -229,7 +229,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 		job.title    = response['title']
 		job.content  = response['contents']
 		job.mimetype = response['mimeType']
-		job.is_text  = True
+		if "text" in job.mimetype:
+			job.is_text  = True
+		else:
+			job.is_text  = False
+
 		job.state    = 'complete'
 
 		if 'rawcontent' in response:
@@ -353,6 +357,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			job.file = new.id
 
 		job.state     = 'complete'
+		job.is_text   = False
 		job.fetchtime = datetime.datetime.now()
 
 		job.mimetype = response['mimeType']
