@@ -96,6 +96,17 @@ def getDestyles(ruleset):
 		assert isinstance(item[1], dict)
 	return ruleset['destyle']
 
+def getPreserveAttrs(ruleset):
+	if not 'preserveAttrs' in ruleset:
+		return []
+	assert isinstance(ruleset['preserveAttrs'], list)
+	for item in ruleset['preserveAttrs']:
+		assert isinstance(item, list)
+		assert len(item) == 2
+		assert isinstance(item[0], str)
+		assert isinstance(item[1], str)
+	return ruleset['preserveAttrs']
+
 
 def checkBadValues(ruleset):
 	assert 'wg' not in ruleset
@@ -223,6 +234,7 @@ def load_validate_rules(fname, dat):
 	rules['type']                  = getGenreType(dat)
 
 	rules['destyle']               = getDestyles(dat)
+	rules['preserveAttrs']         = getPreserveAttrs(dat)
 
 	# itemGenre
 	# allowQueryStr

@@ -61,6 +61,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		self._decomposeBefore = copy.copy(ProcessorBase.GLOBAL_DECOMPOSE_BEFORE)
 		self.stripTitle       = copy.copy(kwargs['stripTitle'])
 		self.destyle          = copy.copy(kwargs['destyle'])
+		self.preserveAttrs    = copy.copy(kwargs['preserveAttrs'])
 
 
 		appends = [
@@ -135,13 +136,13 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		return ret
 
 
-	def destyleItems(self, soup, destyle):
+	def destyleItems(self, soup):
 		'''
 		using the set of search 2-tuples in `destyle`,
 		walk the parse tree and decompose the attributes of any matching
 		element.
 		'''
-		for tagtype, attrs in destyle:
+		for tagtype, attrs in self.destyle:
 			for found in soup.find_all(tagtype, attrs=attrs):
 				for key in list(found.attrs):
 					del found.attrs[key]
@@ -236,9 +237,19 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		]
 
 		for item in [item for item in soup.find_all(True) if item]:
-			for attr in list(item.attrs.keys()):
-				if attr not in validattrs:
-					del item[attr]
+			tmp_valid = validattrs[:]
+			clean = True
+			for name, attr in self.preserveAttrs:
+				if item.name == name:
+					if attr:
+						tmp_valid.append(attr)
+					else:
+						# Preserve all attributes
+						clean = False
+			if clean:
+				for attr in list(item.attrs.keys()):
+					if attr not in tmp_valid:
+						del item[attr]
 
 		return soup
 
@@ -272,7 +283,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		soup = self.decomposeItems(soup, self._decompose)
 
 		soup = self.decomposeAdditional(soup)
-		soup = self.destyleItems(soup, self.destyle)
+		soup = self.destyleItems(soup)
 
 		# Allow child-class hooking
 		soup = self.postprocessBody(soup)
@@ -299,39 +310,4 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		return ret
 
 		# self.updateDbEntry(url=url, title=pgTitle, contents=pgBody, mimetype=mimeType, dlstate=2)
-
-
-
-def test():
-	print("Test mode!")
-	import webFunctions
-	import logSetup
-	logSetup.initLogging()
-
-	import TextScrape.RelinkLookup
-
-	relinkable = TextScrape.RelinkLookup.getRelinkable()
-
-	wg = webFunctions.WebGetRobust()
-
-	tests = [
-		('http://jawztranslations.blogspot.com/2015/03/LMS-V22-C07.html', 'http://jawztranslations.blogspot.com/'),
-		('http://skythewood.blogspot.sg/2015/03/G26.html', 'http://skythewood.blogspot.sg/'),
-	]
-
-	for testurl, context in tests:
-		content = wg.getpage(testurl)
-		scraper = HtmlPageProcessor([context], testurl, content, 'Main.Test', tld=['com', 'net', 'sg'], relinkable=relinkable)
-		extr = scraper.extractContent()
-		# print(scraper)
-
-	print()
-	print()
-	print()
-	print(extr)
-	# print(extr['fLinks'])
-
-
-if __name__ == "__main__":
-	test()
 

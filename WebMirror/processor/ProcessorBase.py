@@ -172,6 +172,17 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 					except KeyError:
 						continue
 
+
+		# Keyhole patch for fictionpress next/prev buttons onclick elements.
+		for button in [item for item in soup.findAll('button') if item.has_attr("onclick")]:
+			if button['onclick'].startswith("self.location='") \
+				and button['onclick'].endswith("'")            \
+				and button['onclick'].count("'") == 2:
+								prefix, url, postfix = button['onclick'].split("'")
+				url = urlFuncs.rebaseUrl(url, self.pageUrl)
+				url = self.convertToReaderUrl(url)
+				button['onclick'] = "'".join((prefix, url, postfix))
+
 		return soup
 
 
@@ -365,6 +376,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'stripTitle',
 			'relinkable',
 			'destyle',
+			'preserveAttrs',
 		]
 
 		assert len(params) == len(expected)

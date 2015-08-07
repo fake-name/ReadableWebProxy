@@ -50,3 +50,12 @@ destyle : [
 	["span", {}],
 ]
 
+
+preserveAttrs : [
+	["button", 'id'],
+	["button", 'onclick'],
+	["button", 'type'],
+	["button", 'btn'],
+	["select", ''],
+]
+

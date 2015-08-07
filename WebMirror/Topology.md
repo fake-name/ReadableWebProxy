@@ -59,6 +59,7 @@ Allowed directives:
  - cloudflare
  - fileDomains
  - destyle
+ - preserveAttrs
 
 Planned directives:
  - TagReplace
