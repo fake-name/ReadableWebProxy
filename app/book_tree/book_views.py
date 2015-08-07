@@ -76,7 +76,27 @@ def getNetlocPrefixes(netloc, length=2):
 		.filter(database.WebPages.state == 'complete')                \
 		.filter(database.WebPages.netloc == netloc)                   \
 		.group_by(substr_chunk)                                       \
+		.order_by(substr_chunk)                                       \
 		.with_entities(substr_chunk, func.min(database.WebPages.id), func.min(database.WebPages.netloc))
+
+	vals = query.all()
+	return vals
+
+def getByNetlocPrefix(netloc, prefix):
+	print("Netloc prefixes")
+
+
+	query = database.session.query(database.WebPages)                 \
+		.filter(database.WebPages.is_text == True)                    \
+		.filter(database.WebPages.title.like("{}%".format(prefix)))   \
+		.filter(database.WebPages.netloc == netloc)                   \
+		.order_by(database.WebPages.title)                            \
+		.with_entities(database.WebPages.id, database.WebPages.url, database.WebPages.title)
+
+
+		# .filter(database.WebPages.file == None)                       \
+		# .filter(database.WebPages.state == 'complete')                \
+		# .group_by(substr_chunk)                                       \
 
 	vals = query.all()
 	return vals
@@ -111,10 +131,12 @@ def pages_branch(netloc):
 @app.route('/pages/leaf/<netloc>/<prefix>', methods=['GET'])
 def pages_leaf(netloc, prefix):
 
+	have = getByNetlocPrefix(netloc, prefix)
 	return render_template(
 		'tree-pages/book-tree-leaf.html',
 		netloc = netloc,
 		prefix = prefix,
+		values = have
 		)
 
 

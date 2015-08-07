@@ -1,18 +1,10 @@
-
-
-
-{%- for prefix, dbid, netloc in vals %}
-	<div>
-		<ul>
-			<li><input type="checkbox" id="id{{dbid}}{{prefix}}" loaded=0 /><label for="id{{dbid}}{{prefix}}">{{prefix}}</label>
-				<ul>
-					<li id="id{{dbid}}{{prefix}}" data-netloc='{{netloc}}' data-prefix='{{prefix}}'><img src='/static/img/loading-bar.gif' /></li>
-				</ul>
+<div>
+	<ul>
+		{%- for dbid, url, title in values %}
+			<li>
+				<a href="/view?url={{url | urlencode}}">{{title}}</a>
 			</li>
-		</ul>
-	</div>
-{%- endfor %}
+		{%- endfor %}
+	</ul>
+</div>
 
-
-netloc = {{netloc}}<br>
-prefix = {{prefix}}<br>

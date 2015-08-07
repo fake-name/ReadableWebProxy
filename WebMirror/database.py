@@ -24,6 +24,7 @@ DB_DEFAULT_DIST      =  10 * 1000
 # import traceback
 # from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Table
 # from sqlalchemy import MetaData
@@ -61,8 +62,9 @@ SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.
 
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
-Session = sessionmaker(bind=engine)
-session = Session()
+session_factory = sessionmaker(bind=engine)
+Scoped_Session = scoped_session(session_factory)
+session = Scoped_Session()
 print("Creating database interface:", session)
 Base = declarative_base()
 
@@ -87,7 +89,7 @@ class WebPages(Base):
 	is_text      = Column(Boolean, default=False)
 	limit_netloc = Column(Boolean, default=True)
 
-	title       = Column(Text)
+	title       = Column(citext.CIText)
 	mimetype    = Column(Text)
 	type        = Column(itemtype_enum, default='unknown', index=True)
 
