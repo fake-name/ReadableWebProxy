@@ -10,9 +10,10 @@ import time
 import multiprocessing
 import signal
 import logging
+import traceback
 import WebMirror.Engine
-# import rpc
 
+# Global run control value. Only used to stop running processes.
 run_state = multiprocessing.Value('i', 1)
 
 def halt_exc(x, y):
@@ -22,40 +23,46 @@ def halt_exc(x, y):
 
 class RunInstance(object):
 	def __init__(self, num, rules):
-		import WebMirror.database as db
-		signal.signal(signal.SIGINT, halt_exc)
-		self.db = db
+		signal.signal(signal.SIGINT, signal.SIG_IGN)
 		self.num = num
-		self.rules = rules
 		self.log = logging.getLogger("Main.Text.Web-%s" % num)
+
+		self.archiver = WebMirror.Engine.SiteArchiver()
+
 
 	def do_task(self):
 		self.log.info("Running task!")
+		self.archiver.taskProcess()
 
 	def go(self):
-		print("RunInstance starting!")
+		self.log.info("RunInstance starting!")
 		while 1:
 
 			if run_state.value:
 				self.do_task()
 				time.sleep(1)
 			else:
-				print("Thread", self.num, "exiting.")
+				self.log.info("Thread %s exiting.", self.num)
 				break
 
 
 	@classmethod
 	def run(cls, num, rules):
-		run = cls(num, rules)
-
-		run.go()
+		try:
+			run = cls(num, rules)
+			run.go()
+		except Exception:
+			print()
+			print("Exception in sub-process!")
+			traceback.print_exc()
 
 def initializeStartUrls(rules):
+	print("Initializing all start URLs in the database")
 	import WebMirror.database as db
 	print(db)
 	print(db.session)
 
-	for ruleset in rules:
+	for ruleset in [rset for rset in rules if rset['starturls']]:
 		for starturl in ruleset['starturls']:
 			have = db.session.query(db.WebPages)     \
 				.filter(db.WebPages.url == starturl) \
@@ -78,36 +85,36 @@ class Crawler(object):
 	def __init__(self):
 		self.log = logging.getLogger("Main.Text.Manager")
 		self.rules = WebMirror.rules.load_rules()
-		initializeStartUrls(self.rules)
+
 
 
 
 	def run(self):
 
-		PROCESSES = 4
+		PROCESSES = 20
 
 		executor = ProcessPoolExecutor(max_workers=PROCESSES)
 
-		# [executor.submit(RunInstance.run, x, self.rules) for x in range(PROCESSES)]
-		# try:
-		# 	while run_state.value:
-		# 		time.sleep(1)
-		# except KeyboardInterrupt:
-		# 	pass
+		[executor.submit(RunInstance.run, x, self.rules) for x in range(PROCESSES)]
+		try:
+			while run_state.value:
+				time.sleep(1)
+		except KeyboardInterrupt:
+			pass
 
-		# self.log.info("Crawler allowing ctrl+c to propagate.")
-		# time.sleep(1)
+		self.log.info("Crawler allowing ctrl+c to propagate.")
+		time.sleep(1)
 
-		# run_state.value = 0
+		run_state.value = 0
 
-		# self.log.info("Crawler waiting on executor to complete.")
-		# try:
-		# 	executor.shutdown()
-		# except KeyboardInterrupt:
-		# 	self.log.info("Hard-stopping threads.")
-		# 	executor.shutdown(wait=False)
+		self.log.info("Crawler waiting on executor to complete.")
+		try:
+			executor.shutdown()
+		except KeyboardInterrupt:
+			self.log.info("Hard-stopping threads.")
+			executor.shutdown(wait=False)
 
-		# self.log.info("Executor has shut down.")
+		self.log.info("Executor has shut down.")
 
 
 

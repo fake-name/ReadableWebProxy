@@ -11,6 +11,7 @@ import time
 import os.path
 import os
 import sys
+import psycopg2
 import sqlalchemy.exc
 
 from sqlalchemy import desc
@@ -23,7 +24,7 @@ import datetime
 import hashlib
 import WebMirror.Fetch
 
-from app import app
+from config import C_RESOURCE_DIR
 
 MAX_DISTANCE = 1000 * 1000
 
@@ -33,12 +34,13 @@ if "debug" in sys.argv:
 	# CACHE_DURATION = 60 * 5
 	# RSC_CACHE_DURATION = 60 * 60 * 5
 else:
-	CACHE_DURATION = 60 * 60 * 8
-	RSC_CACHE_DURATION = 60 * 60 * 24
+	CACHE_DURATION = 60 * 60 * 24 * 3
+	RSC_CACHE_DURATION = 60 * 60 * 24 * 14
 
 
 
 GLOBAL_BAD = [
+			'/xmlrpc.php'
 			'gprofiles.js',
 			'netvibes.com',
 			'accounts.google.com',
@@ -59,7 +61,11 @@ GLOBAL_BAD = [
 			'addtoany.com',
 			'stumbleupon.com',
 			'delicious.com',
+			'/comments/feed/',
 			'reddit.com',
+			'/osd.xml',
+			'/wp-login.php',
+			'?openidserver=1',
 			'newsgator.com',
 			'technorati.com',
 			'pixel.wp.com',
@@ -88,7 +94,7 @@ def saveCoverFile(filecont, fHash, filename):
 	fHash = fHash.upper()
 	dirName = fHash[:3]
 
-	dirPath = os.path.join(app.config['RESOURCE_DIR'], dirName)
+	dirPath = os.path.join(C_RESOURCE_DIR, dirName)
 	if not os.path.exists(dirPath):
 		os.makedirs(dirPath)
 
@@ -105,7 +111,7 @@ def saveCoverFile(filecont, fHash, filename):
 	# Flask config values have specious "/./" crap in them. Since that gets broken through
 	# the abspath canonization, we pre-canonize the config path so it compares
 	# properly.
-	confpath = os.path.abspath(app.config['RESOURCE_DIR'])
+	confpath = os.path.abspath(C_RESOURCE_DIR)
 
 	fqpath = os.path.join(dirPath, filename)
 	fqpath = os.path.abspath(fqpath)
@@ -145,7 +151,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	loggerPath = "Main.SiteArchiver"
 
-	threads = 2
+
 
 	# Fetch items up to 1,000,000 (1 million) links away from the root source
 	# This (functionally) equates to no limit.
@@ -153,17 +159,17 @@ class SiteArchiver(LogBase.LoggerMixin):
 	FETCH_DISTANCE = 1000 * 1000
 
 	def __init__(self):
+		print("SiteArchiver __init__()")
 		super().__init__()
-
-
 
 		import WebMirror.database as db
 		self.db = db
 
+		print("SiteArchiver database imported")
 		ruleset = WebMirror.rules.load_rules()
 		self.ruleset = ruleset
 		self.fetcher = WebMirror.Fetch.ItemFetcher
-
+		print("SiteArchiver rules loaded")
 		self.relinkable = set()
 		for item in ruleset:
 			[self.relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
@@ -189,7 +195,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# print("processing rsc")
 			# print(item['fileDomains'])
 			# rsc_vals  = self.buildUrlPermutations(item['fileDomains'], item['netlocs'])
+
 		self.log.info("Content filter size: %s. Resource filter size %s.", len(self.ctnt_filters), len(self.rsc_filters))
+		print("SiteArchiver initializer complete")
 
 	########################################################################################################################
 	#
@@ -242,29 +250,41 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.db.session.flush()
 
 	# Todo: FIXME
-	def filterContentLinks(self, job, links):
+	def filterContentLinks(self, job, links, badwords):
 		ret = set()
 		for link in links:
+			if any([item in link for item in badwords]):
+				# print("Filtered:", link)
+				continue
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
+				# print("Valid content link: ", link)
 				ret.add(link)
 
 		return ret
 
-	def filterResourceLinks(self, job, links):
+	def filterResourceLinks(self, job, links, badwords):
 		ret = set()
 		for link in links:
+			if any([item in link for item in badwords]):
+				# print("Filtered:", link)
+				continue
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.rsc_filters:
+				# print("Valid resource link: ", link)
 				ret.add(link)
 		return ret
 
 	def upsertResponseLinks(self, job, response):
-		plain = set(response['plainLinks'])
+		plain    = set(response['plainLinks'])
 		resource = set(response['rsrcLinks'])
 
-		plain    = self.filterContentLinks(job, plain)
-		resource = self.filterResourceLinks(job, resource)
+		badwords = GLOBAL_BAD
+		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
+			badwords += item['badwords']
+
+		plain    = self.filterContentLinks(job,  plain,    badwords)
+		resource = self.filterResourceLinks(job, resource, badwords)
 
 		items = []
 		[items.append((link, True))  for link in plain]
@@ -305,9 +325,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 							)
 						self.db.session.add(new)
 					break
+					self.db.session.commit()
 				except sqlalchemy.exc.IntegrityError:
 					self.db.session.rollback()
-			self.db.session.commit()
+				except psycopg2.IntegrityError:
+					self.db.session.rollback()
+
 		self.log.info("New links: %s, retriggered links: %s.", newlinks, retriggerLinks)
 
 
@@ -415,38 +438,36 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def taskProcess(self):
-		while runStatus.run:
-			# runStatus.run = False
-			job = self.getTask()
-			if job:
-				try:
-					self.dispatchRequest(job)
-				except urllib.error.URLError:
-					content = "DOWNLOAD FAILED - urllib URLError"
-					content += "<br>"
-					content += traceback.format_exc()
-					job.content = content
-					job.raw_content = content
-					job.state = 'error'
-					job.errno = -1
-					self.log.error("`urllib.error.URLError` Exception when downloading.")
-				except DownloadException:
-					content = "DOWNLOAD FAILED - DownloadException"
-					content += "<br>"
-					content += traceback.format_exc()
-					job.content = content
-					job.raw_content = content
-					job.state = 'error'
-					job.errno = -2
-					self.log.error("`DownloadException` Exception when downloading.")
-				except KeyboardInterrupt:
-					runStatus.run = False
-					print("Keyboard Interrupt!")
 
-			else:
-				time.sleep(5)
+		job = self.getTask()
+		if job:
+			try:
+				self.dispatchRequest(job)
+			except urllib.error.URLError:
+				content = "DOWNLOAD FAILED - urllib URLError"
+				content += "<br>"
+				content += traceback.format_exc()
+				job.content = content
+				job.raw_content = content
+				job.state = 'error'
+				job.errno = -1
+				self.log.error("`urllib.error.URLError` Exception when downloading.")
+			except DownloadException:
+				content = "DOWNLOAD FAILED - DownloadException"
+				content += "<br>"
+				content += traceback.format_exc()
+				job.content = content
+				job.raw_content = content
+				job.state = 'error'
+				job.errno = -2
+				self.log.error("`DownloadException` Exception when downloading.")
+			except KeyboardInterrupt:
+				runStatus.run = False
+				print("Keyboard Interrupt!")
 
-		self.log.info("Task exiting.")
+		else:
+			time.sleep(5)
+
 
 	def synchronousJobRequest(self, url, ignore_cache=False):
 		"""

@@ -18,6 +18,7 @@ badwords: [
 			"/forum/",
 			"/forum",
 			"/games/",
+			"&pid=",
 			]
 
 # Content Stripping needs to be determined.

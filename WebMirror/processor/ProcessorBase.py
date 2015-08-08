@@ -178,7 +178,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			if button['onclick'].startswith("self.location='") \
 				and button['onclick'].endswith("'")            \
 				and button['onclick'].count("'") == 2:
-								prefix, url, postfix = button['onclick'].split("'")
+				prefix, url, postfix = button['onclick'].split("'")
 				url = urlFuncs.rebaseUrl(url, self.pageUrl)
 				url = self.convertToReaderUrl(url)
 				button['onclick'] = "'".join((prefix, url, postfix))
@@ -272,7 +272,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 	def extractLinks(self, soup, baseUrl):
 		# All links have been resolved to fully-qualified paths at this point.
 		ret = []
-		print("Extracting links!")
+		# print("Extracting links!")
 		for (dummy_isImg, tag, attr) in urlFuncs.urlContainingTargets:
 
 			for link in soup.findAll(tag):
@@ -343,9 +343,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				return
 			else:
 				raise ValueError("Url isn't a url: '%s'" % url)
-		if urlFuncs.isGdocUrl(url) or urlFuncs.isGFileUrl(url):
-			if urlFuncs.trimGDocUrl(url) != url:
-				raise ValueError("Invalid link crept through! Link: '%s'" % url)
+		# if urlFuncs.isGdocUrl(url) or urlFuncs.isGFileUrl(url):
+		# 	if urlFuncs.trimGDocUrl(url) != url:
+		# 		raise ValueError("Invalid link crept through! Link: '%s'" % url)
 
 
 		if not url.lower().startswith('http'):

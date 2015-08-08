@@ -134,7 +134,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 			'title'      : "Error: Unknown dispatch type",
 			'contents'   : "Error. Could not dispatch properly",
-			'mimetype'   : "text/html",
+			'mimeType'   : "text/html",
 			}
 
 
@@ -163,6 +163,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 		}
 
 		ret = plugin.process(params)
+
+		assert "mimeType" in ret or "file" in ret, "Neither mimetype or file in ret for url '%s', plugin '%s'" % (url, plugin)
 
 		return ret
 
@@ -222,6 +224,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 					if not "file" in ret:
 						ret['rawcontent'] = content
 					return ret
+
+		self.log.error("Did not know how to dispatch request for url: '%s', mimetype: '%s'!", self.target_url, mimeType)
 		return self.getEmptyRet()
 
 	########################################################################################################################
@@ -247,8 +251,5 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		return self.dispatchContent(content, fName, mimeType)
 
-
-		self.log.error("Did not know how to dispatch request for url: '%s', mimetype: '%s'!", self.target_url, mimeType)
-		return self.getEmptyRet()
 
 		# self.upsertResponseLinks(job, response)

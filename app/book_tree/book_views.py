@@ -61,7 +61,7 @@ def getDistinctNetlocs():
 
 
 def getNetlocPrefixes(netloc, length=2):
-	print("Netloc prefixes")
+	# print("Netloc prefixes")
 	# SELECT DISTINCT(substring(title for {len})) FROM book_items WHERE lower(title) LIKE %s AND src=%s;
 
 	# So... the .distinct() operator on a query apparently cannot take a function
@@ -83,7 +83,7 @@ def getNetlocPrefixes(netloc, length=2):
 	return vals
 
 def getByNetlocPrefix(netloc, prefix):
-	print("Netloc prefixes")
+	# print("Netloc prefixes")
 
 
 	query = database.session.query(database.WebPages)                 \
