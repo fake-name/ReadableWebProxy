@@ -7,6 +7,8 @@ allImages: False
 baseUrl: [
 	"https://www.fictionpress.com/",
 	"http://www.fictionpress.com/",
+	"https://www.fanfiction.net/",
+	"http://www.fanfiction.net/",
 	]
 
 badwords: [

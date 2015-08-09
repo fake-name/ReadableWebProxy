@@ -31,7 +31,6 @@ class RunInstance(object):
 
 
 	def do_task(self):
-		self.log.info("Running task!")
 		self.archiver.taskProcess()
 
 	def go(self):
@@ -91,7 +90,7 @@ class Crawler(object):
 
 	def run(self):
 
-		PROCESSES = 20
+		PROCESSES = 30
 
 		executor = ProcessPoolExecutor(max_workers=PROCESSES)
 

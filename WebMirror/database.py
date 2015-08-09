@@ -62,7 +62,7 @@ SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.
 
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
-session_factory = sessionmaker(bind=engine)
+session_factory = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Scoped_Session = scoped_session(session_factory)
 session = Scoped_Session()
 print("Creating database interface:", session)

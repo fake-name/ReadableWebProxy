@@ -62,6 +62,7 @@ GLOBAL_BAD = [
 			'stumbleupon.com',
 			'delicious.com',
 			'/comments/feed/',
+			'fbcdn-',
 			'reddit.com',
 			'/osd.xml',
 			'/wp-login.php',
@@ -218,6 +219,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fetcher = self.fetcher(self.ruleset, job.url, job.starturl)
 		response = fetcher.fetch()
 
+		# self.db.session.begin()
 		if "file" in response:
 			# print("File response!")
 			self.upsertFileResponse(job, response)
@@ -229,7 +231,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# Reset the fetch time download
 		job.fetchtime = datetime.datetime.now()
 
-		self.db.session.commit()
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
@@ -248,6 +249,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			job.raw_content = response['rawcontent']
 
 		self.db.session.flush()
+		self.db.session.commit()
 
 	# Todo: FIXME
 	def filterContentLinks(self, job, links, badwords):
@@ -283,6 +285,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
 			badwords += item['badwords']
 
+		# A "None" can occationally crop up. Filter it.
+		badwords = [badword for badword in badwords if badword]
+
 		plain    = self.filterContentLinks(job,  plain,    badwords)
 		resource = self.filterResourceLinks(job, resource, badwords)
 
@@ -303,9 +308,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 						.scalar()
 					if item:
 						if item.is_text:
-							ago = datetime.datetime.now() - datetime.timedelta(hours = 24)
+							ago = datetime.datetime.now() - datetime.timedelta(seconds = CACHE_DURATION)
 						else:
-							ago = datetime.datetime.now() - datetime.timedelta(hours = 24*14)
+							ago = datetime.datetime.now() - datetime.timedelta(seconds = RSC_CACHE_DURATION)
 						if job.fetchtime < ago:
 							retriggerLinks += 1
 							job.dlstate = "new"
@@ -324,12 +329,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 							fetchtime = datetime.datetime.now(),
 							)
 						self.db.session.add(new)
-					break
 					self.db.session.commit()
+					break
 				except sqlalchemy.exc.IntegrityError:
 					self.db.session.rollback()
 				except psycopg2.IntegrityError:
 					self.db.session.rollback()
+
 
 		self.log.info("New links: %s, retriggered links: %s.", newlinks, retriggerLinks)
 
@@ -405,6 +411,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def resetDlstate(self):
+
+		# self.db.session.begin()
 		self.db.session.query(self.db.WebPages) \
 			.filter((self.db.WebPages.state == "fetching") | (self.db.WebPages.state == "processing"))   \
 			.update({self.db.WebPages.state : "new"})
@@ -417,6 +425,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		Also updates the row to be in the "fetching" state.
 		'''
+		# self.db.session.begin()
 		query = self.db.session.query(self.db.WebPages)         \
 			.filter(self.db.WebPages.state == "new")            \
 			.filter(self.db.WebPages.distance < (MAX_DISTANCE)) \
@@ -432,6 +441,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			return False
 
 		job.state = "fetching"
+
+		self.db.session.flush()
 		self.db.session.commit()
 
 		return job
@@ -480,9 +491,18 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# Rather then trying to add, and rolling back if it exists,
 		# just do a simple check for the row first. That'll
 		# probably be faster in the /great/ majority of cases.
-		row =  query = self.db.session.query(self.db.WebPages) \
-			.filter(self.db.WebPages.url == url)               \
-			.scalar()
+		while 1:
+			# self.db.session.begin()
+			try:
+				row =  self.db.session.query(self.db.WebPages) \
+					.filter(self.db.WebPages.url == url)       \
+					.scalar()
+
+				self.db.session.commit()
+				break
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db.session.rollback()
+
 
 		if row:
 			self.log.info("Item already exists in database.")
@@ -506,6 +526,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# fetch the row inserted by another thread at the same time.
 			while 1:
 				try:
+					# self.db.session.begin()
 					self.db.session.add(row)
 					self.db.session.commit()
 					print("Row added?")
@@ -513,11 +534,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 				except sqlalchemy.exc.InvalidRequestError:
 					print("InvalidRequest error!")
 					self.db.session.rollback()
+					self.db.session.begin()
 					self.db.session.add(row)
 					self.db.session.commit()
 				except sqlalchemy.exc.IntegrityError:
 					print("Integrity error!")
 					self.db.session.rollback()
+					self.db.session.begin()
 					row =  query = self.db.session.query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)               \
 						.one()
