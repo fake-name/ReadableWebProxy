@@ -17,6 +17,7 @@ import sqlalchemy.exc
 from sqlalchemy import desc
 
 import WebMirror.util.urlFuncs
+import WebMirror.OutputFilters.FilterManager
 import urllib.parse
 import traceback
 import datetime
@@ -161,12 +162,17 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock):
+	def __init__(self, cookie_lock, run_filters=True):
 		print("SiteArchiver __init__()")
 		super().__init__()
 
 		import WebMirror.database as db
 		self.db = db
+
+		if run_filters:
+			self.filter = WebMirror.OutputFilters.FilterManager.FilterManager()
+		else:
+			self.filter = False
 
 		self.cookie_lock = cookie_lock
 
@@ -223,17 +229,18 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock)
 		response = fetcher.fetch()
 
-		# self.db.session.begin()
 		if "file" in response:
-			# print("File response!")
+			# No title is present in a file response
+			if self.filter:
+				self.filter.processPage(job.url, '', response['content'], response['mimeType'])
 			self.upsertFileResponse(job, response)
 		else:
-			# print("Text response!")
+			if self.filter:
+				self.filter.processPage(job.url, response['title'], response['rawcontent'], response['mimeType'])
 			self.upsertReponseContent(job, response)
 			self.upsertResponseLinks(job, response)
 
 		# Reset the fetch time download
-		job.fetchtime = datetime.datetime.now()
 
 
 	# Update the row with the item contents
@@ -251,6 +258,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		if 'rawcontent' in response:
 			job.raw_content = response['rawcontent']
+
+		job.fetchtime = datetime.datetime.now()
 
 		self.db.session.flush()
 		self.db.session.commit()

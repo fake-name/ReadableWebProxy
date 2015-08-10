@@ -96,9 +96,6 @@ class Crawler(object):
 		self.log = logging.getLogger("Main.Text.Manager")
 		self.rules = WebMirror.rules.load_rules()
 
-
-
-
 	def run(self):
 
 		PROCESSES = 8

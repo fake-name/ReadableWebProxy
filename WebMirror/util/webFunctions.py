@@ -437,6 +437,9 @@ class WebGetRobust:
 	def getpage(self, requestedUrl, **kwargs):
 		# pgreq = fixurl(pgreq)
 
+		# strip trailing and leading spaces.
+		requestedUrl = requestedUrl.strip()
+
 		# addlHeaders = None, returnMultiple = False, callBack=None, postData=None, soup=False, retryQuantity=None, nativeError=False, binaryForm=False
 
 		# If we have 'soup' as a param, just pop it, and call `getSoup()`.
@@ -572,7 +575,7 @@ class WebGetRobust:
 			return pgctnt
 
 	def syncCookiesFromFile(self):
-		self.log.info("Synchronizing cookies with cookieFile.")
+		# self.log.info("Synchronizing cookies with cookieFile.")
 		if os.path.isfile(self.COOKIEFILE):
 			self.cj.save("cookietemp.lwp")
 			self.cj.load(self.COOKIEFILE)
@@ -584,7 +587,7 @@ class WebGetRobust:
 
 	def updateCookiesFromFile(self):
 		if os.path.exists(self.COOKIEFILE):
-			self.log.info("Synchronizing cookies with cookieFile.")
+			# self.log.info("Synchronizing cookies with cookieFile.")
 			self.cj.load(self.COOKIEFILE)
 		# Update cookies from cookiefile
 
@@ -635,12 +638,12 @@ class WebGetRobust:
 		self.cookie_lock.acquire()
 		# print("Have %d cookies before saving cookiejar" % len(self.cj))
 		try:
-			self.log.info("Trying to save cookies!")
+			# self.log.info("Trying to save cookies!")
 			if self.cj is not None:							# If cookies were used
 
 				self.syncCookiesFromFile()
 
-				self.log.info("Have cookies to save")
+				# self.log.info("Have cookies to save")
 				for cookie in self.cj:
 					# print(cookie)
 					# print(cookie.expires)
@@ -648,11 +651,11 @@ class WebGetRobust:
 					if isinstance(cookie.expires, int) and cookie.expires > 30000000000:		# Clamp cookies that expire stupidly far in the future because people are assholes
 						cookie.expires = 30000000000
 
-				self.log.info("Calling save function")
+				# self.log.info("Calling save function")
 				self.cj.save(self.COOKIEFILE)					# save the cookies again
 
 
-				self.log.info("Cookies Saved")
+				# self.log.info("Cookies Saved")
 			else:
 				self.log.info("No cookies to save?")
 		except Exception as e:

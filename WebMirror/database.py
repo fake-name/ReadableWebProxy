@@ -8,21 +8,6 @@ DB_LOW_PRIORITY      = 100 * 1000
 
 DB_DEFAULT_DIST      =  10 * 1000
 
-# import task_exceptions
-# import deps.ExContentLoader
-# import deps.ContentLoader
-# import deps.LibraryContentEnqueue
-# import deps.LibraryContentEnqueue
-# import deps.ExExtract
-# import deps.nameTools as nt
-# import os.path
-# import traceback
-# import string
-# import settings
-# import time
-# import pprint
-# import traceback
-# from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker

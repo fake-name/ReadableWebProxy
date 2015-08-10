@@ -12,3 +12,4 @@ __pycache__
 /logs
 /ScraperResourceStore
 /reading_list.txt
+/WebMirror/OutputFilters/cert

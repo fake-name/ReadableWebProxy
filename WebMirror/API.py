@@ -18,7 +18,7 @@ class RemoteContentObject(object):
 		self.url = url
 		self.fetched = False
 
-		self.archiver = SiteArchiver(cookie_lock=False)
+		self.archiver = SiteArchiver(cookie_lock=False, run_filters=False)
 
 
 	def fetch(self, ignore_cache=False):

@@ -11,6 +11,12 @@ from settings import SECURITY_PASSWORD_SALT as C_SECURITY_PASSWORD_SALT
 from settings import RELINK_SECRET          as C_RELINK_SECRET
 from settings import RESOURCE_DIR           as C_RESOURCE_DIR
 
+
+from settings import RABBIT_LOGIN           as C_RABBIT_LOGIN
+from settings import RABBIT_PASWD           as C_RABBIT_PASWD
+from settings import RABBIT_SRVER           as C_RABBIT_SRVER
+from settings import RABBIT_VHOST           as C_RABBIT_VHOST
+
 import os
 import sys
 import hashlib
