@@ -305,35 +305,40 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
 
-		for link, istext in items:
-			start = urllib.parse.urlsplit(link).netloc
+		while 1:
+			try:
+				for link, istext in items:
+					start = urllib.parse.urlsplit(link).netloc
 
-			assert link.startswith("http")
-			assert start
+					assert link.startswith("http")
+					assert start
 
-			new = {
-				'url'       : link,
-				'starturl'  : job.starturl,
-				'netloc'    : start,
-				'distance'  : job.distance+1,
-				'is_text'   : istext,
-				'priority'  : job.priority,
-				'type'      : job.type,
-				'fetchtime' : datetime.datetime.now(),
-				}
+					new = {
+						'url'       : link,
+						'starturl'  : job.starturl,
+						'netloc'    : start,
+						'distance'  : job.distance+1,
+						'is_text'   : istext,
+						'priority'  : job.priority,
+						'type'      : job.type,
+						'fetchtime' : datetime.datetime.now(),
+						}
 
-			# Fucking huzzah for ON CONFLICT!
-			cmd = text("""
-					INSERT INTO
-						web_pages
-						(url, starturl, netloc, distance, is_text, priority, type, fetchtime)
-					VALUES
-						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime)
-					ON CONFLICT DO NOTHING
-					""")
-			self.db.session.execute(cmd, params=new)
+					# Fucking huzzah for ON CONFLICT!
+					cmd = text("""
+							INSERT INTO
+								web_pages
+								(url, starturl, netloc, distance, is_text, priority, type, fetchtime)
+							VALUES
+								(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime)
+							ON CONFLICT DO NOTHING
+							""")
+					self.db.session.execute(cmd, params=new)
 
-		self.db.session.commit()
+				self.db.session.commit()
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.log.info("Transaction error. Retrying.")
 
 		self.log.info("Links upserted.")
 

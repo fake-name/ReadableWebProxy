@@ -236,7 +236,7 @@ class WebGetRobust:
 
 	def buildRequest(self, pgreq, postData, addlHeaders, binaryForm):
 		# Encode Unicode URL's properly
-		pgreq = iri2uri(pgreq)
+
 
 		try:
 			params = {}
@@ -460,6 +460,8 @@ class WebGetRobust:
 		if addlHeaders and 'Referer' in addlHeaders:
 			addlHeaders['Referer'] = iri2uri(addlHeaders['Referer'])
 
+		requestedUrl = iri2uri(requestedUrl)
+
 		pgctnt = None
 		pghandle = None
 		retryCount = 0
@@ -516,7 +518,16 @@ class WebGetRobust:
 					self.log.critical("Unrecoverable Unicode issue retreiving page - %s", requestedUrl)
 					for line in traceback.format_exc().split("\n"):
 						self.log.critical("%s", line.rstrip())
+					self.log.critical("Parameters:")
+					self.log.critical("	requestedUrl: '%s'", requestedUrl)
+					self.log.critical("	postData:     '%s'", postData)
+					self.log.critical("	addlHeaders:  '%s'", addlHeaders)
+					self.log.critical("	binaryForm:   '%s'", binaryForm)
 					break
+
+
+
+
 
 				except Exception:
 					errored = True
@@ -1128,6 +1139,11 @@ if __name__ == "__main__":
 	# assert(content_1 == content_2)
 
 	gTest = wg.getpage('https://drive.google.com/folderview?id=0B2lnOX3NF2LOeW55WlpYQWIxYnM')
+	print(type(gTest))
+
+	gTest = wg.getpage('https://www.google.com/search?q=Gödel')
+	gTest = wg.getpage('https://www.google.com/search?q=禁断の愛')
+	gTest = wg.getpage('http://www.fanfiction.net/s/6711282/1/Jag-%C3%A4lskar-dig')
 	print(type(gTest))
 
 
