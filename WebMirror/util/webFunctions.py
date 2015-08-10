@@ -91,7 +91,13 @@ class WebGetRobust:
 	# if test=true, no resources are actually fetched (for testing)
 	# creds is a list of 3-tuples that gets inserted into the password manager.
 	# it is structured [(top_level_url1, username1, password1), (top_level_url2, username2, password2)]
-	def __init__(self, test=False, creds=None, logPath="Main.Web"):
+	def __init__(self, test=False, creds=None, logPath="Main.Web", cookie_lock=None):
+
+		if cookie_lock:
+			self.cookie_lock = cookie_lock
+		else:
+			self.cookie_lock = cookieWriteLock
+
 
 		# Override the global default socket timeout, so hung connections will actually time out properly.
 		socket.setdefaulttimeout(30)
@@ -615,7 +621,7 @@ class WebGetRobust:
 
 	def saveCookies(self, halting=False):
 
-		cookieWriteLock.acquire()
+		self.cookie_lock.acquire()
 		# print("Have %d cookies before saving cookiejar" % len(self.cj))
 		try:
 			self.log.info("Trying to save cookies!")
@@ -645,7 +651,7 @@ class WebGetRobust:
 			# not informative, so just silence it.
 			# print("Possible error on exit (or just the destructor): '%s'." % e)
 		finally:
-			cookieWriteLock.release()
+			self.cookie_lock.release()
 
 		# print("Have %d cookies after saving cookiejar" % len(self.cj))
 		if not halting:

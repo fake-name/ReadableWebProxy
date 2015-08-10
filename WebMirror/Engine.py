@@ -21,6 +21,8 @@ import urllib.parse
 import traceback
 import datetime
 
+from sqlalchemy.sql import text
+
 import hashlib
 import WebMirror.Fetch
 
@@ -159,12 +161,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self):
+	def __init__(self, cookie_lock):
 		print("SiteArchiver __init__()")
 		super().__init__()
 
 		import WebMirror.database as db
 		self.db = db
+
+		self.cookie_lock = cookie_lock
 
 		print("SiteArchiver database imported")
 		ruleset = WebMirror.rules.load_rules()
@@ -216,7 +220,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# Retreive remote content at `url`, call the appropriate handler for the
 	# transferred content (e.g. is it an image/html page/binary file)
 	def dispatchRequest(self, job):
-		fetcher = self.fetcher(self.ruleset, job.url, job.starturl)
+		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock)
 		response = fetcher.fetch()
 
 		# self.db.session.begin()
@@ -281,6 +285,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		plain    = set(response['plainLinks'])
 		resource = set(response['rsrcLinks'])
 
+		unfiltered = len(plain)+len(resource)
 		badwords = GLOBAL_BAD
 		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
 			badwords += item['badwords']
@@ -291,53 +296,46 @@ class SiteArchiver(LogBase.LoggerMixin):
 		plain    = self.filterContentLinks(job,  plain,    badwords)
 		resource = self.filterResourceLinks(job, resource, badwords)
 
+		filtered = len(plain)+len(resource)
+		self.log.info("Upserting %s links (%s filtered)" % (filtered, unfiltered))
+
 		items = []
 		[items.append((link, True))  for link in plain]
 		[items.append((link, False)) for link in resource]
 
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
 
-		newlinks = 0
-		retriggerLinks = 0
 		for link, istext in items:
+			start = urllib.parse.urlsplit(link).netloc
+
 			assert link.startswith("http")
-			while 1:
-				try:
-					item = self.db.session.query(self.db.WebPages) \
-						.filter(self.db.WebPages.url == link)      \
-						.scalar()
-					if item:
-						if item.is_text:
-							ago = datetime.datetime.now() - datetime.timedelta(seconds = CACHE_DURATION)
-						else:
-							ago = datetime.datetime.now() - datetime.timedelta(seconds = RSC_CACHE_DURATION)
-						if job.fetchtime < ago:
-							retriggerLinks += 1
-							job.dlstate = "new"
-					else:
-						newlinks += 1
-						start = urllib.parse.urlsplit(link).netloc
-						assert start
-						new = self.db.WebPages(
-							url       = link,
-							starturl  = job.starturl,
-							netloc    = start,
-							distance  = job.distance+1,
-							is_text   = istext,
-							priority  = job.priority,
-							type      = job.type,
-							fetchtime = datetime.datetime.now(),
-							)
-						self.db.session.add(new)
-					self.db.session.commit()
-					break
-				except sqlalchemy.exc.IntegrityError:
-					self.db.session.rollback()
-				except psycopg2.IntegrityError:
-					self.db.session.rollback()
+			assert start
 
+			new = {
+				'url'       : link,
+				'starturl'  : job.starturl,
+				'netloc'    : start,
+				'distance'  : job.distance+1,
+				'is_text'   : istext,
+				'priority'  : job.priority,
+				'type'      : job.type,
+				'fetchtime' : datetime.datetime.now(),
+				}
 
-		self.log.info("New links: %s, retriggered links: %s.", newlinks, retriggerLinks)
+			# Fucking huzzah for ON CONFLICT!
+			cmd = text("""
+					INSERT INTO
+						web_pages
+						(url, starturl, netloc, distance, is_text, priority, type, fetchtime)
+					VALUES
+						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime)
+					ON CONFLICT DO NOTHING
+					""")
+			self.db.session.execute(cmd, params=new)
+
+		self.db.session.commit()
+
+		self.log.info("Links upserted.")
 
 
 
@@ -426,26 +424,39 @@ class SiteArchiver(LogBase.LoggerMixin):
 		Also updates the row to be in the "fetching" state.
 		'''
 		# self.db.session.begin()
-		query = self.db.session.query(self.db.WebPages)         \
-			.filter(self.db.WebPages.state == "new")            \
-			.filter(self.db.WebPages.distance < (MAX_DISTANCE)) \
-			.order_by(self.db.WebPages.priority)                \
-			.order_by(desc(self.db.WebPages.is_text))           \
-			.order_by(desc(self.db.WebPages.addtime))           \
-			.order_by(self.db.WebPages.distance)                \
-			.order_by(self.db.WebPages.url)                     \
-			.limit(1)
 
-		job = query.scalar()
-		if not job:
-			return False
+		# Try to get a task untill we are explicitly out of tasks,
+		# or we succeed.
+		while 1:
+			try:
+				query = self.db.session.query(self.db.WebPages)         \
+					.filter(self.db.WebPages.state == "new")            \
+					.filter(self.db.WebPages.distance < (MAX_DISTANCE)) \
+					.order_by(self.db.WebPages.priority)                \
+					.order_by(desc(self.db.WebPages.is_text))           \
+					.order_by(desc(self.db.WebPages.addtime))           \
+					.order_by(self.db.WebPages.distance)                \
+					.order_by(self.db.WebPages.url)                     \
+					.limit(1)
 
-		job.state = "fetching"
+				job = query.scalar()
+				if not job:
+					self.db.session.flush()
+					self.db.session.commit()
+					return False
 
-		self.db.session.flush()
-		self.db.session.commit()
+				if job.state != "new":
+					raise ValueError("Wat?")
+				job.state = "fetching"
 
-		return job
+				self.db.session.flush()
+				self.db.session.commit()
+				return job
+			except sqlalchemy.exc.OperationalError:
+				self.db.session.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db.session.rollback()
+
 
 
 	def taskProcess(self):
@@ -582,14 +593,41 @@ class SiteArchiver(LogBase.LoggerMixin):
 		return row
 
 
-if __name__ == "__main__":
+def test():
+	archiver = SiteArchiver(None)
+	import WebMirror.database as db
 
-	archiver = SiteArchiver()
-	print(archiver)
-	print(archiver.resetDlstate())
-	print(archiver.getTask())
-	print(archiver.getTask())
-	print(archiver.getTask())
-	print(archiver.taskProcess())
+	new = {
+		'url'       : 'http://www.royalroadl.com/fiction/1484',
+		'starturl'  : 'http://www.royalroadl.com/',
+		'netloc'    : "www.royalroadl.com",
+		'distance'  : 50000,
+		'is_text'   : True,
+		'priority'  : 500000,
+		'type'      : 'unknown',
+		'fetchtime' : datetime.datetime.now(),
+		}
+
+	cmd = text("""
+			INSERT INTO
+				web_pages
+				(url, starturl, netloc, distance, is_text, priority, type, fetchtime)
+			VALUES
+				(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime)
+			ON CONFLICT DO NOTHING
+			""")
+	print("doing")
+	ins = archiver.db.session.execute(cmd, params=new)
+	print("Done. Ret:")
+	print(ins)
+	# print(archiver.resetDlstate())
+	# print(archiver.getTask())
+	# print(archiver.getTask())
+	# print(archiver.getTask())
+	# print(archiver.taskProcess())
+	pass
+
+if __name__ == "__main__":
+	test()
 
 
