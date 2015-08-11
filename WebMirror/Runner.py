@@ -41,13 +41,10 @@ class RunInstance(object):
 		while 1:
 
 			if run_state.value:
-				try:
-					self.do_task()
+				
+				self.do_task()
 
-				# Ignore ValueErrors that would otherwise kill the child-threads, at least for the moment
-				# (I have to fix the webFunctions.py stuff. Eventually).
-				except ValueError:
-					pass
+				
 				time.sleep(1)
 			else:
 				self.log.info("Thread %s exiting.", self.num)
@@ -98,12 +95,13 @@ class Crawler(object):
 
 	def run(self):
 
-		PROCESSES = 8
-
+		PROCESSES = 12
+		tasks =[]
 		# executor = ProcessPoolExecutor(max_workers=PROCESSES)
-		tasks = [multiprocessing.Process(target=RunInstance.run, args=(x, self.rules)) for x in range(PROCESSES)]
-		[task.start() for task in tasks]
+		# tasks = [multiprocessing.Process(target=RunInstance.run, args=(x, self.rules)) for x in range(PROCESSES)]
+		# [task.start() for task in tasks]
 		cnt = 0
+		procno = 0
 		try:
 			while run_state.value:
 				time.sleep(1)
@@ -111,6 +109,11 @@ class Crawler(object):
 				if cnt == 10:
 					cnt = 0
 					living = sum([task.is_alive() for task in tasks])
+					for x in range(PROCESSES - living):
+						proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules)) 
+						tasks.append(proc)
+						proc.start()
+						procno += 1
 					self.log.info("Living processes: %s", living)
 
 		except KeyboardInterrupt:

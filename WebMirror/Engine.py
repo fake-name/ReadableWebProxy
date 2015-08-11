@@ -236,7 +236,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.upsertFileResponse(job, response)
 		else:
 			if self.filter:
-				self.filter.processPage(job.url, response['title'], response['rawcontent'], response['mimeType'])
+				if "rawcontent" in response:
+					rawc = response['rawcontent']
+				else:
+					print("No raw content in response!")
+					print("Keys:", response.keys())
+					rawc = response['contents']
+				self.filter.processPage(job.url, response['title'], rawc, response['mimeType'])
 			self.upsertReponseContent(job, response)
 			self.upsertResponseLinks(job, response)
 
@@ -346,8 +352,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 				self.db.session.commit()
 				break
+			except sqlalchemy.exc.InternalError:
+				self.log.info("Transaction error. Retrying.")
+				self.db.session.rollback()
 			except sqlalchemy.exc.OperationalError:
 				self.log.info("Transaction error. Retrying.")
+				self.db.session.rollback()
 
 		self.log.info("Links upserted.")
 
@@ -535,7 +545,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.log.info("Row does not exist in DB")
 			start = urllib.parse.urlsplit(url).netloc
 
+			# New jobs are inserted in the "fetching" state since we
+			# don't want them to be picked up by the fetch engine
+			# while they're still in-progress
 			row = self.db.WebPages(
+				state     = 'fetching',
 				url       = url,
 				starturl  = url,
 				netloc    = start,
