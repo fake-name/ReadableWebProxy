@@ -471,18 +471,18 @@ class WebGetRobust:
 
 		requestedUrl = iri2uri(requestedUrl)
 
-		pgctnt = None
-		pghandle = None
-		retryCount = 0
-
-		pgreq = self.buildRequest(requestedUrl, postData, addlHeaders, binaryForm)
-
-		errored = False
-		lastErr = ""
-
 
 		if not self.testMode:
 			while 1:
+
+				pgctnt = None
+				pghandle = None
+				retryCount = 0
+
+				pgreq = self.buildRequest(requestedUrl, postData, addlHeaders, binaryForm)
+
+				errored = False
+				lastErr = ""
 
 				retryCount = retryCount + 1
 

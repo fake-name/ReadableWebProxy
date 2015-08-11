@@ -43,7 +43,7 @@ else:
 
 
 GLOBAL_BAD = [
-			'/xmlrpc.php'
+			'/xmlrpc.php',
 			'gprofiles.js',
 			'netvibes.com',
 			'accounts.google.com',
@@ -163,7 +163,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	FETCH_DISTANCE = 1000 * 1000
 
 	def __init__(self, cookie_lock, run_filters=True):
-		print("SiteArchiver __init__()")
+		# print("SiteArchiver __init__()")
 		super().__init__()
 
 		import WebMirror.database as db
@@ -176,11 +176,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		self.cookie_lock = cookie_lock
 
-		print("SiteArchiver database imported")
+		# print("SiteArchiver database imported")
 		ruleset = WebMirror.rules.load_rules()
 		self.ruleset = ruleset
 		self.fetcher = WebMirror.Fetch.ItemFetcher
-		print("SiteArchiver rules loaded")
+		# print("SiteArchiver rules loaded")
 		self.relinkable = set()
 		for item in ruleset:
 			[self.relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
@@ -208,7 +208,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# rsc_vals  = self.buildUrlPermutations(item['fileDomains'], item['netlocs'])
 
 		self.log.info("Content filter size: %s. Resource filter size %s.", len(self.ctnt_filters), len(self.rsc_filters))
-		print("SiteArchiver initializer complete")
+		# print("SiteArchiver initializer complete")
 
 	########################################################################################################################
 	#
