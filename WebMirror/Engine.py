@@ -251,29 +251,37 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
+		while 1:
+			try:
+				job.title    = response['title']
+				job.content  = response['contents']
+				job.mimetype = response['mimeType']
+				if "text" in job.mimetype:
+					job.is_text  = True
+				else:
+					job.is_text  = False
 
-		job.title    = response['title']
-		job.content  = response['contents']
-		job.mimetype = response['mimeType']
-		if "text" in job.mimetype:
-			job.is_text  = True
-		else:
-			job.is_text  = False
+				job.state    = 'complete'
 
-		job.state    = 'complete'
+				if 'rawcontent' in response:
+					job.raw_content = response['rawcontent']
 
-		if 'rawcontent' in response:
-			job.raw_content = response['rawcontent']
+				job.fetchtime = datetime.datetime.now()
 
-		job.fetchtime = datetime.datetime.now()
-
-		self.db.session.flush()
-		self.db.session.commit()
+				self.db.session.flush()
+				self.db.session.commit()
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db.session.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db.session.rollback()
 
 	# Todo: FIXME
 	def filterContentLinks(self, job, links, badwords):
 		ret = set()
 		for link in links:
+			if link.startswith("data:"):
+				continue
 			if any([item in link for item in badwords]):
 				# print("Filtered:", link)
 				continue
@@ -287,6 +295,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def filterResourceLinks(self, job, links, badwords):
 		ret = set()
 		for link in links:
+			if link.startswith("data:"):
+				continue
 			if any([item in link for item in badwords]):
 				# print("Filtered:", link)
 				continue
@@ -573,13 +583,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 				except sqlalchemy.exc.InvalidRequestError:
 					print("InvalidRequest error!")
 					self.db.session.rollback()
-					self.db.session.begin()
-					self.db.session.add(row)
-					self.db.session.commit()
+					traceback.print_exc()
+				except sqlalchemy.exc.OperationalError:
+					print("InvalidRequest error!")
+					self.db.session.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					print("Integrity error!")
 					self.db.session.rollback()
-					self.db.session.begin()
 					row =  query = self.db.session.query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)               \
 						.one()

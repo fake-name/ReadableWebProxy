@@ -46,7 +46,7 @@ def go():
 		app.run(host='0.0.0.0', port=5001)
 	elif "all" in sys.argv:
 		print("Running in all IP mode.")
-		app.run(host='0.0.0.0', port=5001)
+		app.run(host='0.0.0.0', port=5001, threaded=True)
 		# app.run(host='0.0.0.0', port=5001, processes=10)
 	else:
 		print("Running in normal mode.")

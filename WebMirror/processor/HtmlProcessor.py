@@ -1,6 +1,8 @@
 
 import bs4
 import copy
+import re
+import webcolors
 
 import WebMirror.util.urlFuncs as urlFuncs
 from . import ProcessorBase
@@ -201,6 +203,54 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		return soup
 
+
+	def fixCss(self, soup):
+		'''
+		So, because the color scheme of our interface can vary from the original, we need to fix any cases
+		of white text. However, I want to preserve *most* of the color information.
+		Therefore, we look at all the inline CSS, and just patch where needed.
+		'''
+
+		hascss = soup.find_all(True, attrs={"style" : True})
+
+		# parser = tinycss.make_parser('page3')
+
+		hexr = re.compile('(#(?:[a-fA-F0-9]{6})|#(?:[a-fA-F0-9]{3}))')
+
+		for item in hascss:
+			if item['style']:
+				ststr = item['style']
+				old = hexr.findall(ststr)
+				for match in old:
+					color = webcolors.hex_to_rgb(match)
+					mean = sum(color)/len(color)
+
+					if mean > 200:
+						above = mean - 200
+						color = tuple((max(cval - above, 0) for cval in color))
+						new = webcolors.rgb_to_hex(color)
+						item['style'] = item['style'].replace(match, new)
+
+
+
+				# I really /want/ to use a real CSS parser, but I can't find any
+				# that properly let me /generate/ CSS. TinyCSS /parses/, but I can't
+				# then convert the parse tree back to css (as far as I can tell, anyways)
+
+
+				# attr, errors = parser.parse_style_attr(item['style'])
+
+				# new = []
+				# for decl in attr:
+				# 	if decl.name == "color" and decl.value[0].type == "HASH":
+				# 		print(decl)
+				# 		print(decl.name)
+				# 		print(decl.value)
+
+				# 	print(decl.as_css())
+
+		return soup
+
 	def cleanHtmlPage(self, soup, url=None):
 
 		soup = self.relink(soup)
@@ -292,6 +342,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		soup = self.removeClasses(soup)
 
+		soup = self.fixCss(soup)
 
 		# Process page with readability, extract title.
 		pgTitle, pgBody = self.cleanHtmlPage(soup, url=self.pageUrl)
