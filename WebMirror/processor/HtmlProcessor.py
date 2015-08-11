@@ -174,12 +174,13 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	def decomposeAdditional(self, soup):
 
+
 		# Clear out all the iframes
 		for instance in soup.find_all('iframe'):
 			instance.decompose()
 
 		# Clean out any local stylesheets
-		for instance in soup.find_all('style'):
+		for instance in soup.find_all('style', attrs={"type" : "text/css"}):
 			instance.decompose()
 
 		# And all remote scripts
@@ -246,7 +247,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 					else:
 						# Preserve all attributes
 						clean = False
-			if clean:
+			if clean and item.attrs:
+
 				for attr in list(item.attrs.keys()):
 					if attr not in tmp_valid:
 						del item[attr]
@@ -289,6 +291,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		soup = self.postprocessBody(soup)
 
 		soup = self.removeClasses(soup)
+
 
 		# Process page with readability, extract title.
 		pgTitle, pgBody = self.cleanHtmlPage(soup, url=self.pageUrl)

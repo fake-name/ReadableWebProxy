@@ -10,7 +10,6 @@ import urllib.parse
 
 import bs4
 import copy
-import readability.readability
 import hashlib
 import os.path
 

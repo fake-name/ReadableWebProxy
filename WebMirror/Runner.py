@@ -41,10 +41,10 @@ class RunInstance(object):
 		while 1:
 
 			if run_state.value:
-				
+
 				self.do_task()
 
-				
+
 				time.sleep(1)
 			else:
 				self.log.info("Thread %s exiting.", self.num)
@@ -95,7 +95,7 @@ class Crawler(object):
 
 	def run(self):
 
-		PROCESSES = 12
+		PROCESSES = 2
 		tasks =[]
 		# executor = ProcessPoolExecutor(max_workers=PROCESSES)
 		# tasks = [multiprocessing.Process(target=RunInstance.run, args=(x, self.rules)) for x in range(PROCESSES)]
@@ -110,7 +110,7 @@ class Crawler(object):
 					cnt = 0
 					living = sum([task.is_alive() for task in tasks])
 					for x in range(PROCESSES - living):
-						proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules)) 
+						proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules))
 						tasks.append(proc)
 						proc.start()
 						procno += 1

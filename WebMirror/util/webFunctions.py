@@ -237,6 +237,12 @@ class WebGetRobust:
 	def buildRequest(self, pgreq, postData, addlHeaders, binaryForm):
 		# Encode Unicode URL's properly
 
+		try:
+			tmp = pgreq.encode("ascii")
+		except UnicodeEncodeError:
+			print("Wat?")
+			print("pgreq: '%s'", pgreq)
+
 
 		try:
 			params = {}

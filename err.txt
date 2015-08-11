@@ -1,0 +1,196 @@
+Traceback (most recent call last):
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1139, in _execute_context
+    context)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/default.py", line 450, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.extensions.TransactionRollbackError: could not serialize access due to concurrent update
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/media/Storage/Scripts/ReadableWebProxy/app/views.py", line 128, in render
+    title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/API.py", line 91, in getPage
+    page.fetch(ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/API.py", line 26, in fetch
+    self.job = self.archiver.synchronousJobRequest(self.url, ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/Engine.py", line 608, in synchronousJobRequest
+    self.dispatchRequest(row)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/Engine.py", line 246, in dispatchRequest
+    self.upsertReponseContent(job, response)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/Engine.py", line 270, in upsertReponseContent
+    self.db.session.flush()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 2004, in flush
+    self._flush(objects)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 2122, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/langhelpers.py", line 60, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/compat.py", line 182, in reraise
+    raise value
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 2086, in _flush
+    flush_context.execute()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/unitofwork.py", line 373, in execute
+    rec.execute(self)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/unitofwork.py", line 532, in execute
+    uow
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/persistence.py", line 170, in save_obj
+    mapper, table, update)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/persistence.py", line 692, in _emit_update_statements
+    execute(statement, multiparams)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 914, in execute
+    return meth(self, multiparams, params)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/sql/elements.py", line 323, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1010, in _execute_clauseelement
+    compiled_sql, distilled_params
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1146, in _execute_context
+    context)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1341, in _handle_dbapi_exception
+    exc_info
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/compat.py", line 188, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=exc_value)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/compat.py", line 181, in reraise
+    raise value.with_traceback(tb)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1139, in _execute_context
+    context)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/default.py", line 450, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (psycopg2.extensions.TransactionRollbackError) could not serialize access due to concurrent update
+
+
+
+
+
+Main.Web.Thread-70 - INFO - Compression type = none. Content Size = 16.882K. File type: image/webp.
+Main.SiteArchiver.Thread-1.Thread-70 - INFO - Retreived file of type 'image/webp', name of 'dop936.jpg' with a size of 16.882 K
+Main.SiteArchiver.Thread-1.Thread-70 - ERROR - Did not know how to dispatch request for url: 'http://i1.wp.com/shiroyukitranslations.com/wp-content/uploads/2015/08/dop936.jpg?resize=300,259', mimetype: 'image/webp'!
+Internal Error!
+(psycopg2.extensions.TransactionRollbackError) could not serialize access due to concurrent update
+ [SQL: 'UPDATE web_pages SET state=%(state)s, title=%(title)s, mimetype=%(mimetype)s, content=%(content)s, fetchtime=%(fetchtime)s WHERE web_pages.id = %(web_pages_id)s'] [parameters: {'fetchtime': datetime.datetime(2015, 8, 10, 12, 52, 9, 962089), 'content': 'Error. Could not dispatch properly', 'mimetype': 'text/html', 'title': 'Error: Unknown dispatch type', 'web_pages_id': 16161092, 'state': 'complete'}]
+Traceback (most recent call last):
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1139, in _execute_context
+    context)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/default.py", line 450, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.extensions.TransactionRollbackError: could not serialize access due to concurrent update
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/media/Storage/Scripts/ReadableWebProxy/app/views.py", line 145, in render_resource
+    mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url, ignore_cache=ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/API.py", line 103, in getResource
+    page.fetch(ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/API.py", line 26, in fetch
+    self.job = self.archiver.synchronousJobRequest(self.url, ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/Engine.py", line 608, in synchronousJobRequest
+    self.dispatchRequest(row)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/Engine.py", line 246, in dispatchRequest
+    self.upsertReponseContent(job, response)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/Engine.py", line 270, in upsertReponseContent
+    self.db.session.flush()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 2004, in flush
+    self._flush(objects)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 2122, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/langhelpers.py", line 60, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/compat.py", line 182, in reraise
+    raise value
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 2086, in _flush
+    flush_context.execute()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/unitofwork.py", line 373, in execute
+    rec.execute(self)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/unitofwork.py", line 532, in execute
+    uow
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/persistence.py", line 170, in save_obj
+    mapper, table, update)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/persistence.py", line 692, in _emit_update_statements
+    execute(statement, multiparams)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 914, in execute
+    return meth(self, multiparams, params)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/sql/elements.py", line 323, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1010, in _execute_clauseelement
+    compiled_sql, distilled_params
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1146, in _execute_context
+    context)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1341, in _handle_dbapi_exception
+    exc_info
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/compat.py", line 188, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=exc_value)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/util/compat.py", line 181, in reraise
+    raise value.with_traceback(tb)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 1139, in _execute_context
+    context)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/default.py", line 450, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (psycopg2.extensions.TransactionRollbackError) could not serialize access due to concurrent update
+ [SQL: 'UPDATE web_pages SET state=%(state)s, title=%(title)s, mimetype=%(mimetype)s, content=%(content)s, fetchtime=%(fetchtime)s WHERE web_pages.id = %(web_pages_id)s'] [parameters: {'fetchtime': datetime.datetime(2015, 8, 10, 12, 52, 9, 962089), 'content': 'Error. Could not dispatch properly', 'mimetype': 'text/html', 'title': 'Error: Unknown dispatch type', 'web_pages_id': 16161092, 'state': 'complete'}]
+
+10.1.3.100 - - [10/Aug/2015 12:52:09] "GET /render_rsc?url=http%3A//i1.wp.com/shiroyukitranslations.com/wp-content/uploads/2015/08/dop936.jpg%3Fresize%3D300%2C259 HTTP/1.1" 500 -
+
+
+
+10.1.3.100 - - [10/Aug/2015 12:51:15] "GET /render_rsc?url=http%3A//0.gravatar.com/avatar/c80fd0aba546ac9dcea22a4232bef039%3Fs%3D80%26d%3Didenticon%26r%3Dg HTTP/1.1" 200 -
+Internal Error!
+_Connection__connection
+Traceback (most recent call last):
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/media/Storage/Scripts/ReadableWebProxy/app/views.py", line 145, in render_resource
+    mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url, ignore_cache=ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/API.py", line 103, in getResource
+    page.fetch(ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/API.py", line 26, in fetch
+    self.job = self.archiver.synchronousJobRequest(self.url, ignore_cache)
+  File "/media/Storage/Scripts/ReadableWebProxy/WebMirror/Engine.py", line 532, in synchronousJobRequest
+    self.db.session.commit()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 790, in commit
+    self.transaction.commit()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 404, in commit
+    self.close()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/orm/session.py", line 464, in close
+    connection.close()
+  File "/media/Storage/Scripts/ReadableWebProxy/flask/lib/python3.4/site-packages/sqlalchemy/engine/base.py", line 834, in close
+    del self.__connection
+AttributeError: _Connection__connection
+
+
