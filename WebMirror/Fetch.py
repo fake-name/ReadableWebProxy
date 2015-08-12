@@ -59,11 +59,14 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, rules, target_url, start_url, cookie_lock):
+	def __init__(self, rules, target_url, start_url, cookie_lock, wg_handle=None):
 		# print("Fetcher init()")
 		super().__init__()
 
-		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
+		if wg_handle:
+			self.wg = wg_handle
+		else:
+			self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
 
 		# Validate the plugins implement the proper interface
 		for item in PLUGINS:

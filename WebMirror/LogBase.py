@@ -1,6 +1,7 @@
 
 import logging
 import threading
+import multiprocessing
 import abc
 
 class LoggerMixin(metaclass=abc.ABCMeta):
@@ -17,15 +18,24 @@ class LoggerMixin(metaclass=abc.ABCMeta):
 			self.lastLoggerIndex = 1
 
 		threadName = threading.current_thread().name
+		procName   = multiprocessing.current_process().name
+
 		if "Thread-" in threadName:
 			if threadName not in self.loggers:
-				self.loggers[threadName] = logging.getLogger("%s.Thread-%d" % (self.loggerPath, self.lastLoggerIndex))
+				self.loggers[threadName] = logging.getLogger("%s.%s" % (self.loggerPath, threadName))
 				self.lastLoggerIndex += 1
+			return self.loggers[threadName]
+		elif "Process-" in procName:
+			if procName not in self.loggers:
+				self.loggers[procName] = logging.getLogger("%s.%s" % (self.loggerPath, procName))
+				self.lastLoggerIndex += 1
+			return self.loggers[procName]
 
-		# If we're not called in the context of a thread, just return the base log-path
 		else:
+			# If we're not called in the context of a thread, just return the base log-path
 			self.loggers[threadName] = logging.getLogger("%s" % (self.loggerPath,))
-		return self.loggers[threadName]
+			return self.loggers[threadName]
+
 
 
 class TestClass(LoggerMixin):

@@ -33,6 +33,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 
+
 class title_not_contains(object):
 	""" An expectation for checking that the title *does not* contain a case-sensitive
 	substring. title is the fragment of title expected
@@ -53,7 +54,9 @@ class title_not_contains(object):
 # Arrrgh.
 
 from threading import Lock
-cookieWriteLock = Lock()
+COOKIEWRITELOCK = Lock()
+
+GLOBAL_COOKIE_FILE = None
 
 class PreemptiveBasicAuthHandler(urllib.request.HTTPBasicAuthHandler):
 	'''Preemptive basic auth.
@@ -96,7 +99,7 @@ class WebGetRobust:
 		if cookie_lock:
 			self.cookie_lock = cookie_lock
 		else:
-			self.cookie_lock = cookieWriteLock
+			self.cookie_lock = COOKIEWRITELOCK
 
 
 		# Override the global default socket timeout, so hung connections will actually time out properly.
@@ -532,6 +535,10 @@ class WebGetRobust:
 					self.log.critical("	postData:     '%s'", postData)
 					self.log.critical("	addlHeaders:  '%s'", addlHeaders)
 					self.log.critical("	binaryForm:   '%s'", binaryForm)
+
+					# import pdb; pdb.set_trace()
+
+					raise
 					break
 
 

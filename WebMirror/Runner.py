@@ -25,10 +25,11 @@ def halt_exc(x, y):
 		raise KeyboardInterrupt
 
 class RunInstance(object):
-	def __init__(self, num, rules):
-		signal.signal(signal.SIGINT, signal.SIG_IGN)
+	def __init__(self, num, rules, nosig=True):
+		if nosig:
+			signal.signal(signal.SIGINT, signal.SIG_IGN)
 		self.num = num
-		self.log = logging.getLogger("Main.Text.Web-%s" % num)
+		self.log = logging.getLogger("Main.Text.Web")
 
 		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock)
 
@@ -41,10 +42,7 @@ class RunInstance(object):
 		while 1:
 
 			if run_state.value:
-
 				self.do_task()
-
-
 				time.sleep(1)
 			else:
 				self.log.info("Thread %s exiting.", self.num)
@@ -52,9 +50,9 @@ class RunInstance(object):
 
 
 	@classmethod
-	def run(cls, num, rules):
+	def run(cls, num, rules, nosig=True):
 		try:
-			run = cls(num, rules)
+			run = cls(num, rules, nosig)
 			run.go()
 		except Exception:
 			print()
@@ -102,38 +100,43 @@ class Crawler(object):
 		# [task.start() for task in tasks]
 		cnt = 0
 		procno = 0
-		try:
-			while run_state.value:
-				time.sleep(1)
-				cnt += 1
-				if cnt == 10:
-					cnt = 0
-					living = sum([task.is_alive() for task in tasks])
-					for x in range(PROCESSES - living):
-						proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules))
-						tasks.append(proc)
-						proc.start()
-						procno += 1
-					self.log.info("Living processes: %s", living)
 
-		except KeyboardInterrupt:
+		if PROCESSES > 1:
+			try:
+				while run_state.value:
+					time.sleep(1)
+					cnt += 1
+					if cnt == 10:
+						cnt = 0
+						living = sum([task.is_alive() for task in tasks])
+						for x in range(PROCESSES - living):
+							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules))
+							tasks.append(proc)
+							proc.start()
+							procno += 1
+						self.log.info("Living processes: %s", living)
+
+			except KeyboardInterrupt:
+				run_state.value = 0
+				pass
+
+			self.log.info("Crawler allowing ctrl+c to propagate.")
+			time.sleep(1)
 			run_state.value = 0
-			pass
-
-		self.log.info("Crawler allowing ctrl+c to propagate.")
-		time.sleep(1)
-		run_state.value = 0
 
 
-		self.log.info("Crawler waiting on executor to complete.")
-		while 1:
-			living = sum([task.is_alive() for task in tasks])
-			[task.join(3.0/(living+1)) for task in tasks]
-			self.log.info("Living processes: '%s'", living)
-			if living == 0:
-				break
+			self.log.info("Crawler waiting on executor to complete.")
+			while 1:
+				living = sum([task.is_alive() for task in tasks])
+				[task.join(3.0/(living+1)) for task in tasks]
+				self.log.info("Living processes: '%s'", living)
+				if living == 0:
+					break
 
-		self.log.info("All processes halted.")
+			self.log.info("All processes halted.")
+		else:
+			self.log.info("Running in single process mode!")
+			RunInstance.run(procno, self.rules, nosig=False)
 
 
 

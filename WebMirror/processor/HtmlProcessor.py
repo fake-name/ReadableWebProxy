@@ -35,7 +35,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	loggerPath = "Main.Text.HtmlProc"
 
 	def __init__(self, baseUrls, pageUrl, pgContent, loggerPath, relinkable, **kwargs):
-		self.loggerPath = loggerPath+".HtmlExtract"
 
 		self._tld           = set()
 		self._fileDomains   = set()

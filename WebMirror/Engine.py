@@ -23,6 +23,7 @@ import traceback
 import datetime
 
 from sqlalchemy.sql import text
+import WebMirror.util.webFunctions as webFunctions
 
 import hashlib
 import WebMirror.Fetch
@@ -180,6 +181,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		ruleset = WebMirror.rules.load_rules()
 		self.ruleset = ruleset
 		self.fetcher = WebMirror.Fetch.ItemFetcher
+		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
 		# print("SiteArchiver rules loaded")
 		self.relinkable = set()
 		for item in ruleset:
@@ -226,7 +228,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# Retreive remote content at `url`, call the appropriate handler for the
 	# transferred content (e.g. is it an image/html page/binary file)
 	def dispatchRequest(self, job):
-		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock)
+		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock, wg_handle=self.wg)
 		response = fetcher.fetch()
 
 		if "file" in response:
