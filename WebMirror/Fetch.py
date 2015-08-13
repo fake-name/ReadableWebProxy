@@ -25,6 +25,8 @@ import bs4
 import WebMirror.processor.ProcessorBase
 
 
+class DownloadException(Exception):
+	pass
 
 ########################################################################################################################
 #
@@ -180,6 +182,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		try:
 			content, handle = self.wg.getpage(itemUrl, returnMultiple=True)
 		except:
+			print("Failure?")
 			if self.rules['cloudflare']:
 				if not self.wg.stepThroughCloudFlare(itemUrl, titleNotContains='Just a moment...'):
 					raise ValueError("Could not step through cloudflare!")
@@ -191,7 +194,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 		if not content or not handle:
-			raise ValueError("Failed to retreive file from page '%s'!" % itemUrl)
+			raise DownloadException("Failed to retreive file from page '%s'!" % itemUrl)
 
 		fileN = urllib.parse.unquote(urllib.parse.urlparse(handle.geturl())[2].split("/")[-1])
 		fileN = bs4.UnicodeDammit(fileN).unicode_markup

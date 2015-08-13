@@ -26,11 +26,11 @@ from sqlalchemy.sql import text
 import WebMirror.util.webFunctions as webFunctions
 
 import hashlib
+from WebMirror.Fetch import DownloadException
 import WebMirror.Fetch
 
 from config import C_RESOURCE_DIR
 
-MAX_DISTANCE = 1000 * 1000
 
 if "debug" in sys.argv:
 	CACHE_DURATION = 1
@@ -79,8 +79,6 @@ GLOBAL_BAD = [
 			'//mail.google.com',
 	]
 
-class DownloadException(Exception):
-	pass
 
 
 def getHash(fCont):
@@ -467,7 +465,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			try:
 				query = self.db.session.query(self.db.WebPages)         \
 					.filter(self.db.WebPages.state == "new")            \
-					.filter(self.db.WebPages.distance < (MAX_DISTANCE)) \
+					.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE)) \
 					.order_by(self.db.WebPages.priority)                \
 					.order_by(desc(self.db.WebPages.is_text))           \
 					.order_by(desc(self.db.WebPages.addtime))           \
@@ -565,7 +563,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				url       = url,
 				starturl  = url,
 				netloc    = start,
-				distance  = MAX_DISTANCE-2,
+				distance  = self.db.MAX_DISTANCE-2,
 				is_text   = True,
 				priority  = self.db.DB_REALTIME_PRIORITY,
 				type      = "unknown",
@@ -621,7 +619,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				self.log.info("Item has exceeded cache time by text: %s, rsc: %s. (fetchtime: %s) Re-acquiring.", thresh_text_ago, thresh_bin_ago, row.fetchtime)
 
 		row.state     = 'new'
-		row.distance  = MAX_DISTANCE-2
+		row.distance  = self.db.MAX_DISTANCE-2
 		row.priority  = self.db.DB_REALTIME_PRIORITY
 
 		# dispatchRequest modifies the row contents directly.

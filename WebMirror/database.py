@@ -1,12 +1,14 @@
 
 # import rpc
 
-DB_REALTIME_PRIORITY =   1 * 1000
-DB_HIGH_PRIORITY     =  10 * 1000
-DB_MED_PRIORITY      =  50 * 1000
-DB_LOW_PRIORITY      = 100 * 1000
+DB_REALTIME_PRIORITY =    1 * 1000
+DB_HIGH_PRIORITY     =   10 * 1000
+DB_MED_PRIORITY      =   50 * 1000
+DB_LOW_PRIORITY      =  100 * 1000
 
-DB_DEFAULT_DIST      =  10 * 1000
+DB_DEFAULT_DIST      =   10 * 1000
+
+MAX_DISTANCE         = 1000 * 1000
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
@@ -48,9 +50,8 @@ SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI,
 			isolation_level="REPEATABLE READ")
-session_factory = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-Scoped_Session = scoped_session(session_factory)
-session = Scoped_Session()
+
+session = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False))()
 print("Creating database interface:", session)
 Base = declarative_base()
 

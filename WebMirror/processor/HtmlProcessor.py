@@ -219,6 +219,9 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		for item in hascss:
 			if item['style']:
 				ststr = item['style']
+				if 'font' in ststr.lower():
+					item['style'] = ''
+					
 				old = hexr.findall(ststr)
 				for match in old:
 					color = webcolors.hex_to_rgb(match)
@@ -226,9 +229,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 					if mean > 200:
 						above = mean - 200
-						color = tuple((max(cval - above, 0) for cval in color))
+						color = tuple((max(255-cval, 0) for cval in color))
 						new = webcolors.rgb_to_hex(color)
 						item['style'] = item['style'].replace(match, new)
+						#item['style'] = ''
 
 
 

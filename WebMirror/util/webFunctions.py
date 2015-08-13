@@ -476,11 +476,11 @@ class WebGetRobust:
 
 
 		if not self.testMode:
+			retryCount = 0
 			while 1:
 
 				pgctnt = None
 				pghandle = None
-				retryCount = 0
 
 				pgreq = self.buildRequest(requestedUrl, postData, addlHeaders, binaryForm)
 
@@ -536,9 +536,7 @@ class WebGetRobust:
 					self.log.critical("	addlHeaders:  '%s'", addlHeaders)
 					self.log.critical("	binaryForm:   '%s'", binaryForm)
 
-					# import pdb; pdb.set_trace()
 
-					raise
 					break
 
 
