@@ -38,6 +38,7 @@ from sqlalchemy.dialects.postgresql.base import ischema_names
 import citext
 import datetime
 from sqlalchemy.dialects.postgresql import ENUM
+from sqlalchemy.dialects.postgresql import JSON
 ischema_names['citext'] = citext.CIText
 
 from settings import DATABASE_IP            as C_DATABASE_IP
@@ -55,7 +56,7 @@ session = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=F
 print("Creating database interface:", session)
 Base = declarative_base()
 
-dlstate_enum  = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', name='dlstate_enum')
+dlstate_enum   = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', name='dlstate_enum')
 itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype_enum')
 
 class WebPages(Base):
@@ -102,6 +103,45 @@ class WebFiles(Base):
 	fspath       = Column(Text, nullable=False)
 
 
+
+class FeedItems(Base):
+	__tablename__ = 'feed_pages'
+
+	id           = Column(Integer, primary_key = True)
+
+	srcname      = Column(Text, nullable=False, index=True)
+	feedurl      = Column(Text, nullable=False, index=True)
+	contenturl   = Column(Text, nullable=False, index=True)
+	contentid    = Column(Text, nullable=False, index=True, unique=True)
+
+	title        = Column(Text)
+	contents     = Column(Text)
+	author       = Column(Text)
+
+	tags         = Column(JSON)
+
+	updated      = Column(DateTime, default=datetime.datetime.min)
+	published    = Column(DateTime, nullable=False)
+
+
+	# '''CREATE TABLE IF NOT EXISTS {tableName} (
+	# 			dbid        SERIAL PRIMARY KEY,
+	# 			srcname     TEXT NOT NULL,
+	# 			feedurl     TEXT NOT NULL,
+
+	# 			contenturl  TEXT NOT NULL,
+	# 			contentid   TEXT NOT NULL UNIQUE,
+
+	# 			title       TEXT,
+	# 			contents    TEXT,
+	# 			author      TEXT,
+
+	# 			tags        JSON,
+
+	# 			updated     DOUBLE PRECISION DEFAULT -1,
+	# 			published   DOUBLE PRECISION NOT NULL
+
+	# 			);'''
 
 
 Base.metadata.create_all(bind=engine, checkfirst=True)
