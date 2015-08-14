@@ -15,6 +15,7 @@ import WebMirror.processor.GDriveDirProcessor
 import WebMirror.processor.GDocProcessor
 import WebMirror.processor.MarkdownProcessor
 import WebMirror.processor.BinaryProcessor
+import WebMirror.processor.RssProcessor
 
 import WebMirror.util.urlFuncs as url_util
 import urllib.parse
@@ -47,6 +48,7 @@ PLUGINS = [
 	WebMirror.processor.GDocProcessor.GdocPageProcessor,
 	WebMirror.processor.MarkdownProcessor.MarkdownProcessor,
 	WebMirror.processor.BinaryProcessor.BinaryResourceProcessor,
+	WebMirror.processor.RssProcessor.RssProcessor,
 ]
 
 class ItemFetcher(LogBase.LoggerMixin):
@@ -61,14 +63,16 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, rules, target_url, start_url, cookie_lock, wg_handle=None):
+	def __init__(self, rules, target_url, start_url, cookie_lock=None, wg_handle=None):
 		# print("Fetcher init()")
 		super().__init__()
 
 		if wg_handle:
 			self.wg = wg_handle
-		else:
+		elif cookie_lock:
 			self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
+		else:
+			self.wg = webFunctions.WebGetRobust()
 
 		# Validate the plugins implement the proper interface
 		for item in PLUGINS:
@@ -224,8 +228,10 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		for key in keys:
 			for plugin in self.plugin_modules[key]:
-				if mimeType.lower() in plugin.wanted_mimetypes and plugin.wantsUrl(self.target_url):
-					# print("plugin", plugin, "wants", self.target_url)
+				if mimeType.lower() in plugin.wanted_mimetypes and \
+						plugin.wantsUrl(self.target_url)       and \
+						plugin.wantsFromContent(content):
+					print("plugin", plugin, "wants", self.target_url)
 					ret = self.plugin_dispatch(plugin, self.target_url, content, fName, mimeType)
 					if not "file" in ret:
 						ret['rawcontent'] = content

@@ -41,16 +41,16 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 				except sqlalchemy.exc.InternalError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.session.rollback()
+					db.session.rollback()
 				except sqlalchemy.exc.OperationalError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.session.rollback()
+					db.session.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.session.rollback()
+					db.session.rollback()
 				except sqlalchemy.exc.InvalidRequestError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.session.rollback()
+					db.session.rollback()
 
 
 

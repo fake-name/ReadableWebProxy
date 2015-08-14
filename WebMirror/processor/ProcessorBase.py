@@ -95,6 +95,10 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 	def wantsUrl(url):
 		return True
 
+	@staticmethod
+	def wantsFromContent(content):
+		return True
+
 	_relinkDomains  = []
 	_scannedDomains = []
 	_badwords       = []

@@ -77,6 +77,7 @@ GLOBAL_BAD = [
 			'a.wikia-beacon.com',
 			'b.scorecardresearch.com',
 			'//mail.google.com',
+			'javascript:void',
 	]
 
 
