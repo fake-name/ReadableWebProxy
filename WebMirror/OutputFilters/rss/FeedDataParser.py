@@ -5,10 +5,10 @@ import urllib.parse
 import re
 import json
 import logging
-from FeedScrape.feedNameLut import getNiceName
+from . import feedNameLut
+from WebMirror.OutputFilters import AmqpInterface
 import settings
-import FeedScrape.AmqpInterface
-from titleParse import TitleParser
+from WebMirror.util.titleParse import TitleParser
 
 # pylint: disable=W0201
 
@@ -93,8 +93,6 @@ class DataParser():
 
 		self.transfer = transfer
 
-		logPath = 'Main.Feeds.Parser'
-		self.log = logging.getLogger(logPath)
 		amqp_settings = {}
 		amqp_settings["RABBIT_CLIENT_NAME"] = settings.RABBIT_CLIENT_NAME
 		amqp_settings["RABBIT_LOGIN"]       = settings.RABBIT_LOGIN
@@ -105,7 +103,7 @@ class DataParser():
 
 		print("Transfer state:", self.amqp_connect)
 		if self.amqp_connect:
-			self.amqpint = FeedScrape.AmqpInterface.RabbitQueueHandler(settings=amqp_settings)
+			self.amqpint = AmqpInterface.RabbitQueueHandler(settings=amqp_settings)
 		else:
 			print("Not making rabbit connection.")
 		self.names = set()
@@ -1988,10 +1986,10 @@ class DataParser():
 
 
 
-		# if ret:
-		# 	print(item['title'])
-		# 	print(ret["vol"], ret["chp"])
-		# 	print()
+		if ret:
+			print(item['title'])
+			print(ret["vol"], ret["chp"])
+			print()
 
 
 
@@ -2091,7 +2089,7 @@ class DataParser():
 		if any([item in feedDat['linkUrl'] for item in skip_filter]):
 			return
 
-		nicename = getNiceName(feedDat['linkUrl'])
+		nicename = feedNameLut.getNiceName(feedDat['linkUrl'])
 		if not nicename:
 			nicename = urllib.parse.urlparse(feedDat['linkUrl']).netloc
 
