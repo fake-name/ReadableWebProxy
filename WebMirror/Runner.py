@@ -46,8 +46,6 @@ class RunInstance(object):
 			if runStatus.run_state.value == 1:
 				self.do_task()
 				time.sleep(1)
-				print("Looping: Thread %s awake. Runstate: %s (value %s)" % (self.num, runStatus.run_state, runStatus.run_state.value))
-				print("")
 			else:
 				self.log.info("Thread %s exiting.", self.num)
 				break

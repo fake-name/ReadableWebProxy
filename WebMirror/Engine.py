@@ -234,7 +234,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			if self.filter:
 				self.filter.processPage(job.url, '', response['content'], response['mimeType'])
 			self.upsertFileResponse(job, response)
-		if 'rss-content' in response:
+		elif 'rss-content' in response:
 			self.upsertRssItems(response['rss-content'], job.url)
 			self.upsertResponseLinks(job, plain=[entry['linkUrl'] for entry in response['rss-content']])
 
@@ -313,7 +313,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def upsertRssItems(self, entrylist, feedurl):
-		print("InsertFeed!")
+		# print("InsertFeed!")
 		for feedentry in entrylist:
 			# print(feedentry)
 			# print(feedentry.keys())

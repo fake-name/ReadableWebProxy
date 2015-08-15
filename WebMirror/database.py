@@ -1,6 +1,6 @@
 
 import os
-import os
+import multiprocessing
 
 DB_REALTIME_PRIORITY =    1 * 1000
 DB_HIGH_PRIORITY     =   10 * 1000
@@ -54,7 +54,7 @@ SESSIONS = {}
 ENGINES = {}
 
 def get_engine():
-	cpid = os.getpid()
+	cpid = multiprocessing.current_process().name
 	if not cpid in SESSIONS:
 		ENGINES[cpid] = create_engine(SQLALCHEMY_DATABASE_URI,
 					isolation_level="REPEATABLE READ")
@@ -62,7 +62,7 @@ def get_engine():
 	return ENGINES[cpid]
 
 def get_session():
-	cpid = os.getpid()
+	cpid = multiprocessing.current_process().name
 	if not cpid in SESSIONS:
 		engine = create_engine(SQLALCHEMY_DATABASE_URI,
 					isolation_level="REPEATABLE READ")
