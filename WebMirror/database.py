@@ -126,12 +126,70 @@ class WebFiles(Base):
 	fspath       = Column(Text, nullable=False)
 
 
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+
+
+feed_tags_link = Table(
+		'feed_tags_link', Base.metadata,
+		Column('releases_id', Integer, ForeignKey('feed_pages.id'), nullable=False),
+		Column('tags_id',     Integer, ForeignKey('feed_tags.id'),     nullable=False),
+		PrimaryKeyConstraint('releases_id', 'tags_id')
+	)
+
+feed_author_link = Table(
+		'feed_authors_link', Base.metadata,
+		Column('releases_id', Integer, ForeignKey('feed_pages.id'), nullable=False),
+		Column('author_id',   Integer, ForeignKey('feed_author.id'),     nullable=False),
+		PrimaryKeyConstraint('releases_id', 'author_id')
+	)
+
+
+class Tags(Base):
+	__tablename__ = 'feed_tags'
+	id          = Column(Integer, primary_key=True)
+	tag         = Column(citext.CIText(), nullable=False, index=True)
+
+	__table_args__ = (
+		UniqueConstraint('tag'),
+		)
+
+
+class Author(Base):
+	__tablename__ = 'feed_author'
+	id          = Column(Integer, primary_key=True)
+	author      = Column(citext.CIText(), nullable=False, index=True)
+
+	__table_args__ = (
+		UniqueConstraint('author'),
+		)
+
+
+def tag_creator(tag):
+
+	tmp = get_session().query(Tags)         \
+		.filter(Tags.tag      == tag) \
+		.scalar()
+	if tmp:
+		return tmp
+
+	return Tags(tag=tag)
+
+def author_creator(author):
+	tmp = get_session().query(Author)                  \
+		.filter(Author.author == author) \
+		.scalar()
+	if tmp:
+		return tmp
+	return Author(author=author)
+
 
 class FeedItems(Base):
 	__tablename__ = 'feed_pages'
 
-	id           = Column(Integer, primary_key = True)
-
+	id          = Column(Integer, primary_key=True)
 
 	type        = Column(itemtype_enum, default='unknown', index=True)
 
@@ -144,10 +202,16 @@ class FeedItems(Base):
 	contents     = Column(Text)
 	author       = Column(Text)
 
-	tags         = Column(JSON)
 
 	updated      = Column(DateTime, default=datetime.datetime.min)
 	published    = Column(DateTime, nullable=False)
+
+	tag_rel       = relationship('Tags',       secondary=lambda: feed_tags_link)
+	author_rel    = relationship('Author',     secondary=lambda: feed_author_link)
+
+
+	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
+	author        = association_proxy('author_rel',    'author',    creator=author_creator)
 
 
 Base.metadata.create_all(bind=get_engine(), checkfirst=True)

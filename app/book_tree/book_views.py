@@ -49,7 +49,7 @@ from sqlalchemy import func
 
 # This may wind up with performance issues when the DB gets HUEG. We'll see.
 def getDistinctNetlocs():
-	query = database.session.query(database.WebPages)                 \
+	query = database.get_session().query(database.WebPages)                 \
 		.filter(database.WebPages.is_text == True)                    \
 		.filter(database.WebPages.file == None)                       \
 		.filter(database.WebPages.state == 'complete')                \
@@ -70,7 +70,7 @@ def getNetlocPrefixes(netloc, length=2):
 	substr_chunk  = func.substring(func.upper(database.WebPages.title), 0, length)
 	# distinct_hack = func.distinct(substr_chunk)
 
-	query = database.session.query(database.WebPages)                 \
+	query = database.get_session().query(database.WebPages)                 \
 		.filter(database.WebPages.is_text == True)                    \
 		.filter(database.WebPages.file == None)                       \
 		.filter(database.WebPages.state == 'complete')                \
@@ -86,7 +86,7 @@ def getByNetlocPrefix(netloc, prefix):
 	# print("Netloc prefixes")
 
 
-	query = database.session.query(database.WebPages)                 \
+	query = database.get_session().query(database.WebPages)                 \
 		.filter(database.WebPages.is_text == True)                    \
 		.filter(database.WebPages.title.like("{}%".format(prefix)))   \
 		.filter(database.WebPages.netloc == netloc)                   \

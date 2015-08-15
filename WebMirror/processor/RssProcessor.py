@@ -172,7 +172,7 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 				item['published'] = item['updated']
 
 			if not 'updated' in item:
-				item['updated']   = None
+				item['updated']   = 0
 
 			item['tags']    = []
 			if 'tags' in entry:
@@ -194,7 +194,9 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 			# processFeedData() call has to be /before/ we convert the tags to a json object.
 			self.processFeedData(item)
 
-			item['tags'] = json.dumps(item['tags'])
+
+			assert(isinstance(item['published'], (float, int))), "Wrong type for item['published']. Expected '%s', received '%s'" % ((float, int), type(item['published']))
+			assert(isinstance(item['updated'], (float, int, type(None)))), "Wrong type for item['updated']. Expected '%s', received '%s'" % ((float, int, type(None)), type(item['updated']))
 
 			ret.append(item)
 		return ret

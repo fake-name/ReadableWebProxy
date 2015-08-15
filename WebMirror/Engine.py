@@ -290,20 +290,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if have:
 			return
 		else:
+			assert ("srcname" in entry), "'srcname' not in entry for item from '%s' (contenturl: '%s', title: '%s', guid: '%s')" % (feedurl, entry['linkUrl'], entry['title'], entry['guid'])
+
+			authors     = [tmp['name'] for tmp in entry['authors'] if 'name' in tmp]
+
 			new = self.db.FeedItems(
-				contentid  = entry['guid'],
-				title      = entry['title'],
-				author     = ", ".join([tmp['name'] for tmp in entry['authors'] if 'name' in tmp]),
-				srcname    = entry['srcname'],
-				feedurl    = feedurl,
-				contenturl = entry['linkUrl'],
+					contentid  = entry['guid'],
+					title      = entry['title'],
+					srcname    = entry['srcname'],
+					feedurl    = feedurl,
+					contenturl = entry['linkUrl'],
 
-				type       = entry['feedtype'],
-				contents   = entry['contents'],
-				tags       = entry['tags'],
+					type       = entry['feedtype'],
+					contents   = entry['contents'],
 
-				updated    = datetime.datetime.fromtimestamp(entry['updated']) if entry['updated'] else None,
-				published  = datetime.datetime.fromtimestamp(entry['published'])
+					author     = authors,
+					tags       = entry['tags'],
+
+					updated    = datetime.datetime.fromtimestamp(entry['updated']),
+					published  = datetime.datetime.fromtimestamp(entry['published'])
 				)
 
 			self.db.get_session().add(new)
