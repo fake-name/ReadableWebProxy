@@ -1,5 +1,6 @@
 
-# import rpc
+import os
+import os
 
 DB_REALTIME_PRIORITY =    1 * 1000
 DB_HIGH_PRIORITY     =   10 * 1000
@@ -49,11 +50,33 @@ from settings import DATABASE_PASS          as C_DATABASE_PASS
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=C_DATABASE_USER, passwd=C_DATABASE_PASS, host=C_DATABASE_IP, database=C_DATABASE_DB_NAME)
 
 
-engine = create_engine(SQLALCHEMY_DATABASE_URI,
-			isolation_level="REPEATABLE READ")
+SESSIONS = {}
+ENGINES = {}
 
-session = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False))()
-print("Creating database interface:", session)
+def get_engine():
+	cpid = os.getpid()
+	if not cpid in SESSIONS:
+		ENGINES[cpid] = create_engine(SQLALCHEMY_DATABASE_URI,
+					isolation_level="REPEATABLE READ")
+
+	return ENGINES[cpid]
+
+def get_session():
+	cpid = os.getpid()
+	if not cpid in SESSIONS:
+		engine = create_engine(SQLALCHEMY_DATABASE_URI,
+					isolation_level="REPEATABLE READ")
+
+		SESSIONS[cpid] = scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()
+		print("Creating database interface:", SESSIONS[cpid])
+
+	return SESSIONS[cpid]
+
+
+# import traceback
+# traceback.print_stack()
+
+
 Base = declarative_base()
 
 dlstate_enum   = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', name='dlstate_enum')
@@ -127,27 +150,7 @@ class FeedItems(Base):
 	published    = Column(DateTime, nullable=False)
 
 
-	# '''CREATE TABLE IF NOT EXISTS {tableName} (
-	# 			dbid        SERIAL PRIMARY KEY,
-	# 			srcname     TEXT NOT NULL,
-	# 			feedurl     TEXT NOT NULL,
-
-	# 			contenturl  TEXT NOT NULL,
-	# 			contentid   TEXT NOT NULL UNIQUE,
-
-	# 			title       TEXT,
-	# 			contents    TEXT,
-	# 			author      TEXT,
-
-	# 			tags        JSON,
-
-	# 			updated     DOUBLE PRECISION DEFAULT -1,
-	# 			published   DOUBLE PRECISION NOT NULL
-
-	# 			);'''
-
-
-Base.metadata.create_all(bind=engine, checkfirst=True)
+Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 
 
 

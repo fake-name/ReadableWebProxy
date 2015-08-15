@@ -1,5 +1,5 @@
 
-import WebMirror.database as db
+
 import WebMirror.rules
 import WebMirror.TimedTriggers.TriggerBase
 
@@ -18,39 +18,39 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 		for url in feedurls:
 			while 1:
 				try:
-					have = db.session.query(db.WebPages) \
-						.filter(db.WebPages.url == url)  \
+					have = self.db.get_session().query(self.db.WebPages) \
+						.filter(self.db.WebPages.url == url)  \
 						.scalar()
 					if have and have.state != "new":
 						have.state = "new"
-						db.session.commit()
+						self.db.get_session().commit()
 						break
 					elif have:
 						break
 					else:
-						new = db.WebPages(
+						new = self.db.WebPages(
 								url      = url,
 								starturl = url,
 								netloc   = urllib.parse.urlsplit(url).netloc,
-								priority = db.DB_HIGH_PRIORITY,
-								distance = db.MAX_DISTANCE-2,
+								priority = self.db.DB_HIGH_PRIORITY,
+								distance = self.db.MAX_DISTANCE-2,
 							)
-						db.session.add(new)
-						db.session.commit()
+						self.db.get_session().add(new)
+						self.db.get_session().commit()
 						break
 
 				except sqlalchemy.exc.InternalError:
 					self.log.info("Transaction error. Retrying.")
-					db.session.rollback()
+					self.db.get_session().rollback()
 				except sqlalchemy.exc.OperationalError:
 					self.log.info("Transaction error. Retrying.")
-					db.session.rollback()
+					self.db.get_session().rollback()
 				except sqlalchemy.exc.IntegrityError:
 					self.log.info("Transaction error. Retrying.")
-					db.session.rollback()
+					self.db.get_session().rollback()
 				except sqlalchemy.exc.InvalidRequestError:
 					self.log.info("Transaction error. Retrying.")
-					db.session.rollback()
+					self.db.get_session().rollback()
 
 
 

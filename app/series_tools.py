@@ -34,11 +34,11 @@ def updateTags(series, tags, deleteother=True):
 			havetags.pop(tag)
 		else:
 			newtag = Tags(series=series.id, tag=tag, changetime=datetime.datetime.now(), changeuser=current_user.id)
-			db.session.add(newtag)
+			db.get_session().add(newtag)
 	if deleteother:
 		for key, value in havetags.items():
-			db.session.delete(value)
-	db.session.commit()
+			db.get_session().delete(value)
+	db.get_session().commit()
 
 def updateGenres(series, genres, deleteother=True):
 	havegenres = Genres.query.filter((Genres.series==series.id)).all()
@@ -51,11 +51,11 @@ def updateGenres(series, genres, deleteother=True):
 			havegenres.pop(genre)
 		else:
 			newgenre = Genres(series=series.id, genre=genre, changetime=datetime.datetime.now(), changeuser=current_user.id)
-			db.session.add(newgenre)
+			db.get_session().add(newgenre)
 	if deleteother:
 		for key, value in havegenres.items():
-			db.session.delete(value)
-	db.session.commit()
+			db.get_session().delete(value)
+	db.get_session().commit()
 
 
 def updateAltNames(series, altnames, deleteother=True):
@@ -80,12 +80,12 @@ def updateAltNames(series, altnames, deleteother=True):
 					changetime = datetime.datetime.now(),
 					changeuser = current_user.id
 				)
-			db.session.add(newname)
+			db.get_session().add(newname)
 
 	if deleteother:
 		for key, value in havenames.items():
-			db.session.delete(value)
-	db.session.commit()
+			db.get_session().delete(value)
+	db.get_session().commit()
 
 
 
@@ -118,13 +118,13 @@ def setAuthorIllust(series, author=None, illust=None, deleteother=True):
 					changetime = datetime.datetime.now(),
 					changeuser = current_user.id
 				)
-			db.session.add(newentry)
+			db.get_session().add(newentry)
 
 	if deleteother:
 		for key, value in haveitems.items():
-			db.session.delete(value)
+			db.get_session().delete(value)
 
-	db.session.commit()
+	db.get_session().commit()
 
 
 
@@ -150,12 +150,12 @@ def updateGroupAltNames(group, altnames, deleteother=True):
 					changetime = datetime.datetime.now(),
 					changeuser = current_user.id
 				)
-			db.session.add(newname)
+			db.get_session().add(newname)
 
 	if deleteother:
 		for key, value in havenames.items():
-			db.session.delete(value)
-	db.session.commit()
+			db.get_session().delete(value)
+	db.get_session().commit()
 
 
 def getHash(filecont):
