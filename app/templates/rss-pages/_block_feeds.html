@@ -1,0 +1,62 @@
+
+{% macro tableHeader() -%}
+	<table class='table-striped table table-bordered table-condensed fullwidth'>
+		<colgroup>
+			<col>
+			<col style="width: 40%;">
+			<col style="width: 24%;">
+		</colgroup>
+		<tr>
+			<th>
+				Content
+			</th>
+			<th>
+				Tags
+			</th>
+			<th>
+				Group
+			</th>
+		</tr>
+{%- endmacro %}
+
+{% macro tableFooter() -%}
+	</table>
+{%- endmacro %}
+
+{% if raw_feeds: %}
+
+	<h4>
+		{{ format_date(raw_feeds[0].published) }}
+	</h4>
+	{% set lastitemday = raw_feeds[0].published.day %}
+
+	{{ tableHeader() }}
+	{% for entry in raw_feeds: %}
+
+		{% if entry.published.day != lastitemday %}
+			{{ tableFooter() }}
+
+			<h4>
+				{{ format_date(entry.published) }}
+			</h4>
+			{{ tableHeader() }}
+			{% set lastitemday = entry.published.day %}
+		{% endif %}
+		<tr>
+			<td>
+				<a href='{{entry.linkurl}}'>{{entry.title}}</a>
+			</td>
+			<td>
+				{% for tag in entry.tags %}
+					{{ tag.tag }}{% if not loop.last %},{% endif %}
+				{% endfor %}
+			</td>
+			<td>
+				{{entry.srcname}}
+			</td>
+		</tr>
+	{% endfor %}
+	{{ tableFooter() }}
+{% else: %}
+	<strong>No feeds! This probably means something is broken!</strong>
+{% endif %}

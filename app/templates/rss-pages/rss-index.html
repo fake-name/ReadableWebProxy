@@ -1,0 +1,29 @@
+
+{% extends "__base.html" %}
+
+
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well">
+		<h3>BookTrie</h3>
+
+
+		<div class="css-treeview">
+			{%- for dbid, netloc in netlocs %}
+				<div>
+					<ul>
+						<li><input type="checkbox" id="id{{dbid}}" loaded=0 /><label for="id{{dbid}}">{{netloc | title}}</label>
+							<ul>
+								<li id="id{{dbid}}" data-netloc='{{netloc}}'><img src='/static/img/loading-bar.gif' /></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<hr>
+			{%- endfor %}
+
+		</div>
+
+	</div>
+{% endblock %}
