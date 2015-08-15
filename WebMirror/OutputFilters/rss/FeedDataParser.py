@@ -2057,7 +2057,10 @@ class DataParser():
 
 	def getProcessedReleaseInfo(self, feedDat, debug):
 
+
+
 		if any([item in feedDat['linkUrl'] for item in skip_filter]):
+			print("Skipping!")
 			return
 
 

@@ -2,7 +2,7 @@
 
 IGNORE_MALFORMED_URLS: True
 
-type: unknown
+type: "unknown"
 
 baseUrl: None
 

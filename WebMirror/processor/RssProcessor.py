@@ -56,11 +56,12 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 		except Exception:
 			return False
 
-	def __init__(self, pageUrl, loggerPath, pgContent, **kwargs):
+	def __init__(self, pageUrl, loggerPath, pgContent, type, **kwargs):
 		self.loggerPath = loggerPath+".RssProcessor"
 		self.pageUrl    = pageUrl
 
 		self.content    = pgContent
+		self.type       = type
 
 		self.log.info("Processing RSS Item")
 		super().__init__()
@@ -114,7 +115,7 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 
 
 
-	def processFeed(self, feed, feedUrl, feedtype='eastern'):
+	def processFeed(self, feed, feedUrl):
 
 
 		meta = feed['feed']
@@ -166,7 +167,7 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 			if not 'updated' in item:
 				item['updated'] = -1
 
-			item['feedtype'] = feedtype
+			item['feedtype'] = self.type
 
 
 			self.processFeedData(item)
@@ -240,13 +241,18 @@ def test():
 	import WebMirror.Fetch
 	logSetup.initLogging()
 
+	loaded_rules = WebMirror.rules.load_rules()
+	for ruleset in loaded_rules:
+		print(ruleset.keys())
+		print(ruleset['type'])
+		print(ruleset['feedurls'])
 
 	url = 'http://taulsn.wordpress.com/feed/'
 	fetcher = WebMirror.Fetch.ItemFetcher(WebMirror.rules.load_rules(), url, url)
 	response = fetcher.fetch()
 
 
-	url = 'http://fuzionlife.wordpress.com/feed/'
+	url = 'http://turb0translation.blogspot.com/feeds/posts/default'
 	fetcher = WebMirror.Fetch.ItemFetcher(WebMirror.rules.load_rules(), url, url)
 	response = fetcher.fetch()
 

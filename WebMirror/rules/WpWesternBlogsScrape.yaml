@@ -2,7 +2,7 @@
 
 IGNORE_MALFORMED_URLS: True
 
-itemGenre: 'Western'
+type: "western"
 
 baseUrl: [
 	 "http://fuzionlife.wordpress.com",

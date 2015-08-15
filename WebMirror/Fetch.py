@@ -169,6 +169,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'relinkable'      : self.relinkable,
 									'destyle'         : self.rules['destyle'],
 									'preserveAttrs'   : self.rules['preserveAttrs'],
+									'type'            : self.rules['type'],
 		}
 
 		ret = plugin.process(params)

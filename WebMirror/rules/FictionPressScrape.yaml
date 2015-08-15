@@ -3,6 +3,7 @@
 FOLLOW_GOOGLE_LINKS: False
 allImages: False
 
+type: "western"
 
 baseUrl: [
 	"https://www.fictionpress.com/",
