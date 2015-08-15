@@ -402,9 +402,14 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		gdoc_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimeType', 'resources']
 		text_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimeType']
 		file_ret_expected = ['file', 'content', 'fName', 'mimeType']
+		rss_ret_expected  = ['mimeType', 'rss-content']
+
 		if "file" in ret and ret['file'] == True:
 			assert len(ret) == len(file_ret_expected), "File response length mismatch! Expect: %s, received %s (expect keys: '%s', received keys '%s')" % (len(file_ret_expected), len(ret), file_ret_expected, list(ret.keys()))
 			for expect in file_ret_expected:
+				assert expect in ret, "Expected key '%s' in ret (keys: '%s')" % (expect, list(ret.keys()))
+		if 'rss-content' in ret:
+			for expect in rss_ret_expected:
 				assert expect in ret, "Expected key '%s' in ret (keys: '%s')" % (expect, list(ret.keys()))
 		else:
 

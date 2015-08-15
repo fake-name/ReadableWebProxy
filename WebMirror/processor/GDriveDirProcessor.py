@@ -17,7 +17,8 @@ import os.path
 import WebMirror.processor.ProcessorBase as ProcessorBase
 
 
-from . import gDocParse as gdp
+import WebMirror.processor.ProcessorUtils.gDocParse as gdp
+
 import WebMirror.util.urlFuncs as urlFuncs
 
 # import TextScrape.RELINKABLE as RELINKABLE

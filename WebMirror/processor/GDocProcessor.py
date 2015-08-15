@@ -20,7 +20,7 @@ from WebMirror.processor.ProcessorBase import PageProcessor
 
 
 import WebMirror.util.urlFuncs as urlFuncs
-import WebMirror.processor.gDocParse as gdp
+import WebMirror.processor.ProcessorUtils.gDocParse as gdp
 
 # import TextScrape.RelinkLookup
 # import TextScrape.RELINKABLE as RELINKABLE

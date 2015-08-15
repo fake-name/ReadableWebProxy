@@ -8,6 +8,7 @@ from . import ProcessorBase
 
 
 import feedparser
+import bs4
 import json
 import calendar
 import WebMirror.OutputFilters.rss.FeedDataParser
@@ -15,6 +16,8 @@ import WebMirror.OutputFilters.rss.FeedDataParser
 # import TextScrape.RelinkLookup
 # import TextScrape.RELINKABLE as RELINKABLE
 
+
+import WebMirror.processor.HtmlProcessor
 
 
 ########################################################################################################################
@@ -56,12 +59,15 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 		except Exception:
 			return False
 
-	def __init__(self, pageUrl, loggerPath, pgContent, type, **kwargs):
-		self.loggerPath = loggerPath+".RssProcessor"
-		self.pageUrl    = pageUrl
+	def __init__(self, **kwargs):
 
-		self.content    = pgContent
-		self.type       = type
+		self.kwargs     = kwargs
+
+		self.loggerPath = kwargs['loggerPath']+".RssProcessor"
+		self.pageUrl    = kwargs['pageUrl']
+
+		self.content    = kwargs['pgContent']
+		self.type       = kwargs['type']
 
 		self.log.info("Processing RSS Item")
 		super().__init__()
@@ -72,47 +78,63 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 		return feedparser.parse(rawFeed)
 
 
-	# Methods to allow the child-class to modify the content at various points.
-	def extractMarkdownTitle(self, content, url):
-		# Take the first non-empty line, and just assume it's the title. It'll be close enough.
-
-		prefix = None
-		for urlText, prepend in self.urlLut.items():
-			if urlText in url:
-				prefix = prepend
-
-		title = content.strip().split("\n")[0].strip()
-
-		if prefix:
-			title = "{prefix} - {title}".format(prefix=prefix, title=title)
-
-		return title
 
 
-	def extractContent(self):
+	def extractContents(self, feedUrl, contentDat):
+		# TODO: Add more content type parsing!
+
+		# So the complete fruitcakes at http://gravitytales.com/feed/ are apparently
+		# embedding their RSS entries in a CDATA field in their feed, somehow.
+		# Anyways, I think they probably broke wordpress. However, they're then breaking
+		# /my/ stuff, so work around their fucked up feed format.
+		if isinstance(contentDat, str):
+			contentDat = [{
+				'value' : contentDat,
+				'type'  : 'text/html'
+			}]
+		if len(contentDat) != 1:
+			print(contentDat)
+			raise ValueError("How can one post have multiple contents?")
+
+		contentDat = contentDat[0]
 
 
-		feed = self.parseFeed(self.content)
-		data = self.processFeed(feed, self.pageUrl)
+		params = self.kwargs.copy()
 
 
-		# self.insertFeed(tableName, tableKey, pluginName, feedUrl, data, badwords)
+		params['pgContent'] = contentDat['value']
+		params['mimeType']  = contentDat['type']
 
 
-		# title = self.extractMarkdownTitle(self.content, self.pageUrl)
-		# procContent = markdown.markdown(self.content)
+		# baseUrls, pageUrl, pgContent, loggerPath, relinkable
+		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(**params)
 
-		# self.log.info("Processed title: '%s'", title)
+		extracted = scraper.extractContent()
+		assert contentDat['type'] == 'text/html'
+		content = extracted['contents']
 
-		ret = {}
-		# No links here
-		ret['plainLinks'] = []
-		ret['rsrcLinks']  = []
-		ret['title']      = []
-		ret['contents']   = []
+		# Use a parser that doesn't try to generate a well-formed output (and therefore doesn't insert
+		# <html> or <body> into content that will be only a part of the rendered page)
+		soup = bs4.BeautifulSoup(content, "html.parser")
 
-		return ret
 
+
+		if soup.html:
+			soup.html.unwrap()
+		if soup.body:
+			soup.body.unwrap()
+
+		try:
+			cont = soup.prettify()
+		except RuntimeError:
+			try:
+				cont = str(soup)
+			except RuntimeError:
+				cont = '<H2>WARNING - Failure when cleaning and extracting content!</H2><br><br>'
+				cont += content
+
+
+		return content
 
 
 	def processFeed(self, feed, feedUrl):
@@ -124,52 +146,52 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 		ret = []
 
 		for entry in entries:
+
+
+			# if entry['title'].startswith('User:'):
+			# 	# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
+			# 	continue
+
 			item = {}
+			item['feedtype'] = self.type
 
-			item['title'] = entry['title']
-			item['guid'] = entry['guid']
+			item['title']    = entry['title']
+			item['guid']     = entry['guid']
+			item['linkUrl']  = entry['link']
+			item['authors']  = entry['authors']
 
-			item['tags'] = []
-			if 'tags' in entry:
-				for tag in entry['tags']:
-					item['tags'].append(tag['term'])
-
-
-			item['linkUrl'] = entry['link']
-
-
-			if 'content' in entry:
-				item['contents'] = entry['content']
-			elif 'summary' in entry:
-				item['contents'] = entry['summary']
-			else:
-				self.log.error('Empty item in feed?')
-				self.log.error('Feed url: %s', feedUrl)
-				continue
-
-			item['authors'] = entry['authors']
-			# guid
-			# contents
-			# contentHash
-			# author
-			# linkUrl
-			# tags
 
 
 			if 'updated_parsed' in entry:
-				item['updated'] = calendar.timegm(entry['updated_parsed'])
+				item['updated']   = calendar.timegm(entry['updated_parsed'])
 
 			if 'published_parsed' in entry:
 				item['published'] = calendar.timegm(entry['published_parsed'])
 
 			if not 'published' in item or ('updated' in item and item['published'] > item['updated']):
 				item['published'] = item['updated']
+
 			if not 'updated' in item:
-				item['updated'] = -1
+				item['updated']   = None
 
-			item['feedtype'] = self.type
+			item['tags']    = []
+			if 'tags' in entry:
+				for tag in entry['tags']:
+					item['tags'].append(tag['term'])
 
 
+			if 'content' in entry:
+				item['contents'] = self.extractContents(feedUrl, entry['content'])
+			elif 'summary' in entry:
+				item['contents'] = self.extractContents(feedUrl, entry['summary'])
+			else:
+				self.log.error('Empty item in feed?')
+				self.log.error('Feed url: %s', feedUrl)
+				continue
+
+
+
+			# processFeedData() call has to be /before/ we convert the tags to a json object.
 			self.processFeedData(item)
 
 			item['tags'] = json.dumps(item['tags'])
@@ -177,60 +199,42 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 			ret.append(item)
 		return ret
 
-	def insertFeed(self, tableName, tableKey, pluginName, feedUrl, feedContent, badwords):
-		print("InsertFeed!")
-		dbFunc = TextScrape.utilities.Proxy.EmptyProxy(tableKey=tableKey, tableName=tableName, scanned=[feedUrl])
 
-		for item in feedContent:
-			if item['title'].startswith('User:') and tableKey == 'tsuki':
-				# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
-				continue
 
-			try:
-				ret = self.extractContents(feedUrl, item['contents'])
-				# print(ret)
-				# ret = dbFunc.processHtmlPage(feedUrl, item['contents'])
-			except RuntimeError:
-				ret = {}
-				ret['contents'] = '<H2>WARNING - Failure when cleaning and extracting content!</H2><br><br>'
-				ret['contents'] += item['contents']
-				ret['rsrcLinks'] = []
-				ret['plainLinks'] = []
-				self.log.error("Wat? Error when extracting contents!")
+	def extractContent(self):
+
+
+		feed = self.parseFeed(self.content)
+		data = self.processFeed(feed, self.pageUrl)
+
+		# print(data)
+		# self.insertFeed(tableName, tableKey, pluginName, feedUrl, data, badwords)
+
+
+		ret = {}
+		# No links here
+
+		ret['rss-content'] = (data)
+
+		return ret
 
 
 
-			if not self.itemInDB(contentid=item['guid']):
 
-				self.log.info("New article in feed!")
-
-
-				row = {
-					'srcname'    : tableKey,
-					'feedurl'    : feedUrl,
-					'contenturl' : item['linkUrl'],
-					'contentid'  : item['guid'],
-					'title'      : item['title'],
-					'contents'   : ret['contents'],
-					'author'     : '',
-					'tags'       : item['tags'],
-					'updated'    : item['updated'],
-					'published'  : item['published'],
-				}
-
-				self.insertIntoDb(**row)
-
-			dbFunc.upsert(item['linkUrl'], dlstate=0, distance=0, walkLimit=1)
-			for link in ret['plainLinks']:
-				# print("Adding link '%s' to the queue" % link)
-				if not any([badword in link for badword in badwords]):
-					dbFunc.upsert(link, dlstate=0, distance=0, walkLimit=1)
-				else:
-					print("Filtered link!", link)
-			for link in ret['rsrcLinks']:
-				if not any([badword in link for badword in badwords]):
-					dbFunc.upsert(link, distance=0, walkLimit=1, istext=False)
-
+def testJobFromUrl(url):
+	import datetime
+	import WebMirror.database
+	return WebMirror.database.WebPages(
+				state     = 'fetching',
+				url       = url,
+				starturl  = url,
+				netloc    = "wat",
+				distance  = WebMirror.database.MAX_DISTANCE-2,
+				is_text   = True,
+				priority  = WebMirror.database.DB_REALTIME_PRIORITY,
+				type      = "unknown",
+				fetchtime = datetime.datetime.now(),
+				)
 
 
 
@@ -238,28 +242,29 @@ def test():
 	print("Test mode!")
 	import logSetup
 	import WebMirror.rules
-	import WebMirror.Fetch
+	import WebMirror.Engine
+	import multiprocessing
 	logSetup.initLogging()
 
-	loaded_rules = WebMirror.rules.load_rules()
-	for ruleset in loaded_rules:
-		print(ruleset.keys())
-		print(ruleset['type'])
-		print(ruleset['feedurls'])
+	c_lok = cookie_lock = multiprocessing.Lock()
+	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok)
+
+
 
 	url = 'http://taulsn.wordpress.com/feed/'
-	fetcher = WebMirror.Fetch.ItemFetcher(WebMirror.rules.load_rules(), url, url)
-	response = fetcher.fetch()
+
+	job = testJobFromUrl(url)
+	engine.dispatchRequest(job)
 
 
 	url = 'http://turb0translation.blogspot.com/feeds/posts/default'
-	fetcher = WebMirror.Fetch.ItemFetcher(WebMirror.rules.load_rules(), url, url)
-	response = fetcher.fetch()
+	job = testJobFromUrl(url)
+	engine.dispatchRequest(job)
 
 
 	url = 'http://www.w3schools.com/xml/note.xml'
-	fetcher = WebMirror.Fetch.ItemFetcher(WebMirror.rules.load_rules(), url, url)
-	response = fetcher.fetch()
+	job = testJobFromUrl(url)
+	engine.dispatchRequest(job)
 
 
 if __name__ == "__main__":

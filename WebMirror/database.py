@@ -109,6 +109,9 @@ class FeedItems(Base):
 
 	id           = Column(Integer, primary_key = True)
 
+
+	type        = Column(itemtype_enum, default='unknown', index=True)
+
 	srcname      = Column(Text, nullable=False, index=True)
 	feedurl      = Column(Text, nullable=False, index=True)
 	contenturl   = Column(Text, nullable=False, index=True)

@@ -93,7 +93,7 @@ class Crawler(object):
 
 	def run(self):
 
-		PROCESSES = 1
+		PROCESSES = 8
 		tasks =[]
 		# executor = ProcessPoolExecutor(max_workers=PROCESSES)
 		# tasks = [multiprocessing.Process(target=RunInstance.run, args=(x, self.rules)) for x in range(PROCESSES)]

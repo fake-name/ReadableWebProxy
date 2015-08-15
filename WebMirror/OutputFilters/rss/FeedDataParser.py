@@ -1986,10 +1986,10 @@ class DataParser():
 
 
 
-		if ret:
-			print(item['title'])
-			print(ret["vol"], ret["chp"])
-			print()
+		# if ret:
+		# 	print(item['title'])
+		# 	print(ret["vol"], ret["chp"])
+		# 	print()
 
 
 

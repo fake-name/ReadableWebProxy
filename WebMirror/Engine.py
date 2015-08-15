@@ -235,6 +235,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 			if self.filter:
 				self.filter.processPage(job.url, '', response['content'], response['mimeType'])
 			self.upsertFileResponse(job, response)
+		if 'rss-content' in response:
+			self.upsertRssItems(response['rss-content'], job.url)
+			self.upsertResponseLinks(job, plain=[entry['linkUrl'] for entry in response['rss-content']])
+
 		else:
 			if self.filter:
 				if "rawcontent" in response:
@@ -245,7 +249,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					rawc = response['contents']
 				self.filter.processPage(job.url, response['title'], rawc, response['mimeType'])
 			self.upsertReponseContent(job, response)
-			self.upsertResponseLinks(job, response)
+			self.upsertResponseLinks(job, plain=response['plainLinks'], resource=response['rsrcLinks'])
 
 		# Reset the fetch time download
 
@@ -277,6 +281,64 @@ class SiteArchiver(LogBase.LoggerMixin):
 			except sqlalchemy.exc.InvalidRequestError:
 				self.db.session.rollback()
 
+	def insertRssItem(self, entry, feedurl):
+
+		have = self.db.session.query(self.db.FeedItems) \
+			.filter(self.db.FeedItems.contentid == entry['guid'])   \
+			.limit(1)                                  \
+			.scalar()
+
+		if have:
+			return
+		else:
+			new = self.db.FeedItems(
+				contentid  = entry['guid'],
+				title      = entry['title'],
+				author     = ", ".join([tmp['name'] for tmp in entry['authors'] if 'name' in tmp]),
+				srcname    = entry['srcname'],
+				feedurl    = feedurl,
+				contenturl = entry['linkUrl'],
+
+				type       = entry['feedtype'],
+				contents   = entry['contents'],
+				tags       = entry['tags'],
+
+				updated    = datetime.datetime.fromtimestamp(entry['updated']) if entry['updated'] else None,
+				published  = datetime.datetime.fromtimestamp(entry['published'])
+				)
+
+			self.db.session.add(new)
+			self.db.session.commit()
+
+
+
+
+	def upsertRssItems(self, entrylist, feedurl):
+		print("InsertFeed!")
+		for feedentry in entrylist:
+			# print(feedentry)
+			# print(feedentry.keys())
+			# print(feedentry['contents'])
+			# print(feedentry['published'])
+
+
+			while 1:
+				try:
+					self.insertRssItem(feedentry, feedurl)
+					break
+
+				except sqlalchemy.exc.InvalidRequestError:
+					print("InvalidRequest error!")
+					self.db.session.rollback()
+					traceback.print_exc()
+				except sqlalchemy.exc.OperationalError:
+					print("InvalidRequest error!")
+					self.db.session.rollback()
+				except sqlalchemy.exc.IntegrityError:
+					print("Integrity error!")
+					self.db.session.rollback()
+
+
 	# Todo: FIXME
 	def filterContentLinks(self, job, links, badwords):
 		ret = set()
@@ -307,9 +369,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 				ret.add(link)
 		return ret
 
-	def upsertResponseLinks(self, job, response):
-		plain    = set(response['plainLinks'])
-		resource = set(response['rsrcLinks'])
+	def upsertResponseLinks(self, job, plain=[], resource=[]):
+		plain    = set(plain)
+		resource = set(resource)
 
 		unfiltered = len(plain)+len(resource)
 		badwords = GLOBAL_BAD
