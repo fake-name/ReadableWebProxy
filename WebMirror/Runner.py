@@ -3,7 +3,6 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-from concurrent.futures import ProcessPoolExecutor
 import WebMirror.rules
 import WebMirror.util.urlFuncs as urlFuncs
 import time
@@ -53,7 +52,7 @@ class RunInstance(object):
 
 			if loop == 15:
 				loop = 0
-				self.log.info("Thread %s awake. Runstate: %s (value %s)", self.num, runStatus.run_state, runStatus.run_state.value)
+				self.log.info("Thread %s awake. Runstate: %s", self.num, runStatus.run_state.value)
 
 
 	@classmethod
@@ -101,9 +100,6 @@ class Crawler(object):
 
 		PROCESSES = 8
 		tasks =[]
-		# executor = ProcessPoolExecutor(max_workers=PROCESSES)
-		# tasks = [multiprocessing.Process(target=RunInstance.run, args=(x, self.rules)) for x in range(PROCESSES)]
-		# [task.start() for task in tasks]
 		cnt = 0
 		procno = 0
 
@@ -116,6 +112,7 @@ class Crawler(object):
 						cnt = 0
 						living = sum([task.is_alive() for task in tasks])
 						for x in range(PROCESSES - living):
+							self.log.warning("Insufficent living child threads! Creating another thread with number %s", procno)
 							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules))
 							tasks.append(proc)
 							proc.start()

@@ -1,32 +1,41 @@
 
 Overall data-flow:
 
-+----------+   +----------------------+   +-------------------+
-| Database +-->+                      +-->+                   |
-+----^-----+   |   Retreive task.     |   |  Retreive remote  |
-     |         |   Filter by          |   |  resource         |
-     |         |    * Priority        |   |                   |
-     |         |    * Task source     |   +--------+----------+
-     |         |    * Predicted       |            |           
-     |         |       content-Type   |            |           
-     |         |                      |            v           
-     |         +----------------------+   +--------+----------+
-     |         +----------------------+   |                   |
-     |         |                      |   |  Process          |
-     |         |  Generate update     |   |  retrieved        |
-     +--(-)----+  based on processed  +<--+  content using    |
-         |     |  content.            |   |  plugin LUT       |
-         |     |                      |   |                   |
-         |     +----------------------+   +---------+---------+
-         |                                          ^          
-         |                                          |          
-    +----+----+                             +-------+------+   
-    | Update  |                             |              |   
-    | Filter  |                             |   Build      |   
-    | System  |                             |   Plugin     |   
-    +----+----+                             |    LUT       |   
-         |                                  |              |   
-         |                                  +------+-------+   
+
++--------------+
+|              |
+|  Scheduled   |
+|   trigger    +---------------------------------------------------+
+|    system    |                                                   |
+|              |                                                   |
++----+---------+                                                   |
+     |                                                             |
++----v-----+   +----------------------+   +-------------------+    |
+| Database +-->+                      +-->+                   |    |
++----^-----+   |   Retreive task.     |   |  Retreive remote  |    |
+     |         |   Filter by          |   |  resource         |    |
+     |         |    * Priority        |   |                   |    |
+     |         |    * Task source     |   +--------+----------+    |
+     |         |    * Predicted       |            |               |
+     |         |       content-Type   |            |               |
+     |         |                      |            v               |
+     |         +----------------------+   +--------+----------+    |
+     |         +----------------------+   |                   |    |
+     |         |                      |   |  Process          |    |
+     |         |  Generate update     |   |  retrieved        |    |
+     +--(-)----+  based on processed  +<--+  content using    |    |
+         |     |  content.            |   |  plugin LUT       |    |
+         |     |                      |   |                   |    |
+         |     +----------------------+   +---------+---------+    |
+         |                                          ^              |
+         |                                          |              |
+    +----+----+                             +-------+------+       |   
+    | Update  |                             |              |       |   
+    | Filter  |                             |   Build      |       |   
+    | System  |                             |   Plugin     +-------^   
+    +----+----+                             |    LUT       |           
+         |                                  |              |           
+         |                                  +------+-------+           
          v                                         ^           
      (  AMQP )                                     |           
      ( Stuff )                                     |           

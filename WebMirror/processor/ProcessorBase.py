@@ -104,6 +104,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 	_badwords       = []
 
 
+	_no_ret = False
+
 	# Hook so plugins can modify the internal URLs as part of the relinking process
 	def preprocessReaderUrl(self, inUrl):
 		return inUrl
@@ -394,6 +396,11 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		instance = cls(**params)
 		ret = instance.extractContent()
+
+		# Filters don't return anything, so
+		# don't check for return stuff
+		if cls._no_ret:
+			return
 
 		# Copy the mime-type into the return, since bothering to round-trip
 		# it through the processor class is silly.

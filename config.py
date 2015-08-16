@@ -17,13 +17,17 @@ from settings import RABBIT_PASWD           as C_RABBIT_PASWD
 from settings import RABBIT_SRVER           as C_RABBIT_SRVER
 from settings import RABBIT_VHOST           as C_RABBIT_VHOST
 
+
+
 import os
 import sys
 import hashlib
+import datetime
 if len(sys.argv) > 1 and "debug" in sys.argv:
 	SQLALCHEMY_ECHO = True
 
 
+REFETCH_INTERVAL = datetime.timedelta(days=7*3)
 relink_secret = hashlib.sha1(C_RELINK_SECRET.encode("ascii")).hexdigest()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -65,3 +69,4 @@ class BaseConfig(object):
 	SECURITY_PASSWORD_SALT = C_SECURITY_PASSWORD_SALT
 
 	RESOURCE_DIR = C_RESOURCE_DIR
+

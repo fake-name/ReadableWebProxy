@@ -16,7 +16,6 @@ import sqlalchemy.exc
 from sqlalchemy import desc
 
 import WebMirror.util.urlFuncs
-import WebMirror.OutputFilters.FilterManager
 import urllib.parse
 import traceback
 import datetime
@@ -164,14 +163,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		print("SiteArchiver __init__()")
 		super().__init__()
 
-
-
 		self.db = db
-
-		if run_filters:
-			self.filter = WebMirror.OutputFilters.FilterManager.FilterManager()
-		else:
-			self.filter = False
 
 		self.cookie_lock = cookie_lock
 
@@ -231,22 +223,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		if "file" in response:
 			# No title is present in a file response
-			if self.filter:
-				self.filter.processPage(job.url, '', response['content'], response['mimeType'])
 			self.upsertFileResponse(job, response)
 		elif 'rss-content' in response:
 			self.upsertRssItems(response['rss-content'], job.url)
 			self.upsertResponseLinks(job, plain=[entry['linkUrl'] for entry in response['rss-content']])
 
 		else:
-			if self.filter:
-				if "rawcontent" in response:
-					rawc = response['rawcontent']
-				else:
-					print("No raw content in response!")
-					print("Keys:", response.keys())
-					rawc = response['contents']
-				self.filter.processPage(job.url, response['title'], rawc, response['mimeType'])
 			self.upsertReponseContent(job, response)
 			self.upsertResponseLinks(job, plain=response['plainLinks'], resource=response['rsrcLinks'])
 
