@@ -29,7 +29,7 @@
 				Author: {%- for author in entry.author -%}{{ author }}{% if not loop.last %}, {% endif %}{%- endfor -%}
 			</span>
 			<span style='margin:auto;'>
-				<a href="{{entry.contenturl}}">Source page</a>
+				<a href="/view?{{ {"url" : entry.contenturl} | urlencode | safe }}">Source page</a>
 			</span>
 			<span class='pull-right'>
 				Posted: {{entry.published}}
