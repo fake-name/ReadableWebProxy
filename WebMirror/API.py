@@ -31,7 +31,7 @@ class RemoteContentObject(object):
 		assert self.fetched
 		return self.job.title
 
-	def getContent(self, relink_key, relink_replace):
+	def getContent(self, relink_replace):
 		"""
 		At this point, we have the page content, but we need to
 		replace the url/resource keys with the proper paths
@@ -91,7 +91,7 @@ def getPage(url, ignore_cache=False):
 	page.fetch(ignore_cache)
 
 	title      = page.getTitle()
-	content    = page.getContent(relink_secret, "/view?url=")
+	content    = page.getContent("/view?url=")
 	cachestate = page.getCacheState()
 
 	return title, content, cachestate

@@ -170,7 +170,7 @@ class Author(Base):
 def tag_creator(tag):
 
 	tmp = get_session().query(Tags)         \
-		.filter(Tags.tag      == tag) \
+		.filter(Tags.tag == tag) \
 		.scalar()
 	if tmp:
 		return tmp

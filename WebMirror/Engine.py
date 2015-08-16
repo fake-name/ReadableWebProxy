@@ -287,12 +287,19 @@ class SiteArchiver(LogBase.LoggerMixin):
 			.limit(1)                                  \
 			.scalar()
 
+
+
 		if have:
 			return
 		else:
 			assert ("srcname" in entry), "'srcname' not in entry for item from '%s' (contenturl: '%s', title: '%s', guid: '%s')" % (feedurl, entry['linkUrl'], entry['title'], entry['guid'])
 
 			authors     = [tmp['name'] for tmp in entry['authors'] if 'name' in tmp]
+
+			# Deduplicate repeat tags of the differing case.
+			tags = {}
+			for tag in entry['tags']:
+				tags[tag.lower()] = tag
 
 			new = self.db.FeedItems(
 					contentid  = entry['guid'],
@@ -305,7 +312,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					contents   = entry['contents'],
 
 					author     = authors,
-					tags       = entry['tags'],
+					tags       = list(tags.values()),
 
 					updated    = datetime.datetime.fromtimestamp(entry['updated']),
 					published  = datetime.datetime.fromtimestamp(entry['published'])
@@ -339,7 +346,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 					print("InvalidRequest error!")
 					self.db.get_session().rollback()
 				except sqlalchemy.exc.IntegrityError:
-					print("Integrity error!")
+					print("[upsertRssItems] -> Integrity error!")
+					traceback.print_exc()
 					self.db.get_session().rollback()
 
 
@@ -656,7 +664,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					print("InvalidRequest error!")
 					self.db.get_session().rollback()
 				except sqlalchemy.exc.IntegrityError:
-					print("Integrity error!")
+					print("[synchronousJobRequest] -> Integrity error!")
 					self.db.get_session().rollback()
 					row =  query = self.db.get_session().query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)               \

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		{% if title %}
+		{%- if title -%}
 			<title>{{ title }} - ReadProxy</title>
-		{% else %}
+		{%- else -%}
 			<title>ReadProxy</title>
-		{% endif %}
+		{%- endif -%}
 
 		<!-- Base template header -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<!-- Sub template header -->
-		{% block header %}{% endblock %}
+		{%- block header -%}{%- endblock -%}
 		<!-- template header end -->
 	</head>
 	<body>
@@ -20,10 +20,10 @@
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-md-2">
-							{% include '_block_nav.html' %}
+							{%- include '_block_nav.html' -%}
 						</div>
 						<div class="col-md-10">
-							{% block content %}{% endblock %}
+							{%- block content -%}{%- endblock -%}
 						</div>
 					</div>
 
@@ -41,10 +41,10 @@
 	<script src="/static/js/jquery-latest.min.js"></script>
 	<script src="/static/js/bootstrap.min.js"></script>
 	<!-- Admin template-footer -->
-	{% if g.user.is_mod() %}
-		{% include '_block_admin_scripts.html' %}
-	{% endif %}
+	{%- if g.user.is_mod() -%}
+		{%- include '_block_admin_scripts.html' -%}
+	{%- endif -%}
 	<!-- Sub template-footer -->
-	{% block footer %}{% endblock %}
+	{%- block footer -%}{%- endblock -%}
 	<!-- Template footer end -->
 </html>

@@ -1,10 +1,10 @@
 
-{% macro tableHeader() -%}
-	<table class='table-striped table table-bordered table-condensed fullwidth'>
+{%- macro tableHeader() -%}
+	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
 		<colgroup>
-			<col>
-			<col style="width: 40%;">
-			<col style="width: 24%;">
+			<col />
+			<col style="width: 40%;" />
+			<col style="width: 24%;" />
 		</colgroup>
 		<tr>
 			<th>
@@ -17,46 +17,46 @@
 				Group
 			</th>
 		</tr>
-{%- endmacro %}
+{%- endmacro -%}
 
-{% macro tableFooter() -%}
+{%- macro tableFooter() -%}
 	</table>
-{%- endmacro %}
+{%- endmacro -%}
 
-{% if raw_feeds: %}
+{%- if raw_feeds: -%}
 
 	<h4>
 		{{ format_date(raw_feeds[0].published) }}
 	</h4>
-	{% set lastitemday = raw_feeds[0].published.day %}
+	{%- set lastitemday = raw_feeds[0].published.day -%}
 
 	{{ tableHeader() }}
-	{% for entry in raw_feeds: %}
+	{%- for entry in raw_feeds: -%}
 
-		{% if entry.published.day != lastitemday %}
+		{%- if entry.published.day != lastitemday -%}
 			{{ tableFooter() }}
 
 			<h4>
 				{{ format_date(entry.published) }}
 			</h4>
 			{{ tableHeader() }}
-			{% set lastitemday = entry.published.day %}
-		{% endif %}
+			{%- set lastitemday = entry.published.day -%}
+		{%- endif -%}
 		<tr>
 			<td>
-				<a href='{{entry.linkurl}}'>{{entry.title}}</a>
+				<a href='/feeds/postid/{{entry.id}}'>{{entry.title}}</a>
 			</td>
 			<td>
-				{% for tag in entry.tags %}
-					{{ tag.tag }}{% if not loop.last %},{% endif %}
-				{% endfor %}
+				{%- for tag in entry.tags -%}
+					{{ tag }}{% if not loop.last %}, {% endif %}
+				{%- endfor -%}
 			</td>
 			<td>
 				{{entry.srcname}}
 			</td>
 		</tr>
-	{% endfor %}
+	{%- endfor -%}
 	{{ tableFooter() }}
-{% else: %}
+{%- else: -%}
 	<strong>No feeds! This probably means something is broken!</strong>
-{% endif %}
+{%- endif -%}

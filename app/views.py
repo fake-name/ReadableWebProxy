@@ -1,18 +1,4 @@
 
-from flask import flash
-from flask import redirect
-from flask import session
-from flask import url_for
-from flask import jsonify
-from flask import abort
-from flask.ext.login import login_user
-from flask.ext.login import logout_user
-from flask.ext.login import login_required
-from itsdangerous import URLSafeTimedSerializer
-from itsdangerous import BadSignature
-from flask.ext.babel import gettext
-from datetime import datetime
-
 
 # from guess_language import guess_language
 
@@ -20,9 +6,7 @@ import markdown
 import os.path
 
 from flask import render_template
-from flask import make_response
 from flask import send_file
-from flask import request
 from flask import g
 from flask.ext.login import current_user
 from flask.ext.sqlalchemy import get_debug_queries
@@ -35,11 +19,15 @@ from app import app
 
 from app import lm
 from app import babel
-import time
+
 
 import WebMirror.API
 
-import app.book_tree.book_views as book_views
+import app.book_tree.book_views    as book_views
+
+import app.sub_views.content_views as content_views
+import app.sub_views.rss_views     as rss_views
+
 
 @lm.user_loader
 def load_user(id):
@@ -58,16 +46,6 @@ def before_request():
 	g.locale = get_locale()
 
 
-
-@app.after_request
-def after_request(response):
-	for query in get_debug_queries():
-		if query.duration >= app.config['DATABASE_QUERY_TIMEOUT']:
-			app.logger.warning(
-				"SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
-				(query.statement, query.parameters, query.duration,
-				 query.context))
-	return response
 
 
 @app.errorhandler(404)
@@ -103,59 +81,6 @@ def index():
 						   title               = 'Home',
 						   interesting_links   = interesting,
 						   )
-
-
-@app.route('/view', methods=['GET'])
-def view():
-	req_url = request.args.get('url')
-	if not req_url:
-		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
-
-	ignore_cache = request.args.get("nocache")
-
-	return render_template('view.html', title = 'Home', req_url = req_url, ignore_cache = ignore_cache)
-
-
-@app.route('/render', methods=['GET'])
-def render():
-	req_url = request.args.get('url')
-	if not req_url:
-		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
-	req_url = request.args.get('url')
-
-	ignore_cache = request.args.get("nocache")
-	# print("Rendering with nocache=", ignore_cache)
-	title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache)
-
-	return render_template('render.html',
-		title      = title,
-		contents   = content,
-		cachestate = cachestate,
-		req_url    = req_url,
-		)
-
-@app.route('/render_rsc', methods=['GET'])
-def render_resource():
-	req_url = request.args.get('url')
-	if not req_url:
-		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
-
-	ignore_cache = request.args.get("nocache")
-
-	mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url, ignore_cache=ignore_cache)
-
-	response = make_response(content)
-	response.headers['Content-Type'] = mimetype
-	response.headers["Content-Disposition"] = "attachment; filename={}".format(fname)
-
-	return response
-	# return render_template('render.html',
-	# 	title      = title,
-	# 	contents   = content,
-	# 	cachestate = cachestate,
-	# 	req_url    = req_url,
-	# 	)
-
 
 @app.route('/favicon.ico')
 def sendFavIcon():

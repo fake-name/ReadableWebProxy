@@ -126,6 +126,9 @@ textarea
 	resize: none;
 }
 
+td {
+	word-wrap: break-word
+}
 td.numeric, td.postfix {
 		text-align:right;
 }

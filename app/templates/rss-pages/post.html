@@ -1,0 +1,60 @@
+<!-- extend base layout -->
+{%- macro render_pagination(pagination) -%}
+	<div class=pagination>
+	{%- for page in pagination.iter_pages() -%}
+		{%- if page -%}
+			{%- if page != pagination.page -%}
+				<a href="{{ page }}">{{ page }}</a>
+			{%- else -%}
+				<strong>{{ page }}</strong>
+			{%- endif -%}
+		{%- else -%}
+			<span class=ellipsis>…</span>
+		{%- endif -%}
+	{%- endfor -%}
+	</div>
+{%- endmacro -%}
+
+
+
+
+{%- extends "__base.html" -%}
+
+{%- block content -%}
+	{%- include '_block_flash.html' -%}
+	<div class="well well-large" style="min-height: 140px;">
+		<h2>Post: {{entry.title}}</h2>
+		<div style='text-align: center'>
+			<span class='pull-left'>
+				Author: {%- for author in entry.author -%}{{ author }}{% if not loop.last %}, {% endif %}{%- endfor -%}
+			</span>
+			<span style='margin:auto;'>
+				<a href="{{entry.contenturl}}">Source page</a>
+			</span>
+			<span class='pull-right'>
+				Posted: {{entry.published}}
+			</span>
+		</div>
+		<div class='easyreading'>
+			<h3>
+				Post:
+			</h3>
+			<div>
+				{{ contents | safe }}
+			</div>
+		</div>
+
+	</div>
+
+	<style>
+		div.easyreading
+		{
+			margin:0 auto;
+			width: 500px;
+			font-family: Arial;
+			font-size: large;
+			word-wrap: break-word;
+		}
+	</style>
+
+{%- endblock -%}
