@@ -43,7 +43,8 @@ PLUGINS = [
 ]
 
 
-import WebMirror.OutputFilters.RoyalRoadL.RRLProcessor
+import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter
+
 FILTERS = [
-	WebMirror.OutputFilters.RoyalRoadL.RRLProcessor.RRLProcessor,
+	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
 ]

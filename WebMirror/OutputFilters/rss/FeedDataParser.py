@@ -5,10 +5,16 @@ import urllib.parse
 import re
 import json
 import logging
-from . import feedNameLut
+import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 from WebMirror.OutputFilters import AmqpInterface
 import settings
 from WebMirror.util.titleParse import TitleParser
+
+
+from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
+from WebMirror.OutputFilters.util.TitleParsers import extractChapterVol
+from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
+from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment
 
 # pylint: disable=W0201
 
@@ -18,67 +24,6 @@ skip_filter = [
 	"re-monster.wikia.com",
 ]
 
-def extractTitle(inStr):
-	# print("Parsing: '%s'" % inStr)
-	p    = TitleParser(inStr)
-	vol  = p.getVolume()
-	chp  = p.getChapter()
-	frag = p.getFragment()
-	post = p.getPostfix()
-	return vol, chp, frag, post
-
-def extractChapterVol(inStr):
-	vol, chp, dummy_frag, dummy_post = extractTitle(inStr)
-	return chp, vol
-
-def extractVolChapterFragmentPostfix(inStr):
-	vol, chp, frag, post = extractTitle(inStr)
-	return vol, chp, frag, post
-
-def extractChapterVolFragment(inStr):
-	vol, chp, frag, dummy_post = extractTitle(inStr)
-	return chp, vol, frag
-
-
-
-def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}):
-	'''
-	Special case behaviour:
-		If vol or chapter is None, the
-		item in question will sort to the end of
-		the relevant sort segment.
-	'''
-	ret = {
-		'srcname'   : raw_item['srcname'],
-		'series'    : series,
-		'vol'       : vol,
-		'chp'       : packChapterFragments(chap, frag),
-		'published' : raw_item['published'],
-		'itemurl'   : raw_item['linkUrl'],
-		'postfix'   : postfix,
-		'author'    : author,
-		'tl_type'   : tl_type,
-	}
-
-	for key, value in extraData.items():
-		assert key not in ret
-		ret[key] = value
-	return ret
-
-def packChapterFragments(chapStr, fragStr):
-	if not chapStr and not fragStr:
-		return None
-	if not fragStr:
-		return chapStr
-
-	# Handle cases where the fragment is present,
-	# but the chapStr is None
-	if chapStr == None:
-		chapStr = 0
-
-	chap = float(chapStr)
-	frag = float(fragStr)
-	return '%0.2f' % (chap + (frag / 100.0))
 
 
 class DataParser():

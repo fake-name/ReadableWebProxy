@@ -6,10 +6,17 @@ runStatus.preloadDicts = False
 
 import WebMirror.OutputFilters.FilterBase
 
+from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
+from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import bs4
 import re
 import calendar
+import datetime
+import time
+import json
+
+MIN_RATING = 5
 
 ########################################################################################################################
 #
@@ -26,7 +33,7 @@ import calendar
 
 
 
-class RRLProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
@@ -40,8 +47,8 @@ class RRLProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	@staticmethod
 	def wantsUrl(url):
-		if re.search(r"http://www\.royalroadl\.com/fiction/\d+", url):
-			print("RRL Wants url: '%s'" % url)
+		if re.search(r"^http://www\.royalroadl\.com/fiction/\d+/?$", url):
+			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
 			return True
 		return False
 
@@ -64,22 +71,7 @@ class RRLProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 ##################################################################################################################################
 
 
-
-	def patchUrl(self, inurl, chapter):
-		url = inurl
-
-		urls = inurl.rsplit('/', 2)
-		assert len(urls) == 3
-		assert urls[1] == '1'
-
-		url = "/".join((urls[0], str(chapter), urls[2]))
-
-		self.dbFunc.upsert(url, dlstate=0, distance=0, walkLimit=1)
-
-		return url
-
-	def extractSeriesReleases(self, seriesPageUrl):
-		soup = self.wg.getSoup(seriesPageUrl)
+	def extractSeriesReleases(self, seriesPageUrl, soup):
 
 		titletg  = soup.find("h1", class_='fiction-title')
 		authortg = soup.find("span", class_='author')
@@ -103,17 +95,31 @@ class RRLProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		descDiv = soup.find('div', class_='description')
 		paras = descDiv.find_all("p")
 		tags = []
-		for text in [para.get_text() for para in paras]:
+
+		desc = []
+		for para, text in [(para, para.get_text()) for para in paras]:
 			if text.lower().startswith('categories:'):
 				tagstr = text.split(":", 1)[-1]
 				items = tagstr.split(",")
 				[tags.append(item.strip()) for item in items if item.strip()]
+			else:
+				desc.append(para)
+
+
+		seriesmeta = {}
+
+		seriesmeta['title']    = title
+		seriesmeta['author']   = author
+		seriesmeta['tags']     = tags
+		seriesmeta['homepage'] = seriesPageUrl
+		seriesmeta['desc']     = " ".join([str(para) for para in desc])
+
+		self.sendSeriesInfoPacket(seriesmeta)
+
 		extra = {}
 		extra['tags']     = tags
 		extra['homepage'] = seriesPageUrl
 
-		# print(title, author)
-		# print(extra)
 
 		chapters = soup.find("div", class_='chapters')
 		releases = chapters.find_all('li', class_='chapter')
@@ -129,83 +135,53 @@ class RRLProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 			chp_title = chp_title.get_text()
 			# print("Chp title: '{}'".format(chp_title))
-			vol, chp, frag, post = FeedScrape.FeedDataParser.extractTitle(chp_title)
+			vol, chp, frag, post = extractTitle(chp_title)
 
 			raw_item = {}
 			raw_item['srcname']   = "RoyalRoadL"
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release.a['href']
 
-			msg = FeedScrape.FeedDataParser.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
+			msg = buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
 			retval.append(msg)
 
 		return retval
 
 
-	def getSeriesPage(self, entry):
-		ratingtg = entry.find("span", class_='score')
 
-		if not ratingtg:
-			return False
 
-		# Filter poorly rated or unrated series.
-		if float(ratingtg['score']) < MIN_RATING:
-			return False
-
-		links = entry.find_all("a")
-		assert len(links) == 1
-
-		link = links[0]
-
-		assert link.get_text() == "Fiction Page"
-		return link['href']
-
-	def parseEntry(self, entry):
-		seriesPage = self.getSeriesPage(entry)
-		if not seriesPage:
-			return []
-
-		releases = self.extractSeriesReleases(seriesPage)
-		self.log.info("Found %s releases for series", len(releases))
-		return releases
-
-	def loadReleases(self, fromurl):
-		soup = self.wg.getSoup(fromurl)
-
-		content = soup.find("ul", id='fiction-list')
-		entries = content.find_all("li", class_='fiction mature')
-
-		data = []
-		for entry in entries:
-
-			ret = self.parseEntry(entry)
-			if ret:
-				for item in ret:
-					data.append(item)
-		self.log.info("Found %s releases from fictionpress", len(data))
-		return data
+	def sendReleases(self, releases):
+		self.log.info("Total releases found on page: %s", len(releases))
+		for release in releases:
+			pkt = self.createReleasePacket(release)
+			self.amqpint.put_item(pkt)
 
 
 
-	def getChanges(self):
-		for releasePage in self.base:
-			releases = self.loadReleases(releasePage)
-			self.log.info("Total releases found from RoyalRoadL: %s", len(releases))
-			for release in releases:
-				# print(release)
-				pkt = self.createPacket(release)
-				self.amqpint.put_item(pkt)
-				# return
-				# print(pkt)
-
-
-
-	def createPacket(self, data):
+	def createReleasePacket(self, data):
 		ret = {
 			'type' : 'parsed-release',
 			'data' : data
 		}
 		return json.dumps(ret)
+
+
+	def sendSeriesInfoPacket(self, data):
+		ret = {
+			'type' : 'series-metadata',
+			'data' : data
+		}
+		pkt = json.dumps(ret)
+		self.amqpint.put_item(pkt)
+
+
+	def processPage(self, url, content):
+
+		soup = bs4.BeautifulSoup(self.content)
+		releases = self.extractSeriesReleases(self.pageUrl, soup)
+		self.sendReleases(releases)
+
+
 
 
 ##################################################################################################################################
@@ -216,6 +192,9 @@ class RRLProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractContent(self):
 		print("Call to extract!")
+		print(self.amqpint)
+
+		self.processPage(self.pageUrl, self.content)
 
 
 def testJobFromUrl(url):
@@ -248,17 +227,9 @@ def test():
 
 
 
-	url = 'http://www.royalroadl.com/fiction/3021'
+	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fiction/3021'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates'))
 
-	job = testJobFromUrl(url)
-	engine.dispatchRequest(job)
-
-
-
-
-	url = 'http://www.w3schools.com/xml/note.xml'
-	job = testJobFromUrl(url)
-	engine.dispatchRequest(job)
 
 
 if __name__ == "__main__":

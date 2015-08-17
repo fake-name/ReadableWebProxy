@@ -8,6 +8,7 @@ import WebMirror.Runner
 import WebMirror.rules
 import sys
 import datetime
+import config
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
@@ -24,12 +25,12 @@ job_defaults = {
 	'max_instances': 1
 }
 
+SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)
+
 jobstores = {
 
 	'transient_jobstore' : MemoryJobStore(),
-	'main_jobstore'      : SQLAlchemyJobStore(url='postgresql://{username}:{password}@localhost:5432/{dbname}'.format(username=settings.DATABASE_USER,
-				password=settings.DATABASE_PASS,
-				dbname=settings.DATABASE_DB_NAME))
+	'main_jobstore'      : SQLAlchemyJobStore(url=SQLALCHEMY_DATABASE_URI)
 
 }
 
@@ -65,7 +66,7 @@ def scheduleJobs(sched, timeToStart):
 			# Jobs that are called less often then once every 4 hours get placed
 			# in the main jobstore.
 			# More ephemeral jobs get stored in the memory jobstore.
-			if interval < datetime.timedelta(seconds = 60 * 60 * 4):
+			if interval < (60 * 60 * 4):
 				jobstore = "transient_jobstore"
 			else:
 				jobstore = "main_jobstore"

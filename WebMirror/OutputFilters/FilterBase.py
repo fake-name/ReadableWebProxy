@@ -17,7 +17,7 @@ class FilterBase(PageProcessor):
 			"RABBIT_VHOST" : config.C_RABBIT_VHOST,
 		}
 
-		self.amqp_conn = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
+		self.amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
 		super().__init__()
 		self._no_ret = True
