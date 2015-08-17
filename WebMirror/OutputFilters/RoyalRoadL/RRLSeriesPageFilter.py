@@ -77,7 +77,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		authortg = soup.find("span", class_='author')
 		ratingtg = soup.find("span", class_='overall')
 
-		assert float(ratingtg['score']) >= MIN_RATING
+		if not float(ratingtg['score']) >= MIN_RATING:
+			return
 
 		if not titletg:
 			return []
