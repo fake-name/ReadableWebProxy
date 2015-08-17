@@ -6,7 +6,7 @@ runStatus.preloadDicts = False
 
 import WebMirror.OutputFilters.FilterBase
 
-from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
+import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import bs4
@@ -113,8 +113,10 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['tags']     = tags
 		seriesmeta['homepage'] = seriesPageUrl
 		seriesmeta['desc']     = " ".join([str(para) for para in desc])
+		seriesmeta['tl_type']  = 'oel'
 
-		self.sendSeriesInfoPacket(seriesmeta)
+		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
+		self.amqpint.put_item(pkt)
 
 		extra = {}
 		extra['tags']     = tags
@@ -142,7 +144,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release.a['href']
 
-			msg = buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
+			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
 			retval.append(msg)
 
 		return retval
@@ -153,26 +155,10 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def sendReleases(self, releases):
 		self.log.info("Total releases found on page: %s", len(releases))
 		for release in releases:
-			pkt = self.createReleasePacket(release)
+			pkt = msgpackers.createReleasePacket(release)
 			self.amqpint.put_item(pkt)
 
 
-
-	def createReleasePacket(self, data):
-		ret = {
-			'type' : 'parsed-release',
-			'data' : data
-		}
-		return json.dumps(ret)
-
-
-	def sendSeriesInfoPacket(self, data):
-		ret = {
-			'type' : 'series-metadata',
-			'data' : data
-		}
-		pkt = json.dumps(ret)
-		self.amqpint.put_item(pkt)
 
 
 	def processPage(self, url, content):
