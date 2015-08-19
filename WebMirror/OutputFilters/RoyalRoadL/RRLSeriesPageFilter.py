@@ -77,8 +77,11 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		authortg = soup.find("span", class_='author')
 		ratingtg = soup.find("span", class_='overall')
 
+		if not ratingtg:
+			return []
+
 		if not float(ratingtg['score']) >= MIN_RATING:
-			return
+			return []
 
 		if not titletg:
 			return []
@@ -117,7 +120,6 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['tl_type']  = 'oel'
 
 		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
-		self.amqpint.put_item(pkt)
 
 		extra = {}
 		extra['tags']     = tags
@@ -148,6 +150,9 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
 			retval.append(msg)
 
+		if not retval:
+			return []
+		self.amqpint.put_item(pkt)
 		return retval
 
 
@@ -166,7 +171,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		soup = bs4.BeautifulSoup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
-		self.sendReleases(releases)
+		if releases:
+			self.sendReleases(releases)
 
 
 

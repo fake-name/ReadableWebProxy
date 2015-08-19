@@ -48,11 +48,11 @@
 			</td>
 			<td>
 				{%- for tag in entry.tags -%}
-					{{ tag }}{% if not loop.last %}, {% endif %}
+					<a href='/feeds/tag/{{ tag }}/'>{{ tag }}</a>{% if not loop.last %}, {% endif %}
 				{%- endfor -%}
 			</td>
 			<td>
-				{{entry.srcname}}
+				<a href='/feeds/source/{{ entry.srcname | urlencode }}/'>{{entry.srcname}}</a>
 			</td>
 		</tr>
 	{%- endfor -%}

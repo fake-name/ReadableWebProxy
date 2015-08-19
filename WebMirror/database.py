@@ -206,12 +206,12 @@ class FeedItems(Base):
 	updated      = Column(DateTime, default=datetime.datetime.min)
 	published    = Column(DateTime, nullable=False)
 
-	tag_rel       = relationship('Tags',       secondary=lambda: feed_tags_link)
-	author_rel    = relationship('Author',     secondary=lambda: feed_author_link)
+	tag_rel       = relationship('Tags',       secondary=feed_tags_link,   backref='feed_pages')
+	author_rel    = relationship('Author',     secondary=feed_author_link, backref='feed_pages')
 
 
 	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
-	author        = association_proxy('author_rel',    'author',    creator=author_creator)
+	author        = association_proxy('author_rel',   'author',    creator=author_creator)
 
 
 Base.metadata.create_all(bind=get_engine(), checkfirst=True)

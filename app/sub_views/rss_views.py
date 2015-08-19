@@ -57,9 +57,57 @@ def renderFeedsTable(page=1):
 	feed_entries = paginate(feeds, page, app.config['FEED_ITEMS_PER_PAGE'])
 
 	return render_template('rss-pages/feeds.html',
+						   subheader = "",
 						   sequence_item   = feed_entries,
 						   page            = page
 						   )
+
+
+
+@app.route('/feeds/tag/<tag>/<page>')
+@app.route('/feeds/tag/<tag>/<int:page>')
+@app.route('/feeds/tag/<tag>/')
+def renderFeedsTagTable(tag, page=1):
+	query = db.get_session().query(db.FeedItems)
+	# query = query.join(db.Tags)
+	query = query.filter(db.FeedItems.tags.contains(tag))
+	query = query.order_by(desc(db.FeedItems.published))
+
+	feeds = query
+
+	if feeds is None:
+		flash(gettext('No feeds? Something is /probably/ broken!.'))
+		return redirect(url_for('renderFeedsTable'))
+
+	feed_entries = paginate(feeds, page, app.config['FEED_ITEMS_PER_PAGE'])
+
+	return render_template('rss-pages/feeds.html',
+						   subheader = "Tag = '%s'" % tag,
+						   sequence_item   = feed_entries,
+						   page            = page
+						   )
+
+@app.route('/feeds/source/<source>/<page>')
+@app.route('/feeds/source/<source>/<int:page>')
+@app.route('/feeds/source/<source>/')
+def renderFeedsSourceTable(source, page=1):
+	feeds = db.get_session().query(db.FeedItems) \
+		.filter(db.FeedItems.srcname == source)  \
+		.order_by(desc(db.FeedItems.published))
+
+	if feeds is None:
+		flash(gettext('No feeds? Something is /probably/ broken!.'))
+		return redirect(url_for('renderFeedsTable'))
+
+	feed_entries = paginate(feeds, page, app.config['FEED_ITEMS_PER_PAGE'])
+
+	return render_template('rss-pages/feeds.html',
+						   subheader = "Source = '%s'" % source,
+						   sequence_item   = feed_entries,
+						   page            = page
+						   )
+
+
 
 
 @app.route('/feeds/postid/<int:postid>')
