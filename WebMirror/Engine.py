@@ -214,13 +214,17 @@ class SiteArchiver(LogBase.LoggerMixin):
 	#
 	########################################################################################################################
 
+	# Minimal proxy because I want to be able to call the fetcher without affecting the DB.
+	def fetch(self, job):
+		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock, wg_handle=self.wg)
+		response = fetcher.fetch()
+		return response
+
 	# This is the main function that's called by the task management system.
 	# Retreive remote content at `url`, call the appropriate handler for the
 	# transferred content (e.g. is it an image/html page/binary file)
 	def dispatchRequest(self, job):
-		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock, wg_handle=self.wg)
-		response = fetcher.fetch()
-
+		response = self.fetch(job)
 		if "file" in response:
 			# No title is present in a file response
 			self.upsertFileResponse(job, response)

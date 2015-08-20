@@ -271,6 +271,10 @@ class DataParser():
 			proc_str = "%s %s" % (item['tags'], item['title'])
 			proc_str = proc_str.replace("'", " ")
 			chp, vol = extractChapterVol(proc_str)
+
+			with open("out.txt", "a") as fp:
+				fp.write("'%s', '%s', '%s'\n" % (proc_str, chp, vol))
+			print(item['title'], item['tags'], proc_str, chp, vol)
 			if not (chp and vol):
 				return False
 
@@ -1633,6 +1637,7 @@ class DataParser():
 
 
 	def dispatchRelease(self, item, debug = False):
+
 
 		ret = False
 
