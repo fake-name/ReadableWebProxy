@@ -7,6 +7,7 @@ type: "western"
 
 baseUrl: [
 	"http://www.royalroadl.com/",
+	"http://royalroadl.com/",
 	]
 
 badwords: [
@@ -27,6 +28,10 @@ decomposeBefore: [
 	{"class" : "review-body-wrapper"},
 	{"class" : "review-list"},
 
+]
+
+preserveAttrs: [
+	["a", "onclick"],
 ]
 
 decompose: [
@@ -52,6 +57,13 @@ decompose: [
 	{"class" : "nav-menu"},
 	{"class" : "postbit_footer"},
 	{"class" : "add-to-list"},
+	{"class" : "bam_announcement"},
+	{"class" : "bam_announcements"},
+	{"class" : "breadcrumb"},
+	{"class" : "pagination"},
+	{"class" : "button"},
+	{"class" : "postbit_avatar"},
+	{"class" : "postbit_usertitle"},
 
 	# I /think/ this is probably a source typo. Whoops?
 	{"class" : "none"},

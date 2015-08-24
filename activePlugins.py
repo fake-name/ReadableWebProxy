@@ -39,6 +39,8 @@ import WebMirror.processor.GDocProcessor
 import WebMirror.processor.MarkdownProcessor
 import WebMirror.processor.BinaryProcessor
 import WebMirror.processor.RssProcessor
+import WebMirror.processor.WattPadJsonProcessor
+
 PLUGINS = [
 	WebMirror.processor.HtmlProcessor.HtmlPageProcessor,
 	WebMirror.processor.GDriveDirProcessor.GDriveDirProcessor,
@@ -46,6 +48,7 @@ PLUGINS = [
 	WebMirror.processor.MarkdownProcessor.MarkdownProcessor,
 	WebMirror.processor.BinaryProcessor.BinaryResourceProcessor,
 	WebMirror.processor.RssProcessor.RssProcessor,
+	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
 ]
 
 

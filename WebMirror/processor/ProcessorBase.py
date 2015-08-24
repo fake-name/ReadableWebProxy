@@ -120,6 +120,11 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if inUrl.startswith("data:"):
 			return inUrl
 
+		# or links that are NOP()ed with javascript
+		if inUrl.startswith("javascript:void(0);"):
+			return inUrl
+
+
 		# Fix protocol-relative URLs
 		if inUrl.startswith("//"):
 			if hasattr(self, "pageUrl"):
@@ -406,9 +411,16 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		# it through the processor class is silly.
 		ret['mimeType'] = params['mimeType']
 
+		# Google doc returns include inline content (images, usualy)
 		gdoc_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimeType', 'resources']
+
+		# Normal return have just markup, title, contents, and the mime-type
 		text_ret_expected = ['plainLinks', 'rsrcLinks', 'title', 'contents', 'mimeType']
+
+		# File content doesn't contain links or a title, but does include the file-name (generally from the URL or the content-disposition headers)
 		file_ret_expected = ['file', 'content', 'fName', 'mimeType']
+
+		# Rss content is a set of responses (one per article), so we just have two high-level entries.
 		rss_ret_expected  = ['mimeType', 'rss-content']
 
 		if "file" in ret and ret['file'] == True:

@@ -1,0 +1,159 @@
+
+
+FOLLOW_GOOGLE_LINKS: False
+allImages: False
+
+type: "western"
+
+baseUrl: [
+	"https://www.wattpad.com/",
+	]
+extraStartUrl: [
+	'https://www.wattpad.com/stories',
+	'https://www.wattpad.com/api/v3/stories?fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+
+	# Pick out the categories for also crawling.
+	'https://www.wattpad.com/api/v3/stories?category=14&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Action"
+	'https://www.wattpad.com/api/v3/stories?category=24&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Chick Lit"
+	'https://www.wattpad.com/api/v3/stories?category=6&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Fanfiction"
+	'https://www.wattpad.com/api/v3/stories?category=21&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "General Fiction"
+	'https://www.wattpad.com/api/v3/stories?category=9&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Horror"
+	'https://www.wattpad.com/api/v3/stories?category=8&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Mystery / Thriller"
+	'https://www.wattpad.com/api/v3/stories?category=12&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Paranormal"
+	'https://www.wattpad.com/api/v3/stories?category=19&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Random"
+	'https://www.wattpad.com/api/v3/stories?category=5&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Sci-fi"
+	'https://www.wattpad.com/api/v3/stories?category=13&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Spiritual" - WTF Does this category even mean?
+	'https://www.wattpad.com/api/v3/stories?category=18&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Vampire" - This is a category now?
+	'https://www.wattpad.com/api/v3/stories?category=11&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Adventure"
+	'https://www.wattpad.com/api/v3/stories?category=10&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Classics"
+	'https://www.wattpad.com/api/v3/stories?category=3&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Fantasy"
+	'https://www.wattpad.com/api/v3/stories?category=23&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Historical Fiction"
+	'https://www.wattpad.com/api/v3/stories?category=7&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Humor"
+	'https://www.wattpad.com/api/v3/stories?category=4&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Romance"
+	'https://www.wattpad.com/api/v3/stories?category=1&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',  # "Teen Fiction"
+	'https://www.wattpad.com/api/v3/stories?category=22&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0', # "Werewolf" - I guess as a counterpoint to vampire? *Sigh*
+
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=14&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=24&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=6&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=21&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=9&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=8&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=12&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=19&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=5&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=13&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=18&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=11&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=10&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=3&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=23&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=7&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=4&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=1&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=featured&category=22&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=14&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=24&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=6&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=21&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=9&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=8&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=12&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=19&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=5&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=13&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=18&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=11&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=10&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=3&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=23&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=7&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=4&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=1&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&category=22&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=14&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=24&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=6&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=21&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=9&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=8&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=12&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=19&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=5&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=13&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=18&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=11&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=10&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=3&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=23&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=7&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=4&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=1&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+	'https://www.wattpad.com/api/v3/stories?filter=hot&category=22&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
+
+	]
+
+badwords: [
+			"/signup",
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			"/forum/",
+			"/forum",
+			"/forums/",
+			"/forums",
+			"/games/",
+			"/betareaders/",
+			"/poetry/", # Really?
+			"/poetry", # Really?
+
+			"/post.php?",
+			"/author.php?",
+			]
+
+# Content Stripping needs to be determined.
+decomposeBefore: [
+
+]
+
+decompose: [
+	{'id' : "top"},
+	{'id' : "p_footer"},
+	{'id' : "profile_top"},
+	{'id' : "review"},
+	{'class' : "zmenu"},
+	{'class' : "lc-wrapper"},
+
+
+	{'id' : "sign-up-header"},
+	{'id' : "authentication-panel"},
+	{'id' : "overlay"},
+	{'id' : "header"},
+	{'id' : "discover-landing"},
+]
+
+stripTitle: []
+
+
+destyle : [
+	["div",  {}],
+	["span", {}],
+]
+
+
+preserveAttrs : [
+	["button", 'id'],
+	["button", 'onclick'],
+	["button", 'type'],
+	["button", 'btn'],
+	["select", ''],
+]
+

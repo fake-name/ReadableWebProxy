@@ -89,25 +89,23 @@ def scheduleJobs(sched, timeToStart):
 
 
 def go():
-	if "init" in sys.argv:
 
-		rules = WebMirror.rules.load_rules()
-		WebMirror.Runner.initializeStartUrls(rules)
-	else:
+	rules = WebMirror.rules.load_rules()
+	WebMirror.Runner.initializeStartUrls(rules)
 
-		sched = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
+	sched = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
 
-		# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*60)
-		# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*15)
-		# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*5)
-		# startTime = datetime.datetime.now()+datetime.timedelta(seconds=20)
-		startTime = datetime.datetime.now()+datetime.timedelta(seconds=10)
-		scheduleJobs(sched, startTime)
-		sched.start()
+	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*60)
+	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*15)
+	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*5)
+	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=20)
+	startTime = datetime.datetime.now()+datetime.timedelta(seconds=10)
+	scheduleJobs(sched, startTime)
+	sched.start()
 
 
-		runner = WebMirror.Runner.Crawler()
-		runner.run()
+	runner = WebMirror.Runner.Crawler()
+	runner.run()
 
 	# print("Thread halted. App exiting.")
 

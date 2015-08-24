@@ -87,7 +87,7 @@ def initializeStartUrls(rules):
 					)
 				print("Missing start-url for address: '{}'".format(starturl))
 				db.get_session().add(new)
-	db.get_session().commit()
+		db.get_session().commit()
 
 
 
