@@ -100,7 +100,7 @@ class WattPadJsonProcessor(ProcessorBase.PageProcessor):
 			h3.append(link)
 			tmp.append(h3)
 
-			if item['description']:
+			if 'description' in item and item['description']:
 				p = soup.new_tag('p')
 				p.string = item['description']
 				tmp.append(p)
