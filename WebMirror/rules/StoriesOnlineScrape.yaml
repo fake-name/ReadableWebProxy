@@ -10,7 +10,9 @@ baseUrl: [
 	"http://storiesonline.net/",
 
 	]
-extraStartUrl: 'http://storiesonline.net/home.php'
+extraStartUrls: [
+	'http://storiesonline.net/home.php'
+	]
 
 badwords: [
 			"/about/",

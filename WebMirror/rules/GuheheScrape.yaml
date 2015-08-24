@@ -8,7 +8,9 @@ baseUrl: [
 	"http://guhehe.net/",
 	"http://www.guhehe.net/"
 	]
-extraStartUrl: ['http://guhehe.net/volumes/']
+extraStartUrls: [
+	'http://guhehe.net/volumes/'
+	]
 
 badwords: [
 			"/about/",

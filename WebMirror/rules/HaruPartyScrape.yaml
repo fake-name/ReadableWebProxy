@@ -4,7 +4,7 @@
 FOLLOW_GOOGLE_LINKS: True
 
 baseUrl: ["http://lasolistia.com/haruparty/"]
-extraStartUrl: [
+extraStartUrls: [
 		'https://docs.google.com/document/d/1ZdweQdjIBqNsJW6opMhkkRcSlrbgUN5WHCcYrMY7oqI',
 		'https://docs.google.com/document/d/1xInAD8v06AIX_urMZRRXHBocDsqBEePMoU1EOTfGRZQ/pub',
 		'https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web',
