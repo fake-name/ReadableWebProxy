@@ -129,14 +129,15 @@ class WattPadJsonProcessor(ProcessorBase.PageProcessor):
 			self.log.error("'%s'", self.content)
 			raise
 
-		pageLinks = []
 		if "nextUrl" in unpacked:
-			pageLinks.append(unpacked['nextUrl'])
+			# print("nextUrl:", unpacked['nextUrl'])
+			ret['plainLinks'].append(unpacked['nextUrl'])
 
 		if "stories" in unpacked:
 			ret['title'], ret['contents'], newLinks = self.buildPage(unpacked['stories'])
 			ret['plainLinks'] += newLinks
 
+		# print("Link #", len(ret['plainLinks']))
 		return ret
 
 
