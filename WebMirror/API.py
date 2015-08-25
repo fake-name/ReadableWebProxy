@@ -4,6 +4,8 @@ import os.path
 from config import relink_secret
 
 from WebMirror.Engine import SiteArchiver
+from WebMirror.Exceptions import DownloadException, getErrorDiv
+
 
 def replace_links(content):
 	rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
@@ -88,11 +90,14 @@ def processRaw(content):
 def getPage(url, ignore_cache=False):
 	page = RemoteContentObject(url)
 
-	page.fetch(ignore_cache)
+	try:
+		page.fetch(ignore_cache)
 
-	title      = page.getTitle()
-	content    = page.getContent("/view?url=")
-	cachestate = page.getCacheState()
+		title      = page.getTitle()
+		content    = page.getContent("/view?url=")
+		cachestate = page.getCacheState()
+	except DownloadException:
+		title, content, cachestate = getErrorDiv()
 
 	return title, content, cachestate
 

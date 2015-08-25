@@ -25,9 +25,6 @@ import WebMirror.util.urlFuncs as urlFuncs
 # import TextScrape.RelinkLookup
 
 
-class DownloadException(Exception):
-	pass
-
 
 
 ########################################################################################################################

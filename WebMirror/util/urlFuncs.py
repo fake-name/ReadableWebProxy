@@ -44,14 +44,13 @@ urlContainingTargets = [
 	(True,  'img',        'usemap'),
 ]
 
-
-class CannotAccessGDocException(Exception):
-	pass
+from WebMirror.Exceptions import CannotAccessGDocException
 
 
 
 def trimGDocUrl(rawUrl):
-
+	if "docs.google.com" in rawUrl:
+		print("Trimming URL: ", rawUrl)
 
 	url = rawUrl.split("#")[0]
 
@@ -93,10 +92,11 @@ def trimGDocUrl(rawUrl):
 			"/view",
 			"/mobilebasic",
 			"/mobilebasic?viewopt=127",
-			"/pub?embedded=true",
+			"?embedded=true",
+			"?embedded=false",
 			]
 
-		gdocBaseRe = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+)(.*)$')
+		gdocBaseRe = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+(?:/pub)?)(.*)$')
 		simpleCheck = gdocBaseRe.search(url)
 		if simpleCheck:
 			if any([item in simpleCheck.group(2) for item in strip]):
@@ -105,6 +105,9 @@ def trimGDocUrl(rawUrl):
 		for ending in strip:
 			if url.endswith(ending):
 				url = url[:-len(ending)]
+
+	if "docs.google.com" in url:
+		print("Trimmed URL: ", url)
 
 	# if url.endswith("/pub"):
 	# 	url = url[:-3]

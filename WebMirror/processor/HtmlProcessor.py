@@ -7,8 +7,7 @@ import webcolors
 import WebMirror.util.urlFuncs as urlFuncs
 from . import ProcessorBase
 
-class DownloadException(Exception):
-	pass
+
 
 
 ########################################################################################################################
@@ -221,7 +220,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				ststr = item['style']
 				if 'font' in ststr.lower():
 					item['style'] = ''
-					
+
 				old = hexr.findall(ststr)
 				for match in old:
 					color = webcolors.hex_to_rgb(match)

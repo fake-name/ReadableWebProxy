@@ -1,10 +1,6 @@
 
 from . import ProcessorBase
 
-class DownloadException(Exception):
-	pass
-
-
 
 
 

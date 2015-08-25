@@ -19,8 +19,7 @@ import WebMirror.processor.ProcessorBase
 from activePlugins import PLUGINS
 from activePlugins import FILTERS
 
-class DownloadException(Exception):
-	pass
+from WebMirror.Exceptions import DownloadException
 
 ########################################################################################################################
 #
