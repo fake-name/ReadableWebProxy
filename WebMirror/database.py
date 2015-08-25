@@ -85,7 +85,7 @@ itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype
 class WebPages(Base):
 	__tablename__ = 'web_pages'
 	id           = Column(Integer, primary_key = True)
-	state        = Column(dlstate_enum, default='new', index=True)
+	state        = Column(dlstate_enum, default='new', index=True, nullable=False)
 	errno        = Column(Integer, default='0')
 	url          = Column(Text, nullable = False, index = True, unique = True)
 	starturl     = Column(Text, nullable = False)

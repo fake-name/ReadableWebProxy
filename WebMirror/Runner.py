@@ -98,7 +98,7 @@ class Crawler(object):
 
 	def run(self):
 
-		PROCESSES = 8
+		PROCESSES = 16
 		tasks =[]
 		cnt = 0
 		procno = 0

@@ -367,17 +367,22 @@ class SiteArchiver(LogBase.LoggerMixin):
 				ret.add(link)
 		return ret
 
-	def upsertResponseLinks(self, job, plain=[], resource=[]):
-		plain    = set(plain)
-		resource = set(resource)
-
-		unfiltered = len(plain)+len(resource)
+	def getBadWords(self, job):
 		badwords = GLOBAL_BAD
 		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
 			badwords += item['badwords']
 
 		# A "None" can occationally crop up. Filter it.
 		badwords = [badword for badword in badwords if badword]
+		return badwords
+
+	def upsertResponseLinks(self, job, plain=[], resource=[]):
+		plain    = set(plain)
+		resource = set(resource)
+
+		unfiltered = len(plain)+len(resource)
+
+		badwords = self.getBadWords(job)
 
 		plain    = self.filterContentLinks(job,  plain,    badwords)
 		resource = self.filterResourceLinks(job, resource, badwords)
@@ -407,6 +412,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 						'is_text'   : istext,
 						'priority'  : job.priority,
 						'type'      : job.type,
+						'state'     : "new",
 						'fetchtime' : datetime.datetime.now(),
 						}
 
@@ -414,9 +420,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 					cmd = text("""
 							INSERT INTO
 								web_pages
-								(url, starturl, netloc, distance, is_text, priority, type, fetchtime)
+								(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
 							VALUES
-								(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime)
+								(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
 							ON CONFLICT DO NOTHING
 							""")
 					self.db.get_session().execute(cmd, params=new)
@@ -528,11 +534,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 					.filter(self.db.WebPages.state == "new")            \
 					.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE)) \
 					.order_by(self.db.WebPages.priority)                \
-					.order_by(desc(self.db.WebPages.is_text))           \
-					.order_by(desc(self.db.WebPages.addtime))           \
-					.order_by(self.db.WebPages.distance)                \
-					.order_by(self.db.WebPages.url)                     \
 					.limit(1)
+
+					# This compound order_by completely, COMPLETELY tanked the
+					# time of this query. As it was, it took > 2 seconds per query!
+					# .order_by(desc(self.db.WebPages.is_text))           \
+					# .order_by(desc(self.db.WebPages.addtime))           \
+					# .order_by(self.db.WebPages.distance)                \
+					# .order_by(self.db.WebPages.url)                     \
 
 				job = query.scalar()
 				if not job:

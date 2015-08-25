@@ -298,9 +298,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 				item = self.processLinkItem(url, baseUrl)
 				if item:
-					ret.append(item)
+					ret.append(item.strip())
 
-		return ret
+		return set(ret)
 
 
 	def extractImages(self, soup, baseUrl):
@@ -315,7 +315,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			item = self.processImageLink(url, baseUrl)
 			if item:
 				ret.append(item)
-		return ret
+		return set(ret)
 
 
 

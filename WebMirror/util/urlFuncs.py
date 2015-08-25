@@ -49,8 +49,8 @@ from WebMirror.Exceptions import CannotAccessGDocException
 
 
 def trimGDocUrl(rawUrl):
-	if "docs.google.com" in rawUrl:
-		print("Trimming URL: ", rawUrl)
+	# if "docs.google.com" in rawUrl:
+	# 	print("Trimming URL: ", rawUrl)
 
 	url = rawUrl.split("#")[0]
 
@@ -106,8 +106,8 @@ def trimGDocUrl(rawUrl):
 			if url.endswith(ending):
 				url = url[:-len(ending)]
 
-	if "docs.google.com" in url:
-		print("Trimmed URL: ", url)
+	# if "docs.google.com" in url:
+	# 	print("Trimmed URL: ", url)
 
 	# if url.endswith("/pub"):
 	# 	url = url[:-3]
@@ -190,13 +190,14 @@ def rebaseUrl(url, base):
 	"""Rebase one url according to base"""
 
 	parsed = urllib.parse.urlparse(url)
+
 	if parsed.scheme == parsed.netloc == '':
 		return urllib.parse.urljoin(base, url)
 	else:
 		return url
 
 def canonizeUrls(soup, pageUrl):
-
+	print("Canonizing for page: ", pageUrl)
 	for (dummy_isimg, tag, attr) in urlContainingTargets:
 		for link in soup.findAll(tag):
 			try:

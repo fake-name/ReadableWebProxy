@@ -352,9 +352,9 @@ function readCallback(result)
 		alert("Error on update!\n\n"+result["message"])
 	}
 
-	console.log(result)
-	console.log("Saved!")
-	$("#watch-state").text("[saved]");
+	console.log(result);
+	console.log("Saved!");
+	$("#watch-state").each(function(idx, itm){$(itm).text("[saved]");});
 }
 
 

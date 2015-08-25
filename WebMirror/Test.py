@@ -29,6 +29,22 @@ def test(url):
 	archiver = SiteArchiver(None)
 	ret = archiver.fetch(new)
 	print(archiver)
+	print(ret.keys())
+	print("Plain links:")
+	for link in ret['plainLinks']:
+		print("	", link)
+	print("Resource links:")
+	for link in ret['rsrcLinks']:
+		print("	", link)
+
+	print()
+	print("Filtering")
+	badwords = archiver.getBadWords(new)
+	filtered = archiver.filterContentLinks(new, ret['plainLinks'], badwords)
+
+	print("Filtered plain links:")
+	for link in filtered:
+		print("	", link)
 	# cmd = text("""
 	# 		INSERT INTO
 	# 			web_pages
