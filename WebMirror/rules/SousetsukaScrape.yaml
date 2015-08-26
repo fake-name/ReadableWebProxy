@@ -1,5 +1,5 @@
 
-
+type: eastern
 FOLLOW_GOOGLE_LINKS: False
 
 baseUrl: [
@@ -34,14 +34,6 @@ badwords: [
 			"/wp-login.php",
 			"/#comments",      # Ignore in-page anchor tags
 			"/staff/"]
-
-positive_keywords: ['main_content']
-
-negative_keywords: ['mw-normal-catlinks',
-					"printfooter",
-					"mw-panel",
-					'portal']
-
 
 
 

@@ -1,3 +1,4 @@
+type: eastern
 
 feeds: [
 	'http://re-monster.wikia.com/wiki/Special:RecentChanges?feed=atom'
@@ -85,13 +86,6 @@ badwords: [
 
 
 			]
-
-positive_keywords: ['main_content']
-
-negative_keywords: ['mw-normal-catlinks',
-					"printfooter",
-					"mw-panel",
-					'portal']
 
 
 

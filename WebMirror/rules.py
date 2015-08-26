@@ -108,15 +108,6 @@ def getPreserveAttrs(ruleset):
 	return ruleset['preserveAttrs']
 
 
-def checkBadValues(ruleset):
-	assert 'wg' not in ruleset
-	assert 'threads' not in ruleset
-	assert 'startUrl' not in ruleset
-	assert 'tableKey' not in ruleset
-	assert 'pluginName' not in ruleset
-	assert 'loggerPath' not in ruleset
-
-
 def getPossibleNetLocs(ruleset):
 	'''
 	Given the set of start URLs, and (if present) a set of
@@ -208,14 +199,56 @@ def getIgnoreMalformed(ruleset):
 	return ruleset['IGNORE_MALFORMED_URLS']
 
 def getGenreType(ruleset):
-	if not 'type' in ruleset:
-		return "eastern"
+	assert 'type' in ruleset, "Type missing from ruleset!"
 	assert ruleset['type'] in ['western', 'eastern', 'unknown']
 	return ruleset['type']
 
+
+def checkBadValues(ruleset):
+	assert 'wg' not in ruleset
+	assert 'threads' not in ruleset
+	assert 'startUrl' not in ruleset
+	assert 'tableKey' not in ruleset
+	assert 'pluginName' not in ruleset
+	assert 'loggerPath' not in ruleset
+
+
+def validateRuleKeys(dat, fname):
+	checkBadValues(dat)
+	keys = list(dat.keys())
+	# print(keys)
+	valid = [
+		'badwords',
+
+		'decompose',
+		'decomposeBefore',
+
+		'baseUrl',
+		'feeds',
+		'feedPostfix',
+		'stripTitle',
+		'tld',
+		'FOLLOW_GOOGLE_LINKS',
+		'allImages',
+		'cloudflare',
+		'fileDomains',
+		'destyle',
+		'preserveAttrs',
+		'type',
+		'extraStartUrls',
+
+		# Not currently implemented, but useful
+		'titleTweakLut',
+		]
+	for key in keys:
+
+		assert key in valid, "Key '%s' from ruleset '%s' is not valid!" % (key, fname)
+
+
 def load_validate_rules(fname, dat):
 
-	checkBadValues(dat)
+	validateRuleKeys(dat, fname)
+
 
 	rules = {}
 	rules['starturls']             = getStartURLs(dat)
@@ -236,26 +269,6 @@ def load_validate_rules(fname, dat):
 	rules['destyle']               = getDestyles(dat)
 	rules['preserveAttrs']         = getPreserveAttrs(dat)
 
-	# itemGenre
-	# allowQueryStr
-	# changeMasks
-	# stripTitle
-	# decomposeBefore
-	# decompose
-	# badwords
-	# FOLLOW_GOOGLE_LINKS
-	# allImages
-
-	# Start urls are the values of baseurl +
-	# extraStartUrls (if present)
-
-	# feeds
-	# feedPostfix
-
-
-	# Block values:
-	# wg
-	# threads
 
 	return rules
 
@@ -297,7 +310,7 @@ def get_rules():
 				print("ERROR!")
 				print("Validation error when trying to load file: '{}'".format(item))
 				traceback.print_exc()
-				print(dat)
+				# print(dat)
 
 	# for ruleset in ret:
 	# 	print(type(ruleset['starturls']))

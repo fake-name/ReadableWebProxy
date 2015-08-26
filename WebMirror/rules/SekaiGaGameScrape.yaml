@@ -1,6 +1,6 @@
 
 
-
+type: eastern
 
 baseUrl: [
 	"https://sites.google.com/site/sekaigameoredake/"
@@ -26,13 +26,6 @@ badwords: [
 			"/wp-login.php",
 			"/#comments",      # Ignore in-page anchor tags
 			"/staff/"]
-
-positive_keywords: ['main_content']
-
-negative_keywords: ['mw-normal-catlinks',
-					"printfooter",
-					"mw-panel",
-					'portal']
 
 
 

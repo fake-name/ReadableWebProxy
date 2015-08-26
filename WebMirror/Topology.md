@@ -57,31 +57,21 @@ Required directives:
  - baseUrl
 
 Allowed directives:
+ - decomposeBefore
  - feeds
  - feedPostfix
  - stripTitle
- - decomposeBefore
  - tld
- - baseUrl
  - FOLLOW_GOOGLE_LINKS
  - allImages
  - cloudflare
  - fileDomains
  - destyle
  - preserveAttrs
+ - type
+ - extraStartUrls
 
 Planned directives:
  - TagReplace
  - TitleReplace
-
-Ignored directives:
- - positive_keywords
- - negative_keywords
-
-Disallowed directives:
- - wg
- - threads
- - startUrl
- - tableKey
- - pluginName
- - loggerPath
+ - titleTweakLut

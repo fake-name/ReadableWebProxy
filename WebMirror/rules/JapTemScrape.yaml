@@ -1,4 +1,4 @@
-
+type: eastern
 
 feeds: [
 	'http://japtem.com/feed/'
@@ -26,14 +26,6 @@ badwords: [
 			"/wp-login.php",
 			"/#comments",      # Ignore in-page anchor tags
 			"/staff/"]
-
-positive_keywords: ['main_content']
-
-negative_keywords: ['mw-normal-catlinks',
-					"printfooter",
-					"mw-panel",
-					'portal']
-
 
 
 

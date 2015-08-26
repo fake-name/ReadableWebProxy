@@ -1,8 +1,6 @@
 
 
-IGNORE_MALFORMED_URLS: True
-
-itemGenre: Eastern
+type: eastern
 
 baseUrl: [
 
