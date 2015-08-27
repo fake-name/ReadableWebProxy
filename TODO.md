@@ -1,7 +1,7 @@
 #TODO:
 
  - WattPad metadata filter.
- 
+ - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
 
  FIXED:
  ## - Rule-caching is not working.

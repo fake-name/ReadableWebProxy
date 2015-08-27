@@ -25,8 +25,6 @@ badwords: [
 
 # Content Stripping needs to be determined.
 decomposeBefore: [
-	{"class" : "review-body-wrapper"},
-	{"class" : "review-list"},
 
 ]
 
@@ -39,8 +37,6 @@ decompose: [
 	{"class" : "search"},
 	{"class" : "subscribe"},
 	{"class" : "widget-title"},
-	{"class" : "review-body-wrapper"},
-	{"class" : "review"},
 	{"class" : "header"},
 	{"class" : "top_panel"},
 	{"class" : "bam_announcements"},
@@ -77,7 +73,6 @@ decompose: [
 
 	{"id"    : "main-top"},
 	{"id"    : "recent-posts"},
-	{"id"    : "reviews"},
 	{"id"    : "sidebar"},
 	{"id"    : "header-nav"},
 

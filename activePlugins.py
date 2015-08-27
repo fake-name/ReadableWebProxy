@@ -53,7 +53,9 @@ PLUGINS = [
 
 
 import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter
+import WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter
 
 FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
+	WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
 ]

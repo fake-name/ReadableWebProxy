@@ -32,10 +32,10 @@ def test(url):
 	print(ret.keys())
 	print("Plain links:")
 	for link in ret['plainLinks']:
-		print("	", link)
+		print("	'%s'" % link.replace("\n", ""))
 	print("Resource links:")
 	for link in ret['rsrcLinks']:
-		print("	", link)
+		print("	'%s'" % link.replace("\n", ""))
 
 	print()
 	print("Filtering")
@@ -44,7 +44,7 @@ def test(url):
 
 	print("Filtered plain links:")
 	for link in filtered:
-		print("	", link)
+		print("	'%s'" % link.replace("\n", ""))
 	# cmd = text("""
 	# 		INSERT INTO
 	# 			web_pages

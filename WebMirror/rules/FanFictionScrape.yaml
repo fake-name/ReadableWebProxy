@@ -29,6 +29,10 @@ badwords:
      - "/post.php?"
      - "/author.php?"
 
+     # Some idiot has fucked up a URL and produced a infinite loop.
+     # Anyways, block that.
+     - "little-chibi-girl.deviantart.com"
+
 # Content Stripping needs to be determined.
 decomposeBefore: []
 decompose: []

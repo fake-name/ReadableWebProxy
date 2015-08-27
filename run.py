@@ -56,10 +56,10 @@ def go():
 
 	print()
 	print("Interrupt!")
-	if not "debug" in sys.argv:
-		print("Joining on background thread")
-		flags.RUNSTATE = False
-		bk_thread.join()
+	# if not "debug" in sys.argv:
+	# 	print("Joining on background thread")
+	# 	flags.RUNSTATE = False
+	# 	bk_thread.join()
 
 	# print("Thread halted. App exiting.")
 
