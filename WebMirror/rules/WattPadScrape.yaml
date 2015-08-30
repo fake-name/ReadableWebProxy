@@ -127,6 +127,8 @@ badwords: [
 			"/privacy",
 			"/press",
 			"/terms",
+			"wattpad.com/rss?",
+			"/followers",
 			]
 
 # Content Stripping needs to be determined.

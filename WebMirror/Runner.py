@@ -14,6 +14,9 @@ import WebMirror.Engine
 import runStatus
 import WebMirror.database as db
 
+
+PROCESSES = 16
+
 # For synchronizing saving cookies to disk
 cookie_lock = multiprocessing.Lock()
 
@@ -90,6 +93,16 @@ def initializeStartUrls(rules):
 		db.get_session().commit()
 
 
+def resetInProgress():
+	print("Resetting any stalled downloads from the previous session.")
+
+	# db.get_session().begin()
+	db.get_session().query(db.WebPages) \
+		.filter((db.WebPages.state == "fetching") | (db.WebPages.state == "processing"))   \
+		.update({db.WebPages.state : "new"})
+	db.get_session().commit()
+
+
 
 class Crawler(object):
 	def __init__(self):
@@ -98,7 +111,6 @@ class Crawler(object):
 
 	def run(self):
 
-		PROCESSES = 16
 		tasks =[]
 		cnt = 0
 		procno = 0

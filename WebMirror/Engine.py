@@ -35,7 +35,7 @@ if "debug" in sys.argv:
 	# CACHE_DURATION = 60 * 5
 	# RSC_CACHE_DURATION = 60 * 60 * 5
 else:
-	CACHE_DURATION = 60 * 60 * 24 * 3
+	CACHE_DURATION = 60 * 60 * 24 * 7
 	RSC_CACHE_DURATION = 60 * 60 * 24 * 14
 
 
@@ -509,13 +509,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 	########################################################################################################################
 
 
-	def resetDlstate(self):
-
-		# self.db.get_session().begin()
-		self.db.get_session().query(self.db.WebPages) \
-			.filter((self.db.WebPages.state == "fetching") | (self.db.WebPages.state == "processing"))   \
-			.update({self.db.WebPages.state : "new"})
-		self.db.get_session().commit()
 
 
 	def getTask(self):

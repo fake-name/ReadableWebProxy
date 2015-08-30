@@ -94,7 +94,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		title = title.replace("Wattys2015", "")
 		title = title.strip()
 
-		if metadata['voteCount'] < 3:
+		if metadata['numParts'] < 3:
 			return []
 		if metadata['voteCount'] < 100:
 			return []

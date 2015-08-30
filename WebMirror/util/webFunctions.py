@@ -221,12 +221,13 @@ class WebGetRobust:
 		while 1:
 			try:
 				page = self.getpage(*args, **kwargs)
+				page = page.strip()
 				if isinstance(page, bytes):
 					raise ValueError("Received content not decoded! Cannot parse!")
 				ret = json.loads(page)
 				return ret
 			except ValueError:
-				if attempts < 3:
+				if attempts < 1:
 					attempts += 1
 					self.log.error("JSON Parsing issue retreiving content from page!")
 					for line in traceback.format_exc().split("\n"):
@@ -235,6 +236,10 @@ class WebGetRobust:
 					time.sleep(3)
 				else:
 					self.log.error("JSON Parsing issue, and retries exhausted!")
+					# self.log.error("Page content:")
+					# self.log.error(page)
+					# with open("Error-ctnt-{}.json".format(time.time()), "w") as tmp_err_fp:
+					# 	tmp_err_fp.write(page)
 					raise
 
 

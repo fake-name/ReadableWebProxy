@@ -92,6 +92,7 @@ def go():
 
 	rules = WebMirror.rules.load_rules()
 	WebMirror.Runner.initializeStartUrls(rules)
+	WebMirror.Runner.resetInProgress()
 
 	sched = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
 
