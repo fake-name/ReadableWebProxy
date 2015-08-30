@@ -13,6 +13,8 @@ import bs4
 import re
 import markdown
 import time
+import datetime
+import calendar
 from WebMirror.util.webFunctions import WebGetRobust
 
 MIN_RATING = 5
@@ -112,9 +114,8 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			chp_title = release['title']
 			vol, chp, frag, post = extractTitle(chp_title)
 
-			# Wattpad doesn't provide release dates (or I don't
-			# know how to ask for them via the API)
-			reldate = time.time()
+			dt = datetime.datetime.strptime(release['modifyDate'], "%Y-%m-%dT%H:%M:%SZ" )
+			reldate = calendar.timegm(dt.timetuple())
 
 
 			raw_item = {}
@@ -125,6 +126,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 			retval.append(msg)
 
+		# Don't send the series metadata if we didn't find any chapters.
 		if not retval:
 			print("No chapters!")
 			return []
@@ -140,7 +142,6 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
-
 		self.amqpint.put_item(pkt)
 		return retval
 
@@ -174,11 +175,11 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# it up in segments so we don't have a 500 char line
 		segments = [
 			"https://www.wattpad.com/api/v3/stories/{num}?include_deleted=0&".format(num=sid),
-			"fields=id%2Ctitle%2CvoteCount%2CreadCount%2CcommentCount%2Cdescription",
+			"fields=id%2Ctitle%2CvoteCount%2CmodifyDate%2CreadCount%2CcommentCount%2Cdescription",
 			"%2Curl%2Ccover%2Clanguage%2CisAdExempt%2Cuser(name%2Cusername%2Cavatar%2C"
 			"description%2Clocation%2Chighlight_colour%2CbackgroundUrl%2CnumLists%2C",
 			"numStoriesPublished%2CnumFollowing%2CnumFollowers%2Ctwitter)%2Ccompleted",
-			"%2CnumParts%2Cparts(id%2Ctitle%2Clength%2Curl%2Cdeleted%2Cdraft)%2Ctags%2Ccategories",
+			"%2CnumParts%2Cparts(id%2Ctitle%2Clength%2Curl%2Cdeleted%2Cdraft%2CmodifyDate)%2Ctags%2Ccategories",
 			"%2Crating%2Crankings%2Clanguage%2Ccopyright%2CsourceLink%2CfirstPartId%2Cdeleted%2Cdraft",
 			]
 		surl = "".join(segments)

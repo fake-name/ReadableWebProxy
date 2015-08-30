@@ -217,11 +217,26 @@ class WebGetRobust:
 		if 'returnMultiple' in kwargs and kwargs['returnMultiple']:
 			raise ValueError("getSoup cannot be called with 'returnMultiple' being true")
 
-		page = self.getpage(*args, **kwargs)
-		if isinstance(page, bytes):
-			raise ValueError("Received content not decoded! Cannot parse!")
-		ret = json.loads(page)
-		return ret
+		attempts = 0
+		while 1:
+			try:
+				page = self.getpage(*args, **kwargs)
+				if isinstance(page, bytes):
+					raise ValueError("Received content not decoded! Cannot parse!")
+				ret = json.loads(page)
+				return ret
+			except ValueError:
+				if attempts < 3:
+					attempts += 1
+					self.log.error("JSON Parsing issue retreiving content from page!")
+					for line in traceback.format_exc().split("\n"):
+						self.log.error("%s", line.rstrip())
+					self.log.error("Retrying!")
+					time.sleep(3)
+				else:
+					self.log.error("JSON Parsing issue, and retries exhausted!")
+					raise
+
 
 	def getFileAndName(self, *args, **kwargs):
 		if 'returnMultiple' in kwargs:
