@@ -7,6 +7,7 @@ type: "western"
 
 baseUrl: [
 	"https://www.wattpad.com/",
+	"https://a.wattpad.com/",
 	]
 extraStartUrls: [
 	'https://www.wattpad.com/stories',
@@ -117,6 +118,15 @@ badwords: [
 
 			"/post.php?",
 			"/author.php?",
+
+			"I+am+reporting+the+following+content",
+			"/help/",
+			"/login?",
+			"/settings/",
+			"/getmobile",
+			"/privacy",
+			"/press",
+			"/terms",
 			]
 
 # Content Stripping needs to be determined.

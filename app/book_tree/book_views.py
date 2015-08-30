@@ -25,7 +25,7 @@ from flask import send_file
 from flask import request
 from flask import g
 from flask.ext.login import current_user
-from flask.ext.sqlalchemy import get_debug_queries
+# from flask.ext.sqlalchemy import get_debug_queries
 
 import WebMirror.Engine
 

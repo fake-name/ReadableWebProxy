@@ -17,7 +17,7 @@ import re
 import gzip
 import io
 import socket
-
+import json
 import base64
 
 import random
@@ -213,6 +213,15 @@ class WebGetRobust:
 		soup = bs4.BeautifulSoup(page, "lxml")
 		return soup
 
+	def getJson(self, *args, **kwargs):
+		if 'returnMultiple' in kwargs and kwargs['returnMultiple']:
+			raise ValueError("getSoup cannot be called with 'returnMultiple' being true")
+
+		page = self.getpage(*args, **kwargs)
+		if isinstance(page, bytes):
+			raise ValueError("Received content not decoded! Cannot parse!")
+		ret = json.loads(page)
+		return ret
 
 	def getFileAndName(self, *args, **kwargs):
 		if 'returnMultiple' in kwargs:

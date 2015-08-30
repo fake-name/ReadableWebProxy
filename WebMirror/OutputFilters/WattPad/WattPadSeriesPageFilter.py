@@ -11,10 +11,9 @@ from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import bs4
 import re
-import calendar
-import datetime
+import markdown
 import time
-import json
+from WebMirror.util.webFunctions import WebGetRobust
 
 MIN_RATING = 5
 
@@ -48,7 +47,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		if re.search(r"^https://www.wattpad.com/story/\d+.+$", url):
-			print("WattPad Processor Wants url: '%s'" % url)
+			# print("WattPad Processor Wants url: '%s'" % url)
 			return True
 		return False
 
@@ -65,93 +64,83 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.log.info("Processing RSS Item")
 		super().__init__()
 
+		self.wg = WebGetRobust(logPath=self.loggerPath+".Web")
+
 
 ##################################################################################################################################
 ##################################################################################################################################
 ##################################################################################################################################
 
 
-	def extractSeriesReleases(self, seriesPageUrl, soup):
+	def extractSeriesReleases(self, seriesPageUrl, metadata):
 
-		titletg  = soup.find("h1", class_='fiction-title')
-		authortg = soup.find("span", class_='author')
-		ratingtg = soup.find("span", class_='overall')
+		title  = metadata['title']
+		author = metadata['user']['name']
+		desc   = metadata['description']
+		tags   = metadata['tags']
 
-		if not ratingtg:
+		# Apparently the description is rendered in a <pre> tag.
+		# Huh?
+		desc = markdown.markdown(desc, extensions=["linkify"])
+
+		title = title.strip()
+
+		# Siiiiiigh. Really?
+		title = title.replace("[#wattys2015]", "")
+		title = title.replace("(Wattys2015) ", "")
+		title = title.replace("#Wattys2015", "")
+		title = title.replace("Wattys2015", "")
+		title = title.strip()
+
+		if metadata['voteCount'] < 3:
 			return []
-
-		if not float(ratingtg['score']) >= MIN_RATING:
+		if metadata['voteCount'] < 100:
 			return []
-
-		if not titletg:
-			return []
-		if not authortg:
-			return []
-		if not ratingtg:
-			return []
-
-		title  = titletg.get_text()
-		author = authortg.get_text()
-		assert author.startswith("by ")
-		author = author[2:].strip()
-
-
-		descDiv = soup.find('div', class_='description')
-		paras = descDiv.find_all("p")
-		tags = []
-
-		desc = []
-		for para, text in [(para, para.get_text()) for para in paras]:
-			if text.lower().startswith('categories:'):
-				tagstr = text.split(":", 1)[-1]
-				items = tagstr.split(",")
-				[tags.append(item.strip()) for item in items if item.strip()]
-			else:
-				desc.append(para)
 
 
 		seriesmeta = {}
 
-		seriesmeta['title']    = title
-		seriesmeta['author']   = author
-		seriesmeta['tags']     = tags
-		seriesmeta['homepage'] = seriesPageUrl
-		seriesmeta['desc']     = " ".join([str(para) for para in desc])
-		seriesmeta['tl_type']  = 'oel'
-
-		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
-
 		extra = {}
-		extra['tags']     = tags
-		extra['homepage'] = seriesPageUrl
+		extra['tags']        = tags[:]
+		extra['homepage']    = seriesPageUrl
+		extra['sourcesite']  = 'WattPad'
 
 
-		chapters = soup.find("div", class_='chapters')
-		releases = chapters.find_all('li', class_='chapter')
 
 		retval = []
-		for release in releases:
-			chp_title, reldatestr = release.find_all("span")
-			rel = datetime.datetime.strptime(reldatestr.get_text(), '%d/%m/%y')
-			if rel.date() == datetime.date.today():
-				reldate = time.time()
-			else:
-				reldate = calendar.timegm(rel.timetuple())
-
-			chp_title = chp_title.get_text()
-			# print("Chp title: '{}'".format(chp_title))
+		for release in metadata['parts']:
+			chp_title = release['title']
 			vol, chp, frag, post = extractTitle(chp_title)
 
-			raw_item = {}
-			raw_item['srcname']   = "RoyalRoadL"
-			raw_item['published'] = reldate
-			raw_item['linkUrl']   = release.a['href']
+			# Wattpad doesn't provide release dates (or I don't
+			# know how to ask for them via the API)
+			reldate = time.time()
 
+
+			raw_item = {}
+			raw_item['srcname']   = "WattPad"
+			raw_item['published'] = reldate
+			raw_item['linkUrl']   = release['url']
 			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
+
 			retval.append(msg)
 
 		if not retval:
+			print("No chapters!")
 			return []
+
+
+		seriesmeta['title']       = title
+		seriesmeta['author']      = author
+		seriesmeta['tags']        = tags
+		seriesmeta['homepage']    = seriesPageUrl
+		seriesmeta['desc']        = desc
+		seriesmeta['tl_type']     = 'oel'
+		seriesmeta['sourcesite']  = 'WattPad'
+
+
+		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
+
 		self.amqpint.put_item(pkt)
 		return retval
 
@@ -164,16 +153,42 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			pkt = msgpackers.createReleasePacket(release)
 			self.amqpint.put_item(pkt)
 
+	def getJsonMetadata(self, soup):
+		# There are a couple of tags with the data-attr "story-id"
+		# Grab them all, and while we're at it, check they all match (they should)
+		story_id = soup.find_all(True, {'data-story-id' : True})
+		assert story_id, "No story ID tag found on page?"
+		pre = story_id.pop()['data-story-id']
+		for remaining in story_id:
+			assert pre == remaining['data-story-id']
 
+		return pre
 
 
 	def processPage(self, url, content):
-		print("[processPage] -> call for '%s'" % url)
 
-		# soup = bs4.BeautifulSoup(self.content)
-		# releases = self.extractSeriesReleases(self.pageUrl, soup)
-		# if releases:
-		# 	self.sendReleases(releases)
+		soup = bs4.BeautifulSoup(self.content)
+		sid = self.getJsonMetadata(soup)
+
+		# The GET request url is somewhat ridiculous. Build
+		# it up in segments so we don't have a 500 char line
+		segments = [
+			"https://www.wattpad.com/api/v3/stories/{num}?include_deleted=0&".format(num=sid),
+			"fields=id%2Ctitle%2CvoteCount%2CreadCount%2CcommentCount%2Cdescription",
+			"%2Curl%2Ccover%2Clanguage%2CisAdExempt%2Cuser(name%2Cusername%2Cavatar%2C"
+			"description%2Clocation%2Chighlight_colour%2CbackgroundUrl%2CnumLists%2C",
+			"numStoriesPublished%2CnumFollowing%2CnumFollowers%2Ctwitter)%2Ccompleted",
+			"%2CnumParts%2Cparts(id%2Ctitle%2Clength%2Curl%2Cdeleted%2Cdraft)%2Ctags%2Ccategories",
+			"%2Crating%2Crankings%2Clanguage%2Ccopyright%2CsourceLink%2CfirstPartId%2Cdeleted%2Cdraft",
+			]
+		surl = "".join(segments)
+		metadata = self.wg.getJson(surl)
+
+		releases = self.extractSeriesReleases(self.pageUrl, metadata)
+
+
+		if releases:
+			self.sendReleases(releases)
 
 
 
@@ -185,8 +200,8 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def extractContent(self):
-		print("Call to extract!")
-		print(self.amqpint)
+		# print("Call to extract!")
+		# print(self.amqpint)
 
 		self.processPage(self.pageUrl, self.content)
 

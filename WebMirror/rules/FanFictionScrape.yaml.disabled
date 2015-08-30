@@ -1,4 +1,7 @@
 
+# This appears to be hosted by the same people as FictionPress.
+# The website sure looks to be the same codebase, in any event.
+
 
 FOLLOW_GOOGLE_LINKS: False
 allImages: False
@@ -6,11 +9,10 @@ allImages: False
 type: "western"
 
 baseUrl: [
-	"https://www.fictionpress.com/",
-	"http://www.fictionpress.com/",
 	"https://www.fanfiction.net/",
 	"http://www.fanfiction.net/",
 	]
+
 
 badwords: [
 			"/about/",

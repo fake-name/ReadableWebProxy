@@ -64,7 +64,7 @@ def createReleasePacket(data):
 
 def sendSeriesInfoPacket(data):
 
-	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type']
+	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
 
 	assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in metadata message! Expect: '%s', received '%s'" % (expect, list(data.keys()))

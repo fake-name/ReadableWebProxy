@@ -112,18 +112,20 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		seriesmeta = {}
 
-		seriesmeta['title']    = title
-		seriesmeta['author']   = author
-		seriesmeta['tags']     = tags
-		seriesmeta['homepage'] = seriesPageUrl
-		seriesmeta['desc']     = " ".join([str(para) for para in desc])
-		seriesmeta['tl_type']  = 'oel'
+		seriesmeta['title']       = title
+		seriesmeta['author']      = author
+		seriesmeta['tags']        = tags
+		seriesmeta['homepage']    = seriesPageUrl
+		seriesmeta['desc']        = " ".join([str(para) for para in desc])
+		seriesmeta['tl_type']     = 'oel'
+		seriesmeta['sourcesite']  = 'RoyalRoadL'
 
 		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
 
 		extra = {}
 		extra['tags']     = tags
 		extra['homepage'] = seriesPageUrl
+		extra['sourcesite']  = 'RoyalRoadL'
 
 
 		chapters = soup.find("div", class_='chapters')
@@ -184,8 +186,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def extractContent(self):
-		print("Call to extract!")
-		print(self.amqpint)
+		# print("Call to extract!")
+		# print(self.amqpint)
 
 		self.processPage(self.pageUrl, self.content)
 
