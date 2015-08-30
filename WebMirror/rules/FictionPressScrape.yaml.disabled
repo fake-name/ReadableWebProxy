@@ -27,6 +27,7 @@ badwords: [
 
 			"/post.php?",
 			"/author.php?",
+			"fictionpress.com/atom/u/",
 			]
 
 # Content Stripping needs to be determined.

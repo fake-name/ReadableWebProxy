@@ -10,7 +10,7 @@ baseUrl: [
 	"https://a.wattpad.com/",
 	]
 extraStartUrls: [
-	'https://www.wattpad.com/stories',
+
 	'https://www.wattpad.com/api/v3/stories?fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
 	'https://www.wattpad.com/api/v3/stories?filter=featured&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
 	'https://www.wattpad.com/api/v3/stories?filter=undiscovered&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
@@ -97,7 +97,14 @@ extraStartUrls: [
 	'https://www.wattpad.com/api/v3/stories?filter=hot&category=1&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
 	'https://www.wattpad.com/api/v3/stories?filter=hot&category=22&fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
 
+	'https://www.wattpad.com/rss',
+
 	]
+
+feeds: [
+
+	'https://www.wattpad.com/stories',
+]
 
 badwords: [
 			"/signup",
@@ -129,6 +136,7 @@ badwords: [
 			"/terms",
 			"wattpad.com/rss?",
 			"/followers",
+			'?message=I+am+reporting+the',
 			]
 
 # Content Stripping needs to be determined.

@@ -233,6 +233,9 @@ class WebGetRobust:
 					for line in traceback.format_exc().split("\n"):
 						self.log.error("%s", line.rstrip())
 					self.log.error("Retrying!")
+
+					# Scramble our current UA
+					self.browserHeaders = getUserAgent()
 					time.sleep(3)
 				else:
 					self.log.error("JSON Parsing issue, and retries exhausted!")

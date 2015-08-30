@@ -31,7 +31,11 @@ MIN_RATING = 5
 #
 ########################################################################################################################
 
+BLOCK_IDS = {
 
+
+
+}
 
 
 class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -99,6 +103,13 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if metadata['voteCount'] < 100:
 			return []
 
+		# Language ID 1 is english.
+		if metadata['language']['id'] != 1:
+			return []
+
+		# Allow blocking of item by ID
+		if metadata['id'] in BLOCK_IDS:
+			return []
 
 		seriesmeta = {}
 
@@ -183,7 +194,8 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			"%2Crating%2Crankings%2Clanguage%2Ccopyright%2CsourceLink%2CfirstPartId%2Cdeleted%2Cdraft",
 			]
 		surl = "".join(segments)
-		metadata = self.wg.getJson(surl)
+		print(url)
+		metadata = self.wg.getJson(surl, addlHeaders={'Referer': url})
 
 		releases = self.extractSeriesReleases(self.pageUrl, metadata)
 
