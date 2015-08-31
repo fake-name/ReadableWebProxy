@@ -570,7 +570,17 @@ class SiteArchiver(LogBase.LoggerMixin):
 				job.raw_content = content
 				job.state = 'error'
 				job.errno = -1
+				self.db.get_session().commit()
 				self.log.error("`urllib.error.URLError` Exception when downloading.")
+			except ValueError:
+				content = "DOWNLOAD FAILED - ValueError"
+				content += "<br>"
+				content += traceback.format_exc()
+				job.content = content
+				job.raw_content = content
+				job.state = 'error'
+				job.errno = -3
+				self.db.get_session().commit()
 			except DownloadException:
 				content = "DOWNLOAD FAILED - DownloadException"
 				content += "<br>"
@@ -579,6 +589,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				job.raw_content = content
 				job.state = 'error'
 				job.errno = -2
+				self.db.get_session().commit()
 				self.log.error("`DownloadException` Exception when downloading.")
 			except KeyboardInterrupt:
 				runStatus.run = False

@@ -111,6 +111,25 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if metadata['id'] in BLOCK_IDS:
 			return []
 
+		# I know I'm trying to be inclusive and all, but
+		# "spirituality" is bullshit
+		# Sidenote: Is wattpad popular in the middle east? LOTS
+		# of muslim-focused content. Huh.
+		if 'spiritual' in [item.lower().strip() for item in tags]:
+			return []
+		if 'faith' in [item.lower().strip() for item in tags]:
+			return []
+
+		# Only filtered because of quality issues.
+		if 'fanfiction' in [item.lower().strip() for item in tags]:
+			return []
+
+		# Only filtered because of quality issues.
+		if 'fanfic' in [item.lower().strip() for item in tags]:
+			return []
+
+
+
 		seriesmeta = {}
 
 		extra = {}
@@ -121,21 +140,33 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		retval = []
+		index = 1
+		valid = 1
 		for release in metadata['parts']:
 			chp_title = release['title']
-			vol, chp, frag, post = extractTitle(chp_title)
 
 			dt = datetime.datetime.strptime(release['modifyDate'], "%Y-%m-%dT%H:%M:%SZ" )
 			reldate = calendar.timegm(dt.timetuple())
-
 
 			raw_item = {}
 			raw_item['srcname']   = "WattPad"
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release['url']
-			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
-
+			msg = msgpackers.buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
 			retval.append(msg)
+
+			# Check if there was substantive structure in the chapter
+			# name. Used as a crude heuristic for chapter validity.
+			vol, chp, frag, post = extractTitle(chp_title)
+			if any((vol, chp, frag)):
+				print("Valid: ", (vol, chp, frag))
+				valid += 1
+
+			index += 1
+
+		if valid < (index/2):
+			print("Half the present chapters are have no numeric content?")
+			return []
 
 		# Don't send the series metadata if we didn't find any chapters.
 		if not retval:
