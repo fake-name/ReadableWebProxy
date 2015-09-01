@@ -21,6 +21,7 @@ import traceback
 import datetime
 
 from sqlalchemy.sql import text
+from sqlalchemy.sql import func
 import WebMirror.util.webFunctions as webFunctions
 
 import hashlib
@@ -523,10 +524,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# or we succeed.
 		while 1:
 			try:
-				query = self.db.get_session().query(self.db.WebPages)         \
-					.filter(self.db.WebPages.state == "new")            \
+				subq = self.db.get_session().query(func.min(self.db.WebPages.priority)) \
+					.filter(self.db.WebPages.state == "new")                            \
+					.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE))
+
+				query = self.db.get_session().query(self.db.WebPages)           \
+					.filter(self.db.WebPages.state == "new")                    \
+					.filter(self.db.WebPages.priority == subq)                  \
 					.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE)) \
-					.order_by(self.db.WebPages.priority)                \
 					.limit(1)
 
 					# This compound order_by completely, COMPLETELY tanked the
@@ -729,11 +734,11 @@ def test():
 			ON CONFLICT DO NOTHING
 			""")
 	print("doing")
-	ins = archiver.db.get_session().execute(cmd, params=new)
-	print("Done. Ret:")
-	print(ins)
+	# ins = archiver.db.get_session().execute(cmd, params=new)
+	# print("Doneself. Ret:")
+	# print(ins)
 	# print(archiver.resetDlstate())
-	# print(archiver.getTask())
+	print(archiver.getTask())
 	# print(archiver.getTask())
 	# print(archiver.getTask())
 	# print(archiver.taskProcess())

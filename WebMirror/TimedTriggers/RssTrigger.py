@@ -16,16 +16,25 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 	def retriggerRssFeeds(self, feedurls):
 		for url in feedurls:
+			print(url)
 			while 1:
 				try:
 					have = self.db.get_session().query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)  \
 						.scalar()
 					if have and have.state != "new":
-						have.state = "new"
+						have.state    = "new"
+						have.priority = self.db.DB_HIGH_PRIORITY
 						self.db.get_session().commit()
 						break
 					elif have:
+						if have.priority != self.db.DB_HIGH_PRIORITY:
+							have.priority = self.db.DB_HIGH_PRIORITY
+							self.db.get_session().commit()
+
+						if have.distance != self.db.MAX_DISTANCE-3:
+							have.distance = self.db.MAX_DISTANCE-3
+							self.db.get_session().commit()
 						break
 					else:
 						new = self.db.WebPages(

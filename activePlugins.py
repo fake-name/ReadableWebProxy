@@ -23,8 +23,6 @@ import WebMirror.TimedTriggers.PageTriggers
 scrapePlugins = {
 	0  : (WebMirror.TimedTriggers.RssTrigger.RssTriggerBase,                   minutes(20)),
 	1  : (WebMirror.TimedTriggers.TimeoutTrigger.TimeoutTriggerBase,           minutes(20)),
-
-
 	2  : (WebMirror.TimedTriggers.PageTriggers.HourlyPageTrigger,              minutes(60)),
 	3  : (WebMirror.TimedTriggers.PageTriggers.EveryOtherDayPageTrigger,       days(2)),
 

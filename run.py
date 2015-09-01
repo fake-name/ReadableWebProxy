@@ -51,7 +51,7 @@ def go():
 		app.run(host='0.0.0.0', port=5001, processes=10)
 	else:
 		print("Running in normal mode.")
-		app.run(port=5001, threaded=True)
+		app.run(host='0.0.0.0', port=5001, threaded=True)
 
 
 	print()

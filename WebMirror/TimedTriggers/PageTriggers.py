@@ -30,17 +30,24 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 					if have and have.state != "new":
 						have.state    = "new"
 						have.distance = self.db.MAX_DISTANCE-3
-						have.priority = self.db.DB_LOW_PRIORITY
+						have.priority = self.db.DB_HIGH_PRIORITY
 						self.db.get_session().commit()
 						break
 					elif have:
+						if have.priority != self.db.DB_HIGH_PRIORITY:
+							have.priority = self.db.DB_HIGH_PRIORITY
+							self.db.get_session().commit()
+
+						if have.distance != self.db.MAX_DISTANCE-3:
+							have.distance = self.db.MAX_DISTANCE-3
+							self.db.get_session().commit()
 						break
 					else:
 						new = self.db.WebPages(
 								url      = url,
 								starturl = url,
 								netloc   = urllib.parse.urlsplit(url).netloc,
-								priority = self.db.DB_LOW_PRIORITY,
+								priority = self.db.DB_HIGH_PRIORITY,
 								distance = self.db.MAX_DISTANCE-3,
 							)
 						self.db.get_session().add(new)
