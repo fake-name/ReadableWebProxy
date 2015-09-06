@@ -159,7 +159,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			# name. Used as a crude heuristic for chapter validity.
 			vol, chp, frag, post = extractTitle(chp_title)
 			if any((vol, chp, frag)):
-				print("Valid: ", (vol, chp, frag))
+				# print("Valid: ", (vol, chp, frag))
 				valid += 1
 
 			index += 1

@@ -16,6 +16,7 @@ import WebMirror.database as db
 
 
 PROCESSES = 16
+# PROCESSES = 1
 
 # For synchronizing saving cookies to disk
 cookie_lock = multiprocessing.Lock()
@@ -47,7 +48,6 @@ class RunInstance(object):
 
 			if runStatus.run_state.value == 1:
 				self.do_task()
-				time.sleep(1)
 			else:
 				self.log.info("Thread %s exiting.", self.num)
 				break
@@ -115,7 +115,13 @@ class Crawler(object):
 		cnt = 0
 		procno = 0
 
-		if PROCESSES > 1:
+		if PROCESSES == 1:
+			self.log.info("Running in single process mode!")
+			RunInstance.run(procno, self.rules, nosig=False)
+
+		elif PROCESSES < 1:
+			self.log.error("Wat?")
+		elif PROCESSES > 1:
 			try:
 				while runStatus.run_state.value:
 					time.sleep(1)
@@ -149,10 +155,6 @@ class Crawler(object):
 					break
 
 			self.log.info("All processes halted.")
-		else:
-			self.log.info("Running in single process mode!")
-			RunInstance.run(procno, self.rules, nosig=False)
-
 
 
 if __name__ == "__main__":

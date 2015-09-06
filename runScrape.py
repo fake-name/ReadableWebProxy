@@ -110,8 +110,18 @@ def go():
 
 	# print("Thread halted. App exiting.")
 
+def profile():
+	import cProfile
+	import pstats
+	cProfile.run('go()', "run.stats")
+	p = pstats.Stats("run.stats")
+	p.sort_stats('cumulative')
+	p.print_stats(250)
+
 if __name__ == "__main__":
 	started = False
 	if not started:
 		started = True
+
+		# profile()
 		go()
