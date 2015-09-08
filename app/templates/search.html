@@ -1,0 +1,33 @@
+<!-- extend base layout -->
+{% extends "__base.html" %}
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well">
+		<div>
+			<h3>Search Titles</h3>
+			<form action="" class="form-horizontal">
+				<div class="form-group col-xs-10">
+					<input type="text" class="form-control" name="query" placeholder="Search Text">
+				</div>
+				<input type="hidden" name="scope" value="title">
+				<button type="submit" class="btn btn-default">Search</button>
+			</form>
+			<div class="clearfix"></div>
+		</div>
+		<hr>
+		<div>
+			<h3>Search Content</h3>
+			<form action="" class="form-horizontal">
+				<div class="form-group col-xs-10">
+					<input type="text" class="form-control" name="query" placeholder="Search Text">
+				</div>
+				<input type="hidden" name="scope" value="content">
+				<button type="submit" class="btn btn-default">Search</button>
+			</form>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+
+{% endblock %}
+
