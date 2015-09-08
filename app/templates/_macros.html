@@ -1,0 +1,17 @@
+
+
+{%- macro render_pagination(pagination) -%}
+	<div class=pagination>
+	{%- for page in pagination.iter_pages() -%}
+		{%- if page -%}
+			{% if page != pagination.page %}
+				<a href="{{ page }}">{{ page }}</a>
+			{% else %}
+				<strong>{{ page }}</strong>
+			{% endif %}
+		{%- else -%}
+			<span class=ellipsis>…</span>
+		{%- endif -%}
+	{%- endfor -%}
+	</div>
+{%- endmacro -%}

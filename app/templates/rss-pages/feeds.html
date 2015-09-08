@@ -1,20 +1,6 @@
 <!-- extend base layout -->
-{%- macro render_pagination(pagination) -%}
-	<div class=pagination>
-	{%- for page in pagination.iter_pages() -%}
-		{%- if page -%}
-			{% if page != pagination.page %}
-				<a href="{{ page }}">{{ page }}</a>
-			{% else %}
-				<strong>{{ page }}</strong>
-			{% endif %}
-		{%- else -%}
-			<span class=ellipsis>…</span>
-		{%- endif -%}
-	{%- endfor -%}
-	</div>
-{%- endmacro -%}
 
+{% import '_macros.html' as util_macros %}
 
 
 
@@ -25,7 +11,7 @@
 	<div class="well well-large" style="min-height: 140px;">
 		<div><h2 style='display: inline'>RSS Feed Items</h2><h3 style='display: inline; float:right'>{{subheader}}</h3></div>
 
-		{{ render_pagination(sequence_item) }}
+		{{ util_macros.render_pagination(sequence_item) }}
 
 
 		{%- set raw_feeds = sequence_item.items -%}
@@ -33,7 +19,7 @@
 			{%- include 'rss-pages/_block_feeds.html' -%}
 		</div>
 
-		{{ render_pagination(sequence_item) }}
+		{{ util_macros.render_pagination(sequence_item) }}
 
 
 
