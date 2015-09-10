@@ -55,5 +55,5 @@ import WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter
 
 FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
-	WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
+	# WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
 ]

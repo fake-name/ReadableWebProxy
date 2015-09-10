@@ -12,7 +12,6 @@ import config
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
-from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 import activePlugins
@@ -28,8 +27,6 @@ job_defaults = {
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)
 
 jobstores = {
-
-	'transient_jobstore' : MemoryJobStore(),
 	'main_jobstore'      : SQLAlchemyJobStore(url=SQLALCHEMY_DATABASE_URI)
 
 }
@@ -63,14 +60,6 @@ def scheduleJobs(sched, timeToStart):
 		activeJobs.append(jId)
 		if not sched.get_job(jId):
 
-			# Jobs that are called less often then once every 4 hours get placed
-			# in the main jobstore.
-			# More ephemeral jobs get stored in the memory jobstore.
-			if interval < (60 * 60 * 4):
-				jobstore = "transient_jobstore"
-			else:
-				jobstore = "main_jobstore"
-
 
 			sched.add_job(callMod,
 						args=(callee.__name__, ),
@@ -79,7 +68,7 @@ def scheduleJobs(sched, timeToStart):
 						start_date=startWhen,
 						id=jId,
 						replace_existing=True,
-						jobstore=jobstore,
+						jobstore="main_jobstore",
 						misfire_grace_time=2**30)
 
 

@@ -10,6 +10,12 @@ baseUrl: [
 		"http://www.japtem.com/",
 	]
 
+
+extraStartUrls: [
+		'http://japtem.com/fanfic.php?action=last_updated',
+		'http://japtem.com/fanfic.php',
+	]
+
 badwords: [
 			"/viewtopic.php",
 			"/memberlist.php",
@@ -63,12 +69,14 @@ decompose: [
 	{'id' : 'sharedaddy'},
 	{'id' : 'scrollUp'},
 
-	{'class' : 'sticky-header'},
-	{'class' : 'header-wrapper'},
-	{'class' : 'footer-area'},
-	{'class' : 'share-box'},
-	{'id'    : 'slidingbar-area'},
-	{'id'    : 'footer'},
-	{'id'    : 'sliders-container'},
+	{'class'  : 'sticky-header'},
+	{'class'  : 'header-wrapper'},
+	{'class'  : 'footer-area'},
+	{'class'  : 'share-box'},
+	{'id'     : 'slidingbar-area'},
+	{'id'     : 'footer'},
+	{'id'     : 'sliders-container'},
+	{'method' : 'post'},
 ]
 
+stripTitle: ['Japtem - ']

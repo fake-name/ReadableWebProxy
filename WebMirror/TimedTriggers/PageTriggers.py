@@ -77,15 +77,22 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 class HourlyPageTrigger(PageTriggerBase):
 	pages = [
+		# RoyalRoadL
 		'http://www.royalroadl.com/fictions/best-rated/',
 		'http://www.royalroadl.com/fictions/latest-updates/',
 		'http://www.royalroadl.com/fictions/active-top-50/',
 		'http://www.royalroadl.com/fictions/weekly-views-top-50/',
 		'http://www.royalroadl.com/fictions/newest/',
+
+		# Japtem bits
+		'http://japtem.com/fanfic.php?action=last_updated',
+		'http://japtem.com/fanfic.php',
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
-	pages = ['http://www.royalroadl.com/fiction/%s' % x for x in range(3125)]
+	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(3500)]
+	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(600)]
+	pages = rrl_pages + japtem_pages
 
 if __name__ == "__main__":
 	import logSetup

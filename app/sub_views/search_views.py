@@ -5,7 +5,8 @@ from flask import make_response
 from flask import request
 
 import WebMirror.Engine
-
+from sqlalchemy import Text
+from sqlalchemy.sql.expression import cast
 from app import app
 
 
@@ -26,12 +27,13 @@ def build_tsquery(in_str):
 def fetch_content(query_text, column, page):
 
 	tsq = build_tsquery(query_text)
-	query = db.get_session()                                                                         \
-			.query(db.WebPages)                                                                      \
-			.filter(func.to_tsvector("english", column).match(tsq, postgresql_regconfig='english'))
+	query = db.get_session()                                                                                \
+			.query(db.WebPages, func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq))) \
+			.filter(func.to_tsvector("english", column).match(tsq, postgresql_regconfig='english'))         \
+			.order_by(func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq)).desc())
 
-	# print("param: '%s'" % tsq)
-	# print(str(query.statement.compile(dialect=postgresql.dialect())))
+	print("param: '%s'" % tsq)
+	print(str(query.statement.compile(dialect=postgresql.dialect())))
 
 	entries = paginate(query, page)
 	return entries

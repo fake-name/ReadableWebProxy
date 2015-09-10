@@ -23,7 +23,7 @@
 		</th>
 	</tr>
 
-	{%- for entry in results: -%}
+	{%- for entry, similarity in results: -%}
 
 			<tr>
 			<td>
@@ -33,7 +33,7 @@
 				{{entry.url}}
 			</td>
 			<td>
-
+				{{similarity}}
 			</td>
 		</tr>
 

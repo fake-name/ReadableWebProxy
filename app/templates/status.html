@@ -1,0 +1,41 @@
+<!-- extend base layout -->
+{% extends "__base.html" %}
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well">
+
+
+
+		<div class="well">
+			<h3>Job Status</h3>
+
+			<table style='width:100%'>
+				<tr>
+					<th style='width:50%'>
+						Job Name
+					</th>
+					<th style='width:50%'>
+						Next called in
+					</th>
+				</tr>
+				{%- for name, ts, value in tasks -%}
+					<tr>
+						<td>{{name}}</td>
+						<td>{{value['time_til_job']}}</td>
+
+					</tr>
+				{%- endfor -%}
+			</table>
+		</div>
+	</div>
+
+{% endblock %}
+
+
+{% block footer %}
+	{% if g.user.is_mod() %}
+		{% include '_block_admin_scripts.html' %}
+	{% endif %}
+{% endblock %}
+
