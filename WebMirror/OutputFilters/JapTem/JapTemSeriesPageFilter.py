@@ -14,6 +14,7 @@ import re
 import calendar
 import datetime
 import time
+import urllib.parse
 import json
 
 MIN_RATING = 2.5
@@ -135,26 +136,17 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['title']       = title
 		seriesmeta['author']      = author
 		seriesmeta['tags']        = tags
-		seriesmeta['homepage']    = seriesPageUrl
+		seriesmeta['homepage']    = ''
 		seriesmeta['desc']        = " ".join([str(para) for para in desc])
 		seriesmeta['tl_type']     = 'oel'
 		seriesmeta['sourcesite']  = 'JapTem'
-
-		print("Chunk!")
-		print("title:", title)
-		print("author:", author)
-		print("rating:", ratingtg)
-		print("ok!")
-		print(seriesmeta)
-		print()
-		print()
 
 
 		meta_pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
 
 		extra = {}
 		extra['tags']     = tags
-		extra['homepage'] = seriesPageUrl
+		extra['homepage'] = ''
 		extra['sourcesite']  = 'JapTem'
 
 		retval = []
@@ -174,14 +166,14 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 				vol, chp, frag, post = extractTitle(chp_title)
 
 				raw_item = {}
-				raw_item['srcname']   = "RoyalRoadL"
+				raw_item['srcname']   = "JapTem"
 				raw_item['published'] = reldate
-				raw_item['linkUrl']   = release.a['href']
+				releaseurl = urllib.parse.urljoin(seriesPageUrl, release.a['href'])
+				raw_item['linkUrl']   = releaseurl
 
 				msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
 				msg = msgpackers.createReleasePacket(msg)
 				retval.append(msg)
-
 		if not retval:
 			return []
 		retval.append(meta_pkt)
@@ -205,8 +197,8 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		for chunk in soup.find_all('li', class_='fanfic_title'):
 			releases = self.extractSeriesReleases(self.pageUrl, chunk)
 
-			# if releases:
-			# 	self.sendReleases(releases)
+			if releases:
+				self.sendReleases(releases)
 
 
 
@@ -249,13 +241,12 @@ def test():
 	import multiprocessing
 	logSetup.initLogging()
 
-	'''
 	c_lok = cookie_lock = multiprocessing.Lock()
 	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok)
-	engine.dispatchRequest(testJobFromUrl('http://japtem.com/fanfic.php?novel=500'))
-	engine.dispatchRequest(testJobFromUrl('http://japtem.com/fanfic.php?novel=100'))
-	'''
+	engine.dispatchRequest(testJobFromUrl('http://japtem.com/fanfic.php'))
 
+
+	'''
 	import WebMirror.util.webFunctions as webfunc
 
 
@@ -270,7 +261,7 @@ def test():
 		ctnt = wg.getpage(url)
 		proc.content = ctnt
 		proc.processPage(ctnt)
-
+	'''
 
 if __name__ == "__main__":
 	test()
