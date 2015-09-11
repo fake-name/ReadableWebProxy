@@ -12,16 +12,20 @@
 
 			<table style='width:100%'>
 				<tr>
-					<th style='width:50%'>
+					<th style='width:40%'>
 						Job Name
 					</th>
-					<th style='width:50%'>
+					<th style='width:30%'>
+						Seconds until exec
+					</th>
+					<th style='width:30%'>
 						Next called in
 					</th>
 				</tr>
 				{%- for name, ts, value in tasks -%}
 					<tr>
 						<td>{{name}}</td>
+						<td>{{ts}}</td>
 						<td>{{value['time_til_job']}}</td>
 
 					</tr>

@@ -1,6 +1,8 @@
 
 
+# Oh hai?
 FOLLOW_GOOGLE_LINKS: False
+
 allImages: False
 
 type: "western"
@@ -8,7 +10,8 @@ type: "western"
 baseUrl: [
 	"https://www.wattpad.com/",
 	"https://a.wattpad.com/",
-	]
+]
+
 extraStartUrls: [
 
 	'https://www.wattpad.com/api/v3/stories?fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',
@@ -102,9 +105,9 @@ extraStartUrls: [
 	]
 
 feeds: [
-
-	'https://www.wattpad.com/stories',
+	'https://www.wattpad.com/stories'
 ]
+
 
 badwords: [
 			"/signup",
@@ -137,9 +140,20 @@ badwords: [
 			"wattpad.com/rss?",
 			"/followers",
 			'?message=I+am+reporting+the',
+			'/user/',
+			'/user_inbox?',
+			'/comment/',
+			'/forgot?',
 			]
 
+# DELETE FROM web_pages WHERE url LIKE 'https://www.wattpad.com/user/%' AND netloc='www.wattpad.com'
+# DELETE FROM web_pages WHERE (url LIKE 'https://www.wattpad.com/user_inbox?%' OR url LIKE 'https://www.wattpad.com/forgot?%') AND netloc='www.wattpad.com';
+# DELETE FROM web_pages WHERE url LIKE 'https://www.wattpad.com/forgot?%' AND netloc='www.wattpad.com';
 # Content Stripping needs to be determined.
+#
+# CREATE INDEX ix_web_pages_url_ops ON web_pages (url text_pattern_ops);
+
+#
 decomposeBefore: [
 
 ]

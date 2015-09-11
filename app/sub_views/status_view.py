@@ -5,6 +5,7 @@ from flask import make_response
 from flask import request
 
 import pickle
+import time
 import datetime
 
 from sqlalchemy.sql import text
@@ -24,14 +25,11 @@ def get_scheduled_tasks():
 	scheduled = db.get_session().execute(text("""SELECT id, next_run_time, job_state FROM apscheduler_jobs;"""))
 	ret = list(scheduled)
 
-	ret = [(name, ts, pickle.loads(value)) for name, ts, value in ret]
-
+	ret = [(name, ts-time.time(), pickle.loads(value)) for name, ts, value in ret]
 
 	for name, ts, value in ret:
 		then = value['next_run_time']
 		now = datetime.datetime.now(datetime.timezone.utc)
-		# print("then", (then, ))
-		# print("now", (now, ))
 		tgt = then - now
 		value['time_til_job'] = tgt
 	return ret
