@@ -160,13 +160,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, run_filters=True):
+	def __init__(self, cookie_lock, run_filters=True, response_queue=False):
 		print("SiteArchiver __init__()")
 		super().__init__()
 
 		self.db = db
 
 		self.cookie_lock = cookie_lock
+		self.resp_q = response_queue
 
 		# print("SiteArchiver database imported")
 		ruleset = WebMirror.rules.load_rules()

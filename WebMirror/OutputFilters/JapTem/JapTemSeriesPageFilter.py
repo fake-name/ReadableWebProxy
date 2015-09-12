@@ -96,7 +96,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		rating, views, chapters = ratingtg.split("·")
 		rating_score = float(rating.split()[-1])
-		print("Extracted rating: ", rating_score)
+
 		if not rating_score >= MIN_RATING:
 			return []
 
@@ -158,13 +158,14 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			for release in releases:
 				chp_title = release.find("a")
 
-
+				vol_str = volume.find('div', class_='fanfic_volume_title').get_text()
 				reldate = time.time()
 
 				chp_title = chp_title.get_text()
-				# print("Chp title: '{}'".format(chp_title))
-				vol, chp, frag, post = extractTitle(chp_title)
 
+				agg_title = " ".join((vol_str, chp_title))
+				# print("Chp title: '{}'".format(chp_title))
+				vol, chp, frag, post = extractTitle(agg_title)
 				raw_item = {}
 				raw_item['srcname']   = "JapTem"
 				raw_item['published'] = reldate
@@ -173,10 +174,13 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 				msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
 				msg = msgpackers.createReleasePacket(msg)
+
 				retval.append(msg)
 		if not retval:
 			return []
+
 		retval.append(meta_pkt)
+		# return []
 		return retval
 
 
@@ -246,22 +250,18 @@ def test():
 	engine.dispatchRequest(testJobFromUrl('http://japtem.com/fanfic.php'))
 
 
-	'''
-	import WebMirror.util.webFunctions as webfunc
+	# import WebMirror.util.webFunctions as webfunc
 
+	# wg = webfunc.WebGetRobust()
+	# proc = JapTemSeriesPageProcessor(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)
 
-
-	wg = webfunc.WebGetRobust()
-	proc = JapTemSeriesPageProcessor(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)
-
-	urls = [
-		'http://japtem.com/fanfic.php',
-		]
-	for url in urls:
-		ctnt = wg.getpage(url)
-		proc.content = ctnt
-		proc.processPage(ctnt)
-	'''
+	# urls = [
+	# 	'http://japtem.com/fanfic.php',
+	# 	]
+	# for url in urls:
+	# 	ctnt = wg.getpage(url)
+	# 	proc.content = ctnt
+	# 	proc.processPage(ctnt)
 
 if __name__ == "__main__":
 	test()

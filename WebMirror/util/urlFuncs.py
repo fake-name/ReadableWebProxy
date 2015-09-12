@@ -197,7 +197,7 @@ def rebaseUrl(url, base):
 		return url
 
 def canonizeUrls(soup, pageUrl):
-	print("Canonizing for page: ", pageUrl)
+	# print("Canonizing for page: ", pageUrl)
 	for (dummy_isimg, tag, attr) in urlContainingTargets:
 		for link in soup.findAll(tag):
 			try:
