@@ -301,8 +301,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 						clean = False
 			if clean and item.attrs:
 
-				for attr in list(item.attrs.keys()):
-					if attr not in tmp_valid:
+				for attr, value in list(item.attrs.items()):
+					if "float:left" in value or "float:right" in value:
+						del item[attr]
+					elif attr not in tmp_valid:
 						del item[attr]
 
 		return soup

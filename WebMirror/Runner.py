@@ -17,7 +17,8 @@ import WebMirror.database as db
 
 
 # PROCESSES = 16
-PROCESSES = 16
+PROCESSES = 6
+# PROCESSES = 1
 
 # For synchronizing saving cookies to disk
 cookie_lock = multiprocessing.Lock()
