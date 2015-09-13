@@ -184,7 +184,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
-		self.amqpint.put_item(pkt)
+		self.amqp_put_item(pkt)
 		return retval
 
 
@@ -194,7 +194,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.log.info("Total releases found on page: %s", len(releases))
 		for release in releases:
 			pkt = msgpackers.createReleasePacket(release)
-			self.amqpint.put_item(pkt)
+			self.amqp_put_item(pkt)
 
 	def getJsonMetadata(self, soup):
 		# There are a couple of tags with the data-attr "story-id"

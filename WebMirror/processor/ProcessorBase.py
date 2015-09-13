@@ -390,6 +390,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'destyle',
 			'preserveAttrs',
 			'type',
+			'message_q',
 		]
 
 		assert len(params) == len(expected)
@@ -397,11 +398,14 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			assert expect in params
 
 		instance = cls(**params)
+		print("Instantiated plugin: ", instance)
+		print("Now calling: ", instance.extractContent)
 		ret = instance.extractContent()
+		print("Call returned data: ", bool(ret))
 
 		# Filters don't return anything, so
 		# don't check for return stuff
-		if cls._no_ret:
+		if instance._no_ret:
 			return
 
 		# Copy the mime-type into the return, since bothering to round-trip

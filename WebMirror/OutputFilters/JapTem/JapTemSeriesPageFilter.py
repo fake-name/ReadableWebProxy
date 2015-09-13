@@ -72,7 +72,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		if dosuper:
-			super().__init__()
+			super().__init__(**kwargs)
 
 
 ##################################################################################################################################
@@ -189,7 +189,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def sendReleases(self, releases):
 		self.log.info("Total releases found on page: %s", len(releases))
 		for pkt in releases:
-			self.amqpint.put_item(pkt)
+			self.amqp_put_item(pkt)
 
 
 

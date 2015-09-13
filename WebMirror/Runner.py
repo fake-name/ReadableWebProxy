@@ -15,9 +15,11 @@ import runStatus
 import queue
 import WebMirror.database as db
 
+import WebMirror.OutputFilters.AmqpInterface
+import config
 
 # PROCESSES = 16
-PROCESSES = 6
+PROCESSES = 2
 # PROCESSES = 1
 
 # For synchronizing saving cookies to disk
@@ -106,14 +108,30 @@ def resetInProgress():
 
 
 class UpdateAggregator(object):
-	def __init__(self, queue):
-		self.queue = queue
+	def __init__(self, msg_queue):
+		self.queue = msg_queue
 		self.log = logging.getLogger("Main.Agg.Manager")
+
+		amqp_settings = {
+			"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
+			"RABBIT_PASWD" : config.C_RABBIT_PASWD,
+			"RABBIT_SRVER" : config.C_RABBIT_SRVER,
+			"RABBIT_VHOST" : config.C_RABBIT_VHOST,
+		}
+
+		self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
+
+	def do_amqp(self, pkt):
+		self._amqpint.put_item(pkt)
 
 	def do_task(self):
 
-		todo = self.queue.get_nowait()
-		print("Todo", todo)
+		target, value = self.queue.get_nowait()
+
+		if target == "amqp_msg":
+			self.do_amqp(value)
+		else:
+			print("Todo", target, value)
 
 	def run(self):
 

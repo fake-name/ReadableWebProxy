@@ -35,7 +35,7 @@ import WebMirror.processor.HtmlProcessor
 
 
 
-class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
+class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 	wanted_mimetypes = [
@@ -49,6 +49,7 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 
 	loggerPath = "Main.Text.RssProcessor"
 
+	_no_ret = False
 
 	@staticmethod
 	def wantsFromContent(content):
@@ -61,6 +62,13 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 
 	def __init__(self, **kwargs):
 
+		super().__init__(**kwargs)
+
+		# We're inheriting from a filter (which implicitly sets _no_ret),
+		# but we /do/ return content (Rss is a oddball filter instance), so
+		# therefore we reset _no_ret after calling the parent initializer
+		self._no_ret = False
+
 		self.kwargs     = kwargs
 
 		self.loggerPath = kwargs['loggerPath']+".RssProcessor"
@@ -70,7 +78,6 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 		self.type       = kwargs['type']
 
 		self.log.info("Processing RSS Item")
-		super().__init__()
 
 
 	# @profile
@@ -80,7 +87,7 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 
 
 
-	def extractContents(self, feedUrl, contentDat):
+	def extractFeedContents(self, feedUrl, contentDat):
 		# TODO: Add more content type parsing!
 
 		# So the complete fruitcakes at http://gravitytales.com/feed/ are apparently
@@ -181,9 +188,9 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 
 
 			if 'content' in entry:
-				item['contents'] = self.extractContents(feedUrl, entry['content'])
+				item['contents'] = self.extractFeedContents(feedUrl, entry['content'])
 			elif 'summary' in entry:
-				item['contents'] = self.extractContents(feedUrl, entry['summary'])
+				item['contents'] = self.extractFeedContents(feedUrl, entry['summary'])
 			else:
 				self.log.error('Empty item in feed?')
 				self.log.error('Feed url: %s', feedUrl)
@@ -204,6 +211,7 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 
 
 	def extractContent(self):
+		print("Rss extracting content!")
 
 
 		feed = self.parseFeed(self.content)
@@ -217,7 +225,6 @@ class RssProcessor(ProcessorBase.PageProcessor, WebMirror.OutputFilters.rss.Feed
 		# No links here
 
 		ret['rss-content'] = (data)
-
 		return ret
 
 

@@ -17,6 +17,7 @@ from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentP
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment
 
 # pylint: disable=W0201
+import WebMirror.OutputFilters.FilterBase
 
 
 skip_filter = [
@@ -26,31 +27,16 @@ skip_filter = [
 
 
 
-class DataParser():
+class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	amqpint = None
 	amqp_connect = True
 
-	def __init__(self, transfer=True, debug_print=False):
-		super().__init__()
+	def __init__(self, transfer=True, debug_print=False, **kwargs):
+		super().__init__(**kwargs)
 
 		self.dbg_print = debug_print
-
 		self.transfer = transfer
-
-		amqp_settings = {}
-		amqp_settings["RABBIT_CLIENT_NAME"] = settings.RABBIT_CLIENT_NAME
-		amqp_settings["RABBIT_LOGIN"]       = settings.RABBIT_LOGIN
-		amqp_settings["RABBIT_PASWD"]       = settings.RABBIT_PASWD
-		amqp_settings["RABBIT_SRVER"]       = settings.RABBIT_SRVER
-		amqp_settings["RABBIT_VHOST"]       = settings.RABBIT_VHOST
-
-
-		print("Transfer state:", self.amqp_connect)
-		if self.amqp_connect:
-			self.amqpint = AmqpInterface.RabbitQueueHandler(settings=amqp_settings)
-		else:
-			print("Not making rabbit connection.")
 		self.names = set()
 
 	####################################################################################################################################################
@@ -2056,7 +2042,7 @@ class DataParser():
 
 		raw = self.getRawFeedMessage(feedDat)
 		if raw and tx_raw:
-			self.amqpint.put_item(raw)
+			self.amqp_put_item(raw)
 
 		debug = False
 		if not tx_parse:
@@ -2064,7 +2050,7 @@ class DataParser():
 
 		new = self.getProcessedReleaseInfo(feedDat, debug)
 		if new and tx_parse:
-			self.amqpint.put_item(new)
+			self.amqp_put_item(new)
 
 
 

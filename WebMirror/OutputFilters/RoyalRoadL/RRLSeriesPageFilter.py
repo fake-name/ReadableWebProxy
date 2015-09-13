@@ -154,7 +154,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if not retval:
 			return []
-		self.amqpint.put_item(pkt)
+		self.amqp_put_item(pkt)
 		return retval
 
 
@@ -164,7 +164,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.log.info("Total releases found on page: %s", len(releases))
 		for release in releases:
 			pkt = msgpackers.createReleasePacket(release)
-			self.amqpint.put_item(pkt)
+			self.amqp_put_item(pkt)
 
 
 

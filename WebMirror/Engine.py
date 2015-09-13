@@ -160,7 +160,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, run_filters=True, response_queue=False):
+	def __init__(self, cookie_lock, run_filters=True, response_queue=None):
 		print("SiteArchiver __init__()")
 		super().__init__()
 
@@ -218,7 +218,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	# Minimal proxy because I want to be able to call the fetcher without affecting the DB.
 	def fetch(self, job):
-		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock, wg_handle=self.wg)
+		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock, wg_handle=self.wg, response_queue=self.resp_q)
 		response = fetcher.fetch()
 		return response
 
@@ -397,6 +397,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 		[items.append((link, False)) for link in resource]
 
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
+
+		if self.resp_q != None:
+			for item in items:
+				self.resp_q.put(("new_link", item))
+
 
 		while 1:
 			try:
