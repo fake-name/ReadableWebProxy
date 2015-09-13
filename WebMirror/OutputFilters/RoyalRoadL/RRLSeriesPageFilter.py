@@ -63,7 +63,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.type       = kwargs['type']
 
 		self.log.info("Processing RSS Item")
-		super().__init__()
+		super().__init__(**kwargs)
 
 
 ##################################################################################################################################

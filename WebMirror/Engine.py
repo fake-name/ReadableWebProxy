@@ -399,51 +399,66 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
 
 		if self.resp_q != None:
-			for item in items:
-				self.resp_q.put(("new_link", item))
+			for link, istext in items:
+				start = urllib.parse.urlsplit(link).netloc
+
+				assert link.startswith("http")
+				assert start
+				new = {
+					'url'       : link,
+					'starturl'  : job.starturl,
+					'netloc'    : start,
+					'distance'  : job.distance+1,
+					'is_text'   : istext,
+					'priority'  : job.priority,
+					'type'      : job.type,
+					'state'     : "new",
+					'fetchtime' : datetime.datetime.now(),
+					}
+				self.resp_q.put(("new_link", new))
 
 
-		while 1:
-			try:
-				for link, istext in items:
-					start = urllib.parse.urlsplit(link).netloc
+		# while 1:
+		# 	try:
+		# 		for link, istext in items:
+		# 			start = urllib.parse.urlsplit(link).netloc
 
-					assert link.startswith("http")
-					assert start
+		# 			assert link.startswith("http")
+		# 			assert start
 
-					new = {
-						'url'       : link,
-						'starturl'  : job.starturl,
-						'netloc'    : start,
-						'distance'  : job.distance+1,
-						'is_text'   : istext,
-						'priority'  : job.priority,
-						'type'      : job.type,
-						'state'     : "new",
-						'fetchtime' : datetime.datetime.now(),
-						}
+		# 			new = {
+		# 				'url'       : link,
+		# 				'starturl'  : job.starturl,
+		# 				'netloc'    : start,
+		# 				'distance'  : job.distance+1,
+		# 				'is_text'   : istext,
+		# 				'priority'  : job.priority,
+		# 				'type'      : job.type,
+		# 				'state'     : "new",
+		# 				'fetchtime' : datetime.datetime.now(),
+		# 				}
 
-					# Fucking huzzah for ON CONFLICT!
-					cmd = text("""
-							INSERT INTO
-								web_pages
-								(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
-							VALUES
-								(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
-							ON CONFLICT DO NOTHING
-							""")
-					self.db.get_session().execute(cmd, params=new)
+		# 			# Fucking huzzah for ON CONFLICT!
+		# 			cmd = text("""
+		# 					INSERT INTO
+		# 						web_pages
+		# 						(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
+		# 					VALUES
+		# 						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
+		# 					ON CONFLICT DO NOTHING
+		# 					""")
+		# 			self.db.get_session().execute(cmd, params=new)
 
-				self.db.get_session().commit()
-				break
-			except sqlalchemy.exc.InternalError:
-				self.log.info("Transaction error. Retrying.")
-				self.db.get_session().rollback()
-			except sqlalchemy.exc.OperationalError:
-				self.log.info("Transaction error. Retrying.")
-				self.db.get_session().rollback()
+		# 		self.db.get_session().commit()
+		# 		break
+		# 	except sqlalchemy.exc.InternalError:
+		# 		self.log.info("Transaction error. Retrying.")
+		# 		self.db.get_session().rollback()
+		# 	except sqlalchemy.exc.OperationalError:
+		# 		self.log.info("Transaction error. Retrying.")
+		# 		self.db.get_session().rollback()
 
-		self.log.info("Links upserted.")
+		self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
 
 
 

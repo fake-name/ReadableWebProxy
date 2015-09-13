@@ -32,13 +32,16 @@ class RabbitQueueHandler(object):
 												master             = True,
 												synchronous        = False,
 												flush_queues       = False,
+												prefetch           = 25,
+												durable            = True,
 												task_exchange_type = "fanout",
 												task_queue         = 'task.master.q',
 												response_queue     = 'response.master.q',
 												)
 
 
-
+		self.log.info("Connected AMQP Interface: %s", self.connector)
+		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
 
 	def getSslOpts(self):
 		'''
@@ -63,8 +66,9 @@ class RabbitQueueHandler(object):
 			}
 
 	def put_item(self, data):
+		# self.log.info("Putting data: %s", data)
 		self.connector.putMessage(data)
-		self.log.info("Outgoing data size: %s bytes.", len(data))
+		# self.log.info("Outgoing data size: %s bytes.", len(data))
 
 
 	def get_item(self):

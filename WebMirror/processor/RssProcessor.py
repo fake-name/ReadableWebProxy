@@ -211,7 +211,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 	def extractContent(self):
-		print("Rss extracting content!")
+		# print("Rss extracting content!")
 
 
 		feed = self.parseFeed(self.content)

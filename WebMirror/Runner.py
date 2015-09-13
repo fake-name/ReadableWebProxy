@@ -13,13 +13,19 @@ import traceback
 import WebMirror.Engine
 import runStatus
 import queue
+import sqlalchemy.exc
 import WebMirror.database as db
 
 import WebMirror.OutputFilters.AmqpInterface
 import config
 
-# PROCESSES = 16
-PROCESSES = 2
+
+from sqlalchemy.sql import text
+from sqlalchemy.sql import func
+import WebMirror.database as db
+
+PROCESSES = 16
+# PROCESSES = 2
 # PROCESSES = 1
 
 # For synchronizing saving cookies to disk
@@ -121,15 +127,86 @@ class UpdateAggregator(object):
 
 		self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
+		self.seen = {}
+
+		self.links = 0
+
 	def do_amqp(self, pkt):
 		self._amqpint.put_item(pkt)
+
+
+
+	def upsert_new(self, new):
+		while 1:
+			try:
+				cmd = text("""
+						INSERT INTO
+							web_pages
+							(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
+						VALUES
+							(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
+						ON CONFLICT DO NOTHING
+						""")
+				db.get_session().execute(cmd, params=new)
+				db.get_session().commit()
+
+				break
+			except sqlalchemy.exc.InternalError:
+				self.log.info("Transaction error. Retrying.")
+				db.get_session().rollback()
+			except sqlalchemy.exc.OperationalError:
+				self.log.info("Transaction error. Retrying.")
+				db.get_session().rollback()
+
+
+	def do_link(self, linkdict):
+		# print("Link upsert!")
+		# Linkdict structure
+		# new = {
+		# 	'url'       : link,
+		# 	'starturl'  : job.starturl,
+		# 	'netloc'    : start,
+		# 	'distance'  : job.distance+1,
+		# 	'is_text'   : istext,
+		# 	'priority'  : job.priority,
+		# 	'type'      : job.type,
+		# 	'state'     : "new",
+		# 	'fetchtime' : datetime.datetime.now(),
+		# }
+
+		assert 'url'       in linkdict
+		assert 'starturl'  in linkdict
+		assert 'netloc'    in linkdict
+		assert 'distance'  in linkdict
+		assert 'is_text'   in linkdict
+		assert 'priority'  in linkdict
+		assert 'type'      in linkdict
+		assert 'state'     in linkdict
+		assert 'fetchtime' in linkdict
+
+		url = linkdict['url']
+
+		if not url in self.seen:
+			# Fucking huzzah for ON CONFLICT!
+			self.upsert_new(linkdict)
+			self.seen[url] = True
+
+		# else:
+		# 	print("Old item: %s", linkdict)
 
 	def do_task(self):
 
 		target, value = self.queue.get_nowait()
 
+		if (self.links % 50) == 0:
+			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s", len(self.seen), self.queue.qsize())
+
+		self.links += 1
+
 		if target == "amqp_msg":
 			self.do_amqp(value)
+		elif target == "new_link":
+			self.do_link(value)
 		else:
 			print("Todo", target, value)
 

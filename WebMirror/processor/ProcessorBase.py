@@ -398,10 +398,10 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			assert expect in params
 
 		instance = cls(**params)
-		print("Instantiated plugin: ", instance)
-		print("Now calling: ", instance.extractContent)
+		# print("Instantiated plugin: ", instance)
+		# print("Now calling: ", instance.extractContent)
 		ret = instance.extractContent()
-		print("Call returned data: ", bool(ret))
+		# print("Call returned data: ", bool(ret))
 
 		# Filters don't return anything, so
 		# don't check for return stuff

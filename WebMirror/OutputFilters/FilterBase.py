@@ -14,12 +14,13 @@ class FilterBase(PageProcessor):
 		super().__init__()
 
 		if "message_q" in kwargs and kwargs['message_q']:
-			print("Filter has a queue, not connecting directly.")
+			# print("Filter has a queue, not connecting directly.")
 			self.msg_q = kwargs['message_q']
 		else:
 			print()
 			print("No message queue! Doing independent RabbitMQ connection!")
-			traceback.print_exc()
+			traceback.print_stack()
+			print("Wat?")
 			print()
 			self.msg_q = False
 			amqp_settings = {
