@@ -14,6 +14,7 @@ import sys
 import sqlalchemy.exc
 
 from sqlalchemy import desc
+from sqlalchemy.dialects import postgresql
 
 import WebMirror.util.urlFuncs
 import urllib.parse
@@ -37,7 +38,7 @@ if "debug" in sys.argv:
 	# RSC_CACHE_DURATION = 60 * 60 * 5
 else:
 	CACHE_DURATION = 60 * 60 * 24 * 7
-	RSC_CACHE_DURATION = 60 * 60 * 24 * 14
+	RSC_CACHE_DURATION = 60 * 60 * 24 * 147
 
 
 
@@ -417,50 +418,50 @@ class SiteArchiver(LogBase.LoggerMixin):
 					}
 				self.resp_q.put(("new_link", new))
 
-
-		# while 1:
-		# 	try:
-		# 		for link, istext in items:
-		# 			start = urllib.parse.urlsplit(link).netloc
-
-		# 			assert link.startswith("http")
-		# 			assert start
-
-		# 			new = {
-		# 				'url'       : link,
-		# 				'starturl'  : job.starturl,
-		# 				'netloc'    : start,
-		# 				'distance'  : job.distance+1,
-		# 				'is_text'   : istext,
-		# 				'priority'  : job.priority,
-		# 				'type'      : job.type,
-		# 				'state'     : "new",
-		# 				'fetchtime' : datetime.datetime.now(),
-		# 				}
-
-		# 			# Fucking huzzah for ON CONFLICT!
-		# 			cmd = text("""
-		# 					INSERT INTO
-		# 						web_pages
-		# 						(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
-		# 					VALUES
-		# 						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
-		# 					ON CONFLICT DO NOTHING
-		# 					""")
-		# 			self.db.get_session().execute(cmd, params=new)
-
-		# 		self.db.get_session().commit()
-		# 		break
-		# 	except sqlalchemy.exc.InternalError:
-		# 		self.log.info("Transaction error. Retrying.")
-		# 		self.db.get_session().rollback()
-		# 	except sqlalchemy.exc.OperationalError:
-		# 		self.log.info("Transaction error. Retrying.")
-		# 		self.db.get_session().rollback()
-
-		self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
+			self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
 
 
+		else:
+
+			 while 1:
+			  	try:
+			  		for link, istext in items:
+			  			start = urllib.parse.urlsplit(link).netloc
+
+			  			assert link.startswith("http")
+			  			assert start
+
+			  			new = {
+			  				'url'       : link,
+			  				'starturl'  : job.starturl,
+			  				'netloc'    : start,
+			  				'distance'  : job.distance+1,
+			  				'is_text'   : istext,
+			  				'priority'  : job.priority,
+			  				'type'      : job.type,
+			  				'state'     : "new",
+			  				'fetchtime' : datetime.datetime.now(),
+			  				}
+
+			  			#  Fucking huzzah for ON CONFLICT!
+			  			cmd = text("""
+			  					INSERT INTO
+			  						web_pages
+			  						(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
+			  					VALUES
+			  						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
+			  					ON CONFLICT DO NOTHING
+			  					""")
+			  			self.db.get_session().execute(cmd, params=new)
+
+			  		self.db.get_session().commit()
+			  		break
+			  	except sqlalchemy.exc.InternalError:
+			  		self.log.info("Transaction error. Retrying.")
+			  		self.db.get_session().rollback()
+			  	except sqlalchemy.exc.OperationalError:
+			  		self.log.info("Transaction error. Retrying.")
+			  		self.db.get_session().rollback()
 
 	def upsertFileResponse(self, job, response):
 		# Response dict structure:
@@ -562,7 +563,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 					# .order_by(self.db.WebPages.distance)                \
 					# .order_by(self.db.WebPages.url)                     \
 
+				# print("Getting task")
+
+				# print("Query: ", str(query.statement.compile(dialect=postgresql.dialect())))
+				start = time.time()
 				job = query.scalar()
+				xqtim = time.time() - start
+				self.log.info("Query execution time: %s ms", xqtim * 1000)
 				if not job:
 					self.db.get_session().flush()
 					self.db.get_session().commit()

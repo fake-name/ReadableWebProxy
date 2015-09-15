@@ -6,9 +6,11 @@ if __name__ == "__main__":
 
 import WebMirror.Runner
 import WebMirror.rules
-import sys
+import traceback
 import datetime
 import config
+import WebMirror.database as db
+import WebMirror.LogBase as LogBase
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
@@ -32,17 +34,69 @@ jobstores = {
 }
 
 
-# Should probably be a lambda? Laaaazy.
-def callMod(passMod):
-	lut = {}
-	for item, dummy_interval in activePlugins.scrapePlugins.values():
-		lut[item.__name__] = item
-	if not passMod in lut:
-		raise ValueError("Callable '%s' is not in the class lookup table: '%s'!" % (passMod, lut))
-	runModule = lut[passMod]
-	instance = runModule()
-	instance._go()
+CALLABLE_LUT = {}
+for item, dummy_interval in activePlugins.scrapePlugins.values():
+	CALLABLE_LUT[item.__name__] = item
 
+
+class JobCaller(LogBase.LoggerMixin):
+
+	loggerPath = "Main.PluginRunner"
+
+	def __init__(self, job_name):
+
+		if not job_name in CALLABLE_LUT:
+			raise ValueError("Callable '%s' is not in the class lookup table: '%s'!" % (job_name, CALLABLE_LUT))
+		self.runModule = CALLABLE_LUT[job_name]
+		self.job_name = job_name
+
+		session = db.get_session()
+
+		query = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==job_name)
+		have = query.scalar()
+		if not have:
+			new = db.PluginStatus(plugin_name=job_name)
+			session.add(new)
+			session.commit()
+
+	def doCall(self):
+
+		session = db.get_session()
+		item = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==self.job_name).one()
+		if item.is_running:
+			session.commit()
+			self.log.error("Plugin %s is already running! Not doing re-entrant call!", self.job_name)
+			return
+
+		item.is_running = True
+		item.last_run = datetime.datetime.now()
+		session.commit()
+
+		try:
+			self._doCall()
+		except Exception:
+			item.last_error      = datetime.datetime.now()
+			item.last_error_msg  = traceback.format_exc()
+			raise
+		finally:
+			item.is_running = False
+			item.last_run_end = datetime.datetime.now()
+			session.commit()
+
+
+	# Should probably be a lambda? Laaaazy.
+	def _doCall(self):
+		instance = self.runModule()
+		instance._go()
+
+	@classmethod
+	def callMod(cls, passMod):
+		mod = cls(passMod)
+		mod.doCall()
+
+def do_call(job_name):
+	caller = JobCaller(job_name)
+	caller.doCall()
 
 def scheduleJobs(sched, timeToStart):
 
@@ -55,13 +109,17 @@ def scheduleJobs(sched, timeToStart):
 
 	activeJobs = []
 
+	print("JobCaller: ", JobCaller)
+	print("JobCaller.callMod: ", JobCaller.callMod)
+
 	for jobId, callee, interval, startWhen in jobs:
 		jId = callee.__name__
+		print("JobID = ", jId)
 		activeJobs.append(jId)
 		if not sched.get_job(jId):
 
 
-			sched.add_job(callMod,
+			sched.add_job(do_call,
 						args=(callee.__name__, ),
 						trigger='interval',
 						seconds=interval,

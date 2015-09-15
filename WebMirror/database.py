@@ -53,22 +53,34 @@ SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.
 SESSIONS = {}
 ENGINES = {}
 
+ENGINE_LOCK = multiprocessing.Lock()
+SESSION_LOCK = multiprocessing.Lock()
+
 def get_engine():
 	cpid = multiprocessing.current_process().name
-	if not cpid in SESSIONS:
-		ENGINES[cpid] = create_engine(SQLALCHEMY_DATABASE_URI,
-					isolation_level="REPEATABLE READ")
+	if not cpid in ENGINES:
+		with ENGINE_LOCK:
+			# Check if the engine was created while we were
+			# waiting on the lock.
+			if cpid in ENGINES:
+				return ENGINES[cpid]
+
+			print("Instantiating DB Engine")
+			ENGINES[cpid] = create_engine(SQLALCHEMY_DATABASE_URI,
+						isolation_level="REPEATABLE READ")
 
 	return ENGINES[cpid]
 
 def get_session():
 	cpid = multiprocessing.current_process().name
 	if not cpid in SESSIONS:
-		engine = create_engine(SQLALCHEMY_DATABASE_URI,
-					isolation_level="REPEATABLE READ")
-
-		SESSIONS[cpid] = scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()
-		print("Creating database interface:", SESSIONS[cpid])
+		with SESSION_LOCK:
+			# check if the session was created while
+			# we were waiting for the lock
+			if cpid in SESSIONS:
+				return SESSIONS[cpid]
+			SESSIONS[cpid] = scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()
+			print("Creating database interface:", SESSIONS[cpid])
 
 	return SESSIONS[cpid]
 
@@ -212,6 +224,23 @@ class FeedItems(Base):
 
 	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
 	author        = association_proxy('author_rel',   'author',    creator=author_creator)
+
+
+# Tools for tracking plugins
+class PluginStatus(Base):
+	__tablename__ = 'plugin_status'
+	id             = Column(Integer, primary_key = True)
+
+	plugin_name    = Column(Text)
+
+	is_running     = Column(Boolean, default=False)
+
+	last_run       = Column(DateTime)
+	last_run_end   = Column(DateTime)
+
+	last_error     = Column(DateTime)
+	last_error_msg = Column(Text)
+
 
 
 Base.metadata.create_all(bind=get_engine(), checkfirst=True)
