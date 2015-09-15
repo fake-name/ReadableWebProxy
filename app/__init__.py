@@ -75,6 +75,8 @@ def utility_processor():
 		return format_datetime(datetime.datetime.today(), "yyyy/MM/dd, hh:mm:ss")
 
 	def ago(then):
+		if then == None:
+			return "Never"
 		now = datetime.datetime.now()
 		delta = now - then
 

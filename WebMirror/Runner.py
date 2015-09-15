@@ -24,8 +24,8 @@ from sqlalchemy.sql import text
 from sqlalchemy.sql import func
 import WebMirror.database as db
 
-# PROCESSES = 16
-PROCESSES = 4
+PROCESSES = 16
+# PROCESSES = 4
 # PROCESSES = 1
 
 # For synchronizing saving cookies to disk
