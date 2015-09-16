@@ -37,6 +37,10 @@ class FilterBase(PageProcessor):
 
 	def amqp_put_item(self, item):
 		if self.msg_q:
+			items_in_queue = self.msg_q.qsize()
+			if items_in_queue > 100:
+				self.log.warning("AMQP Message queue too large? Items in queue: %s", items_in_queue)
+
 			self.msg_q.put(("amqp_msg", item))
 
 		else:

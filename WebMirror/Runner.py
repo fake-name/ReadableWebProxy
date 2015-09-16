@@ -130,8 +130,14 @@ class UpdateAggregator(object):
 		self.seen = {}
 
 		self.links = 0
+		self.amqpUpdateCount = 0
+		self.deathCounter = 0
 
 	def do_amqp(self, pkt):
+		self.amqpUpdateCount += 1
+
+		if self.amqpUpdateCount % 50 == 0:
+			self.log.info("Transmitted AMQP messages: %s", self.amqpUpdateCount)
 		self._amqpint.put_item(pkt)
 
 
@@ -199,7 +205,7 @@ class UpdateAggregator(object):
 		target, value = self.queue.get_nowait()
 
 		if (self.links % 50) == 0:
-			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s", len(self.seen), self.queue.qsize())
+			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s, transmitted release messages: %s.", len(self.seen), self.queue.qsize(), self.amqpUpdateCount)
 
 		self.links += 1
 
@@ -215,17 +221,20 @@ class UpdateAggregator(object):
 		while 1:
 			try:
 				self.do_task()
+				self.deathCounter = 0
 			except queue.Empty:
-				if runStatus.run_state.value == 1:
-
+				if runStatus.agg_run_state.value == 1:
 					# Fffffuuuuu time.sleep barfs on KeyboardInterrupt
 					try:
 						time.sleep(1)
 					except KeyboardInterrupt:
 						pass
 				else:
-					self.log.info("Aggregator thread exiting.")
-					break
+					self.deathCounter += 1
+					time.sleep(0.1)
+					if self.deathCounter > 5:
+						self.log.info("Aggregator thread exiting.")
+						break
 
 class Crawler(object):
 	def __init__(self):
@@ -289,8 +298,12 @@ class Crawler(object):
 					break
 
 
+
+
 			self.log.info("All processes halted.")
 
+		self.log.info("Asking Aggregator process to stop.")
+		runStatus.agg_run_state.value = 0
 		agg_proc.join(0)
 		self.log.info("Aggregator joined.")
 

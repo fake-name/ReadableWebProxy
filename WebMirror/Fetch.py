@@ -98,7 +98,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 				self.rules = ruleset
 
 		if not self.rules:
-			self.log.warn("Using base ruleset!")
+			self.log.warn("Using base ruleset for URL: '%s'!", target_url)
 			self.rules = baseRules
 
 
@@ -235,7 +235,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 				if mimeType.lower() in plugin.wanted_mimetypes and \
 						plugin.wantsUrl(self.target_url)       and \
 						plugin.wantsFromContent(content):
-					print("plugin", plugin, "wants", self.target_url)
+					# print("plugin", plugin, "wants", self.target_url)
 					ret = self.plugin_dispatch(plugin, self.target_url, content, fName, mimeType)
 					if not "file" in ret:
 						ret['rawcontent'] = content

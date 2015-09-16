@@ -51,6 +51,7 @@ class JobCaller(LogBase.LoggerMixin):
 		self.runModule = CALLABLE_LUT[job_name]
 		self.job_name = job_name
 
+
 		session = db.get_session()
 
 		try:
@@ -102,7 +103,14 @@ class JobCaller(LogBase.LoggerMixin):
 
 def do_call(job_name):
 	caller = JobCaller(job_name)
-	caller.doCall()
+
+
+	while 1:
+		try:
+			caller.doCall()
+			break
+		except AttributeError:
+			print("Call error!")
 
 def scheduleJobs(sched, timeToStart):
 

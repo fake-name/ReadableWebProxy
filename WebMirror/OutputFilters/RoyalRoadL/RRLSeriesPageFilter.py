@@ -62,7 +62,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
 
-		self.log.info("Processing RSS Item")
+		self.log.info("Processing RoyalRoadL Item")
 		super().__init__(**kwargs)
 
 
@@ -161,7 +161,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def sendReleases(self, releases):
-		self.log.info("Total releases found on page: %s", len(releases))
+		self.log.info("Total releases found on page: %s. Emitting messages into AMQP local queue.", len(releases))
 		for release in releases:
 			pkt = msgpackers.createReleasePacket(release)
 			self.amqp_put_item(pkt)

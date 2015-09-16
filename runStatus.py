@@ -8,7 +8,8 @@ preloadDicts = False
 
 # Global run control value. Only used to stop running processes.
 import multiprocessing
-run_state   = multiprocessing.Value('i', 1)
+run_state     = multiprocessing.Value('i', 1)
+agg_run_state = multiprocessing.Value('i', 1)
 
 
 db_imp_lock = multiprocessing.Lock()
