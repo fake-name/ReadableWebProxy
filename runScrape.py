@@ -11,6 +11,7 @@ import datetime
 import config
 import WebMirror.database as db
 import WebMirror.LogBase as LogBase
+import sqlalchemy.exc
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
@@ -52,12 +53,17 @@ class JobCaller(LogBase.LoggerMixin):
 
 		session = db.get_session()
 
-		query = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==job_name)
-		have = query.scalar()
-		if not have:
-			new = db.PluginStatus(plugin_name=job_name)
-			session.add(new)
-			session.commit()
+		try:
+			query = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==job_name)
+			have = query.scalar()
+			if not have:
+				new = db.PluginStatus(plugin_name=job_name)
+				session.add(new)
+				session.commit()
+		except sqlalchemy.exc.OperationalError:
+			session.rollback()
+		except sqlalchemy.exc.InvalidRequestError:
+			session.rollback()
 
 	def doCall(self):
 
@@ -143,10 +149,6 @@ def go():
 
 	sched = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
 
-	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*60)
-	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*15)
-	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=60*5)
-	# startTime = datetime.datetime.now()+datetime.timedelta(seconds=20)
 	startTime = datetime.datetime.now()+datetime.timedelta(seconds=10)
 	scheduleJobs(sched, startTime)
 	sched.start()

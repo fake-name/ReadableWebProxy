@@ -14,6 +14,9 @@ import sys
 import sqlalchemy.exc
 
 from sqlalchemy import desc
+
+from sqlalchemy.sql import text
+from sqlalchemy import distinct
 from sqlalchemy.dialects import postgresql
 
 import WebMirror.util.urlFuncs
@@ -546,17 +549,60 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# or we succeed.
 		while 1:
 			try:
-				subq = self.db.get_session().query(func.min(self.db.WebPages.priority)) \
-					.filter(self.db.WebPages.state == "new")                            \
-					.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE))
+				# Hand-tuned query, I couldn't figure out how to
+				# get sqlalchemy to emit /exactly/ what I wanted.
+				# TINY changes will break the query optimizer, and
+				# the 100 ms query will suddenly take 10 seconds!
+				raw_query = text('''
+						SELECT
+						    web_pages.id
+						FROM
+						    web_pages
+						WHERE
+						    web_pages.state = 'new' AND web_pages.priority = (
+						       SELECT
+						            min(priority)
+						        FROM
+						            web_pages
+						        WHERE
+						            state = 'new'::dlstate_enum AND distance < 1000000
+						    )
+						AND
+						    web_pages.distance < 1000000
+						LIMIT 1;
+					''')
 
-				query = self.db.get_session().query(self.db.WebPages)           \
-					.filter(self.db.WebPages.state == "new")                    \
-					.filter(self.db.WebPages.priority == subq)                  \
-					.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE)) \
-					.limit(1)
 
-					# This compound order_by completely, COMPLETELY tanked the
+				start = time.time()
+				rid = self.db.get_session().execute(raw_query).scalar()
+				xqtim = time.time() - start
+
+				if not rid:
+					self.db.get_session().flush()
+					self.db.get_session().commit()
+					return False
+
+				# print("Raw ID From manual query:")
+				# print(rid)
+				# print()
+				self.log.info("Query execution time: %s ms", xqtim * 1000)
+
+
+				# d_dist = distinct(self.db.WebPages.priority)
+				# subq = self.db.get_session().query(d_dist)                       \
+				# 	.filter(self.db.WebPages.state == "new")                            \
+				# 	.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE))         \
+				# 	.order_by(d_dist)                              \
+				# 	.limit(1)
+
+
+				# query = self.db.get_session().query(self.db.WebPages)           \
+				# 	.filter(self.db.WebPages.state == "new")                    \
+				# 	.filter(self.db.WebPages.priority == subq)                  \
+				# 	.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE)) \
+				# 	.limit(1)
+
+				# 	# This compound order_by completely, COMPLETELY tanked the
 					# time of this query. As it was, it took > 2 seconds per query!
 					# .order_by(desc(self.db.WebPages.is_text))           \
 					# .order_by(desc(self.db.WebPages.addtime))           \
@@ -565,11 +611,23 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 				# print("Getting task")
 
+				# print()
 				# print("Query: ", str(query.statement.compile(dialect=postgresql.dialect())))
-				start = time.time()
-				job = query.scalar()
-				xqtim = time.time() - start
-				self.log.info("Query execution time: %s ms", xqtim * 1000)
+				# print()
+
+
+
+
+				job = self.db.get_session().query(self.db.WebPages) \
+					.filter(self.db.WebPages.id == rid)             \
+					.one()
+
+				if job.state != 'new':
+					self.db.get_session().flush()
+					self.db.get_session().commit()
+					self.log.info("Someone else fetched that job first!")
+					continue
+
 				if not job:
 					self.db.get_session().flush()
 					self.db.get_session().commit()

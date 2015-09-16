@@ -252,6 +252,9 @@ Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 # CREATE INDEX idx_web_pages_title ON web_pages USING gin(to_tsvector('english', title));
 # CREATE INDEX idx_web_pages_content ON web_pages USING gin(to_tsvector('english', content));
 #
+# Essential for fast task get queries
+# CREATE INDEX ix_web_pages_distance_filtered ON web_pages (priority ASC NULLS LAST) WHERE web_pages.state = 'new'::dlstate_enum AND web_pages.distance < 1000000;
+#
 
 
 # SELECT relname AS "relation", pg_size_pretty(pg_relation_size(C.oid)) AS "size"

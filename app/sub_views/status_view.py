@@ -42,7 +42,6 @@ def status_view():
 	tasks = get_scheduled_tasks()
 
 	states = db.get_session().query(db.PluginStatus).all()
-	print(states)
 
 	return render_template('status.html',
 						   tasks          = tasks,
