@@ -235,6 +235,10 @@ class UpdateAggregator(object):
 					if self.deathCounter > 5:
 						self.log.info("Aggregator thread exiting.")
 						break
+			except Exception:
+				self.log.error("Exception in aggregator!")
+				for line in traceback.format_exc():
+					self.log.error(line.rstrip())
 
 class Crawler(object):
 	def __init__(self):

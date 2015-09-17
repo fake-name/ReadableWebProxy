@@ -37,11 +37,18 @@
 			</h4>
 			<div>
 				<table style='width:100%'>
+					<colgroup>
+						<col  style='width:10%'>
+						<col  style='width:30%'>
+						<col>
+						<col  style='width:20%'>
+						<col  style='width:20%'>
+					</colgroup>
 					<tr>
-						<th style='width:10%'>Running</th>
-						<th style='width:35%'>Name</th>
+						<th>Running</th>
+						<th>Name</th>
 						<th>Last Run</th>
-						<th style='width:20%'>RunTime</th>
+						<th>RunTime</th>
 						<th>Last error</th>
 					</tr>
 					{%- for state in states -%}
@@ -53,12 +60,21 @@
 							<td>{{ago(state.last_error)}}</td>
 						</tr>
 						{% if state.last_error %}
-							<tr>
-								<td>Error: </td>
-								<td colspan=4>
-									<code><pre>{{state.last_error_msg}}</pre></code>
-								</td>
-							</tr>
+							</table>
+							<div style='margin-left: 75px; margin-top: 5px;'>
+								Error:
+								<pre>{{state.last_error_msg}}</pre>
+							</div>
+
+
+							<table style='width:100%'>
+							<colgroup>
+								<col  style='width:10%'>
+								<col  style='width:30%'>
+								<col>
+								<col  style='width:20%'>
+								<col  style='width:20%'>
+							</colgroup>
 						{% endif %}
 					{%- endfor -%}
 				</table>

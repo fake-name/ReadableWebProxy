@@ -10,6 +10,8 @@ baseUrl: [
 	"http://www.fictionpress.com/",
 	]
 
+trigger: False
+
 badwords: [
 			"/about/",
 			"/join-us/",

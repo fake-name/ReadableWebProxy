@@ -24,7 +24,6 @@ executors = {
 }
 job_defaults = {
 	'coalesce': True,
-	'max_instances': 1
 }
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)
@@ -40,6 +39,9 @@ for item, dummy_interval in activePlugins.scrapePlugins.values():
 	CALLABLE_LUT[item.__name__] = item
 
 
+class JobNameException(Exception):
+	pass
+
 class JobCaller(LogBase.LoggerMixin):
 
 	loggerPath = "Main.PluginRunner"
@@ -47,7 +49,7 @@ class JobCaller(LogBase.LoggerMixin):
 	def __init__(self, job_name):
 
 		if not job_name in CALLABLE_LUT:
-			raise ValueError("Callable '%s' is not in the class lookup table: '%s'!" % (job_name, CALLABLE_LUT))
+			raise JobNameException("Callable '%s' is not in the class lookup table: '%s'!" % (job_name, CALLABLE_LUT))
 		self.runModule = CALLABLE_LUT[job_name]
 		self.job_name = job_name
 
@@ -104,10 +106,12 @@ class JobCaller(LogBase.LoggerMixin):
 def do_call(job_name):
 	caller = JobCaller(job_name)
 
-
 	while 1:
 		try:
 			caller.doCall()
+			break
+		except JobNameException:
+			print("Error! Invalid job name: '%s'!" % job_name)
 			break
 		except AttributeError:
 			print("Call error!")
@@ -131,22 +135,27 @@ def scheduleJobs(sched, timeToStart):
 		print("JobID = ", jId)
 		activeJobs.append(jId)
 		if not sched.get_job(jId):
-
-
 			sched.add_job(do_call,
-						args=(callee.__name__, ),
-						trigger='interval',
-						seconds=interval,
-						start_date=startWhen,
-						id=jId,
-						replace_existing=True,
-						jobstore="main_jobstore",
-						misfire_grace_time=2**30)
+						args               = (callee.__name__, ),
+						trigger            = 'interval',
+						seconds            = interval,
+						start_date         = startWhen,
+						id                 = jId,
+						max_instances      =  1,
+						replace_existing   = True,
+						jobstore           = "main_jobstore",
+						misfire_grace_time = 2**30)
 
 
 	for job in sched.get_jobs('main_jobstore'):
 		if not job.id in activeJobs:
 			sched.remove_job(job.id, 'main_jobstore')
+
+	print("JobSetup call resetting run-states!")
+	session = db.get_session()
+	session.query(db.PluginStatus).update({db.PluginStatus.is_running : False})
+	session.commit()
+	print("Run-states reset.")
 
 
 def go():

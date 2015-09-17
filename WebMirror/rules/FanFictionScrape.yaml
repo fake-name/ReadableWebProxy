@@ -13,6 +13,7 @@ baseUrl: [
 	"http://www.fanfiction.net/",
 	]
 
+trigger: False
 
 badwords: [
 			"/about/",
