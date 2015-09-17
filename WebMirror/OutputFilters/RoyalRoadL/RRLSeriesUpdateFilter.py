@@ -6,12 +6,16 @@ runStatus.preloadDicts = False
 
 import WebMirror.OutputFilters.FilterBase
 
+import WebMirror.database as db
+
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import bs4
 import re
 import calendar
+import sqlalchemy.exc
+import traceback
 import datetime
 import time
 import json
@@ -33,7 +37,7 @@ MIN_RATING = 5
 
 
 
-class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
@@ -42,14 +46,24 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 						]
 	want_priority    = 50
 
-	loggerPath = "Main.Filter.RoyalRoad.Page"
+	loggerPath = "Main.Filter.RoyalRoad.Series"
 
 
 	@staticmethod
 	def wantsUrl(url):
-		if re.search(r"^http://www\.royalroadl\.com/fiction/\d+/?$", url):
-			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
+		want = [
+			'http://www.royalroadl.com/fictions/best-rated/',
+			'http://www.royalroadl.com/fictions/latest-updates/',
+			'http://www.royalroadl.com/fictions/active-top-50/',
+			'http://www.royalroadl.com/fictions/weekly-views-top-50/',
+			'http://www.royalroadl.com/fictions/newest/'
+		]
+
+		if url in want:
+
+			print("RRLSeriesUpdateFilter Wants url: '%s'" % url)
 			return True
+		print("RRLSeriesUpdateFilter doesn't want url: '%s'" % url)
 		return False
 
 	def __init__(self, **kwargs):
@@ -73,108 +87,69 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
-		titletg  = soup.find("h1", class_='fiction-title')
-		authortg = soup.find("span", class_='author')
-		ratingtg = soup.find("span", class_='overall')
+		container = soup.find('div', class_='fiction-list-wrapper')
+		# print("container: ", container)
 
-		if not ratingtg:
-			return []
+		urls = []
+		for item in container.find_all("li", class_='fiction'):
+			url = item.find('a', text='Fiction Page')['href']
+			urls.append(url)
 
-		if not float(ratingtg['score']) >= MIN_RATING:
-			return []
-
-		if not titletg:
-			return []
-		if not authortg:
-			return []
-		if not ratingtg:
-			return []
-
-		title  = titletg.get_text()
-		author = authortg.get_text()
-		assert author.startswith("by ")
-		author = author[2:].strip()
-
-
-		descDiv = soup.find('div', class_='description')
-		paras = descDiv.find_all("p")
-		tags = []
-
-		desc = []
-		for para, text in [(para, para.get_text()) for para in paras]:
-			if text.lower().startswith('categories:'):
-				tagstr = text.split(":", 1)[-1]
-				items = tagstr.split(",")
-				[tags.append(item.strip()) for item in items if item.strip()]
-			else:
-				desc.append(para)
-
-
-		seriesmeta = {}
-
-		seriesmeta['title']       = title
-		seriesmeta['author']      = author
-		seriesmeta['tags']        = tags
-		seriesmeta['homepage']    = seriesPageUrl
-		seriesmeta['desc']        = " ".join([str(para) for para in desc])
-		seriesmeta['tl_type']     = 'oel'
-		seriesmeta['sourcesite']  = 'RoyalRoadL'
-
-		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
-
-		extra = {}
-		extra['tags']     = tags
-		extra['homepage'] = seriesPageUrl
-		extra['sourcesite']  = 'RoyalRoadL'
-
-
-		chapters = soup.find("div", class_='chapters')
-		releases = chapters.find_all('li', class_='chapter')
-
-		retval = []
-		for release in releases:
-			chp_title, reldatestr = release.find_all("span")
-			rel = datetime.datetime.strptime(reldatestr.get_text(), '%d/%m/%y')
-			if rel.date() == datetime.date.today():
-				reldate = time.time()
-			else:
-				reldate = calendar.timegm(rel.timetuple())
-
-			chp_title = chp_title.get_text()
-			# print("Chp title: '{}'".format(chp_title))
-			vol, chp, frag, post = extractTitle(chp_title)
-
-			raw_item = {}
-			raw_item['srcname']   = "RoyalRoadL"
-			raw_item['published'] = reldate
-			raw_item['linkUrl']   = release.a['href']
-
-			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
-			retval.append(msg)
-
-		if not retval:
-			return []
-		self.amqp_put_item(pkt)
-		return retval
+		return set(urls)
 
 
 
 
-	def sendReleases(self, releases):
-		self.log.info("Total releases found on page: %s. Emitting messages into AMQP local queue.", len(releases))
-		for release in releases:
-			pkt = msgpackers.createReleasePacket(release)
-			self.amqp_put_item(pkt)
+	def retrigger_pages(self, releases):
+		self.log.info("Total releases found on page: %s. Forcing retrigger of item pages.", len(releases))
+		session = db.get_session()
+		for release_url in releases:
+			while 1:
+				try:
+					have = session.query(db.WebPages) \
+						.filter(db.WebPages.url == release_url)   \
+						.scalar()
+
+					# If we don't have the page, ignore
+					# it as the normal new-link upsert mechanism
+					# will add it.
+					if not have:
+						self.log.info("New: '%s'", release_url)
+						break
+
+					# Also, don't reset if it's in-progress
+					if have.state in ['new', 'fetching', 'processing', 'removed']:
+						self.log.info("Skipping: '%s' (%s)", release_url, have.state)
+						break
+
+					self.log.info("Retriggering page '%s'", release_url)
+					have.state = 'new'
+					session.commit()
+					break
+
+
+				except sqlalchemy.exc.InvalidRequestError:
+					print("InvalidRequest error!")
+					session.rollback()
+					traceback.print_exc()
+				except sqlalchemy.exc.OperationalError:
+					print("InvalidRequest error!")
+					session.rollback()
+				except sqlalchemy.exc.IntegrityError:
+					print("[upsertRssItems] -> Integrity error!")
+					traceback.print_exc()
+					session.rollback()
+
 
 
 
 
 	def processPage(self, url, content):
-
+		# print("processPage() call")
 		soup = bs4.BeautifulSoup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
-			self.sendReleases(releases)
+			self.retrigger_pages(releases)
 
 
 
@@ -222,14 +197,17 @@ def test():
 
 
 
+
+
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fiction/3021'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates/'))
 
-	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/best-rated/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/active-top-50/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/weekly-views-top-50/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/newest/'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/best-rated/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/active-top-50/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/weekly-views-top-50/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/newest/'))
+
 
 
 if __name__ == "__main__":

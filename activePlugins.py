@@ -51,11 +51,13 @@ PLUGINS = [
 
 
 import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter
+import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter
 import WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter
 import WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter
 
 FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
+	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter.RRLSeriesUpdateFilter,
 	WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter.JapTemSeriesPageProcessor,
 	# WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
 ]
