@@ -133,6 +133,8 @@ class UpdateAggregator(object):
 		self.amqpUpdateCount = 0
 		self.deathCounter = 0
 
+		self.batched_links = []
+
 	def do_amqp(self, pkt):
 		self.amqpUpdateCount += 1
 
@@ -142,9 +144,15 @@ class UpdateAggregator(object):
 
 
 
-	def upsert_new(self, new):
+
+	def do_link_batch_update(self):
+		if not self.batched_links:
+			return
+
+		self.log.info("Inserting %s items into DB in batch.", len(self.batched_links))
 		while 1:
 			try:
+
 				cmd = text("""
 						INSERT INTO
 							web_pages
@@ -153,10 +161,14 @@ class UpdateAggregator(object):
 							(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
 						ON CONFLICT DO NOTHING
 						""")
-				db.get_session().execute(cmd, params=new)
+				for paramset in self.batched_links:
+					db.get_session().execute(cmd, params=paramset)
 				db.get_session().commit()
-
+				self.batched_links = []
 				break
+			except KeyboardInterrupt:
+				self.log.info("Keyboard Interrupt?")
+				db.get_session().rollback()
 			except sqlalchemy.exc.InternalError:
 				self.log.info("Transaction error. Retrying.")
 				db.get_session().rollback()
@@ -194,8 +206,11 @@ class UpdateAggregator(object):
 
 		if not url in self.seen:
 			# Fucking huzzah for ON CONFLICT!
-			self.upsert_new(linkdict)
+			self.batched_links.append(linkdict)
 			self.seen[url] = True
+
+			if len(self.batched_links) > 100:
+				self.do_link_batch_update()
 
 		# else:
 		# 	print("Old item: %s", linkdict)
@@ -227,9 +242,11 @@ class UpdateAggregator(object):
 					# Fffffuuuuu time.sleep barfs on KeyboardInterrupt
 					try:
 						time.sleep(1)
+						self.do_link_batch_update()
 					except KeyboardInterrupt:
 						pass
 				else:
+					self.do_link_batch_update()
 					self.deathCounter += 1
 					time.sleep(0.1)
 					if self.deathCounter > 5:
