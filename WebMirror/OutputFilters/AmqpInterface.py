@@ -67,7 +67,7 @@ class RabbitQueueHandler(object):
 
 	def put_item(self, data):
 		# self.log.info("Putting data: %s", data)
-		self.connector.putMessage(data)
+		self.connector.putMessage(data, synchronous=1000)
 		# self.log.info("Outgoing data size: %s bytes.", len(data))
 
 

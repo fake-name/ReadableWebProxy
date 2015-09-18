@@ -56,14 +56,19 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'http://www.royalroadl.com/fictions/latest-updates/',
 			'http://www.royalroadl.com/fictions/active-top-50/',
 			'http://www.royalroadl.com/fictions/weekly-views-top-50/',
-			'http://www.royalroadl.com/fictions/newest/'
+			'http://www.royalroadl.com/fictions/newest/',
+			'http://royalroadl.com/fictions/best-rated/',
+			'http://royalroadl.com/fictions/latest-updates/',
+			'http://royalroadl.com/fictions/active-top-50/',
+			'http://royalroadl.com/fictions/weekly-views-top-50/',
+			'http://royalroadl.com/fictions/newest/',
 		]
 
 		if url in want:
 
 			print("RRLSeriesUpdateFilter Wants url: '%s'" % url)
 			return True
-		print("RRLSeriesUpdateFilter doesn't want url: '%s'" % url)
+		# print("RRLSeriesUpdateFilter doesn't want url: '%s'" % url)
 		return False
 
 	def __init__(self, **kwargs):

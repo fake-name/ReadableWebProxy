@@ -84,6 +84,17 @@ def get_session():
 
 	return SESSIONS[cpid]
 
+def delete_session():
+	cpid = multiprocessing.current_process().name
+	if cpid in SESSIONS:
+		with SESSION_LOCK:
+			# check if the session was created while
+			# we were waiting for the lock
+			if not cpid in SESSIONS:
+				return SESSIONS[cpid]
+			del SESSIONS[cpid]
+			print("Deleted session for id: ", cpid)
+
 
 # import traceback
 # traceback.print_stack()

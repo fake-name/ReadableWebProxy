@@ -421,6 +421,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 					}
 				self.resp_q.put(("new_link", new))
 
+				while self.resp_q.qsize() > 1000:
+					time.sleep(0.1)
+
 			self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
 
 

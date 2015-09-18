@@ -47,7 +47,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	@staticmethod
 	def wantsUrl(url):
-		if re.search(r"^http://www\.royalroadl\.com/fiction/\d+/?$", url):
+		if re.search(r"^http://(?:www\.)?royalroadl\.com/fiction/\d+/?$", url):
 			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
 			return True
 		return False
@@ -214,23 +214,30 @@ def test():
 	import logSetup
 	import WebMirror.rules
 	import WebMirror.Engine
+	import WebMirror.Runner
 	import multiprocessing
 	logSetup.initLogging()
 
+	crawler = WebMirror.Runner.Crawler()
+	crawler.start_aggregator()
+
+
 	c_lok = cookie_lock = multiprocessing.Lock()
-	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok)
+	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok, response_queue=crawler.agg_queue)
 
 
 
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fiction/3021'))
+	engine.dispatchRequest(testJobFromUrl('http://royalroadl.com/fiction/3333'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fiction/2850'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates/'))
 
-	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/best-rated/'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/best-rated/'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates/'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/active-top-50/'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/weekly-views-top-50/'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/newest/'))
 
+	crawler.join_aggregator()
 
 if __name__ == "__main__":
 	test()

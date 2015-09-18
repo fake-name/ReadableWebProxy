@@ -263,7 +263,18 @@ class Crawler(object):
 		self.rules = WebMirror.rules.load_rules()
 		self.agg_queue = multiprocessing.Queue()
 
+	def start_aggregator(self):
 
+		agg = UpdateAggregator(self.agg_queue)
+		self.agg_proc = multiprocessing.Process(target=agg.run)
+		self.agg_proc.start()
+
+	def join_aggregator(self):
+
+		self.log.info("Asking Aggregator process to stop.")
+		runStatus.agg_run_state.value = 0
+		self.agg_proc.join(0)
+		self.log.info("Aggregator joined.")
 
 	def run(self):
 
@@ -271,10 +282,7 @@ class Crawler(object):
 		cnt = 0
 		procno = 0
 
-		agg = UpdateAggregator(self.agg_queue)
-
-		agg_proc = multiprocessing.Process(target=agg.run)
-		agg_proc.start()
+		self.start_aggregator()
 
 		if PROCESSES == 1:
 			self.log.info("Running in single process mode!")
@@ -322,11 +330,7 @@ class Crawler(object):
 
 
 			self.log.info("All processes halted.")
-
-		self.log.info("Asking Aggregator process to stop.")
-		runStatus.agg_run_state.value = 0
-		agg_proc.join(0)
-		self.log.info("Aggregator joined.")
+		self.join_aggregator()
 
 
 if __name__ == "__main__":

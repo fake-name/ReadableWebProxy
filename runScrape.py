@@ -14,6 +14,7 @@ import WebMirror.LogBase as LogBase
 import sqlalchemy.exc
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
@@ -68,6 +69,9 @@ class JobCaller(LogBase.LoggerMixin):
 		except sqlalchemy.exc.InvalidRequestError:
 			session.rollback()
 
+		finally:
+			db.delete_session()
+
 	def doCall(self):
 
 		session = db.get_session()
@@ -92,6 +96,7 @@ class JobCaller(LogBase.LoggerMixin):
 			item.last_run_end = datetime.datetime.now()
 			session.commit()
 
+			db.delete_session()
 
 	# Should probably be a lambda? Laaaazy.
 	def _doCall(self):
@@ -114,6 +119,7 @@ def do_call(job_name):
 			print("Error! Invalid job name: '%s'!" % job_name)
 			break
 		except AttributeError:
+			traceback.print_exc()
 			print("Call error!")
 
 def scheduleJobs(sched, timeToStart):
@@ -155,22 +161,24 @@ def scheduleJobs(sched, timeToStart):
 	session = db.get_session()
 	session.query(db.PluginStatus).update({db.PluginStatus.is_running : False})
 	session.commit()
+	db.delete_session()
+
 	print("Run-states reset.")
 
+
+def go_sched():
+
+	sched = BlockingScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
+
+	startTime = datetime.datetime.now()+datetime.timedelta(seconds=10)
+	scheduleJobs(sched, startTime)
+	sched.start()
 
 def go():
 
 	rules = WebMirror.rules.load_rules()
 	WebMirror.Runner.initializeStartUrls(rules)
 	WebMirror.Runner.resetInProgress()
-
-	sched = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
-
-	startTime = datetime.datetime.now()+datetime.timedelta(seconds=10)
-	scheduleJobs(sched, startTime)
-	sched.start()
-
-
 	runner = WebMirror.Runner.Crawler()
 	runner.run()
 
@@ -185,9 +193,14 @@ def profile():
 	p.print_stats(250)
 
 if __name__ == "__main__":
-	started = False
-	if not started:
-		started = True
+	import sys
+	if "scheduler" in sys.argv:
+		go_sched()
+	else:
 
-		# profile()
-		go()
+		started = False
+		if not started:
+			started = True
+
+			# profile()
+			go()

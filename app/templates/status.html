@@ -37,7 +37,7 @@
 							<td>{{state.last_run_end - state.last_run}}</td>
 							<td>{{ago(state.last_error)}}</td>
 						</tr>
-						{% if state.last_error %}
+						{% if state.last_error and state.last_error_msg != None %}
 							</table>
 							<div style='margin-left: 75px; margin-top: 5px;'>
 								Error:
