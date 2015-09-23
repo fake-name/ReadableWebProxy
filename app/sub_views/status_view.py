@@ -32,9 +32,9 @@ def datetime_to_utc_timestamp(timeval):
 	if timeval is not None:
 		return timegm(timeval.utctimetuple()) + timeval.microsecond / 1000000
 
-def get_scheduled_tasks():
+def get_scheduled_tasks(session):
 
-	scheduled = db.get_session().execute(text("""SELECT id, next_run_time, job_state FROM apscheduler_jobs;"""))
+	scheduled = session.execute(text("""SELECT id, next_run_time, job_state FROM apscheduler_jobs;"""))
 	ret = list(scheduled)
 
 
@@ -57,10 +57,11 @@ def get_scheduled_tasks():
 @app.route('/status/', methods=['GET'])
 def status_view():
 
-	tasks = get_scheduled_tasks()
-
-	states = db.get_session().query(db.PluginStatus).all()
-
+	session = db.get_session()
+	# session.expire()
+	tasks = get_scheduled_tasks(session)
+	states = session.query(db.PluginStatus).all()
+	session.commit()
 	return render_template('status.html',
 						   tasks          = tasks,
 						   states         = states,

@@ -144,6 +144,14 @@ badwords: [
 			'/user_inbox?',
 			'/comment/',
 			'/forgot?',
+
+			# People's fucked up markup leading to loops
+			'tranquility_files/tranquility_files/tranquility_files',
+			'nikita_files/nikita_files/nikita_files/nikita_files/nikita_files',
+			'i ask myself_files/i ask myself_files/I ask myself_files',
+			'what is the meaning of life_files/What is the meaning of life_files',
+			'dawn of the hero 3_files/dawn of the hero 3_files/Dawn of the hero 3_files',
+			'The Difference Between Right and Wrong_files/The Difference Between Right and Wrong_files',
 			]
 
 # DELETE FROM web_pages WHERE url LIKE 'https://www.wattpad.com/user/%' AND netloc='www.wattpad.com'

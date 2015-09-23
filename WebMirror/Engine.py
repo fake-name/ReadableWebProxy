@@ -429,45 +429,48 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		else:
 
-			 while 1:
-			  	try:
-			  		for link, istext in items:
-			  			start = urllib.parse.urlsplit(link).netloc
+			while 1:
+				try:
+					for link, istext in items:
+						start = urllib.parse.urlsplit(link).netloc
 
-			  			assert link.startswith("http")
-			  			assert start
+						assert link.startswith("http")
+						assert start
 
-			  			new = {
-			  				'url'       : link,
-			  				'starturl'  : job.starturl,
-			  				'netloc'    : start,
-			  				'distance'  : job.distance+1,
-			  				'is_text'   : istext,
-			  				'priority'  : job.priority,
-			  				'type'      : job.type,
-			  				'state'     : "new",
-			  				'fetchtime' : datetime.datetime.now(),
-			  				}
+						new = {
+							'url'       : link,
+							'starturl'  : job.starturl,
+							'netloc'    : start,
+							'distance'  : job.distance+1,
+							'is_text'   : istext,
+							'priority'  : job.priority,
+							'type'      : job.type,
+							'state'     : "new",
+							'fetchtime' : datetime.datetime.now(),
+							}
 
-			  			#  Fucking huzzah for ON CONFLICT!
-			  			cmd = text("""
-			  					INSERT INTO
-			  						web_pages
-			  						(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
-			  					VALUES
-			  						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
-			  					ON CONFLICT DO NOTHING
-			  					""")
-			  			self.db.get_session().execute(cmd, params=new)
+						#  Fucking huzzah for ON CONFLICT!
+						cmd = text("""
+								INSERT INTO
+									web_pages
+									(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
+								VALUES
+									(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
+								ON CONFLICT DO NOTHING
+								""")
+						self.db.get_session().execute(cmd, params=new)
 
-			  		self.db.get_session().commit()
-			  		break
-			  	except sqlalchemy.exc.InternalError:
-			  		self.log.info("Transaction error. Retrying.")
-			  		self.db.get_session().rollback()
-			  	except sqlalchemy.exc.OperationalError:
-			  		self.log.info("Transaction error. Retrying.")
-			  		self.db.get_session().rollback()
+					self.db.get_session().commit()
+					break
+				except sqlalchemy.exc.InternalError:
+					self.log.info("SQLAlchemy InternalError - Retrying.")
+					self.db.get_session().rollback()
+				except sqlalchemy.exc.OperationalError:
+					self.log.info("SQLAlchemy OperationalError - Retrying.")
+					self.db.get_session().rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					self.log.info("SQLAlchemy InvalidRequestError - Retrying.")
+					self.db.get_session().rollback()
 
 	def upsertFileResponse(self, job, response):
 		# Response dict structure:
@@ -589,36 +592,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 				# print(rid)
 				# print()
 				self.log.info("Query execution time: %s ms", xqtim * 1000)
-
-
-				# d_dist = distinct(self.db.WebPages.priority)
-				# subq = self.db.get_session().query(d_dist)                       \
-				# 	.filter(self.db.WebPages.state == "new")                            \
-				# 	.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE))         \
-				# 	.order_by(d_dist)                              \
-				# 	.limit(1)
-
-
-				# query = self.db.get_session().query(self.db.WebPages)           \
-				# 	.filter(self.db.WebPages.state == "new")                    \
-				# 	.filter(self.db.WebPages.priority == subq)                  \
-				# 	.filter(self.db.WebPages.distance < (self.db.MAX_DISTANCE)) \
-				# 	.limit(1)
-
-				# 	# This compound order_by completely, COMPLETELY tanked the
-					# time of this query. As it was, it took > 2 seconds per query!
-					# .order_by(desc(self.db.WebPages.is_text))           \
-					# .order_by(desc(self.db.WebPages.addtime))           \
-					# .order_by(self.db.WebPages.distance)                \
-					# .order_by(self.db.WebPages.url)                     \
-
-				# print("Getting task")
-
-				# print()
-				# print("Query: ", str(query.statement.compile(dialect=postgresql.dialect())))
-				# print()
-
-
 
 
 				job = self.db.get_session().query(self.db.WebPages) \

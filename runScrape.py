@@ -174,6 +174,18 @@ def go_sched():
 	scheduleJobs(sched, startTime)
 	sched.start()
 
+def go_test():
+	import WebMirror.Engine
+	# rules = WebMirror.rules.load_rules()
+	# WebMirror.Runner.initializeStartUrls(rules)
+	# WebMirror.Runner.resetInProgress()
+	# runner = WebMirror.Runner.Crawler()
+
+	engine = WebMirror.Engine.SiteArchiver(None)
+	print(engine)
+	for x in range(100):
+		engine.getTask()
+
 def go():
 
 	rules = WebMirror.rules.load_rules()
@@ -196,6 +208,8 @@ if __name__ == "__main__":
 	import sys
 	if "scheduler" in sys.argv:
 		go_sched()
+	if "test" in sys.argv:
+		go_test()
 	else:
 
 		started = False

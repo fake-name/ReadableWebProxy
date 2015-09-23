@@ -1,6 +1,7 @@
 
 import os
 import multiprocessing
+import threading
 
 DB_REALTIME_PRIORITY =    1 * 1000
 DB_HIGH_PRIORITY     =   10 * 1000
@@ -58,42 +59,48 @@ SESSION_LOCK = multiprocessing.Lock()
 
 def get_engine():
 	cpid = multiprocessing.current_process().name
-	if not cpid in ENGINES:
+	ctid = threading.current_thread().name
+	csid = "{}-{}".format(cpid, ctid)
+	if not csid in ENGINES:
 		with ENGINE_LOCK:
 			# Check if the engine was created while we were
 			# waiting on the lock.
-			if cpid in ENGINES:
-				return ENGINES[cpid]
+			if csid in ENGINES:
+				return ENGINES[csid]
 
 			print("Instantiating DB Engine")
-			ENGINES[cpid] = create_engine(SQLALCHEMY_DATABASE_URI,
+			ENGINES[csid] = create_engine(SQLALCHEMY_DATABASE_URI,
 						isolation_level="REPEATABLE READ")
 
-	return ENGINES[cpid]
+	return ENGINES[csid]
 
 def get_session():
 	cpid = multiprocessing.current_process().name
-	if not cpid in SESSIONS:
+	ctid = threading.current_thread().name
+	csid = "{}-{}".format(cpid, ctid)
+	if not csid in SESSIONS:
 		with SESSION_LOCK:
 			# check if the session was created while
 			# we were waiting for the lock
-			if cpid in SESSIONS:
-				return SESSIONS[cpid]
-			SESSIONS[cpid] = scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()
-			print("Creating database interface:", SESSIONS[cpid])
+			if csid in SESSIONS:
+				return SESSIONS[csid]
+			SESSIONS[csid] = scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()
+			print("Creating database interface:", SESSIONS[csid])
 
-	return SESSIONS[cpid]
+	return SESSIONS[csid]
 
 def delete_session():
 	cpid = multiprocessing.current_process().name
-	if cpid in SESSIONS:
+	ctid = threading.current_thread().name
+	csid = "{}-{}".format(cpid, ctid)
+	if csid in SESSIONS:
 		with SESSION_LOCK:
 			# check if the session was created while
 			# we were waiting for the lock
-			if not cpid in SESSIONS:
-				return SESSIONS[cpid]
-			del SESSIONS[cpid]
-			print("Deleted session for id: ", cpid)
+			if not csid in SESSIONS:
+				return SESSIONS[csid]
+			del SESSIONS[csid]
+			print("Deleted session for id: ", csid)
 
 
 # import traceback

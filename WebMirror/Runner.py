@@ -24,7 +24,7 @@ from sqlalchemy.sql import text
 from sqlalchemy.sql import func
 import WebMirror.database as db
 
-PROCESSES = 16
+PROCESSES = 12
 # PROCESSES = 2
 # PROCESSES = 1
 

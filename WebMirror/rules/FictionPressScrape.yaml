@@ -30,6 +30,9 @@ badwords: [
 			"/post.php?",
 			"/author.php?",
 			"fictionpress.com/atom/u/",
+			".myspacecdn.com",
+			"static.flickr.com",
+			"/http/",
 			]
 
 # Content Stripping needs to be determined.
