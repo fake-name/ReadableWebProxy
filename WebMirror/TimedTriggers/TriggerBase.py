@@ -30,6 +30,7 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 		self.log.info("Checking %s for updates", self.pluginName)
 
 		self.go()
+		self.log.info("Update check for %s finished.", self.pluginName)
 
 
 

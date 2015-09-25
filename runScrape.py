@@ -25,6 +25,7 @@ executors = {
 }
 job_defaults = {
 	'coalesce': True,
+	'max_instances': 3,
 }
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)

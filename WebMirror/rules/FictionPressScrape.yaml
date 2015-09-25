@@ -33,6 +33,9 @@ badwords: [
 			".myspacecdn.com",
 			"static.flickr.com",
 			"/http/",
+
+			# Block user pages (they're HUGE)
+			'fictionpress.com/u/',
 			]
 
 # Content Stripping needs to be determined.

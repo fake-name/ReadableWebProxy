@@ -25,7 +25,7 @@ class TimeoutTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 				self.db.get_session().query(self.db.WebPages)             \
 					.filter(self.db.WebPages.fetchtime < threshold_time)  \
 					.filter(self.db.WebPages.state   != "new")            \
-					.filter(self.db.WebPages.is_text != True)             \
+					.filter(self.db.WebPages.is_text == True)             \
 					.update({
 							self.db.WebPages.state    : "new",
 							self.db.WebPages.priority : self.db.DB_LOW_PRIORITY,
@@ -45,6 +45,8 @@ class TimeoutTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 			except sqlalchemy.exc.InvalidRequestError:
 				self.log.info("Transaction error. Retrying.")
 				self.db.get_session().rollback()
+
+		self.log.info("Old files retrigger complete.")
 
 
 if __name__ == "__main__":

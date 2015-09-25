@@ -69,8 +69,8 @@ def get_engine():
 				return ENGINES[csid]
 
 			print("Instantiating DB Engine")
-			ENGINES[csid] = create_engine(SQLALCHEMY_DATABASE_URI,
-						isolation_level="REPEATABLE READ")
+			ENGINES[csid] = create_engine(SQLALCHEMY_DATABASE_URI) #,
+						# isolation_level="REPEATABLE READ")
 
 	return ENGINES[csid]
 

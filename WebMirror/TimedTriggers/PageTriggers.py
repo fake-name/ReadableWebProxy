@@ -21,6 +21,7 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 
 	def retriggerPages(self):
+
 		for url in self.pages:
 			while 1:
 				try:
@@ -67,6 +68,7 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 					self.log.info("Transaction error. Retrying.")
 					self.db.get_session().rollback()
 
+		self.log.info("Pages retrigger complete.")
 
 
 
