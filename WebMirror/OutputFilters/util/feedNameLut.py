@@ -217,6 +217,8 @@ def getNiceName(srcurl):
 
 		"feedproxy.google.com"                      : "FeedProxy",
 
+		"dragomircm.com"                            : "DragomirCM",
+		"mike777ac.wordpress.com"                   : "Mike777ac",
 
 		# OEL bits and bobs:
 		# "xhawk77x.blogspot.com"                     : "wat",

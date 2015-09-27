@@ -1616,6 +1616,67 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	####################################################################################################################################################
 	##
+	##  OEL Bits!
+	##
+	####################################################################################################################################################
+	####################################################################################################################################################
+
+
+	####################################################################################################################################################
+	# DragomirCM
+	####################################################################################################################################################
+	def extractDragomirCM(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+		if not postfix and ":" in item['title']:
+			postfix = item['title'].split(":")[-1]
+		if 'Magic Academy' in item['tags'] and chp or vol:
+			return buildReleaseMessage(item, 'I was reincarnated as a Magic Academy!', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+		if "100 Luck" in item['tags'] and chp or vol:
+			return buildReleaseMessage(item, '100 Luck and the Dragon Tamer Skill!', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+
+		return False
+	####################################################################################################################################################
+	# Mike777ac
+	####################################################################################################################################################
+	def extractMike777ac(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if not postfix and ":" in item['title']:
+			postfix = item['title'].split(":")[-1]
+
+		# Christ, this guy doesn't seem to get how tags work:
+		# - 'Action'
+		# - 'Adventure'
+		# - 'Comedy'
+		# - 'Fantasy'
+		# - 'Hardcore OP-ness'
+		# - 'Hardcore OPness'
+		# - 'Magic'
+		# - 'Mature'
+		# - 'HCOP'
+		# - 'MC'
+		# - 'Transportation'
+		# - 'Dungeon'
+		#
+		# This shit isn't used for indexing or crap. Why do you have so many useless synonyms and tags that are literally
+		# applied to EVERY item?
+
+		if 'Hardcore OPness' in item['tags'] and chp or vol:
+			return buildReleaseMessage(item, 'Hardcore OP-ness', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+		print()
+		print(item['title'])
+		print(item['tags'])
+		print(vol, chp, frag, postfix)
+
+		return False
+
+
+
+	####################################################################################################################################################
+	####################################################################################################################################################
+	##
 	##  Dispatcher
 	##
 	####################################################################################################################################################
@@ -1919,6 +1980,13 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		elif item['srcname'] == "A0132":
 			ret = self.extractWAT(item)
 
+
+
+		elif item['srcname'] == 'DragomirCM':
+			ret = self.extractDragomirCM(item)
+
+		elif item['srcname'] == 'Mike777ac':
+			ret = self.extractMike777ac(item)
 
 
 

@@ -4,6 +4,17 @@
 {% block content %}
 	{% include '_block_flash.html' %}
 	<div class="well">
+
+		<div>
+			<p>
+				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
+				<a href='{{req_url}}'>Original content</a> |
+				Ignore-cache: {{"no" if not ignore_cache else "yes"}}
+				(<a href='/view?{{ {"url" : req_url, "nocache" : "true"} | urlencode }}'>yes</a>, <a href='/view?{{ {"url" : req_url} | urlencode | safe }}'>no</a>)
+			</p>
+
+		</div>
+		<hr>
 		<div id='content' class='easyreading'>
 			<div class="center-block text-center">
 				<h4>Loading</h4>
@@ -15,12 +26,15 @@
 		</div>
 		<hr>
 		<div>
-			<p>Remote URL: <a href='{{req_url}}'>{{req_url}}</a></p>
+			<p>
+				Remote URL: <a href='{{req_url}}'>{{req_url}}</a>
+			</p>
 			<p>
 				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
 				<a href='{{req_url}}'>Original content</a> |
 				Ignore-cache: {{"no" if not ignore_cache else "yes"}}
-				(<a href='/view?{{ {"url" : req_url, "nocache" : "true"} | urlencode }}'>yes</a>, <a href='/view?{{ {"url" : req_url} | urlencode | safe }}'>no</a>)</p>
+				(<a href='/view?{{ {"url" : req_url, "nocache" : "true"} | urlencode }}'>yes</a>, <a href='/view?{{ {"url" : req_url} | urlencode | safe }}'>no</a>)
+			</p>
 
 		</div>
 	</div>

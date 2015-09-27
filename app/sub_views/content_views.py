@@ -16,7 +16,7 @@ import WebMirror.API
 def view():
 	req_url = request.args.get('url')
 	if not req_url:
-		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+		return render_template('error.html', title = 'Viewer', message = "Error! No page specified!")
 
 	ignore_cache = request.args.get("nocache")
 
@@ -27,7 +27,7 @@ def view():
 def render():
 	req_url = request.args.get('url')
 	if not req_url:
-		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+		return render_template('error.html', title = 'Markup Render', message = "Error! No page specified!")
 	req_url = request.args.get('url')
 
 	ignore_cache = request.args.get("nocache")
@@ -45,7 +45,7 @@ def render():
 def render_resource():
 	req_url = request.args.get('url')
 	if not req_url:
-		return render_template('error.html', title = 'Home', message = "Error! No page specified!")
+		return render_template('error.html', title = 'Resource Render', message = "Error! No page specified!")
 
 	ignore_cache = request.args.get("nocache")
 
