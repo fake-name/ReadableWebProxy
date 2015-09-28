@@ -9,7 +9,7 @@ import datetime
 from WebMirror.Engine import SiteArchiver
 import urllib.parse
 
-def print_html_response(archiver, ret):
+def print_html_response(archiver, new, ret):
 	print("Plain links:")
 	for link in ret['plainLinks']:
 		print("	'%s'" % link.replace("\n", ""))
@@ -30,7 +30,7 @@ def print_html_response(archiver, ret):
 	for link in filteredr:
 		print("	'%s'" % link.replace("\n", ""))
 
-def print_rss_response(archiver, ret):
+def print_rss_response(archiver, new, ret):
 	pass
 
 def test(url):
@@ -56,9 +56,9 @@ def test(url):
 	print(ret.keys())
 
 	if "plainLinks" in ret and "rsrcLinks" in ret: # Looks like a HTML page. Print the relevant info
-		print_html_response(archiver, ret)
+		print_html_response(archiver, new, ret)
 	if "rss-content" in ret:
-		print_rss_response(archiver, ret)
+		print_rss_response(archiver, new, ret)
 
 
 	# cmd = text("""
