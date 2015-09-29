@@ -41,6 +41,7 @@ import citext
 import datetime
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import TSVECTOR
 ischema_names['citext'] = citext.CIText
 
 from settings import DATABASE_IP            as C_DATABASE_IP
@@ -139,6 +140,8 @@ class WebPages(Base):
 
 	fetchtime   = Column(DateTime, default=datetime.datetime.min)
 	addtime     = Column(DateTime, default=datetime.datetime.utcnow)
+
+	tsv_content = Column(TSVECTOR)
 
 
 	file_item   = relationship("WebFiles")

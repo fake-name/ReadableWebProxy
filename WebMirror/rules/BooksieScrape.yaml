@@ -14,6 +14,7 @@ badwords: [
 			"/poetry",
 			"/poetry/",
 			"/users/",
+			"/rss/",
 			"/writers",
 			]
 

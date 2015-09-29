@@ -87,7 +87,7 @@ def search(page=1):
 	if scope == "title":
 		return render_search(query, db.WebPages.title, page, "Title search for '%s'" % query)
 	if scope == "content":
-		return render_search(query, db.WebPages.content, page, "Content search for '%s'" % query)
+		return render_search(query, db.WebPages.tsv_content, page, "Content search for '%s'" % query)
 
 	else:
 		return render_template('error.html', title = 'Error!', message = "Error! Invalid search scope!")

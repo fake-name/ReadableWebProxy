@@ -25,6 +25,7 @@ from sqlalchemy.sql import func
 import WebMirror.database as db
 
 PROCESSES = 12
+# PROCESSES = 4
 # PROCESSES = 2
 # PROCESSES = 1
 
@@ -171,9 +172,11 @@ class UpdateAggregator(object):
 				db.get_session().rollback()
 			except sqlalchemy.exc.InternalError:
 				self.log.info("Transaction error. Retrying.")
+				traceback.print_exc()
 				db.get_session().rollback()
 			except sqlalchemy.exc.OperationalError:
 				self.log.info("Transaction error. Retrying.")
+				traceback.print_exc()
 				db.get_session().rollback()
 
 

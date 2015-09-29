@@ -615,6 +615,7 @@ class WebGetRobust:
 		if returnMultiple:
 			return pgctnt, pghandle
 		else:
+			pghandle.close()
 			return pgctnt
 
 	def syncCookiesFromFile(self):
