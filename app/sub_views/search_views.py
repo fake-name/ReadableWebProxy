@@ -9,7 +9,7 @@ from sqlalchemy import Text
 from sqlalchemy.sql.expression import cast
 from app import app
 
-
+import traceback
 import WebMirror.database as db
 
 from app.utilities import paginate
@@ -29,28 +29,41 @@ def build_tsquery(in_str):
 def fetch_content(query_text, column, page):
 	session = db.get_session()
 	tsq = build_tsquery(query_text)
-	query = session                                                                                         \
-			.query(db.WebPages, func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq))) \
-			.filter(                                                                                        \
-				func.to_tsvector("english", column).match(tsq, postgresql_regconfig='english')              \
-				)                                                                                           \
-			.order_by(func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq)).desc())
 
-	print("param: '%s'" % tsq)
-	print(str(query.statement.compile(dialect=postgresql.dialect())))
+	if column == db.WebPages.title:
+		query = session                                                                                         \
+				.query(db.WebPages, func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq))) \
+				.filter(                                                                                        \
+					func.to_tsvector("english", column).match(tsq, postgresql_regconfig='english')              \
+					)                                                                                           \
+				.order_by(func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq)).desc())
+
+	elif column == db.WebPages.tsv_content:
+		query = session                                                                                         \
+				.query(db.WebPages, func.ts_rank_cd(column, func.to_tsquery(tsq)))                              \
+				.filter( column.match(tsq) )                                                                    \
+				.order_by(func.ts_rank_cd(column, func.to_tsquery(tsq)).desc())
+	else:
+		raise ValueError("Wat?")
+
+	# print(str(query.statement.compile(dialect=postgresql.dialect())))
+	# print("param: '%s'" % tsq)
 
 	try:
 		entries = paginate(query, page)
 
 	except sqlalchemy.exc.ProgrammingError:
+		traceback.print_exc()
 		print("ProgrammingError - Rolling back!")
 		db.get_session().rollback()
 		raise
 	except sqlalchemy.exc.InternalError:
+		traceback.print_exc()
 		print("InternalError - Rolling back!")
 		db.get_session().rollback()
 		raise
 	except sqlalchemy.exc.OperationalError:
+		traceback.print_exc()
 		print("InternalError - Rolling back!")
 		db.get_session().rollback()
 		raise

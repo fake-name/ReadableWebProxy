@@ -47,11 +47,11 @@
 	<div class="well">
 		<h4>{{ header }}</h4>
 
-		{{ util_macros.render_pagination(sequence_item) }}
+		{{ util_macros.render_pagination(sequence_item, "search") }}
 		<div>
 		{{ search_results(sequence_item.items) }}
 		</div>
-		{{ util_macros.render_pagination(sequence_item) }}
+		{{ util_macros.render_pagination(sequence_item, "search") }}
 	</div>
 
 {% endblock %}

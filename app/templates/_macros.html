@@ -1,11 +1,15 @@
 
 
-{%- macro render_pagination(pagination) -%}
+{%- macro render_pagination(pagination, url_for_param=None) -%}
 	<div class=pagination>
 	{%- for page in pagination.iter_pages() -%}
 		{%- if page -%}
 			{% if page != pagination.page %}
-				<a href="{{ page }}">{{ page }}</a>
+				{% if url_for_param %}
+					<a href="{{ url_for(url_for_param, page=page, **request.args) }}">{{ page }}</a>
+				{% else %}
+					<a href="{{ page }}">{{ page }}</a>
+				{% endif %}
 			{% else %}
 				<strong>{{ page }}</strong>
 			{% endif %}
