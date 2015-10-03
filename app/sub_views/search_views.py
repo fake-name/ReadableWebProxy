@@ -1,12 +1,8 @@
 
 
 from flask import render_template
-from flask import make_response
 from flask import request
 
-import WebMirror.Engine
-from sqlalchemy import Text
-from sqlalchemy.sql.expression import cast
 from app import app
 
 import traceback
@@ -14,10 +10,9 @@ import WebMirror.database as db
 
 from app.utilities import paginate
 import sqlalchemy.exc
-from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import func
 
-import WebMirror.API
+import WebMirror.rules
 
 def build_tsquery(in_str):
 	args = in_str.split()
@@ -88,6 +83,13 @@ def render_search(query_text, column, page, title):
 						   page            = page
 						   )
 
+def render_search_page():
+
+	rules = WebMirror.rules.load_rules()
+
+	return render_template('search.html',
+			rules = rules)
+
 
 @app.route('/search/', methods=['GET'])
 @app.route('/search/<int:page>', methods=['GET'])
@@ -95,7 +97,7 @@ def search(page=1):
 	scope = request.args.get('scope')
 	query = request.args.get('query')
 	if not (scope and query):
-		return render_template('search.html')
+		return render_search_page()
 
 	if scope == "title":
 		return render_search(query, db.WebPages.title, page, "Title search for '%s'" % query)

@@ -59,13 +59,11 @@ baseUrl: [
 	 "http://eternalpath.net",
 	 "https://xxjohnsmithxx.wordpress.com",
 	 "http://dragomircm.com",
-
+	 "http://eugene-rain.com",
 
 	 ]
 
-
-
-
+# http://www.blazingtranslations.com/?feed=rss2
 
 
 feedPostfix: "/feed/"

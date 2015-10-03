@@ -96,7 +96,7 @@ def initializeStartUrls(rules):
 						starturl = starturl,
 						netloc   = netloc,
 						type     = ruleset['type'],
-						priority = db.DB_MED_PRIORITY,
+						priority = db.DB_IDLE_PRIORITY,
 						distance = db.DB_DEFAULT_DIST,
 					)
 				print("Missing start-url for address: '{}'".format(starturl))

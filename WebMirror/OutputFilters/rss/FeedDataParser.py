@@ -18,7 +18,7 @@ from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment
 
 # pylint: disable=W0201
 import WebMirror.OutputFilters.FilterBase
-
+import flags
 
 skip_filter = [
 	"www.baka-tsuki.org",
@@ -2022,7 +2022,31 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		# ret = False
 
-		if self.dbg_print:
+		if flags.RSS_DEBUG and not ret:
+			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+			if vol or chp or frag:
+				with open('rss_filter_misses.txt', "a") as fp:
+					# fp.write("\n==============================\n")
+
+					write_items = [
+						("Title:      ", item['title']),
+						("Vol:        ", vol),
+						("Chp:        ", chp),
+						("Frag:       ", frag),
+						("Postfix:    ", postfix),
+						("SourceName: ", item['srcname']),
+						("Tags:       ", item['tags']),
+						("Feed URL:   ", item['linkUrl']),
+						("GUID:       ", item['guid']),
+					]
+
+					for name, val in write_items:
+						fp.write("%s '%s', " % (name, val))
+					fp.write("\n")
+					# fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
+					# fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
+
+		if self.dbg_print or flags.RSS_DEBUG:
 			if not ret:
 				vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 				print("'%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))

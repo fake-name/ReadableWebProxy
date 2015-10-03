@@ -25,7 +25,28 @@
 				<input type="hidden" name="scope" value="content">
 				<button type="submit" class="btn btn-default">Search</button>
 			</form>
+		</div>
+		<div>
 			<div class="clearfix"></div>
+			<hr>
+			<div class='container'>
+				{% for ruleset in rules: %}
+					<div>
+						{% for key, value in ruleset.items(): %}
+							<div class='row'>
+								<div class='col-xs-2'>
+									{{ key }}
+								</div>
+								<div class='col-xs-6'>
+									{{ value }}
+								</div>
+
+							</div>
+						{% endfor %}
+					</div>
+
+				{% endfor %}
+			</div>
 		</div>
 	</div>
 

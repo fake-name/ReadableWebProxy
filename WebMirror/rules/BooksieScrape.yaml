@@ -16,6 +16,7 @@ badwords: [
 			"/users/",
 			"/rss/",
 			"/writers",
+			"/pdf/",
 			]
 
 # Content Stripping needs to be determined.
