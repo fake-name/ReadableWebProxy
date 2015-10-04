@@ -1,10 +1,12 @@
 
-type: eastern
+type: western
 
 
 FOLLOW_GOOGLE_LINKS: False
 allImages: False
 
+
+refetch: False
 
 baseUrl: [
 	"http://storiesonline.net/",

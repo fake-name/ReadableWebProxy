@@ -192,10 +192,16 @@ def getCloudflare(ruleset):
 	if not 'cloudflare' in ruleset:
 		return False
 	return ruleset['cloudflare']
+
 def getTrigger(ruleset):
 	if not 'trigger' in ruleset:
 		return True
 	return ruleset['trigger']
+
+def getRefetch(ruleset):
+	if not 'refetch' in ruleset:
+		return True
+	return ruleset['refetch']
 
 def getIgnoreMalformed(ruleset):
 	if not 'IGNORE_MALFORMED_URLS' in ruleset:
@@ -242,6 +248,8 @@ def validateRuleKeys(dat, fname):
 		'extraStartUrls',
 		'trigger',
 
+		'refetch',
+
 		# Not currently implemented, but useful
 		'titleTweakLut',
 		]
@@ -277,6 +285,7 @@ def load_validate_rules(fname, dat):
 	if not rules['trigger']:
 		rules['starturls']             = []
 
+	rules['refetch']               = getRefetch(dat)
 
 	return rules
 

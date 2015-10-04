@@ -116,36 +116,41 @@ itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype
 
 class WebPages(Base):
 	__tablename__ = 'web_pages'
-	id           = Column(Integer, primary_key = True)
-	state        = Column(dlstate_enum, default='new', index=True, nullable=False)
-	errno        = Column(Integer, default='0')
-	url          = Column(Text, nullable = False, index = True, unique = True)
-	starturl     = Column(Text, nullable = False)
-	netloc       = Column(Text, nullable = False)
+	id                = Column(Integer, primary_key = True)
+	state             = Column(dlstate_enum, default='new', index=True, nullable=False)
+	errno             = Column(Integer, default='0')
+	url               = Column(Text, nullable = False, index = True, unique = True)
+	starturl          = Column(Text, nullable = False)
+	netloc            = Column(Text, nullable = False)
 
 	# Foreign key to the files table if needed.
-	file         = Column(Integer, ForeignKey('web_files.id'))
+	file              = Column(Integer, ForeignKey('web_files.id'))
 
-	priority     = Column(Integer, default=1000000, index=True, nullable=False)
-	distance     = Column(Integer, index=True, nullable=False)
+	priority          = Column(Integer, default=1000000, index=True, nullable=False)
+	distance          = Column(Integer, index=True, nullable=False)
 
-	is_text      = Column(Boolean, default=False)
-	limit_netloc = Column(Boolean, default=True)
+	is_text           = Column(Boolean, default=False)
+	limit_netloc      = Column(Boolean, default=True)
 
-	title       = Column(citext.CIText)
-	mimetype    = Column(Text)
-	type        = Column(itemtype_enum, default='unknown', index=True)
+	title             = Column(citext.CIText)
+	mimetype          = Column(Text)
+	type              = Column(itemtype_enum, default='unknown', index=True)
 
-	raw_content = Column(Text)
-	content     = Column(Text)
+	raw_content       = Column(Text)
+	content           = Column(Text)
 
-	fetchtime   = Column(DateTime, default=datetime.datetime.min)
-	addtime     = Column(DateTime, default=datetime.datetime.utcnow)
+	fetchtime         = Column(DateTime, default=datetime.datetime.min)
+	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
 
-	tsv_content = Column(TSVECTOR)
+	# Items with `normal_fetch_mode` set to false are not retreived by the normal scheduling system
+	# in WebMirror\Engine.py. This is to allow external systems that need to manage their own
+	# fetch scheduling to operate within the same database.
+	normal_fetch_mode = Column(Boolean, default=True)
+
+	tsv_content       = Column(TSVECTOR)
 
 
-	file_item   = relationship("WebFiles")
+	file_item         = relationship("WebFiles")
 
 # File table doesn't know anything about URLs, since they're kept in the
 # WebPages table entirely.

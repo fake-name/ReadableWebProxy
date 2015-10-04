@@ -565,13 +565,21 @@ class SiteArchiver(LogBase.LoggerMixin):
 						FROM
 						    web_pages
 						WHERE
-						    web_pages.state = 'new' AND web_pages.priority = (
+						    web_pages.state = 'new'
+						AND
+						    normal_fetch_mode = true
+						AND
+						    web_pages.priority = (
 						       SELECT
 						            min(priority)
 						        FROM
 						            web_pages
 						        WHERE
-						            state = 'new'::dlstate_enum AND distance < 1000000
+						            state = 'new'::dlstate_enum
+						        AND
+						            distance < 1000000
+						        AND
+						            normal_fetch_mode = true
 						    )
 						AND
 						    web_pages.distance < 1000000
