@@ -22,6 +22,7 @@ Flask-SQLAlchemy
 flask-paginate
 Flask-WTF
 apscheduler
+semantic
 
 ## BS4 4.4.0 has some bugs.
 BeautifulSoup4==4.3.2

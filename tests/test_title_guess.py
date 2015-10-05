@@ -14,14 +14,18 @@ def test():
 		p = TitleParser(key)
 		vol, chp, frag, post = p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()
 
+		if frag != None:
+			consolidated_chp = (frag / 100.0) + 0 if chp == None else chp
+		else:
+			consolidated_chp = chp
 		if len(value) == 2:
 			e_chp, e_vol = value
-			if e_chp == 0.0 and chp == None:
+			if e_chp == 0.0 and consolidated_chp == None:
 				e_chp = None
-			if vol != e_vol or chp != e_chp:
+			if vol != e_vol or consolidated_chp != e_chp:
 				mismatch += 1
 				print(p)
-				print("Parsed: v{}, c{}, f{}".format(vol, chp, frag))
+				print("Parsed: v{}, c{}".format(vol, consolidated_chp))
 				print("Expect: v{}, c{}".format(e_vol, e_chp))
 				print()
 		elif len(value) == 4:

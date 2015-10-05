@@ -1,5 +1,7 @@
 
 import abc
+import semantic.numbers
+import traceback
 
 # Order matters! Items are checked from left to right.
 VOLUME_KEYS   = [
@@ -85,11 +87,14 @@ def partition(alist, indices):
 class Token(object):
 	__metaclass__ = abc.ABCMeta
 
+	glob_free_number_string = True
+
 	@abc.abstractmethod
 	def tokens(self):
 		pass
 
 	def __init__(self, text, position, parent):
+
 		self.text     = text
 		self.position = position
 		self.parent   = parent
@@ -195,6 +200,12 @@ class Token(object):
 		# Handle strings with multiple decimal points, e.g. '01.05.15'
 		if self.text.count(".") > 1:
 			return False
+
+		# NumberService() for some reason converts "a" to "one", which fucks everything up.
+		# Anyways, if the token is "a", stop it from doing that.
+		if self.text.strip().lower() == 'a':
+			return False
+
 		if not any([char in '0123456789' for char in self.text]):
 			return False
 		if all([char in '0123456789.' for char in self.text]):
@@ -202,11 +213,43 @@ class Token(object):
 		return False
 
 	def getNumber(self):
-		assert self.isNumeric(), "getNumber() can only be called if the token value is entirely numeric!"
-		return float(self.text)
+
+		if self.isNumeric():
+			return float(self.text)
+		val = self.asciiNumeric()
+		if val != False:
+			return val
+		raise ValueError("Call assumes '%s' is numeric, and it's not (return: '%s')?" % (self.text, val))
+		# assert self.isNumeric(), "getNumber() can only be called if the token value is entirely numeric!"
+
+	def asciiNumeric(self):
+		if self.glob_free_number_string != True:
+			return False
+
+		following_text = self.text+self.parent._following_text(self.position)
+		if not following_text:
+			return False
+		following_text = following_text.strip()
+		if ":" in following_text:
+			following_text = following_text.split(":")[0]
+
+
+		# Spot-patching to fix data corruption issues I've run into:
+
+		following_text = following_text.replace("”", "")
+		following_text = following_text.strip()
+
+		try:
+			# print("Parsing '%s' for numbers" % following_text)
+			return semantic.numbers.NumberService().parse(following_text)
+		except semantic.numbers.NumberService.NumberException:
+			# print("Parse failure!")
+			# traceback.print_exc()
+			return False
+
 
 	def __repr__(self):
-		ret = "<{:14} at: {:2} contents: '{}' number: {}>".format(self.__class__.__name__, self.position, self.text, self.isNumeric())
+		ret = "<{:14} at: {:2} contents: '{}' number: {}, ascii number: {}>".format(self.__class__.__name__, self.position, self.text, self.isNumeric(), self.asciiNumeric())
 		return ret
 
 	def index(self):
@@ -237,15 +280,27 @@ class Token(object):
 		'''
 		return text in cls.tokens
 
-	def specialize(self, specializations):
-		if not self.isNumeric():
-			return self
+	def specialize(self, specializations, ascii_num_specializations):
+		# print("Specializing: ", self)
 
-		prev_dat = self.lastData()
-		for spec in [spec for spec in specializations]:
-			if not self.parent._getTokenType(spec):
-				if spec.wantsToSpecialize(prev_dat.stringl()):
-					return spec(self.text, self.position, self.parent)
+		if self.isNumeric():
+			prev_dat = self.lastData()
+			for spec in [spec for spec in specializations]:
+				# print(spec)
+				if not self.parent._getTokenType(spec):
+					if spec.wantsToSpecialize(prev_dat.stringl()):
+						return spec(self.text, self.position, self.parent)
+
+
+		if self.asciiNumeric() != False:
+			prev_dat = self.lastData()
+			for spec in [spec for spec in ascii_num_specializations]:
+				# print(spec)
+				if not self.parent._getTokenType(spec):
+					if spec.wantsToSpecialize(prev_dat.stringl()):
+						return spec(self.text, self.position, self.parent)
+
+
 		return self
 
 
@@ -260,7 +315,8 @@ class FragmentToken(Token):
 	tokens = FRAGMENT_KEYS
 
 class FreeChapterToken(Token):
-	tokens = False
+	tokens                  = False
+	glob_free_number_string = False
 
 	@classmethod
 	def wantsToSpecialize(cls, text):
@@ -308,6 +364,11 @@ class TitleParser(object):
 			FragmentToken,
 			FreeChapterToken,
 		]
+	ASCII_SPECIALIZE = [
+			VolumeToken,
+			ChapterToken,
+			FragmentToken,
+		]
 
 	def __init__(self, title):
 		self.raw = title
@@ -349,7 +410,7 @@ class TitleParser(object):
 				parent   = self)
 		d_toks = d_tok.splitToken(DataToken)
 		for tok in d_toks:
-			tok = tok.specialize(self.SPECIALIZE)
+			tok = tok.specialize(self.SPECIALIZE, self.ASCII_SPECIALIZE)
 			self.chunks.append(tok)
 
 	def _preceeding(self, offset):
@@ -357,6 +418,11 @@ class TitleParser(object):
 
 	def _following(self, offset):
 		return [chunk for chunk in self.chunks[offset+1:] if not isinstance(chunk, (DelimiterToken, NullToken))]
+
+	def _following_text(self, offset):
+		chunks = [chunk for chunk in self.chunks[offset+1:] if not any([isinstance(chunk, ttype) for ttype in self.SPECIALIZE])]
+		texts = [chunk.text for chunk in chunks]
+		return "".join(texts)
 
 	def _getTokenType(self, tok_type):
 		return [chunk for chunk in self.chunks if isinstance(chunk, tok_type)]
@@ -427,6 +493,7 @@ class TitleParser(object):
 		# don't unintentionally glob onto '100', when we want it to
 		# select '2' first
 		have = self._getTokenType(ChapterToken)
+		# print("Have chapter:", have)
 		if have:
 			return have[0]
 		have = self._getTokenType(FreeChapterToken)

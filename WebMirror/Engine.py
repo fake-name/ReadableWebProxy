@@ -587,6 +587,30 @@ class SiteArchiver(LogBase.LoggerMixin):
 					''')
 
 
+				# raw_query = text('''
+				# 		SELECT
+				# 		    web_pages.id
+				# 		FROM
+				# 		    web_pages
+				# 		WHERE
+				# 		    web_pages.state = 'new'
+				# 		AND
+				# 		    web_pages.priority = (
+				# 		       SELECT
+				# 		            min(priority)
+				# 		        FROM
+				# 		            web_pages
+				# 		        WHERE
+				# 		            state = 'new'::dlstate_enum
+				# 		        AND
+				# 		            distance < 1000000
+				# 		    )
+				# 		AND
+				# 		    web_pages.distance < 1000000
+				# 		LIMIT 1;
+				# 	''')
+
+
 				start = time.time()
 				rid = self.db.get_session().execute(raw_query).scalar()
 				xqtim = time.time() - start

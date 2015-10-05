@@ -10,4 +10,4 @@ python3.4 -m venv --without-pip flask
 wget https://bootstrap.pypa.io/get-pip.py
 ./flask/bin/python3.4 get-pip.py
 rm get-pip.py
-./flask/bin/pip install -r requirements.txt
+./flask/bin/pip install --upgrade -r requirements.txt

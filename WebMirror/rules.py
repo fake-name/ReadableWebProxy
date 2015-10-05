@@ -199,9 +199,9 @@ def getTrigger(ruleset):
 	return ruleset['trigger']
 
 def getRefetch(ruleset):
-	if not 'refetch' in ruleset:
+	if not 'normal_fetch_mode' in ruleset:
 		return True
-	return ruleset['refetch']
+	return ruleset['normal_fetch_mode']
 
 def getIgnoreMalformed(ruleset):
 	if not 'IGNORE_MALFORMED_URLS' in ruleset:
@@ -248,7 +248,7 @@ def validateRuleKeys(dat, fname):
 		'extraStartUrls',
 		'trigger',
 
-		'refetch',
+		'normal_fetch_mode',
 
 		# Not currently implemented, but useful
 		'titleTweakLut',

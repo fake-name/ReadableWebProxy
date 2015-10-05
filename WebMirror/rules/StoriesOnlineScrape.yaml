@@ -6,7 +6,7 @@ FOLLOW_GOOGLE_LINKS: False
 allImages: False
 
 
-refetch: False
+normal_fetch_mode: False
 
 baseUrl: [
 	"http://storiesonline.net/",

@@ -86,18 +86,19 @@ def initializeStartUrls(rules):
 
 	for ruleset in [rset for rset in rules if rset['starturls']]:
 		for starturl in ruleset['starturls']:
-			have = db.get_session().query(db.WebPages)     \
-				.filter(db.WebPages.url == starturl) \
+			have = db.get_session().query(db.WebPages) \
+				.filter(db.WebPages.url == starturl)   \
 				.count()
 			if not have:
 				netloc = urlFuncs.getNetLoc(starturl)
 				new = db.WebPages(
-						url      = starturl,
-						starturl = starturl,
-						netloc   = netloc,
-						type     = ruleset['type'],
-						priority = db.DB_IDLE_PRIORITY,
-						distance = db.DB_DEFAULT_DIST,
+						url               = starturl,
+						starturl          = starturl,
+						netloc            = netloc,
+						type              = ruleset['type'],
+						priority          = db.DB_IDLE_PRIORITY,
+						distance          = db.DB_DEFAULT_DIST,
+						normal_fetch_mode = ruleset.normal_fetch_mode,
 					)
 				print("Missing start-url for address: '{}'".format(starturl))
 				db.get_session().add(new)
