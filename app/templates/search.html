@@ -24,29 +24,33 @@
 				</div>
 				<input type="hidden" name="scope" value="content">
 				<button type="submit" class="btn btn-default">Search</button>
-			</form>
-		</div>
-		<div>
-			<div class="clearfix"></div>
-			<hr>
-			<div class='container'>
-				{% for ruleset in rules: %}
-					<div>
-						{% for key, value in ruleset.items(): %}
-							<div class='row'>
-								<div class='col-xs-2'>
-									{{ key }}
-								</div>
-								<div class='col-xs-6'>
-									{{ value }}
-								</div>
+				<div>
+					<div class="clearfix"></div>
+					<hr>
+					<div class=''>
+						{% for locset in netlocs: %}
 
+							<div class='well well-tny'>
+
+								{% if locset|length > 1: %}
+									<input type="radio" name="source-site" value="{{ locset | tojson | urlencode }}"> All from site
+								{% endif %}
+
+
+								{% for url in locset: %}
+									<div class='row'>
+										<div class='col-xs-8'>
+											<input type="radio" name="source-site" value="{{ url | tojson | urlencode }}"> {{ url }}
+										</div>
+									</div>
+								{% endfor %}
 							</div>
+
 						{% endfor %}
 					</div>
+				</div>
 
-				{% endfor %}
-			</div>
+			</form>
 		</div>
 	</div>
 

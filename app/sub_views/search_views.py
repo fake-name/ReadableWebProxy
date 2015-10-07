@@ -2,6 +2,8 @@
 
 from flask import render_template
 from flask import request
+import json
+import urllib.parse
 
 from app import app
 
@@ -21,7 +23,7 @@ def build_tsquery(in_str):
 	ret = " & ".join(args)
 	return ret
 
-def fetch_content(query_text, column, page):
+def fetch_content(query_text, column, page, sources=None):
 	session = db.get_session()
 	tsq = build_tsquery(query_text)
 
@@ -38,6 +40,10 @@ def fetch_content(query_text, column, page):
 				.query(db.WebPages, func.ts_rank_cd(column, func.to_tsquery(tsq)))                              \
 				.filter( column.match(tsq) )                                                                    \
 				.order_by(func.ts_rank_cd(column, func.to_tsquery(tsq)).desc())
+
+		if sources:
+			query = query.filter(db.WebPages.netloc.in_(sources))
+
 	else:
 		raise ValueError("Wat?")
 
@@ -66,9 +72,23 @@ def fetch_content(query_text, column, page):
 	return entries
 
 def render_search(query_text, column, page, title):
+	print(request)
+	if 'source-site' in request.args:
+		try:
+			request_str = request.args['source-site']
+			request_str = urllib.parse.unquote(request_str)
+			sources = json.loads(request_str)
+		except ValueError:
+			sources = None
+	else:
+		sources = None
+
+
+	if isinstance(sources, str):
+		sources = [sources]
 
 	try:
-		entries = fetch_content(query_text, column, page)
+		entries = fetch_content(query_text, column, page, sources=sources)
 	except (sqlalchemy.exc.ProgrammingError,
 			sqlalchemy.exc.InternalError,
 			sqlalchemy.exc.OperationalError):
@@ -84,11 +104,20 @@ def render_search(query_text, column, page, title):
 						   )
 
 def render_search_page():
+	print(request)
+	print(request.args)
+	print("test" in request.args)
+	if "test" in request.args:
+		print(request.args["test"])
+
 
 	rules = WebMirror.rules.load_rules()
 
+	netlocs = [item['netlocs'] for item in rules if item['netlocs']]
+	netlocs.sort(key=lambda x: len(x))
+
 	return render_template('search.html',
-			rules = rules)
+			netlocs = netlocs)
 
 
 @app.route('/search/', methods=['GET'])
