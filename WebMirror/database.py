@@ -1,5 +1,6 @@
 
 import os
+import sys
 import multiprocessing
 import threading
 
@@ -18,6 +19,8 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Table
 # from sqlalchemy import MetaData
+
+import time
 
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -70,7 +73,7 @@ def get_engine():
 			if csid in ENGINES:
 				return ENGINES[csid]
 
-			print("Instantiating DB Engine")
+			print("INFO: Creating engine for process! Engine name: '%s'" % csid)
 			ENGINES[csid] = create_engine(SQLALCHEMY_DATABASE_URI) #,
 						# isolation_level="REPEATABLE READ")
 
@@ -82,14 +85,32 @@ def get_session():
 	csid = "{}-{}".format(cpid, ctid)
 	if not csid in SESSIONS:
 		with SESSION_LOCK:
+
 			# check if the session was created while
 			# we were waiting for the lock
 			if csid in SESSIONS:
-				return SESSIONS[csid]
-			SESSIONS[csid] = scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()
+				# Reset the "last used" time on the handle
+				SESSIONS[csid][0] = time.time()
+				return SESSIONS[csid][1]
+
+			SESSIONS[csid] = [time.time(), scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()]
 			print("Creating database interface:", SESSIONS[csid])
 
-	return SESSIONS[csid]
+			# Delete the session that's oldest.
+			if len(SESSIONS) > 50:
+				print("WARN: More then 50 active sessions! Deleting oldest session to prevent session contention.")
+				maxsz = sys.maxsize
+				to_delete = None
+				for key, value in SESSIONS.items():
+					if value[0] < maxsz:
+						to_delete = key
+						maxsz = value[0]
+				if to_delete:
+					del SESSIONS[to_delete]
+
+	# Reset the "last used" time on the handle
+	SESSIONS[csid][0] = time.time()
+	return SESSIONS[csid][1]
 
 def delete_session():
 	cpid = multiprocessing.current_process().name

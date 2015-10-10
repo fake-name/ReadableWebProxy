@@ -98,7 +98,7 @@ def initializeStartUrls(rules):
 						type              = ruleset['type'],
 						priority          = db.DB_IDLE_PRIORITY,
 						distance          = db.DB_DEFAULT_DIST,
-						normal_fetch_mode = ruleset.normal_fetch_mode,
+						normal_fetch_mode = ruleset['normal_fetch_mode'],
 					)
 				print("Missing start-url for address: '{}'".format(starturl))
 				db.get_session().add(new)

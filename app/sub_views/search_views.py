@@ -51,7 +51,7 @@ def fetch_content(query_text, column, page, sources=None):
 	# print("param: '%s'" % tsq)
 
 	try:
-		entries = paginate(query, page)
+		entries = paginate(query, page, per_page=50)
 
 	except sqlalchemy.exc.ProgrammingError:
 		traceback.print_exc()

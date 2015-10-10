@@ -79,6 +79,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 	def wanted_mimetypes(self):
 		pass
 
+	# The first plugin with mimetype_catchall == True gets anything the other plugins didn't match.
+	mimetype_catchall = False
+
 	@abc.abstractproperty
 	def want_priority(self):
 		pass

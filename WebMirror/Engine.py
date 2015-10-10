@@ -785,6 +785,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		else:
 			if row.state == "complete" and row.fetchtime > thresh_text_ago:
 				self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", RSC_CACHE_DURATION)
+				self.log.info("dbid: %s", row.id)
 				return row
 			elif row.state == "complete" and row.fetchtime > thresh_bin_ago and "text" not in row.mimetype.lower():
 				self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)

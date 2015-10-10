@@ -285,7 +285,7 @@ def load_validate_rules(fname, dat):
 	if not rules['trigger']:
 		rules['starturls']             = []
 
-	rules['refetch']               = getRefetch(dat)
+	rules['normal_fetch_mode']               = getRefetch(dat)
 
 	return rules
 

@@ -220,7 +220,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		# Feed content through filters that want it (if any):
 		for filter_plg in self.filter_modules:
-			if mimeType.lower() in filter_plg.wanted_mimetypes and \
+			if (mimeType.lower() in filter_plg.wanted_mimetypes or filter_plg.mimetype_catchall) and \
 					filter_plg.wantsUrl(self.target_url)       and \
 					filter_plg.wantsFromContent(content):
 				self.plugin_dispatch(filter_plg, self.target_url, content, fName, mimeType, no_ret=True)

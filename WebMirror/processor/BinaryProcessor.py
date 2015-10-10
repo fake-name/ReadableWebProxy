@@ -17,9 +17,13 @@ class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 						"image/png",
 						"image/svg+xml",
 						"image/vnd.djvu",
-						"application/octet-stream"
+						"application/octet-stream",
+						"image/webp",
+
 						]
 
+	# Last case, match everything.
+	mimetype_catchall = True
 
 	loggerPath = "Main.Text.FileProc"
 
