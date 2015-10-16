@@ -1,11 +1,33 @@
 from app import app
 import config
+import datetime
 import os.path
 from config import relink_secret
 
 from WebMirror.Engine import SiteArchiver
 from WebMirror.Exceptions import DownloadException, getErrorDiv
 
+
+def td_format(td_object):
+		seconds = int(td_object.total_seconds())
+		periods = [
+				('y',        60*60*24*365),
+				('d',         60*60*24),
+				('h',        60*60),
+				('m',      60),
+				('s',      1)
+				]
+
+		if seconds < 1:
+			return "just fetched"
+
+		retstr=[]
+		for period_name, period_seconds in periods:
+			if seconds > period_seconds:
+				period_value, seconds = divmod(seconds,period_seconds)
+				retstr.append("%s%s" % (period_value, period_name))
+
+		return ", ".join(retstr)
 
 def replace_links(content):
 	rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
@@ -17,20 +39,21 @@ def replace_links(content):
 
 class RemoteContentObject(object):
 	def __init__(self, url):
-		self.url = url
+		self.url     = url
 		self.fetched = False
-
+		self.job     = None
 		self.archiver = SiteArchiver(cookie_lock=False, run_filters=False)
 
 
 	def fetch(self, ignore_cache=False):
 		self.fetched = True
-		self.job = self.archiver.synchronousJobRequest(self.url, ignore_cache)
+		self.job     = self.archiver.synchronousJobRequest(self.url, ignore_cache)
 
 		# print(self.job)
 
 	def getTitle(self):
 		assert self.fetched
+		assert self.job
 		return self.job.title
 
 	def getContent(self, relink_replace):
@@ -64,7 +87,9 @@ class RemoteContentObject(object):
 
 	def getCacheState(self):
 		assert self.fetched
-		return "hurp durp"
+		fetched = self.job.fetchtime
+		ago = datetime.datetime.now() - fetched
+		return td_format(ago)
 
 
 	def processRaw(self, content):
@@ -108,6 +133,6 @@ def getResource(url, ignore_cache=False):
 	page.fetch(ignore_cache)
 
 	mimetype, fname, content = page.getResource()
-	cachestate        = page.getCacheState()
+	cachestate               = page.getCacheState()
 
 	return mimetype, fname, content, cachestate

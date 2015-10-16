@@ -3,6 +3,7 @@
 from flask import render_template
 from flask import make_response
 from flask import request
+from flask import jsonify
 
 import WebMirror.Engine
 
@@ -33,8 +34,8 @@ def render():
 	ignore_cache = request.args.get("nocache")
 	# print("Rendering with nocache=", ignore_cache)
 	title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache)
-
-	return render_template('render.html',
+	print("Return:", cachestate)
+	return jsonify(
 		title      = title,
 		contents   = content,
 		cachestate = cachestate,

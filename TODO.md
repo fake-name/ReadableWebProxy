@@ -1,9 +1,10 @@
 #TODO:
-
+ - Show two digits for all fragment numbers.
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
-add last updated field for most recemt release
 
  FIXED:
+ ## - Add last updated field for most recent release
+ ## - Removing items does not work.
  ## - WattPad metadata filter.
  ## - Rule-caching is not working.
  ## - Multithreaded server fails because DB interface is shared across threads.

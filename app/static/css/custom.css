@@ -29,6 +29,11 @@ pre {
 	word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
+.breakword
+{
+	word-wrap: break-word;
+}
+
 @media (max-width: 767px)
 {
 	.imgDiv {
