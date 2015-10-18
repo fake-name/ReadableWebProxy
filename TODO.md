@@ -1,8 +1,8 @@
 #TODO:
- - Show two digits for all fragment numbers.
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
 
  FIXED:
+ ## - Show two digits for all fragment numbers.
  ## - Add last updated field for most recent release
  ## - Removing items does not work.
  ## - WattPad metadata filter.
