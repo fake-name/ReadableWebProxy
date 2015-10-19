@@ -5369,29 +5369,36 @@ data = [
 	('Chapter One: ‘O, benevolent darkness..',                          (  1, None)),
 
 
-	('Chapter eleven: Clash of a Dragon and Wolf',  (11, None)),
-	('Chapter ten: Guardian',                       (10, None)),
-	('Chapter nine: Carnage',                       (9, None)),
-	('Chapter eight: Weiss vs. Silara',             (8, None)),
-	('Chapter seven: Cursed beings',                (7, None)),
-	('Chapter eight: Weiss vs. Silara',             (8, None)),
-	('Chapter seven: Cursed beings',                (7, None)),
-	('Chapter six: Where are we',                   (6, None)),
-	('Chapter five: Pursuit of Strength',           (5, None)),
-	('This will be now my update thread',           (None, None)),
-	('Harem already yes or no',                     (None, None)),
-	('Need a name for the MC, and another thing',   (None, None)),
-	('Chapter three: Weak',                         (3, None)),
-	('Chapter two: Fangs and Bones',                (2, None)),
-	('Chapter one: Symbol of death',                (1, None)),
-	('Prologue: Reach out',                         (None, None)),
+	('Chapter eleven: Clash of a Dragon and Wolf',                               (11, None)),
+	('Chapter ten: Guardian',                                                    (10, None)),
+	('Chapter nine: Carnage',                                                    (9, None)),
+	('Chapter eight: Weiss vs. Silara',                                          (8, None)),
+	('Chapter seven: Cursed beings',                                             (7, None)),
+	('Chapter eight: Weiss vs. Silara',                                          (8, None)),
+	('Chapter seven: Cursed beings',                                             (7, None)),
+	('Chapter six: Where are we',                                                (6, None)),
+	('Chapter five: Pursuit of Strength',                                        (5, None)),
+	('This will be now my update thread',                                        (None, None)),
+	('Harem already yes or no',                                                  (None, None)),
+	('Need a name for the MC, and another thing',                                (None, None)),
+	('Chapter three: Weak',                                                      (3, None)),
+	('Chapter two: Fangs and Bones',                                             (2, None)),
+	('Chapter one: Symbol of death',                                             (1, None)),
+	('Prologue: Reach out',                                                      (None, None)),
 
-	('Chapter four: Past happenings. Part two',     (4, None)),
-	('Chapter four: Past happenings. Part one',     (4, None)),
-	('Chapter four: Past happenings. Part two',     (None, 4.0, 2.0, '')),
-	('Chapter four: Past happenings. Part one',     (None, 4.0, 1.0, '')),
+	('Chapter four: Past happenings. Part two',                                  (4, None)),
+	('Chapter four: Past happenings. Part one',                                  (4, None)),
+	('Chapter four: Past happenings. Part two',                                  (None, 4.0, 2.0, '')),
+	('Chapter four: Past happenings. Part one',                                  (None, 4.0, 1.0, '')),
 
+	('Volume 1 Chapter One - New World',                                         (1.0, 1.0, None, '')),
+	('Volume 3 Chapter 4 - Days Before the War (Part One)',                      (3.0, 4.0, 1.0, '')),
+	('Volume 1 Chapter Ten Dash Two - A sad state of affairs - Second Half',     (1.0, 10.0, None, '')),
 
+	# I'm not too sure how to fix this, the system currently assumes "chapter" is /always/ followed
+	# by a number (I think)
+	# anyways, it crashes.
+	# ('Volume 1 Chapter A Whole New World~ - Yes! I Ken Japaneez!',               (1.0, None, None, '')),
 
 
 ]

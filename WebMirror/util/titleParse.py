@@ -219,7 +219,8 @@ class Token(object):
 		val = self.asciiNumeric()
 		if val != False:
 			return val
-		raise ValueError("Call assumes '%s' is numeric, and it's not (return: '%s')?" % (self.text, val))
+
+		raise ValueError("Call assumes '%s' is numeric, and it's not (return: '%s')? Parent: '%s'" % (self.text, val, self.parent))
 		# assert self.isNumeric(), "getNumber() can only be called if the token value is entirely numeric!"
 
 	def asciiNumeric(self):
@@ -227,25 +228,57 @@ class Token(object):
 			return False
 
 		following_text = self.text+self.parent._following_text(self.position)
+
 		if not following_text:
 			return False
+
 		following_text = following_text.strip()
 		if ":" in following_text:
 			following_text = following_text.split(":")[0]
+		if ";" in following_text:
+			following_text = following_text.split(";")[0]
 
 
 		# Spot-patching to fix data corruption issues I've run into:
 
 		following_text = following_text.replace("”", "")
 		following_text = following_text.strip()
+		while following_text:
+			try:
+				# print("Parsing '%s' for numbers" % following_text)
+				ret = semantic.numbers.NumberService().parse(following_text)
+				# print("parsed: ", ret)
+				return ret
+			except semantic.numbers.NumberService.NumberException:
+				try:
+					# Try again with any trailing hyphens removed
+					# semantic assumes "twenty-four" should parse as "twenty four".
+					# this is problematic when you have "chapter one - Thingies", which
+					# tries to parse as "one - thingies", and fails.
+					# However, we only want to invoke this fallback if
+					# we can't parse /with/ the hyphen, as lots of sources actually do release
+					# as "twenty-four"
+					if "-" in following_text:
+						following_text = following_text.split("-")[0].strip()
+						val = semantic.numbers.NumberService().parse(following_text)
+						return val
 
-		try:
-			# print("Parsing '%s' for numbers" % following_text)
-			return semantic.numbers.NumberService().parse(following_text)
-		except semantic.numbers.NumberService.NumberException:
-			# print("Parse failure!")
-			# traceback.print_exc()
-			return False
+					# It also mangles trailing parenthesis, for some reason.
+					if ")" in following_text or "(" in following_text:
+						following_text = following_text.split(")")[0].split("(")[0].strip()
+						val = semantic.numbers.NumberService().parse(following_text)
+						return val
+
+
+				except semantic.numbers.NumberService.NumberException:
+					pass
+
+				# print("Parse failure!")
+				# traceback.print_exc()
+				if not " " in following_text:
+					return False
+				following_text = following_text.rsplit(" ", 1)[0]
+		return False
 
 
 	def __repr__(self):

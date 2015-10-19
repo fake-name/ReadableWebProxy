@@ -1,5 +1,7 @@
 #TODO:
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
+ - Search for proximate words.
+ - "https://xxjohnsmithxx.wordpress.com", parser
 
  FIXED:
  ## - Show two digits for all fragment numbers.

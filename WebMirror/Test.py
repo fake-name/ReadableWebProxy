@@ -110,6 +110,8 @@ def decode(*args):
 		op = args[0]
 		if op == "rss":
 			test_all_rss()
+		else:
+			print("ERROR: Unknown command!")
 
 	if len(args) == 2:
 		op  = args[0]
@@ -118,6 +120,9 @@ def decode(*args):
 		if op == "fetch":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test(tgt)
+		else:
+			print("ERROR: Unknown command!")
+
 
 if __name__ == "__main__":
 	import sys
