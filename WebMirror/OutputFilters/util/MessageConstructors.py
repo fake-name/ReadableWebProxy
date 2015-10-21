@@ -3,7 +3,7 @@
 import json
 
 
-def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}):
+def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}, beta=False):
 	'''
 	Special case behaviour:
 		If vol or chapter is None, the
@@ -20,6 +20,11 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 		'postfix'   : postfix,
 		'author'    : author,
 		'tl_type'   : tl_type,
+
+		# "beta" items are optionally filtered client-end to allow
+		# testing in my dev env without having the feed outputs go through
+		# to the prod env
+		'beta'      : beta,
 	}
 
 	for key, value in extraData.items():
@@ -46,7 +51,7 @@ def packChapterFragments(chapStr, fragStr):
 
 
 
-def createReleasePacket(data):
+def createReleasePacket(data, beta=False):
 	'''
 	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
 
@@ -57,12 +62,17 @@ def createReleasePacket(data):
 
 	ret = {
 		'type' : 'parsed-release',
-		'data' : data
+		'data' : data,
+
+		# "beta" items are optionally filtered client-end to allow
+		# testing in my dev env without having the feed outputs go through
+		# to the prod env
+		'beta'      : beta,
 	}
 	return json.dumps(ret)
 
 
-def sendSeriesInfoPacket(data):
+def sendSeriesInfoPacket(data, beta=False):
 
 	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
 
@@ -71,6 +81,11 @@ def sendSeriesInfoPacket(data):
 
 	ret = {
 		'type' : 'series-metadata',
-		'data' : data
+		'data' : data,
+
+		# "beta" items are optionally filtered client-end to allow
+		# testing in my dev env without having the feed outputs go through
+		# to the prod env
+		'beta'      : beta,
 	}
 	return json.dumps(ret)

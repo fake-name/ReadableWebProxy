@@ -17,6 +17,9 @@ import datetime
 import calendar
 from WebMirror.util.webFunctions import WebGetRobust
 
+from settings import WATTPAD_REQUIRED_TAGS
+from settings import WATTPAD_MASKED_TAGS
+
 MIN_RATING = 5
 
 ########################################################################################################################
@@ -33,9 +36,11 @@ MIN_RATING = 5
 
 BLOCK_IDS = {
 
-
-
 }
+
+
+
+IS_BETA = True
 
 
 class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -111,23 +116,18 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if metadata['id'] in BLOCK_IDS:
 			return []
 
-		# I know I'm trying to be inclusive and all, but
-		# "spirituality" is bullshit
-		# Sidenote: Is wattpad popular in the middle east? LOTS
-		# of muslim-focused content. Huh.
-		if 'spiritual' in [item.lower().strip() for item in tags]:
-			return []
-		if 'faith' in [item.lower().strip() for item in tags]:
-			return []
 
-		# Only filtered because of quality issues.
-		if 'fanfiction' in [item.lower().strip() for item in tags]:
-			return []
+		tags = [item.lower().strip().replace("  ", " ").replace(" ", "-") for item in tags]
 
-		# Only filtered because of quality issues.
-		if 'fanfic' in [item.lower().strip() for item in tags]:
-			return []
+		# Mask any content with any of the blocked tags.
+		if any([item in tags for item in WATTPAD_MASKED_TAGS]):
+			self.log.warning("Item has a masked tag. Not emitting any releases.")
+			return
 
+		# And check that at least one of the target tags is present.
+		if not any([item in tags for item in WATTPAD_REQUIRED_TAGS]):
+			self.log.warning("Item missing required tag. Not emitting any releases.")
+			return
 
 
 		seriesmeta = {}
@@ -152,7 +152,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['srcname']   = "WattPad"
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release['url']
-			msg = msgpackers.buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
+			msg = msgpackers.buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra, beta=IS_BETA)
 			retval.append(msg)
 
 			# Check if there was substantive structure in the chapter
@@ -183,7 +183,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['sourcesite']  = 'WattPad'
 
 
-		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
+		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=IS_BETA)
 		self.amqp_put_item(pkt)
 		return retval
 
@@ -193,7 +193,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def sendReleases(self, releases):
 		self.log.info("Total releases found on page: %s", len(releases))
 		for release in releases:
-			pkt = msgpackers.createReleasePacket(release)
+			pkt = msgpackers.createReleasePacket(release, beta=IS_BETA)
 			self.amqp_put_item(pkt)
 
 	def getJsonMetadata(self, soup):

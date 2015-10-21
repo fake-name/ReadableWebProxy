@@ -171,6 +171,11 @@ def clearOutboundProxy(url):
 
 def clearBitLy(url):
 
+	# Fucking tumblr redirects.
+	if url.startswith("https://www.tumblr.com/login"):
+		return None
+
+
 	if "bit.ly" in url:
 		wg = WebMirror.util.webFunctions.WebGetRobust(logPath="Main.BitLy.Web")
 		try:

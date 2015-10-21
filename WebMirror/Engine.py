@@ -80,6 +80,11 @@ GLOBAL_BAD = [
 			'b.scorecardresearch.com',
 			'//mail.google.com',
 			'javascript:void',
+			'tumblr.com/widgets/',
+			'www.tumblr.com/login',
+			'twitter.com/intent/',
+			'www.pinterest.com/pin/',
+			'www.wattpad.com/login?',
 	]
 
 
