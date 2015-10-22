@@ -83,7 +83,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 ##################################################################################################################################
 
 
-	def extractSeriesReleases(self, seriesPageUrl, metadata):
+	def extractSeriesReleases(self, seriesPageUrl, metadata, soup):
 
 		title  = metadata['title']
 		author = metadata['user']['name']
@@ -116,17 +116,27 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if metadata['id'] in BLOCK_IDS:
 			return []
 
+		# for some particularly stupid reasons, the item category tag is
+		# not included in the metadata.
+		# therefore, we parse it out from the page manually.
+		tagdiv = soup.find("div", class_="tags")
+		if tagdiv:
+			for tag in tagdiv.find_all("a", class_='tag'):
+				tags.append(tag.get_text())
 
-		tags = [item.lower().strip().replace("  ", " ").replace(" ", "-") for item in tags]
+
+		tags = list(set([item.lower().strip().replace("  ", " ").replace(" ", "-") for item in tags]))
 
 		# Mask any content with any of the blocked tags.
 		if any([item in tags for item in WATTPAD_MASKED_TAGS]):
 			self.log.warning("Item has a masked tag. Not emitting any releases.")
+			self.log.warning("Tags: '%s'", tags)
 			return
 
 		# And check that at least one of the target tags is present.
 		if not any([item in tags for item in WATTPAD_REQUIRED_TAGS]):
 			self.log.warning("Item missing required tag. Not emitting any releases.")
+			self.log.warning("Tags: '%s'", tags)
 			return
 
 
@@ -157,16 +167,16 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 			# Check if there was substantive structure in the chapter
 			# name. Used as a crude heuristic for chapter validity.
-			vol, chp, frag, post = extractTitle(chp_title)
-			if any((vol, chp, frag)):
-				# print("Valid: ", (vol, chp, frag))
-				valid += 1
+			# vol, chp, frag, post = extractTitle(chp_title)
+			# if any((vol, chp, frag)):
+			# 	# print("Valid: ", (vol, chp, frag))
+			# 	valid += 1
 
 			index += 1
 
-		if valid < (index/2):
-			print("Half the present chapters are have no numeric content?")
-			return []
+		# if valid < (index/2):
+		# 	print("Half the present chapters are have no numeric content?")
+		# 	return []
 
 		# Don't send the series metadata if we didn't find any chapters.
 		if not retval:
@@ -228,7 +238,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		print(url)
 		metadata = self.wg.getJson(surl, addlHeaders={'Referer': url})
 
-		releases = self.extractSeriesReleases(self.pageUrl, metadata)
+		releases = self.extractSeriesReleases(self.pageUrl, metadata, soup)
 
 
 		if releases:

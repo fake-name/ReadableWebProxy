@@ -20,10 +20,10 @@ from data_uri import DataURI
 from flask.ext.login import current_user
 import datetime
 import app.nameTools as nt
+from sqlalchemy import func
 
 
-
-def updateTags(series, tags, deleteother=True):
+def updateTags(series, tags, deleteother=True, allow_new=True):
 	havetags = Tags.query.filter((Tags.series==series.id)).all()
 	havetags = {item.tag.lower() : item for item in havetags}
 
@@ -33,8 +33,17 @@ def updateTags(series, tags, deleteother=True):
 		if tag in havetags:
 			havetags.pop(tag)
 		else:
-			newtag = Tags(series=series.id, tag=tag, changetime=datetime.datetime.now(), changeuser=current_user.id)
-			db.get_session().add(newtag)
+			# If we're set to allow new, don't bother checking for other instances of the tag.
+			if allow_new:
+				newtag = Tags(series=series.id, tag=tag, changetime=datetime.datetime.now(), changeuser=current_user.id)
+				db.get_session().add(newtag)
+			else:
+				# Otherwise, make sure that tag already exists in the database before adding it.
+				exists = Tags.query.filter((Tags.tag==tag)).count()
+				if exists:
+					newtag = Tags(series=series.id, tag=tag, changetime=datetime.datetime.now(), changeuser=current_user.id)
+					db.get_session().add(newtag)
+
 	if deleteother:
 		for key, value in havetags.items():
 			db.get_session().delete(value)

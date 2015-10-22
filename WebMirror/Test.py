@@ -120,6 +120,9 @@ def decode(*args):
 		if op == "fetch":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test(tgt)
+		if op == "fetch-silent":
+			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
+			test(tgt, debug=False)
 		else:
 			print("ERROR: Unknown command!")
 
