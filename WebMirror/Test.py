@@ -131,6 +131,38 @@ def db_fiddle():
 			print(count, item)
 			db.get_session().commit()
 
+def longest_rows():
+	print("Getting longest rows from database")
+	have = db.get_session().execute("""
+		SELECT
+			id, url, length(content), content
+		FROM
+			web_pages
+		ORDER BY
+			LENGTH(content) DESC NULLS LAST
+		LIMIT 50;
+		""")
+	print("Rows:")
+
+	import os
+	import os.path
+
+	savepath = "./large_files/"
+	for row in have:
+		print(row[0], row[1])
+		try:
+			os.makedirs(savepath)
+		except FileExistsError:
+			pass
+		with open(os.path.join(savepath, "file %s.txt" % row[0]), "wb") as fp:
+			urlst = "URL: %s\n\n" % row[1]
+			size = "Length: %s\n\n" % row[2]
+			fp.write(urlst.encode("utf-8"))
+			fp.write(size.encode("utf-8"))
+			fp.write("{}".format(row[3]).encode("utf-8"))
+
+
+
 
 def decode(*args):
 	print("Args:", args)
@@ -141,6 +173,8 @@ def decode(*args):
 			test_all_rss()
 		elif op == "db-fiddle":
 			db_fiddle()
+		elif op == "longest-rows":
+			longest_rows()
 		else:
 			print("ERROR: Unknown command!")
 

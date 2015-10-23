@@ -264,8 +264,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 				job.state    = 'complete'
 
-				if 'rawcontent' in response:
-					job.raw_content = response['rawcontent']
+				# Disabled for space-reasons.
+				# if 'rawcontent' in response:
+				# 	job.raw_content = response['rawcontent']
 
 				job.fetchtime = datetime.datetime.now()
 
@@ -671,7 +672,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				content += "<br>"
 				content += traceback.format_exc()
 				job.content = content
-				job.raw_content = content
+				# job.raw_content = content
 				job.state = 'error'
 				job.errno = -1
 				self.db.get_session().commit()
@@ -681,7 +682,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				content += "<br>"
 				content += traceback.format_exc()
 				job.content = content
-				job.raw_content = content
+				# job.raw_content = content
 				job.state = 'error'
 				job.errno = -3
 				self.db.get_session().commit()
@@ -690,7 +691,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				content += "<br>"
 				content += traceback.format_exc()
 				job.content = content
-				job.raw_content = content
+				# job.raw_content = content
 				job.state = 'error'
 				job.errno = -2
 				self.db.get_session().commit()

@@ -157,7 +157,9 @@ class WebPages(Base):
 	mimetype          = Column(Text)
 	type              = Column(itemtype_enum, default='unknown', index=True)
 
-	raw_content       = Column(Text)
+	# Disabled due to disk-space issues.
+	# raw_content       = Column(Text)
+
 	content           = Column(Text)
 
 	fetchtime         = Column(DateTime, default=datetime.datetime.min)
