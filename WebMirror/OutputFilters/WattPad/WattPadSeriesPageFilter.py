@@ -194,6 +194,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=IS_BETA)
+		self.log.info("Wattpad scraper generated %s amqp messages!", len(retval) + 1)
 		self.amqp_put_item(pkt)
 		return retval
 

@@ -102,6 +102,35 @@ def test_all_rss():
 		except urllib.error.URLError:
 			print("failure downloading page!")
 
+def db_fiddle():
+	print("Fixing DB things.")
+	print("Getting IDs")
+	have = db.get_session().execute("""
+		SELECT id FROM web_pages WHERE url LIKE 'https://www.wattpad.com/story%' AND state != 'new';
+		""")
+	print("Query executed. Fetching results")
+	have = list(have)
+	print(len(have))
+	count = 0
+
+	chunk = []
+	for item, in have:
+		chunk.append(item)
+
+		count += 1
+		if count % 1000 == 0:
+
+
+			statement = db.get_session().query(db.WebPages) \
+				.filter(db.WebPages.state != 'new')        \
+				.filter(db.WebPages.id.in_(chunk))
+
+			# statement = db.get_session().update(db.WebPages)
+			statement.update({db.WebPages.state : 'new'}, synchronize_session=False)
+			chunk = []
+			print(count, item)
+			db.get_session().commit()
+
 
 def decode(*args):
 	print("Args:", args)
@@ -110,6 +139,8 @@ def decode(*args):
 		op = args[0]
 		if op == "rss":
 			test_all_rss()
+		elif op == "db-fiddle":
+			db_fiddle()
 		else:
 			print("ERROR: Unknown command!")
 
@@ -120,9 +151,10 @@ def decode(*args):
 		if op == "fetch":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test(tgt)
-		if op == "fetch-silent":
+		elif op == "fetch-silent":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test(tgt, debug=False)
+
 		else:
 			print("ERROR: Unknown command!")
 
