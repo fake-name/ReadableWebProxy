@@ -211,6 +211,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		hascss = soup.find_all(True, attrs={"style" : True})
 
+
 		# parser = tinycss.make_parser('page3')
 
 		hexr = re.compile('(#(?:[a-fA-F0-9]{6})|#(?:[a-fA-F0-9]{3}))')
@@ -218,8 +219,17 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		for item in hascss:
 			if item['style']:
 				ststr = item['style']
+
+				# Prevent inline fonts.
 				if 'font' in ststr.lower():
 					item['style'] = ''
+
+				# Disable all explicit width settings.
+				if 'width' in ststr.lower():
+					item['style'] = ''
+				if 'max-width' in ststr.lower():
+					item['style'] = ''
+
 
 				old = hexr.findall(ststr)
 				for match in old:

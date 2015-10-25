@@ -207,6 +207,7 @@ def profile():
 
 if __name__ == "__main__":
 	import sys
+	print("Auxilliary modes: 'test', 'scheduler'.")
 	if "scheduler" in sys.argv:
 		go_sched()
 	if "test" in sys.argv:

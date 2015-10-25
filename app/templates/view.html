@@ -86,11 +86,20 @@
 	<style>
 		div.easyreading
 		{
-			margin:0 auto;
-			max-width: 500px;
-			font-family: Arial;
-			font-size: large;
-			word-wrap: break-word;
+			/* Force override any css that slipped through
+			the preprocessor system */
+			margin      : 0 auto !important;
+			max-width   : 500px !important;
+			font-family : Arial !important;
+			font-size   : large !important;
+			word-wrap   : break-word !important;
+		}
+		div.easyreading table, td, tr
+		{
+			/* Force override any css that slipped through
+			the preprocessor system */
+			max-width    : 500px !important;
+			table-layout : fixed !important;
 		}
 	</style>
 {% endblock %}
