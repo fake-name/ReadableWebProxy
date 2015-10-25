@@ -52,8 +52,6 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if re.search(r"^http://japtem.com/fanfic.php$", url):
 			print("JapTemSeriesPageProcessor Wants url: '%s'" % url)
 			return True
-		else:
-			print("JapTemSeriesPageProcessor Filter doesn't want: ", url)
 		return False
 
 	def __init__(self, **kwargs):

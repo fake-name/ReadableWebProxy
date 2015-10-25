@@ -198,6 +198,12 @@ if __name__ == "__main__":
 	if len(sys.argv) < 2:
 
 		print("you must pass a operation to execute!")
+		print("Current actions:")
+		print('	rss')
+		print('	db-fiddle')
+		print('	longest-rows')
+		print('	fetch {url}')
+		print('	fetch-silent {url}')
 		sys.exit(1)
 
 	decode(*sys.argv[1:])

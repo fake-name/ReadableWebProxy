@@ -54,12 +54,13 @@ import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter
 import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter
 import WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter
 import WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter
+import WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter
 
 FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter.RRLSeriesUpdateFilter,
 	WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter.JapTemSeriesPageProcessor,
-	WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
+	WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter.BooksieSeriesPageProcessor,
 ]
 
 print("Processing plugins: %s, active filters: %s, trigger plugins: %s" % (len(PLUGINS), len(FILTERS), len(scrapePlugins)))
