@@ -2,6 +2,9 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
+ 
+wattpad requires login for some things?
+handle leading decimals numeric
 
  FIXED:
  ## - Show two digits for all fragment numbers.

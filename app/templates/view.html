@@ -10,8 +10,7 @@
 			<p>
 				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
 				<a href='{{req_url}}'>Original content</a> |
-				Ignore-cache: {{"no" if not ignore_cache else "yes"}}
-				(<a href='/view?{{ {"url" : req_url, "nocache" : "true"} | urlencode }}'>yes</a>, <a href='/view?{{ {"url" : req_url} | urlencode | safe }}'>no</a>)
+				<a href="javascript:void(0)" id="refetch_link">Re-Fetch</a>
 				| Age: <span class='cachestate'>loading...</span>
 			</p>
 
@@ -34,8 +33,7 @@
 			<p>
 				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
 				<a href='{{req_url}}'>Original content</a> |
-				Ignore-cache: {{"no" if not ignore_cache else "yes"}}
-				(<a href='/view?{{ {"url" : req_url, "nocache" : "true"} | urlencode }}'>yes</a>, <a href='/view?{{ {"url" : req_url} | urlencode | safe }}'>no</a>)
+				<a href="javascript:void(0)" id="refetch_link">Re-Fetch</a>
 				| Age: <span class='cachestate'>loading...</span>
 			</p>
 
@@ -67,19 +65,41 @@
 		{
 			alert("Failed to fetch content!\nError: " + errorThrown + "\nStatus text: " + textStatus);
 		}
-		{% if ignore_cache %}
-			var url = "/render?{{ {"url" : req_url, "nocache" : "true"} | urlencode | safe }}";
-		{% else %}
+
+
+		function load_cache()
+		{
+
 			var url = "/render?{{ {"url" : req_url} | urlencode | safe }}";
-		{% endif %}
 
-		$.ajax({
-			url      : url,
-			success  : content_load_cb,
-			error    : content_load_cb,
-			dataType : "json",
+			$.ajax({
+				url      : url,
+				success  : content_load_cb,
+				error    : content_load_cb,
+				dataType : "json",
 
-		})
+			})
+
+		}
+		function load_nocache()
+		{
+			var url = "/render?{{ {"url" : req_url, "nocache" : "true"} | urlencode | safe }}";
+
+			var content = $("#content");
+			content.html('<div class="center-block text-center"><h4>Re-Loading</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>');
+
+			$.ajax({
+				url      : url,
+				success  : content_load_cb,
+				error    : content_load_cb,
+				dataType : "json",
+
+			})
+		}
+
+		load_cache();
+
+		$('#refetch_link').click(load_nocache);
 
 
 	</script>
@@ -101,6 +121,7 @@
 			max-width    : 500px !important;
 			table-layout : fixed !important;
 		}
+
 	</style>
 {% endblock %}
 

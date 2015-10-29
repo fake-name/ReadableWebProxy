@@ -19,9 +19,7 @@ def view():
 	if not req_url:
 		return render_template('error.html', title = 'Viewer', message = "Error! No page specified!")
 
-	ignore_cache = request.args.get("nocache")
-
-	return render_template('view.html', title = 'Home', req_url = req_url, ignore_cache = ignore_cache)
+	return render_template('view.html', title = 'Home', req_url = req_url)
 
 
 @app.route('/render', methods=['GET'])

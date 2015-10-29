@@ -172,7 +172,13 @@ decompose: [
 	{'id' : "profile_top"},
 	{'id' : "review"},
 	{'class' : "zmenu"},
+	{'class' : "comments"},
+	{'class' : "add-to-library"},
+	{'class' : "author-info"},
 	{'class' : "lc-wrapper"},
+	{'class' : "on-library-login"},
+	{'class' : "btn-library"},
+	{'class' : "btn-story-lists"},
 
 
 	{'id' : "sign-up-header"},
@@ -180,6 +186,17 @@ decompose: [
 	{'id' : "overlay"},
 	{'id' : "header"},
 	{'id' : "discover-landing"},
+	{'id' : "funbar-container"},
+	{'id' : "header-container"},
+	{'id' : "funbar"},
+	{'id' : "modals"},
+	{'id' : "media-container"},
+	{'id' : "footer"},
+	{'id' : "similar-stories"},
+	{'id' : "share-tools"},
+	{'id' : "interstitial-container"},
+	{'id' : "footer-container"},
+	{'id' : "footer-items"},
 ]
 
 stripTitle: []

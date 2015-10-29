@@ -230,6 +230,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				if 'max-width' in ststr.lower():
 					item['style'] = ''
 
+				if 'background-image:' in ststr.lower():
+					item['style'] = ''
+
+
 
 				old = hexr.findall(ststr)
 				for match in old:
@@ -319,6 +323,17 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		return soup
 
+
+	# Miscellaneous spot-fixes for specific sites.
+	def spotPatch(self, soup):
+
+		# Replace <pre> tags on wattpad.
+		wp_div = soup.find_all('div', class_="panel-reading")
+		for item in wp_div:
+			for pre in item.find_all("pre"):
+				pre.name = "div"
+		return soup
+
 	# Process a plain HTML page.
 	# This call does a set of operations to permute and clean a HTML page.
 	#
@@ -349,6 +364,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		soup = self.decomposeItems(soup, self._decompose)
 
 		soup = self.decomposeAdditional(soup)
+		soup = self.spotPatch(soup)
 		soup = self.destyleItems(soup)
 
 		# Allow child-class hooking
