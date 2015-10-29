@@ -34,6 +34,8 @@ import WebMirror.Fetch
 import WebMirror.database as db
 from config import C_RESOURCE_DIR
 
+from activePlugins import INIT_CALLS
+
 if "debug" in sys.argv:
 	CACHE_DURATION = 1
 	RSC_CACHE_DURATION = 1
@@ -159,10 +161,7 @@ def saveCoverFile(filecont, fHash, filename):
 
 class SiteArchiver(LogBase.LoggerMixin):
 
-
 	loggerPath = "Main.SiteArchiver"
-
-
 
 	# Fetch items up to 1,000,000 (1 million) links away from the root source
 	# This (functionally) equates to no limit.
@@ -183,6 +182,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.ruleset = ruleset
 		self.fetcher = WebMirror.Fetch.ItemFetcher
 		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
+
+
+		for item in INIT_CALLS:
+			item(self)
+
 		# print("SiteArchiver rules loaded")
 		self.relinkable = set()
 		for item in ruleset:

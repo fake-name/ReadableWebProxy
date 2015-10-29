@@ -3,10 +3,12 @@ import config
 import datetime
 import os.path
 from config import relink_secret
+import queue
 
 from WebMirror.Engine import SiteArchiver
 from WebMirror.Exceptions import DownloadException, getErrorDiv
 
+# TODO: Pool of engines
 
 def td_format(td_object):
 		seconds = int(td_object.total_seconds())
@@ -37,12 +39,21 @@ def replace_links(content):
 	content = content.replace(rsc_key, "/render_rsc?url=")
 	return content
 
+
+fetchers = queue.Queue()
+
+for x in range(5):
+	fetchers.put(SiteArchiver(cookie_lock=False, run_filters=False))
+
+
+
 class RemoteContentObject(object):
 	def __init__(self, url):
 		self.url     = url
 		self.fetched = False
 		self.job     = None
-		self.archiver = SiteArchiver(cookie_lock=False, run_filters=False)
+		print("RemoteContentObject instantiated. Available fetchers: %s" % fetchers.qsize())
+		self.archiver = fetchers.get()
 
 
 	def fetch(self, ignore_cache=False):
@@ -105,10 +116,22 @@ class RemoteContentObject(object):
 		content = replace_links(content)
 		return content
 
+	def close(self):
+		fetchers.put(self.archiver)
+		self.archiver = None
+
+	def __del__(self):
+		if self.archiver != None:
+			print("ERROR! Archiver not released!")
+
+
 
 def processRaw(content):
 	page = RemoteContentObject("http://www.example.org")
-	return page.processRaw(content)
+	ret = page.processRaw(content)
+	page.close()
+
+	return ret
 
 
 
@@ -124,6 +147,7 @@ def getPage(url, ignore_cache=False):
 	except DownloadException:
 		title, content, cachestate = getErrorDiv()
 
+	page.close()
 	return title, content, cachestate
 
 
@@ -135,4 +159,5 @@ def getResource(url, ignore_cache=False):
 	mimetype, fname, content = page.getResource()
 	cachestate               = page.getCacheState()
 
+	page.close()
 	return mimetype, fname, content, cachestate

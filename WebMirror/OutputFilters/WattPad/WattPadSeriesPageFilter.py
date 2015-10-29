@@ -40,7 +40,7 @@ BLOCK_IDS = {
 
 
 
-IS_BETA = True
+IS_BETA = False
 
 
 class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
