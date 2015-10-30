@@ -5395,10 +5395,45 @@ data = [
 	('Volume 3 Chapter 4 - Days Before the War (Part One)',                      (3.0, 4.0, 1.0, '')),
 	('Volume 1 Chapter Ten Dash Two - A sad state of affairs - Second Half',     (1.0, 10.0, None, '')),
 
+
+
+
+	('Chapter eight, Mountain Pass, part one',   (None,  8.0, 1.0, '')),
+	('Chapter eight, Mountain Pass, part two',   (None,  8.0, 2.0, '')),
+	('Chapter eleven, Alllies, part one',        (None, 11.0, 1.0, '')),
+	('Chapter eleven, Alllies, part two',        (None, 11.0, 2.0, '')),
+	('Chapter fifteen, Lovers, part one',        (None, 15.0, 1.0, '')),
+	('Chapter fifteen, Lovers, part two',        (None, 15.0, 2.0, '')),
+	('Chapter five, The Caravan, part one',      (None,  5.0, 1.0, '')),
+	('Chapter five, The Caravan, part two',      (None,  5.0, 2.0, '')),
+	('Chapter four, Departure, part one',        (None,  4.0, 1.0, '')),
+	('Chapter four, Departure, part two',        (None,  4.0, 2.0, '')),
+	('Chapter fourteen, Gaz',                    (None, 14.0, None, '')),
+	('Chapter nine, Sea of Grass, part one',     (None,  9.0, 1.0, '')),
+	('Chapter nine, Sea of Grass, part two',     (None,  9.0, 2.0, '')),
+	('Chapter one, Arrival, part one',           (None,  1.0, 1.0, '')),
+	('Chapter one, Arrival, part two',           (None,  1.0, 2.0, '')),
+	('Chapter seven, The Roadhouse, part one',   (None,  7.0, 1.0, '')),
+	('Chapter seven, The Roadhouse, part two',   (None,  7.0, 2.0, '')),
+	('Chapter six, On the road, part one',       (None,  6.0, 1.0, '')),
+	('Chapter six, On the road, part two',       (None,  6.0, 2.0, '')),
+	('Chapter ten, Renegade, part one',          (None, 10.0, 1.0, '')),
+	('Chapter ten, Renegade, part two',          (None, 10.0, 2.0, '')),
+	('Chapter thirteen, Friends, part one',      (None, 13.0, 1.0, '')),
+	('Chapter thirteen, Friends, part two',      (None, 13.0, 2.0, '')),
+	('Chapter three, Change of Plans, part one', (None,  3.0, 1.0, '')),
+	('Chapter three, Change of Plans, part two', (None,  3.0, 2.0, '')),
+	('Chapter twelve, Khraga, part one',         (None, 12.0, 1.0, '')),
+	('Chapter twelve, Khraga, part two',         (None, 12.0, 2.0, '')),
+	('Chapter two, Verd, part one',              (None, 2.0, 1.0, '')),
+	('Chapter two, Verd, part two ',             (None, 2.0, 2.0, '')),
+	('Prelude, a fallen star',                   (None, None, None, '')),
+	('Prologue, a shining star',                 (None, None, None, 'Prologue, a shining star')),
+
+
 	# I'm not too sure how to fix this, the system currently assumes "chapter" is /always/ followed
 	# by a number (I think)
 	# anyways, it crashes.
-	# ('Volume 1 Chapter A Whole New World~ - Yes! I Ken Japaneez!',               (1.0, None, None, '')),
-
+	('Volume 1 Chapter A Whole New World~ - Yes! I Ken Japaneez!',               (1.0, None, None, '')),
 
 ]

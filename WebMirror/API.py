@@ -128,8 +128,10 @@ class RemoteContentObject(object):
 
 def processRaw(content):
 	page = RemoteContentObject("http://www.example.org")
-	ret = page.processRaw(content)
-	page.close()
+	try:
+		ret = page.processRaw(content)
+	finally:
+		page.close()
 
 	return ret
 
@@ -146,18 +148,19 @@ def getPage(url, ignore_cache=False):
 		cachestate = page.getCacheState()
 	except DownloadException:
 		title, content, cachestate = getErrorDiv()
-
-	page.close()
+	finally:
+		page.close()
+		
 	return title, content, cachestate
 
 
 def getResource(url, ignore_cache=False):
 	page = RemoteContentObject(url)
+	try:
+		page.fetch(ignore_cache)
 
-	page.fetch(ignore_cache)
-
-	mimetype, fname, content = page.getResource()
-	cachestate               = page.getCacheState()
-
-	page.close()
+		mimetype, fname, content = page.getResource()
+		cachestate               = page.getCacheState()
+	finally:
+		page.close()
 	return mimetype, fname, content, cachestate

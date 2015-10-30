@@ -216,8 +216,10 @@ class Token(object):
 	def getNumber(self):
 
 		if self.isNumeric():
+			# print("Not numeric!")
 			return float(self.text)
 		val = self.asciiNumeric()
+		# print("AsciiNumeric call return: ", val)
 		if val != False:
 			return val
 
@@ -225,12 +227,15 @@ class Token(object):
 		# assert self.isNumeric(), "getNumber() can only be called if the token value is entirely numeric!"
 
 	def asciiNumeric(self):
+		# print("AsciiNumeric call on '%s'" % self.text)
 		if self.glob_free_number_string != True:
+			# print("self.glob_free_number_string false for '%s'. Returning false" % self.text)
 			return False
 
 		following_text = self.text+self.parent._following_text(self.position)
 
 		if not following_text:
+			# print("No following text for '%s'. Returning false" % self.text)
 			return False
 
 		following_text = following_text.strip()
@@ -239,11 +244,20 @@ class Token(object):
 		if ";" in following_text:
 			following_text = following_text.split(";")[0]
 
+		if "," in following_text:
+			following_text = following_text.split(",")[0]
+
+		following_text = following_text.split(" ")
+		if "a" in following_text: following_text.remove("a")
+		if "A" in following_text: following_text.remove("A")
+		following_text = " ".join(following_text)
+
 
 		# Spot-patching to fix data corruption issues I've run into:
 
 		following_text = following_text.replace("”", "")
 		following_text = following_text.strip()
+		# print("AsciiNumeric concatenated string: '%s'" % following_text)
 		while following_text:
 			try:
 				# print("Parsing '%s' for numbers" % following_text)
@@ -277,12 +291,15 @@ class Token(object):
 				# print("Parse failure!")
 				# traceback.print_exc()
 				if not " " in following_text:
+					# print("Parse failure?")
 					return False
 				following_text = following_text.rsplit(" ", 1)[0]
+		# print("Parse reached end of buffer without content")
 		return False
 
 
 	def __repr__(self):
+		# print("Token __repr__ call!")
 		ret = "<{:14} at: {:2} contents: '{}' number: {}, ascii number: {}>".format(self.__class__.__name__, self.position, self.text, self.isNumeric(), self.asciiNumeric())
 		return ret
 
@@ -537,7 +554,9 @@ class TitleParser(object):
 		return None
 
 	def getChapter(self):
+		# print("GetChapter call")
 		have = self.getChapterItem()
+		# print("GetChapter return: '%s'" % have)
 		if not have:
 			return None
 		return have.getNumber()

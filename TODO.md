@@ -6,6 +6,8 @@
 wattpad requires login for some things?
 handle leading decimals numeric
 
+http://royalroadl.com/fiction/3397 breaks title parsimg
+
  FIXED:
  ## - Show two digits for all fragment numbers.
  ## - Add last updated field for most recent release
