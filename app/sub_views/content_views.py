@@ -30,15 +30,22 @@ def render():
 	req_url = request.args.get('url')
 
 	ignore_cache = request.args.get("nocache")
-	# print("Rendering with nocache=", ignore_cache)
+	print("Rendering with nocache=", ignore_cache)
 	title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache)
 	print("Return:", cachestate)
-	return jsonify(
+	response = jsonify(
 		title      = title,
 		contents   = content,
 		cachestate = cachestate,
 		req_url    = req_url,
 		)
+		
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"] = "no-cache"
+	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+
+	return response
 
 @app.route('/render_rsc', methods=['GET'])
 def render_resource():
