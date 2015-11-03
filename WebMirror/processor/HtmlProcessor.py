@@ -3,6 +3,7 @@ import bs4
 import copy
 import re
 import webcolors
+import urllib.parse
 
 import WebMirror.util.urlFuncs as urlFuncs
 from . import ProcessorBase
@@ -332,6 +333,18 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		for item in wp_div:
 			for pre in item.find_all("pre"):
 				pre.name = "div"
+		return soup
+
+
+
+
+	def preprocessBody(self, soup):
+		for link in soup.find_all("a"):
+			if hasattr(link, "href"):
+				if "javascript:if(confirm(" in link['href']:
+					qs = urllib.parse.urlsplit(link['href']).query
+					link['href'] = "/viewstory.php?{}".format(qs)
+
 		return soup
 
 	# Process a plain HTML page.

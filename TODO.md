@@ -3,12 +3,13 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
  
-wattpad requires login for some things?
 handle leading decimals numeric
 
-http://royalroadl.com/fiction/3397 breaks title parsimg
+delete series
+
 
  FIXED:
+## wattpad requires login for some things?
  ## - Show two digits for all fragment numbers.
  ## - Add last updated field for most recent release
  ## - Removing items does not work.

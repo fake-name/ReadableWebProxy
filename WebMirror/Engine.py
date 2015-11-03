@@ -352,30 +352,32 @@ class SiteArchiver(LogBase.LoggerMixin):
 					traceback.print_exc()
 					self.db.get_session().rollback()
 
+	def generalLinkClean(self, link, badwords):
+		if link.startswith("data:"):
+			return None
+		if any([item in link for item in badwords]):
+			# print("Filtered:", link)
+			return None
+		return link
 
 	# Todo: FIXME
 	def filterContentLinks(self, job, links, badwords):
 		ret = set()
 		for link in links:
-			if link.startswith("data:"):
-				continue
-			if any([item in link for item in badwords]):
-				# print("Filtered:", link)
+			link = self.generalLinkClean(link, badwords)
+			if not link:
 				continue
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
 				# print("Valid content link: ", link)
 				ret.add(link)
-
 		return ret
 
 	def filterResourceLinks(self, job, links, badwords):
 		ret = set()
 		for link in links:
-			if link.startswith("data:"):
-				continue
-			if any([item in link for item in badwords]):
-				# print("Filtered:", link)
+			link = self.generalLinkClean(link, badwords)
+			if not link:
 				continue
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.rsc_filters:
