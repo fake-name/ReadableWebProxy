@@ -7,6 +7,8 @@ if __name__ == "__main__":
 import WebMirror.database as db
 import datetime
 from WebMirror.Engine import SiteArchiver
+
+from sqlalchemy.sql import text
 import urllib.parse
 import urllib.error
 import WebMirror.rules
@@ -145,6 +147,32 @@ def longest_rows():
 			fp.write("{}".format(row[3]).encode("utf-8"))
 
 
+def fix_null():
+	step = 50000
+	end = 475978307
+
+	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE ignoreuntiltime IS NULL;""")
+	start = list(start)[0][0]
+	start = start - (start % step)
+
+	changed = 0
+
+	for x in range(start, end, step):
+		# SQL String munging! I'm a bad person!
+		# Only done because I can't easily find how to make sqlalchemy
+		# bind parameters ignore the postgres specific cast
+		# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+		have = db.get_session().execute("""UPDATE web_pages SET ignoreuntiltime = 'epoch'::timestamp WHERE ignoreuntiltime IS NULL AND id < %s AND id >= %s;""" % (x, x-step))
+		# print()
+		print('%10i, %7.4f, %6i' % (x, x/end * 100, have.rowcount))
+		changed += have.rowcount
+		if changed > 10000:
+			print("Committing (%s changed rows)...." % changed, end=' ')
+			db.get_session().commit()
+			print("done")
+			changed = 0
+	db.get_session().commit()
+
 
 
 def decode(*args):
@@ -158,6 +186,8 @@ def decode(*args):
 			db_fiddle()
 		elif op == "longest-rows":
 			longest_rows()
+		elif op == "fix-null":
+			fix_null()
 		else:
 			print("ERROR: Unknown command!")
 

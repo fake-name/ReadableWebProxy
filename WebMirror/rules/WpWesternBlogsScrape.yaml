@@ -62,6 +62,7 @@ baseUrl: [
 	 "http://eugene-rain.com",
 	 "http://www.pridesfamiliarsmaidens.com",
 	 "https://silvalau.wordpress.com",
+	 'https://circleofshards.wordpress.com',
 
 	 ]
 
@@ -100,6 +101,10 @@ badwords: [
 		 "farmerbob1.wordpress.com",
 		 "pactwebserial.wordpress.com",
 		 "https://docs.google.com/forms/d",
+
+		# http://inmydaydreams.com appears to generate a RSS feed for EVERY PAGE.
+		# Arrrgh
+		 "?feed=rss2&",
 	 ]
 
 

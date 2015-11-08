@@ -395,3 +395,6 @@ def load_special_case_sites():
 # Trigger cache-loading of the ruleset.
 load_rules()
 load_special_case_sites()
+
+if __name__ == "__main__":
+	print(load_special_case_sites())

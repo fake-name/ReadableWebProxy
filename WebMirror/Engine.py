@@ -5,6 +5,7 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 
 import WebMirror.rules
+import WebMirror.SpecialCase
 import WebMirror.LogBase as LogBase
 import runStatus
 import time
@@ -87,6 +88,7 @@ GLOBAL_BAD = [
 			'twitter.com/intent/',
 			'www.pinterest.com/pin/',
 			'www.wattpad.com/login?',
+			'://tumblr.com',
 	]
 
 
@@ -256,7 +258,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def special_case_handle(self, job):
-		print("Special case!", job.netloc)
+		WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers)
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
@@ -596,9 +598,21 @@ class SiteArchiver(LogBase.LoggerMixin):
 						            distance < 1000000
 						        AND
 						            normal_fetch_mode = true
+						        AND
+						            (
+						                web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
+						            OR
+						                web_pages.ignoreuntiltime IS NULL
+						            )
 						    )
 						AND
 						    web_pages.distance < 1000000
+						AND
+						    (
+						        web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
+						    OR
+						        web_pages.ignoreuntiltime IS NULL
+						    )
 						LIMIT 1;
 					''')
 
@@ -670,6 +684,42 @@ class SiteArchiver(LogBase.LoggerMixin):
 				self.db.get_session().rollback()
 
 
+	def do_job(self, job):
+		try:
+			self.dispatchRequest(job)
+		except urllib.error.URLError:
+			content = "DOWNLOAD FAILED - urllib URLError"
+			content += "<br>"
+			content += traceback.format_exc()
+			job.content = content
+			# job.raw_content = content
+			job.state = 'error'
+			job.errno = -1
+			self.db.get_session().commit()
+			self.log.error("`urllib.error.URLError` Exception when downloading.")
+		except ValueError:
+			content = "DOWNLOAD FAILED - ValueError"
+			content += "<br>"
+			content += traceback.format_exc()
+			job.content = content
+			# job.raw_content = content
+			job.state = 'error'
+			job.errno = -3
+			self.db.get_session().commit()
+		except DownloadException:
+			content = "DOWNLOAD FAILED - DownloadException"
+			content += "<br>"
+			content += traceback.format_exc()
+			job.content = content
+			# job.raw_content = content
+			job.state = 'error'
+			job.errno = -2
+			self.db.get_session().commit()
+			self.log.error("`DownloadException` Exception when downloading.")
+		except KeyboardInterrupt:
+			runStatus.run = False
+			runStatus.run_state.value = 0
+			print("Keyboard Interrupt!")
 
 	def taskProcess(self, job_test=None):
 
@@ -685,41 +735,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.special_case_handle(job)
 		else:
 			if job:
-				try:
-					self.dispatchRequest(job)
-				except urllib.error.URLError:
-					content = "DOWNLOAD FAILED - urllib URLError"
-					content += "<br>"
-					content += traceback.format_exc()
-					job.content = content
-					# job.raw_content = content
-					job.state = 'error'
-					job.errno = -1
-					self.db.get_session().commit()
-					self.log.error("`urllib.error.URLError` Exception when downloading.")
-				except ValueError:
-					content = "DOWNLOAD FAILED - ValueError"
-					content += "<br>"
-					content += traceback.format_exc()
-					job.content = content
-					# job.raw_content = content
-					job.state = 'error'
-					job.errno = -3
-					self.db.get_session().commit()
-				except DownloadException:
-					content = "DOWNLOAD FAILED - DownloadException"
-					content += "<br>"
-					content += traceback.format_exc()
-					job.content = content
-					# job.raw_content = content
-					job.state = 'error'
-					job.errno = -2
-					self.db.get_session().commit()
-					self.log.error("`DownloadException` Exception when downloading.")
-				except KeyboardInterrupt:
-					runStatus.run = False
-					runStatus.run_state.value = 0
-					print("Keyboard Interrupt!")
+				self.do_job(job)
 
 
 

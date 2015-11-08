@@ -279,6 +279,9 @@ badwords: [
 	# Who the fuck shares shit like this anyways?
 	 "?share=",
 	 "/feed/",
+
+	 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
+	 '&author=',
 	]
 
 decompose: [

@@ -65,6 +65,7 @@ badwords: [
 
 special_case_filters : {
 	"www.tgstorytime.com" : ["rate_limit", 2],
+	"pokegirls.org"       : ["rate_limit", 2],
 	# They do temporary IP-bans if you hammer them too much.
 
 	"storiesonline.net" : ["remote_fetch", "StoriesOnlineFetch", "getpage"],
