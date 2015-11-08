@@ -1,0 +1,102 @@
+type: western
+
+
+baseUrl: [
+	'http://www.asstr.org/',
+	'http://pokegirls.org/',
+	'http://www.tgstorytime.com/',
+	'http://www.booksiesilk.com/',
+	'http://storiesonline.net/',
+	'http://www.adult-fanfiction.org/',
+	]
+extraStartUrls: [
+	'http://pokegirls.org/storyboard-listing/pokedex.html',
+	'http://www.tgstorytime.com/browse.php?type=recent',
+	]
+
+badwords: [
+
+
+			"/mailto/",
+			"feed?type=atom",
+
+			"/about/",
+			"/author.php?",
+			"/betareaders/",
+			"/chat/",
+			"/forum",
+			"/forum/",
+			"/forums",
+			"/forums/",
+			"/games/",
+			"/join-us/",
+			"/login.php",
+			"/MyAccount/",
+			"/poetry/", # Really?
+			"/post.php?",
+			"big.oscar.aol.com",
+			'&format=pdf',
+			'/adpeeps/',
+			'/ads/',
+			'/globals/',
+			'/java/',
+			'/reviews.php',
+			'?action=',
+			'?format=pdf',
+			'?replytocom=',
+			'action=favse',
+			'action=report',
+			'action=reviewsby',
+			'adpeeps.php',
+			'type=alsolike',
+
+			# Skip the epub files, since they won't be saved properly anyways.
+			'/epubversion/',
+
+			'ne.adult-fanfiction.org',   # Non-english
+			'review.php?', # Filter reviews (possibly should be revisited?)
+
+			'?q=freelinking',
+			'format=opensearch',
+			'.feed?type=rss',
+			'component&print=1&layout=default&page',
+			'?tmpl=component',
+			]
+
+special_case_filters : {
+	"www.tgstorytime.com" : ["rate_limit", 2],
+	# They do temporary IP-bans if you hammer them too much.
+
+	"storiesonline.net" : ["remote_fetch", "StoriesOnlineFetch", "getpage"],
+	# Bullshit account requirement. Circumvent via distributed fetching infrastructure.
+}
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+]
+
+decompose: [
+
+	{'id'     : 'menu'},
+	{'id'     : 'banner'},
+	{'id'     : 'menu'},
+	{'id'     : 'leftindex'},
+	{'id'     : 'footercon'},
+	{'id'     : 'bigblock'},
+	{'id'     : 'footerbottom'},
+
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: []
+
+
+

@@ -399,7 +399,7 @@ class WebGetRobust:
 		if coding == 'deflate':
 			compType = "deflate"
 
-			pgctnt = zlib.decompress(pgctnt, -zlib.MAX_WBITS)
+			pgctnt = zlib.decompress(pgctnt)
 
 		elif coding == 'gzip':
 			compType = "gzip"

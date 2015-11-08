@@ -184,6 +184,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		for instance in soup.find_all('style', attrs={"type" : "text/css"}):
 			instance.decompose()
 
+		# Even if not explicitly tagged as css
+		for instance in soup.find_all('style'):
+			instance.decompose()
+
 		# And all remote scripts
 		for item in soup.find_all("script"):
 			item.decompose()
@@ -340,7 +344,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	def preprocessBody(self, soup):
 		for link in soup.find_all("a"):
-			if hasattr(link, "href"):
+			if link.has_attr("href"):
 				if "javascript:if(confirm(" in link['href']:
 					qs = urllib.parse.urlsplit(link['href']).query
 					link['href'] = "/viewstory.php?{}".format(qs)

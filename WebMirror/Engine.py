@@ -183,6 +183,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.fetcher = WebMirror.Fetch.ItemFetcher
 		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
 
+		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
 		for item in INIT_CALLS:
 			item(self)
@@ -253,6 +254,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		# Reset the fetch time download
 
+
+	def special_case_handle(self, job):
+		print("Special case!", job.netloc)
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
@@ -667,48 +671,56 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 
-	def taskProcess(self):
+	def taskProcess(self, job_test=None):
 
-		job = self.getTask()
-		if job:
-			try:
-				self.dispatchRequest(job)
-			except urllib.error.URLError:
-				content = "DOWNLOAD FAILED - urllib URLError"
-				content += "<br>"
-				content += traceback.format_exc()
-				job.content = content
-				# job.raw_content = content
-				job.state = 'error'
-				job.errno = -1
-				self.db.get_session().commit()
-				self.log.error("`urllib.error.URLError` Exception when downloading.")
-			except ValueError:
-				content = "DOWNLOAD FAILED - ValueError"
-				content += "<br>"
-				content += traceback.format_exc()
-				job.content = content
-				# job.raw_content = content
-				job.state = 'error'
-				job.errno = -3
-				self.db.get_session().commit()
-			except DownloadException:
-				content = "DOWNLOAD FAILED - DownloadException"
-				content += "<br>"
-				content += traceback.format_exc()
-				job.content = content
-				# job.raw_content = content
-				job.state = 'error'
-				job.errno = -2
-				self.db.get_session().commit()
-				self.log.error("`DownloadException` Exception when downloading.")
-			except KeyboardInterrupt:
-				runStatus.run = False
-				runStatus.run_state.value = 0
-				print("Keyboard Interrupt!")
-
+		if job_test:
+			job = job_test
 		else:
+			job = self.getTask()
+		if not job:
 			time.sleep(5)
+			return
+
+		if job.netloc in self.specialty_handlers:
+			self.special_case_handle(job)
+		else:
+			if job:
+				try:
+					self.dispatchRequest(job)
+				except urllib.error.URLError:
+					content = "DOWNLOAD FAILED - urllib URLError"
+					content += "<br>"
+					content += traceback.format_exc()
+					job.content = content
+					# job.raw_content = content
+					job.state = 'error'
+					job.errno = -1
+					self.db.get_session().commit()
+					self.log.error("`urllib.error.URLError` Exception when downloading.")
+				except ValueError:
+					content = "DOWNLOAD FAILED - ValueError"
+					content += "<br>"
+					content += traceback.format_exc()
+					job.content = content
+					# job.raw_content = content
+					job.state = 'error'
+					job.errno = -3
+					self.db.get_session().commit()
+				except DownloadException:
+					content = "DOWNLOAD FAILED - DownloadException"
+					content += "<br>"
+					content += traceback.format_exc()
+					job.content = content
+					# job.raw_content = content
+					job.state = 'error'
+					job.errno = -2
+					self.db.get_session().commit()
+					self.log.error("`DownloadException` Exception when downloading.")
+				except KeyboardInterrupt:
+					runStatus.run = False
+					runStatus.run_state.value = 0
+					print("Keyboard Interrupt!")
+
 
 
 	def synchronousJobRequest(self, url, ignore_cache=False):

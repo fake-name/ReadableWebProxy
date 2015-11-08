@@ -11,11 +11,11 @@
 		<div class="well">
 			<form action="/view" method="get" class="form-horizontal form-inline">
 				<label style='width: 120px'>View address</label>
-				<input class="form-control" type="text" style='width: 550px' name="url">
+				<input class="form-control" type="text" style='width: 100%' name="url">
 				<input type="submit" value="Submit" class="btn btn-default">
 			</form>
 		</div>
-		<div class="well">
+		<div class="well" style="word-wrap: break-word">
 			{{ interesting_links | safe }}
 		</div>
 	</div>

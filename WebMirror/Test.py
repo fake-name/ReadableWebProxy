@@ -56,7 +56,7 @@ def test(url, debug=True):
 	if debug:
 		print(new)
 	archiver = SiteArchiver(None)
-	ret = archiver.fetch(new)
+	ret = archiver.taskProcess(job_test=new)
 
 	if debug:
 		print(archiver)
@@ -68,23 +68,6 @@ def test(url, debug=True):
 			print_rss_response(archiver, new, ret)
 
 
-	# cmd = text("""
-	# 		INSERT INTO
-	# 			web_pages
-	# 			(url, starturl, netloc, distance, is_text, priority, type, fetchtime)
-	# 		VALUES
-	# 			(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime)
-	# 		ON CONFLICT DO NOTHING
-	# 		""")
-	# print("doing")
-	# ins = archiver.db.get_session().execute(cmd, params=new)
-	# print("Done. Ret:")
-	# print(ins)
-	# print(archiver.resetDlstate())
-	# print(archiver.getTask())
-	# print(archiver.getTask())
-	# print(archiver.getTask())
-	# print(archiver.taskProcess())
 	pass
 
 def test_all_rss():

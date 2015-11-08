@@ -7,7 +7,6 @@ type: "western"
 
 baseUrl: [
 	"http://www.booksie.com/",
-	"http://www.booksiesilk.com/",
 	]
 
 badwords: [
