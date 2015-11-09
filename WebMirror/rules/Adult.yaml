@@ -63,6 +63,9 @@ badwords: [
 			'component&print=1&layout=default&page',
 			'?tmpl=component',
 			'textsize=0',
+			'searchword=author',
+			'/author-list.feed?',
+			'blog-roll.feed',
 			]
 
 special_case_filters : {

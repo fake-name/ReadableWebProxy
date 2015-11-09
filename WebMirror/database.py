@@ -165,7 +165,7 @@ class WebPages(Base):
 	fetchtime         = Column(DateTime, default=datetime.datetime.min)
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
 
-	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min)
+	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min, index=True, nullable=False)
 
 	# Items with `normal_fetch_mode` set to false are not retreived by the normal scheduling system
 	# in WebMirror\Engine.py. This is to allow external systems that need to manage their own

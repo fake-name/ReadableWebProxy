@@ -83,12 +83,21 @@ GLOBAL_BAD = [
 			'b.scorecardresearch.com',
 			'//mail.google.com',
 			'javascript:void',
-			'tumblr.com/widgets/',
-			'www.tumblr.com/login',
 			'twitter.com/intent/',
 			'www.pinterest.com/pin/',
 			'www.wattpad.com/login?',
+
+			# Tumblr can seriously go fuck itself with a rusty stake
+			'tumblr.com/widgets/',
+			'www.tumblr.com/login',
 			'://tumblr.com',
+			'&share=tumblr',
+
+			# At least one site (booksie) is serving the favicon with a mime-type
+			# of "text/plain", which then confuses the absolute crap out of the
+			# mime-type dispatcher.
+			# Since I'm not re-serving favicons anyways, just do not fetch them ever.
+			'favicon.ico',
 	]
 
 
@@ -636,21 +645,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 						        AND
 						            normal_fetch_mode = true
 						        AND
-						            (
-						                web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-						            OR
-						                web_pages.ignoreuntiltime IS NULL
-						            )
+					                web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
 						        %s
 						    )
 						AND
 						    web_pages.distance < 1000000
 						AND
-						    (
-						        web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-						    OR
-						        web_pages.ignoreuntiltime IS NULL
-						    )
+					        web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
 						%s
 						LIMIT 1;
 					''' % (filt, filt))

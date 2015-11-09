@@ -11,10 +11,7 @@ from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import bs4
 import re
-import calendar
-import datetime
 import time
-import json
 
 from settings import BOOKSIE_REQUIRED_TAGS
 from settings import BOOKSIE_MASKED_TAGS
@@ -66,9 +63,10 @@ class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	@staticmethod
 	def wantsUrl(url):
-		if re.search(r"^http://(?:www\.)?booksie\.com/.*?/novel/.*?$", url):
+		if re.search(r"^http://(?:www\.)?booksie\.com/.*?/novel/.*?/chapter/1$", url):
 			print("BooksieSeriesPageProcessor Wants url: '%s'" % url)
 			return True
+
 		return False
 
 	def __init__(self, **kwargs):
@@ -95,6 +93,11 @@ class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# The actual image is in a div with the /class/ titlePic
 		# wat.
 		titlecontainer = soup.find("div", id='titlePic')
+		if not titlecontainer:
+			titlecontainer = soup.find("div", id='title')
+		if not titlecontainer:
+			raise ValueError("No title at URL: '%s'", seriesPageUrl)
+
 		titletg  = titlecontainer.h1
 		typetg, authortg, categorytg = titlecontainer.find_all("a")
 
@@ -126,6 +129,8 @@ class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		tags.append(genre.lower())
 		# Fix a lot of the stupid tag fuckups I've seen.
 		# People are stupid.
+		if 'science' in tags and 'fiction' in tags:
+			tags.append("science-fiction")
 		tags = [tag for tag in tags if tag not in BAD_TAGS]
 		tags = [tag for tag in tags if len(tag) > 2]
 		tags = [tag.replace("  ", " ").replace(" ", "-") for tag in tags]
@@ -192,6 +197,7 @@ class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		if not retval:
+			print("No releases?")
 			return []
 		self.amqp_put_item(pkt)
 		return retval
