@@ -216,6 +216,7 @@ def canonizeUrls(soup, pageUrl):
 
 
 def urlClean(url):
+	assert url != None
 	# Google docs can be accessed with or without the '/preview' postfix
 	# We want to remove this if it's present, so we don't duplicate content.
 	url = trimGDocUrl(url)
@@ -242,3 +243,5 @@ if __name__ == "__main__":
 	print('wat')
 
 	print(isGFileUrl('https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web'))
+	print(urlClean('http://inmydaydreams.com/?p=6128&share=tumblr'))
+	print(urlClean('http://inmydaydreams.com/?p=6091&share=tumblr'))

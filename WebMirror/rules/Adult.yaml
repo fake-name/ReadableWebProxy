@@ -8,6 +8,7 @@ baseUrl: [
 	'http://www.booksiesilk.com/',
 	'http://storiesonline.net/',
 	'http://www.adult-fanfiction.org/',
+	'https://www.fictionmania.tv',
 	]
 extraStartUrls: [
 	'http://pokegirls.org/storyboard-listing/pokedex.html',
@@ -61,11 +62,12 @@ badwords: [
 			'.feed?type=rss',
 			'component&print=1&layout=default&page',
 			'?tmpl=component',
+			'textsize=0',
 			]
 
 special_case_filters : {
-	"www.tgstorytime.com" : ["rate_limit", 2],
-	"pokegirls.org"       : ["rate_limit", 2],
+	"www.tgstorytime.com" : ["rate_limit", 1],
+	"pokegirls.org"       : ["rate_limit", 1],
 	# They do temporary IP-bans if you hammer them too much.
 
 	"storiesonline.net" : ["remote_fetch", "StoriesOnlineFetch", "getpage"],

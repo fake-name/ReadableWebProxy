@@ -3,6 +3,8 @@ import logging
 import datetime
 import random
 import WebMirror.database as db
+import multiprocessing
+import time
 random.seed()
 # import WebMirror.rules
 # import WebMirror.LogBase as LogBase
@@ -49,25 +51,34 @@ ACTIVE_FETCHES = {
 	# Populated at runtime
 }
 
+FETCH_LOCK = multiprocessing.Lock()
+
 log = logging.getLogger("Main.Web.SpecialCaseHandler")
+
 def handleRemoteFetch(params, job, engine):
 	print("Remote fetch command!")
 	pass
 
 def handleRateLimiting(params, job, engine):
 	allowable = params[0]
-	if not job.netloc in ACTIVE_FETCHES:
-		ACTIVE_FETCHES[job.netloc] = 0
+	with FETCH_LOCK:
+		if not job.netloc in ACTIVE_FETCHES:
+			ACTIVE_FETCHES[job.netloc] = 0
 
+	log.info("Active fetchers for domain %s - %s", job.netloc, ACTIVE_FETCHES[job.netloc])
 	if ACTIVE_FETCHES[job.netloc] > allowable:
 		log.info("Too many instances of fetchers for domain %s active. Forcing requests to sleep for a while", job.netloc)
 		job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(seconds=60*5 + random.randrange(0, 60*5))
 		db.get_session().commit()
 		return
 	else:
-		ACTIVE_FETCHES[job.netloc] += 1
+		with FETCH_LOCK:
+			ACTIVE_FETCHES[job.netloc] += 1
 		engine.do_job(job)
-		ACTIVE_FETCHES[job.netloc] -= 1
+		time.sleep(5)
+		with FETCH_LOCK:
+			ACTIVE_FETCHES[job.netloc] -= 1
+
 
 
 dispatchers = {

@@ -247,7 +247,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# No title is present in a file response
 			self.upsertFileResponse(job, response)
 		elif 'rss-content' in response:
-			self.upsertRssItems(response['rss-content'], job.url)
+			self.upsertRssItems(job, response['rss-content'], job.url)
 			self.upsertResponseLinks(job, plain=[entry['linkUrl'] for entry in response['rss-content']])
 
 		else:
@@ -332,7 +332,26 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 
-	def upsertRssItems(self, entrylist, feedurl):
+	def upsertRssItems(self, job, entrylist, feedurl):
+
+		while 1:
+			try:
+				job.state     = 'complete'
+				job.fetchtime = datetime.datetime.now()
+				break
+
+			except sqlalchemy.exc.InvalidRequestError:
+				print("InvalidRequest error!")
+				self.db.get_session().rollback()
+				traceback.print_exc()
+			except sqlalchemy.exc.OperationalError:
+				print("InvalidRequest error!")
+				self.db.get_session().rollback()
+			except sqlalchemy.exc.IntegrityError:
+				print("[upsertRssItems] -> Integrity error!")
+				traceback.print_exc()
+				self.db.get_session().rollback()
+
 		# print("InsertFeed!")
 		for feedentry in entrylist:
 			# print(feedentry)
@@ -561,7 +580,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 
-	def getTask(self):
+	def getTask(self, wattpad=False):
 		'''
 		Get a job row item from the database.
 
@@ -573,10 +592,28 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# or we succeed.
 		while 1:
 			try:
+				if wattpad:
+					filt = """
+					AND
+						(
+							web_pages.netloc = 'a.wattpad.com'
+						OR
+							web_pages.netloc = 'www.wattpad.com'
+						)
+					"""
+				else:
+					filt = """
+					AND NOT
+						(
+							web_pages.netloc = 'a.wattpad.com'
+						OR
+							web_pages.netloc = 'www.wattpad.com'
+						)
+					"""
 				# Hand-tuned query, I couldn't figure out how to
 				# get sqlalchemy to emit /exactly/ what I wanted.
 				# TINY changes will break the query optimizer, and
-				# the 100 ms query will suddenly take 10 seconds!
+				# the 10 ms query will suddenly take 10 seconds!
 				raw_query = text('''
 						SELECT
 						    web_pages.id
@@ -604,6 +641,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 						            OR
 						                web_pages.ignoreuntiltime IS NULL
 						            )
+						        %s
 						    )
 						AND
 						    web_pages.distance < 1000000
@@ -613,32 +651,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 						    OR
 						        web_pages.ignoreuntiltime IS NULL
 						    )
+						%s
 						LIMIT 1;
-					''')
-
-
-				# raw_query = text('''
-				# 		SELECT
-				# 		    web_pages.id
-				# 		FROM
-				# 		    web_pages
-				# 		WHERE
-				# 		    web_pages.state = 'new'
-				# 		AND
-				# 		    web_pages.priority = (
-				# 		       SELECT
-				# 		            min(priority)
-				# 		        FROM
-				# 		            web_pages
-				# 		        WHERE
-				# 		            state = 'new'::dlstate_enum
-				# 		        AND
-				# 		            distance < 1000000
-				# 		    )
-				# 		AND
-				# 		    web_pages.distance < 1000000
-				# 		LIMIT 1;
-				# 	''')
+					''' % (filt, filt))
 
 
 				start = time.time()
@@ -728,8 +743,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 		else:
 			job = self.getTask()
 		if not job:
-			time.sleep(5)
-			return
+			job = self.getTask(wattpad=True)
+			if not job:
+				time.sleep(5)
+				return
 
 		if job.netloc in self.specialty_handlers:
 			self.special_case_handle(job)

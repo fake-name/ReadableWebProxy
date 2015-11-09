@@ -152,6 +152,10 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
 			retval.append(msg)
 
+		# Do not add series without 3 chapters.
+		if len(retval) < 3:
+			return []
+
 		if not retval:
 			return []
 		self.amqp_put_item(pkt)
