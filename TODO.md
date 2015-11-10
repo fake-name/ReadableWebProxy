@@ -9,7 +9,8 @@ delete series
 
 
  FIXED:
-## wattpad requires login for some things?
+ ## - If series have > 5 chapters and < 20% of chapters have no numbering, do basic chronological numbering.
+ ## - wattpad requires login for some things?
  ## - Show two digits for all fragment numbers.
  ## - Add last updated field for most recent release
  ## - Removing items does not work.

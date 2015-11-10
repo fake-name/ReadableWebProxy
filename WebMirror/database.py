@@ -322,3 +322,37 @@ Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 #     AND C.relkind <> 'i'
 #     AND nspname !~ '^pg_toast'
 #   ORDER BY pg_total_relation_size(C.oid) DESC;
+
+
+# CREATE INDEX
+#     ix_web_pages_distance_filtered_nowp
+# ON
+#     web_pages(priority)
+# WHERE
+#     state = 'new'::dlstate_enum
+# AND
+#     distance < 1000000
+# AND
+#     normal_fetch_mode = true
+# AND NOT
+#     (
+#             web_pages.netloc = 'a.wattpad.com'
+#         OR
+#             web_pages.netloc = 'www.wattpad.com'
+#     );
+
+# CREATE INDEX
+#     ix_web_pages_distance_filtered_wp
+# ON
+#     web_pages(priority)
+# WHERE
+#     state = 'new'::dlstate_enum
+# AND
+#     distance < 1000000
+# AND
+#     normal_fetch_mode = true
+# AND  (
+#             web_pages.netloc = 'a.wattpad.com'
+#         OR
+#             web_pages.netloc = 'www.wattpad.com'
+#     );

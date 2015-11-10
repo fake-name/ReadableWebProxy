@@ -66,6 +66,7 @@ badwords: [
 			'searchword=author',
 			'/author-list.feed?',
 			'blog-roll.feed',
+			'=rss',
 			]
 
 special_case_filters : {

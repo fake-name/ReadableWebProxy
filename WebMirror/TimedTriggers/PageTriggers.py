@@ -80,11 +80,11 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 class HourlyPageTrigger(PageTriggerBase):
 	pages = [
 		# RoyalRoadL
-		'http://www.royalroadl.com/fictions/best-rated/',
-		'http://www.royalroadl.com/fictions/latest-updates/',
-		'http://www.royalroadl.com/fictions/active-top-50/',
-		'http://www.royalroadl.com/fictions/weekly-views-top-50/',
-		'http://www.royalroadl.com/fictions/newest/',
+		'http://royalroadl.com/fictions/best-rated/',
+		'http://royalroadl.com/fictions/latest-updates/',
+		'http://royalroadl.com/fictions/active-top-50/',
+		'http://royalroadl.com/fictions/weekly-views-top-50/',
+		'http://royalroadl.com/fictions/newest/',
 
 		# Japtem bits
 		'http://japtem.com/fanfic.php?action=last_updated',
