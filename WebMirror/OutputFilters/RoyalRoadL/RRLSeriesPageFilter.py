@@ -157,14 +157,15 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			if not (item['vol'] or item['chp']):
 				missing_chap += 1
 
-		unnumbered = (missing_chap/len(retval)) * 100
-		if len(retval) >= 5 and unnumbered > 80:
-			self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
-			chap = 1
-			for item in retval:
-				item['vol'] = None
-				item['chp'] = chap
-				chap += 1
+		if len(retval):
+			unnumbered = (missing_chap/len(retval)) * 100
+			if len(retval) >= 5 and unnumbered > 80:
+				self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
+				chap = 1
+				for item in retval:
+					item['vol'] = None
+					item['chp'] = chap
+					chap += 1
 
 		# Do not add series without 3 chapters.
 		if len(retval) < 3:
