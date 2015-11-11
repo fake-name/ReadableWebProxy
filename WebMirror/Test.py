@@ -8,6 +8,8 @@ import WebMirror.database as db
 import datetime
 from WebMirror.Engine import SiteArchiver
 
+import sqlalchemy.exc
+import traceback
 from sqlalchemy.sql import text
 import urllib.parse
 import urllib.error
@@ -174,6 +176,46 @@ def fix_null():
 	db.get_session().commit()
 
 
+def fix_tsv():
+	step = 1000
+	end = 475978307
+
+	print("Determining extents that need to be changed.")
+	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
+	start = list(start)[0][0]
+	start = start - (start % step)
+
+	end = db.get_session().execute("""SELECT MAX(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
+	end = list(end)[0][0]
+
+	changed = 0
+
+
+	print("Start: ", start)
+	print("End: ", end)
+	for x in range(start, end, step):
+		try:
+			# SQL String munging! I'm a bad person!
+			# Only done because I can't easily find how to make sqlalchemy
+			# bind parameters ignore the postgres specific cast
+			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+			have = db.get_session().execute("""UPDATE web_pages SET tsv_content = to_tsvector(coalesce(content)) WHERE tsv_content IS NULL AND content IS NOT NULL AND id < %s AND id >= %s;""" % (x, x-step))
+			# print()
+			print('%10i, %10i, %7.4f, %6i' % (x, end, (x-start)/(end-start) * 100, have.rowcount))
+			changed += have.rowcount
+			if changed > 10000:
+				print("Committing (%s changed rows)...." % changed, end=' ')
+				db.get_session().commit()
+				print("done")
+				changed = 0
+		except sqlalchemy.exc.OperationalError:
+			db.get_session().rollback()
+			print("Error!")
+			traceback.print_exc()
+
+	db.get_session().commit()
+
+
 
 def decode(*args):
 	print("Args:", args)
@@ -188,6 +230,8 @@ def decode(*args):
 			longest_rows()
 		elif op == "fix-null":
 			fix_null()
+		elif op == "fix-tsv":
+			fix_tsv()
 		else:
 			print("ERROR: Unknown command!")
 

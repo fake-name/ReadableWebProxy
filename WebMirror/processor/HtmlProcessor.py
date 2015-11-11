@@ -245,8 +245,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 					color = webcolors.hex_to_rgb(match)
 					mean = sum(color)/len(color)
 
-					if mean > 200:
-						above = mean - 200
+					if mean > 150:
+						above = mean - 150
 						color = tuple((max(255-cval, 0) for cval in color))
 						new = webcolors.rgb_to_hex(color)
 						item['style'] = item['style'].replace(match, new)

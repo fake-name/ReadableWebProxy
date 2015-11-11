@@ -3,10 +3,12 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
  
+tsvector column not up to date
 handle leading decimals numeric
 
 delete series
-
+rules comditionally disable tld permutatiom
+text/plain mimetype freaking shit out
 
  FIXED:
  ## - If series have > 5 chapters and < 20% of chapters have no numbering, do basic chronological numbering.

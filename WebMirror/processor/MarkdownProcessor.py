@@ -37,15 +37,18 @@ class MarkdownProcessor(ProcessorBase.PageProcessor):
 
 	loggerPath = "Main.Text.MarkdownProcessor"
 
-	def __init__(self, pageUrl, loggerPath, content, pbLut, **kwargs):
+	# def __init__(self, pageUrl, loggerPath, content, pbLut, **kwargs):
+
+	def __init__(self, baseUrls, pageUrl, pgContent, loggerPath, relinkable, **kwargs):
+
 		'''
 		I'm assuming that pastebin content doesn't have any links, because lazy, mostly.
 		'''
 		self.loggerPath = loggerPath+".MarkdownProcessor"
 		self.pageUrl    = pageUrl
 
-		self.content    = content
-		self.urlLut     = pbLut
+		self.content    = pgContent
+		self.urlLut     = {}
 
 		# if isinstance(scannedDomains, (set, list)):
 		# 	for url in scannedDomains:

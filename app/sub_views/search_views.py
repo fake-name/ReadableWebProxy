@@ -13,6 +13,7 @@ import WebMirror.database as db
 from app.utilities import paginate
 import sqlalchemy.exc
 from sqlalchemy.sql.expression import func
+from sqlalchemy.dialects import postgresql
 
 import WebMirror.rules
 
@@ -47,8 +48,8 @@ def fetch_content(query_text, column, page, sources=None):
 	else:
 		raise ValueError("Wat?")
 
-	# print(str(query.statement.compile(dialect=postgresql.dialect())))
-	# print("param: '%s'" % tsq)
+	print(str(query.statement.compile(dialect=postgresql.dialect())))
+	print("param: '%s', '%s'" % (tsq, sources))
 
 	try:
 		entries = paginate(query, page, per_page=50)
@@ -114,6 +115,7 @@ def render_search_page():
 	rules = WebMirror.rules.load_rules()
 
 	netlocs = [item['netlocs'] for item in rules if item['netlocs']]
+	[item.sort() for item in netlocs]
 	netlocs.sort(key=lambda x: len(x))
 
 	return render_template('search.html',

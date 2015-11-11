@@ -67,6 +67,12 @@ badwords: [
 			'/author-list.feed?',
 			'blog-roll.feed',
 			'=rss',
+			
+			'report.html',
+			'addreview.html',
+			'readreview.html',
+			'containxresults.html',
+			'/searchdisplay/',
 			]
 
 special_case_filters : {
