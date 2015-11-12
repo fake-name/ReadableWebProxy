@@ -3,6 +3,21 @@
 import json
 
 
+def fixSmartQuotes(text):
+	text = text.replace(r"\'", "'")
+	text = text.replace(r'\"', '"')
+	text = text.replace(r"’", "'")
+	text = text.replace(r"‘", "'")
+	text = text.replace(r"“", '"')
+	text = text.replace(r"”", '"')
+	return text
+
+def fix_dict(inRelease):
+	for key in inRelease.keys():
+		if isinstance(inRelease[key], str):
+			inRelease[key] = fixSmartQuotes(inRelease[key])
+	return inRelease
+
 def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}, beta=False):
 	'''
 	Special case behaviour:
@@ -30,6 +45,8 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 	for key, value in extraData.items():
 		assert key not in ret
 		ret[key] = value
+
+	ret = fix_dict(ret)
 	return ret
 
 
@@ -56,6 +73,7 @@ def createReleasePacket(data, beta=False):
 	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
 
 	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type']
+	data = fix_dict(data)
 
 	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
@@ -75,6 +93,7 @@ def createReleasePacket(data, beta=False):
 def sendSeriesInfoPacket(data, beta=False):
 
 	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
+	data = fix_dict(data)
 
 	assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in metadata message! Expect: '%s', received '%s'" % (expect, list(data.keys()))

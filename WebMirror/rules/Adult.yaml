@@ -67,7 +67,7 @@ badwords: [
 			'/author-list.feed?',
 			'blog-roll.feed',
 			'=rss',
-			
+
 			'report.html',
 			'addreview.html',
 			'readreview.html',

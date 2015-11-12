@@ -177,7 +177,7 @@ def fix_null():
 
 
 def fix_tsv():
-	step = 1000
+	step = 100
 	end = 475978307
 
 	print("Determining extents that need to be changed.")
@@ -203,7 +203,7 @@ def fix_tsv():
 			# print()
 			print('%10i, %10i, %7.4f, %6i' % (x, end, (x-start)/(end-start) * 100, have.rowcount))
 			changed += have.rowcount
-			if changed > 10000:
+			if changed > 100:
 				print("Committing (%s changed rows)...." % changed, end=' ')
 				db.get_session().commit()
 				print("done")
