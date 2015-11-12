@@ -358,8 +358,13 @@ Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 #     );
 
 
+# EXPLAIN ANALYZE UPDATE web_pages SET fetchtime='now'::timestamp WHERE id=428615139;
+# EXPLAIN ANALYZE UPDATE web_pages SET tsv_content = NULL WHERE id=428615139;
+
+# SELECT  tsv_content FROM web_pages WHERE id=428615139;
+
 '''
-CREATE FUNCTION web_pages_content_update_func() RETURNS TRIGGER AS $_$
+CREATE OR REPLACE FUNCTION web_pages_content_update_func() RETURNS TRIGGER AS $_$
 BEGIN
     --
     -- Create a row in {name}changes to reflect the operation performed on emp,
@@ -367,18 +372,16 @@ BEGIN
     --
     IF (TG_OP = 'UPDATE' OR TG_OP = 'INSERT') THEN
         IF NEW.content IS NOT NULL AND NEW.content != OLD.content THEN
-
             NEW.tsv_content = to_tsvector(coalesce(NEW.content));
-
         END IF;
     END IF;
-    RETURN NULL; -- result is ignored since this is an AFTER trigger
+    RETURN NEW;
 END $_$ LANGUAGE 'plpgsql';
 
 
 CREATE TRIGGER
     update_row_count_trigger
-AFTER INSERT OR UPDATE ON
+BEFORE INSERT OR UPDATE ON
     web_pages
 FOR EACH ROW EXECUTE PROCEDURE
     web_pages_content_update_func();
