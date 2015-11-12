@@ -160,6 +160,13 @@ textarea
 	resize: none;
 }
 
+.rowContents {
+	word-wrap: break-word
+}
+.singleitem {
+	word-wrap: break-word
+}
+
 td {
 	word-wrap: break-word
 }

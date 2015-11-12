@@ -12,11 +12,22 @@ def fixSmartQuotes(text):
 	text = text.replace(r"”", '"')
 	return text
 
+def fixCase(inText):
+	caps  = sum(1 for c in inText if c.isupper())
+	lower = sum(1 for c in inText if c.islower())
+	if (lower == 0) or (caps == 0) or (caps / lower) > 2.5:
+		inText = inText.title()
+	return inText
+
 def fix_dict(inRelease):
 	for key in inRelease.keys():
 		if isinstance(inRelease[key], str):
 			inRelease[key] = fixSmartQuotes(inRelease[key])
+			inRelease[key] = fixCase(inRelease[key])
 	return inRelease
+
+
+
 
 def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}, beta=False):
 	'''
@@ -25,6 +36,8 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 		item in question will sort to the end of
 		the relevant sort segment.
 	'''
+
+
 	ret = {
 		'srcname'   : raw_item['srcname'],
 		'series'    : series,

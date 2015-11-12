@@ -178,7 +178,7 @@ def fix_null():
 
 def fix_tsv():
 	step = 100
-	end = 475978307
+
 
 	print("Determining extents that need to be changed.")
 	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
@@ -189,6 +189,7 @@ def fix_tsv():
 	end = list(end)[0][0]
 
 	changed = 0
+
 
 
 	print("Start: ", start)
@@ -203,7 +204,7 @@ def fix_tsv():
 			# print()
 			print('%10i, %10i, %7.4f, %6i' % (x, end, (x-start)/(end-start) * 100, have.rowcount))
 			changed += have.rowcount
-			if changed > 100:
+			if changed > step:
 				print("Committing (%s changed rows)...." % changed, end=' ')
 				db.get_session().commit()
 				print("done")

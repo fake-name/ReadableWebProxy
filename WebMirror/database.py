@@ -356,3 +356,31 @@ Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 #         OR
 #             web_pages.netloc = 'www.wattpad.com'
 #     );
+
+
+'''
+CREATE FUNCTION web_pages_content_update_func() RETURNS TRIGGER AS $_$
+BEGIN
+    --
+    -- Create a row in {name}changes to reflect the operation performed on emp,
+    -- make use of the special variable TG_OP to work out the operation.
+    --
+    IF (TG_OP = 'UPDATE' OR TG_OP = 'INSERT') THEN
+        IF NEW.content IS NOT NULL AND NEW.content != OLD.content THEN
+
+            NEW.tsv_content = to_tsvector(coalesce(NEW.content));
+
+        END IF;
+    END IF;
+    RETURN NULL; -- result is ignored since this is an AFTER trigger
+END $_$ LANGUAGE 'plpgsql';
+
+
+CREATE TRIGGER
+    update_row_count_trigger
+AFTER INSERT OR UPDATE ON
+    web_pages
+FOR EACH ROW EXECUTE PROCEDURE
+    web_pages_content_update_func();
+'''
+
