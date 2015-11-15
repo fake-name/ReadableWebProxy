@@ -42,7 +42,7 @@ def replace_links(content):
 
 fetchers = queue.Queue()
 
-for x in range(5):
+for x in range(3):
 	fetchers.put(SiteArchiver(cookie_lock=False, run_filters=False))
 
 
@@ -150,7 +150,7 @@ def getPage(url, ignore_cache=False):
 		title, content, cachestate = getErrorDiv()
 	finally:
 		page.close()
-		
+
 	return title, content, cachestate
 
 

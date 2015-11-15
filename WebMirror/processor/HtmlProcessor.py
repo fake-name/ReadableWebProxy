@@ -7,8 +7,7 @@ import urllib.parse
 
 import WebMirror.util.urlFuncs as urlFuncs
 from . import ProcessorBase
-
-
+import markdown
 
 
 ########################################################################################################################
@@ -333,10 +332,18 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	def spotPatch(self, soup):
 
 		# Replace <pre> tags on wattpad.
-		wp_div = soup.find_all('div', class_="panel-reading")
-		for item in wp_div:
-			for pre in item.find_all("pre"):
-				pre.name = "div"
+		# wp_div = soup.find_all('div', class_="panel-reading")
+		# for item in wp_div:
+
+		# Fukkit, just nuke them in general
+		for pre in soup.find_all("pre"):
+			pre.name = "div"
+			formatted = markdown.markdown(pre.encode_contents().decode("utf-8"), extensions=["linkify"])
+			formatted = bs4.BeautifulSoup(formatted)
+			formatted.html.unwrap()
+			formatted.body.unwrap()
+			pre.replace_with(formatted)
+			# print(pre)
 		return soup
 
 

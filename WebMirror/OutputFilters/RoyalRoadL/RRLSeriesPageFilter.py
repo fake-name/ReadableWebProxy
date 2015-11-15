@@ -78,17 +78,22 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		ratingtg = soup.find("span", class_='overall')
 
 		if not ratingtg:
+			self.log.info("Could not find rating tag!")
 			return []
-
-		if not float(ratingtg['score']) >= MIN_RATING:
+			
+			
+		rating = float(ratingtg['score'])
+		if not rating >= MIN_RATING and rating != 0.0:
+			self.log.info("Item rating below upload threshold: %s", rating)
 			return []
 
 		if not titletg:
+			self.log.info("Could not find title tag!")
 			return []
 		if not authortg:
+			self.log.info("Could not find author tag!")
 			return []
-		if not ratingtg:
-			return []
+		
 
 		title  = titletg.get_text()
 		author = authortg.get_text()
@@ -169,9 +174,13 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		# Do not add series without 3 chapters.
 		if len(retval) < 3:
+			self.log.info("Less then three chapters!")
 			return []
 
+
+
 		if not retval:
+			self.log.info("Retval empty?!")
 			return []
 		self.amqp_put_item(pkt)
 		return retval

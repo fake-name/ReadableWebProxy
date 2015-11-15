@@ -3,9 +3,11 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
-
+bottom refetch link doesnt work
 fictionmania js links 
  
+update release sources from novelupdates
+log has duplicate 'thread nnn' emtries 
 tsvector column not up to date
 handle leading decimals numeric
 

@@ -19,11 +19,17 @@ def fixCase(inText):
 		inText = inText.title()
 	return inText
 
+def fix_string(val):
+	if not val:
+		return val
+	val = fixSmartQuotes(val)
+	val = fixCase(val)
+	return val
+
 def fix_dict(inRelease):
 	for key in inRelease.keys():
 		if isinstance(inRelease[key], str):
-			inRelease[key] = fixSmartQuotes(inRelease[key])
-			inRelease[key] = fixCase(inRelease[key])
+			inRelease[key] = fix_string(inRelease[key])
 	return inRelease
 
 
@@ -40,13 +46,13 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 
 	ret = {
 		'srcname'   : raw_item['srcname'],
-		'series'    : series,
+		'series'    : fix_string(series),
 		'vol'       : vol,
 		'chp'       : packChapterFragments(chap, frag),
 		'published' : raw_item['published'],
 		'itemurl'   : raw_item['linkUrl'],
-		'postfix'   : postfix,
-		'author'    : author,
+		'postfix'   : fix_string(postfix),
+		'author'    : fix_string(author),
 		'tl_type'   : tl_type,
 
 		# "beta" items are optionally filtered client-end to allow
@@ -59,7 +65,6 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 		assert key not in ret
 		ret[key] = value
 
-	ret = fix_dict(ret)
 	return ret
 
 
@@ -86,10 +91,13 @@ def createReleasePacket(data, beta=False):
 	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
 
 	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type']
-	data = fix_dict(data)
 
 	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
+
+	data['series']  = fix_string(data['series'])
+	data['postfix'] = fix_string(data['postfix'])
+	data['author']  = fix_string(data['author'])
 
 	ret = {
 		'type' : 'parsed-release',
@@ -106,10 +114,13 @@ def createReleasePacket(data, beta=False):
 def sendSeriesInfoPacket(data, beta=False):
 
 	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
-	data = fix_dict(data)
 
 	assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in metadata message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
+
+	data['title']   = fix_string(data['title'])
+	data['author']  = fix_string(data['author'])
+	data['desc']    = fix_string(data['desc'])
 
 	ret = {
 		'type' : 'series-metadata',

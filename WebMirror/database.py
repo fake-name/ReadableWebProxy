@@ -233,8 +233,8 @@ class Author(Base):
 
 def tag_creator(tag):
 
-	tmp = get_session().query(Tags)         \
-		.filter(Tags.tag == tag) \
+	tmp = get_session().query(Tags) \
+		.filter(Tags.tag == tag)    \
 		.scalar()
 	if tmp:
 		return tmp
@@ -242,7 +242,7 @@ def tag_creator(tag):
 	return Tags(tag=tag)
 
 def author_creator(author):
-	tmp = get_session().query(Author)                  \
+	tmp = get_session().query(Author)    \
 		.filter(Author.author == author) \
 		.scalar()
 	if tmp:
@@ -370,8 +370,12 @@ BEGIN
     -- Create a row in {name}changes to reflect the operation performed on emp,
     -- make use of the special variable TG_OP to work out the operation.
     --
-    IF (TG_OP = 'UPDATE' OR TG_OP = 'INSERT') THEN
-        IF NEW.content IS NOT NULL AND NEW.content != OLD.content THEN
+    IF TG_OP = 'INSERT' THEN
+        IF NEW.content IS NOT NULL THEN
+            NEW.tsv_content = to_tsvector(coalesce(NEW.content));
+        END IF;
+    ELSEIF TG_OP = 'UPDATE' THEN
+        IF NEW.content != OLD.content THEN
             NEW.tsv_content = to_tsvector(coalesce(NEW.content));
         END IF;
     END IF;
