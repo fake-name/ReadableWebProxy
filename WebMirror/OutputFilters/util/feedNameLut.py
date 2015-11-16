@@ -193,6 +193,7 @@ def getNiceName(srcurl):
 		'vaancruze.wordpress.com'                   : 'VaanCruze',
 		'voidtranslations.wordpress.com'            : 'Void Translations',
 		'wartdf.wordpress.com'                      : 'Raising the Dead',
+		'raisingthedead.ninja'                      : 'Raising the Dead',
 		'wcctranslation.wordpress.com'              : 'WCC Translation',
 		'webnoveltranslations.blogspot.com'         : 'Neo Translations',
 		'webnoveltranslations.blogspot.se'          : 'Neo Translations',
@@ -211,6 +212,9 @@ def getNiceName(srcurl):
 		'youtsubasilver.wordpress.com'              : 'youtsubasilver\'s Blog',
 		'zmunjali.wordpress.com'                    : 'Roxism HQ',
 		'novicetranslator.wordpress.com'            : 'NoviceTranslator',
+
+		'yukkuri-literature-service.blogspot.com'   : 'Yukkuri Free Time Literature Service',
+		'bersekertranslations.blogspot.com'         : 'Berseker Translations',
 
 
 

@@ -309,7 +309,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if have:
 			return
 		else:
-			assert ("srcname" in entry), "'srcname' not in entry for item from '%s' (contenturl: '%s', title: '%s', guid: '%s')" % (feedurl, entry['linkUrl'], entry['title'], entry['guid'])
+			if not ("srcname" in entry):
+				self.log.error("'srcname' not in entry for item from '%s' (contenturl: '%s', title: '%s', guid: '%s')" % (feedurl, entry['linkUrl'], entry['title'], entry['guid']))
+				return
 
 			authors     = [tmp['name'] for tmp in entry['authors'] if 'name' in tmp]
 

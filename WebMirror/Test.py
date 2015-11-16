@@ -10,6 +10,7 @@ from WebMirror.Engine import SiteArchiver
 
 import sqlalchemy.exc
 import traceback
+import settings
 from sqlalchemy.sql import text
 import urllib.parse
 import urllib.error
@@ -41,7 +42,10 @@ def print_html_response(archiver, new, ret):
 def print_rss_response(archiver, new, ret):
 	pass
 
-def test(url, debug=True):
+def test(url, debug=True, rss_debug=False):
+	if rss_debug:
+		print("Debugging RSS")
+		flags.RSS_DEBUG = True
 
 	parsed = urllib.parse.urlparse(url)
 	root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
@@ -246,6 +250,9 @@ def decode(*args):
 		elif op == "fetch-silent":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test(tgt, debug=False)
+		elif op == "fetch-rss":
+			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
+			test(tgt, debug=False, rss_debug=True)
 
 		else:
 			print("ERROR: Unknown command!")
@@ -262,6 +269,7 @@ if __name__ == "__main__":
 		print('	longest-rows')
 		print('	fetch {url}')
 		print('	fetch-silent {url}')
+		print('	fetch-rss {url}')
 		sys.exit(1)
 
 	decode(*sys.argv[1:])

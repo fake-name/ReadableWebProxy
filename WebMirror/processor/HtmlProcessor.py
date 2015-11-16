@@ -340,9 +340,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			pre.name = "div"
 			formatted = markdown.markdown(pre.encode_contents().decode("utf-8"), extensions=["linkify"])
 			formatted = bs4.BeautifulSoup(formatted)
-			formatted.html.unwrap()
-			formatted.body.unwrap()
-			pre.replace_with(formatted)
+			if formatted.find("html"):
+				formatted.html.unwrap()
+				formatted.body.unwrap()
+				pre.replace_with(formatted)
 			# print(pre)
 		return soup
 

@@ -44,16 +44,20 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	def extractSousetsuka(self, item):
 		# check that 'Desumachi' is in the tags? It seems to work well enough now....
-		desumachi_norm  = re.search(r'^(Death March kara Hajimaru Isekai Kyusoukyoku) (\d+)\W(\d+)$', item['title'])
+		desumachi_norm  = re.search(r'^(Death March kara Hajimaru Isekai Kyo?usoukyoku) (\d+)\W(\d+)$', item['title'])
 		desumachi_extra = re.search(r'^(Death March kara Hajimaru Isekai Kyusoukyoku)(?: Chapter)? (\d+)\W(Intermission.*?)$', item['title'])
 
+		if desumachi_norm:
+			print(desumachi_norm.groups())
 
 		ret = False
 		if desumachi_norm:
 			series = desumachi_norm.group(1)
 			vol    = desumachi_norm.group(2)
 			chp    = desumachi_norm.group(3)
-			ret = buildReleaseMessage(item, series, vol, chp)
+			ret = buildReleaseMessage(raw_item=item, series=series, vol=vol, chap=chp)
+
+
 		elif desumachi_extra:
 			series  = desumachi_extra.group(1)
 			vol     = desumachi_extra.group(2)
@@ -547,6 +551,18 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if 'Shinka no Mi' in item['tags']:
 			return buildReleaseMessage(item, 'Shinka no Mi', vol, chp, frag=frag)
+
+		if 'Elf Tensei' in item['tags']:
+			return buildReleaseMessage(item, 'Elf Tensei Kara no Cheat Kenkoku-ki', vol, chp, frag=frag)
+
+		if 'Smartphone' in item['tags']:
+			return buildReleaseMessage(item, 'Isekai wa Smartphone to Tomoni', vol, chp, frag=frag)
+
+		if 'Tran Sexual Online' in item['tags']:
+			return buildReleaseMessage(item, 'Tran Sexual Online', vol, chp, frag=frag)
+
+		if 'Takami no Kago' in item['tags']:
+			return buildReleaseMessage(item, 'Takami No Kago', vol, chp, frag=frag)
 
 		return False
 
@@ -1599,6 +1615,83 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		return False
 
+	####################################################################################################################################################
+	# 'yukkuri-literature-service'
+	####################################################################################################################################################
+	def extractYukkuri(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if '10 nen goshi no HikiNEET o Yamete Gaishutsushitara Jitaku goto Isekai ni Ten’ishiteta' in item['tags']:
+			return buildReleaseMessage(item, '10 nen goshi no HikiNEET o Yamete Gaishutsushitara Jitaku goto Isekai ni Ten’ishiteta', vol, chp, frag=frag, postfix=postfix)
+		elif 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru' in item['tags']:
+			return buildReleaseMessage(item, 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru', vol, chp, frag=frag, postfix=postfix)
+		elif 'Tenseisha wa Cheat o Nozomanai' in item['tags']:
+			return buildReleaseMessage(item, 'Tenseisha wa Cheat o Nozomanai', vol, chp, frag=frag, postfix=postfix)
+		elif 'Genjitsushugisha no Oukoku Kaizouki' in item['tags']:
+			return buildReleaseMessage(item, 'Genjitsushugisha no Oukoku Kaizouki', vol, chp, frag=frag, postfix=postfix)
+
+
+		return False
+
+
+	####################################################################################################################################################
+	# '桜翻訳! | Light novel translations'
+	####################################################################################################################################################
+	def extractSakurahonyaku(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'hyouketsu kyoukai no eden' in item['tags']:
+			return buildReleaseMessage(item, 'Hyouketsu Kyoukai no Eden', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+
+
+	####################################################################################################################################################
+	# JawzTranslations
+	####################################################################################################################################################
+	def extractJawzTranslations(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Zectas' in item['tags'] and vol and chp:
+			return buildReleaseMessage(item, 'Hyouketsu Kyoukai no Eden', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+		if 'LMS' in item['tags'] and vol and chp:
+			return buildReleaseMessage(item, 'Legendary Moonlight Sculptor', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+
+	####################################################################################################################################################
+	# General feedproxy stuff
+	####################################################################################################################################################
+	def extractDreadfulDecoding(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Gun Gale Online' in item['tags'] and chp or vol:
+			return buildReleaseMessage(item, 'Sword Art Online Alternative - Gun Gale Online', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+
+
+	####################################################################################################################################################
+	# General feedproxy stuff
+	####################################################################################################################################################
+	def extractBersekerTranslations(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+
+
+
+		if 'Because the world has changed into a death game is funny' in item['tags'] and (chp or vol or "Prologue" in postfix):
+			return buildReleaseMessage(item, 'Sekai ga death game ni natta no de tanoshii desu', vol, chp, frag=frag, postfix=postfix)
+
+		print(item['title'])
+		print(item['tags'])
+		print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+		return False
+
 
 	####################################################################################################################################################
 	# General feedproxy stuff
@@ -1684,7 +1777,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def dispatchRelease(self, item, debug = False):
-
 
 		ret = False
 
@@ -1915,8 +2007,16 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		elif item['srcname'] == 'Ensj Translations':
 			ret = self.extractEnsjTranslations(item)
 
+		elif item['srcname'] == 'Yukkuri Free Time Literature Service':
+			ret = self.extractYukkuri(item)
+		elif item['srcname'] == '桜翻訳! | Light novel translations':
+			ret = self.extractSakurahonyaku(item)
+		elif item['srcname'] == 'JawzTranslations':
+			ret = self.extractJawzTranslations(item)
 		elif item['srcname'] == 'Dreadful Decoding':
-			ret = self.extractWAT(item)
+			ret = self.extractDreadfulDecoding(item)
+		elif item['srcname'] == 'Berseker Translations':
+			ret = self.extractBersekerTranslations(item)
 
 		# To Add:
 
@@ -2029,14 +2129,14 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 					# fp.write("\n==============================\n")
 
 					write_items = [
+						("SourceName: ", item['srcname']),
 						("Title:      ", item['title']),
 						("Vol:        ", vol),
 						("Chp:        ", chp),
 						("Frag:       ", frag),
 						("Postfix:    ", postfix),
-						("SourceName: ", item['srcname']),
-						("Tags:       ", item['tags']),
 						("Feed URL:   ", item['linkUrl']),
+						("Tags:       ", item['tags']),
 						("GUID:       ", item['guid']),
 					]
 
@@ -2047,11 +2147,12 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 					# fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 
 		if self.dbg_print or flags.RSS_DEBUG:
+			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if not ret:
-				vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-				print("'%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
+				print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
+			# else:
+			# 	print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], ret['itemurl']))
 			ret = False
-
 
 		# Only return a value if we've actually found a chapter/vol
 		if ret and not (ret['vol'] or ret['chp'] or ret['postfix']):
@@ -2085,8 +2186,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def getProcessedReleaseInfo(self, feedDat, debug):
 
-
-
 		if any([item in feedDat['linkUrl'] for item in skip_filter]):
 			print("Skipping!")
 			return
@@ -2116,6 +2215,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		return json.dumps(ret)
 
 	def processFeedData(self, feedDat, tx_raw=True, tx_parse=True):
+
 
 		if any([item in feedDat['linkUrl'] for item in skip_filter]):
 			return
