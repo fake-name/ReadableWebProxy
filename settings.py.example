@@ -1,0 +1,43 @@
+
+
+DATABASE_IP      = "database IP"
+DATABASE_DB_NAME = "database DB name"
+DATABASE_USER    = "database username"
+DATABASE_PASS    = "database password"
+
+
+RELINK_SECRET = "random string for relinking. Put >10 characters of randomness here"
+RESOURCE_DIR  = "Absolute filesystem path where resources will be stored."
+
+# RabbitMQ bits and bobs.
+RABBIT_ENABLED      = True  # Set this false to disable rabbitmq interface
+RABBIT_LOGIN        = "client_1"
+RABBIT_PASWD        = "pass"
+RABBIT_SRVER        = "url"
+RABBIT_VHOST        = "vhost"
+
+
+WATTPAD_AUTH_CREDS = {
+	"username" : '<username>',
+	"password" : '<pwd>'
+
+}
+
+# Items will not be processed unless they include at least
+# one of the following tags.
+WATTPAD_REQUIRED_TAGS = [
+	"tag 1",
+	"tag 2"
+]
+
+# Items with any of the following tags
+# will be rejected, even if they
+# have a required tag.
+WATTPAD_MASKED_TAGS = [
+	"bad tag a",
+	"bad tag b",
+]
+
+BOOKSIE_REQUIRED_TAGS = WATTPAD_REQUIRED_TAGS
+BOOKSIE_MASKED_TAGS   = WATTPAD_MASKED_TAGS
+

@@ -127,7 +127,8 @@ class UpdateAggregator(object):
 			"RABBIT_VHOST" : config.C_RABBIT_VHOST,
 		}
 
-		self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
+		if config.C_DO_RABBIT:
+			self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
 		self.seen = {}
 
@@ -229,7 +230,8 @@ class UpdateAggregator(object):
 		self.links += 1
 
 		if target == "amqp_msg":
-			self.do_amqp(value)
+			if config.C_DO_RABBIT:
+				self.do_amqp(value)
 		elif target == "new_link":
 			self.do_link(value)
 		else:

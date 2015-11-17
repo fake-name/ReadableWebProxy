@@ -4,12 +4,10 @@ from settings import DATABASE_IP            as C_DATABASE_IP
 from settings import DATABASE_DB_NAME       as C_DATABASE_DB_NAME
 from settings import DATABASE_USER          as C_DATABASE_USER
 from settings import DATABASE_PASS          as C_DATABASE_PASS
-from settings import SECRET_KEY             as C_SECRET_KEY
-from settings import WTF_CSRF_SECRET_KEY    as C_WTF_CSRF_SECRET_KEY
-from settings import SECURITY_PASSWORD_SALT as C_SECURITY_PASSWORD_SALT
 
 from settings import RELINK_SECRET          as C_RELINK_SECRET
 from settings import RESOURCE_DIR           as C_RESOURCE_DIR
+from settings import RABBIT_ENABLED         as C_DO_RABBIT
 
 
 from settings import RABBIT_LOGIN           as C_RABBIT_LOGIN
@@ -63,10 +61,7 @@ class BaseConfig(object):
 	DATABASE_DB_NAME       = C_DATABASE_DB_NAME
 	DATABASE_USER          = C_DATABASE_USER
 	DATABASE_PASS          = C_DATABASE_PASS
-	SECRET_KEY             = C_SECRET_KEY
-	WTF_CSRF_SECRET_KEY    = C_WTF_CSRF_SECRET_KEY
 
-	SECURITY_PASSWORD_SALT = C_SECURITY_PASSWORD_SALT
 
 	RESOURCE_DIR = C_RESOURCE_DIR
 
