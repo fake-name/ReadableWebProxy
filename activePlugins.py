@@ -10,7 +10,6 @@ def minutes(num):
 	return 60*num
 
 
-
 # Plugins in this dictionary are the active plugins. Comment out a plugin to disable it.
 # plugin keys specify when plugins will start, and cannot be duplicates.
 # All they do is specify the order in which plugins
@@ -25,10 +24,7 @@ scrapePlugins = {
 	# 1  : (WebMirror.TimedTriggers.TimeoutTrigger.TimeoutTriggerBase,           minutes(31)),
 	2  : (WebMirror.TimedTriggers.PageTriggers.HourlyPageTrigger,              minutes(60)),
 	3  : (WebMirror.TimedTriggers.PageTriggers.EveryOtherDayPageTrigger,       days(2)),
-
-
 }
-
 
 
 import WebMirror.processor.HtmlProcessor
