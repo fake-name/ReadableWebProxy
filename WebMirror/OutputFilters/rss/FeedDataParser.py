@@ -1662,7 +1662,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	####################################################################################################################################################
-	# General feedproxy stuff
+	#
 	####################################################################################################################################################
 	def extractDreadfulDecoding(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -1675,20 +1675,51 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	####################################################################################################################################################
-	# General feedproxy stuff
+	#
 	####################################################################################################################################################
 	def extractBersekerTranslations(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-
-
-
 		if 'Because the world has changed into a death game is funny' in item['tags'] and (chp or vol or "Prologue" in postfix):
 			return buildReleaseMessage(item, 'Sekai ga death game ni natta no de tanoshii desu', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractLunate(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if "chapter" in item['title'].lower() and (vol or chp):
+			return buildReleaseMessage(item, 'World Customize Creator', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractBakaDogeza(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if "chapter" in item['title'].lower() and (vol or chp):
+			return buildReleaseMessage(item, 'Knights & Magic', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractBakaDogeza(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
 		print(item['title'])
 		print(item['tags'])
 		print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+		if "chapter" in item['title'].lower() and (vol or chp):
+			return buildReleaseMessage(item, 'Knights & Magic', vol, chp, frag=frag, postfix=postfix)
 
 		return False
 
@@ -2017,6 +2048,10 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			ret = self.extractDreadfulDecoding(item)
 		elif item['srcname'] == 'Berseker Translations':
 			ret = self.extractBersekerTranslations(item)
+		elif item['srcname'] == 'Lunate':
+			ret = self.extractLunate(item)
+		elif item['srcname'] == 'Baka Dogeza Translation':
+			ret = self.extractBakaDogeza(item)
 
 		# To Add:
 

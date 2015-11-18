@@ -215,6 +215,7 @@ def getNiceName(srcurl):
 
 		'yukkuri-literature-service.blogspot.com'   : 'Yukkuri Free Time Literature Service',
 		'bersekertranslations.blogspot.com'         : 'Berseker Translations',
+		'dreamsleeper87.blogspot.com'               : 'Lunate',
 
 
 

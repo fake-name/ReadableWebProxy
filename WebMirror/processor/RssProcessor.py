@@ -159,6 +159,9 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 			# 	# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
 			# 	continue
 
+			if not 'guid' in entry:
+				continue
+
 			item = {}
 			item['feedtype'] = self.type
 
