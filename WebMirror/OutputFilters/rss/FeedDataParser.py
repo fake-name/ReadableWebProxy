@@ -1131,7 +1131,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractRuzeTranslations(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Guang Zhi Zi' in item['title'] and chp or vol:
+		if 'Guang Zhi Zi' in item['title'] and (chp or vol):
 			return buildReleaseMessage(item, 'Guang Zhi Zi', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1149,7 +1149,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'The Nine Cauldrons',
 		]
 		for name in releases:
-			if name in item['title'] and chp or vol:
+			if name in item['title'] and (chp or vol):
 				return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix)
 		return False
 
@@ -1160,7 +1160,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extract1HP(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Route to almightyness from 1HP' in item['title'] and chp or vol:
+		if 'Route to almightyness from 1HP' in item['title'] and (chp or vol):
 			return buildReleaseMessage(item, 'HP1 kara Hajimeru Isekai Musou', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1172,7 +1172,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractTsuigeki(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Seiju no Kuni no Kinju Tsukai' in item['tags'] and chp or vol:
+		if 'Seiju no Kuni no Kinju Tsukai' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Seiju no Kuni no Kinju Tsukai', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1185,7 +1185,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractErosWorkshop(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Young God Divine Armaments' in item['tags'] and chp or vol:
+		if 'Young God Divine Armaments' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Young God Divine Armaments', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1197,7 +1197,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractForgetfulDreamer(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'ヤンデレ系乙女ゲーの世界に転生してしまったようです' in item['tags'] and chp or vol:
+		if 'ヤンデレ系乙女ゲーの世界に転生してしまったようです' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'It seems like I got reincarnated into the world of a Yandere Otome game', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1209,7 +1209,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractFudgeTranslations(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'SoE' in item['title'] and chp or vol:
+		if 'SoE' in item['title'] and (chp or vol):
 			return buildReleaseMessage(item, 'The Sword of Emperor', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1234,13 +1234,13 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractInfiniteNovelTranslations(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Yomigaeri no Maou' in item['tags'] and chp or vol:
+		if 'Yomigaeri no Maou' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Yomigaeri no Maou', vol, chp, frag=frag, postfix=postfix)
-		if 'Kuro no Shoukan Samurai' in item['tags'] and chp or vol:
+		if 'Kuro no Shoukan Samurai' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Kuro no Shoukan Samurai', vol, chp, frag=frag, postfix=postfix)
-		if 'Nidoume no Jinsei wo Isekai de' in item['tags'] and chp or vol:
+		if 'Nidoume no Jinsei wo Isekai de' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Nidoume no Jinsei wo Isekai de', vol, chp, frag=frag, postfix=postfix)
-		if 'Hachi-nan' in item['tags'] and chp or vol:
+		if 'Hachi-nan' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Hachinan tte, Sore wa Nai Deshou!', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1251,7 +1251,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractIsekaiTranslation(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Isekai Maou to Shoukan Shoujo Dorei Majutsu' in item['tags'] and chp or vol:
+		if 'Isekai Maou to Shoukan Shoujo Dorei Majutsu' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Isekai Maou to Shoukan Shoujo no Dorei Majutsu', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1262,7 +1262,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractIterations(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'SaeKano' in item['tags'] and chp or vol:
+		if 'SaeKano' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Saenai Heroine no Sodatekata', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1275,7 +1275,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractKaezar(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Mushoku Tensei' in item['tags'] and chp or vol:
+		if 'Mushoku Tensei' in item['tags'] and (chp or vol):
 			if 'Redundancy Chapters' in item['tags']:
 				return buildReleaseMessage(item, 'Mushoku Tensei Redundancy', vol, chp, frag=frag, postfix=postfix)
 			else:
@@ -1289,11 +1289,11 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractLarvyde(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Ore no Osananajimi wa Joshikousei de Yuusha' in item['tags'] and chp or vol:
+		if 'Ore no Osananajimi wa Joshikousei de Yuusha' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Ore no Osananajimi wa Joshikousei de Yuusha', vol, chp, frag=frag, postfix=postfix)
-		if 'Oukoku e Tsuzuku Michi' in item['tags'] and chp or vol:
+		if 'Oukoku e Tsuzuku Michi' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Oukoku e Tsuzuku Michi', vol, chp, frag=frag, postfix=postfix)
-		if 'Takarakuji de 40-oku Atattandakedo' in item['tags'] and chp or vol:
+		if 'Takarakuji de 40-oku Atattandakedo' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Takarakuji de 40 Oku Atattandakedo Isekai ni Ijuu Suru', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1306,7 +1306,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractUnchainedTranslation(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'The Alchemist God' in item['tags'] and chp or vol:
+		if 'The Alchemist God' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Ascension of the Alchemist God', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1585,35 +1585,26 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	####################################################################################################################################################
-	# Burei Dan Works
+	# B
 	####################################################################################################################################################
 	def extractCeLn(self, item):
-		# vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-		# if 'Mushi Uta' in item['tags']:
-		# 	print(item['title'])
-		# 	print(item['tags'])
-		# 	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-		#
-		# if 'Isekai Canceller' in item['tags'] and (chp or vol or frag or postfix):
-		# 	return buildReleaseMessage(item, 'Isekai Canceller', vol, chp, frag=frag, postfix=postfix)
-		# if 'Kenja ni Natta' in item['tags'] and (chp or vol or frag or postfix):
-		# 	return buildReleaseMessage(item, 'Kenja ni Natta', vol, chp, frag=frag, postfix=postfix)
-		return False
-
-
-	####################################################################################################################################################
-	# 'CtrlAlcalá'
-	####################################################################################################################################################
-	def extractCtrlA(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
+		if 'Seirei Gensouki' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Seirei Gensouki - Konna Sekai de Deaeta Kimi ni', vol, chp, frag=frag, postfix=postfix)
 
-		# Literal "three", "five" etc... for chapter numbering?
-		# print(item['title'])
-		# print(item['tags'])
-		# print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+		if 'Mushi Uta' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Mushi-Uta', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Shinonome Yuuko series' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Shinonome Yuuko wa Tanpen Shousetsu o Aishite Iru', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Mismarca Koukoku Monogatari' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Mismarca Koukoku Monogatari', vol, chp, frag=frag, postfix=postfix)
+
 
 		return False
+
 
 	####################################################################################################################################################
 	# 'yukkuri-literature-service'
@@ -1667,7 +1658,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractDreadfulDecoding(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'Gun Gale Online' in item['tags'] and chp or vol:
+		if 'Gun Gale Online' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Sword Art Online Alternative - Gun Gale Online', vol, chp, frag=frag, postfix=postfix)
 
 		return False
@@ -1708,21 +1699,41 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		return False
 
+
 	####################################################################################################################################################
 	#
 	####################################################################################################################################################
-	def extractBakaDogeza(self, item):
+	def extractCNovelProj(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Please Be More Serious' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Please Be More Serious', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Still Not Wanting to Forget' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Still Not Wanting to Forget', vol, chp, frag=frag, postfix=postfix)
+
 
 		print(item['title'])
 		print(item['tags'])
 		print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
-		if "chapter" in item['title'].lower() and (vol or chp):
-			return buildReleaseMessage(item, 'Knights & Magic', vol, chp, frag=frag, postfix=postfix)
-
 		return False
 
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractLolercoaster(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Seirei Gensouki' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Seirei Gensouki - Konna Sekai de Deaeta Kimi ni', vol, chp, frag=frag, postfix=postfix)
+
+
+		print(item['title'])
+		print(item['tags'])
+		print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+		return False
 
 	####################################################################################################################################################
 	# General feedproxy stuff
@@ -1730,11 +1741,45 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractFeedProxy(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-		if 'The Man Picked up by the Gods' in item['tags'] and chp or vol:
+		if 'The Man Picked up by the Gods' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Kamitachi ni Hirowareta Otoko', vol, chp, frag=frag, postfix=postfix)
 
 		return False
 
+
+
+
+	####################################################################################################################################################
+	# Untuned Translation Blog
+	####################################################################################################################################################
+	def extractUntunedTranslation(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		# if 'meg and seron' in item['tags'] and (chp or vol):
+		# 	return buildReleaseMessage(item, 'Meg and Seron', vol, chp, frag=frag, postfix=postfix)
+
+		# Ffffuuuuu now roman numerals!
+
+		# print(item['title'])
+		# print(item['tags'])
+		# print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+		return False
+
+
+	####################################################################################################################################################
+	# 'CtrlAlcalá'
+	####################################################################################################################################################
+	def extractCtrlA(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+
+		# Literal "three", "five" etc... for chapter numbering?
+		# print(item['title'])
+		# print(item['tags'])
+		# print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+		return False
 
 
 	####################################################################################################################################################
@@ -1753,9 +1798,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 		if not postfix and ":" in item['title']:
 			postfix = item['title'].split(":")[-1]
-		if 'Magic Academy' in item['tags'] and chp or vol:
+		if 'Magic Academy' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'I was reincarnated as a Magic Academy!', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-		if "100 Luck" in item['tags'] and chp or vol:
+		if "100 Luck" in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, '100 Luck and the Dragon Tamer Skill!', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 
@@ -1786,7 +1831,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# This shit isn't used for indexing or crap. Why do you have so many useless synonyms and tags that are literally
 		# applied to EVERY item?
 
-		if 'Hardcore OPness' in item['tags'] and chp or vol:
+		if 'Hardcore OPness' in item['tags'] and (chp or vol):
 			return buildReleaseMessage(item, 'Hardcore OP-ness', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 		print()
@@ -1962,7 +2007,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			ret = self.extractBinhjamin(item)
 		elif item['srcname'] == 'Burei Dan Works':
 			ret = self.extractBureiDan(item)
-		elif item['srcname'] == "C.E. Light Novel Translations":
+		elif item['srcname'] == 'C.E. Light Novel Translations':
 			ret = self.extractCeLn(item)
 		elif item['srcname'] == "Lazy NEET Translations":
 			ret = self.extractNEET(item)
@@ -2052,6 +2097,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			ret = self.extractLunate(item)
 		elif item['srcname'] == 'Baka Dogeza Translation':
 			ret = self.extractBakaDogeza(item)
+		elif item['srcname'] == 'The C-Novel Project':
+			ret = self.extractCNovelProj(item)
 
 		# To Add:
 
@@ -2319,17 +2366,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	def extractPrinceRevolution(self, item):
 		# Has annoying volume format ("V8C5"), will have to revisit.
-		# vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-		# print(item['title'])
-		# print(item['tags'])
-		# print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-		return False
-
-	####################################################################################################################################################
-	# Untuned Translation Blog
-	####################################################################################################################################################
-	def extractUntunedTranslation(self, item):
-		# Arrrgh, volume and book parts in the same title. Fffuuuuuuuuu
 		# vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 		# print(item['title'])
 		# print(item['tags'])
