@@ -155,13 +155,21 @@ def longest_rows():
 
 def fix_null():
 	step = 50000
-	end = 475978307
+
+
+	end = db.get_session().execute("""SELECT MAX(id) FROM web_pages WHERE  ignoreuntiltime IS NULL;""")
+	end = list(end)[0][0]
 
 	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE ignoreuntiltime IS NULL;""")
 	start = list(start)[0][0]
-	start = start - (start % step)
 
 	changed = 0
+
+	if not start:
+		print("No null rows to fix!")
+		return
+
+	start = start - (start % step)
 
 	for x in range(start, end, step):
 		# SQL String munging! I'm a bad person!
@@ -181,23 +189,27 @@ def fix_null():
 
 
 def fix_tsv():
-	step = 100
+	step = 1000
 
 
 	print("Determining extents that need to be changed.")
-	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
+	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL AND id != 60903982;""")
 	start = list(start)[0][0]
-	start = start - (start % step)
 
 	end = db.get_session().execute("""SELECT MAX(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
 	end = list(end)[0][0]
 
 	changed = 0
-
-
-
 	print("Start: ", start)
 	print("End: ", end)
+
+
+	if not start:
+		print("No null rows to fix!")
+		return
+
+	start = start - (start % step)
+
 	for x in range(start, end, step):
 		try:
 			# SQL String munging! I'm a bad person!
@@ -221,6 +233,36 @@ def fix_tsv():
 	db.get_session().commit()
 
 
+def clear_bad():
+	from sqlalchemy.dialects import postgresql
+
+	rules = WebMirror.rules.load_rules()
+
+	for ruleset in rules:
+
+		# print(ruleset['netlocs'])
+		# print(ruleset.keys())
+		for badword in ruleset['badwords']:
+			if not ruleset['netlocs']:
+				continue
+			if "%" in badword:
+				print(badword)
+			else:
+
+				q = db.get_session().query(db.WebPages)                   \
+					.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
+					.filter(db.WebPages.url.like("%{}%".format(badword)))
+				items = q.count()
+				if items:
+					print("%s results for : '%s'" % (items, badword))
+
+					# q = db.get_session().query(db.WebPages)                   \
+					# 	.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
+					# 	.filter(db.WebPages.url.like("%{}%".format(badword))) \
+					# 	.delete(synchronize_session=False)
+					# db.get_session().commit()
+
+
 
 def decode(*args):
 	print("Args:", args)
@@ -237,6 +279,8 @@ def decode(*args):
 			fix_null()
 		elif op == "fix-tsv":
 			fix_tsv()
+		elif op == "clear-bad":
+			clear_bad()
 		else:
 			print("ERROR: Unknown command!")
 
@@ -267,6 +311,9 @@ if __name__ == "__main__":
 		print('	rss')
 		print('	db-fiddle')
 		print('	longest-rows')
+		print('	fix-null')
+		print('	fix-tsv')
+		print('	clear-bad')
 		print('	fetch {url}')
 		print('	fetch-silent {url}')
 		print('	fetch-rss {url}')

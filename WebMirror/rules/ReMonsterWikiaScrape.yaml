@@ -83,6 +83,7 @@ badwords: [
 			"viewtopic.php",
 			"memberlist.php",
 			"printable=yes",
+			"/Special:RecentChanges?",
 
 
 			]
