@@ -36,6 +36,11 @@ badwords: [
 
 			# Block user pages (they're HUGE)
 			'fictionpress.com/u/',
+
+			'/nobody_files/',
+			'/Free Verse3_files/',
+			'/free%20verse3_files/',
+			'/Nobody_files/',
 			]
 
 # Content Stripping needs to be determined.

@@ -2,9 +2,11 @@ type: eastern
 
 FOLLOW_GOOGLE_LINKS: False
 
-baseUrl:             ["http://earlandfairy.weebly.com/"]
-
-
+baseUrl:
+     - "http://earlandfairy.weebly.com/"
+     - "http://eccentrictranslations.weebly.com"
+     - "http://hakushakutoyousei.weebly.com"
+     - "http://snowtimeff.weebly.com"
 
 
 badwords:

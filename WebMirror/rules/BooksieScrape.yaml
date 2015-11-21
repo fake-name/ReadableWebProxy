@@ -16,6 +16,10 @@ badwords: [
 			"/rss/",
 			"/writers",
 			"/pdf/",
+
+			# Booksie tags can apparently nest arbitrarily, so
+			# they basically take over the scraper if left unchecked.
+			"/tags/",
 			]
 
 # Content Stripping needs to be determined.
