@@ -26,6 +26,10 @@ badwords: [
 			"#share",
 			"#comments",
 
+			".epub?",
+			".pdf?",
+			".mobi?",
+
 			"/join-us/",
 			"/chat/",
 			'&format=pdf',
