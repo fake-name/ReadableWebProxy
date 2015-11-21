@@ -10,7 +10,7 @@
 			<p>
 				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
 				<a href='{{req_url}}'>Original content</a> |
-				<a href="javascript:void(0)" id="refetch_link">Re-Fetch</a>
+				<a href="javascript:void(0)" id="refetch_link_1">Re-Fetch</a>
 				| Age: <span class='cachestate'>loading...</span>
 			</p>
 
@@ -33,7 +33,7 @@
 			<p>
 				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
 				<a href='{{req_url}}'>Original content</a> |
-				<a href="javascript:void(0)" id="refetch_link">Re-Fetch</a>
+				<a href="javascript:void(0)" id="refetch_link_2">Re-Fetch</a>
 				| Age: <span class='cachestate'>loading...</span>
 			</p>
 
@@ -100,7 +100,8 @@
 
 		load_cache();
 
-		$('#refetch_link').click(load_nocache);
+		$('#refetch_link_1').click(load_nocache);
+		$('#refetch_link_2').click(load_nocache);
 
 
 	</script>

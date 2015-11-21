@@ -3,9 +3,8 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
-bottom refetch link doesnt work
+ 
 
-https://archiveofourown.org/
 
 fictionmania js links 
  
@@ -18,6 +17,8 @@ delete series
 rules comditionally disable tld permutatiom
 
  FIXED:
+ ## bottom refetch link doesnt work
+ ## https://archiveofourown.org/
  ## Clear smartquote bullshit on triggers 
  ## text/plain mimetype freaking shit out
  ## http://10.1.1.8:5000/series-id/3187/ < HR not wrapping.

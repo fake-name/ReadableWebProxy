@@ -226,6 +226,8 @@ def getNiceName(srcurl):
 		"dragomircm.com"                            : "DragomirCM",
 		"mike777ac.wordpress.com"                   : "Mike777ac",
 
+		# 'xxjohnsmithxx.wordpress.com'               : 'Huh',
+
 		# OEL bits and bobs:
 		# "xhawk77x.blogspot.com"                     : "wat",
 		# "tieshaunn.wordpress.com"                   : "wat",
