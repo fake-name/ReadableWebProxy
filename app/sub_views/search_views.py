@@ -123,7 +123,9 @@ def render_search_page():
 
 	rules = WebMirror.rules.load_rules()
 
-	netlocs = [item['netlocs'] for item in rules if item['netlocs']]
+	netlocs = [item['starturls'] for item in rules if item['starturls']]
+	netlocs = [list(set([urllib.parse.urlsplit(item).netloc for item in tmp])) for tmp in netlocs]
+
 	[item.sort() for item in netlocs]
 	netlocs.sort(key=lambda x: len(x))
 
