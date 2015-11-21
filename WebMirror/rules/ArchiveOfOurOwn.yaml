@@ -1,0 +1,85 @@
+
+
+
+FOLLOW_GOOGLE_LINKS: False
+allImages: False
+
+type: "western"
+
+baseUrl: [
+	"https://archiveofourown.org/",
+	]
+
+trigger: False
+
+badwords: [
+			"/about",
+			"/search",
+			"/abuse_reports/",
+			"/known_issues",
+			"/diversity",
+			"/tos",
+			"/dmca",
+
+			"/comments/",
+			"/kudos",
+			"#share",
+			"#comments",
+
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			"/forum/",
+			"/forum",
+			"/forums/",
+			"/forums",
+			"/games/",
+			"/betareaders/",
+			"/poetry/", # Really?
+
+			]
+
+# Content Stripping needs to be determined.
+decomposeBefore: [
+
+]
+
+decompose: [
+	{'id' : "top"},
+	{'id' : "p_footer"},
+	{'id' : "profile_top"},
+	{'id' : "review"},
+	{'id' : "header"},
+	{'id' : "footer"},
+	{'id' : "add_comment_placeholder"},
+	{'id' : "comments_placeholder"},
+	{'id' : "add_comment"},
+	{'id' : "feedback"},
+	{'class' : "landmark"},
+	{'class' : "heading"},
+	{'class' : "actions"},
+	{'class' : "comment"},
+	{'class' : "zmenu"},
+	{'role'  : "menu"},
+	{'class' : "lc-wrapper"},
+]
+
+stripTitle: []
+
+
+destyle : [
+	["div",  {}],
+	["span", {}],
+]
+
+
+preserveAttrs : [
+	["button", 'id'],
+	["button", 'onclick'],
+	["button", 'type'],
+	["button", 'btn'],
+	["select", ''],
+]
+

@@ -256,11 +256,11 @@ def clear_bad():
 				if items:
 					print("%s results for : '%s'" % (items, badword))
 
-					# q = db.get_session().query(db.WebPages)                   \
-					# 	.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
-					# 	.filter(db.WebPages.url.like("%{}%".format(badword))) \
-					# 	.delete(synchronize_session=False)
-					# db.get_session().commit()
+					q = db.get_session().query(db.WebPages)                   \
+						.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
+						.filter(db.WebPages.url.like("%{}%".format(badword))) \
+						.delete(synchronize_session=False)
+					db.get_session().commit()
 
 
 
