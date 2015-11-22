@@ -115,11 +115,10 @@ def sendSeriesInfoPacket(data, beta=False):
 
 	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
 
-	assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
+	# assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in metadata message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
 
 	data['title']   = fix_string(data['title'])
-	data['author']  = fix_string(data['author'])
 	data['desc']    = fix_string(data['desc'])
 
 	ret = {

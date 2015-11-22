@@ -46,8 +46,8 @@ def fetch_content(query_text, column, text_column, page, sources=None):
 			while "  " in search:
 				search = search.replace("  ", " ")
 			search = search.strip()
-			search = '%{}%'.format(search)
-			query = query.filter( text_column.like(search) )
+			search = '%{}%'.format(search.lower())
+			query = query.filter( func.lower(text_column).like(search) )
 
 		query = query.order_by(func.ts_rank_cd(column, func.to_tsquery(tsq)).desc())
 

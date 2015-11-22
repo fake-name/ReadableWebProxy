@@ -11,10 +11,9 @@ from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import bs4
 import re
-import markdown
-import time
-import datetime
 import calendar
+import time
+from dateutil.parser import parse
 import urllib.parse
 from WebMirror.util.webFunctions import WebGetRobust
 
@@ -85,120 +84,48 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		itemsoup = self.getSoupForSeriesItem(seriesPageUrl)
 		itemdata = self.extractSeriesInfo(itemsoup)
-		print(itemdata)
+		# print(itemdata)
 
-		# title  = metadata['title']
-		# author = metadata['user']['name']
-		# desc   = metadata['description']
-		# tags   = metadata['tags']
-
-		# # Apparently the description is rendered in a <pre> tag.
-		# # Huh?
-		# desc = markdown.markdown(desc, extensions=["linkify"])
-
-		# title = title.strip()
-
-		# # Siiiiiigh. Really?
-		# title = title.replace("[#wattys2015]", "")
-		# title = title.replace("(Wattys2015) ", "")
-		# title = title.replace("#Wattys2015", "")
-		# title = title.replace("Wattys2015", "")
-		# title = title.strip()
-
-		# if metadata['numParts'] < 3:
-		# 	return []
-		# if metadata['voteCount'] < 100:
-		# 	return []
-
-		# # Language ID 1 is english.
-		# if metadata['language']['id'] != 1:
-		# 	return []
-
-		# # Allow blocking of item by ID
-		# if metadata['id'] in BLOCK_IDS:
-		# 	return []
-
-		# # for some particularly stupid reasons, the item category tag is
-		# # not included in the metadata.
-		# # therefore, we parse it out from the page manually.
-		# tagdiv = soup.find("div", class_="tags")
-		# if tagdiv:
-		# 	for tag in tagdiv.find_all("a", class_='tag'):
-		# 		tags.append(tag.get_text())
-
-
-		# tags = list(set([item.lower().strip().replace("  ", " ").replace(" ", "-") for item in tags]))
-
-		# # Mask any content with any of the blocked tags.
-		# if any([item in tags for item in LNDB_MASKED_TAGS]):
-		# 	self.log.warning("Item has a masked tag. Not emitting any releases.")
-		# 	self.log.warning("Tags: '%s'", tags)
-		# 	return
-
-		# # And check that at least one of the target tags is present.
-		# if not any([item in tags for item in LNDB_REQUIRED_TAGS]):
-		# 	self.log.warning("Item missing required tag. Not emitting any releases.")
-		# 	self.log.warning("Tags: '%s'", tags)
-		# 	return
-
-
-		# seriesmeta = {}
-
-		# extra = {}
-		# extra['tags']        = tags[:]
-		# extra['homepage']    = seriesPageUrl
-		# extra['sourcesite']  = 'LNDB'
+		tags = []
+		if 'genre' in itemdata and itemdata['genre']:
+			tags = list(set([item.lower().strip().replace("  ", " ").replace(" ", "-") for item in itemdata['genre']]))
 
 
 
-		# retval = []
-		# index = 1
-		# valid = 1
-		# for release in metadata['parts']:
-		# 	chp_title = release['title']
-
-		# 	dt = datetime.datetime.strptime(release['modifyDate'], "%Y-%m-%dT%H:%M:%SZ" )
-		# 	reldate = calendar.timegm(dt.timetuple())
-
-		# 	raw_item = {}
-		# 	raw_item['srcname']   = "LNDB"
-		# 	raw_item['published'] = reldate
-		# 	raw_item['linkUrl']   = release['url']
-		# 	msg = msgpackers.buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra, beta=IS_BETA)
-		# 	retval.append(msg)
-
-		# 	# Check if there was substantive structure in the chapter
-		# 	# name. Used as a crude heuristic for chapter validity.
-		# 	# vol, chp, frag, post = extractTitle(chp_title)
-		# 	# if any((vol, chp, frag)):
-		# 	# 	# print("Valid: ", (vol, chp, frag))
-		# 	# 	valid += 1
-
-		# 	index += 1
-
-		# # if valid < (index/2):
-		# # 	print("Half the present chapters are have no numeric content?")
-		# # 	return []
-
-		# # Don't send the series metadata if we didn't find any chapters.
-		# if not retval:
-		# 	print("No chapters!")
-		# 	return []
+		# {
+		# 	'volNo': '3',
+		# 	'illust': 'Eiji Usatsuka',
+		# 	'jTitle': '異世界はスマートフォンとともに。',
+		# 	'pubdate': datetime.datetime(2015, 2, 22, 0, 0),
+		# 	'author': 'Batora Fuyuhara',
+		# 	'target': 'Male',
+		# 	'genre': ['fantasy']
+		# }
 
 
-		# seriesmeta['title']       = title
-		# seriesmeta['author']      = author
-		# seriesmeta['tags']        = tags
-		# seriesmeta['homepage']    = seriesPageUrl
-		# seriesmeta['desc']        = desc
-		# seriesmeta['tl_type']     = 'oel'
-		# seriesmeta['sourcesite']  = 'LNDB'
+
+		seriesmeta = {}
 
 
-		# pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=IS_BETA)
-		# self.log.info("LNDB scraper generated %s amqp messages!", len(retval) + 1)
-		# self.amqp_put_item(pkt)
-		# return retval
+		seriesmeta['title']       = itemdata['title']
+		seriesmeta['alt_titles']  = [itemdata['jTitle'], ] + itemdata['alt_names']
+
+
+		seriesmeta['author']      = itemdata['author']
+		seriesmeta['illust']      = itemdata['illust']
+		seriesmeta['desc']        = itemdata['description']
+		seriesmeta['pubdate']     = calendar.timegm(itemdata['pubdate'].timetuple())
+
+		seriesmeta['tags']        = tags
+		seriesmeta['homepage']    = None
+
+		seriesmeta['tl_type']     = 'translated'
+		seriesmeta['sourcesite']  = 'LNDB'
+
+
+		# print(seriesmeta)
+		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=True)
+		self.amqp_put_item(pkt)
 
 
 
@@ -243,6 +170,35 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raise ValueError("Could not retreive page!")
 		return soup
 
+	def getPubDate(self, soup):
+		ret = None
+		pubdiv = soup.find("div", class_='lightnovellabels')
+		for item in pubdiv.find_all("p", class_='paragraph-info'):
+			if item.find("br"):
+				dates = str(item.find("br").next_sibling)
+				if "-" in dates:
+					dates = dates.split("-")[0].strip()
+					ts = parse(dates, fuzzy=True)
+					if not ret:
+						ret = ts
+					else:
+						if ts < ret:
+							ret = ts
+		return ret
+
+	def getAltNames(self, soup):
+		pubdiv = soup.find("div", class_='lightnovelassociatedtitles')
+		if pubdiv:
+			for item in pubdiv.find_all("p", class_='paragraph-info'):
+				return [item.strip() for item in item.stripped_strings]
+		return None
+
+	def getDescription(self, soup):
+		pubdiv = soup.find("div", class_='lightnovelabout')
+		if pubdiv:
+			return " ".join([str(item) for item in pubdiv.find_all("p", class_='paragraph-info')])
+		return None
+
 	def extractSeriesInfo(self, soup):
 		content = soup.find('div', class_='lightnovelcontent')
 
@@ -253,8 +209,6 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'Light Novel'           : 'series',
 			'Publisher'             : 'pub',
 			'Light Novel Label'     : 'label',
-			'Author'                : 'author',
-			'Illustrator'           : 'illust',
 			'Target Readership'     : 'target',
 			'Volumes'               : 'volNo',
 			'Release Date'          : 'relDate',
@@ -268,8 +222,15 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'Online Shops'          : None,
 		}
 
+		mdataLut = {
+			'Author'                : 'author',
+			'Illustrator'           : 'illust',
+			'Illustrators'          : 'illust',
+		}
+
 		assert content != None
-		itemTitle = content.find('div', class_='secondarytitle').get_text().strip()
+
+
 
 		infoDiv = content.find('div', class_="secondary-info")
 
@@ -291,6 +252,45 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			if desc in dataLut:
 				kwargs[dataLut[desc]] = cont
 
+		for tr in rows:
+			tds = tr.find_all('td')
+			if len(tds) != 2:
+				self.log.error("Row with wrong number of items?")
+				continue
+			desc, cont = tds
+			desc = desc.get_text().strip()
+			cont = cont.get_text().strip()
+
+			if desc in mdataLut:
+				kwargs[mdataLut[desc]] = [item.strip() for item in cont.split(",")]
+
+		itemTitle = content.find('div', class_='secondarytitle').get_text().strip()
+		kwargs['title'] = itemTitle
+
+		if "genre" in kwargs:
+			kwargs['genre'] = [item.strip().lower() for item in kwargs['genre'].split(",")]
+		else:
+			kwargs['genre'] = []
+
+		altn = self.getAltNames(content)
+		if altn:
+			kwargs['alt_names'] = altn
+		else:
+			kwargs['alt_names'] = []
+
+		desc = self.getDescription(content)
+		if desc:
+			kwargs['description'] = desc
+		else:
+			kwargs['description'] = None
+
+		pub = self.getPubDate(content)
+		if pub:
+			kwargs['pubdate'] = pub
+		else:
+			kwargs['pubdate'] = None
+
+
 		return kwargs
 
 
@@ -301,19 +301,10 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		soup = bs4.BeautifulSoup(self.content)
 
-		releases = self.extractSeries(self.pageUrl, soup)
-
-
-		if releases:
-			self.sendReleases(releases)
+		self.extractSeries(self.pageUrl, soup)
 
 
 
-	def sendReleases(self, releases):
-		self.log.info("Total releases found on page: %s", len(releases))
-		for release in releases:
-			pkt = msgpackers.createReleasePacket(release, beta=IS_BETA)
-			self.amqp_put_item(pkt)
 
 
 
@@ -350,7 +341,6 @@ def testJobFromUrl(url):
 def test():
 	print("Test mode!")
 	import logSetup
-	import WebMirror.rules
 	import WebMirror.Engine
 	import multiprocessing
 	logSetup.initLogging()
@@ -360,7 +350,10 @@ def test():
 
 
 
-	engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fiction/3021'))
+	engine.dispatchRequest(testJobFromUrl('http://lndb.info/light_novel/Gamers!'))
+	engine.dispatchRequest(testJobFromUrl('http://lndb.info/light_novel/AntiMagic_Academy_The_35th_Test_Platoon'))
+	engine.dispatchRequest(testJobFromUrl('http://lndb.info/light_novel/Madan_no_Ou_to_Vanadis'))
+	engine.dispatchRequest(testJobFromUrl('http://lndb.info/light_novel/Aru_Hi,_Bakudan_ga_Ochitekite'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates'))
 
 
