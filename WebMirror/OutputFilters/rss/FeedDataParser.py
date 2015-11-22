@@ -1713,11 +1713,22 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			return buildReleaseMessage(item, 'Still Not Wanting to Forget', vol, chp, frag=frag, postfix=postfix)
 
 
-		print(item['title'])
-		print(item['tags'])
-		print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+		return False
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractRancer(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'The Strongest Magical Beast' in item['tags'] and 'Chapter Release' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'The Strongest Magical Beast', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Apocalypse ЯR' in item['tags'] and 'Chapter Release' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Apocalypse ЯR', vol, chp, frag=frag, postfix=postfix)
 
 		return False
+
 
 	####################################################################################################################################################
 	#
@@ -2099,6 +2110,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			ret = self.extractBakaDogeza(item)
 		elif item['srcname'] == 'The C-Novel Project':
 			ret = self.extractCNovelProj(item)
+
+		elif item['srcname'] == 'RANCER':
+			ret = self.extractRancer(item)
 
 		# To Add:
 

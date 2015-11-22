@@ -65,6 +65,7 @@ baseUrl: [
 	 'https://circleofshards.wordpress.com',
 
 	'https://manatankmagus.wordpress.com/',
+	'https://rancerqz.wordpress.com',
 
 	 ]
 
@@ -107,6 +108,9 @@ badwords: [
 		# http://inmydaydreams.com appears to generate a RSS feed for EVERY PAGE.
 		# Arrrgh
 		 "?feed=rss2&",
+
+		# Broken link is recursing.
+		'chapter-16-powers-awakening/2015/',
 	 ]
 
 

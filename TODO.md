@@ -37,11 +37,6 @@ rules comditionally disable tld permutatiom
 Check these URLs:
 
 
- 
- 
-## http://koongkoongtranslations.com/ - Private
-
-http://cnovels.bookbychapters.com
 
 http://forum.wuxiaworld.com/profile/1268/areslucifer
 
@@ -129,3 +124,6 @@ http://minashiro.co.vu
 
 Korean drama blog site?:
 http://koalasplayground.com
+
+
+## http://koongkoongtranslations.com/ - Private

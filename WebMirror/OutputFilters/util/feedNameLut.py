@@ -218,6 +218,7 @@ def getNiceName(srcurl):
 		'dreamsleeper87.blogspot.com'               : 'Lunate',
 		'cnovelproject.blogspot.com'                : 'The C-Novel Project',
 
+		'rancerqz.wordpress.com'                    : 'RANCER',
 
 
 

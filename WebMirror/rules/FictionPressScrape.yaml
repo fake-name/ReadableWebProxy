@@ -40,7 +40,7 @@ badwords: [
 			'/nobody_files/',
 			'/Free Verse3_files/',
 			'/free%20verse3_files/',
-			'/Nobody_files/',
+			'_files/',
 			]
 
 # Content Stripping needs to be determined.
