@@ -52,7 +52,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	@staticmethod
 	def wantsUrl(url):
-		if re.search(r"^http://lndb.info/light_novel/.+$", url):
+		if re.search(r"^http://lndb.info/light_novel/[^/]+$", url):
 			if "lndb.info/light_novel/view/" in url:
 				return False
 			# print("LNDB Processor Wants url: '%s'" % url)
@@ -216,6 +216,8 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeriesInfo(self, soup):
 		content = soup.find('div', class_='lightnovelcontent')
+		if not content:
+			return
 
 		dataLut = {
 			'Japanese Title'        : 'jTitle',
@@ -242,8 +244,6 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'Illustrator'           : 'illust',
 			'Illustrators'          : 'illust',
 		}
-
-		assert content != None
 
 
 
@@ -308,6 +308,11 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			kwargs['pubnames'] = pubnames
 		else:
 			kwargs['pubnames'] = None
+
+		if not 'author' in kwargs:
+			kwargs['author'] = None
+		if not 'illust' in kwargs:
+			kwargs['illust'] = None
 
 
 		return kwargs
