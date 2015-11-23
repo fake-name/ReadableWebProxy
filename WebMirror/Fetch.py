@@ -140,7 +140,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 	def plugin_dispatch(self, plugin, url, content, fName, mimeType, no_ret=False):
 		self.log.info("Dispatching file '%s' with mime-type '%s'", fName, mimeType)
-		assert isinstance(content, str) , "Content must be a string. It's currently type: '%s'" % type(content)
+		assert isinstance(content, (str, bytes)) , "Content must be a string/bytes. It's currently type: '%s'" % type(content)
 
 
 		params = {
