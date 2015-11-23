@@ -28,16 +28,8 @@ decompose: [
 
 	{'class'  : 'header'},
 	{'class'  : 'left'},
+	# {'class'  : 'infotable'},
 
-
-
-	{'class'  : 'main-nav'},
-	{'class'  : 'inside-right-sidebar'},
-	{'class'  : 'screen-reader-text'},
-	{'class'  : 'site-footer'},
-	{'class'  : 'menu-toggle'},
-	{'class'  : 'site-header'},
-	{'class'  : 'paging-navigation'},
 	{'class'  : 'comments-area'},
 ]
 

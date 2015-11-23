@@ -180,7 +180,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	FETCH_DISTANCE = 1000 * 1000
 
 	def __init__(self, cookie_lock, run_filters=True, response_queue=None):
-		print("SiteArchiver __init__()")
+		# print("SiteArchiver __init__()")
 		super().__init__()
 
 		self.db = db
@@ -243,7 +243,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	# Minimal proxy because I want to be able to call the fetcher without affecting the DB.
 	def fetch(self, job):
-		fetcher = self.fetcher(self.ruleset, job.url, job.starturl, self.cookie_lock, wg_handle=self.wg, response_queue=self.resp_q)
+		fetcher = self.fetcher(rules=self.ruleset, target_url=job.url, start_url=job.starturl, cookie_lock=self.cookie_lock, job=job, wg_handle=self.wg, response_queue=self.resp_q)
 		response = fetcher.fetch()
 		return response
 
@@ -252,6 +252,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# transferred content (e.g. is it an image/html page/binary file)
 	def dispatchRequest(self, job):
 		response = self.fetch(job)
+		self.processResponse(job, response)
+
+	def processResponse(self, job, response):
 		if "file" in response:
 			# No title is present in a file response
 			self.upsertFileResponse(job, response)
@@ -757,15 +760,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 			if job:
 				self.do_job(job)
 
+	def get_row(self, url, distance=None, priority=None):
+		if distance == None:
+			distance = self.db.MAX_DISTANCE-2
 
-
-	def synchronousJobRequest(self, url, ignore_cache=False):
-		"""
-		trigger an immediate, synchronous dispatch of a job for url `url`,
-		and return the fetched row upon completion
-
-		"""
-		self.log.info("Manually initiated request for content at '%s'", url)
+		if priority == None:
+			priority = self.db.DB_REALTIME_PRIORITY
 
 		# Rather then trying to add, and rolling back if it exists,
 		# just do a simple check for the row first. That'll
@@ -787,7 +787,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.log.info("Item already exists in database.")
 		else:
 			self.log.info("Row does not exist in DB")
-			start = urllib.parse.urlsplit(url).netloc
+			url_netloc = urllib.parse.urlsplit(url).netloc
 
 			# New jobs are inserted in the "fetching" state since we
 			# don't want them to be picked up by the fetch engine
@@ -796,10 +796,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 				state     = 'fetching',
 				url       = url,
 				starturl  = url,
-				netloc    = start,
-				distance  = self.db.MAX_DISTANCE-2,
+				netloc    = url_netloc,
+				distance  = distance,
 				is_text   = True,
-				priority  = self.db.DB_REALTIME_PRIORITY,
+				priority  = priority,
 				type      = "unknown",
 				fetchtime = datetime.datetime.now(),
 				)
@@ -824,21 +824,36 @@ class SiteArchiver(LogBase.LoggerMixin):
 				except sqlalchemy.exc.IntegrityError:
 					print("[synchronousJobRequest] -> Integrity error!")
 					self.db.get_session().rollback()
-					row =  query = self.db.get_session().query(self.db.WebPages) \
-						.filter(self.db.WebPages.url == url)               \
+					row = self.db.get_session().query(self.db.WebPages) \
+						.filter(self.db.WebPages.url == url)            \
 						.one()
 					self.db.get_session().commit()
 					break
+		return row
+
+
+	def synchronousDispatchPrefetched(self, url, parentjob, content, mimetype, filename="None"):
+		self.log.info("Manually initiated dispatch for prefetched-content at '%s'", url)
+		row = self.get_row(url)
+
+		fetcher = self.fetcher(self.ruleset, url, parentjob.starturl, job=row, cookie_lock=None, wg_handle=self.wg, response_queue=self.resp_q)
+		ret = fetcher.dispatchContent(content, filename, mimetype)
+		self.processResponse(row, ret)
+
+
+
+	def synchronousJobRequest(self, url, ignore_cache=False):
+		"""
+		trigger an immediate, synchronous dispatch of a job for url `url`,
+		and return the fetched row upon completion
+
+		"""
+		self.log.info("Manually initiated request for content at '%s'", url)
+
+		row = self.get_row(url)
 
 		thresh_text_ago = datetime.datetime.now() - datetime.timedelta(seconds=CACHE_DURATION)
 		thresh_bin_ago  = datetime.datetime.now() - datetime.timedelta(seconds=RSC_CACHE_DURATION)
-
-		# print("now                             ", datetime.datetime.now())
-		# print("row.fetchtime                   ", row.fetchtime)
-		# print("thresh_text_ago                 ", thresh_text_ago)
-		# print("thresh_bin_ago                  ", thresh_bin_ago)
-		# print("row.fetchtime > thresh_text_ago ", row.fetchtime > thresh_text_ago)
-		# print("row.fetchtime > thresh_bin_ago  ", row.fetchtime > thresh_bin_ago)
 
 		if ignore_cache:
 			self.log.info("Cache ignored due to override")

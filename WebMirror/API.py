@@ -2,13 +2,12 @@ from app import app
 import config
 import datetime
 import os.path
-from config import relink_secret
 import queue
 
-from WebMirror.Engine import SiteArchiver
+import WebMirror.Engine
+import WebMirror.runtime_engines
 from WebMirror.Exceptions import DownloadException, getErrorDiv
 
-# TODO: Pool of engines
 
 def td_format(td_object):
 		seconds = int(td_object.total_seconds())
@@ -40,20 +39,13 @@ def replace_links(content):
 	return content
 
 
-fetchers = queue.Queue()
-
-for x in range(3):
-	fetchers.put(SiteArchiver(cookie_lock=False, run_filters=False))
-
-
-
 class RemoteContentObject(object):
 	def __init__(self, url):
 		self.url     = url
 		self.fetched = False
 		self.job     = None
-		print("RemoteContentObject instantiated. Available fetchers: %s" % fetchers.qsize())
-		self.archiver = fetchers.get()
+		print("RemoteContentObject instantiated. Available fetchers: %s" % WebMirror.runtime_engines.fetchers.qsize())
+		self.archiver = WebMirror.runtime_engines.fetchers.get()
 
 
 	def fetch(self, ignore_cache=False):
@@ -103,21 +95,29 @@ class RemoteContentObject(object):
 		return td_format(ago)
 
 
-	def processRaw(self, content):
+	def processRaw(self, content, mimetype='text/html', starturl='http://www.example.org'):
 
 		# Abuse the fact that functions (including lambda) are fully formed objects
 		job = lambda:None
 
-		job.url      = "http://www.example.org"
-		job.starturl = "http://www.example.org"
-		fetcher      = self.archiver.fetcher(self.archiver.ruleset, job.url, job.starturl, cookie_lock=False)
+		job.url       = self.url
+		job.starturl  = "http://www.example.org"
+		job.distaance = WebMirror.database.MAX_DISTANCE-2
+		fetcher       = self.archiver.fetcher(self.archiver.ruleset, job.url, job.starturl, job=job, cookie_lock=False)
+		print(fetcher)
 		ret          = fetcher.dispatchContent(content, "None", "text/html")
 		content = ret['contents']
 		content = replace_links(content)
 		return content
 
+	def dispatchRetreived(self, parentjob, content, mimetype):
+		print("Dispatching prefetched content!")
+		assert bool(content) == True
+		self.archiver.synchronousDispatchPrefetched(self.url, parentjob, content, mimetype)
+
+
 	def close(self):
-		fetchers.put(self.archiver)
+		WebMirror.runtime_engines.fetchers.put(self.archiver)
 		self.archiver = None
 
 	def __del__(self):
@@ -154,7 +154,12 @@ def getPage(url, ignore_cache=False):
 	return title, content, cachestate
 
 
+
 def getResource(url, ignore_cache=False):
+	'''
+	Get a url that (probably) contains resource content synchronously.
+	Return is a 4-tuple consisting of (mimetype, filename, filecontent, cache-state)
+	'''
 	page = RemoteContentObject(url)
 	try:
 		page.fetch(ignore_cache)
@@ -164,3 +169,13 @@ def getResource(url, ignore_cache=False):
 	finally:
 		page.close()
 	return mimetype, fname, content, cachestate
+
+def processFetchedContent(url, content, mimetype, parentjob):
+
+	page = RemoteContentObject(url)
+	try:
+		ret = page.dispatchRetreived(parentjob, content, mimetype)
+	finally:
+		page.close()
+
+	return ret

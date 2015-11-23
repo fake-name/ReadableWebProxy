@@ -45,11 +45,12 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, rules, target_url, start_url, cookie_lock=None, wg_handle=None, response_queue=None):
+	def __init__(self, rules, target_url, start_url, job, cookie_lock=None, wg_handle=None, response_queue=None):
 		# print("Fetcher init()")
 		super().__init__()
 
 		self.response_queue = response_queue
+		self.job = job
 
 		if wg_handle:
 			self.wg = wg_handle
@@ -139,7 +140,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 	def plugin_dispatch(self, plugin, url, content, fName, mimeType, no_ret=False):
 		self.log.info("Dispatching file '%s' with mime-type '%s'", fName, mimeType)
-
+		assert isinstance(content, str) , "Content must be a string. It's currently type: '%s'" % type(content)
 
 
 		params = {
@@ -160,6 +161,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'preserveAttrs'   : self.rules['preserveAttrs'],
 									'type'            : self.rules['type'],
 									'message_q'       : self.response_queue,
+									'job'             : self.job,
 		}
 
 		ret = plugin.process(params)
@@ -217,7 +219,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 	def dispatchContent(self, content, fName, mimeType):
-
+		assert bool(content) == True
 		# Feed content through filters that want it (if any):
 		for filter_plg in self.filter_modules:
 			if (mimeType.lower() in filter_plg.wanted_mimetypes or filter_plg.mimetype_catchall) and \

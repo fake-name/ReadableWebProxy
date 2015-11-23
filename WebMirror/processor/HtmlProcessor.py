@@ -38,6 +38,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		self._tld           = set()
 		self._fileDomains   = set()
 
+		assert bool(pgContent) == True
+
 		self.content = pgContent
 		self.pageUrl = pageUrl
 
@@ -367,7 +369,9 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	# then decomposes all the tags in the `decompose` class variable, feeds the content through
 	# readability, and finally saves the processed HTML into the database
 	def extractContent(self):
-		self.log.info("Processing '%s' as HTML.", self.pageUrl)
+		self.log.info("Processing '%s' as HTML (size: %s).", self.pageUrl, len(self.content))
+		assert self.content
+		# print(type(self.content))
 		soup = bs4.BeautifulSoup(self.content, "lxml")
 
 

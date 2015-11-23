@@ -401,6 +401,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'preserveAttrs',
 			'type',
 			'message_q',
+			'job',
 		]
 
 		assert len(params) == len(expected)

@@ -8,6 +8,7 @@ import WebMirror.OutputFilters.FilterBase
 
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
+# from WebMirror.Engine import SiteArchiver
 
 import bs4
 import re
@@ -16,6 +17,9 @@ import time
 from dateutil.parser import parse
 import urllib.parse
 from WebMirror.util.webFunctions import WebGetRobust
+
+import WebMirror.API
+import pprint
 
 MIN_RATING = 5
 
@@ -31,13 +35,7 @@ MIN_RATING = 5
 #
 ########################################################################################################################
 
-BLOCK_IDS = {
-
-}
-
-
-
-IS_BETA = True
+IS_BETA = False
 
 
 class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -55,6 +53,8 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		if re.search(r"^http://lndb.info/light_novel/.+$", url):
+			if "lndb.info/light_novel/view/" in url:
+				return False
 			# print("LNDB Processor Wants url: '%s'" % url)
 			return True
 		return False
@@ -62,7 +62,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def __init__(self, **kwargs):
 
 		self.kwargs     = kwargs
-
+		self.job        = kwargs['job']
 
 		self.pageUrl    = kwargs['pageUrl']
 
@@ -82,27 +82,13 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeries(self, seriesPageUrl, soup):
 
-		itemsoup = self.getSoupForSeriesItem(seriesPageUrl)
+		itemsoup = self.getSoupForSeriesItem(seriesPageUrl, soup)
 		itemdata = self.extractSeriesInfo(itemsoup)
 		# print(itemdata)
 
 		tags = []
 		if 'genre' in itemdata and itemdata['genre']:
 			tags = list(set([item.lower().strip().replace("  ", " ").replace(" ", "-") for item in itemdata['genre']]))
-
-
-
-		# {
-		# 	'volNo': '3',
-		# 	'illust': 'Eiji Usatsuka',
-		# 	'jTitle': '異世界はスマートフォンとともに。',
-		# 	'pubdate': datetime.datetime(2015, 2, 22, 0, 0),
-		# 	'author': 'Batora Fuyuhara',
-		# 	'target': 'Male',
-		# 	'genre': ['fantasy']
-		# }
-
-
 
 		seriesmeta = {}
 
@@ -114,7 +100,12 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['author']      = itemdata['author']
 		seriesmeta['illust']      = itemdata['illust']
 		seriesmeta['desc']        = itemdata['description']
-		seriesmeta['pubdate']     = calendar.timegm(itemdata['pubdate'].timetuple())
+		if itemdata['pubdate']:
+			seriesmeta['pubdate']     = calendar.timegm(itemdata['pubdate'].timetuple())
+		else:
+			seriesmeta['pubdate']     = None
+		seriesmeta['pubnames']    = itemdata['pubnames']
+
 
 		seriesmeta['tags']        = tags
 		seriesmeta['homepage']    = None
@@ -123,8 +114,11 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['sourcesite']  = 'LNDB'
 
 
+		# pprint.pprint(itemdata)
+		# pprint.pprint(seriesmeta)
+
 		# print(seriesmeta)
-		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=True)
+		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=IS_BETA)
 		self.amqp_put_item(pkt)
 
 
@@ -148,10 +142,10 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	covers      - Cover Array
 	'''
 
-	def getSoupForSeriesItem(self, baseUrl):
+	def getSoupForSeriesItem(self, baseUrl, baseSoup):
 		urlpostfix = baseUrl.replace("http://lndb.info/light_novel/", "")
 
-		print("urlpostfix:", urlpostfix)
+		# print("urlpostfix:", urlpostfix)
 
 		url      = urllib.parse.urljoin('http://lndb.info/', '/light_novel/view/' + urlpostfix)
 		referrer = urllib.parse.urljoin('http://lndb.info/', '/light_novel/' + urlpostfix)
@@ -160,7 +154,10 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		for x in range(3):
 			try:
 				# You have to specify the 'X-Requested-With' param, or you'll get a 404
-				soup = self.wg.getSoup(url, addlHeaders={'Referer': referrer, 'X-Requested-With': 'XMLHttpRequest'})
+				content = self.wg.getpage(url, addlHeaders={'Referer': referrer, 'X-Requested-With': 'XMLHttpRequest'})
+				# print("Wat wat?")
+				WebMirror.API.processFetchedContent(url, content, "text/html", self.job)
+				soup = bs4.BeautifulSoup(content)
 				break
 			except urllib.error.URLError:
 				time.sleep(4)
@@ -168,23 +165,41 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				self.wg = webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
 		if not soup:
 			raise ValueError("Could not retreive page!")
+
 		return soup
 
 	def getPubDate(self, soup):
-		ret = None
-		pubdiv = soup.find("div", class_='lightnovellabels')
-		for item in pubdiv.find_all("p", class_='paragraph-info'):
-			if item.find("br"):
-				dates = str(item.find("br").next_sibling)
-				if "-" in dates:
-					dates = dates.split("-")[0].strip()
-					ts = parse(dates, fuzzy=True)
-					if not ret:
-						ret = ts
-					else:
-						if ts < ret:
-							ret = ts
-		return ret
+		pubdate = None
+		pubnames = []
+
+		pubdiv1 = soup.find("div", class_='lightnovellabels')
+		pubdiv2 = soup.find("div", class_='lightnovelmagazines')
+
+
+
+		for pubdiv in [item for item in [pubdiv1, pubdiv2] if item]:
+			for item in pubdiv.find_all("p", class_='paragraph-info'):
+				for publink in item.find_all("a"):
+					pub = publink.get_text().strip()
+					if not pub in pubnames:
+						pubnames.append(pub)
+
+				children = list(item.children)
+				for x in range(len(children)):
+
+					if children[x]:
+						if str(children[x]).startswith("\xa0"):
+							dates = str(children[x])
+							if "-" in dates:
+								dates = dates.split("-")[0].strip()
+								ts = parse(dates, fuzzy=True)
+								if not pubdate:
+									pubdate = ts
+								else:
+									if ts < pubdate:
+										pubdate = ts
+
+		return pubdate, pubnames
 
 	def getAltNames(self, soup):
 		pubdiv = soup.find("div", class_='lightnovelassociatedtitles')
@@ -284,11 +299,15 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		else:
 			kwargs['description'] = None
 
-		pub = self.getPubDate(content)
-		if pub:
-			kwargs['pubdate'] = pub
+		pubdate, pubnames = self.getPubDate(content)
+		if pubdate:
+			kwargs['pubdate'] = pubdate
 		else:
 			kwargs['pubdate'] = None
+		if pubnames:
+			kwargs['pubnames'] = pubnames
+		else:
+			kwargs['pubnames'] = None
 
 
 		return kwargs
