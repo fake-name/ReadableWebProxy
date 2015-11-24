@@ -218,7 +218,11 @@ def getNiceName(srcurl):
 		'dreamsleeper87.blogspot.com'               : 'Lunate',
 		'cnovelproject.blogspot.com'                : 'The C-Novel Project',
 
+		'bubujingxinenglish.blogspot.com'           : 'Bu Bu Jing Xin Translation',
+
+		'beehugger.wordpress.com'                   : 'Beehugger',
 		'rancerqz.wordpress.com'                    : 'RANCER',
+		'moonbunnycafe.com'                         : 'Moon Bunny Cafe',
 
 
 
@@ -226,6 +230,8 @@ def getNiceName(srcurl):
 
 		"dragomircm.com"                            : "DragomirCM",
 		"mike777ac.wordpress.com"                   : "Mike777ac",
+
+		"87percenttranslation.wordpress.com"        : "87 Percent Translation",
 
 		# 'xxjohnsmithxx.wordpress.com'               : 'Huh',
 

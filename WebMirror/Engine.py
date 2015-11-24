@@ -858,12 +858,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if ignore_cache:
 			self.log.info("Cache ignored due to override")
 		else:
-			if row.state == "complete" and row.fetchtime > thresh_text_ago:
-				self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", RSC_CACHE_DURATION)
+			# if row.state == "complete" and row.fetchtime > thresh_text_ago:
+			# if row.state == "complete" and row.fetchtime > thresh_bin_ago and "text" not in row.mimetype.lower():
+			# 	self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
+			# 	return row
+			if row.state == "complete":
+				self.log.info("Using cached fetch results.")
 				self.log.info("dbid: %s", row.id)
-				return row
-			elif row.state == "complete" and row.fetchtime > thresh_bin_ago and "text" not in row.mimetype.lower():
-				self.log.info("Using cached fetch results as content was retreived within the last %s seconds.", CACHE_DURATION)
 				return row
 			else:
 				self.log.info("Item has exceeded cache time by text: %s, rsc: %s. (fetchtime: %s) Re-acquiring.", thresh_text_ago, thresh_bin_ago, row.fetchtime)

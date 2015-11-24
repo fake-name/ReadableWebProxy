@@ -506,7 +506,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	def extractDarkFish(self, item):
 		chp, vol, frag = extractChapterVolFragment(item['title'])
-		if 'She Professed Herself The Pupil Of The Wise Man'.lower() in item['title'].lower():
+
+		if 'She Professed Herself The Pupil Of The Wise Man'.lower() in item['title'].lower() or 'She Professed Herself The Pupil Of The Wise Man' in item['tags']:
 			return buildReleaseMessage(item, 'Kenja no Deshi wo Nanoru Kenja', vol, chp, frag=frag)
 		# if 'Majin Tenseiki' in item['title']:
 		return False
@@ -1733,6 +1734,71 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	#
 	####################################################################################################################################################
+	def extract87Percent(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Return of the former hero' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Return of the Former Hero', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Summoning at random' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Summoning at Random', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Legend' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'レジェンド', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Death game' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'The world is fun as it has become a death game', vol, chp, frag=frag, postfix=postfix)
+
+
+		return False
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractBeehugger(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Battle Emperor' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Battle Emperor', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractBuBuJingXinTrans(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'bu bu jing xin' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Bu Bu Jing Xin', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
+	def extractMoonBunnyCafe(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Monogatari no Naka no Hito' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Monogatari no Naka no Hito', vol, chp, frag=frag, postfix=postfix)
+		if 'Against The Gods' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Against The Gods', vol, chp, frag=frag, postfix=postfix)
+		if 'The Demonic King Chases His Wife: The Rebellious Good-for-nothing Miss' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'The Demonic King Chases His Wife: The Rebellious Good-for-nothing Miss', vol, chp, frag=frag, postfix=postfix)
+		if 'The Saint’s Recovery Magic is a Degraded Version of Mine' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'The Saint’s Recovery Magic is a Degraded Version of Mine', vol, chp, frag=frag, postfix=postfix)
+		if 'It seems like I got reincarnated into the world of a Yandere Otome game.' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'It seems like I got reincarnated into the world of a Yandere Otome game.', vol, chp, frag=frag, postfix=postfix)
+		if 'Parallel World Pharmacy'.lower() in item['title'].lower() and (chp or vol):
+			return buildReleaseMessage(item, 'Parallel World Pharmacy', vol, chp, frag=frag, postfix=postfix)
+
+		return False
+
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
 	def extractLolercoaster(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
@@ -1745,6 +1811,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 		return False
+
 
 	####################################################################################################################################################
 	# General feedproxy stuff
@@ -2113,6 +2180,14 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		elif item['srcname'] == 'RANCER':
 			ret = self.extractRancer(item)
+		elif item['srcname'] == "87 Percent Translation":
+			ret = self.extract87Percent(item)
+		elif item['srcname'] == "Beehugger":
+			ret = self.extractBeehugger(item)
+		elif item['srcname'] == 'Bu Bu Jing Xin Translation':
+			ret = self.extractBuBuJingXinTrans(item)
+		elif item['srcname'] == 'Moon Bunny Cafe':
+			ret = self.extractMoonBunnyCafe(item)
 
 		# To Add:
 
@@ -2145,28 +2220,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		elif item['srcname'] == "HaruPARTY":
 			ret = self.extractWAT(item)
 
-		# 'Henouji Translation', 'Tensei Slime Chapter 6  Skill Learning (Last Part)', '['Light Novel', 'Tensei Slime']', 'None', '6.0', 'None', ''
-		# 'izra709 | B Group no Shounen Translations', 'Chapter 2 – Her Situation', '['Uncategorized']', 'None', '2.0', 'None', ''
-		# 'JawzTranslations', 'Legendary Moonlight Sculptor English Volume 22 Chapter 03', '['LMS']', '22.0', '3.0', 'None', ''
-		# 'Light Novel translations', 'Surviving a Monster World chapter 1, Alpha', '['Uncategorized']', 'None', '1.0', 'None', ''
-		# 'pandafuqtranslations', 'Chapter 4 (2)', '['Douluodalu 2 - The unrivaled Tang-Clan', 'Douluodalu 2', 'translation', 'wuxia']', 'None', '4.0', 'None', ''
-		# 'TheLazy9', 'Astarte’s Knight – The 3rd Story: Pig and Moustache', '["Astarte's Knight"]', 'None', '3.0', 'None', ''
-		# 'Translation Raven', 'Godly Hunter – Chapter 14 – I Got Tricked! – Intransient', '['Godly Hunter', 'Intransient', 'Translation']', 'None', '14.0', 'None', ''
-		# 'Untuned Translation Blog', '5656! -Knights' Strange Night- Episode 3', '['5656', 'etsusa bridge', 'light novel', 'translation']', 'None', '3.0', 'None', ''
-
-		# Boku wa Isekai de Fuyo Mahou to Shoukan Mahou wo Tenbin ni Kakeru (Novel)
-
-
-		# Handle "three" rather then "3"?
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Chapter Eight: Sieger (Winner) – It’s okay if they don’t catch you', '['Fiction']', 'None', 'None', 'None', ''
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Chapter Five: Beziehung (Connection) – My strenght is not your strenght', '['Fiction']', 'None', 'None', 'None', ''
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Chapter Nine: Glas (Glass) – Nothing is for certain', '['Fiction']', 'None', 'None', 'None', ''
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Chapter Seven: Gëfuhle (Feelings) – The one who wouldn’t back down.', '['Fiction']', 'None', 'None', 'None', ''
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Chapter Six: Entwicklung (Evolution) – Just one more step', '['Fiction']', 'None', 'None', 'None', ''
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Fifth Intermission: Monde (World) – Boredom of the [Demon Empress].', '['Fiction']', 'None', 'None', 'None', 'Intermission: Monde (World) – Boredom of the [Demon Empress].'
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Sixth Intermission: Ciel (Sky) – [Babel’s Ruin] Ascension.', '['Fiction']', 'None', 'None', 'None', 'Intermission: Ciel (Sky) – [Babel’s Ruin] Ascension.'
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Special Transmission: Character Index [Cinco]', '['Fiction']', 'None', 'None', 'None', ''
-		# 'CtrlAlcalá', 'Magical Tournament Volume Three Special Transmission: Character Index [Seis]', '['Fiction']', 'None', 'None', 'None', ''
 
 		# Will be challenging, uses pages instead of chapters
 		elif item['srcname'] == "Shin Sekai Yori – From the New World":
@@ -2221,19 +2274,19 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if flags.RSS_DEBUG and not ret:
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if vol or chp or frag:
-				with open('rss_filter_misses.txt', "a") as fp:
+				with open('rss_filter_misses-1.txt', "a") as fp:
 					# fp.write("\n==============================\n")
 
 					write_items = [
 						("SourceName: ", item['srcname']),
-						("Title:      ", item['title']),
-						("Vol:        ", vol),
-						("Chp:        ", chp),
-						("Frag:       ", frag),
-						("Postfix:    ", postfix),
-						("Feed URL:   ", item['linkUrl']),
-						("Tags:       ", item['tags']),
-						("GUID:       ", item['guid']),
+						("Title: ", item['title']),
+						("Tags: ", item['tags']),
+						("Vol: ", vol),
+						("Chp: ", chp),
+						("Frag: ", frag),
+						("Postfix: ", postfix),
+						("Feed URL: ", item['linkUrl']),
+						("GUID: ", item['guid']),
 					]
 
 					for name, val in write_items:

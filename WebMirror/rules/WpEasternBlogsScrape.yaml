@@ -294,6 +294,7 @@ baseUrl: [
 	'https://zentranslations.wordpress.com',
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
+	'https://anonempireblog.wordpress.com',
 
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
@@ -375,6 +376,7 @@ baseUrl: [
 	'http://moonbunnycafe.com',
 	'http://flowerbridgetoo.com',
 	'http://cnovels.bookbychapters.com',
+	'http://joeglens.com',
 
 	# OEL and translated.
 	'http://www.renegadesanctuary.com',
