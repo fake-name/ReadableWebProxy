@@ -4,6 +4,7 @@
  - "https://xxjohnsmithxx.wordpress.com", parser
 
  
+http://erolns.blogspot.com/feeds/posts/default
 
 
 fictionmania js links 

@@ -24,9 +24,11 @@ Quick installation overview:
  - Create a database for the project.
  - In the project database, install the `pg_trgm` and `citext` extensions.
  - Copy `settings.example.py` to `settings.py`.
- - Setup virtualhost by rinning `build-venv.sh`
+ - Setup virtualhost by running `build-venv.sh`
  - Activate vhost: `source flask/bin/activate`
  - Bootstrap DB: `create_db.sh`
  - (Potentially) disable wattpad login system by editing the content of `INIT_CALLS` in 
      `activePlugins.py`.
  - Run server: `python3 run.py`
+ - (Optional): Scraper is started by `python runScrape.py`
+ - (Optional): Scraper periodic scheduler is started by `python runScrape.py scheduler`

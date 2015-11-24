@@ -1799,6 +1799,27 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	#
 	####################################################################################################################################################
+	def extractEroLightNovelTranslations(self, item):
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+		if 'Adolescent Adam' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Shishunki na Adam', vol, chp, frag=frag, postfix=postfix)
+
+		if 'Harem Castle' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Harem Castle', vol, chp, frag=frag, postfix=postfix)
+		if 'Harem Pirates' in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, 'Harem Pirates', vol, chp, frag=frag, postfix=postfix)
+
+		if "Student Council President's Secret Laid Bare" in item['tags'] and (chp or vol):
+			return buildReleaseMessage(item, "Student Council President's Secret Laid Bare", vol, chp, frag=frag, postfix=postfix)
+
+
+		return False
+
+
+	####################################################################################################################################################
+	#
+	####################################################################################################################################################
 	def extractLolercoaster(self, item):
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
@@ -2188,6 +2209,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			ret = self.extractBuBuJingXinTrans(item)
 		elif item['srcname'] == 'Moon Bunny Cafe':
 			ret = self.extractMoonBunnyCafe(item)
+		elif item['srcname'] == 'Ero Light Novel Translations':
+			ret = self.extractEroLightNovelTranslations(item)
 
 		# To Add:
 
