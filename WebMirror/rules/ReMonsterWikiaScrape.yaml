@@ -85,6 +85,8 @@ badwords: [
 			"printable=yes",
 			"/Special:RecentChanges?",
 
+			'/Null?action=render'
+
 
 			]
 

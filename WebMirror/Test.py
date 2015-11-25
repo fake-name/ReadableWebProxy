@@ -67,19 +67,18 @@ def test(url, debug=True, rss_debug=False):
 	if debug:
 		print(new)
 	archiver = SiteArchiver(None)
-	ret = archiver.taskProcess(job_test=new)
+	archiver.taskProcess(job_test=new)
 
-	if debug:
-		print(archiver)
-		print(ret.keys())
+	# if debug:
+	# 	print(archiver)
+	# 	print(ret.keys())
 
-		if "plainLinks" in ret and "rsrcLinks" in ret: # Looks like a HTML page. Print the relevant info
-			print_html_response(archiver, new, ret)
-		if "rss-content" in ret:
-			print_rss_response(archiver, new, ret)
+	# 	if "plainLinks" in ret and "rsrcLinks" in ret: # Looks like a HTML page. Print the relevant info
+	# 		print_html_response(archiver, new, ret)
+	# 	if "rss-content" in ret:
+	# 		print_rss_response(archiver, new, ret)
 
 
-	pass
 
 def test_all_rss():
 	print("fetching and debugging RSS feeds")

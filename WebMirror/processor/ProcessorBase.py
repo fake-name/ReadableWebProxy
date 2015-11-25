@@ -257,6 +257,10 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if url.startswith("https://www.tumblr.com/login"):
 			return None
 
+		for badword in self._badwords:
+			if badword in url:
+				return
+
 		url = urlFuncs.clearBitLy(url)
 		if not url:
 			return None
@@ -264,7 +268,6 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		for badword in self._badwords:
 			if badword in url:
 				return
-
 
 		url = urlFuncs.urlClean(url)
 

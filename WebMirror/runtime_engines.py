@@ -9,6 +9,7 @@ fetchers = queue.Queue()
 
 # Only allow the engine queue to be built once.
 def init_engines():
+	global INITED
 	if not INITED:
 		INITED = True
 		if not fetchers.qsize():

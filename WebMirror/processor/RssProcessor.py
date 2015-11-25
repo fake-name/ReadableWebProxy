@@ -161,6 +161,8 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 			if not 'guid' in entry:
 				continue
+			if not "authors" in entry:
+				continue
 
 			item = {}
 			item['feedtype'] = self.type

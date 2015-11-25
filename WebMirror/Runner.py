@@ -18,6 +18,7 @@ import WebMirror.database as db
 
 import WebMirror.OutputFilters.AmqpInterface
 import config
+import os.path
 
 
 from sqlalchemy.sql import text
@@ -32,6 +33,7 @@ PROCESSES = 16
 
 # For synchronizing saving cookies to disk
 cookie_lock = multiprocessing.Lock()
+job_get_lock = multiprocessing.Lock()
 
 def halt_exc(x, y):
 	if runStatus.run_state.value == 0:
@@ -46,7 +48,7 @@ class RunInstance(object):
 		self.num = num
 		self.log = logging.getLogger("Main.Text.Web")
 
-		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock, response_queue=response_queue)
+		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock, job_get_lock=job_get_lock, response_queue=response_queue)
 		print("RunInstance %s MOAR init!" % num)
 
 
@@ -57,7 +59,6 @@ class RunInstance(object):
 		self.log.info("RunInstance starting!")
 		loop = 0
 		while 1:
-
 			if runStatus.run_state.value == 1:
 				self.do_task()
 			else:
@@ -68,6 +69,9 @@ class RunInstance(object):
 			if loop == 15:
 				loop = 0
 				self.log.info("Thread %s awake. Runstate: %s", self.num, runStatus.run_state.value)
+
+
+
 
 
 	@classmethod

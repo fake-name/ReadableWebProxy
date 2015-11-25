@@ -56,7 +56,7 @@ FETCH_LOCK = multiprocessing.Lock()
 log = logging.getLogger("Main.Web.SpecialCaseHandler")
 
 def handleRemoteFetch(params, job, engine):
-	print("Remote fetch command!")
+	# print("Remote fetch command!")
 	pass
 
 def handleRateLimiting(params, job, engine):

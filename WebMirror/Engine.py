@@ -13,6 +13,7 @@ import os.path
 import os
 import sys
 import sqlalchemy.exc
+import random
 
 from sqlalchemy import desc
 
@@ -179,12 +180,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, run_filters=True, response_queue=None):
+	def __init__(self, cookie_lock, job_get_lock=False, run_filters=True, response_queue=None):
 		# print("SiteArchiver __init__()")
 		super().__init__()
 
 		self.db = db
-
+		self.job_get_lock = job_get_lock
 		self.cookie_lock = cookie_lock
 		self.resp_q = response_queue
 
@@ -592,20 +593,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 	########################################################################################################################
 
 
+	def _get_task_internal(self, wattpad):
 
-
-	def getTask(self, wattpad=False):
-		'''
-		Get a job row item from the database.
-
-		Also updates the row to be in the "fetching" state.
-		'''
-		# self.db.get_session().begin()
-
-		# Try to get a task untill we are explicitly out of tasks,
-		# or we succeed.
-		while 1:
+		while runStatus.run_state.value == 1:
 			try:
+
 				if wattpad:
 					filt = """
 					AND
@@ -666,14 +658,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 				rid = self.db.get_session().execute(raw_query).scalar()
 				xqtim = time.time() - start
 
+				self.db.get_session().flush()
 				if not rid:
-					self.db.get_session().flush()
 					self.db.get_session().commit()
 					return False
 
-				# print("Raw ID From manual query:")
-				# print(rid)
-				# print()
 				self.log.info("Query execution time: %s ms", xqtim * 1000)
 
 
@@ -681,14 +670,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 					.filter(self.db.WebPages.id == rid)             \
 					.one()
 
+				self.db.get_session().flush()
 				if job.state != 'new':
-					self.db.get_session().flush()
 					self.db.get_session().commit()
-					self.log.info("Someone else fetched that job first!")
+					sleeptime = random.random()
+					self.log.info("Someone else fetched that job first! Sleeping %s", sleeptime)
+					time.sleep(sleeptime)
 					continue
 
 				if not job:
-					self.db.get_session().flush()
 					self.db.get_session().commit()
 					return False
 
@@ -696,14 +686,43 @@ class SiteArchiver(LogBase.LoggerMixin):
 					raise ValueError("Wat?")
 				job.state = "fetching"
 
-				self.db.get_session().flush()
 				self.db.get_session().commit()
+				self.log.info("Job for url: '%s' fetched", job.url)
 				return job
 			except sqlalchemy.exc.OperationalError:
+				sleeptime = random.random()
+				self.log.info("Error marking job fetched (OperationalError)! Sleeping %s", sleeptime)
+				time.sleep(sleeptime)
 				self.db.get_session().rollback()
 			except sqlalchemy.exc.InvalidRequestError:
+				sleeptime = random.random()
+				self.log.info("Error marking job fetched (InvalidRequestError)! Sleeping %s", sleeptime)
+				time.sleep(sleeptime)
 				self.db.get_session().rollback()
 
+	def getTask(self, wattpad=False):
+		'''
+		Get a job row item from the database.
+
+		Also updates the row to be in the "fetching" state.
+		'''
+		# self.db.get_session().begin()
+
+		# Try to get a task untill we are explicitly out of tasks,
+		try:
+			# or we succeed.
+			while runStatus.run_state.value == 1:
+				if self.job_get_lock:
+					acq = self.job_get_lock.acquire(timeout=1)
+					if not acq:
+						continue
+					return self._get_task_internal(wattpad)
+				else:
+					return self._get_task_internal(wattpad)
+		finally:
+
+			if self.job_get_lock:
+				self.job_get_lock.release()
 
 	def do_job(self, job):
 		try:
@@ -744,21 +763,39 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	def taskProcess(self, job_test=None):
 
-		if job_test:
-			job = job_test
-		else:
-			job = self.getTask()
-		if not job:
-			job = self.getTask(wattpad=True)
+		job = None
+		try:
+			if job_test:
+				job = job_test
+			else:
+				job = self.getTask()
 			if not job:
-				time.sleep(5)
-				return
+				job = self.getTask(wattpad=True)
+				if not job:
+					time.sleep(5)
+					return
 
-		if job.netloc in self.specialty_handlers:
-			self.special_case_handle(job)
-		else:
-			if job:
-				self.do_job(job)
+			if job.netloc in self.specialty_handlers:
+				self.special_case_handle(job)
+			else:
+				if job:
+					self.do_job(job)
+
+		except Exception:
+			err_f = os.path.join("./logs", "error - {}.txt".format(time.time()))
+			with open(err_f, "w") as fp:
+				if job:
+					fp.write("Job: {val}\n".format(val=job))
+					fp.write("Job-netloc: {val}\n".format(val=job.netloc))
+					fp.write("Job-url: {val}\n".format(val=job.url))
+					job.state = "error"
+					self.db.get_session().commit()
+
+				fp.write(traceback.format_exc())
+
+
+			for line in traceback.format_exc().split("\n"):
+				self.log.critical("%s", line.rstrip())
 
 	def get_row(self, url, distance=None, priority=None):
 		if distance == None:

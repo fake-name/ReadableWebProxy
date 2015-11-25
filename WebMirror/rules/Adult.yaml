@@ -79,6 +79,19 @@ badwords: [
 			# they basically take over the scraper if left unchecked.
 			"/tags/",
 
+
+			# Not sure why there's so much gay content on ASSTR. Not my thing.
+			"/nifty/gay/",
+			"/nifty/bisexual/",
+
+			# Something is fucking up and generating double-slashes.
+			# They don't affect the server, but they'll duplicate content for
+			# my end. BLock that.
+			"/files//",
+
+			'bit.ly/',
+			".pdf",
+
 			]
 
 special_case_filters : {

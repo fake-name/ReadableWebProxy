@@ -74,8 +74,8 @@ def get_engine():
 				return ENGINES[csid]
 
 			print("INFO: Creating engine for process! Engine name: '%s'" % csid)
-			ENGINES[csid] = create_engine(SQLALCHEMY_DATABASE_URI) #,
-						# isolation_level="REPEATABLE READ")
+			ENGINES[csid] = create_engine(SQLALCHEMY_DATABASE_URI,
+						isolation_level="SERIALIZABLE")
 
 	return ENGINES[csid]
 

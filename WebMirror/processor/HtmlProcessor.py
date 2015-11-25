@@ -291,7 +291,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Since the content we're extracting will be embedded into another page, we want to
 		# strip out the <body> and <html> tags. `unwrap()`  replaces the soup with the contents of the
 		# tag it's called on. We end up with just the contents of the <body> tag.
-		soup.body.unwrap()
+		if soup.body:
+			soup.body.unwrap()
+		elif soup.html:
+			soup.html.unwrap()
 
 		contents = soup.prettify()
 
