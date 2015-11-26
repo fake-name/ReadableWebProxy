@@ -40,7 +40,7 @@ class GDocExtractor(object):
 		ctnt, handle = cls.wg.getpage(url, returnMultiple=True)
 
 		# Pull out the title for the disambiguation page.
-		soup = bs4.BeautifulSoup(ctnt)
+		soup = WebMirror.util.webFunctions.as_soup(ctnt)
 		title = soup.title.string
 
 		# Google drive supports a `read?{google doc path} mode. As such, we look at the actual URL,
@@ -237,7 +237,7 @@ class GFileExtractor(object):
 
 def makeDriveDisambiguation(urls, pageHeader):
 
-	soup = bs4.BeautifulSoup()
+	soup = WebMirror.util.webFunctions.as_soup()
 
 	tag = soup.new_tag('h3')
 	tag.string = 'Google Drive directory: %s' % pageHeader

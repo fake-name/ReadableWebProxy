@@ -594,111 +594,123 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def _get_task_internal(self, wattpad):
+		if wattpad:
+			filt = """
+			AND
+				(
+					web_pages.netloc = 'a.wattpad.com'
+				OR
+					web_pages.netloc = 'www.wattpad.com'
+				)
+			"""
+		else:
+			filt = """
+			AND NOT
+				(
+					web_pages.netloc = 'a.wattpad.com'
+				OR
+					web_pages.netloc = 'www.wattpad.com'
+				)
+			"""
+		# Hand-tuned query, I couldn't figure out how to
+		# get sqlalchemy to emit /exactly/ what I wanted.
+		# TINY changes will break the query optimizer, and
+		# the 10 ms query will suddenly take 10 seconds!
+		raw_query = text('''
+				UPDATE
+				    web_pages
+				SET
+				    state = 'fetching'
+				WHERE
+				    web_pages.id = (
+				        SELECT
+				            web_pages.id
+				        FROM
+				            web_pages
+				        WHERE
+				            web_pages.state = 'new'
+				        AND
+				            normal_fetch_mode = true
+				        AND
+				            web_pages.priority = (
+				               SELECT
+				                    min(priority)
+				                FROM
+				                    web_pages
+				                WHERE
+				                    state = 'new'::dlstate_enum
+				                AND
+				                    distance < 1000000
+				                AND
+				                    normal_fetch_mode = true
+				                AND
+				                    web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
+				                %s
+				            )
+				        AND
+				            web_pages.distance < 1000000
+				        AND
+				            web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
+				        %s
+				        LIMIT 1
+				    )
+				AND
+				    web_pages.state = 'new'
+				RETURNING
+				    web_pages.id;
+			''' % (filt, filt))
 
+
+		start = time.time()
+
+		sess = self.db.get_session()
 		while runStatus.run_state.value == 1:
 			try:
-
-				if wattpad:
-					filt = """
-					AND
-						(
-							web_pages.netloc = 'a.wattpad.com'
-						OR
-							web_pages.netloc = 'www.wattpad.com'
-						)
-					"""
-				else:
-					filt = """
-					AND NOT
-						(
-							web_pages.netloc = 'a.wattpad.com'
-						OR
-							web_pages.netloc = 'www.wattpad.com'
-						)
-					"""
-				# Hand-tuned query, I couldn't figure out how to
-				# get sqlalchemy to emit /exactly/ what I wanted.
-				# TINY changes will break the query optimizer, and
-				# the 10 ms query will suddenly take 10 seconds!
-				raw_query = text('''
-						SELECT
-						    web_pages.id
-						FROM
-						    web_pages
-						WHERE
-						    web_pages.state = 'new'
-						AND
-						    normal_fetch_mode = true
-						AND
-						    web_pages.priority = (
-						       SELECT
-						            min(priority)
-						        FROM
-						            web_pages
-						        WHERE
-						            state = 'new'::dlstate_enum
-						        AND
-						            distance < 1000000
-						        AND
-						            normal_fetch_mode = true
-						        AND
-					                web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-						        %s
-						    )
-						AND
-						    web_pages.distance < 1000000
-						AND
-					        web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-						%s
-						LIMIT 1;
-					''' % (filt, filt))
-
-
-				start = time.time()
-				rid = self.db.get_session().execute(raw_query).scalar()
-				xqtim = time.time() - start
-
-				self.db.get_session().flush()
-				if not rid:
-					self.db.get_session().commit()
-					return False
-
-				self.log.info("Query execution time: %s ms", xqtim * 1000)
-
-
-				job = self.db.get_session().query(self.db.WebPages) \
-					.filter(self.db.WebPages.id == rid)             \
-					.one()
-
-				self.db.get_session().flush()
-				if job.state != 'new':
-					self.db.get_session().commit()
-					sleeptime = random.random()
-					self.log.info("Someone else fetched that job first! Sleeping %s", sleeptime)
-					time.sleep(sleeptime)
-					continue
-
-				if not job:
-					self.db.get_session().commit()
-					return False
-
-				if job.state != "new":
-					raise ValueError("Wat?")
-				job.state = "fetching"
-
-				self.db.get_session().commit()
-				self.log.info("Job for url: '%s' fetched", job.url)
-				return job
+				rid = sess.execute(raw_query).scalar()
+				sess.commit()
+				break
 			except sqlalchemy.exc.OperationalError:
-				sleeptime = random.random()
-				self.log.info("Error marking job fetched (OperationalError)! Sleeping %s", sleeptime)
-				time.sleep(sleeptime)
-				self.db.get_session().rollback()
+				delay = random.random() / 5.0
+				# traceback.print_exc()
+				self.log.warn("Error marking job fetched (OperationalError)! Delaying %s.", delay)
+				time.sleep(delay)
+				sess.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
-				sleeptime = random.random()
-				self.log.info("Error marking job fetched (InvalidRequestError)! Sleeping %s", sleeptime)
-				time.sleep(sleeptime)
-				self.db.get_session().rollback()
+				traceback.print_exc()
+				self.log.warn("Error marking job fetched (InvalidRequestError)!")
+				sess.rollback()
+
+		# If we broke because a user-interrupt, we may not have a
+		# valid rid at this point.
+		if runStatus.run_state.value != 1:
+			return False
+
+		xqtim = time.time() - start
+
+		if not rid:
+			return False
+
+		self.log.info("Query execution time: %s ms", xqtim * 1000)
+
+
+		job = self.db.get_session().query(self.db.WebPages) \
+			.filter(self.db.WebPages.id == rid)             \
+			.one()
+		self.db.get_session().flush()
+
+		if not job:
+			self.db.get_session().commit()
+			return False
+
+		if job.state != 'fetching':
+			self.db.get_session().commit()
+			sleeptime = random.random()
+			self.log.info("Wat? How did the query return? Sleeping %s", sleeptime)
+
+
+		self.db.get_session().commit()
+		self.log.info("Job for url: '%s' fetched", job.url)
+		return job
 
 	def getTask(self, wattpad=False):
 		'''
@@ -709,20 +721,18 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# self.db.get_session().begin()
 
 		# Try to get a task untill we are explicitly out of tasks,
-		try:
-			# or we succeed.
-			while runStatus.run_state.value == 1:
-				if self.job_get_lock:
-					acq = self.job_get_lock.acquire(timeout=1)
-					if not acq:
-						continue
-					return self._get_task_internal(wattpad)
-				else:
-					return self._get_task_internal(wattpad)
-		finally:
-
+		while runStatus.run_state.value == 1:
 			if self.job_get_lock:
-				self.job_get_lock.release()
+				acq = self.job_get_lock.acquire(timeout=1)
+				if not acq:
+					continue
+				try:
+					return self._get_task_internal(wattpad)
+				finally:
+					self.job_get_lock.release()
+			else:
+				return self._get_task_internal(wattpad)
+
 
 	def do_job(self, job):
 		try:

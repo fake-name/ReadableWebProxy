@@ -19,6 +19,7 @@ import traceback
 import datetime
 import time
 import json
+import WebMirror.util.webFunctions
 
 MIN_RATING = 5
 
@@ -151,7 +152,7 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, url, content):
 		# print("processPage() call")
-		soup = bs4.BeautifulSoup(self.content)
+		soup = WebMirror.util.webFunctions.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.retrigger_pages(releases)

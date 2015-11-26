@@ -11,6 +11,7 @@ import feedparser
 import bs4
 import json
 import calendar
+import WebMirror.util.webFunctions
 import WebMirror.OutputFilters.rss.FeedDataParser
 
 # import TextScrape.RelinkLookup
@@ -84,7 +85,7 @@ class WattPadJsonProcessor(ProcessorBase.PageProcessor):
 		else:
 			return "(empty) WattPad Stories Container", '~~Nothing here~~', []
 
-		soup = bs4.BeautifulSoup()
+		soup = WebMirror.util.webFunctions.as_soup()
 		container = soup.new_tag("div")
 		soup.append(container)
 

@@ -13,6 +13,7 @@ import bs4
 import re
 import calendar
 import datetime
+import WebMirror.util.webFunctions
 import time
 import urllib.parse
 import json
@@ -196,7 +197,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, content):
 
-		soup = bs4.BeautifulSoup(self.content)
+		soup = WebMirror.util.webFunctions.as_soup(self.content)
 
 		for chunk in soup.find_all('li', class_='fanfic_title'):
 			try:

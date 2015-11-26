@@ -216,7 +216,7 @@ class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, url, content):
 
-		soup = bs4.BeautifulSoup(self.content)
+		soup = as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.sendReleases(releases)
