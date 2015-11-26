@@ -73,6 +73,7 @@ badwords: [
 			'readreview.html',
 			'containxresults.html',
 			'/searchdisplay/',
+			'/blog_comment.php?',
 
 
 			# Booksie tags can apparently nest arbitrarily, so

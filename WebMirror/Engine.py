@@ -253,6 +253,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# transferred content (e.g. is it an image/html page/binary file)
 	def dispatchRequest(self, job):
 		response = self.fetch(job)
+		self.log.info("Dispatching job: %s, url: %s", job, job.url)
 		self.processResponse(job, response)
 
 	def processResponse(self, job, response):
@@ -293,8 +294,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 				job.fetchtime = datetime.datetime.now()
 
-				self.db.get_session().flush()
 				self.db.get_session().commit()
+				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
 				break
 			except sqlalchemy.exc.OperationalError:
 				self.db.get_session().rollback()
@@ -351,8 +352,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		while 1:
 			try:
+				self.db.get_session().flush()
+				if not (job.state == "fetching" or job.state == 'processing'):
+					self.log.critical("Someone else modified row first?")
 				job.state     = 'complete'
 				job.fetchtime = datetime.datetime.now()
+				self.db.get_session().commit()
+				self.log.info("Marked RSS job with id %s, url %s as complete (%s)!", job.id, job.url, job.state)
 				break
 
 			except sqlalchemy.exc.InvalidRequestError:
@@ -572,6 +578,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 		job.is_text   = False
 		job.fetchtime = datetime.datetime.now()
 
+		self.log.info("Marked file job with id %s, url %s as complete!", job.id, job.url)
+
 		job.mimetype = response['mimeType']
 		self.db.get_session().commit()
 
@@ -670,7 +678,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				sess.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
-				delay = random.random() / 5.0
+				delay = random.random()*2
 				# traceback.print_exc()
 				self.log.warn("Error marking job fetched (OperationalError)! Delaying %s.", delay)
 				time.sleep(delay)
@@ -690,7 +698,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if not rid:
 			return False
 
-		self.log.info("Query execution time: %s ms", xqtim * 1000)
+		self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
 
 
 		job = self.db.get_session().query(self.db.WebPages) \
@@ -705,11 +713,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if job.state != 'fetching':
 			self.db.get_session().commit()
 			sleeptime = random.random()
-			self.log.info("Wat? How did the query return? Sleeping %s", sleeptime)
-
+			self.log.info("Wat? How did the query return?")
+			return False
 
 		self.db.get_session().commit()
-		self.log.info("Job for url: '%s' fetched", job.url)
+		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
 		return job
 
 	def getTask(self, wattpad=False):
@@ -721,17 +729,19 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# self.db.get_session().begin()
 
 		# Try to get a task untill we are explicitly out of tasks,
-		while runStatus.run_state.value == 1:
-			if self.job_get_lock:
-				acq = self.job_get_lock.acquire(timeout=1)
-				if not acq:
-					continue
-				try:
-					return self._get_task_internal(wattpad)
-				finally:
-					self.job_get_lock.release()
-			else:
-				return self._get_task_internal(wattpad)
+		return self._get_task_internal(wattpad)
+
+		# while runStatus.run_state.value == 1:
+		# 	if self.job_get_lock:
+		# 		acq = self.job_get_lock.acquire(timeout=1)
+		# 		if not acq:
+		# 			continue
+		# 		try:
+		# 			return self._get_task_internal(wattpad)
+		# 		finally:
+		# 			self.job_get_lock.release()
+		# 	else:
+		# 		return self._get_task_internal(wattpad)
 
 
 	def do_job(self, job):
@@ -786,6 +796,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					return
 
 			if job.netloc in self.specialty_handlers:
+				self.log.info("Job %s for url %s has a specialty handler!", job, job.url)
 				self.special_case_handle(job)
 			else:
 				if job:
