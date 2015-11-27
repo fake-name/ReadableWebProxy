@@ -17,6 +17,14 @@ import flags
 skip_filter = [
 	"www.baka-tsuki.org",
 	"re-monster.wikia.com",
+	'inmydaydreams.com',
+	'www.fanfiction.net',
+	'www.booksie.com',
+	'www.booksiesilk.com',
+	'www.fictionpress.com',
+	'storiesonline.net',
+	'www.fictionmania.tv',
+
 ]
 
 
@@ -202,7 +210,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 
-		if flags.RSS_DEBUG and not ret :
+		if (flags.RSS_DEBUG or self.dbg_print) and not ret:
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if vol or chp or frag:
 				with open('rss_filter_misses-1.txt', "a") as fp:
@@ -231,15 +239,18 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			if not ret:
 				print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 			# else:
-			# 	print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], ret['itemurl']))
-			ret = False
+				# print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], ret['itemurl']))
+			if flags.RSS_DEBUG:
+				ret = False
 
 		# Only return a value if we've actually found a chapter/vol
 		if ret and not (ret['vol'] or ret['chp'] or ret['postfix']):
+			self.log.info("Skipping item due to no chapter/vol/postfix: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix)
 			ret = False
 
 		# Do not trigger if there is "preview" in the title.
 		if 'preview' in item['title'].lower():
+			self.log.info("Skipping item due to preview string: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix)
 			ret = False
 		if ret:
 			assert 'tl_type' in ret
@@ -296,12 +307,13 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		feedDat['srcname'] = nicename
 
+		if tx_raw:
+			raw = self.getRawFeedMessage(feedDat)
+			if raw:
+				self.amqp_put_item(raw)
 
-		raw = self.getRawFeedMessage(feedDat)
-		if raw and tx_raw:
-			self.amqp_put_item(raw)
-
-		new = self.getProcessedReleaseInfo(feedDat)
-		if new and tx_parse:
-			self.amqp_put_item(new)
+		if tx_parse:
+			new = self.getProcessedReleaseInfo(feedDat)
+			if new:
+				self.amqp_put_item(new)
 

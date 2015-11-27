@@ -38,6 +38,7 @@ class FilterBase(PageProcessor):
 
 	def amqp_put_item(self, item):
 		if config.C_DO_RABBIT:
+			self.log.info("Putting item in to AMQP queue!")
 			if self.msg_q:
 				items_in_queue = self.msg_q.qsize()
 				if items_in_queue > 100:
@@ -47,4 +48,5 @@ class FilterBase(PageProcessor):
 
 			else:
 				self._amqpint.put_item(item)
-
+		else:
+			self.log.info("NOT Putting item in to AMQP queue!")

@@ -14,6 +14,8 @@ from WebMirror.Engine import SiteArchiver
 import sqlalchemy.exc
 import traceback
 import settings
+import calendar
+from sqlalchemy import and_
 from sqlalchemy.sql import text
 import urllib.parse
 import urllib.error
@@ -266,6 +268,40 @@ def clear_bad():
 
 
 
+def rss_db_sync():
+	import WebMirror.processor.RssProcessor
+
+
+	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath="Main.RssDb", pageUrl='http://www.example.org', pgContent='', type='application/atom+xml', transfer=False, debug_print=True)
+
+
+	print("Getting feed items....")
+	feed_items = db.get_session().query(db.FeedItems) \
+			.order_by(db.FeedItems.srcname)           \
+			.all()
+	print("Feed items: ", len(feed_items))
+
+	for item in feed_items:
+		ctnt = {}
+		ctnt['srcname']   = item.srcname
+		ctnt['title']     = item.title
+		ctnt['tags']      = item.tags
+		ctnt['linkUrl']   = item.contenturl
+		ctnt['guid']      = item.contentid
+		ctnt['published'] = calendar.timegm(item.published.timetuple())
+
+		# Pop()ed off in processFeedData().
+		ctnt['contents']  = 'wat'
+
+		try:
+			parser.processFeedData(ctnt, tx_raw=False)
+		except ValueError:
+			pass
+		# print(ctnt)
+
+	# item = {}
+
+
 def decode(*args):
 	print("Args:", args)
 
@@ -283,6 +319,8 @@ def decode(*args):
 			fix_tsv()
 		elif op == "clear-bad":
 			clear_bad()
+		elif op == "rss-db":
+			rss_db_sync()
 		else:
 			print("ERROR: Unknown command!")
 
@@ -316,6 +354,7 @@ if __name__ == "__main__":
 		print('	fix-null')
 		print('	fix-tsv')
 		print('	clear-bad')
+		print('	rss-db')
 		print('	fetch {url}')
 		print('	fetch-silent {url}')
 		print('	fetch-rss {url}')
