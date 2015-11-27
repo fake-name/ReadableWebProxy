@@ -278,6 +278,7 @@ def getNiceName(srcurl):
 		'ente38.wordpress.com'                      : 'Ente38 translations',
 		'epyontranslations.wordpress.com'           : 'Epyon Translations',
 		'erolns.blogspot.com'                       : 'Ero Light Novel Translations',
+		'machineslicedbread.wordpress.com'          : 'Machine Sliced Bread',
 
 
 		'etheriatranslation.wordpress.com'          : 'etheriatranslation.wordpress.com',
@@ -325,7 +326,6 @@ def getNiceName(srcurl):
 		'lmsmachinetranslations.com'                : 'lmsmachinetranslations.com',
 		'loiterous.wordpress.com'                   : 'loiterous.wordpress.com',
 		'lylisasmodeus.wordpress.com'               : 'lylisasmodeus.wordpress.com',
-		'machineslicedbread.wordpress.com'          : 'machineslicedbread.wordpress.com',
 		'makinatranslations.wordpress.com'          : 'makinatranslations.wordpress.com',
 		'manatankmagus.wordpress.com'               : 'manatankmagus.wordpress.com',
 		'martialgodtranslator.wordpress.com'        : 'martialgodtranslator.wordpress.com',
@@ -430,6 +430,7 @@ def getNiceName(srcurl):
 		'youjinsite.com'                            : 'youjinsite.com',
 		'youshokutranslations.wordpress.com'        : 'youshokutranslations.wordpress.com',
 		'zentranslations.wordpress.com'             : 'zentranslations.wordpress.com',
+		'rumanshi.com'                              : 'rumanshi.com',
 
 
 

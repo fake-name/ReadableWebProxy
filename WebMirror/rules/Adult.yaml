@@ -74,7 +74,7 @@ badwords: [
 			'containxresults.html',
 			'/searchdisplay/',
 			'/blog_comment.php?',
-
+			'com/../',
 
 			# Booksie tags can apparently nest arbitrarily, so
 			# they basically take over the scraper if left unchecked.

@@ -1782,6 +1782,22 @@ def extractLolercoaster(item):
 
 	return False
 
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractWIP(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+	# if 'Seirei Gensouki' in item['tags'] and (chp or vol):
+	# 	return buildReleaseMessage(item, 'Seirei Gensouki - Konna Sekai de Deaeta Kimi ni', vol, chp, frag=frag, postfix=postfix)
+
+
+	print(item['title'])
+	print(item['tags'])
+	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False
+
 
 ####################################################################################################################################################
 # General feedproxy stuff

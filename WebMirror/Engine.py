@@ -678,7 +678,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				sess.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
-				delay = random.random()*2
+				delay = random.random() / 3
 				# traceback.print_exc()
 				self.log.warn("Error marking job fetched (OperationalError)! Delaying %s.", delay)
 				time.sleep(delay)
@@ -729,19 +729,19 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# self.db.get_session().begin()
 
 		# Try to get a task untill we are explicitly out of tasks,
-		return self._get_task_internal(wattpad)
+		# return self._get_task_internal(wattpad)
 
-		# while runStatus.run_state.value == 1:
-		# 	if self.job_get_lock:
-		# 		acq = self.job_get_lock.acquire(timeout=1)
-		# 		if not acq:
-		# 			continue
-		# 		try:
-		# 			return self._get_task_internal(wattpad)
-		# 		finally:
-		# 			self.job_get_lock.release()
-		# 	else:
-		# 		return self._get_task_internal(wattpad)
+		while runStatus.run_state.value == 1:
+			if self.job_get_lock:
+				acq = self.job_get_lock.acquire(timeout=1)
+				if not acq:
+					continue
+				try:
+					return self._get_task_internal(wattpad)
+				finally:
+					self.job_get_lock.release()
+			else:
+				return self._get_task_internal(wattpad)
 
 
 	def do_job(self, job):
