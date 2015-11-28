@@ -22,6 +22,7 @@ import urllib.parse
 import urllib.error
 import WebMirror.rules
 import flags
+from sqlalchemy import or_
 import WebMirror.Exceptions
 
 def print_html_response(archiver, new, ret):
@@ -313,7 +314,31 @@ def rss_db_sync(target = None):
 			pass
 		# print(ctnt)
 
-	# item = {}
+def clear_blocked():
+	for ruleset in WebMirror.rules.load_rules():
+		if ruleset['netlocs'] and ruleset['badwords']:
+			# mask = [db.WebPages.url.like("%{}%".format(tmp)) for tmp in ruleset['badwords'] if not "%" in tmp]
+
+			for badword in ruleset['badwords']:
+				feed_items = db.get_session().query(db.WebPages)          \
+					.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
+					.filter(db.WebPages.url.like("%{}%".format(badword))) \
+					.count()
+
+				if feed_items:
+					print("Have:  ", feed_items, badword)
+					feed_items = db.get_session().query(db.WebPages)          \
+						.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
+						.filter(db.WebPages.url.like("%{}%".format(badword))) \
+						.delete(synchronize_session=False)
+					db.get_session().expire_all()
+
+				else:
+					print("Empty: ", feed_items, badword)
+			# print(mask)
+			# print(ruleset['netlocs'])
+			# print(ruleset['badwords'])
+	pass
 
 
 def decode(*args):
@@ -335,6 +360,8 @@ def decode(*args):
 			clear_bad()
 		elif op == "rss-db":
 			rss_db_sync()
+		elif op == "clear-blocked":
+			clear_blocked()
 		else:
 			print("ERROR: Unknown command!")
 
@@ -370,6 +397,7 @@ if __name__ == "__main__":
 		print('	fix-null')
 		print('	fix-tsv')
 		print('	clear-bad')
+		print('	clear-blocked')
 		print('	rss-db')
 		print('	rss-db {feedname}')
 		print('	fetch {url}')

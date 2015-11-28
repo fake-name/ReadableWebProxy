@@ -84,6 +84,8 @@ badwords: [
 			# Not sure why there's so much gay content on ASSTR. Not my thing.
 			"/nifty/gay/",
 			"/nifty/bisexual/",
+			'/nifty/authors.html/gay/',
+			'/nifty/authors.html/bisexual/',
 
 			# Something is fucking up and generating double-slashes.
 			# They don't affect the server, but they'll duplicate content for
