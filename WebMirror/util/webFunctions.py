@@ -196,6 +196,7 @@ class WebGetRobust:
 					self.log.info("Loading CookieJar")
 				except:
 					self.log.critical("Cookie file is corrupt/damaged?")
+					os.remove(self.COOKIEFILE)
 
 			if http.cookiejar is not None:
 				self.log.info("Installing CookieJar")

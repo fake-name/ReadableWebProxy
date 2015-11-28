@@ -34,13 +34,14 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	amqpint = None
 	amqp_connect = True
 
-	def __init__(self, transfer=True, debug_print=False, **kwargs):
+	def __init__(self, transfer=True, debug_print=False, write_debug=True, **kwargs):
 		super().__init__(**kwargs)
 
 		self.dbg_print = debug_print
 		self.transfer = transfer
 		self.names = set()
 
+		self.write_debug = write_debug
 
 	####################################################################################################################################################
 	####################################################################################################################################################
@@ -175,6 +176,25 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'中翻英圖書館 Translations'                  :  pfuncs.extractTuShuGuan,
 				'桜翻訳! | Light novel translations'        :  pfuncs.extractSakurahonyaku,
 
+				'Lonahora'                                  :  pfuncs.extractLonahora,
+				'WuxiaSociety'                              :  pfuncs.extractWuxiaSociety,
+				'Wuxia Heroes'                              :  pfuncs.extractWuxiaHeroes,
+				'Radiant Translations'                      :  pfuncs.extractRadiantTranslations,
+				'Tales of MU'                               :  pfuncs.extractTalesOfMU,
+				'ZSW'                                       :  pfuncs.extractZSW,
+
+				'Youjinsite Translations'                   :  pfuncs.extractYoujinsite,
+				'Youshoku Translations'                     :  pfuncs.extractYoushoku,
+				'A0132'                                     :  pfuncs.extractA0132,
+				'Lost in Translation'                       :  pfuncs.extractLostInTranslation,
+				"Pea's Kingdom"                             :  pfuncs.extractPeasKingdom,
+				'Circus Translations'                       :  pfuncs.extractCircusTranslations,
+				'Distracted Translations'                   :  pfuncs.extractDistractedTranslations,
+				'Forgotten Conqueror'                       :  pfuncs.extractForgottenConqueror,
+				"Hold 'X' and Click"                        :  pfuncs.extractHoldX,
+				'Hot Cocoa Translations'                    :  pfuncs.extractHotCocoa,
+				'Solitary Translation'                      :  pfuncs.extractSolitaryTranslation,
+				'A Place Of Legends'                        :  pfuncs.extractPlaceOfLegends,
 
 				# KnW mess
 				'Blazing Translations'                      :  pfuncs.extractKnW,
@@ -188,7 +208,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 				# Broken or not implemented yet
 				'Untuned Translation Blog'                  :  pfuncs.extractBase,
-				'A0132'                                     :  pfuncs.extractBase,
 				'Bad Translation'                           :  pfuncs.extractBase,
 				'HaruPARTY'                                 :  pfuncs.extractBase,
 				'Kami Translation'                          :  pfuncs.extractBase,
@@ -207,14 +226,15 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if item['srcname'] in funcMap:
 			ret = funcMap[item['srcname']](item)
+		else:
+			print("No filter found?")
 
 
-
-		if (flags.RSS_DEBUG or self.dbg_print) and not ret:
+		if (flags.RSS_DEBUG or self.dbg_print) and self.write_debug and not ret:
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-			if vol or chp or frag:
+			if vol or chp or frag and not flags.RSS_DEBUG:
+
 				with open('rss_filter_misses-1.txt', "a") as fp:
-					# fp.write("\n==============================\n")
 
 					write_items = [
 						("SourceName: ", item['srcname']),
@@ -228,18 +248,24 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 						("GUID: ", item['guid']),
 					]
 
+					fp.write("\n==============================\n")
+					fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
+					fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 					for name, val in write_items:
 						fp.write("%s '%s', " % (name, val))
 					fp.write("\n")
-					# fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
-					# fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 
 		if self.dbg_print or flags.RSS_DEBUG:
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-			if not ret:
+			if not ret and (vol or chp or frag):
 				print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
-			# else:
-				# print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], ret['itemurl']))
+			elif ret:
+				pass
+				# print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], item['title']))
+			else:
+				pass
+				# print("Wat: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
+
 			if flags.RSS_DEBUG:
 				ret = False
 

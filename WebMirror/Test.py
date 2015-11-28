@@ -14,6 +14,7 @@ from WebMirror.Engine import SiteArchiver
 import sqlalchemy.exc
 import traceback
 import settings
+import config
 import calendar
 from sqlalchemy import and_
 from sqlalchemy.sql import text
@@ -268,17 +269,30 @@ def clear_bad():
 
 
 
-def rss_db_sync():
+def rss_db_sync(target = None):
+	if target:
+		config.C_DO_RABBIT = False
+		flags.RSS_DEBUG    = True
+
+
 	import WebMirror.processor.RssProcessor
-
-
-	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath="Main.RssDb", pageUrl='http://www.example.org', pgContent='', type='application/atom+xml', transfer=False, debug_print=True)
+	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath="Main.RssDb", pageUrl='http://www.example.org', pgContent='', type='application/atom+xml', transfer=False, debug_print=True, write_debug=False)
 
 
 	print("Getting feed items....")
-	feed_items = db.get_session().query(db.FeedItems) \
-			.order_by(db.FeedItems.srcname)           \
-			.all()
+
+	if target:
+		print("Limiting to '%s' source." % target)
+		feed_items = db.get_session().query(db.FeedItems) \
+				.filter(db.FeedItems.srcname == target)    \
+				.order_by(db.FeedItems.srcname)           \
+				.all()
+	else:
+		feed_items = db.get_session().query(db.FeedItems) \
+				.order_by(db.FeedItems.srcname)           \
+				.all()
+
+
 	print("Feed items: ", len(feed_items))
 
 	for item in feed_items:
@@ -331,6 +345,8 @@ def decode(*args):
 		if op == "fetch":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test(tgt)
+		elif op == "rss-db":
+			rss_db_sync(tgt)
 		elif op == "fetch-silent":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test(tgt, debug=False)
@@ -355,6 +371,7 @@ if __name__ == "__main__":
 		print('	fix-tsv')
 		print('	clear-bad')
 		print('	rss-db')
+		print('	rss-db {feedname}')
 		print('	fetch {url}')
 		print('	fetch-silent {url}')
 		print('	fetch-rss {url}')

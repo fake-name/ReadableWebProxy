@@ -354,7 +354,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			try:
 				self.db.get_session().flush()
 				if not (job.state == "fetching" or job.state == 'processing'):
-					self.log.critical("Someone else modified row first?")
+					self.log.critical("Someone else modified row first? State: %s, url: %s", job.state, job.url)
 				job.state     = 'complete'
 				job.fetchtime = datetime.datetime.now()
 				self.db.get_session().commit()

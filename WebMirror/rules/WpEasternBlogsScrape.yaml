@@ -446,6 +446,7 @@ badwords: [
 
 	 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
 	 '&author=',
+	 '/#comment-',
 	]
 
 decompose: [

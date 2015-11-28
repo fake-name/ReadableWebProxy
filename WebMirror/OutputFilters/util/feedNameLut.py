@@ -63,6 +63,7 @@ def getNiceName(srcurl):
 		'bingnovels.wordpress.com'                  : 'Binggo&Corp',
 		'binhjamin.wordpress.com'                   : 'Binhjamin',
 		'blazingtranslations.com'                   : 'Blazing Translations',
+		'www.blazingtranslations.com'               : 'Blazing Translations',
 		'bltranslation.blogspot.com'                : 'Chinese BL Translations',
 		'bluesilvertranslations.wordpress.com'      : 'Blue Silver Translations',
 		'bubujingxinenglish.blogspot.com'           : 'Bu Bu Jing Xin Translation',
@@ -124,6 +125,7 @@ def getNiceName(srcurl):
 		'flowerbridgetoo.com'                       : 'Flower Bridge Too',
 		'flowerbridgetoo.wordpress.com'             : 'Flower Bridge Too',
 		'forgottenconqueror.wordpress.com'          : 'Forgotten Conqueror',
+		'forgottenconqueror.com'                    : 'Forgotten Conqueror',
 		'fromwhencecamethenamed.wordpress.com'      : 'The Named',
 		'fungshen.wordpress.com'                    : 'Fung Shen',
 		'fuyuugakuenthetranslation.wordpress.com'   : '(NanoDesu) - Fuyuu Gakuen no Alice and Shirley',
@@ -169,7 +171,7 @@ def getNiceName(srcurl):
 		'japtem.com'                                : 'Japtem',
 		'jawztranslations.blogspot.com'             : 'JawzTranslations',
 		'jjagaimo.wordpress.com'                    : 'Jagaimo',
-		'jntranslation.wordpress.com'               : 'SolitaryTranslation V2',
+		'jntranslation.wordpress.com'               : 'Solitary Translation',
 		'joeglens.com'                              : 'Joeglen\'s Translation Space',
 		'kaezartranslations.blogspot.com'           : 'Kaezar Translations',
 		'kahoim.wordpress.com'                      : 'Kahoim Translations',
@@ -303,6 +305,7 @@ def getNiceName(srcurl):
 		'shincodezeroblog.wordpress.com'            : 'Code-Zero\'s Blog',
 		'shinsekai.cadet-nine.org'                  : 'Shin Sekai Yori – From the New World',
 		'shinsoritranslations.wordpress.com'        : 'Shinsori Translations',
+		'www.shintranslations.com'                  : 'Shin Translations',
 		'shintranslations.com'                      : 'Shin Translations',
 		'shintranslations.wordpress.com'            : 'Shin Translations',
 		'shiroyukitranslations.com'                 : 'Shiroyukineko Translations',
@@ -414,6 +417,9 @@ def getNiceName(srcurl):
 		'zentranslations.wordpress.com'             : 'Zen Translations',
 		'zmunjali.wordpress.com'                    : 'Roxism HQ',
 
+		'yellawtwl.com'                             : 'Wuxiaworld',
+		'yellawlaw.wordpress.com'                   : 'Wuxiaworld',
+
 
 		'beehugger.wordpress.com'                   : 'Beehugger',
 		'rancerqz.wordpress.com'                    : 'RANCER',
@@ -422,6 +428,7 @@ def getNiceName(srcurl):
 		"feedproxy.google.com"                      : "FeedProxy",
 
 		"dragomircm.com"                            : "DragomirCM",
+		'dragomircm.wordpress.com'                  : "DragomirCM",
 		"mike777ac.wordpress.com"                   : "Mike777ac",
 
 
