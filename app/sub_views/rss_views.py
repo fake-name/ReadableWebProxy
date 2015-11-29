@@ -27,8 +27,8 @@ def renderFeedsTable(page=1):
 		.order_by(desc(db.FeedItems.published))
 
 
-	# feeds = feeds.options(joinedload('tags'))
-	# feeds = feeds.options(joinedload('authors'))
+	feeds = feeds.options(joinedload('tags'))
+	feeds = feeds.options(joinedload('authors'))
 
 
 

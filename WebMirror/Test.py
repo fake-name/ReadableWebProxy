@@ -271,13 +271,20 @@ def clear_bad():
 
 
 def rss_db_sync(target = None):
+	write_debug = True
 	if target:
 		config.C_DO_RABBIT = False
 		flags.RSS_DEBUG    = True
-
+		write_debug = False
 
 	import WebMirror.processor.RssProcessor
-	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath="Main.RssDb", pageUrl='http://www.example.org', pgContent='', type='application/atom+xml', transfer=False, debug_print=True, write_debug=False)
+	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
+															pageUrl     = 'http://www.example.org',
+															pgContent   = '',
+															type        = 'application/atom+xml',
+															transfer    = False,
+															debug_print = True,
+															write_debug = write_debug)
 
 
 	print("Getting feed items....")

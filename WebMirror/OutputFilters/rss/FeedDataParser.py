@@ -34,7 +34,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	amqpint = None
 	amqp_connect = True
 
-	def __init__(self, transfer=True, debug_print=False, write_debug=True, **kwargs):
+	def __init__(self, transfer=True, debug_print=False, write_debug=False, **kwargs):
 		super().__init__(**kwargs)
 
 		self.dbg_print = debug_print
@@ -248,9 +248,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 						("GUID: ", item['guid']),
 					]
 
-					fp.write("\n==============================\n")
-					fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
-					fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
+					# fp.write("\n==============================\n")
+					# fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
+					# fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
 					for name, val in write_items:
 						fp.write("%s '%s', " % (name, val))
 					fp.write("\n")
