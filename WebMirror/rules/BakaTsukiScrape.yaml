@@ -2,6 +2,8 @@ type: eastern
 
 baseUrl:  ['http://www.baka-tsuki.org/']
 
+send_raw_feed: False
+
 feeds:
 	# All changes feed (HIGH VOLUME)
 	- 'http://www.baka-tsuki.org/project/index.php?title=Special:RecentChanges&feed=atom'

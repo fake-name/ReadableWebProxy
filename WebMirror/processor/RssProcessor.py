@@ -160,8 +160,10 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 			# 	continue
 
 			if not 'guid' in entry:
+				# print("if not 'guid' in entry:")
 				continue
 			if not "authors" in entry:
+				# print('if not "authors" in entry:')
 				continue
 
 			item = {}
@@ -216,7 +218,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 	def extractContent(self):
-		# print("Rss extracting content!")
+		print("Rss extracting content!")
 
 
 		feed = self.parseFeed(self.content)

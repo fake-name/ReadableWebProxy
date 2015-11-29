@@ -12,6 +12,7 @@ import WebMirror.OutputFilters.rss.ParserFuncs as pfuncs
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
 import WebMirror.OutputFilters.FilterBase
+import WebMirror.rules
 import flags
 
 skip_filter = [
@@ -320,11 +321,19 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		if any([item in feedDat['linkUrl'] for item in skip_filter]):
+			# print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			return
+
+		netloc = urllib.parse.urlparse(feedDat['linkUrl']).netloc
+
+		# print("ProcessFeedData! ", netloc)
+		if not WebMirror.rules.netloc_send_feed(netloc):
+			# print("Not sending data for netloc: ", netloc)
 			return
 
 		nicename = feedNameLut.getNiceName(feedDat['linkUrl'])
 		if not nicename:
-			nicename = urllib.parse.urlparse(feedDat['linkUrl']).netloc
+			nicename = netloc
 
 
 		# if not nicename in self.names:
@@ -332,6 +341,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# 	# print(nicename)
 
 		feedDat['srcname'] = nicename
+
 
 		if tx_raw:
 			raw = self.getRawFeedMessage(feedDat)

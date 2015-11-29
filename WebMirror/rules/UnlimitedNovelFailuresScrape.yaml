@@ -5,6 +5,7 @@ baseUrl: [
 	"http://unlimitednovelfailures.mangamatters.com/"
 	]
 
+send_raw_feed: True
 
 feeds: [
 	'http://unlimitednovelfailures.mangamatters.com/feed/atom/'

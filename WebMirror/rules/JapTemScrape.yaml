@@ -11,6 +11,7 @@ baseUrl: [
 	]
 
 
+send_raw_feed: True
 extraStartUrls: [
 		'http://japtem.com/fanfic.php?action=last_updated',
 		'http://japtem.com/fanfic.php',

@@ -5,6 +5,7 @@ feeds: [
 ]
 
 
+send_raw_feed: False
 baseUrl: [
 		"http://re-monster.wikia.com/wiki/Novel",
 		"http://re-monster.wikia.com/wiki/Day_1-10/Day_1",

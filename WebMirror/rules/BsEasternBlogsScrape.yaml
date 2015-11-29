@@ -6,6 +6,8 @@ allImages: True
 
 FOLLOW_GOOGLE_LINKS: True
 
+send_raw_feed: True
+
 baseUrl: [
 
 	'http://a0132.blogspot.ca',

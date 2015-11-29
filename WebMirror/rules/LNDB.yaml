@@ -5,6 +5,7 @@ baseUrl: [
 	"http://lndb.info/"
 	]
 
+send_raw_feed: False
 badwords: [
 			"/auth/",
 			"/about/",

@@ -221,6 +221,11 @@ def getSpecialFilters(ruleset):
 	return ret
 
 
+def transmitFeeds(ruleset):
+	assert 'send_raw_feed' in ruleset, "'send_raw_feed' flag missing from ruleset!"
+
+	return bool(ruleset['send_raw_feed'])
+
 
 def checkBadValues(ruleset):
 	assert 'wg' not in ruleset
@@ -257,6 +262,7 @@ def validateRuleKeys(dat, fname):
 		'trigger',
 
 		'normal_fetch_mode',
+		'send_raw_feed',
 		'special_case_filters',
 
 		# Not currently implemented, but useful
@@ -287,6 +293,7 @@ def load_validate_rules(fname, dat):
 	rules['IGNORE_MALFORMED_URLS'] = getIgnoreMalformed(dat)
 	rules['type']                  = getGenreType(dat)
 
+	rules['send_raw_feed']         = transmitFeeds(dat)
 	rules['destyle']               = getDestyles(dat)
 	rules['preserveAttrs']         = getPreserveAttrs(dat)
 
@@ -370,7 +377,7 @@ def load_rules():
 		flags.RULE_CACHE = rules
 		flags.SPECIAL_CASE_CACHE = specials
 	else:
-		print("Using cached rules")
+		# print("Using cached rules")
 		rules = flags.RULE_CACHE
 	return rules
 
@@ -392,9 +399,20 @@ def load_special_case_sites():
 
 
 
+def netloc_send_feed(netloc):
+	for ruleset in load_rules():
+		if ruleset['send_raw_feed']:
+			if netloc in ruleset['netlocs']:
+				return True
+	return False
+
 # Trigger cache-loading of the ruleset.
 load_rules()
 load_special_case_sites()
 
 if __name__ == "__main__":
 	print(load_special_case_sites())
+
+	for ruleset in load_rules():
+		if ruleset['send_raw_feed'] == False:
+			print(ruleset['netlocs'])

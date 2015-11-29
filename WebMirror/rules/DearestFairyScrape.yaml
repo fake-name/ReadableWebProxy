@@ -2,6 +2,8 @@ type: eastern
 
 FOLLOW_GOOGLE_LINKS: False
 
+send_raw_feed: True
+
 baseUrl:
      - "http://earlandfairy.weebly.com/"
      - "http://eccentrictranslations.weebly.com"

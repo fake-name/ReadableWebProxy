@@ -13,6 +13,7 @@ baseUrl: [
 	"http://www.fanfiction.net/",
 	]
 
+send_raw_feed: False
 trigger: False
 
 badwords: [

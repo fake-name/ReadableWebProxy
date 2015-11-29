@@ -4,6 +4,9 @@ feeds: [
 	'http://guhehe.net/feed/'
 ]
 
+
+send_raw_feed: True
+
 baseUrl: [
 	"http://guhehe.net/",
 	"http://www.guhehe.net/"

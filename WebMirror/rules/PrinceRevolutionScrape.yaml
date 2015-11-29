@@ -8,6 +8,7 @@ baseUrl: [
 feeds: [
 	'http://www.princerevolution.org/feed/'
 ]
+send_raw_feed: True
 
 
 # Any url containing any of the words in the `badwords` list will be ignored.

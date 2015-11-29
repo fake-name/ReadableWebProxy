@@ -9,6 +9,7 @@ baseUrl: [
 feeds: [
 	'http://www.sousetsuka.com/feeds/posts/default'
 ]
+send_raw_feed: True
 
 badwords: [
 			"pages/reportAbuse",

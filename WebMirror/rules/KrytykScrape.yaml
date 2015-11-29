@@ -6,6 +6,8 @@ feeds: [
 	'http://krytykal.org/feed/'
 ]
 
+send_raw_feed: True
+
 # Any url containing any of the words in the `badwords` list will be ignored.
 badwords: [
 			"/manga/",

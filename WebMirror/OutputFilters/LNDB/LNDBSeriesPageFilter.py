@@ -69,7 +69,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
 
-		self.log.info("Processing RSS Item")
+		self.log.info("Processing LNDB Item")
 		super().__init__()
 
 		self.wg = WebMirror.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")

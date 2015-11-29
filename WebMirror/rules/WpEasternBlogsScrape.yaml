@@ -2,6 +2,8 @@
 
 type: eastern
 
+send_raw_feed: True
+
 baseUrl: [
 
 	'http://gekkahimethetranslation.wordpress.com',

@@ -5,6 +5,7 @@ allImages: False
 
 type: "western"
 
+send_raw_feed: False
 baseUrl: [
 	"http://www.royalroadl.com/",
 	"http://royalroadl.com/",

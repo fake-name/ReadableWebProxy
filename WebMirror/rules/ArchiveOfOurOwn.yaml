@@ -11,6 +11,7 @@ baseUrl: [
 	]
 
 trigger: False
+send_raw_feed: False
 
 badwords: [
 			"/about",

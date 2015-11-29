@@ -1,6 +1,7 @@
 type: western
 
 
+send_raw_feed: False
 baseUrl: [
 	'http://www.asstr.org/',
 	'http://pokegirls.org/',

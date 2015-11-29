@@ -6,6 +6,8 @@ baseUrl: [
 	"https://sites.google.com/site/sekaigameoredake/"
 	]
 
+send_raw_feed: True
+
 badwords: [
 			"pages/reportAbuse",
 

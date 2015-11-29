@@ -3,6 +3,8 @@
 
 type: "western"
 
+send_raw_feed: True
+
 baseUrl: [
 	 "http://fuzionlife.wordpress.com",
 	 "http://lastexorcist.wordpress.com",
@@ -65,8 +67,12 @@ baseUrl: [
 	 "https://silvalau.wordpress.com",
 	 'https://circleofshards.wordpress.com',
 
-	'https://manatankmagus.wordpress.com/',
+	'https://manatankmagus.wordpress.com',
 	'https://rancerqz.wordpress.com',
+	'https://originnovels.wordpress.com',
+	'https://trueidentitynovel.wordpress.com',
+	'https://shinynewjustice.wordpress.com',
+
 
 	 ]
 

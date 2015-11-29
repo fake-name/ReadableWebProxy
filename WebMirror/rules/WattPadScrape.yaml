@@ -12,6 +12,7 @@ baseUrl: [
 	"https://a.wattpad.com/",
 ]
 
+send_raw_feed: False
 extraStartUrls: [
 
 	'https://www.wattpad.com/api/v3/stories?fields%3Dstories%28id%2Ctitle%2Curl%29%2Ctotal%2CnextUrl&limit=50&offset=0',

@@ -72,7 +72,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
 
-		self.log.info("Processing RSS Item")
+		self.log.info("Processing WattPad Item")
 		super().__init__()
 
 		self.wg = WebMirror.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")

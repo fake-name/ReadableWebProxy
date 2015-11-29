@@ -416,6 +416,7 @@ def getNiceName(srcurl):
 		'yukkuri-literature-service.blogspot.com'   : 'Yukkuri Free Time Literature Service',
 		'zentranslations.wordpress.com'             : 'Zen Translations',
 		'zmunjali.wordpress.com'                    : 'Roxism HQ',
+		'www.suiminchuudoku.net'                    : '睡眠中毒',
 
 		'yellawtwl.com'                             : 'Wuxiaworld',
 		'yellawlaw.wordpress.com'                   : 'Wuxiaworld',
@@ -426,6 +427,15 @@ def getNiceName(srcurl):
 		'moonbunnycafe.com'                         : 'Moon Bunny Cafe',
 
 		"feedproxy.google.com"                      : "FeedProxy",
+
+		"www.worldofwatermelons.com"                : "World of Watermelons",
+
+		'shinynewjustice.wordpress.com'             : 'Sins of the Fathers',
+		'trueidentitynovel.wordpress.com'           : 'Origin Novels',
+		'originnovels.wordpress.com'                : 'Origin Novels',
+
+		'vaancruze.com'                             : 'VaanCruze',
+		'vaancruze.wordpress.com'                   : 'VaanCruze',
 
 		"dragomircm.com"                            : "DragomirCM",
 		'dragomircm.wordpress.com'                  : "DragomirCM",

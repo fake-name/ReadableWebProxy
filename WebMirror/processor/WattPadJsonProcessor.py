@@ -65,7 +65,7 @@ class WattPadJsonProcessor(ProcessorBase.PageProcessor):
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
 
-		self.log.info("Processing RSS Item")
+		self.log.info("Processing WattPad JSON Item")
 		super().__init__()
 
 	@staticmethod
