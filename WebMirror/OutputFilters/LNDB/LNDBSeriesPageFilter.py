@@ -118,7 +118,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# pprint.pprint(seriesmeta)
 
 		# print(seriesmeta)
-		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=IS_BETA)
+		pkt = msgpackers.createSeriesInfoPacket(seriesmeta, beta=IS_BETA, matchAuthor=True)
 		self.amqp_put_item(pkt)
 
 

@@ -35,7 +35,7 @@ def fix_dict(inRelease):
 
 
 
-def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}, beta=False):
+def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}, matchAuthor=False):
 	'''
 	Special case behaviour:
 		If vol or chapter is None, the
@@ -45,20 +45,17 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 
 
 	ret = {
-		'srcname'   : raw_item['srcname'],
-		'series'    : fix_string(series),
-		'vol'       : vol,
-		'chp'       : packChapterFragments(chap, frag),
-		'published' : raw_item['published'],
-		'itemurl'   : raw_item['linkUrl'],
-		'postfix'   : fix_string(postfix),
-		'author'    : fix_string(author),
-		'tl_type'   : tl_type,
+		'srcname'      : raw_item['srcname'],
+		'series'       : fix_string(series),
+		'vol'          : vol,
+		'chp'          : packChapterFragments(chap, frag),
+		'published'    : raw_item['published'],
+		'itemurl'      : raw_item['linkUrl'],
+		'postfix'      : fix_string(postfix),
+		'author'       : fix_string(author),
+		'tl_type'      : tl_type,
+		'match_author' : matchAuthor,
 
-		# "beta" items are optionally filtered client-end to allow
-		# testing in my dev env without having the feed outputs go through
-		# to the prod env
-		'beta'      : beta,
 	}
 
 	for key, value in extraData.items():
@@ -86,21 +83,19 @@ def packChapterFragments(chapStr, fragStr):
 
 
 
-def createReleasePacket(data, beta=False):
-	'''
-	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
+def createSeriesInfoPacket(data, beta=False, matchAuthor=False):
 
-	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type']
+	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
 
-	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, data)
-	assert all([key in data for key in expect]), "Invalid key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
+	# assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
+	assert all([key in data for key in expect]), "Invalid key in metadata message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
 
-	data['series']  = fix_string(data['series'])
-	data['postfix'] = fix_string(data['postfix'])
-	data['author']  = fix_string(data['author'])
+	data['title']        = fix_string(data['title'])
+	data['desc']         = fix_string(data['desc'])
+	data['match_author'] = matchAuthor
 
 	ret = {
-		'type' : 'parsed-release',
+		'type' : 'series-metadata',
 		'data' : data,
 
 		# "beta" items are optionally filtered client-end to allow
@@ -111,18 +106,21 @@ def createReleasePacket(data, beta=False):
 	return json.dumps(ret)
 
 
-def sendSeriesInfoPacket(data, beta=False):
+def createReleasePacket(data, beta=False):
+	'''
+	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
 
-	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
+	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type', 'match_name']
 
-	# assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
-	assert all([key in data for key in expect]), "Invalid key in metadata message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
+	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, data)
+	assert all([key in data for key in expect]), "Invalid key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
 
-	data['title']   = fix_string(data['title'])
-	data['desc']    = fix_string(data['desc'])
+	data['series']  = fix_string(data['series'])
+	data['postfix'] = fix_string(data['postfix'])
+	data['author']  = fix_string(data['author'])
 
 	ret = {
-		'type' : 'series-metadata',
+		'type' : 'parsed-release',
 		'data' : data,
 
 		# "beta" items are optionally filtered client-end to allow

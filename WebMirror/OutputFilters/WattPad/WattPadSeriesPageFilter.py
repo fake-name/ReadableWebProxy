@@ -162,7 +162,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['srcname']   = "WattPad"
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release['url']
-			msg = msgpackers.buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra, beta=IS_BETA)
+			msg = msgpackers.buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 			retval.append(msg)
 
 			# Check if there was substantive structure in the chapter
@@ -193,7 +193,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['sourcesite']  = 'WattPad'
 
 
-		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta, beta=IS_BETA)
+		pkt = msgpackers.createSeriesInfoPacket(seriesmeta, beta=IS_BETA, matchAuthor=True)
 		self.log.info("Wattpad scraper generated %s amqp messages!", len(retval) + 1)
 		self.amqp_put_item(pkt)
 		return retval

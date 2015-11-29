@@ -126,7 +126,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['tl_type']     = 'oel'
 		seriesmeta['sourcesite']  = 'RoyalRoadL'
 
-		pkt = msgpackers.sendSeriesInfoPacket(seriesmeta)
+		pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
 
 		extra = {}
 		extra['tags']     = tags
@@ -155,7 +155,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release.a['href']
 
-			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
+			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 			retval.append(msg)
 
 		missing_chap = 0
