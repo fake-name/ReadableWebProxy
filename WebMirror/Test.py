@@ -18,6 +18,7 @@ import config
 import calendar
 from sqlalchemy import and_
 from sqlalchemy.sql import text
+import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 import urllib.parse
 import urllib.error
 import WebMirror.rules
@@ -270,6 +271,53 @@ def clear_bad():
 
 
 
+def delete_comment_feed_items():
+
+	sess = db.get_session()
+	bad = sess.query(db.FeedItems) \
+			.filter(or_(
+				db.FeedItems.contenturl.like("%#comment-%"),
+				db.FeedItems.contenturl.like("%CommentsForInMyDaydreams%"),
+				db.FeedItems.contenturl.like("%www.fanfiction.net%"),
+				db.FeedItems.contenturl.like("%www.fictionpress.com%"),
+				db.FeedItems.contenturl.like("%www.booksie.com%")))    \
+			.order_by(db.FeedItems.contenturl) \
+			.all()
+
+	count = 0
+	for bad in bad:
+		print(bad.contenturl)
+
+		while bad.author:
+			bad.author.pop()
+		while bad.tags:
+			bad.tags.pop()
+		sess.delete(bad)
+		count += 1
+		if count % 1000 == 0:
+			print("Committing at %s" % count)
+			sess.commit()
+
+	print("Done. Committing...")
+	sess.commit()
+
+
+
+def update_feed_names():
+	for key, value in feedNameLut.mapper.items():
+		feed_items = db.get_session().query(db.FeedItems) \
+				.filter(db.FeedItems.srcname == key)    \
+				.all()
+		if feed_items:
+			for item in feed_items:
+				item.srcname = value
+			print(len(feed_items))
+			print(key, value)
+			db.get_session().commit()
+
+
+
+
 def rss_db_sync(target = None):
 	write_debug = True
 	if target:
@@ -294,10 +342,12 @@ def rss_db_sync(target = None):
 		feed_items = db.get_session().query(db.FeedItems) \
 				.filter(db.FeedItems.srcname == target)    \
 				.order_by(db.FeedItems.srcname)           \
+				.order_by(db.FeedItems.title)           \
 				.all()
 	else:
 		feed_items = db.get_session().query(db.FeedItems) \
 				.order_by(db.FeedItems.srcname)           \
+				.order_by(db.FeedItems.title)           \
 				.all()
 
 
@@ -355,8 +405,12 @@ def decode(*args):
 		op = args[0]
 		if op == "rss":
 			test_all_rss()
+		elif op == "rss-del-comments":
+			delete_comment_feed_items()
 		elif op == "db-fiddle":
 			db_fiddle()
+		elif op == "rss-name":
+			update_feed_names()
 		elif op == "longest-rows":
 			longest_rows()
 		elif op == "fix-null":
@@ -399,6 +453,8 @@ if __name__ == "__main__":
 		print("you must pass a operation to execute!")
 		print("Current actions:")
 		print('	rss')
+		print('	rss-del-comments')
+		print('	rss-name')
 		print('	db-fiddle')
 		print('	longest-rows')
 		print('	fix-null')

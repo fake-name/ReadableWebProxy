@@ -11,34 +11,23 @@ import re
 # Sousetsuka
 ####################################################################################################################################################
 def extractSousetsuka(item):
-	# check that 'Desumachi' is in the tags? It seems to work well enough now....
-	desumachi_norm  = re.search(r'^(Death March kara Hajimaru Isekai Kyo?usoukyoku) (\d+)\W(\d+)$', item['title'])
-	desumachi_extra = re.search(r'^(Death March kara Hajimaru Isekai Kyusoukyoku)(?: Chapter)? (\d+)\W(Intermission.*?)$', item['title'])
 
-	if desumachi_norm:
-		print(desumachi_norm.groups())
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if 'Desumachi' in item['tags']:
+		return buildReleaseMessage(item, "Death March kara Hajimaru Isekai Kyousoukyoku", vol, chp, frag=frag, postfix=postfix)
 
-	ret = False
-	if desumachi_norm:
-		series = desumachi_norm.group(1)
-		vol    = desumachi_norm.group(2)
-		chp    = desumachi_norm.group(3)
-		ret = buildReleaseMessage(raw_item=item, series=series, vol=vol, chap=chp)
-
-
-	elif desumachi_extra:
-		series  = desumachi_extra.group(1)
-		vol     = desumachi_extra.group(2)
-		postfix = desumachi_extra.group(3)
-		ret = buildReleaseMessage(item, series, vol, postfix=postfix)
-
-	return ret
+	return False
 
 ####################################################################################################################################################
 # お兄ちゃん、やめてぇ！ / Onii-chan Yamete
 ####################################################################################################################################################
 def extractOniichanyamete(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
 	if       'Jashin Average'   in item['title'] \
 			or 'Cthulhu Average'  in item['title'] \
 			or 'Evil God Average' in item['tags']  \
@@ -50,7 +39,6 @@ def extractOniichanyamete(item):
 
 	if 'Tilea’s Worries' in item['title']:
 		return buildReleaseMessage(item, 'Tilea\'s Worries', vol, chp, postfix=postfix)
-
 
 	if 'Kenkyo Kenjitu' in item['tags']:
 		return buildReleaseMessage(item, 'Kenkyo Kenjitu', vol, chp, postfix=postfix)
@@ -128,12 +116,16 @@ def extractOniichanyamete(item):
 # Natsu TL
 ####################################################################################################################################################
 def extractNatsuTl(item):
-	meister  = re.search(r'^(Magi Craft Meister) Volume (\d+) Chapter (\d+)$', item['title'])
-	if meister:
-		series = meister.group(1)
-		vol    = meister.group(2)
-		chp    = meister.group(3)
-		return buildReleaseMessage(item, series, vol, chp)
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if 'Jikuu' in item['tags']:
+		return buildReleaseMessage(item, "Jikuu Mahou de Isekai to Chikyuu wo ittarikitari", vol, chp, frag=frag, postfix=postfix)
+
+	if 'Magi Craft Meister' in item['tags']:
+		return buildReleaseMessage(item, 'Magi Craft Meister', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -142,26 +134,23 @@ def extractNatsuTl(item):
 # TheLazy9
 ####################################################################################################################################################
 def extractTheLazy9(item):
-	kansutoppu  = re.search(r'^(Kansutoppu!) Chapter (\d+)$', item['title'])
-	garudeina  = re.search(r'^(Garudeina Oukoku Koukoku Ki) Chapter (\d+): Part (\d+)$', item['title'])
-	# meister  = re.search(r'^(Magi Craft Meister) Volume (\d+) Chapter (\d+)$', item['title'])
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if kansutoppu:
-		series = kansutoppu.group(1)
-		vol    = None
-		chp    = kansutoppu.group(2)
-		return buildReleaseMessage(item, series, vol, chp)
-	if garudeina:
-		series = garudeina.group(1)
-		vol    = None
-		chp    = garudeina.group(2)
-		frag   = garudeina.group(3)
+	if not (chp or vol):
+		return False
 
-		return buildReleaseMessage(item, series, vol, chp, frag=frag)
+	if 'かんすとっぷ！(KANSUTOPPU)' in item['tags'] or "Kansutoppu!" in item['title']:
+		return buildReleaseMessage(item, "Kansutoppu!", vol, chp, frag=frag, postfix=postfix)
+	if 'Goblin Tenseiki ~erufu youjo ni kaku de maketeru yuusha na ore~' in item['tags']:
+		return buildReleaseMessage(item, 'Goblin Tenseiki ~erufu youjo ni kaku de maketeru yuusha na ore~', vol, chp, frag=frag, postfix=postfix)
 
-	if "Astarte's Knight" in item['tags']:
-		return buildReleaseMessage(item, 'Astarte\'s Knight', vol, chp, frag=frag, postfix=postfix)
+	if "Black Knight" in item['title']:
+		return buildReleaseMessage(item, "The Black Knight Who Was Stronger than even the Hero", vol, chp, frag=frag, postfix=postfix)
+	if "Astarte’s Knight" in item['title']:
+		return buildReleaseMessage(item, "Astarte's Knight", vol, chp, frag=frag, postfix=postfix)
+	if "HTG:" in item['title']:
+		return buildReleaseMessage(item, "Tozoku shoujo ni tensei shita ore no shimei wa yuusha to maou ni iyagarasena no!", vol, chp, frag=frag, postfix=postfix)
+
 
 	return False
 
@@ -170,6 +159,9 @@ def extractTheLazy9(item):
 ####################################################################################################################################################
 def extractYoraikun(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
 	if 'The Rise of the Shield Hero' in item['tags']:
 		return buildReleaseMessage(item, 'The Rise of the Shield Hero', vol, chp, frag=frag, postfix=postfix)
 	elif 'Konjiki no Wordmaster' in item['tags']:
@@ -255,6 +247,8 @@ def extractGravityTranslation(item):
 ####################################################################################################################################################
 def extractPikaTranslations(item):
 	chp, vol = extractChapterVol(item['title'])
+	if not (chp or vol):
+		return False
 	if 'Close Combat Mage' in item['tags']:
 		return buildReleaseMessage(item, 'Close Combat Mage', vol, chp)
 
@@ -774,7 +768,7 @@ def extractClicky(item):
 ####################################################################################################################################################
 def extractDefiring(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if 'World teacher' in item['title']:
+	if 'World teacher'.lower() in item['title'].lower() or 'World teacher' in item['tags']:
 		return buildReleaseMessage(item, 'World teacher', vol, chp, frag=frag, postfix=postfix)
 	if 'Shinka no Mi' in item['title']:
 		return buildReleaseMessage(item, 'Shinka no Mi', vol, chp, frag=frag, postfix=postfix)
@@ -1014,10 +1008,18 @@ def extractRisingDragons(item):
 ####################################################################################################################################################
 def extractSylver(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if "Shura's Wrath" in item['tags']:
+
+	if not (chp or vol):
+		return False
+
+	if "History's Number One Founder" in item['tags']:
 		if ":" in item['title']:
 			postfix = item['title'].split(":", 1)[-1]
-		return buildReleaseMessage(item, 'Shura’s Wrath', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, "History's Number One Founder", vol, chp, frag=frag, postfix=postfix)
+	if "Shura's Wrath" in item['tags'] or "Shura\"s Wrath" in item['tags']:
+		if ":" in item['title']:
+			postfix = item['title'].split(":", 1)[-1]
+		return buildReleaseMessage(item, 'Shura\'s Wrath', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 ####################################################################################################################################################
@@ -1160,6 +1162,8 @@ def extractBureiDan(item):
 		return buildReleaseMessage(item, 'Isekai Canceller', vol, chp, frag=frag, postfix=postfix)
 	if 'Kenja ni Natta' in item['tags'] and (chp or vol or frag or postfix):
 		return buildReleaseMessage(item, 'Kenja ni Natta', vol, chp, frag=frag, postfix=postfix)
+	if 'Han-Ryuu Shoujo no Dorei Raifu' in item['tags'] and (chp or vol or frag or postfix):
+		return buildReleaseMessage(item, 'Han-Ryuu Shoujo no Dorei Raifu', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -2183,6 +2187,15 @@ def extractSolitaryTranslation(item):
 
 	return False
 
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def extractThyaeria(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if 'Tales of Demons and Gods' in item['tags'] and (chp or vol):
+		return buildReleaseMessage(item, 'Tales of Demons and Gods', vol, chp, frag=frag, postfix=postfix)
+	return False
 
 ####################################################################################################################################################
 #
@@ -2227,6 +2240,10 @@ def extractFeedProxy(item):
 		return buildReleaseMessage(item, 'Kamitachi ni Hirowareta Otoko', vol, chp, frag=frag, postfix=postfix)
 
 	return False
+
+
+
+
 
 
 
