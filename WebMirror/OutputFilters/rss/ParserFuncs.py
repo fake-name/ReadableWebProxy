@@ -1726,7 +1726,7 @@ def extractJawzTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
 	if 'Zectas' in item['tags'] and vol and chp:
-		return buildReleaseMessage(item, 'Hyouketsu Kyoukai no Eden', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+		return buildReleaseMessage(item, 'Zectas', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'LMS' in item['tags'] and vol and chp:
 		return buildReleaseMessage(item, 'Legendary Moonlight Sculptor', vol, chp, frag=frag, postfix=postfix)
 
