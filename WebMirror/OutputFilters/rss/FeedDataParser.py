@@ -509,8 +509,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 						fp.write("%s '%s', " % (name, val))
 					fp.write("\n")
 
+		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 		if self.dbg_print or flags.RSS_DEBUG:
-			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if not ret and (vol or chp or frag):
 				print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 			elif ret:
