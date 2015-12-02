@@ -5436,4 +5436,19 @@ data = [
 	# anyways, it crashes.
 	('Volume 1 Chapter A Whole New World~ - Yes! I Ken Japaneez!',               (1.0, None, None, '')),
 
+
+	('IoR Book 1 Chapter 13 中',      (1.0, 13.0, None, '')),
+	('IoR Book 1 Chapter 14 Pt. 1',   (1.0, 14.0, 1, '')),
+	('IoR Book 1 Chapter 14 Pt. 2',   (1.0, 14.0, 2, '')),
+	('IoR Book 1 Chapter 16 Pt. 2',   (1.0, 16.0, 2, '')),
+	('IoR Book 1 Chapter 17 Pt. 2',   (1.0, 17.0, 2, '')),
+	('IoR Book 1 Chapter 18 Pt. 1',   (1.0, 18.0, 1, '')),
+	('IoR Book 1 Chapter 19 Pt. 1',   (1.0, 19.0, 1, '')),
+	('IoR Book 1 Chapter 19 Pt. 2',   (1.0, 19.0, 2, '')),
+	('IoR Book 1 Chapter 1 Pt. 2',    (1.0,  1.0, 2, '')),
+	('IoR Book 2 Chapter 2 Pt. 1',    (2.0,  2.0, 1, '')),
+	('IoR Book 2 Chapter 2 Pt. 2',    (2.0,  2.0, 2, '')),
+	('IoR Book 2 Chapter 3 Pt. 1',    (2.0,  3.0, 1, '')),
+
+
 ]

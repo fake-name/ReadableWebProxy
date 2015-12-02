@@ -13,7 +13,7 @@ from WebMirror.Engine import SiteArchiver
 
 import sqlalchemy.exc
 import traceback
-import settings
+import os
 import config
 import calendar
 from sqlalchemy import and_
@@ -324,6 +324,8 @@ def rss_db_sync(target = None):
 		config.C_DO_RABBIT = False
 		flags.RSS_DEBUG    = True
 		write_debug = False
+	else:
+		os.unlink('rss_filter_misses-1.txt')
 
 	import WebMirror.processor.RssProcessor
 	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",

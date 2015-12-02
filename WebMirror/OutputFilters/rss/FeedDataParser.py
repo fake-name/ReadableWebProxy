@@ -184,6 +184,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Radiant Translations'                                          : pfuncs.extractRadiantTranslations,
 				'Tales of MU'                                                   : pfuncs.extractTalesOfMU,
 				'ZSW'                                                           : pfuncs.extractZSW,
+				'Loiterous'                                                     : pfuncs.extractLoiterous,
 
 				'Youjinsite Translations'                                       : pfuncs.extractYoujinsite,
 				'Youshoku Translations'                                         : pfuncs.extractYoushoku,
@@ -197,6 +198,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Hot Cocoa Translations'                                        : pfuncs.extractHotCocoa,
 				'Solitary Translation'                                          : pfuncs.extractSolitaryTranslation,
 				'A Place Of Legends'                                            : pfuncs.extractPlaceOfLegends,
+				'Mecha Mushroom Translations'                                   : pfuncs.extractMechaMushroom,
 
 				# KnW mess
 				'Blazing Translations'                                          : pfuncs.extractKnW,
@@ -349,7 +351,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Linked Translations'                                           : pfuncs.extractBase,
 				'Lizard Translations'                                           : pfuncs.extractBase,
 				'LMS Machine Translations'                                      : pfuncs.extractBase,
-				'Loiterous'                                                     : pfuncs.extractBase,
 				'LorCromwell'                                                   : pfuncs.extractBase,
 				'Lylis Translations'                                            : pfuncs.extractBase,
 				'Machine Sliced Bread'                                          : pfuncs.extractBase,
@@ -357,7 +358,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Mana Tank Magus'                                               : pfuncs.extractBase,
 				'Maou na Anoko to murabito a'                                   : pfuncs.extractBase,
 				'Martial God Translator'                                        : pfuncs.extractBase,
-				'Mecha Mushroom Translations'                                   : pfuncs.extractBase,
 				'Midnight Translation Blog'                                     : pfuncs.extractBase,
 				'Mnemeaa'                                                       : pfuncs.extractBase,
 				'mousou-haven.com'                                              : pfuncs.extractBase,
@@ -390,7 +390,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Quality ★ Mistranslations'                                    : pfuncs.extractBase,
 				'Rainbow Translations'                                          : pfuncs.extractBase,
 				'Raising Angels & Defection'                                    : pfuncs.extractBase,
-				'Rebirth Online World'                                          : pfuncs.extractBase,
+				'Rebirth Online World'                                          : pfuncs.extractRebirthOnlineWorld,
 				'Red Dragon Translations'                                       : pfuncs.extractBase,
 				'Reddy Creations'                                               : pfuncs.extractBase,
 				'Reigokai: Isekai Translations'                                 : pfuncs.extractBase,
@@ -515,7 +515,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 			elif ret:
 				pass
-				print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], item['title']))
+				# print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], item['title']))
 			else:
 				pass
 				print("Wat: '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
