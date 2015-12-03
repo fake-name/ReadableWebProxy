@@ -5451,4 +5451,32 @@ data = [
 	('IoR Book 2 Chapter 3 Pt. 1',    (2.0,  3.0, 1, '')),
 
 
+
+	("Ch.1 I woke up",                            (None, 1.0, None, '')),
+	("Ch.2 If I work hard",                       (None, 2.0, None, '')),
+	("Ch.3 We get stronger",                      (None, 3.0, None, '')),
+	("Ch.4 I'm king of the ring",                 (None, 4.0, None, '')),
+	("Ch.5 I don't understand",                   (None, 5.0, None, '')),
+	("Ch.6 I'll come",                            (None, 6.0, None, '')),
+	("Ch. 7 So this is civilization",             (None, 7.0, None, '')),
+	("Ch.8 In the city",                          (None, 8.0, None, '')),
+	("Ch.9 The previous victims",                 (None, 9.0, None, '')),
+	("Ch. 10 Shopping starts",                    (None, 10.0, None, '')),
+	("Ch.11 Shopping ends",                       (None, 11.0, None, '')),
+	("Ch.12 First lesson",                        (None, 12.0, None, '')),
+	("Ch.13 A visitor",                           (None, 13.0, None, '')),
+	("Ch.14 Magic lesson",                        (None, 14.0, None, '')),
+	("Ch.15 Why more lectures?",                  (None, 15.0, None, '')),
+	("Ch.16 The orphanage",                       (None, 16.0, None, '')),
+	("Ch.17 Acting my age",                       (None, 17.0, None, '')),
+	("Side story: A nightmare",                   (None, None, None, 'Side story: A nightmare')),
+	("Ch.18 Registering",                         (None, 18.0, None, '')),
+	("Ch.19 Its weak",                            (None, 19.0, None, '')),
+	("Ch.20 Routine changes then stays the same", (None, 20.0, None, '')),
+	("Side story: Neil's POV",                    (None, None, None, "Side story: Neil's POV")),
+	("Ch.21 Just a day left",                     (None, 21.0, None, '')),
+	("Ch.22 Testing",                             (None, 22.0, None, '')),
+	("Ch.23 Dorms",                               (None, 23.0, None, '')),
+
+
 ]

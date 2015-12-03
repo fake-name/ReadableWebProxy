@@ -212,12 +212,19 @@ class Token(object):
 			return False
 		if all([char in '0123456789.' for char in self.text]):
 			return True
+
+		# Make sure we have at least one digit
+		if not any([char in '0123456789' for char in self.text]):
+			return False
 		return False
 
 	def getNumber(self):
 
 		if self.isNumeric():
 			# print("Not numeric!")
+			if self.text.startswith("."):
+				return float(self.text[1:])
+
 			return float(self.text)
 		val = self.asciiNumeric()
 		# print("AsciiNumeric call return: ", val)
