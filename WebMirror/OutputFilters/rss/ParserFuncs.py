@@ -2374,6 +2374,62 @@ def extractSoraTranslations(item):
 ####################################################################################################################################################
 #
 ####################################################################################################################################################
+def extractAzurro(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if not 'translation project' in item['tags']:
+		return False
+
+	if 'A Naive Short-tempered Girl' in item['tags']:
+		return buildReleaseMessage(item, 'A Naive Short-tempered Girl', vol, chp, frag=frag, postfix=postfix)
+	if 'Substitute Bride' in item['tags']:
+		return buildReleaseMessage(item, 'Substitute Bride', vol, chp, frag=frag, postfix=postfix)
+	if 'Husband is Great Black Belly (老公是腹黑大人)' in item['tags']:
+		return buildReleaseMessage(item, 'Husband is Great Black Belly', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractCloversNook(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if 'A mistaken marriage match: A generation of military counselor' in item['tags']:
+		return buildReleaseMessage(item, 'A mistaken marriage match: A generation of military counselor', vol, chp, frag=frag, postfix=postfix)
+	if 'A mistaken marriage match: Record of washed grievances' in item['tags']:
+		return buildReleaseMessage(item, 'A mistaken marriage match: Record of washed grievances', vol, chp, frag=frag, postfix=postfix)
+	if 'Three Marriages' in item['tags']:
+		return buildReleaseMessage(item, 'Three Marriages', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractCookiePasta(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	return buildReleaseMessage(item, 'Douluo Dalu 2 - Jueshi Tangmen', vol, chp, frag=frag, postfix=postfix)
+
+	print(item['title'])
+	print(item['tags'])
+	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False
+
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
 def extractWIP(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):

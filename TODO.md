@@ -6,7 +6,11 @@
  
 http://erolns.blogspot.com/feeds/posts/default
 https://verathragna.wordpress.com/
+http://Turtleme.me
 
+http://laute.tumblr.com
+http://www.deadlylegends.com/translations
+http://www.pegasusfarts.com
 
 fictionmania js links 
  

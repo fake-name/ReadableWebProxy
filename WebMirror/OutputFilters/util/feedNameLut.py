@@ -82,7 +82,7 @@ mapper = {
 	'cnovelproject.blogspot.com'                : 'The C-Novel Project',
 	'cnovels.bookbychapters.com'                : 'Lil\' Bliss Novels',
 	'cnovels2c.wordpress.com'                   : 'C Novels 2 C',
-	'cookiepastatranslations.wordpress.com'     : 'CookiePasta Translations',
+	'cookiepastatranslations.wordpress.com'     : 'CookiePasta',
 	'cosmictranslation.wordpress.com'           : 'Cosmic Translation',
 	'crimsonkisato.blogspot.com'                : 'Kisato\'s MLTs',
 	'ctrlalcala.wordpress.com'                  : 'CtrlAlcalá',

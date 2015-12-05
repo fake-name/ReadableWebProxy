@@ -324,6 +324,9 @@ baseUrl: [
 	'http://www.pandatranslations.net',
 	'http://thyaeriatranslations.com',
 	'http://www.deadlylegends.com/translations/',
+	'https://wuxiaheroes.com',
+	'http://youjinsite.com',
+	'http://www.deadlylegends.com/translations',
 
 	 # This is WP, but it uses an custom theme I haven't tested against.
 	'http://arkmachinetranslations.com',

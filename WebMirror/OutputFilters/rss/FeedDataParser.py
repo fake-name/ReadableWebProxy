@@ -202,6 +202,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Solitary Translation'                                          : pfuncs.extractSolitaryTranslation,
 				'A Place Of Legends'                                            : pfuncs.extractPlaceOfLegends,
 				'Mecha Mushroom Translations'                                   : pfuncs.extractMechaMushroom,
+				'Azurro 4 Cielo'                                                : pfuncs.extractAzurro,
 
 				# KnW mess
 				'Blazing Translations'                                          : pfuncs.extractKnW,
@@ -234,8 +235,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Diwasteman'                                                    : pfuncs.extractBase,
 				'Dark Translations'                                             : pfuncs.extractBase,
 				'Dao Seeker Blog'                                               : pfuncs.extractBase,
-				'CookiePasta Translations'                                      : pfuncs.extractBase,
-				'Clover\'s Nook'                                                : pfuncs.extractBase,
+				'CookiePasta'                                                   : pfuncs.extractCookiePasta,
+				'Clover\'s Nook'                                                : pfuncs.extractCloversNook,
 
 				'Dewey Night Unrolls'                                           : pfuncs.extractBase,
 
@@ -277,7 +278,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Aori Translations'                                             : pfuncs.extractBase,
 				'Aqua Scans'                                                    : pfuncs.extractBase,
 				'Archivity'                                                     : pfuncs.extractBase,
-				'Azurro 4 Cielo'                                                : pfuncs.extractBase,
 				'Bcat00 Translation'                                            : pfuncs.extractBase,
 				'Bear Bear Translations'                                        : pfuncs.extractBase,
 				'BeRsErk Translations'                                          : pfuncs.extractBase,
