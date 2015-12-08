@@ -16,6 +16,7 @@ import datetime
 import time
 import json
 import WebMirror.util.webFunctions
+import bleach
 
 MIN_RATING = 5
 
@@ -101,6 +102,9 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		assert author.startswith("by ")
 		author = author[2:].strip()
 
+
+		title = bleach.clean(title, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
+		author = bleach.clean(author, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
 
 		descDiv = soup.find('div', class_='description')
 		paras = descDiv.find_all("p")
