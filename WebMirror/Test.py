@@ -319,7 +319,7 @@ def update_feed_names():
 
 
 
-def rss_db_sync(target = None):
+def rss_db_sync(target = None, recent=False):
 	write_debug = True
 	if target:
 		config.C_DO_RABBIT = False
@@ -347,6 +347,14 @@ def rss_db_sync(target = None):
 				.order_by(db.FeedItems.srcname)           \
 				.order_by(db.FeedItems.title)           \
 				.all()
+	elif recent:
+		cutoff = datetime.datetime.now() - datetime.timedelta(days=32)
+		feed_items = db.get_session().query(db.FeedItems) \
+				.filter(db.FeedItems.published > cutoff)  \
+				.order_by(db.FeedItems.srcname)           \
+				.order_by(db.FeedItems.title)             \
+				.all()
+
 	else:
 		feed_items = db.get_session().query(db.FeedItems) \
 				.order_by(db.FeedItems.srcname)           \
@@ -442,6 +450,8 @@ def decode(*args):
 			clear_bad()
 		elif op == "rss-db":
 			rss_db_sync()
+		elif op == "rss-recent":
+			rss_db_sync(recent=True)
 		elif op == "clear-blocked":
 			clear_blocked()
 		else:

@@ -349,7 +349,7 @@ mapper = {
 	'tomorolls.wordpress.com'                   : 'Tomorolls',
 	'tony-yon-ka.blogspot.com'                  : 'Tony Yon Ka',
 	'tony-yon-ka.blogspot.com.au'               : 'Tony Yon Ka',
-	'totallyinsanetranlation.com'               : 'Totally Insane Tranlation',
+	'totallyinsanetranlation.com'               : 'Totally Insane Translation',
 	'totobro.com'                               : 'Totokk\'s Translations',
 	'tototrans.com'                             : 'Totokk\'s Translations',
 	'translatedbyaclown.wordpress.com'          : 'Translated by a Clown',
@@ -416,6 +416,7 @@ mapper = {
 	'zmunjali.wordpress.com'                    : 'Roxism HQ',
 	'www.suiminchuudoku.net'                    : '睡眠中毒',
 
+	'watdameow.wordpress.com'                   : 'Wat Da Meow',
 	'yellawtwl.com'                             : 'Wuxiaworld',
 	'yellawlaw.wordpress.com'                   : 'Wuxiaworld',
 
@@ -444,6 +445,7 @@ mapper = {
 	'machineslicedbread.wordpress.com'          : 'Machine Sliced Bread',
 	'holdxandclick.wordpress.com'               : 'Hold \'X\' and Click',
 	'watdameow.wordpress.com'                   : 'Wat Da Meow',
+	'omatranslations.wordpress.com'             : 'One Man Army Translations',
 
 
 	'cavescans.com'                             : 'cavescans.com',
