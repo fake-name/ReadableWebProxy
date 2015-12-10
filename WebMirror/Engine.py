@@ -309,6 +309,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			.limit(1)                                  \
 			.scalar()
 
+		# print("keys = ", list(entry.keys()))
 
 
 		if have:
@@ -317,7 +318,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 			if not ("srcname" in entry):
 				self.log.error("'srcname' not in entry for item from '%s' (contenturl: '%s', title: '%s', guid: '%s')" % (feedurl, entry['linkUrl'], entry['title'], entry['guid']))
 				return
-
 			authors     = [tmp['name'] for tmp in entry['authors'] if 'name' in tmp]
 
 			# Deduplicate repeat tags of the differing case.

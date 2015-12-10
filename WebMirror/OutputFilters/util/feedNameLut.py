@@ -447,8 +447,10 @@ mapper = {
 	'watdameow.wordpress.com'                   : 'Wat Da Meow',
 	'omatranslations.wordpress.com'             : 'One Man Army Translations',
 
+	'turtleme.me'                               : 'The Beginning After The End',
+	'verathragna.wordpress.com'                 : 'Verathragana Stories',
 
-	'cavescans.com'                             : 'cavescans.com',
+	'cavescans.com'                             : 'CaveScans',
 
 	# Wat
 	# 'booksmoviesandbeyond.blogspot.com'         : 'booksmoviesandbeyond.blogspot.com',

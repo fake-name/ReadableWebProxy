@@ -2499,7 +2499,6 @@ def extractNovelsNao(item):
 		return buildReleaseMessage(item, 'Dragon Martial Emperor', vol, chp, frag=frag, postfix=postfix)
 	if 'Three Marriages' in item['tags']:
 		return buildReleaseMessage(item, 'Three Marriages', vol, chp, frag=frag, postfix=postfix)
-
 	if 'The Unseeing Eyes' in item['tags']:
 		return buildReleaseMessage(item, 'The Unseeing Eyes', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'The Gemstone Chronicles' in item['tags']:
@@ -2666,6 +2665,45 @@ def extractTaffyTranslations(item):
 		return buildReleaseMessage(item, 'Close Combat Mage', vol, chp, frag=frag, postfix=postfix)
 
 	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractBeginningAfterTheEnd(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if "Chapter" in item['title']:
+		return buildReleaseMessage(item, 'The Beginning After The End', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractVerathragana(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if "Chapter" in item['title']:
+		return buildReleaseMessage(item, 'The Prince Of Nilfheim', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractOneManArmy(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if "DBWG – Chapter" in item['title']:
+		return buildReleaseMessage(item, 'Dragon-Blooded War God', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
 
 ####################################################################################################################################################
 #

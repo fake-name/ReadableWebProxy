@@ -203,6 +203,10 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'A Place Of Legends'                                            : pfuncs.extractPlaceOfLegends,
 				'Mecha Mushroom Translations'                                   : pfuncs.extractMechaMushroom,
 				'Azurro 4 Cielo'                                                : pfuncs.extractAzurro,
+				'Ceruleonice Translations'                                      : pfuncs.extractCeruleonice,
+				'Trungt Nguyen 123'                                             : pfuncs.extractTrungtNguyen,
+				'Wolfie Translation'                                            : pfuncs.extractWolfieTranslation,
+				'~Taffy Translations~'                                          : pfuncs.extractTaffyTranslations,
 
 				# KnW mess
 				'Blazing Translations'                                          : pfuncs.extractKnW,
@@ -230,6 +234,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Wat Da Meow'                                                   : pfuncs.extractWatDaMeow,
 				'Nutty is Procrastinating'                                      : pfuncs.extractNutty,
 
+				'The Beginning After The End'                                   : pfuncs.extractBeginningAfterTheEnd,
+				'Verathragana Stories'                                          : pfuncs.extractVerathragana,
+
 				'Untuned Translation Blog'                                      : pfuncs.extractBase,
 				'Bad Translation'                                               : pfuncs.extractBase,
 				'HaruPARTY'                                                     : pfuncs.extractBase,
@@ -249,6 +256,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Diwasteman'                                                    : pfuncs.extractBase,
 				'Dark Translations'                                             : pfuncs.extractBase,
 				'Dewey Night Unrolls'                                           : pfuncs.extractBase,
+				'One Man Army Translations (OMA)'                               : pfuncs.extractOneManArmy,
 
 				'(NanoDesu) - Amagi Brilliant Park '                            : pfuncs.extractBase,
 				'(NanoDesu) - Fate/Apocrypha'                                   : pfuncs.extractBase,
@@ -294,7 +302,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'C Novels 2 C'                                                  : pfuncs.extractBase,
 				'Cat Scans'                                                     : pfuncs.extractBase,
 				'cavescans.com'                                                 : pfuncs.extractBase,
-				'Ceruleonice Translations'                                      : pfuncs.extractCeruleonice,
 				'Cheddar!'                                                      : pfuncs.extractBase,
 				'Chinese BL Translations'                                       : pfuncs.extractBase,
 				'Chinese Weaboo Translations'                                   : pfuncs.extractBase,
@@ -441,7 +448,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Translation Raven'                                             : pfuncs.extractBase,
 				'Translation Treasure Box'                                      : pfuncs.extractBase,
 				'Translations From Outer Space'                                 : pfuncs.extractBase,
-				'Trungt Nguyen 123'                                             : pfuncs.extractTrungtNguyen,
 				'Tsukigomori'                                                   : pfuncs.extractBase,
 				'Tumble Into Fantasy'                                           : pfuncs.extractBase,
 				'Tus-Trans'                                                     : pfuncs.extractBase,
@@ -458,7 +464,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'When The Hunting Party Came'                                   : pfuncs.extractBase,
 				'Whimsical Land'                                                : pfuncs.extractBase,
 				'White Tiger Translations'                                      : pfuncs.extractBase,
-				'Wolfie Translation'                                            : pfuncs.extractWolfieTranslation,
 				'Word of Craft'                                                 : pfuncs.extractBase,
 				'World of Summie'                                               : pfuncs.extractBase,
 				'Worm - A Complete Web Serial'                                  : pfuncs.extractBase,
@@ -470,7 +475,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Yi Yue Translation'                                            : pfuncs.extractBase,
 				'youtsubasilver\'s Blog'                                        : pfuncs.extractBase,
 				'Zen Translations'                                              : pfuncs.extractBase,
-				'~Taffy Translations~'                                          : pfuncs.extractTaffyTranslations,
 				'ヾ(。￣□￣)ﾂ'                                                    : pfuncs.extractBase,
 				'一期一会, 万歳!'                                                : pfuncs.extractBase,
 				'睡眠中毒'                                                       : pfuncs.extractBase,
@@ -574,29 +578,22 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processFeedData(self, feedDat, tx_raw=True, tx_parse=True):
 
-
 		if any([item in feedDat['linkUrl'] for item in skip_filter]):
-			# print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
 			return
+
 
 		netloc = urllib.parse.urlparse(feedDat['linkUrl']).netloc
-
-		# print("ProcessFeedData! ", netloc)
-		if not WebMirror.rules.netloc_send_feed(netloc):
-			# print("Not sending data for netloc: ", netloc)
-			return
 
 		nicename = feedNameLut.getNiceName(feedDat['linkUrl'])
 		if not nicename:
 			nicename = netloc
-
-
-		# if not nicename in self.names:
-		# 	self.names.add(nicename)
-		# 	# print(nicename)
-
 		feedDat['srcname'] = nicename
 
+		# print("ProcessFeedData! ", netloc)
+		if not WebMirror.rules.netloc_send_feed(netloc):
+			print("Not sending data for netloc: ", netloc)
+			return
 
 		if tx_raw:
 			raw = self.getRawFeedMessage(feedDat)
