@@ -676,26 +676,27 @@ def extractTensaiTranslations(item):
 ####################################################################################################################################################
 def extractKnW(item):
 	chp, vol, frag = extractChapterVolFragment(item['title'])
+	if not (chp or vol):
+		return False
 
 	tags = item['tags']
 	title = item['title']
 	src = item['srcname']
 
 	postfix = ''
-	ret = None
 
 	if src == 'XCrossJ' and 'Cross Gun' in item['tags']:
-		ret = buildReleaseMessage(item, 'Cross Gun', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+		return buildReleaseMessage(item, 'Cross Gun', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 
 	if 'Character Analysis' in item['title']:
-		return ret
+		return False
 
 	if "Chapter" in title and src == 'Blazing Translations':
 		if "By:" in title:
-			return None
+			return False
 		if "Comment" in title:
-			return None
+			return False
 
 		if ":" in title:
 			postfix = title.split(":", 1)[-1].strip()
@@ -704,14 +705,14 @@ def extractKnW(item):
 		else:
 			postfix = ""
 
-		ret = buildReleaseMessage(item, 'Konjiki no Wordmaster', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Konjiki no Wordmaster', vol, chp, frag=frag, postfix=postfix)
 
 	if ('Chapters' in tags and 'Konjiki no Wordmaster' in tags) \
 		or 'Konjiki no Wordmaster Web Novel Chapters' in tags   \
 		or 'Konjiki' in tags                                    \
 		or (src == 'Loliquent' and 'Konjiki no Wordmaster' in title):
 		postfix = title.split("–", 1)[-1].strip()
-		ret = buildReleaseMessage(item, 'Konjiki no Wordmaster', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Konjiki no Wordmaster', vol, chp, frag=frag, postfix=postfix)
 
 	elif 'Konjiki no Wordmaster Chapters' in tags                                        \
 		or 'Konjiki no Moji Tsukai' in tags                                              \
@@ -721,15 +722,9 @@ def extractKnW(item):
 		or (src == 'XCrossJ' and 'Konjiki no Moji Tsukai' in title)                      \
 		or (src == 'Insignia Pierce' and 'Konjiki no Word Master Chapter' in title):
 		postfix = title.split(":", 1)[-1].strip()
-		ret = buildReleaseMessage(item, 'Konjiki no Wordmaster', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Konjiki no Wordmaster', vol, chp, frag=frag, postfix=postfix)
 		# elif 'Konjiki no Moji Tsukai' in tags:
 
-	else:
-		pass
-
-	# Only return a value if we've actually found a chapter/vol
-	if ret and (ret['vol'] or ret['chp']):
-		return ret
 
 	return False
 
@@ -2861,22 +2856,130 @@ def extractReddyCreations(item):
 def extractShinSekaiYori(item):
 
 	chStr = ""
-
 	for tag in item['tags']:
-		if "chapter" in tag.lower()
+		if "chapter" in tag.lower():
 			chStr = chStr + " " + tag
-	# if any(['chapter' in tag.lower() for tag in item['tags']]):
-	# 	chStr = ""
 
+	chStr += " " + item['title']
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(chStr)
+	if not (chp or vol):
+		return False
+	if frag:
+		frag = frag / 10
+
+	return buildReleaseMessage(item, 'Shin Sekai yori', vol, chp, frag=frag, postfix=postfix)
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractKobatoChanDaiSukiScan(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
 
-	print(item['title'])
-	print(item['tags'])
-	print("v'{}', c'{}', f'{}', p'{}'".format(vol, chp, frag, postfix))
+	# Return of `None` makes the "Missed item" filter system ignore the return.
+	if 'Lookism' in item['tags'] or 'webtoon' in item['tags']:
+		return None # No webcomics plz
+
+	if 'God of Crime' in item['tags'] :
+		return buildReleaseMessage(item, 'God of Crime', vol, chp, frag=frag, postfix=postfix)
+	if 'Kenkyo kenjitsu o motto ni ikite orimasu!' in item['tags']:
+		return buildReleaseMessage(item, 'Kenkyo, Kenjitsu o Motto ni Ikite Orimasu!', vol, chp, frag=frag, postfix=postfix)
 
 	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractPrinceRevolution(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if 'Romance RPG' in item['tags'] :
+		return buildReleaseMessage(item, 'Romance RPG', vol, chp, frag=frag, postfix=postfix)
+	if 'The Legend of Sun Knight' in item['tags'] :
+		return buildReleaseMessage(item, 'The Legend of Sun Knight', vol, chp, frag=frag, postfix=postfix)
+	if 'Dominions End' in item['tags'] :
+		return buildReleaseMessage(item, 'Dominions End', vol, chp, frag=frag, postfix=postfix)
+	if '½ Prince' in item['tags'] :
+		return buildReleaseMessage(item, '½ Prince', vol, chp, frag=frag, postfix=postfix)
+	if 'killvsprince' in item['tags'] :
+		return buildReleaseMessage(item, 'Kill No More VS 1/2 Prince', vol, chp, frag=frag, postfix=postfix)
+	if 'Illusions-Lies-Truth' in item['tags'] :
+		return buildReleaseMessage(item, 'Illusions, Lies, Truth', vol, chp, frag=frag, postfix=postfix)
+	if 'No Hero' in item['tags'] :
+		return buildReleaseMessage(item, 'No Hero', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractAnathema(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	return buildReleaseMessage(item, 'Anathema', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractKingJaahn(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	return buildReleaseMessage(item, 'Divine Progress', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractUntunedTranslation(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	# TODO: Needs the facility to parse roman numerals!
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractRumorsBlock(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if "Rumor's Block" in item['tags'] and "chapter" in item['title'].lower():
+		return buildReleaseMessage(item, "Rumor's Block", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractTwistedCogs(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if '–' in item['title']:
+		postfix = item['title'].split('–', 1)[-1].strip()
+
+	if "smut" in item['title'].lower():
+		return buildReleaseMessage(item, 'Twisted Smut', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+	return buildReleaseMessage(item, 'Twisted Cogs', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 ####################################################################################################################################################
 #
@@ -2885,6 +2988,7 @@ def extractWIP(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
+
 
 	print(item['title'])
 	print(item['tags'])
@@ -2985,3 +3089,18 @@ def extractMike777ac(item):
 
 	if ('Hardcore OPness' in item['tags'] or 'HCOP' in item['tags']) and (chp or vol):
 		return buildReleaseMessage(item, 'Hardcore OP-ness', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+
+
+
+####################################################################################################################################################
+####################################################################################################################################################
+####################################################################################################################################################
+# Broken!
+####################################################################################################################################################
+####################################################################################################################################################
+####################################################################################################################################################
+def extractRequireCookie(item):
+	# No structured data. Arrrgh
+	return None
+

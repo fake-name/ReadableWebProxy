@@ -248,10 +248,10 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'The Beginning After The End'                                   : pfuncs.extractBeginningAfterTheEnd,
 				'Verathragana Stories'                                          : pfuncs.extractVerathragana,
 
-				'Untuned Translation Blog'                                      : pfuncs.extractBase,
+				'Untuned Translation Blog'                                      : pfuncs.extractUntunedTranslation,
 				'Bad Translation'                                               : pfuncs.extractBase,
 				'HaruPARTY'                                                     : pfuncs.extractBase,
-				'KobatoChanDaiSukiScan'                                         : pfuncs.extractBase,
+				'KobatoChanDaiSukiScan'                                         : pfuncs.extractKobatoChanDaiSukiScan,
 				'LordofScrubs'                                                  : pfuncs.extractBase,
 				'Roasted Tea'                                                   : pfuncs.extractBase,
 				'Roxism HQ'                                                     : pfuncs.extractBase,
@@ -259,7 +259,11 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Undecent Translations'                                         : pfuncs.extractBase,
 				'ℝeanとann@'                                                     : pfuncs.extractBase,
 				'pandafuqtranslations'                                          : pfuncs.extractBase,
-				'Prince Revolution!'                                            : pfuncs.extractBase,
+				'Prince Revolution!'                                            : pfuncs.extractPrinceRevolution,
+
+
+				'Anathema Serial'                                               : pfuncs.extractAnathema,
+				'King Jaahn\'s Subjects'                                        : pfuncs.extractKingJaahn,
 
 				'Ducky\'s English Translations'                                 : pfuncs.extractBase,
 				'Diwasteman'                                                    : pfuncs.extractBase,
@@ -298,7 +302,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Adamantine Dragon in the Crystal World'                        : pfuncs.extractBase,
 				'alicetranslations.wordpress.com'                               : pfuncs.extractBase,
 				'All\'s Fair In Love & War'                                     : pfuncs.extractBase,
-				'Anathema Serial'                                               : pfuncs.extractBase,
 				'Andrew9495\'s MTL corner'                                      : pfuncs.extractBase,
 				'Anon Empire'                                                   : pfuncs.extractBase,
 				'Aori Translations'                                             : pfuncs.extractBase,
@@ -358,7 +361,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Joeglen\'s Translation Space'                                  : pfuncs.extractBase,
 				'Kahoim Translations'                                           : pfuncs.extractBase,
 				'Kedelu'                                                        : pfuncs.extractBase,
-				'King Jaahn\'s Subjects'                                        : pfuncs.extractBase,
 				'Kisato\'s MLTs'                                                : pfuncs.extractBase,
 				'KN Translation'                                                : pfuncs.extractBase,
 				'Knokkro Translations'                                          : pfuncs.extractBase,
@@ -414,11 +416,11 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Reddy Creations'                                               : pfuncs.extractReddyCreations,
 				'Reigokai: Isekai Translations'                                 : pfuncs.extractBase,
 				'Reject Hero'                                                   : pfuncs.extractBase,
-				'Require: Cookie'                                               : pfuncs.extractBase,
+				'Require: Cookie'                                               : pfuncs.extractRequireCookie,
 				'Romantic Dreamer\'s Sanctuary'                                 : pfuncs.extractBase,
 				'Rosyfantasy - Always Dreaming'                                 : pfuncs.extractBase,
 				'Rumanshi\'s Lair'                                              : pfuncs.extractBase,
-				'Rumor\'s Block'                                                : pfuncs.extractBase,
+				'Rumor\'s Block'                                                : pfuncs.extractRumorsBlock,
 				'Saber Translations'                                            : pfuncs.extractBase,
 				'Sauri\'s TL Blog'                                              : pfuncs.extractBase,
 				'SETSUNA86BLOG'                                                 : pfuncs.extractBase,
@@ -454,7 +456,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Tsukigomori'                                                   : pfuncs.extractBase,
 				'Tumble Into Fantasy'                                           : pfuncs.extractBase,
 				'Tus-Trans'                                                     : pfuncs.extractBase,
-				'Twisted Cogs'                                                  : pfuncs.extractBase,
+				'Twisted Cogs'                                                  : pfuncs.extractTwistedCogs,
 				'U Donate We Translate'                                         : pfuncs.extractBase,
 				'Unlimited Story Works'                                         : pfuncs.extractBase,
 				'Useless no 4'                                                  : pfuncs.extractBase,
@@ -491,8 +493,11 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		else:
 			print("No filter found?")
 
+		# NanoDesu is annoying and makes their releases basically impossible to parse. FFFUUUUUu
+		if "(NanoDesu)" in item['srcname'] and not ret:
+			return False
 
-		if (flags.RSS_DEBUG or self.dbg_print) and self.write_debug and not ret:
+		if (flags.RSS_DEBUG or self.dbg_print) and self.write_debug and ret == False and not "teaser" in item['title'].lower():
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if vol or chp or frag and not flags.RSS_DEBUG:
 
@@ -519,7 +524,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 		if self.dbg_print or flags.RSS_DEBUG:
-			if not ret and (vol or chp or frag):
+			# False means not caught. None means intentionally ignored.
+
+			if ret == False and (vol or chp or frag) and not "teaser" in item['title'].lower():
 				print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 			elif ret:
 				pass
@@ -542,6 +549,10 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			ret = False
 		if ret:
 			assert 'tl_type' in ret
+
+
+		if ret == None:
+			ret = False
 
 
 		return ret

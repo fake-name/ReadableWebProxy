@@ -349,8 +349,13 @@ def sort_json(json_name):
 		"GUID",
 	]
 
+	outf = json_name+".out.txt"
+	try:
+		os.unlink(outf)
+	except FileNotFoundError:
+		pass
 
-	with open(json_name+".out.txt", "w") as fp:
+	with open(outf, "w") as fp:
 		for item in out:
 			# print(item[1])
 			for value in item[1]:
@@ -368,7 +373,10 @@ def rss_db_sync(target = None, recent=False):
 		flags.RSS_DEBUG    = True
 		write_debug = False
 	else:
-		os.unlink(json_file)
+		try:
+			os.unlink(json_file)
+		except FileNotFoundError:
+			pass
 
 	import WebMirror.processor.RssProcessor
 	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
