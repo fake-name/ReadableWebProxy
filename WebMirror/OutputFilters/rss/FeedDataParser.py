@@ -14,6 +14,7 @@ from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentP
 import WebMirror.OutputFilters.FilterBase
 import WebMirror.rules
 import flags
+import json
 
 skip_filter = [
 	"www.baka-tsuki.org",
@@ -140,7 +141,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'putttytranslations'                                            : pfuncs.extractPuttty,
 				'Raising the Dead'                                              : pfuncs.extractRaisingTheDead,
 				'RANCER'                                                        : pfuncs.extractRancer,
-				'Rebirth Online'                                                : pfuncs.extractRebirthOnline,
 				'Rhinabolla'                                                    : pfuncs.extractRhinabolla,
 				'Rising Dragons Translation'                                    : pfuncs.extractRisingDragons,
 				'Ruze Translations'                                             : pfuncs.extractRuzeTranslations,
@@ -218,12 +218,10 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Pummels Translations'                                          : pfuncs.extractKnW,
 				'XCrossJ'                                                       : pfuncs.extractKnW,
 
-				# Broken or not implemented yet
 				'Dreams of Jianghu'                                             : pfuncs.extractDreamsOfJianghu,
 				'Dao Seeker Blog'                                               : pfuncs.extractDaoSeekerBlog,
 				'CookiePasta'                                                   : pfuncs.extractCookiePasta,
 				'Clover\'s Nook'                                                : pfuncs.extractCloversNook,
-				'Rebirth Online World'                                          : pfuncs.extractRebirthOnlineWorld,
 				'Shinsori Translations'                                         : pfuncs.extractShinsori,
 				'Soaring Translations'                                          : pfuncs.extractSoaring,
 				'Totally Insane Translation'                                    : pfuncs.extractTotallyInsaneTranslation,
@@ -233,6 +231,19 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Machine Sliced Bread'                                          : pfuncs.extractMachineSlicedBread,
 				'Wat Da Meow'                                                   : pfuncs.extractWatDaMeow,
 				'Nutty is Procrastinating'                                      : pfuncs.extractNutty,
+				'One Man Army Translations (OMA)'                               : pfuncs.extractOneManArmy,
+				'One Man Army Translations'                                     : pfuncs.extractOneManArmy,
+				'Bcat00 Translation'                                            : pfuncs.extractBcat00,
+				'Five Star Specialists'                                         : pfuncs.extractFiveStar,
+				'Mana Tank Magus'                                               : pfuncs.extractManaTankMagus,
+				'OK Translation'                                                : pfuncs.extractOKTranslation,
+				'Ultimate Arcane'                                               : pfuncs.extractUltimateArcane,
+				'Rainbow Translations'                                          : pfuncs.extractRainbowTranslations,
+				'Kami Translation'                                              : pfuncs.extractKamiTranslation,
+				'CtrlAlcalá'                                                    : pfuncs.extractCtrlAlcala,
+
+				'Rebirth Online'                                                : pfuncs.extractRebirthOnlineWorld,
+				'Rebirth Online World'                                          : pfuncs.extractRebirthOnlineWorld,
 
 				'The Beginning After The End'                                   : pfuncs.extractBeginningAfterTheEnd,
 				'Verathragana Stories'                                          : pfuncs.extractVerathragana,
@@ -240,23 +251,20 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Untuned Translation Blog'                                      : pfuncs.extractBase,
 				'Bad Translation'                                               : pfuncs.extractBase,
 				'HaruPARTY'                                                     : pfuncs.extractBase,
-				'Kami Translation'                                              : pfuncs.extractBase,
 				'KobatoChanDaiSukiScan'                                         : pfuncs.extractBase,
 				'LordofScrubs'                                                  : pfuncs.extractBase,
 				'Roasted Tea'                                                   : pfuncs.extractBase,
 				'Roxism HQ'                                                     : pfuncs.extractBase,
-				'Shin Sekai Yori – From the New World'                          : pfuncs.extractBase,
+				'Shin Sekai Yori – From the New World'                          : pfuncs.extractShinSekaiYori,
 				'Undecent Translations'                                         : pfuncs.extractBase,
 				'ℝeanとann@'                                                     : pfuncs.extractBase,
 				'pandafuqtranslations'                                          : pfuncs.extractBase,
 				'Prince Revolution!'                                            : pfuncs.extractBase,
-				'CtrlAlcalá'                                                    : pfuncs.extractBase,
 
 				'Ducky\'s English Translations'                                 : pfuncs.extractBase,
 				'Diwasteman'                                                    : pfuncs.extractBase,
 				'Dark Translations'                                             : pfuncs.extractBase,
 				'Dewey Night Unrolls'                                           : pfuncs.extractBase,
-				'One Man Army Translations (OMA)'                               : pfuncs.extractOneManArmy,
 
 				'(NanoDesu) - Amagi Brilliant Park '                            : pfuncs.extractBase,
 				'(NanoDesu) - Fate/Apocrypha'                                   : pfuncs.extractBase,
@@ -296,7 +304,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Aori Translations'                                             : pfuncs.extractBase,
 				'Aqua Scans'                                                    : pfuncs.extractBase,
 				'Archivity'                                                     : pfuncs.extractBase,
-				'Bcat00 Translation'                                            : pfuncs.extractBase,
 				'Bear Bear Translations'                                        : pfuncs.extractBase,
 				'BeRsErk Translations'                                          : pfuncs.extractBase,
 				'C Novels 2 C'                                                  : pfuncs.extractBase,
@@ -332,7 +339,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Eye of Adventure '                                             : pfuncs.extractBase,
 				'EZ Translations'                                               : pfuncs.extractBase,
 				'Fighting Dreamers Scanlations'                                 : pfuncs.extractBase,
-				'Five Star Specialists'                                         : pfuncs.extractBase,
 				'Flicker Hero'                                                  : pfuncs.extractBase,
 				'Fung Shen'                                                     : pfuncs.extractBase,
 				'Fuzion Life'                                                   : pfuncs.extractBase,
@@ -374,7 +380,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'LorCromwell'                                                   : pfuncs.extractBase,
 				'Lylis Translations'                                            : pfuncs.extractBase,
 				'Makina Translations'                                           : pfuncs.extractBase,
-				'Mana Tank Magus'                                               : pfuncs.extractBase,
 				'Maou na Anoko to murabito a'                                   : pfuncs.extractBase,
 				'Martial God Translator'                                        : pfuncs.extractBase,
 				'Midnight Translation Blog'                                     : pfuncs.extractBase,
@@ -386,9 +391,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'National NEET'                                                 : pfuncs.extractBase,
 				'NOT Daily Translations'                                        : pfuncs.extractBase,
 				'Nowhere & Nothing'                                             : pfuncs.extractBase,
-				'OK Translation'                                                : pfuncs.extractBase,
 				'omatranslations.wordpress.com'                                 : pfuncs.extractBase,
-				'Omgitsaray Translations'                                       : pfuncs.extractBase,
+				'Omgitsaray Translations'                                       : pfuncs.extractOmgitsaray,
 				'One Second Spring'                                             : pfuncs.extractBase,
 				'Ore ga Heroine in English'                                     : pfuncs.extractBase,
 				'Origin Novels'                                                 : pfuncs.extractBase,
@@ -405,10 +409,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Project Accelerator'                                           : pfuncs.extractBase,
 				'Pumpkin Translations'                                          : pfuncs.extractBase,
 				'Quality ★ Mistranslations'                                    : pfuncs.extractBase,
-				'Rainbow Translations'                                          : pfuncs.extractBase,
 				'Raising Angels & Defection'                                    : pfuncs.extractBase,
 				'Red Dragon Translations'                                       : pfuncs.extractBase,
-				'Reddy Creations'                                               : pfuncs.extractBase,
+				'Reddy Creations'                                               : pfuncs.extractReddyCreations,
 				'Reigokai: Isekai Translations'                                 : pfuncs.extractBase,
 				'Reject Hero'                                                   : pfuncs.extractBase,
 				'Require: Cookie'                                               : pfuncs.extractBase,
@@ -453,7 +456,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Tus-Trans'                                                     : pfuncs.extractBase,
 				'Twisted Cogs'                                                  : pfuncs.extractBase,
 				'U Donate We Translate'                                         : pfuncs.extractBase,
-				'Ultimate Arcane'                                               : pfuncs.extractBase,
 				'Unlimited Story Works'                                         : pfuncs.extractBase,
 				'Useless no 4'                                                  : pfuncs.extractBase,
 				'Village Translations'                                          : pfuncs.extractBase,
@@ -494,25 +496,25 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if vol or chp or frag and not flags.RSS_DEBUG:
 
-				with open('rss_filter_misses-1.txt', "a") as fp:
+				with open('rss_filter_misses-1.json', "a") as fp:
 
-					write_items = [
-						("SourceName: ", item['srcname']),
-						("Title: ", item['title']),
-						("Tags: ", item['tags']),
-						("Vol: ", vol),
-						("Chp: ", chp),
-						("Frag: ", frag),
-						("Postfix: ", postfix),
-						("Feed URL: ", item['linkUrl']),
-						("GUID: ", item['guid']),
-					]
+					write_items = {
+						"SourceName" : item['srcname'],
+						"Title"      : item['title'],
+						"Tags"       : list(item['tags']),
+						"Vol"        : False if not vol else vol,
+						"Chp"        : False if not chp else chp,
+						"Frag"       : False if not frag else frag,
+						"Postfix"    : postfix,
+						"Feed URL"   : item['linkUrl'],
+						"GUID"       : item['guid'],
+					}
 
 					# fp.write("\n==============================\n")
 					# fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
 					# fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
-					for name, val in write_items:
-						fp.write("%s '%s', " % (name, val))
+
+					fp.write("%s" % (json.dumps(write_items, )))
 					fp.write("\n")
 
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -524,7 +526,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], item['title']))
 			else:
 				pass
-				print("Wat: '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
+				# print("Wat: '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
 
 			if flags.RSS_DEBUG:
 				ret = False

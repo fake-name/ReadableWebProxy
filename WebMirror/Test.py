@@ -17,8 +17,7 @@ import os
 import os.path
 import config
 import calendar
-from sqlalchemy import and_
-from sqlalchemy.sql import text
+import json
 import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 import urllib.parse
 import urllib.error
@@ -317,16 +316,59 @@ def update_feed_names():
 			db.get_session().commit()
 
 
+# Re-order the missed file list by order of misses.
+def sort_json(json_name):
+	with open(json_name) as fp:
+		cont = fp.readlines()
+	print("Json file has %s lines." % len(cont))
 
+	data = {}
+	for line in cont:
+		val = json.loads(line)
+		name = val['SourceName']
+		if not name in data:
+			data[name] = []
+
+		data[name].append(val)
+	out = []
+	for key in data:
+
+		out.append((len(data[key]), data[key]))
+
+	out.sort(key=lambda x:x[0], reverse=True)
+
+	key_order = [
+		"SourceName",
+		"Title",
+		"Tags",
+		"Vol",
+		"Chp",
+		"Frag",
+		"Postfix",
+		"Feed URL",
+		"GUID",
+	]
+
+
+	with open(json_name+".out.txt", "w") as fp:
+		for item in out:
+			# print(item[1])
+			for value in item[1]:
+				for key in key_order:
+					fp.write("%s, " % ((key, value[key]), ))
+				fp.write("\n")
 
 def rss_db_sync(target = None, recent=False):
+
+	json_file = 'rss_filter_misses-1.json'
+
 	write_debug = True
 	if target:
 		config.C_DO_RABBIT = False
 		flags.RSS_DEBUG    = True
 		write_debug = False
 	else:
-		os.unlink('rss_filter_misses-1.txt')
+		os.unlink(json_file)
 
 	import WebMirror.processor.RssProcessor
 	parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
@@ -381,6 +423,7 @@ def rss_db_sync(target = None, recent=False):
 		except ValueError:
 			pass
 		# print(ctnt)
+	sort_json(json_file)
 
 def clear_blocked():
 	for ruleset in WebMirror.rules.load_rules():
@@ -450,6 +493,8 @@ def decode(*args):
 			clear_bad()
 		elif op == "rss-db":
 			rss_db_sync()
+		elif op == "sort-json":
+			sort_json('rss_filter_misses-1.json')
 		elif op == "rss-recent":
 			rss_db_sync(recent=True)
 		elif op == "clear-blocked":

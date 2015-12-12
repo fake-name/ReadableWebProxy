@@ -4,7 +4,7 @@
  - "https://xxjohnsmithxx.wordpress.com", parser
 
  
- 
+ https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
 http://erolns.blogspot.com/feeds/posts/default 
 
 http://laute.tumblr.com
