@@ -326,7 +326,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			if clean and item.attrs:
 
 				for attr, value in list(item.attrs.items()):
-					if "float:left" in value or "float:right" in value:
+					if attr == 'style' and 'float' in value:
 						del item[attr]
 					elif attr not in tmp_valid:
 						del item[attr]
