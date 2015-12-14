@@ -455,6 +455,35 @@ mapper = {
 
 	'cavescans.com'                                   : 'CaveScans',
 
+
+
+
+	'lasciviousimouto.wordpress.com'                  : 'Lascivious Imouto',
+	'noveltrans.wordpress.com'                        : 'Novel Trans',
+	'firebirdsnest.wordpress.com'                     : 'Firebird\'s Nest',
+	'nanjamora.wordpress.com'                         : 'Nanjamora',
+	'catinghampalace.wordpress.com'                   : 'Nekoyashiki',
+	'konobuta.wordpress.com'                          : 'Konobuta',
+	'crystalraindescends.wordpress.com'               : 'CrystalRainDescends',
+	'dramasbooksandtea.wordpress.com'                 : 'Dramas, Books & Tea',
+	'sut3kii.wordpress.com'                           : 'Suteki Da Ne',
+	'saibaichiroku.wordpress.com'                     : 'Nooblate',
+	'silenttl.wordpress.com'                          : 'Silent Tl',
+	'casprojectsite.wordpress.com'                    : 'Cas Project Site',
+	'frostfire10.wordpress.com'                       : 'Frostfire 10',
+	'walkingthestorm.wordpress.com'                   : 'Walking the Storm',
+	'zetianjitranslation.wordpress.com'               : 'Translating Ze Tian Ji',
+	'jtranslashions.wordpress.com'                    : 'Web Novel Japanese Translation',
+	'pizzasandcoke.wordpress.com'                     : 'Madao Translations',
+	'monktranslation.wordpress.com'                   : 'Monk Translation',
+	'soojiki.wordpress.com'                           : 'Soojiki\'s Project',
+	'morrighansucks.wordpress.com'                    : 'Morrighan Sucks',
+	'crackofdawntranslations.wordpress.com'           : 'Crack of Dawn Translations',
+	'lunaris111.wordpress.com'                        : 'Lunaris',
+
+
+	# 'asiandramalife.wordpress.com'                    : '',
+
 	# Wat
 	# 'booksmoviesandbeyond.blogspot.com'         : 'booksmoviesandbeyond.blogspot.com',
 	# 'xxjohnsmithxx.wordpress.com'               : 'Huh',
