@@ -298,7 +298,7 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 	'https://anonempireblog.wordpress.com',
 	'https://shinsoritranslations.wordpress.com',
-
+	'https://atentranslationswordpresscom.wordpress.com',
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	'http://avertranslation.com',
@@ -348,6 +348,7 @@ baseUrl: [
 	'https://darktranslations.wordpress.com',
 	"http://moonbunnycafe.com",
 	'https://mechamushroomtranslations.wordpress.com',
+	'http://helidwarf.com/',
 
 
 	'http://77novel.com',

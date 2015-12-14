@@ -23,6 +23,7 @@ import urllib.parse
 import urllib.error
 import WebMirror.rules
 import flags
+import WebMirror.SiteSync.fetch
 from sqlalchemy import or_
 import WebMirror.Exceptions
 
@@ -431,7 +432,8 @@ def rss_db_sync(target = None, recent=False):
 		except ValueError:
 			pass
 		# print(ctnt)
-	sort_json(json_file)
+	if target == None:
+		sort_json(json_file)
 
 def clear_blocked():
 	for ruleset in WebMirror.rules.load_rules():
@@ -485,6 +487,8 @@ def decode(*args):
 		op = args[0]
 		if op == "rss":
 			test_all_rss()
+		if op == "sync":
+			WebMirror.SiteSync.fetch.fetch_other_sites()
 		elif op == "rss-del-comments":
 			delete_comment_feed_items()
 		elif op == "db-fiddle":
@@ -541,6 +545,7 @@ if __name__ == "__main__":
 		print("you must pass a operation to execute!")
 		print("Current actions:")
 		print('	rss')
+		print('	sync')
 		print('	rss-del-comments')
 		print('	rss-name')
 		print('	db-fiddle')
