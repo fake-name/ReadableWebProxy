@@ -349,7 +349,7 @@ def sort_json(json_name):
 		"GUID",
 	]
 
-	outf = json_name+".out.txt"
+	outf = json_name+".pyout"
 	try:
 		os.unlink(outf)
 	except FileNotFoundError:

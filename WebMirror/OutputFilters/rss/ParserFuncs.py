@@ -1041,11 +1041,23 @@ def extractAFlappyTeddyBird(item):
 ####################################################################################################################################################
 def extractPuttty(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
 	# Whoooo, tag case typos!
 	if any(['god of thunder' == val.lower() for val in item['tags']]) and (vol or chp):
 		if ":" in item['title']:
 			postfix = item['title'].split(":", 1)[-1]
 		return buildReleaseMessage(item, 'God of Thunder', vol, chp, frag=frag, postfix=postfix)
+	if 'Beseech the devil'.lower() in item['title'].lower():
+		return buildReleaseMessage(item, 'Beseech the Devil', vol, chp, frag=frag, postfix=postfix)
+	if 'Goblin' in item['tags']:
+		return buildReleaseMessage(item, 'Goblin', vol, chp, frag=frag, postfix=postfix)
+	if 'King of the Eternal Night' in item['tags']:
+		return buildReleaseMessage(item, 'King of the Eternal Night', vol, chp, frag=frag, postfix=postfix)
+	if 'Martial World' in item['tags']:
+		return buildReleaseMessage(item, 'Martial World', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 ####################################################################################################################################################
@@ -1516,6 +1528,8 @@ def extractShikkakuTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if "kuro no maou" in item['title'].lower():
 		return buildReleaseMessage(item, 'Kuro no Maou', vol, chp, frag=frag, postfix=postfix)
+	if 'KENS' in item['tags']:
+		return buildReleaseMessage(item, 'Kamigoroshi no Eiyuu to Nanatsu no Seiyaku', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3123,6 +3137,141 @@ def extractTranslationRaven(item):
 ####################################################################################################################################################
 #
 ####################################################################################################################################################
+def extractKoreanNovelTrans(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag):
+		return False
+
+	if 'Novel: Kill the Lights' in item['tags'] :
+		return buildReleaseMessage(item, 'Kill the Lights', vol, chp, frag=frag, postfix=postfix)
+	if 'Novel: Black Butterfly' in item['tags'] :
+		return buildReleaseMessage(item, 'Black Butterfly', vol, chp, frag=frag, postfix=postfix)
+	if 'NL Novel: Our House Pet' in item['tags'] :
+		return buildReleaseMessage(item, 'Our House Pet', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractRoxism(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if 'Bocchi Tenseiki' in item['tags'] and "chapter" in item['title'].lower():
+		return buildReleaseMessage(item,  'Bocchi Tenseiki', vol, chp, frag=frag, postfix=postfix)
+	if 'Seirei Gensouki ~Konna Sekai de Deaeta Kimi ni~' in item['tags'] and "chapter" in item['title'].lower():
+		return buildReleaseMessage(item,  'Seirei Gensouki ~Konna Sekai de Deaeta Kimi ni~', vol, chp, frag=frag, postfix=postfix)
+	if 'DHM' in item['tags'] and "chapter" in item['title'].lower():
+		return buildReleaseMessage(item,  'Dungeon+Harem+Master', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractChineseBLTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if 'Novel: City of Endless Rain' in item['tags'] :
+		return buildReleaseMessage(item, 'City of Endless Rain', vol, chp, frag=frag, postfix=postfix)
+	if 'Novel: Cold Sands' in item['tags'] :
+		return buildReleaseMessage(item, 'Cold Sands', vol, chp, frag=frag, postfix=postfix)
+	if 'Novel: The Rental Shop Owner' in item['tags'] :
+		return buildReleaseMessage(item, 'The Rental Shop Owner', vol, chp, frag=frag, postfix=postfix)
+	if 'Novel: Till Death Do Us Part' in item['tags'] :
+		return buildReleaseMessage(item, 'Till Death Do Us Part', vol, chp, frag=frag, postfix=postfix)
+	if 'Novel: Love Late' in item['tags'] :
+		return buildReleaseMessage(item, 'Love Late', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractKahoim(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if 'Soshite Shoujo wa Akujo no Karada o Te ni Ireru' in item['tags'] :
+		return buildReleaseMessage(item, 'Soshite Shoujo wa Akujo no Karada o Te ni Ireru', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractSilvasLibrary(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if "Silva's Diary - Zero no Tsukaima" in item['tags'] :
+		return buildReleaseMessage(item, "Silva's Diary - Zero no Tsukaima", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractOriginNovels(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if '–' in item['title']:
+		postfix = item['title'].split("–")[-1]
+	if 'True Identity' in item['tags'] :
+		return buildReleaseMessage(item, 'True Identity', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractOutspanFoster(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+	if "Chapter" in item['tags'] and 'ascension' in item['tags'] :
+		return buildReleaseMessage(item, 'The Ascension Chronicle', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+	return False
+
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractDiwasteman(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "commentary" in item['title'].lower():
+		return False
+	if 'Parameter remote controller' in item['tags'] :
+		return buildReleaseMessage(item, 'Parameter remote controller', vol, chp, frag=frag, postfix=postfix)
+	if 'maou no hajimekata' in item['tags'] :
+		return buildReleaseMessage(item, 'Maou no Hajimekata', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractHoldXandClick(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if 'Bishoujo wo Jouzu ni Nikubenki ni Suru Houhou' in item['tags'] :
+		return buildReleaseMessage(item, 'Bishoujo wo Jouzu ni Nikubenki ni Suru Houhou', vol, chp, frag=frag, postfix=postfix)
+
+	print(item['title'])
+	print(item['tags'])
+	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
 def extractWIP(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
@@ -3150,11 +3299,6 @@ def extractFeedProxy(item):
 		return buildReleaseMessage(item, 'Kamitachi ni Hirowareta Otoko', vol, chp, frag=frag, postfix=postfix)
 
 	return False
-
-
-
-
-
 
 
 
