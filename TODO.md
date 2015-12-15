@@ -9,7 +9,7 @@
 
 ## Add Tumblr/Livejournal support already!
 
-	'http://cfensi.wordpress.com',
+'http://cfensi.wordpress.com',
 
 cacatuasulphureacitrinocristata.tumblr.com
 cocobees.tumblr.com
