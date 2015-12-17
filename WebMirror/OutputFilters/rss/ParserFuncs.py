@@ -2028,6 +2028,10 @@ def extractEroLightNovelTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
 	if 'Adolescent Adam' in item['tags'] and (chp or vol):
+		if 'Adolescent Adam 2' in item['title']:
+			if not vol:
+				vol = 1
+			return buildReleaseMessage(item, 'Shishunki na Adam', vol+1, chp, frag=frag, postfix=postfix)
 		return buildReleaseMessage(item, 'Shishunki na Adam', vol, chp, frag=frag, postfix=postfix)
 
 	if 'Harem Castle' in item['tags'] and (chp or vol):
@@ -3376,6 +3380,36 @@ def extractNekoyashiki(item):
 	return False
 
 ####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractKonobuta(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if 'Ryouriban' in item['title']:
+		return buildReleaseMessage(item, 'The Cook of the Mercenary Corp', vol, chp, frag=frag, postfix=postfix)
+	if 'UchiMusume' in item['title']:
+		return buildReleaseMessage(item, 'For my daughter, I might even be able to defeat the demon king', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractCrystalRainDescends(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	if 'Honey Stewed Squid' in item['tags']:
+		return buildReleaseMessage(item, 'Honey Stewed Squid', vol, chp, frag=frag, postfix=postfix)
+	if 'Bloom' in item['tags']:
+		return buildReleaseMessage(item, 'Bloom', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+
+####################################################################################################################################################
 # General feedproxy stuff
 # This is the sourcename for a whole pile of junk that goes
 # through google somehow.
@@ -3473,6 +3507,7 @@ def extractBase(item):
 	# if 'meg and seron' in item['tags'] and (chp or vol):
 	# 	return buildReleaseMessage(item, 'Meg and Seron', vol, chp, frag=frag, postfix=postfix)
 
+
 	# print(item['title'])
 	# print(item['tags'])
 	# print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
@@ -3492,14 +3527,19 @@ def extractBase(item):
 ####################################################################################################################################################
 ####################################################################################################################################################
 ####################################################################################################################################################
+
+
 def extractLasciviousImouto(item):
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	# Convert "-" to "." so partial chapters like 'Chapter 02-31' convert to 02.31, and the
+	# fragment works correctly.
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'].replace("-", "."))
 	if not (chp or vol):
 		return False
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+	if ('The Beast of the 17th District' in item['tags'] or "the beast of the 17th district" in item['title'].lower()):
+		return buildReleaseMessage(item, 'The Beast of the 17th District', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Le Festin de Vampire' in item['tags']:
+		return buildReleaseMessage(item, 'Le Festin de Vampire', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3507,28 +3547,12 @@ def extractLasciviousImouto(item):
 ####################################################################################################################################################
 #
 ####################################################################################################################################################
-def extractLasciviousImouto(item):
+def extractWitchLife(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
-	return False
-
-####################################################################################################################################################
-#
-####################################################################################################################################################
-def extractNovelTrans(item):
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol):
-		return False
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+	if 'Witch Life' in item['tags']:
+		return buildReleaseMessage(item, 'Witch Life', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 	return False
 
@@ -3540,9 +3564,12 @@ def extractFirebirdsNest(item):
 	if not (chp or vol):
 		return False
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+	if 'no-fatigue' in item['tags']:
+		return buildReleaseMessage(item, 'No Fatigue', vol, chp, frag=frag, postfix=postfix)
+	if 'mondaiji' in item['tags']:
+		return buildReleaseMessage(item, 'Mondaiji-tachi ga Isekai Kara Kuru Sou Desu yo?', vol, chp, frag=frag, postfix=postfix)
+
+
 
 	return False
 
@@ -3554,52 +3581,12 @@ def extractNanjamora(item):
 	if not (chp or vol):
 		return False
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
-	return False
-
-####################################################################################################################################################
-#
-####################################################################################################################################################
-def extractKonobuta(item):
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol):
-		return False
-
-	if 'Ryouriban' in item['title']:
-		return buildReleaseMessage(item, 'The Cook of the Mercenary Corp', vol, chp, frag=frag, postfix=postfix)
-	if 'UchiMusume' in item['title']:
-		return buildReleaseMessage(item, 'For my daughter, I might even be able to defeat the demon king', vol, chp, frag=frag, postfix=postfix)
-
-	return False
-
-####################################################################################################################################################
-#
-####################################################################################################################################################
-def extractCrystalRainDescends(item):
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol):
-		return False
-
-	if 'Honey Stewed Squid' in item['tags']:
-		return buildReleaseMessage(item, 'Honey Stewed Squid', vol, chp, frag=frag, postfix=postfix)
-	if 'Bloom' in item['tags']:
-		return buildReleaseMessage(item, 'Bloom', vol, chp, frag=frag, postfix=postfix)
-	return False
-
-####################################################################################################################################################
-#
-####################################################################################################################################################
-def extractDramasBooksTea(item):
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol):
-		return False
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+	if 'Endless Dantian' in item['tags']:
+		return buildReleaseMessage(item, 'Endless Dantian', vol, chp, frag=frag, postfix=postfix)
+	if 'Infinite Temptation' in item['tags']:
+		return buildReleaseMessage(item, 'Infinite Temptation', vol, chp, frag=frag, postfix=postfix)
+	if 'wushang jinshia' in item['tags']:
+		return buildReleaseMessage(item, 'Wu Shang Jin Shia', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3610,6 +3597,12 @@ def extractSutekiDaNe(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
+
+	if 'Can I Not Marry?' in item['tags']:
+		return buildReleaseMessage(item, 'Can I Not Marry? / Days of Cohabitation with the President', vol, chp, frag=frag, postfix=postfix)
+	if "Black Bellied Prince's Stunning Abandoned Consort" in item['tags']:
+		return buildReleaseMessage(item, "Black Bellied Prince's Stunning Abandoned Consort", vol, chp, frag=frag, postfix=postfix)
+
 
 	print(item['title'])
 	print(item['tags'])
@@ -3624,10 +3617,9 @@ def extractNooblate(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+	if 'Kujibiki Tokushou : Musou Harem Ken' in item['title'] \
+		or 'Kujibiji Tokushou : Musou Harem Ken' in item['title']:
+		return buildReleaseMessage(item, "Kujibiki Tokushou : Musou Harem Ken", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3638,10 +3630,8 @@ def extractSilentTl(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+	if 'Legend' in item['tags']:
+		return buildReleaseMessage(item, "Legend", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3652,12 +3642,8 @@ def extractCasProjectSite(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
+	return buildReleaseMessage(item, "Era of Cultivation", vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
-	return False
 
 ####################################################################################################################################################
 #
@@ -3666,12 +3652,7 @@ def extractFrostfire10(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
-	return False
+	return buildReleaseMessage(item, "Overlord", vol, chp, frag=frag, postfix=postfix)
 
 ####################################################################################################################################################
 #
@@ -3680,12 +3661,8 @@ def extractWalkingTheStorm(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol):
 		return False
+	return buildReleaseMessage(item, "Joy of life", vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
-	return False
 
 ####################################################################################################################################################
 #
@@ -3814,3 +3791,17 @@ def extractWIP(item):
 	return False
 
 
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractDramasBooksTea(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol):
+		return False
+
+	print(item['title'])
+	print(item['tags'])
+	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False

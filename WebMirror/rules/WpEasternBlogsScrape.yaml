@@ -299,6 +299,7 @@ baseUrl: [
 	'https://anonempireblog.wordpress.com',
 	'https://shinsoritranslations.wordpress.com',
 	'https://atentranslationswordpresscom.wordpress.com',
+	'https://dramasbooksandtea.wordpress.com',
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	'http://avertranslation.com',

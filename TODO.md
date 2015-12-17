@@ -6,7 +6,10 @@
  
  https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
 
+letters on tl group browse page
+allow multiple homepage enteies
 
+http://tabikonotrans.blogspot.com/
 ## Add Tumblr/Livejournal support already!
 
 'http://cfensi.wordpress.com',

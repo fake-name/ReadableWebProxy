@@ -284,12 +284,12 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Undecent Translations'                                         : pfuncs.extractBase,
 				'pandafuqtranslations'                                          : pfuncs.extractBase,
 
-
 				'Anathema Serial'                                               : pfuncs.extractAnathema,
 				'King Jaahn\'s Subjects'                                        : pfuncs.extractKingJaahn,
+				'Diwasteman'                                                    : pfuncs.extractDiwasteman,
+
 
 				'Ducky\'s English Translations'                                 : pfuncs.extractBase,
-				'Diwasteman'                                                    : pfuncs.extractDiwasteman,
 				'Dark Translations'                                             : pfuncs.extractBase,
 				'Dewey Night Unrolls'                                           : pfuncs.extractBase,
 
@@ -481,22 +481,25 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'youtsubasilver\'s Blog'                                        : pfuncs.extractBase,
 				'Zen Translations'                                              : pfuncs.extractBase,
 
+				'ヾ(。￣□￣)ﾂ'                                                    : pfuncs.extractBase,
+				'一期一会, 万歳!'                                                : pfuncs.extractBase,
+				'睡眠中毒'                                                       : pfuncs.extractBase,
+				'輝く世界'                                                        : pfuncs.extractBase,
 
 				'Nekoyashiki'                                                   : pfuncs.extractNekoyashiki,
 				'Konobuta'                                                      : pfuncs.extractKonobuta,
 				'CrystalRainDescends'                                           : pfuncs.extractCrystalRainDescends,
-
+				'Witch Life Novel'                                              : pfuncs.extractWitchLife,
 				'Lascivious Imouto'                                             : pfuncs.extractLasciviousImouto,
-				'Novel Trans'                                                   : pfuncs.extractNovelTrans,
 				'Firebird\'s Nest'                                              : pfuncs.extractFirebirdsNest,
 				'Nanjamora'                                                     : pfuncs.extractNanjamora,
-				'Dramas, Books & Tea'                                           : pfuncs.extractDramasBooksTea,
 				'Suteki Da Ne'                                                  : pfuncs.extractSutekiDaNe,
 				'Nooblate'                                                      : pfuncs.extractNooblate,
 				'Silent Tl'                                                     : pfuncs.extractSilentTl,
 				'Cas Project Site'                                              : pfuncs.extractCasProjectSite,
 				'Frostfire 10'                                                  : pfuncs.extractFrostfire10,
 				'Walking the Storm'                                             : pfuncs.extractWalkingTheStorm,
+
 				'Translating Ze Tian Ji'                                        : pfuncs.extractTranslatingZeTianJi,
 				'Web Novel Japanese Translation'                                : pfuncs.extractWebNovelJapaneseTranslation,
 				'Madao Translations'                                            : pfuncs.extractMadaoTranslations,
@@ -506,11 +509,10 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Crack of Dawn Translations'                                    : pfuncs.extractCrackofDawnTranslations,
 				'Lunaris'                                                       : pfuncs.extractLunaris,
 
-				'ヾ(。￣□￣)ﾂ'                                                    : pfuncs.extractBase,
-				'一期一会, 万歳!'                                                : pfuncs.extractBase,
-				'睡眠中毒'                                                       : pfuncs.extractBase,
-				'輝く世界'                                                        : pfuncs.extractBase,
 
+				# No Posts yet?
+				'Novel Trans'                                                   : pfuncs.extractBase,
+				'Dramas, Books & Tea'                                           : pfuncs.extractDramasBooksTea,
 		}
 
 

@@ -457,9 +457,10 @@ mapper = {
 
 
 
-
+	'witchlifenovel.blogspot.com'                     : 'Witch Life Novel',
 	'lasciviousimouto.wordpress.com'                  : 'Lascivious Imouto',
 	'noveltrans.wordpress.com'                        : 'Novel Trans',
+
 	'firebirdsnest.wordpress.com'                     : 'Firebird\'s Nest',
 	'nanjamora.wordpress.com'                         : 'Nanjamora',
 	'catinghampalace.wordpress.com'                   : 'Nekoyashiki',
