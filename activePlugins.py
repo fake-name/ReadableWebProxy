@@ -66,7 +66,7 @@ FILTERS = [
 import WebMirror.OutputFilters.WattPad.WattPadInit
 
 INIT_CALLS = [
-	WebMirror.OutputFilters.WattPad.WattPadInit.init_call
+	#WebMirror.OutputFilters.WattPad.WattPadInit.init_call
 ]
 
 print("Processing plugins: %s, active filters: %s, trigger plugins: %s" % (len(PLUGINS), len(FILTERS), len(scrapePlugins)))

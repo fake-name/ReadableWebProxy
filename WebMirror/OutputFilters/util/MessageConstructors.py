@@ -78,6 +78,7 @@ def packChapterFragments(chapStr, fragStr):
 
 	chap = float(chapStr)
 	frag = float(fragStr)
+	frag = min(frag, 99)
 	return '%0.2f' % (chap + (frag / 100.0))
 
 
