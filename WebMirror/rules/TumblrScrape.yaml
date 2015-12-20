@@ -2,7 +2,7 @@
 
 type: eastern
 
-send_raw_feed: True
+send_raw_feed: False
 
 baseUrl: [
 

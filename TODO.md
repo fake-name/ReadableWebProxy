@@ -9,8 +9,7 @@
 letters on tl group browse page
 allow multiple homepage enteies
 
-http://tabikonotrans.blogspot.com/
-## Add Tumblr/Livejournal support already!
+Livejournal prefilter to poke through adult only bs
  
 
 mazuisubs.com
@@ -96,6 +95,7 @@ rules comditionally disable tld permutatiom
  ## - Multithreaded server fails because DB interface is shared across threads.
  ## - Validate unmatched keys in rules so that key-typos don't silently break things.
  ## - funky tables outlines
+ ## - Add Tumblr/Livejournal support already!
 
 
 Check these URLs:
