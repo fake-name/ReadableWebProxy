@@ -483,6 +483,53 @@ mapper = {
 	'lunaris111.wordpress.com'                        : 'Lunaris',
 
 
+	# Garbage or non-translation blogs:
+	# 'cacatuasulphureacitrinocristata.tumblr.com'      : 'A lil\' shipping never hurts',   # More naruto bs
+	# 'raspomme.tumblr.com'                             : 'Soup Fanclub',            # raspomme.tumblr.com/rss
+	# 'shuuen-scans.tumblr.com'                         : 'Shuuen Scanlations',        # shuuen-scans.tumblr.com/rss
+
+
+	'cocobees.tumblr.com'                             : 'Cocobees',                                  # cocobees.tumblr.com/rss
+	'lunacy-of-venomania.tumblr.com'                  : 'The Lunacy of Duke Venomania',              # lunacy-of-venomania.tumblr.com/rss
+	'closure-of-yellow.tumblr.com'                    : 'Clôture of Yellow',                         # closure-of-yellow.tumblr.com/rss
+	'vgperson.tumblr.com'                             : 'VgPerson',                                  # vgperson.tumblr.com/rss
+	'blastron01.tumblr.com'                           : 'Blastron Does Some Things',                 # blastron01.tumblr.com/rss
+	'mikagura-scans.tumblr.com'                       : 'Mikagura Scanlations Club',                 # mikagura-scans.tumblr.com/rss
+	'necromancyscans.tumblr.com'                      : 'Scanlating the Lodoss Novels',              # necromancyscans.tumblr.com/rss
+	'soul-eater-novel.tumblr.com'                     : 'Suikoden I: Soul Eater Novel Translation',  # soul-eater-novel.tumblr.com/rss
+	'renna-translations.tumblr.com'                   : 'Renna\'s Translations',                     # renna-translations.tumblr.com/rss
+	'applepling.tumblr.com'                           : 'Collection.',                               # applepling.tumblr.com/rss
+	'translatisms.tumblr.com'                         : '陽光的夏天',                                  # translatisms.tumblr.com/rss
+	'wiegenlied-of-green.tumblr.com'                  : 'Wiegenlied of Green',                       # wiegenlied-of-green.tumblr.com/rss
+	'gomigeemu.tumblr.com'                            : 'Gomigeemu',                                 # gomigeemu.tumblr.com/rss
+	'honyakusha-eri.tumblr.com'                       : 'Translator Eri',                            # honyakusha-eri.tumblr.com/rss
+	'laute.tumblr.com'                                : 'Laute, Laute!',                             # laute.tumblr.com/rss
+
+	# Low quality
+	'owari-owari.tumblr.com'                          : '♥ yenney ♥',                                 # owari-owari.tumblr.com/rss
+	'chilly-territory.tumblr.com'                     : 'Chilly Territory',                           # chilly-territory.tumblr.com/rss
+	'theyseemewhalin.tumblr.com'                      : 'The Captain\'s Log',                         # theyseemewhalin.tumblr.com/rss
+
+
+
+	'lily-ros3.livejournal.com'                       : 'Lily Ros 3',                                 # lily-ros3.livejournal.com/data/atom
+	'orenotokei.livejournal.com'                      : 'Japanese Light Novels: Prologues',           # orenotokei.livejournal.com/data/atom
+	's3ri.livejournal.com'                            : 'S3ri',                                       # s3ri.livejournal.com/data/atom
+	'inchoate-oeuvre.livejournal.com'                 : 'Inchoate Oeuvre',                            # inchoate-oeuvre.livejournal.com/data/atom
+	'luxiufer.livejournal.com'                        : 'Luxiufer',                                   # luxiufer.livejournal.com/data/atom
+	'sl-llian.livejournal.com'                        : 'Llian',                                      # sl-llian.livejournal.com/data/atom
+	'keseranpasaran.livejournal.com'                  : 'BL Drama Diary',                             # keseranpasaran.livejournal.com/data/atom
+	'panisal.livejournal.com'                         : 'panisal',                                    # panisal.livejournal.com/data/atom
+	'anni-fiesta.livejournal.com'                     : 'The Verbose Playground',                     # anni-fiesta.livejournal.com/data/atom
+	'black-freya.livejournal.com'                     : 'Mobile Suit Zeta Gundam Novels Translation', # black-freya.livejournal.com/data/atom
+	'zhuanji.livejournal.com'                         : '未完待续',                                     # zhuanji.livejournal.com/data/atom
+	'tsukilining.livejournal.com'                     : 'Tsuki\'s Miscellaneous',                     # tsukilining.livejournal.com/data/atom
+	'sinmay.livejournal.com'                          : 'Spirits Abound',                             # sinmay.livejournal.com/data/atom
+	'mittens-220.livejournal.com'                     : 'Mittens 220',                                # mittens-220.livejournal.com/data/atom
+	'sookybabi.livejournal.com'                       : 'Sooky\'s Kitchen',                           # sookybabi.livejournal.com/data/atom
+	'adarshan-novels.livejournal.com'                 : 'Adarshan no Hanayome',                       # adarshan-novels.livejournal.com/data/atom
+
+
 	# 'asiandramalife.wordpress.com'                    : '',
 
 	# Wat

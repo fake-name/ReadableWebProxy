@@ -291,8 +291,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'ZSW'                                                           : pfuncs.extractZSW,
 				'~Taffy Translations~'                                          : pfuncs.extractTaffyTranslations,
 				'ℝeanとann@'                                                     : pfuncs.extractReantoAnna,
-				'お兄ちゃん、やめてぇ！'                                              : pfuncs.extractOniichanyamete,
-				'中翻英圖書館 Translations'                                      : pfuncs.extractTuShuGuan,
+				'お兄ちゃん、やめてぇ！'                                               : pfuncs.extractOniichanyamete,
+				'中翻英圖書館 Translations'                                       : pfuncs.extractTuShuGuan,
 				'桜翻訳! | Light novel translations'                             : pfuncs.extractSakurahonyaku,
 
 				# KnW mess
