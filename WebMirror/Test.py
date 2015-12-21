@@ -548,6 +548,7 @@ if __name__ == "__main__":
 		print('	sync')
 		print('	rss-del-comments')
 		print('	rss-name')
+		print('	rss-recent')
 		print('	db-fiddle')
 		print('	longest-rows')
 		print('	fix-null')

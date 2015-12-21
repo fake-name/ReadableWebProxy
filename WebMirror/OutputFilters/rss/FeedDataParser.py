@@ -294,6 +294,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'お兄ちゃん、やめてぇ！'                                               : pfuncs.extractOniichanyamete,
 				'中翻英圖書館 Translations'                                       : pfuncs.extractTuShuGuan,
 				'桜翻訳! | Light novel translations'                             : pfuncs.extractSakurahonyaku,
+				'Pippi Site'                                                    : pfuncs.extractPippiSite,
+				'Helidwarf'                                                     : pfuncs.extractHelidwarf,
+
 
 				# KnW mess
 				'Blazing Translations'                                          : pfuncs.extractKnW,
@@ -431,7 +434,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Paztok'                                                        : pfuncs.extractBase,
 				'Pea Translation'                                               : pfuncs.extractBase,
 				'Pielord Translations'                                          : pfuncs.extractBase,
-				'Pippi Site'                                                    : pfuncs.extractBase,
 				'Polyphonic Story Translation Group'                            : pfuncs.extractBase,
 				'Popsiclete'                                                    : pfuncs.extractBase,
 				'Project Accelerator'                                           : pfuncs.extractBase,
@@ -464,7 +466,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'The Sphere'                                                    : pfuncs.extractBase,
 				'TheDefend Translations'                                        : pfuncs.extractBase,
 				'Tieshaunn'                                                     : pfuncs.extractBase,
-				'tiffybook.com'                                                 : pfuncs.extractBase,
 				'Tofubyu'                                                       : pfuncs.extractBase,
 				'Translation Treasure Box'                                      : pfuncs.extractBase,
 				'Translations From Outer Space'                                 : pfuncs.extractBase,
@@ -499,10 +500,12 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'輝く世界'                                                        : pfuncs.extractBase,
 
 
-
+				'tiffybook.com'                                                 : pfuncs.extractCrazyForHENovels,
+				'Crazy for HE Novels'                                           : pfuncs.extractCrazyForHENovels,
 
 				# No Posts yet?
 				'Novel Trans'                                                   : pfuncs.extractBase,
+				'The Bathrobe Knight'                                           : pfuncs.extractBathrobeKnight,
 				'Dramas, Books & Tea'                                           : pfuncs.extractDramasBooksTea,
 
 				# Not parseable.

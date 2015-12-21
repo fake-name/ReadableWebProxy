@@ -457,6 +457,7 @@ mapper = {
 
 
 
+	'thebathrobeknight.blogspot.com'                  : 'The Bathrobe Knight',
 	'witchlifenovel.blogspot.com'                     : 'Witch Life Novel',
 	'lasciviousimouto.wordpress.com'                  : 'Lascivious Imouto',
 	'noveltrans.wordpress.com'                        : 'Novel Trans',
@@ -481,6 +482,8 @@ mapper = {
 	'morrighansucks.wordpress.com'                    : 'Morrighan Sucks',
 	'crackofdawntranslations.wordpress.com'           : 'Crack of Dawn Translations',
 	'lunaris111.wordpress.com'                        : 'Lunaris',
+	'tiffybook.com'                                   : 'Crazy for HE Novels',
+	'helidwarf.com'                                   : 'Helidwarf',
 
 
 	# Garbage or non-translation blogs:
