@@ -62,6 +62,12 @@ FILTERS = [
 	WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter.LNDBSeriesPageFilter,
 ]
 
+import WebMirror.PreProcessors.LiveJournalPreprocess
+
+PREPROCESSORS = [
+	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor
+]
+
 
 import WebMirror.OutputFilters.WattPad.WattPadInit
 

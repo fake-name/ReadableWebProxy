@@ -6,10 +6,12 @@
  
  https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
 
-letters on tl group browse page
-allow multiple homepage enteies
 
-Livejournal prefilter to poke through adult only bs
+## letters on tl group browse page
+## allow multiple homepage enteies
+
+Livejournal prefilter to poke through adult only bs ->
+    Generalize to arbitrary prefiltering-system with netloc-based callees
  
 
 mazuisubs.com

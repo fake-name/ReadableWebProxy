@@ -16,6 +16,7 @@ import bs4
 
 import WebMirror.processor.ProcessorBase
 
+from activePlugins import PREPROCESSORS
 from activePlugins import PLUGINS
 from activePlugins import FILTERS
 
@@ -76,6 +77,11 @@ class ItemFetcher(LogBase.LoggerMixin):
 		self.filter_modules = []
 		for item in FILTERS:
 			self.filter_modules.append(item)
+
+
+		self.preprocessor_modules = []
+		for item in PREPROCESSORS:
+			self.preprocessor_modules.append(item)
 
 		baseRules = [ruleset for ruleset in rules if ruleset['netlocs'] == None].pop(0)
 
@@ -220,6 +226,17 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 	def dispatchContent(self, content, fName, mimeType):
 		assert bool(content) == True
+
+		# Do preprocessing:
+		preprocess_counts = 0
+		for filter_plg in self.preprocessor_modules:
+			if filter_plg.wantsUrl(self.target_url):
+				content = filter_plg.preprocess(self.target_url, mimeType, content, self.wg)
+				preprocess_counts += 1
+
+		if preprocess_counts > 1:
+			raise ValueError("Multiple preprocess executions for the same content (%s, %s, %s). Wat?" % (self.target_url, self.fName, self.mimeType))
+
 		# Feed content through filters that want it (if any):
 		for filter_plg in self.filter_modules:
 			if (mimeType.lower() in filter_plg.wanted_mimetypes or filter_plg.mimetype_catchall) and \
