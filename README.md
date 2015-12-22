@@ -18,11 +18,12 @@ link points to the proxied version of the file, rather then the original.
 
 Quick installation overview:
 
- - Install Postgresql **>= 9.5.** This is alpha, you will have to build from source.
+ - Install Postgresql **>= 9.5.** This is ~~alpha~~, you will (probably) have to build from source.
      (This is because this project uses the new `ON CONFLICT` clause)
  - Build the community extensions for Postgresql.
  - Create a database for the project.
- - In the project database, install the `pg_trgm` and `citext` extensions.
+ - In the project database, install the `pg_trgm` and `citext` extensions from the 
+    community extensions modules.
  - Copy `settings.example.py` to `settings.py`.
  - Setup virtualhost by running `build-venv.sh`
  - Activate vhost: `source flask/bin/activate`

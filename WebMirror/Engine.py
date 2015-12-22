@@ -73,6 +73,7 @@ GLOBAL_BAD = [
 			'delicious.com',
 			'/comments/feed/',
 			'fbcdn-',
+			'/wp-json/',
 			'reddit.com',
 			'/osd.xml',
 			'/wp-login.php',
@@ -87,6 +88,7 @@ GLOBAL_BAD = [
 			'twitter.com/intent/',
 			'www.pinterest.com/pin/',
 			'www.wattpad.com/login?',
+			'/embed?',
 
 			# Tumblr can seriously go fuck itself with a rusty stake
 			'tumblr.com/widgets/',

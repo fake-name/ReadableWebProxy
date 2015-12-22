@@ -480,6 +480,17 @@ def filter_links(path):
 		if item not in havestarts:
 			print(item)
 
+def missing_lut():
+	import WebMirror.OutputFilters.util.feedNameLut as fnl
+	rules = WebMirror.rules.load_rules()
+	feeds = [item['feedurls'] for item in rules]
+	feeds = [item for sublist in feeds for item in sublist]
+	# feeds = [urllib.parse.urlsplit(tmp).netloc for tmp in feeds]
+	for feed in feeds:
+		if not fnl.getNiceName(feed):
+			print("Missing: ", urllib.parse.urlsplit(feed).netloc)
+	pass
+
 def decode(*args):
 	print("Args:", args)
 
@@ -499,6 +510,8 @@ def decode(*args):
 			longest_rows()
 		elif op == "fix-null":
 			fix_null()
+		elif op == "missing-lut":
+			missing_lut()
 		elif op == "fix-tsv":
 			fix_tsv()
 		elif op == "clear-bad":
@@ -551,6 +564,7 @@ if __name__ == "__main__":
 		print('	rss-recent')
 		print('	db-fiddle')
 		print('	longest-rows')
+		print('	missing-lut')
 		print('	fix-null')
 		print('	fix-tsv')
 		print('	clear-bad')

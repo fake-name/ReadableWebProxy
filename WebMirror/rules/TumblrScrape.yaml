@@ -22,6 +22,7 @@ baseUrl: [
 	'http://gomigeemu.tumblr.com',
 	'http://honyakusha-eri.tumblr.com',
 	'http://laute.tumblr.com',
+	'http://shuuen-scans.tumblr.com',
 
 	# Low quality
 	'http://owari-owari.tumblr.com',
@@ -29,7 +30,6 @@ baseUrl: [
 	'http://theyseemewhalin.tumblr.com',
 
 	]
-
 
 
 feedPostfix: "/rss"

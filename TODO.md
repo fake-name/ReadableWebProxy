@@ -6,70 +6,57 @@
  
  https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
 
+http://www.shinsori.com/
+https://www.literotica.com not scraping?
+fix feed generation for https://www.wlnupdates.com/series-id/33342/
+last release time on group page
 
-## letters on tl group browse page
-## allow multiple homepage enteies
+## Todo:
+www.aoitenshi.com
 
-Livejournal prefilter to poke through adult only bs ->
-    Generalize to arbitrary prefiltering-system with netloc-based callees
+# Blogger:
+www.aresnovels.com
+www.pegasusfarts.com
+novel.oddsquad.org
+
+# Custom: 
+www.gundamwingtales.com
+
+# Scans?
+
+# ..... Anime?
+mazuisubs.com
+
+
+blcxtranslations.github.io
+cautrs.com
+ckmscans.halofight.com
+justblthings.weebly.com
+
+minashiro.co.vu
+novel.oddsquad.org
+quartia.dreamwidth.org
+
+
+# Scanlators: (?)
+ckmscans.halofight.com
+egscans.com
+egscans.com 
+hotchocolatescans.com
+riceballicious.info
+september.strawberrywine.org
+www.world-three.org
+www.zeonic-republic.net
+
+## Not WP:
+http://www.aoitenshi.com
+http://www.gundamwingtales.com
+
  
 
-mazuisubs.com
-lmfyd.blogspot.co.nz
-cautrs.com
-www.spcnet.tv
-walkthejianghu.com
-www.wuxiaheroes.com
-www.pegasusfarts.com
-minashiro.co.vu
-www.aoitenshi.com
-www.zeonic-republic.net
-riceballicious.info
-walkthejianghu.com
-hotchocolatescans.com
-www.spcnet.tv
-www.gundamwingtales.com
-Rumanshi.com
-avertranslation.org
-www.spcnet.tv
-www.spcnet.tv
-blazingtranslations.com
-ckmscans.halofight.com
-www.spcnet.tv
-egscans.com
-september.strawberrywine.org
-chenguangsorchard.blogspot.com.au
-liveandlearn88.com
-novel.oddsquad.org
-www.arantranslations.com
-www.shinsori.com
-www.wuxiaworld.com
-koongkoongtranslations.com
-indoromance.com
-quartia.dreamwidth.org
-koalasplayground.com
-opinisaya.com
-www.world-three.org
-trinityarchive.com
-bubujingxinenglish.blogspot.com.au
-trinityarchive.com
-www.fictionpress.com
-weaboodesu.com
-www.bhauth.com
-forum.wuxiaworld.com
-www.heroicnovels.com
-www.reddit.com
-justblthings.weebly.com
-blcxtranslations.github.io
-www.studentnotes.ca
-
-
-
-http://erolns.blogspot.com/feeds/posts/default 
 
 http://laute.tumblr.com
-http://www.deadlylegends.com/translations
-http://www.pegasusfarts.com
+http://www.deadlylegends.com/translations 
 
 fictionmania js links 
  
@@ -118,78 +105,13 @@ https://drive.google.com/folderview?id=0B4ar77TfWmQTMTFnQmNrZTRrZUU&usp=sharing
 https://www.reddit.com/user/OrganicDinosaur
 
 
-## http://agirlinjapan.tumblr.com
-## http://applepling.tumblr.com
-http://blastron01.tumblr.com
-## http://cacatuasulphureacitrinocristata.tumblr.com
-http://chilly-territory.tumblr.com
-http://closure-of-yellow.tumblr.com
-http://cocobees.tumblr.com
-http://fierydragonbreath.tumblr.com
-http://gomigeemu.tumblr.com
-http://honyakusha-eri.tumblr.com
-http://janeypeixes.tumblr.com
-http://laute.tumblr.com
-http://lemoninagin.tumblr.com
-http://lunacy-of-venomania.tumblr.com
-http://messier-45.tumblr.com
-http://mikagura-scans.tumblr.com
-http://misarumi.tumblr.com
-http://necromancyscans.tumblr.com
-http://owari-owari.tumblr.com
-http://raspomme.tumblr.com
-http://renna-translations.tumblr.com
-http://shuuen-scans.tumblr.com
-http://soul-eater-novel.tumblr.com
-http://theyseemewhalin.tumblr.com
-http://trashbunny.tumblr.com
-http://vgperson.tumblr.com
-http://wiegenlied-of-green.tumblr.com
-
-
-http://adarshan-novels.livejournal.com
-http://anni-fiesta.livejournal.com
-http://black-freya.livejournal.com
-http://inchoate-oeuvre.livejournal.com
-http://keseranpasaran.livejournal.com
-http://luxiufer.livejournal.com
-http://mittens-220.livejournal.com
-http://orenotokei.livejournal.com
-http://panisal.livejournal.com
-http://sinmay.livejournal.com
-http://sl-llian.livejournal.com
-http://tsukilining.livejournal.com
-http://yuujinchou.livejournal.com
-http://zhuanji.livejournal.com
-
-
-
-
-Blogger: 
-http://www.pegasusfarts.com
-http://novel.oddsquad.org
-
-
-Scanlators: (?)
-http://hotchocolatescans.com
-http://ckmscans.halofight.com
-http://egscans.com
-http://riceballicious.info
-http://september.strawberrywine.org
-http://www.zeonic-republic.net
-
-## Not WP:
-http://www.aoitenshi.com
-http://www.gundamwingtales.com
-
-
-Gone?:
-http://www.studentnotes.ca
-http://mousou-haven.com
-http://minashiro.co.vu
-
-Korean drama blog site?:
-http://koalasplayground.com
 
 
 ## http://koongkoongtranslations.com/ - Private
+
+
+
+## letters on tl group browse page
+## allow multiple homepage enteies
+## Livejournal prefilter to poke through adult only bs ->
+##     Generalize to arbitrary prefiltering-system with netloc-based callees

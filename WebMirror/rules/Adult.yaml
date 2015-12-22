@@ -3,13 +3,15 @@ type: western
 
 send_raw_feed: False
 baseUrl: [
-	'http://www.asstr.org/',
-	'http://pokegirls.org/',
-	'http://www.tgstorytime.com/',
-	'http://www.booksiesilk.com/',
-	'http://storiesonline.net/',
-	'http://www.adult-fanfiction.org/',
+	'http://www.asstr.org',
+	'http://pokegirls.org',
+	'http://www.tgstorytime.com',
+	'http://www.booksiesilk.com',
+	'http://storiesonline.net',
+	'http://www.adult-fanfiction.org',
 	'https://www.fictionmania.tv',
+	'https://www.literotica.com',
+	'http://www.mcstories.com',
 	]
 extraStartUrls: [
 	'http://pokegirls.org/storyboard-listing/pokedex.html',
@@ -18,8 +20,10 @@ extraStartUrls: [
 
 badwords: [
 
-
+			'/audio/',
+			'/i/',
 			"/mailto/",
+			"/out.php?",
 			"feed?type=atom",
 
 			"/about/",
@@ -95,6 +99,10 @@ badwords: [
 
 			'bit.ly/',
 			".pdf",
+			'storyfeedbackboard.php',
+			'make_comment.php',
+			'anonfeedback.php',
+			'/storyxs/',
 
 			]
 
@@ -130,6 +138,10 @@ decompose: [
 	{'class'  : 'site-header'},
 	{'class'  : 'paging-navigation'},
 	{'class'  : 'comments-area'},
+	{'class'  : 'ads'},
+
+	{'class'  : 'b-sidebar'},
+	{'class'  : 'b-footer'},
 ]
 
 stripTitle: []
