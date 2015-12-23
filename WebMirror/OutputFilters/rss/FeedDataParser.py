@@ -297,6 +297,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Pippi Site'                                                    : pfuncs.extractPippiSite,
 				'Helidwarf'                                                     : pfuncs.extractHelidwarf,
 
+				'Walk the Jiang Hu'                                             : pfuncs.extractWalkTheJiangHu,
+				'Universes With Meaning'                                        : pfuncs.extractUniversesWithMeaning,
+
 
 				# KnW mess
 				'Blazing Translations'                                          : pfuncs.extractKnW,
@@ -385,7 +388,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'EZ Translations'                                               : pfuncs.extractBase,
 				'Fighting Dreamers Scanlations'                                 : pfuncs.extractBase,
 				'Flicker Hero'                                                  : pfuncs.extractBase,
-				'Fung Shen'                                                     : pfuncs.extractBase,
+				'Fung Shen'                                                     : pfuncs.extractFungShen,
 				'Fuzion Life'                                                   : pfuncs.extractBase,
 				'Gargoyle Web Serial'                                           : pfuncs.extractBase,
 				'Grow with me'                                                  : pfuncs.extractBase,

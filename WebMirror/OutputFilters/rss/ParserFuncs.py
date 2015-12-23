@@ -3812,6 +3812,47 @@ def extractBathrobeKnight(item):
 ####################################################################################################################################################
 #
 ####################################################################################################################################################
+def extractWalkTheJiangHu(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+	if 'TTNH Chapter' in item['title']:
+		return buildReleaseMessage(item, "Transcending the Nine Heavens", vol, chp, frag=frag, postfix=postfix)
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractUniversesWithMeaning(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+	if 'Angel of Death' in item['title']:
+		return buildReleaseMessage(item, 'Angel of Death', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'In The Name Of God' in item['title']:
+		return buildReleaseMessage(item, 'In The Name Of God', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractFungShen(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Shrouded' in item['tags']:
+		return buildReleaseMessage(item, 'Shrouded', vol, chp, frag=frag, postfix=postfix)
+	print(item['title'])
+	print(item['tags'])
+	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
 def extractWIP(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) and not "preview" in item['title']:
@@ -3822,6 +3863,12 @@ def extractWIP(item):
 	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
+
+
+
+
+
+
 
 ####################################################################################################################################################
 #
