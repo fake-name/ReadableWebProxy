@@ -255,6 +255,7 @@ class Token(object):
 		if "," in following_text:
 			following_text = following_text.split(",")[0]
 
+		# text-to-number library does stupid things with "a" or "A" (converts them to 1)
 		following_text = following_text.split(" ")
 		if "a" in following_text: following_text.remove("a")
 		if "A" in following_text: following_text.remove("A")

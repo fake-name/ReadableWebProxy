@@ -3729,8 +3729,15 @@ def extractJoeglensTranslationSpace(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) and not "preview" in item['title']:
 		return False
+
+
 	if 'Parallel World Pharmacy' in item['tags']:
-		return buildReleaseMessage(item, 'Parallel World Pharmacy', vol, chp, frag=frag, postfix=postfix)
+		chapter = re.search(r'(?:chapter|chap)\W*(\d+)', item['title'], flags=re.IGNORECASE)
+		episode = re.search(r'(?:episode|ep)\W*(\d+)', item['title'], flags=re.IGNORECASE)
+		if chapter and episode:
+			chp = chapter.group(0)
+			frag = episode.group(0)
+			return buildReleaseMessage(item, 'Parallel World Pharmacy', vol, chp, frag=frag, postfix=postfix)
 	if 'Slave Career Planner' in item['tags']:
 		return buildReleaseMessage(item, 'The Successful Business of a Slave Career Planner', vol, chp, frag=frag, postfix=postfix)
 	if 'Rokudenashi' in item['tags']:

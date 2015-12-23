@@ -6,9 +6,7 @@
  
  https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
 
-http://www.shinsori.com/
-https://www.literotica.com not scraping?
-fix feed generation for https://www.wlnupdates.com/series-id/33342/
+
 last release time on group page
 
 ## Todo:

@@ -612,12 +612,12 @@ mapper = {
 	'www.wattpad.com'                                 : 'Wattpad',
 	'www.wuxiaheroes.com'                             : 'Wuxia Heroes',
 	'yuujinchou.livejournal.com'                      : 'Yuujinchou',
+	'volaretranslations.com'                          : 'Volare Translations',
 
-	'shuuen-scans.tumblr.com'                         : 'shuuen-scans.tumblr.com',
-	'slavetranslations.com'                           : 'slavetranslations.com',
-	'thetaleofxero.net'                               : 'thetaleofxero.net',
-	'trinityarchive.com'                              : 'trinityarchive.com',
-	'volaretranslations.com'                          : 'volaretranslations.com',
+	'shuuen-scans.tumblr.com'                         : 'Shuuen Scanlations',
+	'slavetranslations.com'                           : 'Slave Translations',
+	'thetaleofxero.net'                               : 'Mystic Tales',
+	'trinityarchive.com'                              : 'Trinity Archive',
 
 	# Private
 	'sorotrans.wordpress.com'                         : 'sorotrans.wordpress.com',
