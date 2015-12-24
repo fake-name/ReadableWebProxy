@@ -334,11 +334,13 @@ def sort_json(json_name):
 	out = []
 	for key in data:
 
-		out.append((len(data[key]), data[key]))
+		out.append((data[key][0]['Have Func'], len(data[key]), data[key]))
 
-	out.sort(key=lambda x:x[0], reverse=True)
+	out.sort(key=lambda x: (x[0], x[1]*-1))
+	out.sort(key=lambda x: (x[1]*-1))
 
 	key_order = [
+		"Have Func",
 		"SourceName",
 		"Title",
 		"Tags",
@@ -359,7 +361,7 @@ def sort_json(json_name):
 	with open(outf, "w") as fp:
 		for item in out:
 			# print(item[1])
-			for value in item[1]:
+			for value in item[2]:
 				for key in key_order:
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")

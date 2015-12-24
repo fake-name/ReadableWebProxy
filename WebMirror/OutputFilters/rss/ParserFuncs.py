@@ -969,7 +969,9 @@ def extractOhanashimi(item):
 ####################################################################################################################################################
 def extractOmegaHarem(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol) and not "preview" in item['title']:
+	if not (chp or vol):
+		return False
+	if "preview" in item['title']:
 		return False
 
 	title = item['title']
@@ -989,6 +991,10 @@ def extractOmegaHarem(item):
 		return buildReleaseMessage(item, 'Evil God Average – Side Story', vol, chp, frag=frag, postfix=postfix)
 	elif 'Heibon' in title:
 		return buildReleaseMessage(item, 'E? Heibon Desu yo??', vol, chp, frag=frag, postfix=postfix)
+	elif 'Eliza Chapter' in title:
+		if "–" in title and not postfix:
+			postfix = title.split("–")[-1]
+		return buildReleaseMessage(item, 'I Reincarnated as a Noble Girl Villainess, but why did it turn out this way', vol, chp, frag=frag, postfix=postfix)
 	elif 'Villainess Brother Reincarnation' in title:
 		return buildReleaseMessage(item, 'Villainess Brother Reincarnation', vol, chp, frag=frag, postfix=postfix)
 	elif 'The Black Knight' in title:
@@ -1918,49 +1924,59 @@ def extractBuBuJingXinTrans(item):
 def extractMoonBunnyCafe(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
+	if not (chp or vol):
+		return False
+	if "preview" in item['title']:
+		return False
+
 	ltags = [tmp.lower() for tmp in item['tags']]
 
-	if 'monogatari no naka no hito' in ltags and (chp or vol):
+	if 'monogatari no naka no hito' in ltags:
 		return buildReleaseMessage(item, 'Monogatari no Naka no Hito', vol, chp, frag=frag, postfix=postfix)
-	if 'maken no daydreamer' in ltags and (chp or vol):
+	if 'maken no daydreamer' in ltags:
 		return buildReleaseMessage(item, 'Maken no Daydreamer', vol, chp, frag=frag, postfix=postfix)
-	if 'magic robot aluminare' in ltags and (chp or vol):
+	if 'magic robot aluminare' in ltags:
 		return buildReleaseMessage(item, 'Magic Robot Aluminare', vol, chp, frag=frag, postfix=postfix)
-	if  'it seems like i got reincarnated into the world of a yandere otome game.' in ltags and (chp or vol):
+	if  'it seems like i got reincarnated into the world of a yandere otome game.' in ltags:
 		return buildReleaseMessage(item,  'It seems like I got reincarnated into the world of a Yandere Otome game.', vol, chp, frag=frag, postfix=postfix)
-	if 'kuro no maou' in ltags and (chp or vol):
+	if 'kuro no maou' in ltags:
 		return buildReleaseMessage(item, 'Kuro no Maou', vol, chp, frag=frag, postfix=postfix)
-	if 'kumo desu ga, nani ka?' in ltags and (chp or vol):
+	if "what's your gender, princess?" in ltags:
+		return buildReleaseMessage(item, "What's Your Gender, Princess?", vol, chp, frag=frag, postfix=postfix)
+	if 'kumo desu ga, nani ka?' in ltags:
 		return buildReleaseMessage(item, 'Kumo Desu ga, Nani ka?', vol, chp, frag=frag, postfix=postfix)
-	if 'magic mechanics shuraba' in ltags and (chp or vol):
+	if 'magic mechanics shuraba' in ltags:
 		return buildReleaseMessage(item, 'Magic Mechanics Shuraba', vol, chp, frag=frag, postfix=postfix)
-	if "shura's wrath" in ltags and (chp or vol):
+	if "shura's wrath" in ltags:
 		return buildReleaseMessage(item, "Shura's Wrath", vol, chp, frag=frag, postfix=postfix)
-	if 'against the gods' in ltags and (chp or vol):
+	if 'against the gods' in ltags:
 		return buildReleaseMessage(item, 'Against The Gods', vol, chp, frag=frag, postfix=postfix)
-	if 'b group no shounen' in ltags and (chp or vol):
+	if 'b group no shounen' in ltags:
 		return buildReleaseMessage(item, 'B Group no Shounen', vol, chp, frag=frag, postfix=postfix)
-	if 'slave career planner' in ltags and (chp or vol):
+	if 'i reincarnated as a noble girl villainess, but why did it turn out this way' in ltags:
+		return buildReleaseMessage(item, 'I Reincarnated as a Noble Girl Villainess, but why did it turn out this way', vol, chp, frag=frag, postfix=postfix)
+	if 'slave career planner' in ltags:
 		return buildReleaseMessage(item, 'Slave Career Planner', vol, chp, frag=frag, postfix=postfix)
-	if 'the simple life of killing demons' in ltags and (chp or vol):
+	if 'the simple life of killing demons' in ltags:
 		return buildReleaseMessage(item, 'The Simple Life of Killing Demons', vol, chp, frag=frag, postfix=postfix)
-	if 'tensei shitara slime datta ken' in ltags and (chp or vol):
+	if 'tensei shitara slime datta ken' in ltags:
 		return buildReleaseMessage(item, 'Tensei Shitara Slime Datta Ken', vol, chp, frag=frag, postfix=postfix)
-	if 'godly hunter' in ltags and (chp or vol):
+	if 'godly hunter' in ltags:
 		return buildReleaseMessage(item, 'Godly Hunter', vol, chp, frag=frag, postfix=postfix)
-	if 'kamigoroshi no eiyuu to nanatsu no seiyaku' in ltags and (chp or vol):
+	if 'kamigoroshi no eiyuu to nanatsu no seiyaku' in ltags:
 		return buildReleaseMessage(item, 'Kamigoroshi no Eiyuu to Nanatsu no Seiyaku', vol, chp, frag=frag, postfix=postfix)
-	if 'and so the girl obtained a wicked girl’s body' in ltags and (chp or vol):
+	if 'and so the girl obtained a wicked girl’s body' in ltags:
 		return buildReleaseMessage(item, 'And so the Girl Obtained a Wicked Girl\'s Body', vol, chp, frag=frag, postfix=postfix)
-	if 'shen mu' in ltags and (chp or vol):
+	if 'shen mu' in ltags:
 		return buildReleaseMessage(item, 'Shen Mu', vol, chp, frag=frag, postfix=postfix)
-	if 'the demonic king chases his wife: the rebellious good-for-nothing miss' in ltags and (chp or vol):
+	if 'the demonic king chases his wife: the rebellious good-for-nothing miss' in ltags or \
+		'dkc chapter'.lower() in item['title'].lower():
 		return buildReleaseMessage(item, 'The Demonic King Chases His Wife: The Rebellious Good-for-nothing Miss', vol, chp, frag=frag, postfix=postfix)
-	if 'the saint’s recovery magic is a degraded version of mine' in ltags and (chp or vol):
+	if 'the saint’s recovery magic is a degraded version of mine' in ltags:
 		return buildReleaseMessage(item, 'The Saint’s Recovery Magic is a Degraded Version of Mine', vol, chp, frag=frag, postfix=postfix)
-	if 'it seems like i got reincarnated into the world of a yandere otome game.' in ltags and (chp or vol):
+	if 'it seems like i got reincarnated into the world of a yandere otome game.' in ltags:
 		return buildReleaseMessage(item, 'It seems like I got reincarnated into the world of a Yandere Otome game.', vol, chp, frag=frag, postfix=postfix)
-	if 'Parallel World Pharmacy'.lower() in item['title'].lower() and (chp or vol):
+	if 'Parallel World Pharmacy'.lower() in item['title'].lower():
 		return buildReleaseMessage(item, 'Parallel World Pharmacy', vol, chp, frag=frag, postfix=postfix)
 
 	return False
@@ -3851,9 +3867,35 @@ def extractFungShen(item):
 
 	if 'Shrouded' in item['tags']:
 		return buildReleaseMessage(item, 'Shrouded', vol, chp, frag=frag, postfix=postfix)
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractGrowWithMe(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'zui wu dao' in item['tags']:
+		# These parts are either volumes or chapters
+		vol, chp, frag = frag, chp, 0
+		return buildReleaseMessage(item, 'Zui Wu Dao', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractVolareTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+	if 'Great Demon King' in item['tags']:
+		return buildReleaseMessage(item, 'Great Demon King', vol, chp, frag=frag, postfix=postfix)
+	if 'Sovereign of the Three Realms' in item['tags']:
+		return buildReleaseMessage(item, 'Sovereign of the Three Realms', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
