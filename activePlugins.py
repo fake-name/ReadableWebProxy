@@ -52,6 +52,7 @@ import WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter
 import WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter
 import WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter
 import WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter
+import WebMirror.OutputFilters.NovelUpdates.NUSeriesUpdateFilter
 
 FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
@@ -60,6 +61,7 @@ FILTERS = [
 	WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
 	WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter.BooksieSeriesPageProcessor,
 	WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter.LNDBSeriesPageFilter,
+	WebMirror.OutputFilters.NovelUpdates.NUSeriesUpdateFilter.NUSeriesUpdateFilter,
 ]
 
 import WebMirror.PreProcessors.LiveJournalPreprocess

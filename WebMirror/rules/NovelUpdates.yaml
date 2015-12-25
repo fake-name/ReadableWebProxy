@@ -1,0 +1,49 @@
+
+
+FOLLOW_GOOGLE_LINKS: False
+allImages: False
+
+type: "eastern"
+
+baseUrl: [
+	"http://www.novelupdates.com",
+	]
+
+send_raw_feed: False
+trigger: False
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			"/forum/",
+			"/forum",
+			"/forums/",
+			"#comment",
+			"/forums",
+
+			"/post.php?",
+			"/author.php?",
+			]
+
+# Content Stripping needs to be determined.
+decomposeBefore: [
+
+]
+
+decompose: [
+]
+
+stripTitle: []
+
+
+destyle : [
+]
+
+
+preserveAttrs : [
+]
+

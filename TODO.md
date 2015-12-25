@@ -6,8 +6,20 @@
  
  https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
 
-
+about "A Wild Last Boss Appeared" it has 3 chapters translated on Oniichanyamete.
+MovelUpdates feed system
+http://raisingthedead.ninja/2015/12/14/when-i-returned-home-what-i-found-was-fantasy-2-03/
 last release time on group page
+
+Demons of Astlan series (summoned OP mc, awesome world building)
+Lost on Jord series (summoned non-op, pioneering journey)
+The Tome of Bill series (vampire action horror comedy, good world building)
+The Spellmonger series (massive, pure fantasy, awesome worldbuilding)
+Daniel Black series (adult themed OP summoned hero, awesome world building)
+Portals of Infinity series (adult themed OP world hopping hero)
+
+ 
+
 
 ## Todo:
 www.aoitenshi.com
