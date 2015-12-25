@@ -35,7 +35,7 @@ MIN_RATING = 5
 
 
 
-class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
@@ -44,13 +44,13 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 						]
 	want_priority    = 50
 
-	loggerPath = "Main.Filter.RoyalRoad.Page"
+	loggerPath = "Main.Filter.NoveUpdates.Page"
 
 
 	@staticmethod
 	def wantsUrl(url):
-		if re.search(r"^http://(?:www\.)?royalroadl\.com/fiction/\d+/?$", url):
-			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
+		if re.search(r"^https?://(?:www\.)?novelupdates\.com/series/.+/?$", url):
+			print("NUSeriesPageProcessor Wants url: '%s'" % url)
 			return True
 		return False
 
@@ -64,7 +64,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
 
-		self.log.info("Processing RoyalRoadL Item")
+		self.log.info("Processing NovelUpdates series page")
 		super().__init__(**kwargs)
 
 
@@ -75,36 +75,71 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
-		titletg  = soup.find("h1", class_='fiction-title')
-		authortg = soup.find("span", class_='author')
-		ratingtg = soup.find("span", class_='overall')
-
-		if not ratingtg:
-			self.log.info("Could not find rating tag!")
-			return []
+		titletg  = soup.find("h4", class_='seriestitle')
+		altnametg  = soup.find("div", id='editassociated')
+		descrtg  = soup.find("div", id='editdescription')
 
 
-		rating = float(ratingtg['score'])
-		if not rating >= MIN_RATING and rating != 0.0:
-			self.log.info("Item rating below upload threshold: %s", rating)
-			return []
+
+		link_sets = {
+			'authortg'        : soup.find("div", id='showauthors'),
+			'artisttg'        : soup.find("div", id='showartists'),
+			'langtg'          : soup.find("div", id='showlang'),
+			'genretg'         : soup.find("div", id='seriesgenre'),
+			'tagstg'          : soup.find("div", id='showtags'),
+			'typetg'          : soup.find("div", id='showtype'),
+			'orig_pub_tg'     : soup.find("div", id='showopublisher'),
+			'eng_pub_tg'      : soup.find("div", id='showepublisher'),
+		}
+
+		text_sets = {
+			'transcompletetg' : soup.find("div", id='showtranslated'),
+			'yeartg'          : soup.find("div", id='edityear'),
+			'coostatustg'     : soup.find("div", id='editstatus'),
+			'licensedtg'      : soup.find("div", id='showlicensed'),
+			}
 
 		if not titletg:
-			self.log.info("Could not find title tag!")
+			self.log.warn("Could not find item title!")
 			return []
-		if not authortg:
-			self.log.info("Could not find author tag!")
+		if not altnametg:
+			self.log.warn("Could not find alt-name container tag!")
+			return []
+		if not descrtg:
+			self.log.warn("Could not find description container tag!")
 			return []
 
+		data_sets = {}
+		for key in list(link_sets.keys()):
+			if not link_sets[key]:
+				self.log.warn("Could not find tag for name: '%s'", key)
+				return []
+			data_sets[key] = [tag.get_text() for tag in link_sets[key].find_all("a")]
 
-		title  = titletg.get_text()
-		author = authortg.get_text()
-		assert author.startswith("by ")
-		author = author[2:].strip()
+		for key in list(text_sets.keys()):
+			if not text_sets[key]:
+				self.log.warn("Could not find tag for name: '%s'", key)
+				return []
+			data_sets[key] = [tmp.strip() for tmp in text_sets[key].contents if isinstance(tmp, bs4.NavigableString)]
+
+		title  = titletg.get_text().strip()
+
+		data_sets['title'] = title
+		data_sets['altnames'] = [tmp.strip() for tmp in altnametg.contents if isinstance(tmp, bs4.NavigableString)]
+		data_sets['description'] = bleach.clean(descrtg.prettify(), tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'p'], strip=True).strip()
+
+		print(title  )
+		print(data_sets)
+
+		# Scrub incoming markup
+		for key in list(data_sets.keys()):
+			data_sets[key] = [bleach.clean(val, tags=[], attributes=[], styles=[], strip=True, strip_comments=True) for val in data_sets[key]]
 
 
-		title = bleach.clean(title, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
-		author = bleach.clean(author, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
+
+		return []
+
+		title = bleach.clean(title, tags=[], attributes=[], styles=[], strip=True)
 
 		descDiv = soup.find('div', class_='description')
 		paras = descDiv.find_all("p")
@@ -128,68 +163,69 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['homepage']    = seriesPageUrl
 		seriesmeta['desc']        = " ".join([str(para) for para in desc])
 		seriesmeta['tl_type']     = 'oel'
-		seriesmeta['sourcesite']  = 'RoyalRoadL'
+		seriesmeta['sourcesite']  = 'Unknown'
 
 		pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
 
 		extra = {}
 		extra['tags']     = tags
 		extra['homepage'] = seriesPageUrl
-		extra['sourcesite']  = 'RoyalRoadL'
+		extra['sourcesite']  = 'Unknown'
 
 
 		chapters = soup.find("div", class_='chapters')
 		releases = chapters.find_all('li', class_='chapter')
 
-		retval = []
-		for release in releases:
-			chp_title, reldatestr = release.find_all("span")
-			rel = datetime.datetime.strptime(reldatestr.get_text(), '%d/%m/%y')
-			if rel.date() == datetime.date.today():
-				reldate = time.time()
-			else:
-				reldate = calendar.timegm(rel.timetuple())
+		# retval = []
+		# for release in releases:
+		# 	chp_title, reldatestr = release.find_all("span")
+		# 	rel = datetime.datetime.strptime(reldatestr.get_text(), '%d/%m/%y')
+		# 	if rel.date() == datetime.date.today():
+		# 		reldate = time.time()
+		# 	else:
+		# 		reldate = calendar.timegm(rel.timetuple())
 
-			chp_title = chp_title.get_text()
-			# print("Chp title: '{}'".format(chp_title))
-			vol, chp, frag, post = extractTitle(chp_title)
+		# 	chp_title = chp_title.get_text()
+		# 	# print("Chp title: '{}'".format(chp_title))
+		# 	vol, chp, frag, post = extractTitle(chp_title)
 
-			raw_item = {}
-			raw_item['srcname']   = "RoyalRoadL"
-			raw_item['published'] = reldate
-			raw_item['linkUrl']   = release.a['href']
+		# 	raw_item = {}
+		# 	raw_item['srcname']   = "Wattt"
+		# 	raw_item['published'] = reldate
+		# 	raw_item['linkUrl']   = release.a['href']
 
-			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
-			retval.append(msg)
+		# 	msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+		# 	retval.append(msg)
 
-		missing_chap = 0
-		for item in retval:
-			if not (item['vol'] or item['chp']):
-				missing_chap += 1
+		# missing_chap = 0
+		# for item in retval:
+		# 	if not (item['vol'] or item['chp']):
+		# 		missing_chap += 1
 
-		if len(retval):
-			unnumbered = (missing_chap/len(retval)) * 100
-			if len(retval) >= 5 and unnumbered > 80:
-				self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
-				chap = 1
-				for item in retval:
-					item['vol'] = None
-					item['chp'] = chap
-					chap += 1
+		# if len(retval):
+		# 	unnumbered = (missing_chap/len(retval)) * 100
+		# 	if len(retval) >= 5 and unnumbered > 80:
+		# 		self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
+		# 		chap = 1
+		# 		for item in retval:
+		# 			item['vol'] = None
+		# 			item['chp'] = chap
+		# 			chap += 1
 
-		# Do not add series without 3 chapters.
-		if len(retval) < 3:
-			self.log.info("Less then three chapters!")
-			return []
+		# # Do not add series without 3 chapters.
+		# if len(retval) < 3:
+		# 	self.log.info("Less then three chapters!")
+		# 	return []
 
 
 
-		if not retval:
-			self.log.info("Retval empty?!")
-			return []
-		self.amqp_put_item(pkt)
-		return retval
+		# if not retval:
+		# 	self.log.info("Retval empty?!")
+		# 	return []
+		# self.amqp_put_item(pkt)
+		# return retval
 
+		return []
 
 
 
@@ -260,15 +296,13 @@ def test():
 
 
 
-	engine.dispatchRequest(testJobFromUrl('http://royalroadl.com/fiction/3333'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fiction/2850'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/sendai-yuusha-wa-inkyou-shitai'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/when-he-comes-close-your-eyes'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/night-ranger/'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/mythical-tyrant/'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu/'))
 
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/best-rated/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/latest-updates/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/active-top-50/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/weekly-views-top-50/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.royalroadl.com/fictions/newest/'))
 
 	crawler.join_aggregator()
 
