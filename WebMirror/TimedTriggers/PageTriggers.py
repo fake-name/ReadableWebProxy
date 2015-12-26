@@ -89,6 +89,9 @@ class HourlyPageTrigger(PageTriggerBase):
 		# Japtem bits
 		'http://japtem.com/fanfic.php?action=last_updated',
 		'http://japtem.com/fanfic.php',
+
+		# NovelUpdates
+		'http://www.novelupdates.com',
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):

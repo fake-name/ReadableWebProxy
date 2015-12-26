@@ -4,6 +4,9 @@ import json
 
 
 def fixSmartQuotes(text):
+	if isinstance(text, list):
+		text = [fixSmartQuotes(tmp) for tmp in text]
+		return text
 	text = text.replace(r"\'", "'")
 	text = text.replace(r'\"', '"')
 	text = text.replace(r"’", "'")
@@ -13,6 +16,9 @@ def fixSmartQuotes(text):
 	return text
 
 def fixCase(inText):
+	if isinstance(inText, list):
+		inText = [fixCase(tmp) for tmp in inText]
+		return inText
 	caps  = sum(1 for c in inText if c.isupper())
 	lower = sum(1 for c in inText if c.islower())
 	if (lower == 0) or (caps == 0) or (caps / lower) > 2.5:
@@ -20,6 +26,10 @@ def fixCase(inText):
 	return inText
 
 def fix_string(val):
+	if isinstance(val, list):
+		val = [fixCase(tmp) for tmp in val]
+		return val
+
 	if not val:
 		return val
 	val = fixSmartQuotes(val)
@@ -86,10 +96,17 @@ def packChapterFragments(chapStr, fragStr):
 
 def createSeriesInfoPacket(data, beta=False, matchAuthor=False):
 
-	expect = ['title', 'author', 'tags', 'homepage', 'desc', 'tl_type', 'sourcesite']
+	expect = ['title', 'author', 'tags', 'desc', 'tl_type', 'sourcesite']
+	allowed = ['alt_titles', 'author', 'desc', 'homepage', 'illust', 'pubdate', 'pubnames', 'sourcesite', 'tags', 'title', 'tl_type', 'update_only', 'coostate', 'type', 'genres', 'licensed', 'transcomplete']
+
+
 
 	# assert len(expect) == len(data),             "Invalid number of items in metadata packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in metadata message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
+
+	haven = list(data.keys())
+	[haven.remove(tmp) for tmp in allowed if tmp in haven]
+	assert len(haven) == 0, "Disallowed tag in update! Uncleared tags: '%s'" % haven
 
 	data['title']        = fix_string(data['title'])
 	data['desc']         = fix_string(data['desc'])
@@ -111,7 +128,7 @@ def createReleasePacket(data, beta=False):
 	'''
 	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
 
-	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type', 'match_author']
+	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type']
 
 	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, data)
 	assert all([key in data for key in expect]), "Invalid key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))

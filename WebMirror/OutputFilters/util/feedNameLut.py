@@ -357,6 +357,8 @@ mapper = {
 	'zentranslations.wordpress.com'                   : 'Zen Translations',
 	'zetianjitranslation.wordpress.com'               : 'Translating Ze Tian Ji',
 	'zmunjali.wordpress.com'                          : 'Roxism HQ',
+	'lsdell.com'                                      : 'Taint',
+
 
 	# Blogspot
 	"aquarilasscenario.blogspot.com"                  : "Aquarilas' Scenario",

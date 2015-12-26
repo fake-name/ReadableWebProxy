@@ -303,6 +303,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Walk the Jiang Hu'                                             : pfuncs.extractWalkTheJiangHu,
 				'Universes With Meaning'                                        : pfuncs.extractUniversesWithMeaning,
 
+				'Taint'                                                         : pfuncs.extractTaint,
+
 
 				# KnW mess
 				'Blazing Translations'                                          : pfuncs.extractKnW,

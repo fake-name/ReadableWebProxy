@@ -56,8 +56,8 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def __init__(self, **kwargs):
 
+		self.is_beta    = True
 		self.kwargs     = kwargs
-
 
 		self.pageUrl    = kwargs['pageUrl']
 
@@ -126,113 +126,143 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		data_sets['title'] = title
 		data_sets['altnames'] = [tmp.strip() for tmp in altnametg.contents if isinstance(tmp, bs4.NavigableString)]
-		data_sets['description'] = bleach.clean(descrtg.prettify(), tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'p'], strip=True).strip()
-
-		print(title  )
-		print(data_sets)
 
 		# Scrub incoming markup
 		for key in list(data_sets.keys()):
-			data_sets[key] = [bleach.clean(val, tags=[], attributes=[], styles=[], strip=True, strip_comments=True) for val in data_sets[key]]
-
-
-
-		return []
-
-		title = bleach.clean(title, tags=[], attributes=[], styles=[], strip=True)
-
-		descDiv = soup.find('div', class_='description')
-		paras = descDiv.find_all("p")
-		tags = []
-
-		desc = []
-		for para, text in [(para, para.get_text()) for para in paras]:
-			if text.lower().startswith('categories:'):
-				tagstr = text.split(":", 1)[-1]
-				items = tagstr.split(",")
-				[tags.append(item.strip()) for item in items if item.strip()]
+			if isinstance(data_sets[key], list):
+				data_sets[key] = [bleach.clean(val, tags=[], attributes=[], styles=[], strip=True, strip_comments=True).strip() for val in data_sets[key]]
 			else:
-				desc.append(para)
+				data_sets[key] = bleach.clean(data_sets[key], tags=[], attributes=[], styles=[], strip=True, strip_comments=True).strip()
 
 
-		seriesmeta = {}
+		if data_sets['yeartg'] and data_sets['yeartg'][0]:
+			print("Non-null data_sets['yeartg']:", data_sets['yeartg'])
+			tmp_d = datetime.datetime(year=int(data_sets['yeartg'].pop()), month=1, day=1)
+			data_sets['yeartg'] = calendar.timegm(tmp_d.timetuple())
+		else:
+			data_sets['yeartg'] = None
 
-		seriesmeta['title']       = title
-		seriesmeta['author']      = author
-		seriesmeta['tags']        = tags
-		seriesmeta['homepage']    = seriesPageUrl
-		seriesmeta['desc']        = " ".join([str(para) for para in desc])
-		seriesmeta['tl_type']     = 'oel'
-		seriesmeta['sourcesite']  = 'Unknown'
+		{
+			# 'coostatustg': ['3 Volumes (Ongoing)', '5 Web Volumes (Ongoing)'],
+			# 'orig_pub_tg': ['Media Factory'],
+			# 'eng_pub_tg': [],
+			# 'typetg': ['Web Novel'],
+			# 'genretg': ['Action', 'Adventure', 'Comedy', 'Ecchi', 'Fantasy', 'Romance', 'Seinen'],
+			# 'licensedtg': ['No'],
+			# 'altnames': ['Sendai Yuusha wa Inkyoshitai', 'The Previous Hero wants to Retire', '先代勇者は隠居したい'],
+			# 'authortg': ['Iida K'],
+			# 'artisttg': ['Shimotsuki Eito'],
+			# 'title': 'Sendai Yuusha wa Inkyou Shitai',
+			# 'description': '<p>\n  Three years ago, in the land of Reinbulk, a Legendary Hero was summoned in the Kindom of Leezalion and he succeeded in repelling the Demon King. Now, five students are summoned back into Reinbulk by the Kingdom of Luxeria to fight against the Demon King and the demon army. Unlike the other heroes, Yashiro Yuu has no magical affinity and the Luxeria Kingdom has no intention on acknowledging his existence or returning him to his world.\n </p>\n <p>\n  However, Yuu is actually the previous Hero that had fought the Demon King. Moreover, he is perplexed at the situation since he knows the Demon King has not returned since he sealed him. If the seal was ever broken then he would be automatically summoned instead of normal summoned. Since he already saved the world once and the Demon King hasn’t been unsealed, Yuu decides to leave the demons to the new heroes and retire from the Hero business. So he decides to become an adventurer.\n </p>',
+			# 'tagstg': ['Elves', 'Heroes', 'Magic', 'Monsters', 'Multiple Narrators', 'Protagonist Strong from the Start', 'Strong Male Lead', 'Sword and Sorcery', 'Transported to Another World'],
+			# 'langtg': ['Japanese'],
+			# 'yeartg': ['2013']
 
-		pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
+
+			'transcompletetg': ['No'],
+		}
+
+		data_sets['description'] = bleach.clean(descrtg.prettify(), tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'p'], strip=True).strip()
+
+		series_message = {
+			'update_only'   : False,
+			'sourcesite'    : "NovelUpdates",
+			'title'         : data_sets['title'],
+			'alt_titles'    : data_sets['altnames'] + [data_sets['title'], ],
+
+			'desc'          : data_sets['description'],
+			# 'homepage'      : data_sets[''],
+			'author'        : data_sets['authortg'],
+			'illust'        : data_sets['artisttg'],
+
+			'pubdate'       : data_sets['yeartg'],
+			'pubnames'      : data_sets['orig_pub_tg'] + data_sets['eng_pub_tg'],
+			# 'sourcesite'    : data_sets[''],
+			'tags'          : data_sets['tagstg'],
+
+			# AFICT, NovelUpdates doesn't have any english items, but wth.
+			'tl_type'       : "translated" if 'English' not in data_sets['langtg'] else "oel",
+
+			# New:
+			'coostate'      : data_sets['coostatustg'],
+			'type'          : data_sets['typetg'],
+			'genres'        : data_sets['genretg'],
+			'licensed'      : data_sets['licensedtg'],
+			'transcomplete' : data_sets['transcompletetg'],
+
+		}
+
+		pkt = msgpackers.createSeriesInfoPacket(series_message, matchAuthor=True, beta=self.is_beta)
+		# print(pkt)
 
 		extra = {}
-		extra['tags']     = tags
-		extra['homepage'] = seriesPageUrl
+		extra['tags']     = data_sets['tagstg']
+		# extra['homepage'] = seriesPageUrl
 		extra['sourcesite']  = 'Unknown'
 
 
-		chapters = soup.find("div", class_='chapters')
-		releases = chapters.find_all('li', class_='chapter')
+		chapter_tbl = soup.find("table", class_='tablesorter')
+		releases = chapter_tbl.find_all("tr")
 
-		# retval = []
-		# for release in releases:
-		# 	chp_title, reldatestr = release.find_all("span")
-		# 	rel = datetime.datetime.strptime(reldatestr.get_text(), '%d/%m/%y')
-		# 	if rel.date() == datetime.date.today():
-		# 		reldate = time.time()
-		# 	else:
-		# 		reldate = calendar.timegm(rel.timetuple())
+		retval = []
+		for release in releases:
 
-		# 	chp_title = chp_title.get_text()
-		# 	# print("Chp title: '{}'".format(chp_title))
-		# 	vol, chp, frag, post = extractTitle(chp_title)
+			items = release.find_all("td")
+			if len(items) == 0:
+				continue
 
-		# 	raw_item = {}
-		# 	raw_item['srcname']   = "Wattt"
-		# 	raw_item['published'] = reldate
-		# 	raw_item['linkUrl']   = release.a['href']
+			date_tg, group_tg, chp_tg = items
 
-		# 	msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
-		# 	retval.append(msg)
+			rel = datetime.datetime.strptime(date_tg.get_text(), '%m/%d/%y')
+			if rel.date() == datetime.date.today():
+				reldate = time.time()
+			else:
+				reldate = calendar.timegm(rel.timetuple())
 
-		# missing_chap = 0
-		# for item in retval:
-		# 	if not (item['vol'] or item['chp']):
-		# 		missing_chap += 1
+			chp_title  = chp_tg.get_text().strip()
+			group_name = group_tg.get_text().strip()
+			vol, chp, frag, post = extractTitle(chp_title)
 
-		# if len(retval):
-		# 	unnumbered = (missing_chap/len(retval)) * 100
-		# 	if len(retval) >= 5 and unnumbered > 80:
-		# 		self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
-		# 		chap = 1
-		# 		for item in retval:
-		# 			item['vol'] = None
-		# 			item['chp'] = chap
-		# 			chap += 1
+			raw_item = {}
+			raw_item['srcname']   = group_name
+			raw_item['published'] = reldate
+			raw_item['linkUrl']   = chp_tg.a['href']
+
+			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=data_sets['authortg'], postfix=chp_title, tl_type='translated', extraData=extra, matchAuthor=True)
+			retval.append(msg)
+
+		missing_chap = 0
+		for item in retval:
+			if not (item['vol'] or item['chp']):
+				missing_chap += 1
+
+		if len(retval):
+			unnumbered = (missing_chap/len(retval)) * 100
+			if len(retval) >= 5 and unnumbered > 80:
+				self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
+				chap = 1
+				for item in retval:
+					item['vol'] = None
+					item['chp'] = chap
+					chap += 1
 
 		# # Do not add series without 3 chapters.
 		# if len(retval) < 3:
 		# 	self.log.info("Less then three chapters!")
 		# 	return []
 
-
-
-		# if not retval:
-		# 	self.log.info("Retval empty?!")
-		# 	return []
-		# self.amqp_put_item(pkt)
-		# return retval
-
-		return []
-
+		if not retval:
+			self.log.info("Retval empty?!")
+			return []
+		self.amqp_put_item(pkt)
+		# return []
+		return retval
 
 
 	def sendReleases(self, releases):
 		self.log.info("Total releases found on page: %s. Emitting messages into AMQP local queue.", len(releases))
 		for release in releases:
-			pkt = msgpackers.createReleasePacket(release)
+			pkt = msgpackers.createReleasePacket(release, beta=self.is_beta)
 			self.amqp_put_item(pkt)
 
 
@@ -297,11 +327,11 @@ def test():
 
 
 	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/sendai-yuusha-wa-inkyou-shitai'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/when-he-comes-close-your-eyes'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/night-ranger/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/mythical-tyrant/'))
-	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/when-he-comes-close-your-eyes'))
+	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu'))
+	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/night-ranger/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/mythical-tyrant/'))
+	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu/'))
 
 
 	crawler.join_aggregator()

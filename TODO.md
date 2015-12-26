@@ -5,6 +5,7 @@
 
  
  https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
+http://lsdell.com/table-of-contents/
 
 "A Wild Last Boss Appeared" it has 3 chapters translated on Oniichanyamete.
 MovelUpdates feed system
