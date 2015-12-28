@@ -3,7 +3,8 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
- 
+https://youkoadvent.wordpress.com/
+https://lygartranslations.wordpress.com/novels/himekishi-ga-classmate/
  https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
 http://lsdell.com/table-of-contents/
 

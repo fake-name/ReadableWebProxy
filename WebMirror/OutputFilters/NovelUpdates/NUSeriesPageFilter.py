@@ -56,7 +56,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def __init__(self, **kwargs):
 
-		self.is_beta    = True
+		self.is_beta    = False
 		self.kwargs     = kwargs
 
 		self.pageUrl    = kwargs['pageUrl']

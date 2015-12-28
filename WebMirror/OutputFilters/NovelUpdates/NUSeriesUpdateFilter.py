@@ -49,18 +49,17 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	loggerPath = "Main.Filter.NovelUpdates.Series"
 
+	# This plugin doesn't need AMQP connectivity at all.
+	_needs_amqp = False
 
 	@staticmethod
 	def wantsUrl(url):
 		want = [
-			'http://www.novelupdates.com/',
-			'http://www.novelupdates.com/?pg=1',
-			'http://www.novelupdates.com/?pg=2',
-			'http://www.novelupdates.com/?pg=3',
-			'http://www.novelupdates.com/?pg=4',
+			'http://www\.novelupdates\.com/$',
+			'http://www\.novelupdates\.com/\?pg=\d+$',
 		]
 
-		if url in want:
+		if any([re.match(pattern, url) for pattern in want]):
 
 			print("NovelUpdatesSeriesUpdateFilter Wants url: '%s'" % url)
 			return True
@@ -203,7 +202,11 @@ def test():
 	c_lok = cookie_lock = multiprocessing.Lock()
 	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok)
 
-	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/'))
+	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/'))
+
+	for x in range(0, 180):
+		engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/?pg={num}'.format(num=x)))
+
 	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/?pg=1'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/?pg=2'))
 	# engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/?pg=3'))
