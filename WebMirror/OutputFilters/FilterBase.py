@@ -38,7 +38,7 @@ class FilterBase(PageProcessor):
 		self._no_ret = True
 
 	def amqp_put_item(self, item):
-		if self._needs_amqp:
+		if not self._needs_amqp:
 			raise ValueError("Plugin declared to not require AMQP connectivity, and yet AMQP call used?")
 
 		if config.C_DO_RABBIT:
