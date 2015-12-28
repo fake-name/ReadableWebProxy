@@ -95,8 +95,8 @@ class HourlyPageTrigger(PageTriggerBase):
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
-	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(5000)]
-	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(600)]
+	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(5500)]
+	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(700)]
 	pages = rrl_pages + japtem_pages
 
 if __name__ == "__main__":
