@@ -299,6 +299,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Fung Shen'                                                     : pfuncs.extractFungShen,
 				'Grow with Me'                                                  : pfuncs.extractGrowWithMe,
 				'Volare Translations'                                           : pfuncs.extractVolareTranslations,
+				'Kuma Otou'                                                     : pfuncs.extractKumaOtou,
 
 				'Walk the Jiang Hu'                                             : pfuncs.extractWalkTheJiangHu,
 				'Universes With Meaning'                                        : pfuncs.extractUniversesWithMeaning,
@@ -410,7 +411,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# 'KN Translation'                                                : pfuncs.extractBase,
 				# 'Knokkro Translations'                                          : pfuncs.extractBase,
 				# 'Krytyk\'s Translations'                                        : pfuncs.extractBase,
-				# 'Kuma Otou'                                                     : pfuncs.extractBase,
 				# 'Kurotsuki Novel'                                               : pfuncs.extractBase,
 				# 'Kyakka Translations'                                           : pfuncs.extractBase,
 				# 'L2M'                                                           : pfuncs.extractBase,

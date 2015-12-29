@@ -224,7 +224,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			vol, chp, frag, post = extractTitle(chp_title)
 
 			raw_item = {}
-			raw_item['srcname']   = group_name
+			raw_item['srcname']   = msgpackers.fixSmartQuotes(group_name)
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = chp_tg.a['href']
 

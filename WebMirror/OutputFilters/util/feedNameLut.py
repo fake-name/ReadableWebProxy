@@ -334,7 +334,6 @@ mapper = {
 	'walkthejianghu.wordpress.com'                    : 'Walk the Jiang Hu',
 	'wartdf.wordpress.com'                            : 'Raising the Dead',
 	'watdameow.wordpress.com'                         : 'Wat Da Meow',
-	'watdameow.wordpress.com'                         : 'Wat Da Meow',
 	'watermelonhelmets.wordpress.com'                 : 'Watermelon Helmets',
 	'wcctranslation.wordpress.com'                    : 'WCC Translation',
 	'weletranslation.wordpress.com'                   : 'Wele Translation',
@@ -357,8 +356,8 @@ mapper = {
 	'zentranslations.wordpress.com'                   : 'Zen Translations',
 	'zetianjitranslation.wordpress.com'               : 'Translating Ze Tian Ji',
 	'zmunjali.wordpress.com'                          : 'Roxism HQ',
+	'youkoadvent.wordpress.com'                       : 'Youko Advent',
 	'lsdell.com'                                      : 'Taint',
-
 
 	# Blogspot
 	"aquarilasscenario.blogspot.com"                  : "Aquarilas' Scenario",
@@ -393,7 +392,6 @@ mapper = {
 	'crimsonkisato.blogspot.com'                      : 'Kisato\'s MLTs',
 	'dreadfuldecoding.blogspot.com'                   : 'Dreadful Decoding',
 	'dreamsleeper87.blogspot.com'                     : 'Lunate',
-	'ecwebnovel.blogspot.ca'                          : 'EC Webnovel',
 	'ecwebnovel.blogspot.ca'                          : 'EC Webnovel',
 	'ecwebnovel.blogspot.com'                         : 'EC Webnovel',
 	'erolns.blogspot.com'                             : 'Ero Light Novel Translations',

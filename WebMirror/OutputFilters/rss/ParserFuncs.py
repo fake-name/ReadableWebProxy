@@ -653,6 +653,11 @@ def extractRaisingTheDead(item):
 	if 'Is Heaven Supposed To Be Like This?!' in item['tags']:
 		return buildReleaseMessage(item, "Is Heaven Supposed to Be Like This?!", vol, chp, frag=frag, tl_type='oel')
 
+	if 'KmF?!' in item['tags']:
+		# Chapters are specified as 2-03, meaning chp 2, part 3. Needs a special parsing system.
+		# return buildReleaseMessage(item, "Is Heaven Supposed to Be Like This?!", vol, chp, frag=frag, tl_type='oel')
+		pass
+
 	return False
 
 ####################################################################################################################################################
@@ -3903,13 +3908,29 @@ def extractVolareTranslations(item):
 #
 ####################################################################################################################################################
 def extractTaint(item):
+	titletmp = item['title'] + " ".join(item['tags'])
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(titletmp)
+	if not (chp or vol or frag) and not "preview" in item['title']:
+		return False
+
+	if 'Chapter Release' in item['tags'] and 'Taint' in item['tags'] and 'Main Story' in item['tags']:
+		return buildReleaseMessage(item, 'Taint', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Chapter Release' in item['tags'] and 'Taint' in item['tags'] and 'Side Story' in item['tags']:
+		postfix = "Side Story"
+		return buildReleaseMessage(item, 'Taint', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractKumaOtou(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) and not "preview" in item['title']:
 		return False
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+	if "I Kinda Came to Another World but where's the way home" in item['tags'] and 'translation' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Kichattakedo Kaerimichi doko?', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

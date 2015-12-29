@@ -5,14 +5,13 @@
 
 https://www.wlnupdates.com/feeds/tag/Magic%20is%20Japanese/
 
-https://youkoadvent.wordpress.com/
-https://lygartranslations.wordpress.com/novels/himekishi-ga-classmate/
- https://kumaotou.wordpress.com/i-kinda-came-to-another-world-but-wheres-the-way-home-link-to-yoraikun/
-http://lsdell.com/table-of-contents/
 
-"A Wild Last Boss Appeared" it has 3 chapters translated on Oniichanyamete.
-MovelUpdates feed system
-http://raisingthedead.ninja/2015/12/14/when-i-returned-home-what-i-found-was-fantasy-2-03/
+add item id to merge dialog for easier c&p maybe even button to copy
+
+machine sliced bread link unwrapper
+
+## https://youkoadvent.wordpress.com/    'Youko Advent'
+
 last release time on group page
 
 Demons of Astlan series (summoned OP mc, awesome world building)
@@ -99,6 +98,13 @@ rules comditionally disable tld permutatiom
  ## - Validate unmatched keys in rules so that key-typos don't silently break things.
  ## - funky tables outlines
  ## - Add Tumblr/Livejournal support already!
+ ## "A Wild Last Boss Appeared" it has 3 chapters translated on Oniichanyamete.
+ ## http://raisingthedead.ninja/2015/12/14/when-i-returned-home-what-i-found-was-fantasy-2-03/
+ ## https://lygartranslations.wordpress.com/novels/himekishi-ga-classmate/   'LygarTranslations'
+ ## https://kumaotou.wordpress.com/
+ ## http://lsdell.com/table-of-contents/  'Taint'
+ ## https://watdameow.wordpress.com/      'Wat Da Meow'
+ ## MovelUpdates feed system
 
 
 Check these URLs:
