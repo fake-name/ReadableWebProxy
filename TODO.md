@@ -2,15 +2,11 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
-
-https://www.wlnupdates.com/feeds/tag/Magic%20is%20Japanese/
-
-
-add item id to merge dialog for easier c&p maybe even button to copy
+ 
+ 
 
 machine sliced bread link unwrapper
-
-## https://youkoadvent.wordpress.com/    'Youko Advent'
+https://www.wlnupdates.com/series-id/34541/
 
 last release time on group page
 
@@ -20,7 +16,6 @@ The Tome of Bill series (vampire action horror comedy, good world building)
 The Spellmonger series (massive, pure fantasy, awesome worldbuilding)
 Daniel Black series (adult themed OP summoned hero, awesome world building)
 Portals of Infinity series (adult themed OP world hopping hero)
-
  
 
 

@@ -3937,6 +3937,19 @@ def extractKumaOtou(item):
 ####################################################################################################################################################
 #
 ####################################################################################################################################################
+def extractPriddlesTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Magic is Japanese' in item['tags']:
+		return buildReleaseMessage(item, 'Magic is Japanese', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
 def extractWIP(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) and not "preview" in item['title']:
@@ -3977,5 +3990,18 @@ def extractCrackofDawnTranslations(item):
 	print(item['title'])
 	print(item['tags'])
 	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractYoukoAdvent(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	# No chapter numbers in titles. Arrrgh
 
 	return False

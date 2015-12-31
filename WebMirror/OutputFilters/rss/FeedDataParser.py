@@ -300,11 +300,13 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Grow with Me'                                                  : pfuncs.extractGrowWithMe,
 				'Volare Translations'                                           : pfuncs.extractVolareTranslations,
 				'Kuma Otou'                                                     : pfuncs.extractKumaOtou,
+				'Priddles Translations'                                         : pfuncs.extractPriddlesTranslations,
 
 				'Walk the Jiang Hu'                                             : pfuncs.extractWalkTheJiangHu,
 				'Universes With Meaning'                                        : pfuncs.extractUniversesWithMeaning,
 
 				'Taint'                                                         : pfuncs.extractTaint,
+				'Youko Advent'                                                  : pfuncs.extractYoukoAdvent,
 
 
 				# KnW mess

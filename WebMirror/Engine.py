@@ -101,6 +101,9 @@ GLOBAL_BAD = [
 			# mime-type dispatcher.
 			# Since I'm not re-serving favicons anyways, just do not fetch them ever.
 			'favicon.ico',
+
+			# Try to not scrape inline images
+			';base64,',
 	]
 
 
