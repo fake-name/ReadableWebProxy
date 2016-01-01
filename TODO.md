@@ -3,7 +3,10 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
  
+ http://rumanshi.com/jp-web-novels/isekai-cheat/
+ http://raisingthedead.ninja/2015/12/30/when-i-returned-home-what-i-found-was-fantasy-2-04/
  
+ merge group rss view and group release view
 
 machine sliced bread link unwrapper
 https://www.wlnupdates.com/series-id/34541/

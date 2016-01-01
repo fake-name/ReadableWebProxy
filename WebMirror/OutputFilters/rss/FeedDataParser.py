@@ -301,12 +301,14 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Volare Translations'                                           : pfuncs.extractVolareTranslations,
 				'Kuma Otou'                                                     : pfuncs.extractKumaOtou,
 				'Priddles Translations'                                         : pfuncs.extractPriddlesTranslations,
+				'Novel Saga'                                                    : pfuncs.extractNovelSaga,
 
 				'Walk the Jiang Hu'                                             : pfuncs.extractWalkTheJiangHu,
 				'Universes With Meaning'                                        : pfuncs.extractUniversesWithMeaning,
 
 				'Taint'                                                         : pfuncs.extractTaint,
 				'Youko Advent'                                                  : pfuncs.extractYoukoAdvent,
+				'Dark Translations'                                             : pfuncs.extractDarkTranslations,
 
 
 				# KnW mess
@@ -321,7 +323,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 				# 'Ducky\'s English Translations'                                 : pfuncs.extractBase,
-				# 'Dark Translations'                                             : pfuncs.extractBase,
 				# 'Bad Translation'                                               : pfuncs.extractBase,
 				# 'LordofScrubs'                                                  : pfuncs.extractBase,
 				# 'Roasted Tea'                                                   : pfuncs.extractBase,

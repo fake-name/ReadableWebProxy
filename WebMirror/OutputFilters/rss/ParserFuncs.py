@@ -334,7 +334,9 @@ def extractScryaTranslations(item):
 # Japtem
 ####################################################################################################################################################
 def extractJaptem(item):
-	chp, vol, frag = extractChapterVolFragment(item['title'])
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
 	if '[Chinese] Shadow Rogue' in item['tags']:
 		return buildReleaseMessage(item, "Shadow Rogue", vol, chp, frag=frag)
 	if '[Chinese] Unique Legend' in item['tags']:
@@ -343,6 +345,9 @@ def extractJaptem(item):
 		return buildReleaseMessage(item, "Magi's Grandson", vol, chp, frag=frag)
 	if '[Japanese / Hosted] Arifureta' in item['tags']:
 		return buildReleaseMessage(item, "Arifureta", vol, chp, frag=frag)
+	if '[Korean] 21st Century Archmage' in item['tags']:
+		return buildReleaseMessage(item, "21st Century Archmage", vol, chp, frag=frag)
+
 	return False
 
 ####################################################################################################################################################
@@ -996,7 +1001,7 @@ def extractOmegaHarem(item):
 		return buildReleaseMessage(item, 'Evil God Average – Side Story', vol, chp, frag=frag, postfix=postfix)
 	elif 'Heibon' in title:
 		return buildReleaseMessage(item, 'E? Heibon Desu yo??', vol, chp, frag=frag, postfix=postfix)
-	elif 'Eliza Chapter' in title:
+	elif 'eliza chapter' in title.lower():
 		if "–" in title and not postfix:
 			postfix = title.split("–")[-1]
 		return buildReleaseMessage(item, 'I Reincarnated as a Noble Girl Villainess, but why did it turn out this way', vol, chp, frag=frag, postfix=postfix)
@@ -3948,6 +3953,40 @@ def extractPriddlesTranslations(item):
 	return False
 
 ####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractNovelSaga(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Dragon Martial Emperor' in item['tags']:
+		return buildReleaseMessage(item, 'Dragon Martial Emperor', vol, chp, frag=frag, postfix=postfix)
+	if 'The Six Immortals' in item['tags']:
+		return buildReleaseMessage(item, 'The Six Immortals', vol, chp, frag=frag, postfix=postfix)
+	if 'Genius Sword Immortal' in item['tags']:
+		return buildReleaseMessage(item, 'Genius Sword Immortal', vol, chp, frag=frag, postfix=postfix)
+	if 'Martial God Space' in item['tags']:
+		return buildReleaseMessage(item, 'Martial God Space', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractDarkTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if item['title'].lower().startswith("kuang shen"):
+		return buildReleaseMessage(item, 'Kuang Shen', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith("sheng wang chapter"):
+		return buildReleaseMessage(item, 'Sheng Wang', vol, chp, frag=frag, postfix=postfix)
+	if "lord xue ying chapter" in item['title'].lower():
+		return buildReleaseMessage(item, 'Lord Xue Ying', vol, chp, frag=frag, postfix=postfix)
+
+	return False####################################################################################################################################################
 #
 ####################################################################################################################################################
 def extractWIP(item):
