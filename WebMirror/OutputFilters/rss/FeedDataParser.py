@@ -302,6 +302,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Kuma Otou'                                                     : pfuncs.extractKumaOtou,
 				'Priddles Translations'                                         : pfuncs.extractPriddlesTranslations,
 				'Novel Saga'                                                    : pfuncs.extractNovelSaga,
+				'Rumanshi\'s Lair'                                              : pfuncs.extractRumanshisLair,
+				'Luen Translations'                                             : pfuncs.extractLuenTranslations,
 
 				'Walk the Jiang Hu'                                             : pfuncs.extractWalkTheJiangHu,
 				'Universes With Meaning'                                        : pfuncs.extractUniversesWithMeaning,
@@ -309,6 +311,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Taint'                                                         : pfuncs.extractTaint,
 				'Youko Advent'                                                  : pfuncs.extractYoukoAdvent,
 				'Dark Translations'                                             : pfuncs.extractDarkTranslations,
+				'Watermelon Helmets'                                            : pfuncs.extractWatermelonHelmets,
 
 
 				# KnW mess
@@ -452,7 +455,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# 'Reject Hero'                                                   : pfuncs.extractBase,
 				# 'Romantic Dreamer\'s Sanctuary'                                 : pfuncs.extractBase,
 				# 'Rosyfantasy - Always Dreaming'                                 : pfuncs.extractBase,
-				# 'Rumanshi\'s Lair'                                              : pfuncs.extractBase,
 				# 'Saber Translations'                                            : pfuncs.extractBase,
 				# 'Sauri\'s TL Blog'                                              : pfuncs.extractBase,
 				# 'SETSUNA86BLOG'                                                 : pfuncs.extractBase,
@@ -485,7 +487,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# 'Useless no 4'                                                  : pfuncs.extractBase,
 				# 'Village Translations'                                          : pfuncs.extractBase,
 				# 'walkthejianghu.wordpress.com'                                  : pfuncs.extractBase,
-				# 'Watermelon Helmets'                                            : pfuncs.extractBase,
 				# 'Weaving stories and building castles in the clouds'            : pfuncs.extractBase,
 				# 'Wele Translation'                                              : pfuncs.extractBase,
 				# 'When The Hunting Party Came'                                   : pfuncs.extractBase,

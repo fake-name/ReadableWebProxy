@@ -2,12 +2,9 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
- 
- http://rumanshi.com/jp-web-novels/isekai-cheat/
- http://raisingthedead.ninja/2015/12/30/when-i-returned-home-what-i-found-was-fantasy-2-04/
- 
+  
  merge group rss view and group release view
-
+ 
 machine sliced bread link unwrapper
 https://www.wlnupdates.com/series-id/34541/
 
@@ -97,7 +94,7 @@ rules comditionally disable tld permutatiom
  ## - funky tables outlines
  ## - Add Tumblr/Livejournal support already!
  ## "A Wild Last Boss Appeared" it has 3 chapters translated on Oniichanyamete.
- ## http://raisingthedead.ninja/2015/12/14/when-i-returned-home-what-i-found-was-fantasy-2-03/
+ ## http://raisingthedead.ninja/2015/12/30/when-i-returned-home-what-i-found-was-fantasy-2-04/
  ## https://lygartranslations.wordpress.com/novels/himekishi-ga-classmate/   'LygarTranslations'
  ## https://kumaotou.wordpress.com/
  ## http://lsdell.com/table-of-contents/  'Taint'

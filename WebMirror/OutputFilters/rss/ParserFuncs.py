@@ -371,7 +371,7 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, "Battle Through the Heavens", vol, chp, frag=frag)
 	if 'SL Chapter Release' in item['tags'] or 'SA Chapter Release' in item['tags'] or 'Skyfire Avenue' in item['tags']:
 		return buildReleaseMessage(item, "Skyfire Avenue", vol, chp, frag=frag)
-	if 'MGA Chapter Release' in item['tags']:
+	if 'MGA Chapter Release' in item['tags'] or 'Martial God Asura' in item['tags']:
 		return buildReleaseMessage(item, "Martial God Asura", vol, chp, frag=frag)
 	if 'ATG Chapter Release' in item['tags'] or 'Against the Gods' in item['tags']:
 		return buildReleaseMessage(item, "Ni Tian Xie Shen", vol, chp, frag=frag)
@@ -389,6 +389,8 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, 'Desolate Era', vol, chp, frag=frag)
 	if 'Wu Dong Qian Kun' in item['tags']:
 		return buildReleaseMessage(item, 'Wu Dong Qian Kun', vol, chp, frag=frag)
+	if 'Perfect World' in item['tags']:
+		return buildReleaseMessage(item, 'Perfect World', vol, chp, frag=frag)
 
 	return False
 
@@ -655,13 +657,18 @@ def extractRaisingTheDead(item):
 	if 'E? Heibon Desu Yo??' in item['tags']:
 		return buildReleaseMessage(item, 'E? Heibon Desu Yo??', vol, chp, frag=frag)
 
+	if 'Right Grasper' in item['tags']:
+		return buildReleaseMessage(item, 'Right Grasper ~Stealing Skills in the Other World~', vol, chp, frag=frag)
+
 	if 'Is Heaven Supposed To Be Like This?!' in item['tags']:
 		return buildReleaseMessage(item, "Is Heaven Supposed to Be Like This?!", vol, chp, frag=frag, tl_type='oel')
 
 	if 'KmF?!' in item['tags']:
-		# Chapters are specified as 2-03, meaning chp 2, part 3. Needs a special parsing system.
-		# return buildReleaseMessage(item, "Is Heaven Supposed to Be Like This?!", vol, chp, frag=frag, tl_type='oel')
-		pass
+		matches = re.search(r'When I returned home, what I found was fantasy!\? (\d+)\-(\d+)', item['title'], flags=re.IGNORECASE)
+		if matches:
+			vol = float(matches.group(1))
+			chp = float(matches.group(2))
+			return buildReleaseMessage(item, 'Kaettekite mo Fantasy!?', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2708,6 +2715,7 @@ def extractUltimateArcane(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) and not "preview" in item['title']:
 		return False
+
 	if 'Isekai ni kanaderu densetsu ~toki wo tomeru mono~' in item['tags']:
 		return buildReleaseMessage(item, 'Isekai ni kanaderu densetsu ~toki wo tomeru mono~', vol, chp, frag=frag, postfix=postfix)
 	if 'JIKUU MAHOU DE ISEKAI TO CHIKYUU WO ITTARIKITARI' in item['tags']:
@@ -3986,7 +3994,51 @@ def extractDarkTranslations(item):
 	if "lord xue ying chapter" in item['title'].lower():
 		return buildReleaseMessage(item, 'Lord Xue Ying', vol, chp, frag=frag, postfix=postfix)
 
-	return False####################################################################################################################################################
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractWatermelonHelmets(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+	if 'Dragon Life' in item['tags'] or 'Dragon Life: Chapter' in item['title']:
+		return buildReleaseMessage(item, 'Dragon Life', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractRumanshisLair(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Isekai Cheat' in item['tags'] or 'Isekai Cheat' in item['title']:
+		return buildReleaseMessage(item, 'Different World Reincarnation ~ Enjoying the new world as a cheat ~', vol, chp, frag=frag, postfix=postfix)
+	if 'Other Worlds Monster Breeder' in item['tags'] or 'Other World’s Monster Breeder (PokeGod)'.lower() in item['title'].lower():
+		return buildReleaseMessage(item, 'Other World\'s Monster Breeder', vol, chp, frag=frag, postfix=postfix)
+	if 'When I returned home, what I found was fantasy!?'.lower() in item['title'].lower():
+		return buildReleaseMessage(item, 'Kaettekite mo Fantasy!?', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractLuenTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Journey to Seek Past Reincarnations' in item['tags'] or item['title'].startswith('JTSPR'):
+		return buildReleaseMessage(item, 'Journey to Seek Past Reincarnations', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
 #
 ####################################################################################################################################################
 def extractWIP(item):

@@ -104,7 +104,26 @@ badwords: [
 			'anonfeedback.php',
 			'/storyxs/',
 
+			'/quest/bugs.php?',
+			'/stories/signup.php?',
+			'/members/lost_password.php?',
+			'/stories/addtofavs.php?',
+			'/stories/report_comment.php?',
+			'/stories/report_profile.php',
+			'/editors/contacteditor.php?',
+			'&page=contact',
+
 			]
+
+
+# DELETE FROM web_pages WHERE (netloc = 'www.literotica.com' AND url LIKE '%/quest/bugs.php?%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%/stories/signup.php?%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%/members/lost_password.php?%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%/editors/contacteditor.php?%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%&page=contact%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%/stories/report_comment.php?%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%/stories/report_profile.php%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%/stories/addtofavs.php?%');
 
 special_case_filters : {
 	"www.tgstorytime.com" : ["rate_limit", 1],
