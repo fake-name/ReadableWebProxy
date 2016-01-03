@@ -257,6 +257,7 @@ def extractPikaTranslations(item):
 		'Close Combat Mage Chapter' in item['title']:
 		return buildReleaseMessage(item, 'Close Combat Mage', vol, chp)
 	if 'IoR Book' in item['title'] or \
+		'IoR B' in item['title'] or \
 		'Inch of Radiance Book' in item['title'] or \
 		'Inch of Radiance Chapter' in item['title']:
 		return buildReleaseMessage(item, 'Inch of Radiance', vol, chp)
@@ -272,19 +273,21 @@ def extractPikaTranslations(item):
 # Blue Silver Translations
 ####################################################################################################################################################
 def extractBlueSilverTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
 	if 'Douluo Dalu' in item['tags']:
 		proc_str = "%s %s" % (item['tags'], item['title'])
 		proc_str = proc_str.replace("'", " ")
 		chp, vol = extractChapterVol(proc_str)
 
-		with open("out.txt", "a") as fp:
-			fp.write("'%s', '%s', '%s'\n" % (proc_str, chp, vol))
-		print(item['title'], item['tags'], proc_str, chp, vol)
 		if not (chp and vol):
 			return False
-
 		return buildReleaseMessage(item, 'Douluo Dalu', vol, chp)
+
+	if 'Immortal Executioner' in item['tags']:
+		if not (chp or vol) and not "preview" in item['title']:
+			return False
+		return buildReleaseMessage(item, 'Immortal Executioner', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -797,7 +800,7 @@ def extractLingson(item):
 ####################################################################################################################################################
 def extractSwordAndGame(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if 'The Rising of the Shield Hero' in item['tags'] and 'chapter' in item['tags']:
+	if 'The Rising of the Shield Hero' in item['tags'] and 'chapter' in [tmp.lower() for tmp in item['tags']]:
 		return buildReleaseMessage(item, 'The Rise of the Shield Hero', vol, chp, frag=frag, postfix=postfix)
 	if 'Ark' in item['tags'] and (vol or chp or postfix):
 		return buildReleaseMessage(item, 'Ark', vol, chp, frag=frag, postfix=postfix)
@@ -883,7 +886,7 @@ def extractGuhehe(item):
 ####################################################################################################################################################
 def extractHajiko(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if 'Ryuugoroshi no Sugosuhibi' in item['title']:
+	if 'Ryuugoroshi no Sugosuhibi' in item['title'] or 'Ryuugoroshi no Sugosu Hibi' in item['tags']:
 		return buildReleaseMessage(item, 'Ryugoroshi no Sugosuhibi', vol, chp, frag=frag, postfix=postfix)
 
 	return False
@@ -1107,7 +1110,7 @@ def extractSylver(item):
 ####################################################################################################################################################
 def extractTomorolls(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if 'Cicada as Dragon' in item['tags']:
+	if 'Cicada as Dragon' in item['tags'] or 'Semi Datte Tensei Sureba Ryuu Ni Naru' in item['title']:
 		return buildReleaseMessage(item, 'Cicada as Dragon', vol, chp, frag=frag, postfix=postfix)
 	return False
 
@@ -1116,8 +1119,11 @@ def extractTomorolls(item):
 ####################################################################################################################################################
 def extractTotokk(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
 	# Lawl, title typo
-	if '[SYWZ] Chapter' in item['title'] or '[SWYZ] Chapter' in item['title'] or 'Shen Yin Wang Zuo, Chapter' in item['title']:
+	if '[SYWZ] Chapter' in item['title'] or '[SWYZ] Chapter' in item['title'] \
+		or '[SYWZ]' in item['title'] or 'Shen Yin Wang Zuo, Chapter' in item['title']:
 		return buildReleaseMessage(item, 'Shen Yin Wang Zuo', vol, chp, frag=frag, postfix=postfix)
 	return False
 
@@ -1461,13 +1467,23 @@ def extractKaezar(item):
 ####################################################################################################################################################
 def extractLarvyde(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
 
-	if 'Ore no Osananajimi wa Joshikousei de Yuusha' in item['tags'] and (chp or vol):
+	if not postfix and '–' in item['title']:
+		postfix = item['title'].split("–")[-1]
+	if 'Ore no Osananajimi wa Joshikousei de Yuusha' in item['tags']:
 		return buildReleaseMessage(item, 'Ore no Osananajimi wa Joshikousei de Yuusha', vol, chp, frag=frag, postfix=postfix)
-	if 'Oukoku e Tsuzuku Michi' in item['tags'] and (chp or vol):
+	if 'Oukoku e Tsuzuku Michi' in item['tags']:
 		return buildReleaseMessage(item, 'Oukoku e Tsuzuku Michi', vol, chp, frag=frag, postfix=postfix)
-	if 'Takarakuji de 40-oku Atattandakedo' in item['tags'] and (chp or vol):
+	if 'Takarakuji de 40-oku Atattandakedo' in item['tags']:
 		return buildReleaseMessage(item, 'Takarakuji de 40 Oku Atattandakedo Isekai ni Ijuu Suru', vol, chp, frag=frag, postfix=postfix)
+	if 'Jaaku Chika Teikoku' in item['tags']:
+		return buildReleaseMessage(item, 'Jaaku Chika Teikoku', vol, chp, frag=frag, postfix=postfix)
+	if 'Saenai Heroine no Sodatekata' in item['tags']:
+		return buildReleaseMessage(item, 'Saenai Heroine no Sodatekata', vol, chp, frag=frag, postfix=postfix)
+	if 'Genjitsushugisha no Oukokukaizouki' in item['tags']:
+		return buildReleaseMessage(item, 'Genjitsushugisha no Oukokukaizouki', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1688,7 +1704,7 @@ def extractShiroyukineko(item):
 	if not (chp or vol) and not "preview" in item['title']:
 		return False
 
-	if 'DOP' in item['tags'] or 'Descent of the Phoenix: 13 Year Old Princess Consort' in item['tags']:
+	if 'DOP' in item['tags'] or 'Descent of the Phoenix: 13 Year Old Princess Consort' in item['tags'] or item['title'].startswith('DOP Chapter'):
 		return buildReleaseMessage(item, 'Descent of the Phoenix: 13 Year Old Princess Consort', vol, chp, frag=frag, postfix=postfix)
 	if 'LLS' in item['tags'] or 'Long Live Summons!' in item['tags']:
 		return buildReleaseMessage(item, 'Long Live Summons!', vol, chp, frag=frag, postfix=postfix)
@@ -1822,9 +1838,13 @@ def extractJawzTranslations(item):
 ####################################################################################################################################################
 def extractDreadfulDecoding(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
 
-	if 'Gun Gale Online' in item['tags'] and (chp or vol):
+	if 'Gun Gale Online' in item['tags']:
 		return buildReleaseMessage(item, 'Sword Art Online Alternative - Gun Gale Online', vol, chp, frag=frag, postfix=postfix)
+	if 'RotTS' in item['tags']:
+		return buildReleaseMessage(item, 'Sword Art Online Alternative - Rondo of the Transient Sword', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2509,6 +2529,8 @@ def extractMachineSlicedBread(item):
 		return buildReleaseMessage(item, 'I made a slave harem using a charm cheat in a different world.', vol, chp, frag=frag, postfix=postfix)
 	if 'Cheatman TL' in item['tags']:
 		return buildReleaseMessage(item, 'Joudan Mitaina Chiito Nouryouku de Isekai ni Tensei shi, Sukikatte suru Hanashi', vol, chp, frag=frag, postfix=postfix)
+	if 'Zombie Emperor TL' in item['tags']:
+		return buildReleaseMessage(item, 'The Bloodshot One-Eyed Zombie Emperor', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3486,6 +3508,10 @@ def extractSoojikisProject(item):
 		return False
 	if 'Weakest Skeleton' in item['tags'] or 'Home page' in item['tags']:
 		return buildReleaseMessage(item, 'Kurasu marugoto jingai tensei -Saijyaku no sukeruton ni natta ore-', vol, chp, frag=frag, postfix=postfix)
+	if 'Reincarnated as a Villager' in item['tags']:
+		return buildReleaseMessage(item, 'Reincarnated as a Villager ~ Strongest Slow-life', vol, chp, frag=frag, postfix=postfix)
+	if 'Yandere?' in item['tags'] and 'Weapons' in item['tags']:
+		return buildReleaseMessage(item, 'Myself, weapons, and Yandere', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -4035,6 +4061,162 @@ def extractLuenTranslations(item):
 
 	if 'Journey to Seek Past Reincarnations' in item['tags'] or item['title'].startswith('JTSPR'):
 		return buildReleaseMessage(item, 'Journey to Seek Past Reincarnations', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractHeroicNovels(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Dragon Order of Flame' in item['tags']:
+		return buildReleaseMessage(item, 'Dragon Order of Flame', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('The Hero Volume'):
+		return buildReleaseMessage(item, 'The Hero', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('Metatron Volume'):
+		return buildReleaseMessage(item, 'Metatron', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractNotDailyTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Zombie Emperor' in item['tags']:
+		return buildReleaseMessage(item, 'The Bloodshot One-Eyed Zombie Emperor', vol, chp, frag=frag, postfix=postfix)
+	if 'Nidome no Yuusha' in item['tags']:
+		return buildReleaseMessage(item, 'Nidome no Yuusha wa Fukushuu no Michi wo Warai Ayumu. ~Maou yo, Sekai no Hanbun wo Yaru Kara Ore to Fukushuu wo Shiyou~', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractEpyonTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+	if 'magic robot aluminare ch' in item['title'].lower():
+
+		match = re.search(r'ch ?(\d+)\-(\d+)', item['title'])
+		if match:
+			chp  = match.group(1)
+			frag = match.group(2)
+			return buildReleaseMessage(item, 'Magic Robot Aluminare', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Magic Robot Aluminare', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractWhiteTigerTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if item['title'].lower().startswith('mp volume'):
+		return buildReleaseMessage(item, 'Martial Peak', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('ipash chapter'):
+		return buildReleaseMessage(item, 'Martial Peak', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractRosyfantasy(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Chu Wang Fei' in item['tags']:
+		return buildReleaseMessage(item, 'Chu Wang Fei', vol, chp, frag=frag, postfix=postfix)
+	if 'Seven Unfortunate Lifetimes' in item['tags']:
+		return buildReleaseMessage(item, 'Seven Unfortunate Lifetimes', vol, chp, frag=frag, postfix=postfix)
+	if 'All Thanks to a Single Moment of Impulse' in item['tags']:
+		return buildReleaseMessage(item, 'All Thanks to a Single Moment of Impulse', vol, chp, frag=frag, postfix=postfix)
+	if 'White Calculation' in item['tags']:
+		return buildReleaseMessage(item, 'White Calculation', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractKnokkroTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'Eternal Life' in item['tags']:
+		return buildReleaseMessage(item, 'Eternal Life', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractLilBlissNovels(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if ':' in item['title'] and 'Side Story' in item['title'] and not postfix:
+		postfix = item['title'].split(":")[-1]
+	if 'Wei Wei Yi Xiao Hen Qing Cheng' in item['tags']:
+		return buildReleaseMessage(item, 'Wei Wei Yi Xiao Hen Qing Cheng', vol, chp, frag=frag, postfix=postfix)
+	if 'Memory Lost' in item['tags']:
+		return buildReleaseMessage(item, 'Memory Lost', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractLinkedTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+	if item['title'].startswith('A Record of a Mortal’s Journey to Immortality:'):
+		if not postfix:
+			postfix = item['title'].split(":")[-1]
+		return buildReleaseMessage(item, 'A Record of a Mortal’s Journey to Immortality', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractWeleTranslation(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if item['title'].startswith('Sin City'):
+		return buildReleaseMessage(item, 'Sin City', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('zhan xian'):
+		return buildReleaseMessage(item, 'Zhan Xian', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractUDonateWeTranslate(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) and not "preview" in item['title']:
+		return False
+
+	if 'ATG' in item['tags'] or ('Against the Gods' in item['title'] and 'Chapter' in item['title']):
+		return buildReleaseMessage(item, 'Against the Gods', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
