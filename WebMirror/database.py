@@ -39,6 +39,9 @@ from sqlalchemy.ext.associationproxy import association_proxy
 # from  sqlalchemy.sql.expression import func
 # from citext import CIText
 
+from sqlalchemy_utils.types import TSVectorType
+from sqlalchemy_searchable import make_searchable
+
 # Patch in knowledge of the citext type, so it reflects properly.
 from sqlalchemy.dialects.postgresql.base import ischema_names
 import citext
@@ -131,6 +134,7 @@ def delete_session():
 
 
 Base = declarative_base()
+make_searchable()
 
 dlstate_enum   = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', name='dlstate_enum')
 itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype_enum')
@@ -172,7 +176,8 @@ class WebPages(Base):
 	# fetch scheduling to operate within the same database.
 	normal_fetch_mode = Column(Boolean, default=True)
 
-	tsv_content       = Column(TSVECTOR)
+	tsv_content       = Column(TSVectorType('content'))
+
 
 
 	file_item         = relationship("WebFiles")

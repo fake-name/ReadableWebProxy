@@ -320,6 +320,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'お兄ちゃん、やめてぇ！'                                               : pfuncs.extractOniichanyamete,
 				'中翻英圖書館 Translations'                                       : pfuncs.extractTuShuGuan,
 				'桜翻訳! | Light novel translations'                             : pfuncs.extractSakurahonyaku,
+				'pandafuqtranslations'                                          : pfuncs.extractPandafuqTranslations,
+				'Paztok'                                                        : pfuncs.extractPaztok,
 
 
 				# KnW mess
@@ -338,7 +340,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# 'LordofScrubs'                                                  : pfuncs.extractBase,
 				# 'Roasted Tea'                                                   : pfuncs.extractBase,
 				# 'Undecent Translations'                                         : pfuncs.extractBase,
-				# 'pandafuqtranslations'                                          : pfuncs.extractBase,
 
 				# '(NanoDesu) - Amagi Brilliant Park '                            : pfuncs.extractBase,
 				# '(NanoDesu) - Fate/Apocrypha'                                   : pfuncs.extractBase,
@@ -447,7 +448,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# 'Ore ga Heroine in English'                                     : pfuncs.extractBase,
 				# 'Otome Revolution'                                              : pfuncs.extractBase,
 				# 'Pact Web Serial'                                               : pfuncs.extractBase,
-				# 'Paztok'                                                        : pfuncs.extractBase,
 				# 'Pea Translation'                                               : pfuncs.extractBase,
 				# 'Pielord Translations'                                          : pfuncs.extractBase,
 				# 'Polyphonic Story Translation Group'                            : pfuncs.extractBase,
