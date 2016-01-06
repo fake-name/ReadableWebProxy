@@ -11,25 +11,20 @@ import bs4
 
 
 
-class LJPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreprocessor):
+class RedditPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreprocessor):
 
-	loggerPath = "Main.Preprocessor.Livejournal"
+	loggerPath = "Main.Preprocessor.Reddit"
 
 	def acceptAdult(self, content, url):
-		soup = bs4.BeautifulSoup(content)
-		formdiv = soup.find('div', class_='b-msgsystem-warningbox-confirm')
 
-		target = formdiv.form['action']
-		bounce = formdiv.input
-		button = formdiv.button
+		target = "https://www.reddit.com/over18?%s" % urllib.parse.urlencode({"dest" : url})
 
 		form_args = {
-			button['name'] : button['value'],
-			bounce['name'] : bounce['value'],
+			"over18" : "yes",
 		}
 
 		new = self.wg.getpage(target, postData=form_args)
-		assert '<form method="POST" action="http://www.livejournal.com/misc/adult_explicit.bml">' not in new
+		assert '<title>reddit.com: over 18?</title>' not in new
 		return new
 
 
@@ -37,7 +32,7 @@ class LJPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreprocesso
 		if not isinstance(contentstr, str):
 			return contentstr
 		self.log.info("Preprocessing content from URL: '%s'", url)
-		if '<form method="POST" action="http://www.livejournal.com/misc/adult_explicit.bml">' in contentstr:
+		if '<title>reddit.com: over 18?</title>' in contentstr:
 			self.log.info("Adult clickwrap page. Stepping through")
 			contentstr = self.acceptAdult(contentstr, url)
 			self.log.info("Retreived clickwrapped content successfully")
@@ -46,4 +41,4 @@ class LJPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreprocesso
 	@staticmethod
 	def wantsUrl(url):
 		netloc = urllib.parse.urlsplit(url).netloc
-		return netloc.lower().endswith("livejournal.com")
+		return netloc.lower().endswith("reddit.com")

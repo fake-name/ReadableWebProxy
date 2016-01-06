@@ -112,6 +112,7 @@ badwords: [
 			'/stories/report_profile.php',
 			'/editors/contacteditor.php?',
 			'&page=contact',
+			'/secretsound.php?',
 
 			]
 
@@ -122,6 +123,7 @@ badwords: [
 #                             (netloc = 'www.literotica.com' AND url LIKE '%/editors/contacteditor.php?%') OR
 #                             (netloc = 'www.literotica.com' AND url LIKE '%&page=contact%') OR
 #                             (netloc = 'www.literotica.com' AND url LIKE '%/stories/report_comment.php?%') OR
+#                             (netloc = 'www.literotica.com' AND url LIKE '%/secretsound.php?%') OR
 #                             (netloc = 'www.literotica.com' AND url LIKE '%/stories/report_profile.php%') OR
 #                             (netloc = 'www.literotica.com' AND url LIKE '%/stories/addtofavs.php?%');
 

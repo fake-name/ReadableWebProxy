@@ -4,6 +4,8 @@ import sys
 import multiprocessing
 import threading
 
+from settings import MAX_DB_SESSIONS
+
 DB_REALTIME_PRIORITY =    1 * 1000
 DB_HIGH_PRIORITY     =   10 * 1000
 DB_MED_PRIORITY      =   50 * 1000
@@ -100,8 +102,8 @@ def get_session():
 			print("Creating database interface:", SESSIONS[csid])
 
 			# Delete the session that's oldest.
-			if len(SESSIONS) > 50:
-				print("WARN: More then 50 active sessions! Deleting oldest session to prevent session contention.")
+			if len(SESSIONS) > MAX_DB_SESSIONS:
+				print("WARN: More then %s active sessions! Deleting oldest session to prevent session contention." % MAX_DB_SESSIONS)
 				maxsz = sys.maxsize
 				to_delete = None
 				for key, value in SESSIONS.items():

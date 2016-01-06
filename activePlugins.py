@@ -69,13 +69,17 @@ FILTERS = [
 ]
 
 import WebMirror.PreProcessors.LiveJournalPreprocess
+import WebMirror.PreProcessors.RedditPreprocess
+import WebMirror.PreProcessors.WattPadPreprocess
 
 PREPROCESSORS = [
-	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor
+	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor,
+	WebMirror.PreProcessors.RedditPreprocess.RedditPreprocessor,
+	WebMirror.PreProcessors.WattPadPreprocess.WattPadPreprocessor,
 ]
 
 
-import WebMirror.OutputFilters.WattPad.WattPadInit
+# import WebMirror.OutputFilters.WattPad.WattPadInit
 
 INIT_CALLS = [
 	#WebMirror.OutputFilters.WattPad.WattPadInit.init_call

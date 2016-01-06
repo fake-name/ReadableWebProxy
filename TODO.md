@@ -8,6 +8,8 @@
  http://soratranslations.com/?p=202
  http://lightnovelstranslations.com/
  
+ colspan? http://royalroadl.com/forum/showthread.php?tid=47458
+ 
  smartquotes in tl geoup name
 machine sliced bread link unwrapper
 https://www.wlnupdates.com/series-id/34541/

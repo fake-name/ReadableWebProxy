@@ -1,8 +1,13 @@
 #!flask/bin/python
 
+from WebMirror.Runner import PROCESSES
+from settings import MAX_DB_SESSIONS
+MAX_DB_SESSIONS = PROCESSES + 5
+
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
+
 
 
 # This HAS to be included before the app, to prevent circular dependencies.
@@ -209,6 +214,7 @@ if __name__ == "__main__":
 	import sys
 	print("Auxilliary modes: 'test', 'scheduler'.")
 	if "scheduler" in sys.argv:
+		MAX_DB_SESSIONS = 4
 		go_sched()
 	if "test" in sys.argv:
 		go_test()
