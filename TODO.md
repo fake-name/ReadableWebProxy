@@ -3,14 +3,14 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
   
- merge group rss view and group release view
- reddit r18 prefilter
- http://soratranslations.com/?p=202
- http://lightnovelstranslations.com/
+merge group rss view and group release view
+reddit r18 prefilter
+http://soratranslations.com/?p=202
+http://lightnovelstranslations.com/
  
- colspan? http://royalroadl.com/forum/showthread.php?tid=47458
+colspan? http://royalroadl.com/forum/showthread.php?tid=47458
  
- smartquotes in tl geoup name
+smartquotes in tl geoup name
 machine sliced bread link unwrapper
 https://www.wlnupdates.com/series-id/34541/
 

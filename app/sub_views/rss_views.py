@@ -1,4 +1,5 @@
 
+from flask import g
 from flask import render_template
 from flask import flash
 from flask import redirect
@@ -23,7 +24,7 @@ import WebMirror.database as db
 @app.route('/feeds/')
 def renderFeedsTable(page=1):
 
-	feeds = db.get_session().query(db.FeedItems)       \
+	feeds = g.session.query(db.FeedItems)       \
 		.order_by(desc(db.FeedItems.published))
 
 
@@ -50,7 +51,7 @@ def renderFeedsTable(page=1):
 @app.route('/feeds/tag/<tag>/<int:page>')
 @app.route('/feeds/tag/<tag>/')
 def renderFeedsTagTable(tag, page=1):
-	query = db.get_session().query(db.FeedItems)
+	query = g.session.query(db.FeedItems)
 	# query = query.join(db.Tags)
 	query = query.filter(db.FeedItems.tags.contains(tag))
 	query = query.order_by(desc(db.FeedItems.published))
@@ -73,7 +74,7 @@ def renderFeedsTagTable(tag, page=1):
 @app.route('/feeds/source/<source>/<int:page>')
 @app.route('/feeds/source/<source>/')
 def renderFeedsSourceTable(source, page=1):
-	feeds = db.get_session().query(db.FeedItems) \
+	feeds = g.session.query(db.FeedItems) \
 		.filter(db.FeedItems.srcname == source)  \
 		.order_by(desc(db.FeedItems.published))
 
@@ -97,7 +98,7 @@ def renderFeedEntry(postid):
 
 
 
-	post = db.get_session().query(db.FeedItems) \
+	post = g.session.query(db.FeedItems) \
 		.filter(db.FeedItems.id == postid)    \
 		.scalar()
 

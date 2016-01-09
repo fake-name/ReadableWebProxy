@@ -6,3 +6,6 @@ RSS_DEBUG      = False
 
 RULE_CACHE         = None
 SPECIAL_CASE_CACHE = None
+
+
+IS_FLASK = False

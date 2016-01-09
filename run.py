@@ -42,7 +42,7 @@ def startBackgroundThread():
 
 
 def go():
-
+	flags.IS_FLASK = True
 	settings.MAX_DB_SESSIONS = 10
 
 	import sys

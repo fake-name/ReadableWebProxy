@@ -47,6 +47,7 @@ from sqlalchemy_searchable import make_searchable
 # Patch in knowledge of the citext type, so it reflects properly.
 from sqlalchemy.dialects.postgresql.base import ischema_names
 import citext
+import queue
 import datetime
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.dialects.postgresql import JSON
@@ -58,11 +59,16 @@ from settings import DATABASE_DB_NAME       as C_DATABASE_DB_NAME
 from settings import DATABASE_USER          as C_DATABASE_USER
 from settings import DATABASE_PASS          as C_DATABASE_PASS
 
+from flask import g
+import flags
+
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=C_DATABASE_USER, passwd=C_DATABASE_PASS, host=C_DATABASE_IP, database=C_DATABASE_DB_NAME)
 
 
 SESSIONS = {}
-ENGINES = {}
+ENGINES  = {}
+POOL    = None
+
 
 ENGINE_LOCK = multiprocessing.Lock()
 SESSION_LOCK = multiprocessing.Lock()
@@ -84,7 +90,31 @@ def get_engine():
 
 	return ENGINES[csid]
 
+def checkout_session():
+	global POOL
+	if not POOL:
+		print("Creating pool")
+		POOL = queue.Queue()
+		for dummy_x in range(10):
+			POOL.put(scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))())
+
+
+	cpid = multiprocessing.current_process().name
+	ctid = threading.current_thread().name
+	csid = "{}-{}".format(cpid, ctid)
+
+	print("Getting DB session (avail: %s, ID: '%s')" % (POOL.qsize(), csid))
+	sess = POOL.get()
+	return sess
+
+def release_session(session):
+	POOL.put(session)
+	print("Returning db handle to pool. Handles available: %s" % (POOL.qsize(), ))
+
 def get_session():
+	if flags.IS_FLASK:
+		return g.session
+
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
 	csid = "{}-{}".format(cpid, ctid)

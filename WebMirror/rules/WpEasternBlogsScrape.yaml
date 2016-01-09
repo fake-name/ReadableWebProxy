@@ -333,6 +333,8 @@ baseUrl: [
 	'https://www.wuxiaheroes.com',
 	'http://youjinsite.com',
 	'http://www.deadlylegends.com/translations',
+	'http://soratranslations.com',
+	'http://lightnovelstranslations.com',
 
 	 # This is WP, but it uses an custom theme I haven't tested against.
 	'http://arkmachinetranslations.com',

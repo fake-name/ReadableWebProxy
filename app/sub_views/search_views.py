@@ -1,5 +1,5 @@
 
-
+from flask import g
 from flask import render_template
 from flask import request
 import json
@@ -25,7 +25,7 @@ def build_tsquery(in_str):
 	return ret
 
 def fetch_content(query_text, column, text_column, page, sources=None):
-	session = db.get_session()
+	session = g.session
 	tsq = build_tsquery(query_text)
 	search = None
 	if column == db.WebPages.title:
@@ -66,17 +66,17 @@ def fetch_content(query_text, column, text_column, page, sources=None):
 	except sqlalchemy.exc.ProgrammingError:
 		traceback.print_exc()
 		print("ProgrammingError - Rolling back!")
-		db.get_session().rollback()
+		g.session.rollback()
 		raise
 	except sqlalchemy.exc.InternalError:
 		traceback.print_exc()
 		print("InternalError - Rolling back!")
-		db.get_session().rollback()
+		g.session.rollback()
 		raise
 	except sqlalchemy.exc.OperationalError:
 		traceback.print_exc()
 		print("InternalError - Rolling back!")
-		db.get_session().rollback()
+		g.session.rollback()
 		raise
 
 	return entries

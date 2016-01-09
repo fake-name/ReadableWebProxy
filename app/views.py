@@ -20,6 +20,8 @@ from app import app
 from app import lm
 from app import babel
 
+from WebMirror import database
+
 
 import WebMirror.API
 
@@ -46,6 +48,14 @@ def before_request():
 
 	g.user = current_user
 	g.locale = get_locale()
+
+	g.session = database.checkout_session()
+
+
+@app.after_request
+def after_request(response):
+	database.release_session(g.session)
+	return response
 
 
 

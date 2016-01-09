@@ -1,5 +1,5 @@
 
-
+from flask import g
 from flask import render_template
 from flask import make_response
 from flask import request
@@ -57,7 +57,7 @@ def get_scheduled_tasks(session):
 @app.route('/status/', methods=['GET'])
 def status_view():
 
-	session = db.get_session()
+	session = g.session
 	# session.expire()
 	tasks = get_scheduled_tasks(session)
 	states = session.query(db.PluginStatus).all()

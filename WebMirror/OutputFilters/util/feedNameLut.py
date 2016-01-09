@@ -527,6 +527,9 @@ mapper = {
 	'www.youjinsite.com'                              : 'Youjinsite Translations',
 	'www.suiminchuudoku.net'                          : '睡眠中毒',
 
+	'soratranslations.com'                            : 'Sora Translations',
+	'lightnovelstranslations.com'                     : 'Light Novels Translations',
+
 
 	'yellawtwl.com'                                   : 'Wuxiaworld',
 	'moonbunnycafe.com'                               : 'Moon Bunny Cafe',
