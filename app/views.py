@@ -52,12 +52,9 @@ def before_request():
 	g.session = database.checkout_session()
 
 
-@app.after_request
-def after_request(response):
+@app.teardown_request
+def teardown_request(response):
 	database.release_session(g.session)
-	return response
-
-
 
 
 @app.errorhandler(404)
