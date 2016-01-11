@@ -171,14 +171,15 @@ make_searchable()
 dlstate_enum   = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', name='dlstate_enum')
 itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype_enum')
 
+
 class WebPages(Base):
 	__tablename__ = 'web_pages'
-	id                = Column(Integer, primary_key = True)
+	id                = Column(Integer, primary_key = True, index = True)
 	state             = Column(dlstate_enum, default='new', index=True, nullable=False)
 	errno             = Column(Integer, default='0')
 	url               = Column(Text, nullable = False, index = True, unique = True)
 	starturl          = Column(Text, nullable = False)
-	netloc            = Column(Text, nullable = False)
+	netloc            = Column(Text, nullable = False, index = True)
 
 	# Foreign key to the files table if needed.
 	file              = Column(Integer, ForeignKey('web_files.id'))
@@ -213,6 +214,46 @@ class WebPages(Base):
 
 
 	file_item         = relationship("WebFiles")
+
+
+
+
+class WebPageHistory(Base):
+	__tablename__ = 'web_page_history'
+	id                = Column(Integer, primary_key = True)
+	errno             = Column(Integer, default='0')
+	url               = Column(Text, nullable = False, index = True, unique = True)
+
+	# Foreign key to the files table if needed.
+	file              = Column(Integer, ForeignKey('web_files.id'))
+
+	distance          = Column(Integer, index=True, nullable=False)
+
+	is_text           = Column(Boolean, default=False)
+
+	title             = Column(citext.CIText)
+	mimetype          = Column(Text)
+
+	# Disabled due to disk-space issues.
+	# raw_content       = Column(Text)
+
+	content           = Column(Text)
+
+	fetchtime         = Column(DateTime, default=datetime.datetime.min)
+	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
+
+	tsv_content       = Column(TSVectorType('content'))
+
+	file_item         = relationship("WebFiles")
+
+
+
+	# Foreign key to the files table if needed.
+	root_rel              = Column(Integer, ForeignKey('web_pages.id'), nullable = False)
+	newer_rel             = Column(Integer, ForeignKey('web_page_history.id'))
+	older_rel             = Column(Integer, ForeignKey('web_page_history.id'))
+
+
 
 # File table doesn't know anything about URLs, since they're kept in the
 # WebPages table entirely.
@@ -332,7 +373,7 @@ class PluginStatus(Base):
 
 
 
-Base.metadata.create_all(bind=get_engine(), checkfirst=True)
+# Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 
 
 
