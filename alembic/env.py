@@ -43,6 +43,10 @@ def include_object(object, name, type_, reflected, compare_to):
 		'apscheduler',
 	]
 
+	# Allow items with null names (it was an issue).
+	if not object.name:
+		return True
+
 	if any([tmp in object.name for tmp in ignored]):
 		print((object.name, object, name, type, reflected, compare_to))
 		return False

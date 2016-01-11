@@ -10,8 +10,8 @@ import WebMirror.util.webFunctions as wf
 def go():
 	wg = wf.WebGetRobust()
 
-	new_content = wg.getpage("https://www.youtube.com/")
-	old_content = wg.getpage("https://www.youtube.com/")
+	new_content = wg.getpage("http://royalroadl.com/fictions/")
+	old_content = wg.getpage("http://royalroadl.com/fictions/")
 
 	print("Calculating diff")
 
@@ -19,7 +19,9 @@ def go():
 
 	diff = differ.patch_make(new_content, old_content)
 	textdiff = differ.patch_toText(diff)
-	print(textdiff)
+
+	# print(textdiff)
+
 	print(len(new_content), len(old_content), len(diff), len(textdiff))
 	print(len(old_content.split("\n")), len(new_content.split("\n")))
 

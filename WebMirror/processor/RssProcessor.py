@@ -106,19 +106,20 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 		contentDat = contentDat[0]
 
 
-		params = self.kwargs.copy()
+		# params = self.kwargs.copy()
 
 
-		params['pgContent'] = contentDat['value']
-		params['mimeType']  = contentDat['type']
+		# params['pgContent'] = contentDat['value']
+		# params['mimeType']  = contentDat['type']
 
 
-		# baseUrls, pageUrl, pgContent, loggerPath, relinkable
-		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(**params)
+		# # baseUrls, pageUrl, pgContent, loggerPath, relinkable
+		# scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(**params)
 
-		extracted = scraper.extractContent()
-		assert contentDat['type'] == 'text/html'
-		content = extracted['contents']
+		# extracted = scraper.extractContent()
+		# assert contentDat['type'] == 'text/html'
+		# content = extracted['contents']
+		content = "Disabled?"
 
 		# Use a parser that doesn't try to generate a well-formed output (and therefore doesn't insert
 		# <html> or <body> into content that will be only a part of the rendered page)

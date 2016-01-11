@@ -211,9 +211,9 @@ class WebPages(Base):
 
 	tsv_content       = Column(TSVectorType('content'))
 
-
-
 	file_item         = relationship("WebFiles")
+
+	previous_release  = Column(Integer, ForeignKey('web_page_history.id'))
 
 
 
@@ -229,15 +229,22 @@ class WebPageHistory(Base):
 
 	distance          = Column(Integer, index=True, nullable=False)
 
+	# Is this item a diff from the next version, or is it a full copy?
+	# Basically, sometimes the diff is larger then the file contents.
+	# therefore, we want to be able to just store the plain
+	# content in that case.
+	is_diff           = Column(Boolean, default=False)
+
 	is_text           = Column(Boolean, default=False)
 
 	title             = Column(citext.CIText)
 	mimetype          = Column(Text)
 
-	# Disabled due to disk-space issues.
-	# raw_content       = Column(Text)
-
 	content           = Column(Text)
+
+	# The hash (md5) of the reconstructed content.
+	# Used to make sure the reconstituted history is right.
+	contenthash       = Column(Text)
 
 	fetchtime         = Column(DateTime, default=datetime.datetime.min)
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
@@ -245,8 +252,6 @@ class WebPageHistory(Base):
 	tsv_content       = Column(TSVectorType('content'))
 
 	file_item         = relationship("WebFiles")
-
-
 
 	# Foreign key to the files table if needed.
 	root_rel              = Column(Integer, ForeignKey('web_pages.id'), nullable = False)

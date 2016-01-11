@@ -15,6 +15,7 @@ import sys
 import sqlalchemy.exc
 import random
 
+import Misc.diff_match_patch as dmp
 from sqlalchemy import desc
 
 from sqlalchemy.sql import text
@@ -279,10 +280,24 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def special_case_handle(self, job):
 		WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers)
 
+
+	def pushBackHistory(self, job, response):
+		if job.previous_release:
+			pass
+
+		return 50
+
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
 		while 1:
 			try:
+
+				# If we have already fetched the page, push what we have back
+				# into the history table.
+				last = None
+				if job.content:
+					last = self.pushBackHistory(job, response)
+
 				job.title    = response['title']
 				job.content  = response['contents']
 				job.mimetype = response['mimeType']
@@ -488,10 +503,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					time.sleep(0.1)
 
 			self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
-
-
 		else:
-
 			while 1:
 				try:
 					for link, istext in items:
