@@ -559,18 +559,19 @@ if __name__ == "__main__":
 
 		print("you must pass a operation to execute!")
 		print("Current actions:")
+		print('	clear-bad')
+		print('	clear-blocked')
+		print('	db-fiddle')
+		print('	fix-null')
+		print('	fix-tsv')
+		print('	longest-rows')
+		print('	missing-lut')
 		print('	rss')
-		print('	sync')
 		print('	rss-del-comments')
 		print('	rss-name')
 		print('	rss-recent')
-		print('	db-fiddle')
-		print('	longest-rows')
-		print('	missing-lut')
-		print('	fix-null')
-		print('	fix-tsv')
-		print('	clear-bad')
-		print('	clear-blocked')
+		print('	sort-json')
+		print('	sync')
 		print('	rss-db')
 		print('	rss-db {feedname}')
 		print('	fetch {url}')
@@ -581,5 +582,6 @@ if __name__ == "__main__":
 
 	decode(*sys.argv[1:])
 	# test("http://www.royalroadl.com/fiction/1484")
+
 
 

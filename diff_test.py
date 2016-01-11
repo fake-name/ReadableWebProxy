@@ -19,8 +19,10 @@ def go():
 
 	diff = differ.patch_make(new_content, old_content)
 	textdiff = differ.patch_toText(diff)
-	# print(textdiff)
+	print(textdiff)
 	print(len(new_content), len(old_content), len(diff), len(textdiff))
+	print(len(old_content.split("\n")), len(new_content.split("\n")))
+
 	differ_2 = dmp.diff_match_patch()
 	d2     = differ_2.patch_fromText(textdiff)
 	old_content_reconstituted, results = differ_2.patch_apply(d2, new_content)
