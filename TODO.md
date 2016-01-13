@@ -2,9 +2,12 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
-  
-merge group rss view and group release view
-reddit r18 prefilter
+   
+
+
+fiddle with tsvector threshold
+touch scrollbar?
+
 http://soratranslations.com/?p=202
 http://lightnovelstranslations.com/
  
