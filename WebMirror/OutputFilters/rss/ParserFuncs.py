@@ -1186,6 +1186,8 @@ def extractRebirthOnlineWorld(item):
 	if 'Loiterous' in item['tags']:
 		return buildReleaseMessage(item, 'Loiterous', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if "tdadp" in item['title'].lower() or 'To deprive a deprived person episode'.lower() in item['title'].lower():
+		if vol and chp:
+			vol = None
 		return buildReleaseMessage(item, 'To Deprive a Deprived Person', vol, chp, frag=frag, postfix=postfix)
 	if "Lazy Dragon".lower() in item['title'].lower():
 		return buildReleaseMessage(item, 'Taidana Doragon wa Hatarakimono', vol, chp, frag=frag, postfix=postfix)
@@ -1601,8 +1603,31 @@ def extractSotranslations(item):
 def extractTurb0(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
-	if 'kumo desu ga, nani ka?' in item['title'].lower() \
-		or 'kumo desu ka, nani ga?' in item['title'].lower():
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	extr = re.search(r' ([A-Z])\d+', item['title'], flags=re.IGNORECASE)
+	if extr:
+		if vol and not chp:
+			chp, vol = vol, chp
+		ep_key = extr.group(1)
+		if ep_key == "S":
+			postfix = "Shun chapter"
+		elif ep_key == "J" or ep_key == "Y":
+			postfix = "Julius chapter"
+		elif ep_key == "K":
+			postfix = "Katia chapter"
+		elif ep_key == "B":
+			postfix = "Balto chapter"
+	if re.search(r'blood \d+', item['title'], flags=re.IGNORECASE):
+		postfix = "Blood Chapter"
+
+
+
+	if 'kumo desu ga, nani ka?' in item['title'].lower()     \
+		or 'kumo desu ka, nani ga?' in item['title'].lower() \
+		or 'kumo desu ga, nani ga?' in item['title'].lower():
 		return buildReleaseMessage(item, 'Kumo Desu ga, Nani ka?', vol, chp, frag=frag, postfix=postfix)
 
 	return False
