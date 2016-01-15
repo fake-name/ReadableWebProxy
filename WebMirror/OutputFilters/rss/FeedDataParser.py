@@ -499,7 +499,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# 'www.pridesfamiliarsmaidens.com'                                : pfuncs.extractBase,
 				# 'www.soltarination.org'                                         : pfuncs.extractBase,
 				# 'xantbos.wordpress.com'                                         : pfuncs.extractBase,
-				# 'Yet Another Translation Site'                                  : pfuncs.extractBase,
+				'Yet Another Translation Site'                                  : pfuncs.extractMiaomix539,
 				# 'Yi Yue Translation'                                            : pfuncs.extractBase,
 				# 'youtsubasilver\'s Blog'                                        : pfuncs.extractBase,
 				# 'Zen Translations'                                              : pfuncs.extractBase,

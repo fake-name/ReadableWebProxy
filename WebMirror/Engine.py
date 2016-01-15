@@ -301,6 +301,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 				job.title    = response['title']
 				job.content  = response['contents']
 				job.mimetype = response['mimeType']
+
+				# Update the tsv_content column if we have data for it.
+				if response['contents']:
+					job.tsv_content = func.to_tsvector(func.coalesce(response['contents']))
+
 				if "text" in job.mimetype:
 					job.is_text  = True
 				else:

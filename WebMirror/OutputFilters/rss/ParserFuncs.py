@@ -1995,6 +1995,12 @@ def extractMoonBunnyCafe(item):
 
 	if 'monogatari no naka no hito' in ltags:
 		return buildReleaseMessage(item, 'Monogatari no Naka no Hito', vol, chp, frag=frag, postfix=postfix)
+	if 'five way heaven' in ltags:
+		return buildReleaseMessage(item, 'Five Way Heaven', vol, chp, frag=frag, postfix=postfix)
+	if 'because i’m a weapon shop uncle' in ltags or \
+		'because im a weapon shop uncle' in item['title'].lower().replace("’", "").replace("'", "") or \
+		'because im a weapons shop uncle' in item['title'].lower().replace("’", "").replace("'", ""):
+		return buildReleaseMessage(item, 'Because I\'m a Weapon Shop Uncle', vol, chp, frag=frag, postfix=postfix)
 	if 'maken no daydreamer' in ltags:
 		return buildReleaseMessage(item, 'Maken no Daydreamer', vol, chp, frag=frag, postfix=postfix)
 	if 'magic robot aluminare' in ltags:
@@ -2015,9 +2021,10 @@ def extractMoonBunnyCafe(item):
 		return buildReleaseMessage(item, 'Against The Gods', vol, chp, frag=frag, postfix=postfix)
 	if 'b group no shounen' in ltags:
 		return buildReleaseMessage(item, 'B Group no Shounen', vol, chp, frag=frag, postfix=postfix)
-	if 'i reincarnated as a noble girl villainess, but why did it turn out this way' in ltags:
+	if 'i reincarnated as a noble girl villainess, but why did it turn out this way' in ltags or \
+		'i reincarnated as a noble girl villainess, but why did it turn out this way?' in ltags:
 		return buildReleaseMessage(item, 'I Reincarnated as a Noble Girl Villainess, but why did it turn out this way', vol, chp, frag=frag, postfix=postfix)
-	if 'slave career planner' in ltags:
+	if 'slave career planner' in ltags or 'Slave Career Planner Volume' in item['title']:
 		return buildReleaseMessage(item, 'Slave Career Planner', vol, chp, frag=frag, postfix=postfix)
 	if 'the simple life of killing demons' in ltags:
 		return buildReleaseMessage(item, 'The Simple Life of Killing Demons', vol, chp, frag=frag, postfix=postfix)
@@ -2040,6 +2047,11 @@ def extractMoonBunnyCafe(item):
 		return buildReleaseMessage(item, 'It seems like I got reincarnated into the world of a Yandere Otome game.', vol, chp, frag=frag, postfix=postfix)
 	if 'Parallel World Pharmacy'.lower() in item['title'].lower():
 		return buildReleaseMessage(item, 'Parallel World Pharmacy', vol, chp, frag=frag, postfix=postfix)
+	if 'no fatigue' in ltags:
+		return buildReleaseMessage(item, 'No Fatigue', vol, chp, frag=frag, postfix=postfix)
+
+	if 'Isekai Maou to Shoukan Shoujo Dorei Majutsu' in item['tags'] and (chp or vol):
+		return buildReleaseMessage(item, 'Isekai Maou to Shoukan Shoujo no Dorei Majutsu', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2887,6 +2899,8 @@ def extractKobatoChanDaiSukiScan(item):
 		return buildReleaseMessage(item, 'God of Crime', vol, chp, frag=frag, postfix=postfix)
 	if 'Kenkyo kenjitsu o motto ni ikite orimasu!' in item['tags']:
 		return buildReleaseMessage(item, 'Kenkyo, Kenjitsu o Motto ni Ikite Orimasu!', vol, chp, frag=frag, postfix=postfix)
+	if 'God of Thunder' in item['tags']:
+		return buildReleaseMessage(item, 'God of Thunder', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -4275,6 +4289,29 @@ def extractDramasBooksTea(item):
 		return False
 	if "I Don't Like This World I Only Like You" in item['tags']:
 		return buildReleaseMessage(item, "I Don't Like This World I Only Like You", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractMiaomix539(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+
+	titleclean = item['title'].lower().replace("“", "").replace("”", "")
+	if not (chp or vol) or "preview" in titleclean:
+		return False
+
+	if "death march" in titleclean:
+		extract = re.search(r'Death March ((\d+)\-(.+?).*)', titleclean, flags=re.IGNORECASE)
+		if extract:
+			try:
+				postfix = extract.group(1)
+				vol = int(extract.group(2))
+				chp = int(extract.group(3))
+				return buildReleaseMessage(item, 'Death March kara Hajimaru Isekai Kyusoukyoku (LN)', vol, chp, postfix=postfix)
+			except ValueError:
+				return False
 
 	return False
 

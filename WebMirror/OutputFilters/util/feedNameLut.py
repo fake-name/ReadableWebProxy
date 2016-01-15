@@ -378,7 +378,6 @@ mapper = {
 	"aquarilasscenario.blogspot.com"                  : "Aquarilas' Scenario",
 	"arzengi.blogspot.com"                            : "Towards the Sky~",
 	"erosworkshop.blogspot.com"                       : "Eros Workshop",
-	"sousetsuka.blogspot.com"                         : "Sousetsuka",
 	"the-last-skull.blogspot.com"                     : "The Last Skull",
 	"thezombieknight.blogspot.com"                    : "The Zombie Knight",
 	"xhawk77x.blogspot.com"                           : "Universes With Meaning",
@@ -442,7 +441,6 @@ mapper = {
 	'royalroadweed.blogspot.co.il'                    : 'Royal Road Weed',
 	'skythewood.blogspot.com'                         : 'Skythewood translations',
 	'skythewood.blogspot.sg'                          : 'Skythewood translations',
-	'sousetsuka.blogspot.ca'                          : 'Sousetsuka',
 	'sweetacollections.blogspot.com'                  : 'Sweet A Collections',
 	'swordandgame.blogspot.ca'                        : 'Sword and Game',
 	'swordandgame.blogspot.com'                       : 'Sword and Game',
@@ -473,6 +471,9 @@ mapper = {
 	'sparklingdawnlights.blogspot.sg'                 : 'Little Translations',
 	'tseirptranslations.blogspot.sg'                  : 'Tseirp Translations',
 
+	"sousetsuka.blogspot.com"                         : "Sousetsuka",
+	'sousetsuka.blogspot.ca'                          : 'Sousetsuka',
+	'www.sousetsuka.com'                              : 'Sousetsuka',
 
 	# Other
 	"dragomircm.com"                                  : "DragomirCM",
@@ -610,7 +611,6 @@ mapper = {
 	'www.risingdragonstranslation.com'                : 'Rising Dragons Translation',
 	'www.shintranslations.com'                        : 'Shin Translations',
 	'www.soltarination.org'                           : 'Soltarination Scanlations',
-	'www.sousetsuka.com'                              : 'Sousetsuka',
 	'www.suiminchuudoku.net'                          : '睡眠中毒',
 	'www.talesofmu.com'                               : 'Tales of MU',
 	'www.taptaptaptaptap.net'                         : 'tap-trans » tappity tappity tap.',

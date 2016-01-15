@@ -183,7 +183,7 @@ body
 
 	margin:0 auto;
 	max-width: 1100px;
-	background-color: #ccc;
+	background-color: #555;
 }
 
 tr.red-highlight:nth-of-type(odd) {
