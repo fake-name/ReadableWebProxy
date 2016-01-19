@@ -5,7 +5,7 @@ type: eastern
 send_raw_feed: True
 
 baseUrl: [
-
+	'https://fgilantranslations.wordpress.com',
 	'http://gekkahimethetranslation.wordpress.com',
 	'http://gravitytranslations.wordpress.com',
 	'http://kobatochandaisuki.wordpress.com',
