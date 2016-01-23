@@ -324,16 +324,22 @@ def purge_invalid_urls():
 	sess = db.get_session()
 	for ruleset in WebMirror.rules.load_rules():
 		opts = []
-		if ruleset['netlocs'] and ruleset['badwords']:
+		if ruleset['starturls'] and ruleset['netlocs'] and ruleset['badwords']:
 			loc = and_(
 					db.WebPages.netloc.in_(ruleset['netlocs']),
 					or_(*(db.WebPages.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
 				)
 			opts.append(loc)
-		count = sess.query(db.WebPages) \
-			.filter(or_(*opts)) \
-			.count()
-		print("{num} items match badwords from file {file}: ".format(file=ruleset['filename'], num=count))
+
+			count = sess.query(db.WebPages) \
+				.filter(or_(*opts)) \
+				.count()
+			print("{num} items match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=count))
+
+			count = sess.query(db.WebPages) \
+				.filter(or_(*opts)) \
+				.delete(synchronize_session=False)
+			sess.commit()
 		# print(ruleset['netlocs'])
 		# print(ruleset['badwords'])
 

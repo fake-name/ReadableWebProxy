@@ -623,25 +623,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 	########################################################################################################################
 
 
-	def _get_task_internal(self, wattpad):
-		if wattpad:
-			filt = """
-			AND
-				(
-					web_pages.netloc = 'a.wattpad.com'
-				OR
-					web_pages.netloc = 'www.wattpad.com'
-				)
-			"""
-		else:
-			filt = """
-			AND NOT
-				(
-					web_pages.netloc = 'a.wattpad.com'
-				OR
-					web_pages.netloc = 'www.wattpad.com'
-				)
-			"""
+	def _get_task_internal(self):
+
 		# Hand-tuned query, I couldn't figure out how to
 		# get sqlalchemy to emit /exactly/ what I wanted.
 		# TINY changes will break the query optimizer, and
@@ -675,20 +658,18 @@ class SiteArchiver(LogBase.LoggerMixin):
 				                    normal_fetch_mode = true
 				                AND
 				                    web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-				                %s
 				            )
 				        AND
 				            web_pages.distance < 1000000
 				        AND
 				            web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-				        %s
 				        LIMIT 1
 				    )
 				AND
 				    web_pages.state = 'new'
 				RETURNING
 				    web_pages.id;
-			''' % (filt, filt))
+			''')
 
 
 		start = time.time()
@@ -720,7 +701,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if not rid:
 			return False
 
-		self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
+		if xqtim < 0.1:
+			self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
+		else:
+			self.log.warn("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
 
 
 		job = self.db.get_session().query(self.db.WebPages) \
@@ -742,7 +726,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
 		return job
 
-	def getTask(self, wattpad=False):
+	def getTask(self):
 		'''
 		Get a job row item from the database.
 
@@ -759,11 +743,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 				if not acq:
 					continue
 				try:
-					return self._get_task_internal(wattpad)
+					return self._get_task_internal()
 				finally:
 					self.job_get_lock.release()
 			else:
-				return self._get_task_internal(wattpad)
+				return self._get_task_internal()
 
 
 	def do_job(self, job):
@@ -812,10 +796,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			else:
 				job = self.getTask()
 			if not job:
-				job = self.getTask(wattpad=True)
-				if not job:
-					time.sleep(5)
-					return
+				time.sleep(5)
+				return
 
 			if job.netloc in self.specialty_handlers:
 				self.log.info("Job %s for url %s has a specialty handler!", job, job.url)

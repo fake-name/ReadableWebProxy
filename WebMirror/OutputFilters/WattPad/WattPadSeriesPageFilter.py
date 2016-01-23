@@ -214,7 +214,9 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		assert story_id, "No story ID tag found on page?"
 		pre = story_id.pop()['data-story-id']
 		for remaining in story_id:
-			assert pre == remaining['data-story-id']
+
+			if not pre == remaining['data-story-id']:
+				self.log.warning("Wat?: '%s' - '%s'.", pre, remaining['data-story-id'])
 
 		return pre
 
