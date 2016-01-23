@@ -15,6 +15,14 @@ def extractSousetsuka(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 	if 'Desumachi' in item['tags']:
+
+		extract = re.search(r'Kyousoukyoku (\d+)\-(\d+)', item['title'])
+		if extract and not vol:
+			vol = int(extract.group(1))
+			chp = int(extract.group(2))
+			# print("'{}' '{}', '{}', '{}', '{}'".format(item['title'], vol, chp, frag, postfix))
+
+		# print(item['tags'],)
 		return buildReleaseMessage(item, "Death March kara Hajimaru Isekai Kyousoukyoku", vol, chp, frag=frag, postfix=postfix)
 
 	return False

@@ -25,6 +25,7 @@ import WebMirror.rules
 import flags
 import WebMirror.SiteSync.fetch
 from sqlalchemy import or_
+from sqlalchemy import and_
 import WebMirror.Exceptions
 
 def print_html_response(archiver, new, ret):
@@ -317,6 +318,28 @@ def update_feed_names():
 			db.get_session().commit()
 
 
+def purge_invalid_urls():
+
+
+	sess = db.get_session()
+	for ruleset in WebMirror.rules.load_rules():
+		opts = []
+		if ruleset['netlocs'] and ruleset['badwords']:
+			loc = and_(
+					db.WebPages.netloc.in_(ruleset['netlocs']),
+					or_(*(db.WebPages.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
+				)
+			opts.append(loc)
+		count = sess.query(db.WebPages) \
+			.filter(or_(*opts)) \
+			.count()
+		print("{num} items match badwords from file {file}: ".format(file=ruleset['filename'], num=count))
+		# print(ruleset['netlocs'])
+		# print(ruleset['badwords'])
+
+
+
+
 # Re-order the missed file list by order of misses.
 def sort_json(json_name):
 	with open(json_name) as fp:
@@ -461,7 +484,7 @@ def clear_blocked():
 			# print(mask)
 			# print(ruleset['netlocs'])
 			# print(ruleset['badwords'])
-	pass
+
 
 def filter_links(path):
 	if not os.path.exists(path):
@@ -491,7 +514,7 @@ def missing_lut():
 	for feed in feeds:
 		if not fnl.getNiceName(feed):
 			print("Missing: ", urllib.parse.urlsplit(feed).netloc)
-	pass
+
 
 def decode(*args):
 	print("Args:", args)
@@ -508,6 +531,8 @@ def decode(*args):
 			db_fiddle()
 		elif op == "rss-name":
 			update_feed_names()
+		elif op == "purge-from-rules":
+			purge_invalid_urls()
 		elif op == "longest-rows":
 			longest_rows()
 		elif op == "fix-null":
@@ -563,6 +588,7 @@ if __name__ == "__main__":
 		print('	clear-blocked')
 		print('	db-fiddle')
 		print('	fix-null')
+		print('	purge-from-rules')
 		print('	fix-tsv')
 		print('	longest-rows')
 		print('	missing-lut')

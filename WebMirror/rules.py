@@ -299,10 +299,11 @@ def load_validate_rules(fname, dat):
 
 	rules['trigger']               = getTrigger(dat)
 	if not rules['trigger']:
-		rules['starturls']             = []
+		rules['starturls']         = []
 
-	rules['normal_fetch_mode']               = getRefetch(dat)
+	rules['normal_fetch_mode']     = getRefetch(dat)
 
+	rules['filename']              = fname
 	special = getSpecialFilters(dat)
 
 	return rules, special

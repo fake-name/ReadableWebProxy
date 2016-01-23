@@ -700,7 +700,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				sess.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
-				delay = random.random() / 3
+				delay = random.random() / 30
 				# traceback.print_exc()
 				self.log.warn("Error marking job fetched (OperationalError)! Delaying %s.", delay)
 				time.sleep(delay)
