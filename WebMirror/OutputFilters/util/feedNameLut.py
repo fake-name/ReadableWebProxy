@@ -627,6 +627,11 @@ mapper = {
 	'yuujinchou.livejournal.com'                      : 'Yuujinchou',
 	'zhuanji.livejournal.com'                         : '未完待续',
 
+	'fgilantranslations.wordpress.com'                : 'fgiLaN translations',
+	'fgilantranslations.com'                          : 'fgiLaN translations',
+
+	'slothtranslationsblog.wordpress.com'             : 'Sloth Translations Blog',
+
 	# Low quality
 	'owari-owari.tumblr.com'                          : '♥ yenney ♥',
 	'chilly-territory.tumblr.com'                     : 'Chilly Territory',

@@ -12,7 +12,13 @@ baseUrl: [
 	'https://www.fictionmania.tv',
 	'https://www.literotica.com',
 	'http://www.mcstories.com',
+	'http://www.overflowingbra.com',
+	'http://tsa.transform.to',
 	]
+
+# Figure out how to add http://www.bearchive.com/~addventure/
+
+
 extraStartUrls: [
 	'http://pokegirls.org/storyboard-listing/pokedex.html',
 	'http://www.tgstorytime.com/browse.php?type=recent',

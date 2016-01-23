@@ -2,19 +2,20 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
-   
 
+
+Adult link pages: 
+http://www.fictionmania.tv/links/linksdisplay.html?thelink=a09
+http://www.asstr.org/~lostboy/storylinks.html
 
 fiddle with tsvector threshold
-touch scrollbar?
+wlnupdates average release interval
 
-http://soratranslations.com/?p=202
-http://lightnovelstranslations.com/
- 
 colspan? http://royalroadl.com/forum/showthread.php?tid=47458
  
 smartquotes in tl geoup name
 machine sliced bread link unwrapper
+also adfly
 https://www.wlnupdates.com/series-id/34541/
 
 last release time on group page
