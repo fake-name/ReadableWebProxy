@@ -4,6 +4,7 @@ import WebMirror.util.webFunctions as webFunctions
 import WebMirror.LogBase as LogBase
 import WebMirror.rules
 import urllib.parse
+import urllib.error
 
 class SiteSyncFetch(LogBase.LoggerMixin):
 
@@ -88,7 +89,11 @@ class AhoUpdatesFetch(SiteSyncFetch):
 
 		for x in range(500000):
 			url = 'http://aho-updates.com/groups?sort_by=title&sort_order=ASC&page={num}'.format(num=x)
-			soup = self.wg.getSoup(url)
+
+			try:
+				soup = self.wg.getSoup(url)
+			except urllib.error.URLError:
+				break
 
 			main = soup.find_all("div", class_='views-row')
 
