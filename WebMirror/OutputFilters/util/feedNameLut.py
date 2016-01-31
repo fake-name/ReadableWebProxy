@@ -374,6 +374,7 @@ mapper = {
 	'zentranslations.wordpress.com'                   : 'Zen Translations',
 	'zetianjitranslation.wordpress.com'               : 'Translating Ze Tian Ji',
 	'zmunjali.wordpress.com'                          : 'Roxism HQ',
+	'tbatenovel.com'                                  : 'The Beginning After The End Novel',
 
 	# Blogspot
 	"aquarilasscenario.blogspot.com"                  : "Aquarilas' Scenario",
@@ -471,6 +472,7 @@ mapper = {
 	'yukkuri-literature-service.blogspot.com'         : 'Yukkuri Free Time Literature Service',
 	'sparklingdawnlights.blogspot.sg'                 : 'Little Translations',
 	'tseirptranslations.blogspot.sg'                  : 'Tseirp Translations',
+	'tseirptranslations.blogspot.com'                 : 'Tseirp Translations',
 
 	"sousetsuka.blogspot.com"                         : "Sousetsuka",
 	'sousetsuka.blogspot.ca'                          : 'Sousetsuka',
@@ -644,7 +646,7 @@ mapper = {
 	'hereticlnt.blogspot.ca'                          : 'hereticlnt.blogspot.ca',
 
 	# Broken?
-	'novelcow.com'                                    : 'novelcow.com',
+	'novelcow.com'                                    : 'NovelCow',
 
 	# Removed:
 	'ciaranhillock.blogspot.com'                      : 'ciaranhillock.blogspot.com',

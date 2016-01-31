@@ -3,6 +3,7 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+spoiler at http://10.1.1.43:5001/view?url=http%3A//aquarilasscenario.blogspot.com/2016/01/in-that-moment-of-suffering-chapter-27.html
 
 Adult link pages: 
 http://www.fictionmania.tv/links/linksdisplay.html?thelink=a09
