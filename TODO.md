@@ -12,6 +12,8 @@ http://www.asstr.org/~lostboy/storylinks.html
 fiddle with tsvector threshold
 wlnupdates average release interval
 
+images are cranky: https://isekaicyborg.wordpress.com/isekai-maou-to-shoukan-shoujo-dorei-majutsu-manga/
+
 colspan? http://royalroadl.com/forum/showthread.php?tid=47458
  
 smartquotes in tl geoup name
