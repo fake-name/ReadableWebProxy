@@ -560,51 +560,57 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fHash = getHash(response['content'])
 
 
-		# Look for existing files with the same MD5sum. If there are any, just point the new file at the
-		# fsPath of the existing one, rather then creating a new file on-disk.
 
-		have = self.db.get_session().query(self.db.WebFiles) \
-			.filter(self.db.WebFiles.fhash == fHash)   \
-			.limit(1)                                  \
-			.scalar()
+		while 1:
+			try:
+				# Look for existing files with the same MD5sum. If there are any, just point the new file at the
+				# fsPath of the existing one, rather then creating a new file on-disk.
+				have = self.db.get_session().query(self.db.WebFiles) \
+					.filter(self.db.WebFiles.fhash == fHash)   \
+					.limit(1)                                  \
+					.scalar()
 
-		if have:
-			match = self.db.get_session().query(self.db.WebFiles)              \
-				.filter(self.db.WebFiles.fhash == fHash)                \
-				.filter(self.db.WebFiles.filename == response['fName']) \
-				.limit(1)                                               \
-				.scalar()
-			if match:
-				job.file = match.id
-			else:
-				new = self.db.WebFiles(
-					filename = response['fName'],
-					fhash    = fHash,
-					fspath   = have.fspath,
-					)
-				self.db.get_session().add(new)
+				if have:
+					match = self.db.get_session().query(self.db.WebFiles)              \
+						.filter(self.db.WebFiles.fhash == fHash)                \
+						.filter(self.db.WebFiles.filename == response['fName']) \
+						.limit(1)                                               \
+						.scalar()
+					if match:
+						job.file = match.id
+					else:
+						new = self.db.WebFiles(
+							filename = response['fName'],
+							fhash    = fHash,
+							fspath   = have.fspath,
+							)
+						self.db.get_session().add(new)
+						self.db.get_session().commit()
+						job.file = new.id
+				else:
+					savedpath = saveCoverFile(response['content'], fHash, response['fName'])
+					new = self.db.WebFiles(
+						filename = response['fName'],
+						fhash    = fHash,
+						fspath   = savedpath,
+						)
+					self.db.get_session().add(new)
+					self.db.get_session().commit()
+					job.file = new.id
+
+				job.state     = 'complete'
+				job.is_text   = False
+				job.fetchtime = datetime.datetime.now()
+
+				self.log.info("Marked file job with id %s, url %s as complete!", job.id, job.url)
+
+				job.mimetype = response['mimeType']
 				self.db.get_session().commit()
-				job.file = new.id
-		else:
-			savedpath = saveCoverFile(response['content'], fHash, response['fName'])
-			new = self.db.WebFiles(
-				filename = response['fName'],
-				fhash    = fHash,
-				fspath   = savedpath,
-				)
-			self.db.get_session().add(new)
-			self.db.get_session().commit()
-			job.file = new.id
-
-		job.state     = 'complete'
-		job.is_text   = False
-		job.fetchtime = datetime.datetime.now()
-
-		self.log.info("Marked file job with id %s, url %s as complete!", job.id, job.url)
-
-		job.mimetype = response['mimeType']
-		self.db.get_session().commit()
-
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db.get_session().rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db.get_session().rollback()
 		# print("have:", have)
 
 
