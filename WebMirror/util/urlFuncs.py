@@ -2,6 +2,7 @@
 import re
 import urllib.parse
 import WebMirror.util.webFunctions
+import unshortenit
 
 # All tags you need to look into to do link canonization
 # source: http://stackoverflow.com/q/2725156/414272
@@ -146,50 +147,27 @@ def isGFileUrl(url):
 	return False, url
 
 
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
 
 
-
-
-def clearOutboundProxy(url):
-	'''
-	So google proxies all their outbound links through a redirect so they can detect outbound links.
-	This call strips them out if they are present.
-
-	'''
-	# 'https://www.google.com/url?sntz=1&q=https://bluesilvertranslations.wordpress.com/&usg=AFQjCNFzgp4e2VefkBwffciUm_xsCC4_zg&sa=D'?
-	if url.startswith("http://www.google.com/url?"):
-		qs = urllib.parse.urlparse(url).query
-		query = urllib.parse.parse_qs(qs)
-		if not "q" in query:
-			raise ValueError("No target?")
-
-		return query["q"].pop()
-
-	return url
-
-
-
-def clearBitLy(url):
-
+def cleanUrl(url):
 	# Fucking tumblr redirects.
 	if url.startswith("https://www.tumblr.com/login"):
 		return None
 
-
-	if "bit.ly" in url:
-		wg = WebMirror.util.webFunctions.WebGetRobust(logPath="Main.BitLy.Web")
-		try:
-
-			dummy_ctnt, handle = wg.getpage(url, returnMultiple=True)
-			# Recurse into redirects
-			return clearBitLy(handle.geturl())
-
-		except urllib.error.URLError:
-			print("Error resolving redirect!")
-			return None
+	url, status = unshortenit.unshorten_only(url)
+	assert (status == 200)
 
 	return url
 
+
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
 
 def rebaseUrl(url, base):
 	"""Rebase one url according to base"""

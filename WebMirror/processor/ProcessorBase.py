@@ -251,7 +251,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 
 	def processLinkItem(self, url, baseUrl):
-		url = urlFuncs.clearOutboundProxy(url)
+
+		url = urlFuncs.cleanUrl(url)
 
 		# Fucking tumblr redirects.
 		if url.startswith("https://www.tumblr.com/login"):
