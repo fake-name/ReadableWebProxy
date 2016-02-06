@@ -4,6 +4,9 @@ import sys
 import multiprocessing
 import threading
 
+from sqlalchemy_continuum import make_versioned
+make_versioned(user_cls=None)
+
 from settings import MAX_DB_SESSIONS
 
 DB_REALTIME_PRIORITY =    1 * 1000
@@ -23,6 +26,8 @@ from sqlalchemy import Table
 # from sqlalchemy import MetaData
 
 import time
+
+import sqlalchemy as sa
 
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -58,6 +63,7 @@ from settings import DATABASE_IP            as C_DATABASE_IP
 from settings import DATABASE_DB_NAME       as C_DATABASE_DB_NAME
 from settings import DATABASE_USER          as C_DATABASE_USER
 from settings import DATABASE_PASS          as C_DATABASE_PASS
+
 
 from flask import g
 import flags
@@ -173,7 +179,10 @@ itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype
 
 
 class WebPages(Base):
+	__versioned__ = {}
+
 	__tablename__ = 'web_pages'
+
 	id                = Column(Integer, primary_key = True, index = True)
 	state             = Column(dlstate_enum, default='new', index=True, nullable=False)
 	errno             = Column(Integer, default='0')
@@ -213,50 +222,6 @@ class WebPages(Base):
 
 	file_item         = relationship("WebFiles")
 
-	previous_release  = Column(Integer, ForeignKey('web_page_history.id'))
-
-
-
-
-class WebPageHistory(Base):
-	__tablename__ = 'web_page_history'
-	id                = Column(Integer, primary_key = True)
-	errno             = Column(Integer, default='0')
-	url               = Column(Text, nullable = False, index = True, unique = True)
-
-	# Foreign key to the files table if needed.
-	file              = Column(Integer, ForeignKey('web_files.id'))
-
-	distance          = Column(Integer, index=True, nullable=False)
-
-	# Is this item a diff from the next version, or is it a full copy?
-	# Basically, sometimes the diff is larger then the file contents.
-	# therefore, we want to be able to just store the plain
-	# content in that case.
-	is_diff           = Column(Boolean, default=False)
-
-	is_text           = Column(Boolean, default=False)
-
-	title             = Column(citext.CIText)
-	mimetype          = Column(Text)
-
-	content           = Column(Text)
-
-	# The hash (md5) of the reconstructed content.
-	# Used to make sure the reconstituted history is right.
-	contenthash       = Column(Text)
-
-	fetchtime         = Column(DateTime, default=datetime.datetime.min)
-	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
-
-	tsv_content       = Column(TSVectorType('content'))
-
-	file_item         = relationship("WebFiles")
-
-	# Foreign key to the files table if needed.
-	root_rel              = Column(Integer, ForeignKey('web_pages.id'), nullable = False)
-	newer_rel             = Column(Integer, ForeignKey('web_page_history.id'))
-	older_rel             = Column(Integer, ForeignKey('web_page_history.id'))
 
 
 
@@ -377,6 +342,7 @@ class PluginStatus(Base):
 	last_error_msg = Column(Text)
 
 
+sa.orm.configure_mappers()
 
 # Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 
