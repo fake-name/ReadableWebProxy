@@ -25,8 +25,6 @@ from WebMirror import database
 
 import WebMirror.API
 
-import app.book_tree.book_views    as book_views
-
 import app.sub_views.content_views as content_views
 import app.sub_views.rss_views     as rss_views
 import app.sub_views.search_views  as search_views

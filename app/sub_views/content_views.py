@@ -39,7 +39,7 @@ def render():
 		cachestate = cachestate,
 		req_url    = req_url,
 		)
-		
+
 	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
 	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
 	response.headers["Pragma"] = "no-cache"

@@ -280,23 +280,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def special_case_handle(self, job):
 		WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers)
 
-
-	def pushBackHistory(self, job, response):
-		if job.previous_release:
-			pass
-
-		return 50
-
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
 		while 1:
 			try:
-
-				# If we have already fetched the page, push what we have back
-				# into the history table.
-				last = None
-				if job.content:
-					last = self.pushBackHistory(job, response)
 
 				job.title    = response['title']
 				job.content  = response['contents']
