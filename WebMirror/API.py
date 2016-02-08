@@ -48,9 +48,17 @@ class RemoteContentObject(object):
 		self.archiver = WebMirror.runtime_engines.fetchers.get()
 
 
-	def fetch(self, ignore_cache=False):
+	def fetch(self, ignore_cache=False, version=None):
 		self.fetched = True
+
+		assert not (ignore_cache and version)
+
 		self.job     = self.archiver.synchronousJobRequest(self.url, ignore_cache)
+
+		# Override the job instance if we're fetching a old version
+		if version != None:
+			self.job = self.job.versions[version]
+
 
 		# print(self.job)
 
@@ -137,11 +145,17 @@ def processRaw(content):
 
 
 
-def getPage(url, ignore_cache=False):
+def getPage(url, ignore_cache=False, version=None):
+
+	assert not (version and ignore_cache)
+
 	page = RemoteContentObject(url)
 
+	if version:
+		assert isinstance(version, int)
+
 	try:
-		page.fetch(ignore_cache)
+		page.fetch(ignore_cache, version)
 
 		title      = page.getTitle()
 		content    = page.getContent("/view?url=")

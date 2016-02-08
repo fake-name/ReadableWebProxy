@@ -53,11 +53,12 @@
 
 		function content_load_cb(data, textStatus, jqXHR)
 		{
+			console.log("Replacing content")
 			var content = $("#content");
 			var cachest = $(".cachestate");
-			console.log(content);
-			console.log(data);
-			console.log(textStatus);
+			console.log("content", content);
+			console.log("data", data);
+			console.log("textStatus", textStatus);
 
 			cachest.text(data['cachestate']);
 			content.html(data['contents']);
@@ -72,7 +73,7 @@
 		function load_cache()
 		{
 
-			var url = "/render?{{ {"url" : req_url} | urlencode | safe }}";
+			var url = "/render?{{ {"url" : req_url, "version" : version} | urlencode | safe }}";
 
 			$.ajax({
 				url      : url,
@@ -86,7 +87,7 @@
 		}
 		function load_nocache()
 		{
-			var url = "/render?{{ {"url" : req_url, "nocache" : "true"} | urlencode | safe }}";
+			var url = "/render?{{ {"url" : req_url, "nocache" : "true", "version" : None} | urlencode | safe }}";
 
 			var content = $("#content");
 			content.html('<div class="center-block text-center"><h4>Re-Loading</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>');

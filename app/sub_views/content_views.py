@@ -12,14 +12,26 @@ from app import app
 
 import WebMirror.API
 
+def build_error_response(message):
+	response = jsonify(
+		title      = "Error rendering content!",
+		contents   = "Error message:<br> {}".format(message),
+		cachestate = "Error!",
+		req_url    = "None",
+		)
+	return response
 
 @app.route('/view', methods=['GET'])
 def view():
 	req_url = request.args.get('url')
 	if not req_url:
 		return render_template('error.html', title = 'Viewer', message = "Error! No page specified!")
+	version = request.args.get('version')
 
-	return render_template('view.html', title = 'Rendering Content', req_url = req_url, version=None)
+	if version == "None":
+		version = None
+
+	return render_template('view.html', title = 'Rendering Content', req_url = req_url, version=version)
 
 
 @app.route('/history', methods=['GET'])
@@ -30,7 +42,7 @@ def view_history():
 
 
 	version = request.args.get('version')
-	if not version:
+	if version:
 		return render_template('view.html', title = 'Rendering Content', req_url = req_url, version=version)
 
 	with WebMirror.API.getPageRow(req_url) as page:
@@ -41,7 +53,9 @@ def view_history():
 			versions.append(rev)
 			rev = rev.next
 
-		versions = enumerate(versions)
+		versions = list(enumerate(versions))
+		versions.reverse()
+
 		return render_template('history.html', title = 'Item History', page = page, req_url = req_url, versions=versions)
 
 
@@ -49,13 +63,28 @@ def view_history():
 def render():
 	req_url = request.args.get('url')
 	if not req_url:
-		return render_template('error.html', title = 'Markup Render', message = "Error! No page specified!")
+		return build_error_response(message = "Error! No page specified!")
 	req_url = request.args.get('url')
 
+	version = request.args.get('version')
 	ignore_cache = request.args.get("nocache")
-	print("Rendering with nocache=", ignore_cache)
-	title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache)
-	print("Return:", cachestate)
+
+	try:
+		if version == "None":
+			version = None
+		else:
+			version = int(version)
+	except ValueError:
+		return build_error_response(message = "Error! Historical version number must be an integer!")
+
+	if version and ignore_cache:
+		return build_error_response(message = "Error! Cannot render a historical version with nocache!")
+
+	title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache, version=version)
+
+	# print("Render-Version: ", version, type(version))
+	# print("Rendering with nocache=", ignore_cache)
+	# print("Return:", cachestate)
 	response = jsonify(
 		title      = title,
 		contents   = content,

@@ -1,0 +1,83 @@
+<!-- extend base layout -->
+{% set title = "Loading" %}
+{% extends "__base.html" %}
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well breakword">
+
+		<div>
+			<p>
+				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
+				<a href='{{req_url}}'>Original content</a> |
+				<a href='/view?{{ {"url" : req_url} | urlencode }}'>Current Version</a> |
+				<a href="javascript:void(0)" id="refetch_link_1">Re-Fetch</a>
+				| Age: <span class='cachestate'>loading...</span>
+			</p>
+
+		</div>
+		<hr>
+		<div id='content' class='easyreading'>
+			<div class="center-block text-center">
+				<h4>Old Versions:</h4>
+
+			</div>
+
+			<ul>
+				<li>Version: <a href='/view?{{ {"url" : req_url } | urlencode }}'>Current</a></li>
+				{% for indice, version in versions %}
+					<li>Version: <a href='/view?{{ {"url" : req_url, "version" : indice} | urlencode }}'>#{{indice}}, {{version.fetchtime}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<hr>
+		<div>
+			<p>
+				Remote URL: <a href='{{req_url}}'>{{req_url}}</a>
+			</p>
+			<p>
+				<a href='/render?{{ {"url" : req_url} | urlencode }}'>Raw Render</a> |
+				<a href='{{req_url}}'>Original content</a> |
+				<a href='/view?{{ {"url" : req_url} | urlencode }}'>Current Version</a> |
+				<a href="javascript:void(0)" id="refetch_link_2">Re-Fetch</a>
+				| Age: <span class='cachestate'>loading...</span>
+			</p>
+
+		</div>
+	</div>
+
+{% endblock %}
+
+
+{% block footer %}
+	{% if g.user.is_mod() %}
+		{% include '_block_admin_scripts.html' %}
+	{% endif %}
+	<script>
+
+
+
+	</script>
+	<style>
+		div.easyreading
+		{
+			/* Force override any css that slipped through
+			the preprocessor system */
+			margin      : 0 auto !important;
+			max-width   : 500px !important;
+			font-family : Arial !important;
+			font-size   : large !important;
+			word-wrap   : break-word !important;
+		}
+		div.easyreading table, td, tr
+		{
+			/* Force override any css that slipped through
+			the preprocessor system */
+			max-width    : 500px !important;
+			table-layout : fixed !important;
+			word-wrap   : break-word !important;
+		}
+
+	</style>
+{% endblock %}
+
