@@ -2,7 +2,7 @@ from app import app
 import config
 import datetime
 import os.path
-import queue
+import contextlib
 
 import WebMirror.Engine
 import WebMirror.runtime_engines
@@ -152,6 +152,21 @@ def getPage(url, ignore_cache=False):
 		page.close()
 
 	return title, content, cachestate
+
+
+@contextlib.contextmanager
+def getPageRow(url):
+	page = RemoteContentObject(url)
+
+	try:
+		page.fetch(ignore_cache=False)
+
+		yield page
+	except DownloadException:
+		yield None
+	finally:
+		page.close()
+
 
 
 

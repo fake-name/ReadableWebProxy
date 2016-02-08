@@ -246,14 +246,13 @@ class Token(object):
 			# print("No following text for '%s'. Returning false" % self.text)
 			return False
 
-		following_text = following_text.strip()
-		if ":" in following_text:
-			following_text = following_text.split(":")[0]
-		if ";" in following_text:
-			following_text = following_text.split(";")[0]
 
-		if "," in following_text:
-			following_text = following_text.split(",")[0]
+		following_text = following_text.strip()
+
+		bad_chars = [":", ";", ",", "[", "]"]
+		for bad_char in bad_chars:
+			if bad_char in following_text:
+				following_text = following_text.split(bad_char)[0]
 
 		# text-to-number library does stupid things with "a" or "A" (converts them to 1)
 		following_text = following_text.split(" ")
@@ -272,8 +271,10 @@ class Token(object):
 				# print("Parsing '%s' for numbers" % following_text)
 				ret = semantic.numbers.NumberService().parse(following_text)
 				# print("parsed: ", ret)
+				# print(traceback.print_stack())
 				return ret
 			except semantic.numbers.NumberService.NumberException:
+				# print("Failed to parse: ", following_text)
 				try:
 					# Try again with any trailing hyphens removed
 					# semantic assumes "twenty-four" should parse as "twenty four".

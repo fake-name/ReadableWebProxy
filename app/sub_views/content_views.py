@@ -19,7 +19,30 @@ def view():
 	if not req_url:
 		return render_template('error.html', title = 'Viewer', message = "Error! No page specified!")
 
-	return render_template('view.html', title = 'Home', req_url = req_url)
+	return render_template('view.html', title = 'Rendering Content', req_url = req_url, version=None)
+
+
+@app.route('/history', methods=['GET'])
+def view_history():
+	req_url = request.args.get('url')
+	if not req_url:
+		return render_template('error.html', title = 'Viewer', message = "Error! No page specified!")
+
+
+	version = request.args.get('version')
+	if not version:
+		return render_template('view.html', title = 'Rendering Content', req_url = req_url, version=version)
+
+	with WebMirror.API.getPageRow(req_url) as page:
+		versions = []
+
+		rev = page.job.versions[0]
+		while rev:
+			versions.append(rev)
+			rev = rev.next
+
+		versions = enumerate(versions)
+		return render_template('history.html', title = 'Item History', page = page, req_url = req_url, versions=versions)
 
 
 @app.route('/render', methods=['GET'])
