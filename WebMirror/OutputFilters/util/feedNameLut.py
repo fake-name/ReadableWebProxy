@@ -635,6 +635,12 @@ mapper = {
 
 	'slothtranslationsblog.wordpress.com'             : 'Sloth Translations Blog',
 
+
+	'pettankotranslations.wordpress.com'              : 'Pettanko Translations',
+	'www.ironteethserial.com'                         : 'The Iron Teeth',
+	'senjiqcreations.wordpress.com'                   : 'SenjiQ creations',
+
+
 	# Low quality
 	'owari-owari.tumblr.com'                          : '♥ yenney ♥',
 	'chilly-territory.tumblr.com'                     : 'Chilly Territory',

@@ -255,6 +255,10 @@ def extractGravityTranslation(item):
 		return buildReleaseMessage(item, 'Cult of the Sacred Runes', vol, chp, frag=frag, postfix=postfix)
 	if 'Blood Hourglass' in item['title']:
 		return buildReleaseMessage(item, 'Blood Hourglass', vol, chp, frag=frag, postfix=postfix)
+	if "A Dragon's Curiosity" in item['tags']:
+		return buildReleaseMessage(item, "A Dragon's Curiosity", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Ancient Strengthening Technique' in item['tags']:
+		return buildReleaseMessage(item, 'Ancient Strengthening Technique', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -676,6 +680,10 @@ def extractRaisingTheDead(item):
 
 	if 'Alice Tales' in item['tags']:
 		return buildReleaseMessage(item, 'Alice Tale in Phantasmagoria', vol, chp, frag=frag)
+	if 'Katte Kita Motoyuusha' in item['tags']:
+		return buildReleaseMessage(item, 'Katte Kita Motoyuusha', vol, chp, frag=frag)
+	if 'Riot Grasper' in item['tags']:
+		return buildReleaseMessage(item, 'Riot Grasper', vol, chp, frag=frag)
 
 	if 'E? Heibon Desu Yo??' in item['tags']:
 		return buildReleaseMessage(item, 'E? Heibon Desu Yo??', vol, chp, frag=frag)
@@ -2157,14 +2165,20 @@ def extractLonahora(item):
 ####################################################################################################################################################
 def extractRadiantTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
 
 	if 'Chapter Release' in item['tags']:
-		if ('Child of Light' in item['tags'] or 'Guang Zhi Zi' in item['tags']) and (chp or vol):
+		if 'Child of Light' in item['tags'] or 'Guang Zhi Zi' in item['tags']:
 			return buildReleaseMessage(item, 'Guang Zhi Zi', vol, chp, frag=frag, postfix=postfix)
-		if ('Bing Huo Mo Chu' in item['tags'] or 'Magic Chef of Ice and Fire' in item['tags']) and (chp or vol):
+		if 'Bing Huo Mo Chu' in item['tags'] or 'Magic Chef of Ice and Fire' in item['tags']:
 			return buildReleaseMessage(item, 'Bing Huo Mo Chu', vol, chp, frag=frag, postfix=postfix)
-		if ('Lord Xue Ying' in item['tags']) and (chp or vol):
+		if 'Lord Xue Ying' in item['tags']:
 			return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
+		if 'The Legend of the Dragon King' in item['tags']:
+			return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
+		if item['title'].startswith('Dragon-Marked War God'):
+			return buildReleaseMessage(item, 'Dragon-Marked War God', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2634,6 +2648,8 @@ def extractWatDaMeow(item):
 		return buildReleaseMessage(item, 'Commushou no Ore ga, Koushou Skill ni Zenfurishite Tenseishita Kekka', vol, chp, frag=frag, postfix=postfix)
 	if 'Kitsune-sama' in item['tags']:
 		return buildReleaseMessage(item, 'Isekai Kichattakedo Kaerimichi doko?', vol, chp, frag=frag, postfix=postfix)
+	if "We live in dragon's peak" in item['tags']:
+		return buildReleaseMessage(item, "We live in dragon's peak", vol, chp, frag=frag, postfix=postfix)
 	if 'JuJoku' in item['title']:
 		return buildReleaseMessage(item, 'Junai X Ryoujoku Kompurekusu', vol, chp, frag=frag, postfix=postfix)
 
@@ -2729,6 +2745,8 @@ def extractTrungtNguyen(item):
 
 	if 'Underdog Versus Boss' in item['tags']:
 		return buildReleaseMessage(item, 'Underdog Versus Boss', vol, chp, frag=frag, postfix=postfix)
+	if 'Xiao Qi Wait' in item['tags']:
+		return buildReleaseMessage(item, 'Xiao Qi Wait', vol, chp, frag=frag, postfix=postfix)
 	if 'Beloved Little Treasure' in item['tags']:
 		return buildReleaseMessage(item, 'Beloved Little Treasure', vol, chp, frag=frag, postfix=postfix)
 	if 'Real Fake Fiance' in item['tags']:
@@ -2953,12 +2971,21 @@ def extractKobatoChanDaiSukiScan(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
+
 	# Return of `None` makes the "Missed item" filter system ignore the return.
 	if 'Lookism' in item['tags'] or 'webtoon' in item['tags']:
 		return None # No webcomics plz
 
 	if 'God of Crime' in item['tags'] :
 		return buildReleaseMessage(item, 'God of Crime', vol, chp, frag=frag, postfix=postfix)
+	if "The Overlord's Elite is now a Human?!" in item['tags'] :
+		return buildReleaseMessage(item, "The Overlord's Elite is now a Human?!", vol, chp, frag=frag, postfix=postfix)
+	if 'The Bird That Drinks Tears' in item['tags'] :
+		return buildReleaseMessage(item, 'The Bird That Drinks Tears', vol, chp, frag=frag, postfix=postfix)
+	if 'Survival World RPG' in item['tags'] :
+		return buildReleaseMessage(item, 'Survival World RPG', vol, chp, frag=frag, postfix=postfix)
+	if 'Reincarnator' in item['tags'] :
+		return buildReleaseMessage(item, 'Reincarnator', vol, chp, frag=frag, postfix=postfix)
 	if 'Kenkyo kenjitsu o motto ni ikite orimasu!' in item['tags']:
 		return buildReleaseMessage(item, 'Kenkyo, Kenjitsu o Motto ni Ikite Orimasu!', vol, chp, frag=frag, postfix=postfix)
 	if 'God of Thunder' in item['tags']:
@@ -3639,6 +3666,18 @@ def extractMorrighanSucks(item):
 		return buildReleaseMessage(item, 'Unlimited Anime Works', vol, chp, frag=frag, postfix=postfix)
 
 	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractProjectAccelerator(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'Black Healer' in item['tags']:
+		return buildReleaseMessage(item, 'Black Healer', vol, chp, frag=frag, postfix=postfix)
+	return False
+
 ####################################################################################################################################################
 #
 ####################################################################################################################################################
@@ -3649,6 +3688,20 @@ def extractLunaris(item):
 
 	if 'World of Hidden Phoenix' in item['tags']:
 		return buildReleaseMessage(item, 'World of Hidden Phoenix', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+def extractGrimdarkZTranslations(item):               # 'GrimdarkZ Translations'
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+
+	if 'Devouring The Heavens' in item['tags']:
+		return buildReleaseMessage(item, 'Devouring The Heavens', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -4319,11 +4372,6 @@ def extractPopsiclete(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
 	return False
-def extractProjectAccelerator(item):
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
-	return False
 def extractPumpkinTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
@@ -4618,11 +4666,6 @@ def extractfgiLaNTranslations(item):                  # 'fgiLaN translations'
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
 	return False
-def extractGrimdarkZTranslations(item):               # 'GrimdarkZ Translations'
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
-	return False
 def extractGrowWithMe(item):                          # 'Grow with me'
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
@@ -4716,11 +4759,6 @@ def extractTowardsTheSky(item):                       # 'Towards the Sky~'
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
 	return False
-def extractTrinityArchive(item):                      # 'Trinity Archive'
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
-	return False
 def extractXantDoesStuffAndThings(item):              # 'Xant Does Stuff and Things'
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
@@ -4735,6 +4773,13 @@ def extractXantDoesStuffAndThings(item):              # 'Xant Does Stuff and Thi
 ####################################################################################################################################################
 
 
+def extractTrinityArchive(item):                      # 'Trinity Archive'
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'Summoned Slaughterer' in item['tags']:
+		return buildReleaseMessage(item, 'Summoned Slaughterer', vol, chp, frag=frag, postfix=postfix)
+	return False
 def extractAranTranslations(item):                    # 'Aran Translations'
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
@@ -5211,6 +5256,8 @@ def extractNotDailyTranslations(item):
 
 	if 'Zombie Emperor' in item['tags']:
 		return buildReleaseMessage(item, 'The Bloodshot One-Eyed Zombie Emperor', vol, chp, frag=frag, postfix=postfix)
+	if "Stealing Hero's Lovers" in item['tags']:
+		return buildReleaseMessage(item, "Stealing Hero's Lovers", vol, chp, frag=frag, postfix=postfix)
 	if 'Nidome no Yuusha' in item['tags']:
 		return buildReleaseMessage(item, 'Nidome no Yuusha wa Fukushuu no Michi wo Warai Ayumu. ~Maou yo, Sekai no Hanbun wo Yaru Kara Ore to Fukushuu wo Shiyou~', vol, chp, frag=frag, postfix=postfix)
 
@@ -5320,10 +5367,14 @@ def extractWeleTranslation(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if item['title'].startswith('Sin City'):
+	if item['title'].lower().startswith('sin city'):
 		return buildReleaseMessage(item, 'Sin City', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith('zhan xian'):
 		return buildReleaseMessage(item, 'Zhan Xian', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('heaven awakening path'):
+		return buildReleaseMessage(item, 'Heaven Awakening Path', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('immortal executioner'):
+		return buildReleaseMessage(item, 'Immortal Executioner', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
