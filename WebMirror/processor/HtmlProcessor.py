@@ -223,6 +223,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		hexr = re.compile('(#(?:[a-fA-F0-9]{6})|#(?:[a-fA-F0-9]{3}))')
 
+		ascii_color = re.compile('color\W*?:\W*?\w+;?')
+
 		for item in hascss:
 			if item['style']:
 				ststr = item['style']
@@ -254,7 +256,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 						item['style'] = item['style'].replace(match, new)
 						#item['style'] = ''
 
-
+				if ascii_color.findall(ststr):
+					item['style'] = ''
 
 				# I really /want/ to use a real CSS parser, but I can't find any
 				# that properly let me /generate/ CSS. TinyCSS /parses/, but I can't
