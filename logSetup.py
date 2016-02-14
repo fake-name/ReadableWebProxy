@@ -144,14 +144,14 @@ def initLogging(logLevel=logging.INFO):
 	ch = ColourHandler()
 	mainLogger.addHandler(ch)
 
-	logName	= "Error - %s.txt" % (time.strftime("%Y-%m-%d %H;%M;%S", time.gmtime()))
+	# logName	= "Error - %s.txt" % (time.strftime("%Y-%m-%d %H;%M;%S", time.gmtime()))
 
-	errLogHandler = RobustFileHandler(os.path.join("./logs", logName))
-	errLogHandler.setLevel(logging.WARNING)
-	formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-	errLogHandler.setFormatter(formatter)
+	# errLogHandler = RobustFileHandler(os.path.join("./logs", logName))
+	# errLogHandler.setLevel(logging.WARNING)
+	# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+	# errLogHandler.setFormatter(formatter)
 
-	mainLogger.addHandler(errLogHandler)
+	# mainLogger.addHandler(errLogHandler)
 
 	# Install override for excepthook, to catch all errors
 	sys.excepthook = exceptHook

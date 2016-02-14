@@ -317,6 +317,7 @@ baseUrl: [
 	'https://zentranslations.wordpress.com',
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
+	'https://psicern.wordpress.com',
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	'http://giraffecorps.liamak.net',
@@ -363,6 +364,7 @@ baseUrl: [
 	'http://www.wuxiatranslations.com',
 	'http://www.risingdragonstranslation.com',
 	'http://mousou-haven.com',
+	'https://falamartranslation.wordpress.com',
 
 	 # Seriously bro, you can change your A record:
 	 # 'http://tototr.com'
