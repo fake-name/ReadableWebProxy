@@ -55,6 +55,8 @@ baseUrl: [
 	'https://amber99y.wordpress.com',
 	'https://tthcs.wordpress.com',
 	'https://bcat00.wordpress.com',
+	'http://www.zxzxzx.info',
+	'https://bunimithetranslation.wordpress.com',
 	'https://bearbeartranslations.wordpress.com',
 	'https://beehugger.wordpress.com',
 	'https://berserksite.wordpress.com',
@@ -319,6 +321,51 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 	'https://psicern.wordpress.com',
 
+
+	'https://anotherworldtranslations.wordpress.com',
+	'https://arctranslations.wordpress.com',
+	'https://arslansenki.wordpress.com',
+	'https://ayaxworld.wordpress.com',
+	'https://bbluefiree.wordpress.com',
+	'https://bijinsans.wordpress.com',
+	'https://blackpond.wordpress.com',
+	'https://chronontranslations.wordpress.com',
+	'https://cloudtranslations.wordpress.com',
+	'https://dowstranslations.wordpress.com',
+	'https://emptyboundaries.wordpress.com',
+	'https://faketypist.wordpress.com',
+	'https://falinmer.wordpress.com',
+	'https://gaochaotranslations.wordpress.com',
+	'https://halfelementmaster.wordpress.com',
+	'https://honyakusite.wordpress.com',
+	'https://hyorinmarublog.wordpress.com',
+	'https://januketranslations.wordpress.com',
+	'https://japanesemafialady.wordpress.com',
+	'https://karkiat.wordpress.com',
+	'https://keyotranslations.wordpress.com',
+	'https://kokumatranslations.wordpress.com',
+	'https://lickymeetranslations.wordpress.com',
+	'https://loliquentblog.wordpress.com',
+	'https://mojotranslations.wordpress.com',
+	'https://nakimushitl.wordpress.com',
+	'https://nefasvenustus.wordpress.com',
+	'https://nepustation.wordpress.com',
+	'https://pekaboblog.wordpress.com',
+	'https://penguinoverlordblog.wordpress.com',
+	'https://premiumredtea.wordpress.com',
+	'https://razorace.wordpress.com',
+	'https://riptranslations.wordpress.com',
+	'https://ruibelle.wordpress.com',
+	'https://shenyuanlangmtl.wordpress.com',
+	'https://solstar24.wordpress.com',
+	'https://springscents.wordpress.com',
+	'https://starrydawntranslations.wordpress.com',
+	'https://taidadonotranslations.wordpress.com',
+	'https://trytranslations.wordpress.com',
+	'https://turtleandharetranslations.wordpress.com',
+	'https://wizthief.wordpress.com',
+	'https://wuxiatranslators.wordpress.com',
+
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	'http://giraffecorps.liamak.net',
 	# The wordpress address redirects to the plain URL,
@@ -354,6 +401,9 @@ baseUrl: [
 	'http://aresnovels.com',
 	'http://avertranslation.org',
 	'http://eccentrictranslations.com',
+	'http://dailydallying.com',
+	'http://cookiepasta.com',
+	'http://chasingadreamtranslations.com',
 
 	 # This is WP, but it uses an custom theme I haven't tested against.
 	'http://arkmachinetranslations.com',
@@ -365,6 +415,7 @@ baseUrl: [
 	'http://www.risingdragonstranslation.com',
 	'http://mousou-haven.com',
 	'https://falamartranslation.wordpress.com',
+	'http://cautrs.com',
 
 	 # Seriously bro, you can change your A record:
 	 # 'http://tototr.com'
@@ -415,6 +466,7 @@ baseUrl: [
 	'http://rumanshi.com',
 	'https://watdameow.wordpress.com',
 	'http://omatranslations.com',
+	'http://machineslicedbread.xyz',
 
 	# OEL and translated.
 	'http://www.renegadesanctuary.com',
@@ -460,6 +512,11 @@ baseUrl: [
 	'http://lightnovelstranslations.com',
 	'https://slothtranslationsblog.wordpress.com',
 	'http://fgilantranslations.com',
+	'http://koongkoongtranslations.com',
+	'http://www.lightnovelstranslations.com',
+	'http://www.heroicnovels.com',
+	'http://www.anotherparallel.space',
+
 
 	# Very custom theme:
 	'http://weaboodesu.com',

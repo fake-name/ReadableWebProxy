@@ -46,7 +46,10 @@ class NovelUpdatesFetch(SiteSyncFetch):
 		return ret
 
 	def urlFromGroupPage(self, url):
-		soup = self.wg.getSoup(url)
+		try:
+			soup = self.wg.getSoup(url)
+		except urllib.error.URLError:
+			return None
 		content = soup.find('div', class_='w-blog-content')
 		if not content:
 			raise ValueError("Wat?")
