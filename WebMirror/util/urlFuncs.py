@@ -159,7 +159,7 @@ def cleanUrl(url):
 		return None
 
 	url, status = unshortenit.unshorten_only(url)
-	assert (status == 200)
+	#assert (status == 200)
 
 	return url
 
