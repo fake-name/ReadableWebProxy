@@ -216,7 +216,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		for remaining in story_id:
 
 			if not pre == remaining['data-story-id']:
-				self.log.warning("Wat?: '%s' - '%s'.", pre, remaining['data-story-id'])
+				self.log.warning("Mismatched story-ids when fetching wattpad item metadata: '%s' - '%s'.", pre, remaining['data-story-id'])
 
 		return pre
 
