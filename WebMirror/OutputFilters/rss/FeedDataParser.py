@@ -736,7 +736,10 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'type' : 'raw-feed',
 			'data' : feedDat
 		}
-		return json.dumps(ret)
+		try:
+			return json.dumps(ret)
+		except TypeError:
+			return None
 
 	def processFeedData(self, feedDat, tx_raw=True, tx_parse=True):
 
@@ -757,13 +760,13 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			print("Not sending data for netloc: ", netloc)
 			return
 
+		raw = self.getRawFeedMessage(feedDat)
+		new = self.getProcessedReleaseInfo(feedDat)
+
 		if tx_raw:
-			raw = self.getRawFeedMessage(feedDat)
 			if raw:
 				self.amqp_put_item(raw)
-
 		if tx_parse:
-			new = self.getProcessedReleaseInfo(feedDat)
 			if new:
 				self.amqp_put_item(new)
 

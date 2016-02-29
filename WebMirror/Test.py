@@ -373,11 +373,11 @@ def sort_json(json_name):
 		"SourceName",
 		"Title",
 		"Tags",
+		"Feed URL",
 		"Vol",
 		"Chp",
 		"Frag",
 		"Postfix",
-		"Feed URL",
 		"GUID",
 	]
 
@@ -459,7 +459,7 @@ def rss_db_sync(target = None, recent=False):
 		ctnt['contents']  = 'wat'
 
 		try:
-			parser.processFeedData(ctnt, tx_raw=False)
+			parser.processFeedData(ctnt, tx_raw=False, tx_parse=not recent)
 		except ValueError:
 			pass
 		# print(ctnt)

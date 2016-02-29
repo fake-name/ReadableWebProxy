@@ -685,6 +685,7 @@ mapper = {
 	'nakimushitl.wordpress.com'                       : 'Nakimushi',
 	'nefasvenustus.wordpress.com'                     : 'This World Work',
 	'nepustation.wordpress.com'                       : 'Nepustation',
+	'nepustation.com'                                 : 'Nepustation',
 	'pekaboblog.wordpress.com'                        : 'Pekabo Blog',
 	'penguinoverlordblog.wordpress.com'               : 'Penguin Overlord Translations',
 	'premiumredtea.wordpress.com'                     : 'Premium Red Tea',

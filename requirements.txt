@@ -23,6 +23,10 @@ flask-paginate
 Flask-WTF
 apscheduler
 semantic
+sqlalchemy_continuum
+sqlalchemy_searchable
+requests
+git+https://github.com/fake-name/unshortenit
 
 ## BS4 4.4.0 has some bugs.
 BeautifulSoup4==4.3.2

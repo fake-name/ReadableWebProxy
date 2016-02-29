@@ -408,8 +408,13 @@ def netloc_send_feed(netloc):
 	return False
 
 # Trigger cache-loading of the ruleset.
-load_rules()
-load_special_case_sites()
+
+def startup():
+	load_rules()
+	load_special_case_sites()
+
+startup()
+
 
 if __name__ == "__main__":
 	print(load_special_case_sites())
