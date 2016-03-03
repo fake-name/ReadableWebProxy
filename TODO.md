@@ -7,6 +7,10 @@
 adfly remover not working
 fix linkbucks
 
+levenshtein series merger
+also tl gropus
+and everything else?
+
 text color: http://tony-yon-ka.blogspot.com/2015/06/manowa-25.html
 spoiler at http://10.1.1.43:5001/view?url=http%3A//aquarilasscenario.blogspot.com/2016/01/in-that-moment-of-suffering-chapter-27.html
 

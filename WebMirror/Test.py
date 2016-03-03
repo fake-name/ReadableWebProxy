@@ -395,7 +395,7 @@ def sort_json(json_name):
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")
 
-def rss_db_sync(target = None, recent=False):
+def rss_db_sync(target = None, recent=False, month_recent=False):
 
 	json_file = 'rss_filter_misses-1.json'
 
@@ -430,7 +430,14 @@ def rss_db_sync(target = None, recent=False):
 				.order_by(db.FeedItems.title)           \
 				.all()
 	elif recent:
-		cutoff = datetime.datetime.now() - datetime.timedelta(days=32)
+		cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
+		feed_items = db.get_session().query(db.FeedItems) \
+				.filter(db.FeedItems.published > cutoff)  \
+				.order_by(db.FeedItems.srcname)           \
+				.order_by(db.FeedItems.title)             \
+				.all()
+	elif month_recent:
+		cutoff = datetime.datetime.now() - datetime.timedelta(days=45)
 		feed_items = db.get_session().query(db.FeedItems) \
 				.filter(db.FeedItems.published > cutoff)  \
 				.order_by(db.FeedItems.srcname)           \
@@ -555,6 +562,8 @@ def decode(*args):
 			sort_json('rss_filter_misses-1.json')
 		elif op == "rss-recent":
 			rss_db_sync(recent=True)
+		elif op == "rss-month":
+			rss_db_sync(month_recent=True)
 		elif op == "clear-blocked":
 			clear_blocked()
 		else:
