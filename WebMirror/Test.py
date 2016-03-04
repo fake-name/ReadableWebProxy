@@ -395,7 +395,7 @@ def sort_json(json_name):
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")
 
-def rss_db_sync(target = None, recent=False, month_recent=False):
+def rss_db_sync(target = None, days=False):
 
 	json_file = 'rss_filter_misses-1.json'
 
@@ -429,21 +429,14 @@ def rss_db_sync(target = None, recent=False, month_recent=False):
 				.order_by(db.FeedItems.srcname)           \
 				.order_by(db.FeedItems.title)           \
 				.all()
-	elif recent:
-		cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
+	elif days:
+		print("RSS age override: ", days)
+		cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
 		feed_items = db.get_session().query(db.FeedItems) \
 				.filter(db.FeedItems.published > cutoff)  \
 				.order_by(db.FeedItems.srcname)           \
 				.order_by(db.FeedItems.title)             \
 				.all()
-	elif month_recent:
-		cutoff = datetime.datetime.now() - datetime.timedelta(days=45)
-		feed_items = db.get_session().query(db.FeedItems) \
-				.filter(db.FeedItems.published > cutoff)  \
-				.order_by(db.FeedItems.srcname)           \
-				.order_by(db.FeedItems.title)             \
-				.all()
-
 	else:
 		feed_items = db.get_session().query(db.FeedItems) \
 				.order_by(db.FeedItems.srcname)           \
@@ -466,7 +459,7 @@ def rss_db_sync(target = None, recent=False, month_recent=False):
 		ctnt['contents']  = 'wat'
 
 		try:
-			parser.processFeedData(ctnt, tx_raw=False, tx_parse=not recent)
+			parser.processFeedData(ctnt, tx_raw=False, tx_parse=not bool(days))
 		except ValueError:
 			pass
 		# print(ctnt)
@@ -560,10 +553,12 @@ def decode(*args):
 			rss_db_sync()
 		elif op == "sort-json":
 			sort_json('rss_filter_misses-1.json')
-		elif op == "rss-recent":
-			rss_db_sync(recent=True)
+		elif op == "rss-day":
+			rss_db_sync(days=1)
+		elif op == "rss-week":
+			rss_db_sync(days=7)
 		elif op == "rss-month":
-			rss_db_sync(month_recent=True)
+			rss_db_sync(days=45)
 		elif op == "clear-blocked":
 			clear_blocked()
 		else:
