@@ -3,7 +3,7 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
  
- url casing
+url casing
 adfly remover not working
 fix linkbucks
 

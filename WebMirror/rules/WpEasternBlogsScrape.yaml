@@ -322,6 +322,9 @@ baseUrl: [
 	'https://psicern.wordpress.com',
 	'https://ninjanuf.wordpress.com',
 	'https://saiakutranslationsblog.wordpress.com',
+	'https://dragonmt.wordpress.com',
+	'https://nanowave.wordpress.com',
+	'https://altoroctranslations.wordpress.com',
 
 
 	'https://anotherworldtranslations.wordpress.com',
@@ -368,6 +371,10 @@ baseUrl: [
 	'https://turtleandharetranslations.wordpress.com',
 	'https://wizthief.wordpress.com',
 	'https://wuxiatranslators.wordpress.com',
+	'https://delicioustranslations.wordpress.com',
+	'https://norvablog.wordpress.com',
+	'https://tatakaushisho.wordpress.com',
+	'https://dreamlesswindow.wordpress.com',
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	'http://giraffecorps.liamak.net',
@@ -413,6 +420,7 @@ baseUrl: [
 	'http://flowerbridgetoo.com',
 	'http://giraffecorps.liamak.net',
 	'http://www.blazingtranslations.com',
+	'http://blazingtranslations.com',
 	'http://www.radianttranslations.com',
 	'http://www.wuxiatranslations.com',
 	'http://www.risingdragonstranslation.com',
