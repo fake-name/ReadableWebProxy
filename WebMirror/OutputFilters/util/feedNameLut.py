@@ -716,6 +716,19 @@ mapper = {
 	'silvalibrary.com'                                : 'Silva\'s Library',
 
 
+	'sparkskey.livejournal.com'                       : '희노애락',
+	'narumo.livejournal.com'                          : 'Creepy and Evil Translations',
+	'forbidentry.livejournal.com'                     : 'Forbidentry',
+	'redturtle95.livejournal.com'                     : 'Turtle\'s',
+	'yonakayaku.tumblr.com'                           : 'HaruChika & Ghost Hunt Translations',
+	'dragonmt.wordpress.com'                          : 'Dragon MT',
+	'nanowave.wordpress.com'                          : 'Nanowave Translations',
+	'altoroctranslations.wordpress.com'               : 'Altoroc Translations',
+	'delicioustranslations.wordpress.com'             : 'Delicious Translations',
+	'norvablog.wordpress.com'                         : 'Norva Blog',
+	'tatakaushisho.wordpress.com'                     : 'Tatakau Shisho Light Novel Translation',
+	'dreamlesswindow.wordpress.com'                   : 'Dreamless Window\'s translation',
+
 
 	'pettankotranslations.wordpress.com'              : 'Pettanko Translations',
 	'www.ironteethserial.com'                         : 'The Iron Teeth',

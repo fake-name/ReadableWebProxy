@@ -266,6 +266,8 @@ def extractGravityTranslation(item):
 		return buildReleaseMessage(item, 'The Trembling World', vol, chp, frag=frag, postfix=postfix)
 	if 'Ancient Strengthening Technique' in item['tags']:
 		return buildReleaseMessage(item, 'Ancient Strengthening Technique', vol, chp, frag=frag, postfix=postfix)
+	if 'a record of a mortal’s journey to immortality' in item['tags']:
+		return buildReleaseMessage(item, 'A Record of a Mortal\'s Journey to Immortality', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -523,6 +525,11 @@ def extractSkythewood(item):
 		return buildReleaseMessage(item, 'Genocide Reality', vol, chp, frag=frag)
 	if 'Youjo Senki' in item['tags']:
 		return buildReleaseMessage(item, 'Youjo Senki', vol, chp, frag=frag)
+
+	if item['title'].startswith('A Tale of Two Shadows'):
+		return buildReleaseMessage(item, 'A Tale of Two Shadows', vol, chp, frag=frag)
+	if item['title'].startswith('Gate of Twilight'):
+		return buildReleaseMessage(item, 'Gate of Twilight', vol, chp, frag=frag)
 
 	return False
 
