@@ -16,14 +16,14 @@ def minutes(num):
 # are run, initially, starting after 1-minue*{key} intervals
 
 import WebMirror.TimedTriggers.RssTrigger
-import WebMirror.TimedTriggers.TimeoutTrigger
+import WebMirror.TimedTriggers.RollingRewalkTrigger
 import WebMirror.TimedTriggers.PageTriggers
 
 scrapePlugins = {
-	0  : (WebMirror.TimedTriggers.RssTrigger.RssTriggerBase,                   minutes(30)),
-	# 1  : (WebMirror.TimedTriggers.TimeoutTrigger.TimeoutTriggerBase,           minutes(31)),
-	2  : (WebMirror.TimedTriggers.PageTriggers.HourlyPageTrigger,              minutes(60)),
-	3  : (WebMirror.TimedTriggers.PageTriggers.EveryOtherDayPageTrigger,       days(2)),
+	0  : (WebMirror.TimedTriggers.RssTrigger.RssTriggerBase,                     minutes(30)),
+	1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase, minutes(90)),
+	2  : (WebMirror.TimedTriggers.PageTriggers.HourlyPageTrigger,                minutes(60)),
+	3  : (WebMirror.TimedTriggers.PageTriggers.EveryOtherDayPageTrigger,         days(2)),
 }
 
 

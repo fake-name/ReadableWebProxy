@@ -2,9 +2,10 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
- 
-url casing
-adfly remover not working
+
+
+https://lasciviousimouto.wordpress.com/translation/le-festin-de-vampire/
+
 fix linkbucks
 
 levenshtein series merger
@@ -20,12 +21,10 @@ http://www.asstr.org/~lostboy/storylinks.html
 
 fiddle with tsvector threshold
 wlnupdates average release interval
- 
+
 colspan? http://royalroadl.com/forum/showthread.php?tid=47458
- 
+
 smartquotes in tl geoup name
-machine sliced bread link unwrapper
-also adfly
 https://www.wlnupdates.com/series-id/34541/
 
 last release time on group page

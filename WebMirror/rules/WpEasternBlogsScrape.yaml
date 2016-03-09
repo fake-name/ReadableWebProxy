@@ -325,6 +325,7 @@ baseUrl: [
 	'https://dragonmt.wordpress.com',
 	'https://nanowave.wordpress.com',
 	'https://altoroctranslations.wordpress.com',
+	'https://oyasumireads.wordpress.com',
 
 
 	'https://anotherworldtranslations.wordpress.com',
@@ -375,6 +376,10 @@ baseUrl: [
 	'https://norvablog.wordpress.com',
 	'https://tatakaushisho.wordpress.com',
 	'https://dreamlesswindow.wordpress.com',
+	'https://spiritualtranscription.wordpress.com',
+	'https://psychobarcodetranslations.wordpress.com',
+	'https://negaraizu.wordpress.com',
+	'https://nighttranslations.wordpress.com',
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	'http://giraffecorps.liamak.net',
