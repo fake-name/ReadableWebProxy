@@ -1,6 +1,7 @@
 
 
 import json
+import ftfy
 
 
 def fixSmartQuotes(text):
@@ -34,6 +35,7 @@ def fix_string(val):
 		return val
 	val = fixSmartQuotes(val)
 	val = fixCase(val)
+	val = ftfy.fix_text(val)
 	return val
 
 def fix_dict(inRelease):
