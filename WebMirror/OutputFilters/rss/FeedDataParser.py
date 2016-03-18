@@ -625,6 +625,13 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Tatakau Shisho Light Novel Translation' : pfuncs.extractTatakauShishoLightNovelTranslation,
 				'Dragon MT'                              : pfuncs.extractDragonMT,
 
+				'Emruyshit Translations'                 : pfuncs.extractEmruyshitTranslations,
+				'Nega Translations'                      : pfuncs.extractNegaTranslations,
+				'NightFall Translations'                 : pfuncs.extractNightFallTranslations,
+				'Oyasumi Reads'                          : pfuncs.extractOyasumiReads,
+				'Spiritual Transcription'                : pfuncs.extractSpiritualTranscription,
+				'Try Translations'                       : pfuncs.extractTryTranslations,
+
 
 				'Zeonic'                                 : pfuncs.extractZeonic,
 				'「\u3000」'                               : pfuncs.extractU3000,

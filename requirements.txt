@@ -8,7 +8,7 @@ colorama
 pyyaml
 natsort
 mdx_linkify
-python-ftfy
+ftfy
 lxml
 Flask
 Flask-DebugToolbar

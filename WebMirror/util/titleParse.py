@@ -56,6 +56,7 @@ POSTFIX_KEYS = [
 		['sidestory'],
 		['side', 'story'],
 		['extra'],
+		['illustrations'],
 	]
 
 POSTFIX_SPLITS = [

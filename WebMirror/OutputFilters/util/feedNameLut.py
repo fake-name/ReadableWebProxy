@@ -342,6 +342,7 @@ mapper = {
 	'unlimitedstoryworks.wordpress.com'               : 'Unlimited Story Works',
 	'uselessno4.wordpress.com'                        : 'Useless no 4',
 	'vaancruze.wordpress.com'                         : 'VaanCruze',
+	'vaancruze.com'                                   : 'VaanCruze',
 	'verathragna.wordpress.com'                       : 'Verathragana Stories',
 	'villagetranslations.wordpress.com'               : 'Village Translations',
 	'voidtranslations.wordpress.com'                  : 'Void Translations',
@@ -713,6 +714,7 @@ mapper = {
 	'talesoftheforgottenslayer.wordpress.com'         : 'Tales of The Forgottenslayer',
 	'welcometotheunderdark.wordpress.com'             : 'Welcome To The Underdark',
 	'snowy.pub'                                       : 'Snowy Publications',
+	'twigserial.wordpress.com'                        : 'Twig',
 	'silvalibrary.com'                                : 'Silva\'s Library',
 
 
@@ -733,6 +735,13 @@ mapper = {
 	'pettankotranslations.wordpress.com'              : 'Pettanko Translations',
 	'www.ironteethserial.com'                         : 'The Iron Teeth',
 	'senjiqcreations.wordpress.com'                   : 'SenjiQ creations',
+
+
+	'emruyshittranslations.blogspot.com'              : 'Emruyshit Translations',
+	'negaraizu.wordpress.com'                         : 'Nega Translations',
+	'nighttranslations.wordpress.com'                 : 'NightFall Translations',
+	'oyasumireads.wordpress.com'                      : 'Oyasumi Reads',
+	'spiritualtranscription.wordpress.com'            : 'Spiritual Transcription',
 
 
 	# Low quality
