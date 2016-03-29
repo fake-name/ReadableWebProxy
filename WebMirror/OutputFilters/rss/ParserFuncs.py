@@ -2063,6 +2063,18 @@ def extractDreadfulDecoding(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
+	extractVol = re.search(r'\[[A-Z]+(\d+)\]', item['title'])
+	if not vol and extractVol:
+		vol = int(extractVol.group(1))
+
+
+	extractChp = re.search(r'SECT\.(\d+) ', item['title'])
+	if chp == 1 and "SECT." in item['title'] and extractChp:
+		chp = int(extractChp.group(1))
+
+
+
+
 	if 'Gun Gale Online' in item['tags']:
 		return buildReleaseMessage(item, 'Sword Art Online Alternative - Gun Gale Online', vol, chp, frag=frag, postfix=postfix)
 	if 'RotTS' in item['tags']:

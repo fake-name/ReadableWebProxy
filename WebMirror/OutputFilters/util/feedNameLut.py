@@ -646,6 +646,7 @@ mapper = {
 	'fgilantranslations.com'                          : 'fgiLaN translations',
 
 	'slothtranslationsblog.wordpress.com'             : 'Sloth Translations Blog',
+	'dadishero.wordpress.com'                         : 'DadIsHero Fan Translations',
 
 
 	'chronazero.blogspot.com'                         : 'Chrona Zero',

@@ -1,8 +1,8 @@
 #!flask/bin/python
 
-from WebMirror.Runner import PROCESSES
+from WebMirror.Runner import NO_PROCESSES
 from settings import MAX_DB_SESSIONS
-MAX_DB_SESSIONS = PROCESSES + 5
+MAX_DB_SESSIONS = NO_PROCESSES + 5
 
 if __name__ == "__main__":
 	import logSetup
@@ -194,10 +194,33 @@ def go_test():
 
 def go():
 
+	largv = [tmp.lower() for tmp in sys.argv]
+
+	if not "noreset" in largv:
+		print("Resetting any in-progress downloads.")
+		WebMirror.Runner.resetInProgress()
+	else:
+		print("Not resetting in-progress downloads.")
+
 	rules = WebMirror.rules.load_rules()
 	WebMirror.Runner.initializeStartUrls(rules)
-	WebMirror.Runner.resetInProgress()
-	runner = WebMirror.Runner.Crawler()
+
+	processes = 24
+	if "lotsofprocesses" in largv:
+		processes = 48
+		NO_PROCESSES = 48
+		MAX_DB_SESSIONS = NO_PROCESSES + 5
+	elif "fewprocesses" in largv:
+		processes = 12
+		NO_PROCESSES = 12
+		MAX_DB_SESSIONS = NO_PROCESSES + 5
+	elif "oneprocess" in largv:
+		processes = 1
+		NO_PROCESSES = 1
+		MAX_DB_SESSIONS = NO_PROCESSES + 2
+
+
+	runner = WebMirror.Runner.Crawler(thread_count=processes)
 	runner.run()
 
 	# print("Thread halted. App exiting.")
@@ -207,17 +230,34 @@ def profile():
 	import pstats
 	cProfile.run('go()', "run.stats")
 	p = pstats.Stats("run.stats")
-	p.sort_stats('cumulative')
+	p.sort_stats('tottime')
 	p.print_stats(250)
+
+
+def gprofile():
+	import cProfile
+	import pstats
+	from pycallgraph import PyCallGraph
+	from pycallgraph.output import GraphvizOutput
+	with PyCallGraph(output=GraphvizOutput()):
+		go()
 
 if __name__ == "__main__":
 	import sys
 	print("Auxilliary modes: 'test', 'scheduler'.")
+
+
+	largv = [tmp.lower() for tmp in sys.argv]
+
 	if "scheduler" in sys.argv:
 		MAX_DB_SESSIONS = 4
 		go_sched()
-	if "test" in sys.argv:
+	if "test" in largv:
 		go_test()
+	elif "profile" in largv:
+		profile()
+	elif "graph-profile" in largv:
+		gprofile()
 	else:
 
 		started = False

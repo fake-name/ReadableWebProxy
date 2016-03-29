@@ -3,6 +3,11 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+add r search for alt titles to admin view
+
+most rated
+tag similar
+
 
 https://lasciviousimouto.wordpress.com/translation/le-festin-de-vampire/
 

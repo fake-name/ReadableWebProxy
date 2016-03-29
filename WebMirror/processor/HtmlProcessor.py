@@ -153,25 +153,49 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		return soup
 
 	def decomposeItems(self, soup, toDecompose):
+		if not soup:
+			print("Soup is false? Wat?")
+
 		# print("Decomposing", toDecompose)
 		# Decompose all the parts we don't want
-		for key in toDecompose:
-			try:
-				if not soup:
-					print("Soup is false? Wat?")
-				have = soup.find_all(True, attrs=key)
 
-				for instance in have:
-					# print("Need to decompose for ", key)
-					# So.... yeah. At least one blogspot site has EVERY class used in the
-					# <body> tag, for no coherent reason. Therefore, *never* decompose the <body>
-					# tag, even if it has a bad class in it.
-					if instance.name == 'body':
-						continue
+		# Use a custom function so we only walk the tree once.
+		def searchFunc(tag):
+			for candidate in toDecompose:
+				if all([tag.get(key) == value for key, value in candidate.items()]):
+					return True
+			return False
 
-					instance.decompose() # This call permutes the tree!
-			except AttributeError:
-				pass
+
+		have = soup.find_all(searchFunc)
+
+		for instance in have:
+			# print("Need to decompose for ", key)
+			# So.... yeah. At least one blogspot site has EVERY class used in the
+			# <body> tag, for no coherent reason. Therefore, *never* decompose the <body>
+			# tag, even if it has a bad class in it.
+			if instance.name == 'body':
+				continue
+
+			instance.decompose() # This call permutes the tree!
+
+		# for key in toDecompose:
+		# 	try:
+		# 		if not soup:
+		# 			print("Soup is false? Wat?")
+		# 		have = soup.find_all(True, attrs=key)
+
+		# 		for instance in have:
+		# 			# print("Need to decompose for ", key)
+		# 			# So.... yeah. At least one blogspot site has EVERY class used in the
+		# 			# <body> tag, for no coherent reason. Therefore, *never* decompose the <body>
+		# 			# tag, even if it has a bad class in it.
+		# 			if instance.name == 'body':
+		# 				continue
+
+		# 			instance.decompose() # This call permutes the tree!
+		# 	except AttributeError:
+		# 		pass
 
 		return soup
 

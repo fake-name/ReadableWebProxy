@@ -318,7 +318,7 @@ def get_rules():
 	specials = {}
 	for item in [os.path.join(rulepath, item) for item in items if item.endswith('.yaml')]:
 
-		with open(item, "r") as fp:
+		with open(item, "r", encoding='utf-8') as fp:
 			try:
 				text = fp.read()
 				# Fuck you YAML, tabs are better then spaces.

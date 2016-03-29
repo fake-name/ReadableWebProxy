@@ -25,11 +25,11 @@ from sqlalchemy.sql import text
 from sqlalchemy.sql import func
 import WebMirror.database as db
 
-PROCESSES = 24
-# PROCESSES = 16
-# PROCESSES = 4
-# PROCESSES = 2
-# PROCESSES = 1
+NO_PROCESSES = 24
+# NO_PROCESSES = 16
+# NO_PROCESSES = 4
+# NO_PROCESSES = 2
+# NO_PROCESSES = 1
 
 # For synchronizing saving cookies to disk
 cookie_lock = multiprocessing.Lock()
@@ -269,10 +269,13 @@ class UpdateAggregator(object):
 					self.log.error(line.rstrip())
 
 class Crawler(object):
-	def __init__(self):
+	def __init__(self, thread_count=NO_PROCESSES):
 		self.log = logging.getLogger("Main.Text.Manager")
 		self.rules = WebMirror.rules.load_rules()
 		self.agg_queue = multiprocessing.Queue()
+
+		self.log.info("Scraper executing with %s processes", thread_count)
+		self.thread_count = thread_count
 
 	def start_aggregator(self):
 
@@ -295,7 +298,7 @@ class Crawler(object):
 
 		self.start_aggregator()
 
-		if PROCESSES == 1:
+		if self.thread_count == 1:
 			self.log.info("Running in single process mode!")
 			try:
 				RunInstance.run(procno, self.rules, self.agg_queue, nosig=False)
@@ -303,9 +306,9 @@ class Crawler(object):
 				runStatus.run_state.value = 0
 
 
-		elif PROCESSES < 1:
+		elif self.thread_count < 1:
 			self.log.error("Wat?")
-		elif PROCESSES > 1:
+		elif self.thread_count > 1:
 			try:
 				while runStatus.run_state.value:
 					time.sleep(1)
@@ -313,7 +316,7 @@ class Crawler(object):
 					if cnt == 10:
 						cnt = 0
 						living = sum([task.is_alive() for task in tasks])
-						for dummy_x in range(PROCESSES - living):
+						for dummy_x in range(self.thread_count - living):
 							self.log.warning("Insufficent living child threads! Creating another thread with number %s", procno)
 							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules, self.agg_queue))
 							tasks.append(proc)
