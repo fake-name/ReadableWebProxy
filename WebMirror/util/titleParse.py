@@ -75,6 +75,8 @@ SPLIT_ON = [
 
 		# Fucking quotes
 		'"',
+		'/',
+		'\\',
 	]
 
 

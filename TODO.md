@@ -3,6 +3,12 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+https://fablewind.wordpress.com/
+https://bakapervert.wordpress.com/ultimate-antihero-vol-1/
+
+scrape reddit ln page
+scrape twitter for bt updates
+
 add r search for alt titles to admin view
 
 most rated

@@ -54,6 +54,7 @@ import WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter
 import WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter
 import WebMirror.OutputFilters.NovelUpdates.NUSeriesUpdateFilter
 import WebMirror.OutputFilters.NovelUpdates.NUSeriesPageFilter
+import WebMirror.OutputFilters.BakaTsukiTwitter.BTTwitterFilter
 
 FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
@@ -66,6 +67,8 @@ FILTERS = [
 
 	WebMirror.OutputFilters.NovelUpdates.NUSeriesUpdateFilter.NUSeriesUpdateFilter,
 	WebMirror.OutputFilters.NovelUpdates.NUSeriesPageFilter.NUSeriesPageProcessor,
+
+	WebMirror.OutputFilters.BakaTsukiTwitter.BTTwitterFilter.BakaTsukiTwitterProcessor,
 ]
 
 import WebMirror.PreProcessors.LiveJournalPreprocess

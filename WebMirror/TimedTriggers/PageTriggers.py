@@ -92,6 +92,9 @@ class HourlyPageTrigger(PageTriggerBase):
 
 		# NovelUpdates
 		'http://www.novelupdates.com',
+
+		# BT Twitter feed.
+		'https://twitter.com/Baka_Tsuki',
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):

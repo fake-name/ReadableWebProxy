@@ -55,15 +55,11 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		want = [
-			'http://www\.novelupdates\.com/$',
-			'http://www\.novelupdates\.com/\?pg=\d+$',
+			r'http://www\.novelupdates\.com/?$',
+			r'http://www\.novelupdates\.com/\?pg=\d+$',
 		]
-
 		if any([re.match(pattern, url) for pattern in want]):
-
-			print("NovelUpdatesSeriesUpdateFilter Wants url: '%s'" % url)
 			return True
-		# print("NUSeriesUpdateFilter doesn't want url: '%s'" % url)
 		return False
 
 	def __init__(self, **kwargs):
@@ -152,7 +148,6 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def processPage(self, url, content):
-		print("processPage() call")
 		soup = WebMirror.util.webFunctions.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:

@@ -162,7 +162,11 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Use a custom function so we only walk the tree once.
 		def searchFunc(tag):
 			for candidate in toDecompose:
-				if all([tag.get(key) == value for key, value in candidate.items()]):
+				matches = [
+					(tag.get(key) and any([sattr == value.lower() for sattr in tag.get(key)]))
+						for key, value in candidate.items()]
+				match = any(matches)
+				if match:
 					return True
 			return False
 
