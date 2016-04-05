@@ -327,6 +327,11 @@ baseUrl: [
 	'https://altoroctranslations.wordpress.com',
 	'https://oyasumireads.wordpress.com',
 	'https://freezinglightnovels.wordpress.com',
+	'https://tamakeribanchou.wordpress.com',
+
+	'https://arousingimouto.wordpress.com',
+	'https://yamenaideoneesama.wordpress.com',
+	'https://azuremysterioustofusect.wordpress.com',
 
 
 	'https://anotherworldtranslations.wordpress.com',
@@ -381,6 +386,7 @@ baseUrl: [
 	'https://psychobarcodetranslations.wordpress.com',
 	'https://negaraizu.wordpress.com',
 	'https://nighttranslations.wordpress.com',
+	'https://fablewind.wordpress.com',
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	'http://giraffecorps.liamak.net',

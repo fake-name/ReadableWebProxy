@@ -205,10 +205,15 @@ def go():
 	rules = WebMirror.rules.load_rules()
 	WebMirror.Runner.initializeStartUrls(rules)
 
-	processes = 24
-	if "lotsofprocesses" in largv:
-		processes = 48
-		NO_PROCESSES = 48
+	global NO_PROCESSES
+	global MAX_DB_SESSIONS
+
+	processes = 48
+	NO_PROCESSES = 48
+	MAX_DB_SESSIONS = NO_PROCESSES + 5
+	if "medianprocesses" in largv:
+		processes = 24
+		NO_PROCESSES = 24
 		MAX_DB_SESSIONS = NO_PROCESSES + 5
 	elif "fewprocesses" in largv:
 		processes = 12

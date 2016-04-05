@@ -152,7 +152,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 			chp_title = chp_title.get_text()
 			# print("Chp title: '{}'".format(chp_title))
-			vol, chp, frag, post = extractTitle(chp_title)
+			vol, chp, frag, post = extractTitle(chp_title + " " + title)
 
 			raw_item = {}
 			raw_item['srcname']   = "RoyalRoadL"
