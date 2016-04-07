@@ -42,7 +42,24 @@ The Tome of Bill series (vampire action horror comedy, good world building)
 The Spellmonger series (massive, pure fantasy, awesome worldbuilding)
 Daniel Black series (adult themed OP summoned hero, awesome world building)
 Portals of Infinity series (adult themed OP world hopping hero)
- 
+
+
+
+quartia.dreamwidth.org
+sincere.dreamwidth.org
+notaboutlogic.dreamwidth.org
+sinnesspiel.dreamwidth.org
+
+ckmscans.halofight.com
+justblthings.weebly.com
+miracletranslations.azurewebsites.net
+novel.oddsquad.org
+toriitranslations.animeholics.org
+www.gundamwingtales.com
+
+www.xianxiaworld.net
+www.aoitenshi.com
+www.hasutsuki.com
 
 
 ## Todo:

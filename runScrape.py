@@ -208,8 +208,8 @@ def go():
 	global NO_PROCESSES
 	global MAX_DB_SESSIONS
 
-	processes = 48
-	NO_PROCESSES = 48
+	processes = 32
+	NO_PROCESSES = 32
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 	if "medianprocesses" in largv:
 		processes = 24
