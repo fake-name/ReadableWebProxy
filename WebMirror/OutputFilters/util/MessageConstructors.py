@@ -45,6 +45,19 @@ def fix_dict(inRelease):
 	return inRelease
 
 
+def pack_message(type, data, is_beta=False):
+
+	ret = {
+		'type' : type,
+		'data' : data,
+
+		# "beta" items are optionally filtered client-end to allow
+		# testing in my dev env without having the feed outputs go through
+		# to the prod env
+		'beta'      : is_beta,
+	}
+	return json.dumps(ret)
+
 
 
 def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}, matchAuthor=False):
@@ -114,16 +127,7 @@ def createSeriesInfoPacket(data, beta=False, matchAuthor=False):
 	data['desc']         = fix_string(data['desc'])
 	data['match_author'] = matchAuthor
 
-	ret = {
-		'type' : 'series-metadata',
-		'data' : data,
-
-		# "beta" items are optionally filtered client-end to allow
-		# testing in my dev env without having the feed outputs go through
-		# to the prod env
-		'beta'      : beta,
-	}
-	return json.dumps(ret)
+	return pack_message('series-metadata', data, is_beta=beta)
 
 
 def createReleasePacket(data, beta=False):
@@ -139,13 +143,4 @@ def createReleasePacket(data, beta=False):
 	data['postfix'] = fix_string(data['postfix'])
 	data['author']  = fix_string(data['author'])
 
-	ret = {
-		'type' : 'parsed-release',
-		'data' : data,
-
-		# "beta" items are optionally filtered client-end to allow
-		# testing in my dev env without having the feed outputs go through
-		# to the prod env
-		'beta'      : beta,
-	}
-	return json.dumps(ret)
+	return pack_message('parsed-release', data, is_beta=beta)

@@ -222,6 +222,11 @@ class UpdateAggregator(object):
 			if len(self.batched_links) > 100:
 				self.do_link_batch_update()
 
+
+		# The seen dict was eating all my free memory (I think).
+		if len(self.seen) > 1000000:
+			self.seen = {}
+
 		# else:
 		# 	print("Old item: %s", linkdict)
 

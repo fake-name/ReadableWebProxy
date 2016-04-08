@@ -10,7 +10,7 @@ import WebMirror.runtime_engines
 import WebMirror.database as db
 import datetime
 from WebMirror.Engine import SiteArchiver
-
+from concurrent.futures import ThreadPoolExecutor
 import sqlalchemy.exc
 import traceback
 import os
@@ -52,7 +52,7 @@ def print_html_response(archiver, new, ret):
 def print_rss_response(archiver, new, ret):
 	pass
 
-def test(url, debug=True, rss_debug=False):
+def test_retrieve(url, debug=True, rss_debug=False):
 	if rss_debug:
 		print("Debugging RSS")
 		flags.RSS_DEBUG = True
@@ -94,13 +94,14 @@ def test_all_rss():
 	feeds = [item for sublist in feeds for item in sublist]
 
 	flags.RSS_DEBUG = True
-	for url in feeds:
-		try:
-			test(url, debug=False)
-		except WebMirror.Exceptions.DownloadException:
-			print("failure downloading page!")
-		except urllib.error.URLError:
-			print("failure downloading page!")
+	with ThreadPoolExecutor(max_workers=8) as executor:
+		for url in feeds:
+			try:
+				executor.submit(test_retrieve, url, debug=False)
+			except WebMirror.Exceptions.DownloadException:
+				print("failure downloading page!")
+			except urllib.error.URLError:
+				print("failure downloading page!")
 
 def db_fiddle():
 	print("Fixing DB things.")
@@ -570,15 +571,15 @@ def decode(*args):
 
 		if op == "fetch":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
-			test(tgt)
+			test_retrieve(tgt)
 		elif op == "rss-db":
 			rss_db_sync(tgt)
 		elif op == "fetch-silent":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
-			test(tgt, debug=False)
+			test_retrieve(tgt, debug=False)
 		elif op == "fetch-rss":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
-			test(tgt, debug=False, rss_debug=True)
+			test_retrieve(tgt, debug=False, rss_debug=True)
 
 		elif op == "filter-new-links":
 			print("Filtering new links from file: '%s'" % tgt)
@@ -617,7 +618,7 @@ if __name__ == "__main__":
 		sys.exit(1)
 
 	decode(*sys.argv[1:])
-	# test("http://www.royalroadl.com/fiction/1484")
+	# test_retrieve("http://www.royalroadl.com/fiction/1484")
 
 
 
