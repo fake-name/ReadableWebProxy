@@ -5176,4 +5176,6 @@ data = [
 	("[Volume One] Chapter 1: Getting another chance",   (1, 1.0, None, '')),
 
 
+	('(R18)Zhan Long 256 – Attack by Mei Guo', (None, 256.0, None, '')),
+
 ]

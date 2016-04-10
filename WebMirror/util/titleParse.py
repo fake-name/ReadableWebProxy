@@ -45,6 +45,13 @@ CHAPTER_KEYS  = [
 		'episode'
 	]
 
+# Do NOT glob onto numeric values preceeded by "r",
+# so "(R18) Title Blah 4" doesn't get universally interpreted
+# as chapter 18.
+CHAPTER_NUMBER_NEGATIVE_MASKS = [
+	"r",
+]
+
 POSTFIX_KEYS = [
 		['prologue'],
 		['afterword'],
@@ -98,11 +105,17 @@ class Token(object):
 	def tokens(self):
 		pass
 
+
 	def __init__(self, text, position, parent):
 
 		self.text     = text
 		self.position = position
 		self.parent   = parent
+
+	def getPreceeding(self):
+		if self.position == 0:
+			return None
+		return self.parent[self.position-1]
 
 	def splitToken(self, toktype):
 		'''
@@ -171,6 +184,9 @@ class Token(object):
 		'''
 		if not any([char in '0123456789' for char in self.text]):
 			return [self]
+
+		# print("Parsing: ", self.text)
+		# print("Parsing: ", self.getPreceeding(()))
 		if ("/" in self.text and self.text.index("/") > 0) or ("\\" in self.text and self.text.index("\\") > 0):
 			return [self]
 
@@ -388,7 +404,7 @@ class FreeChapterToken(Token):
 		Glob onto any numeric value that is NOT preceeded by
 		any of the existing glob lists.
 		'''
-		return text not in VOLUME_KEYS+CHAPTER_KEYS+FRAGMENT_KEYS
+		return text not in VOLUME_KEYS+CHAPTER_KEYS+FRAGMENT_KEYS+CHAPTER_NUMBER_NEGATIVE_MASKS
 
 class DelimiterToken(Token):
 	tokens = None
@@ -458,6 +474,9 @@ class TitleParser(object):
 		# Finally, tack on any trailing data tokens (if they're present)
 		if data:
 			self.appendDataChunk(data)
+
+	def __getitem__(self, idx):
+		return self.chunks[idx]
 
 	def appendDelimiterChunk(self, rawdat):
 		tok  = DelimiterToken(
