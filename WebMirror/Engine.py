@@ -674,15 +674,19 @@ class SiteArchiver(LogBase.LoggerMixin):
 				sess.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
-				delay = random.random() / 30
-				# traceback.print_exc()
-				self.log.warn("Error marking job fetched (OperationalError)! Delaying %s.", delay)
+				delay = random.random() / 3
+				traceback.print_exc()
+				self.log.warn("Error getting job (OperationalError)! Delaying %s.", delay)
 				time.sleep(delay)
 				sess.rollback()
+				sess.flush()
+				sess.expire_all()
 			except sqlalchemy.exc.InvalidRequestError:
 				traceback.print_exc()
-				self.log.warn("Error marking job fetched (InvalidRequestError)!")
+				self.log.warn("Error getting job (InvalidRequestError)!")
 				sess.rollback()
+				sess.flush()
+				sess.expire_all()
 
 		# If we broke because a user-interrupt, we may not have a
 		# valid rid at this point.
@@ -694,29 +698,35 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if not rid:
 			return False
 
-		if xqtim < 0.1:
-			self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
-		else:
+		if xqtim > 0.5:
+			self.log.error("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
+		if xqtim > 0.1:
 			self.log.warn("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
+		else:
+			self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
 
 
-		job = self.db.get_session().query(self.db.WebPages) \
+		job = sess.query(self.db.WebPages) \
 			.filter(self.db.WebPages.id == rid)             \
 			.one()
-		self.db.get_session().flush()
+		sess.flush()
 
 		if not job:
-			self.db.get_session().commit()
+			sess.commit()
 			return False
 
 		if job.state != 'fetching':
-			self.db.get_session().commit()
+			sess.commit()
 			sleeptime = random.random()
 			self.log.info("Wat? How did the query return?")
 			return False
 
-		self.db.get_session().commit()
+		sess.commit()
 		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
+
+		sess.flush()
+
+
 		return job
 
 	def getTask(self):
@@ -815,6 +825,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 			for line in traceback.format_exc().split("\n"):
 				self.log.critical("%s", line.rstrip())
 
+		finally:
+			try:
+				# Sessions are per-task.
+				self.db.delete_session()
+			except KeyError:
+				print("Deleting session failed!")
+				traceback.print_exc()
+				pass
+
 	def get_row(self, url, distance=None, priority=None):
 		if distance == None:
 			distance = self.db.MAX_DISTANCE-2
@@ -894,7 +913,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fetcher = self.fetcher(self.ruleset, url, parentjob.starturl, job=row, cookie_lock=None, wg_handle=self.wg, response_queue=self.resp_q)
 		ret = fetcher.dispatchContent(content, filename, mimetype)
 		self.processResponse(row, ret)
-
+		self.db.get_session.close()
 
 
 	def synchronousJobRequest(self, url, ignore_cache=False):

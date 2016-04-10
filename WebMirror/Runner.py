@@ -35,6 +35,12 @@ NO_PROCESSES = 24
 cookie_lock = multiprocessing.Lock()
 job_get_lock = multiprocessing.Lock()
 
+# from pympler.tracker import SummaryTracker, summary, muppy
+# import tracemalloc
+import objgraph
+import random
+import gc
+
 def halt_exc(x, y):
 	if runStatus.run_state.value == 0:
 		print("Raising Keyboard Interrupt")
@@ -56,11 +62,58 @@ class RunInstance(object):
 		self.archiver.taskProcess()
 
 	def go(self):
+
+		# tracemalloc.start()
 		self.log.info("RunInstance starting!")
 		loop = 0
+
+		count = 0
+
 		while 1:
 			if runStatus.run_state.value == 1:
+
+				# tr = SummaryTracker()
+
+
+				# snapshot1 = tracemalloc.take_snapshot()
+				# objgraph.show_growth(limit=3)
 				self.do_task()
+				# objgraph.show_growth()
+				# count += 1
+				# gc.collect()
+
+				# subnode = 1
+				# for tmp in objgraph.by_type('AttributeState'):
+				# 	objgraph.show_chain(
+				# 		objgraph.find_backref_chain(
+				# 			tmp,
+				# 			objgraph.is_proper_module),
+				# 		filename='chain %s %s (%s).png' % (self.num, count, subnode))
+				# 	subnode += 1
+
+				# objgraph.show_backrefs(objgraph.by_type('Nondestructible'), filename='./finalizers %s.png' % count)
+				# snapshot2 = tracemalloc.take_snapshot()
+
+
+				# top_stats = snapshot2.compare_to(snapshot1, 'lineno')
+				# print("[ Top 10 differences ]")
+				# for stat in top_stats[:10]:
+				# 	print(stat)
+				# 	for line in stat.traceback:
+				# 		print("	", line)
+				# biggest = top_stats[0]
+
+				# top_stats = snapshot2.compare_to(snapshot1, 'lineno')
+
+				# del snapshot1
+				# del snapshot2
+				# del top_stats
+
+				# tr.print_diff()
+				# del tr
+				# sum1 = summary.summarize(muppy.get_objects())
+				# summary.print_(sum1)
+
 			else:
 				self.log.info("Thread %s exiting.", self.num)
 				break
@@ -88,10 +141,10 @@ class RunInstance(object):
 
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
-
+	sess = db.get_session()
 	for ruleset in [rset for rset in rules if rset['starturls']]:
 		for starturl in ruleset['starturls']:
-			have = db.get_session().query(db.WebPages) \
+			have = sess.query(db.WebPages) \
 				.filter(db.WebPages.url == starturl)   \
 				.count()
 			if not have:
@@ -106,18 +159,21 @@ def initializeStartUrls(rules):
 						normal_fetch_mode = ruleset['normal_fetch_mode'],
 					)
 				print("Missing start-url for address: '{}'".format(starturl))
-				db.get_session().add(new)
-		db.get_session().commit()
-
+				sess.add(new)
+		sess.commit()
+	sess.close()
 
 def resetInProgress():
 	print("Resetting any stalled downloads from the previous session.")
 
 	# db.get_session().begin()
-	db.get_session().query(db.WebPages) \
+	sess = db.get_session()
+	sess.query(db.WebPages) \
 		.filter((db.WebPages.state == "fetching") | (db.WebPages.state == "processing"))   \
 		.update({db.WebPages.state : "new"})
-	db.get_session().commit()
+	sess.commit()
+	sess.close()
+	sess.close()
 
 
 class UpdateAggregator(object):
@@ -158,6 +214,8 @@ class UpdateAggregator(object):
 			return
 
 		self.log.info("Inserting %s items into DB in batch.", len(self.batched_links))
+
+		sess = db.get_session()
 		while 1:
 			try:
 
@@ -170,21 +228,22 @@ class UpdateAggregator(object):
 						ON CONFLICT DO NOTHING
 						""")
 				for paramset in self.batched_links:
-					db.get_session().execute(cmd, params=paramset)
-				db.get_session().commit()
+					sess.execute(cmd, params=paramset)
+				sess.commit()
 				self.batched_links = []
 				break
 			except KeyboardInterrupt:
 				self.log.info("Keyboard Interrupt?")
-				db.get_session().rollback()
+				sess.rollback()
 			except sqlalchemy.exc.InternalError:
 				self.log.info("Transaction error. Retrying.")
 				traceback.print_exc()
-				db.get_session().rollback()
+				sess.rollback()
 			except sqlalchemy.exc.OperationalError:
 				self.log.info("Transaction error. Retrying.")
 				traceback.print_exc()
-				db.get_session().rollback()
+				sess.rollback()
+		sess.close()
 
 
 	def do_link(self, linkdict):
@@ -298,7 +357,7 @@ class Crawler(object):
 	def run(self):
 
 		tasks =[]
-		cnt = 0
+		cnt = 10
 		procno = 0
 
 		self.start_aggregator()
@@ -317,8 +376,9 @@ class Crawler(object):
 			try:
 				while runStatus.run_state.value:
 					time.sleep(1)
+
 					cnt += 1
-					if cnt == 10:
+					if cnt >= 10:
 						cnt = 0
 						living = sum([task.is_alive() for task in tasks])
 						for dummy_x in range(self.thread_count - living):

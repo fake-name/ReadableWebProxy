@@ -208,20 +208,24 @@ def go():
 	global NO_PROCESSES
 	global MAX_DB_SESSIONS
 
-	processes = 32
-	NO_PROCESSES = 32
+	processes = 40
+	NO_PROCESSES = processes
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 	if "medianprocesses" in largv:
 		processes = 24
-		NO_PROCESSES = 24
+		NO_PROCESSES = processes
 		MAX_DB_SESSIONS = NO_PROCESSES + 5
 	elif "fewprocesses" in largv:
-		processes = 12
-		NO_PROCESSES = 12
+		processes = 6
+		NO_PROCESSES = processes
 		MAX_DB_SESSIONS = NO_PROCESSES + 5
+	elif "twoprocess" in largv:
+		processes = 2
+		NO_PROCESSES = processes
+		MAX_DB_SESSIONS = NO_PROCESSES + 2
 	elif "oneprocess" in largv:
 		processes = 1
-		NO_PROCESSES = 1
+		NO_PROCESSES = processes
 		MAX_DB_SESSIONS = NO_PROCESSES + 2
 
 

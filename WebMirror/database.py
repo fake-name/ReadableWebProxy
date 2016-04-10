@@ -64,6 +64,7 @@ from settings import DATABASE_DB_NAME       as C_DATABASE_DB_NAME
 from settings import DATABASE_USER          as C_DATABASE_USER
 from settings import DATABASE_PASS          as C_DATABASE_PASS
 
+import traceback
 
 from flask import g
 import flags
@@ -121,9 +122,16 @@ def get_session():
 	if flags.IS_FLASK:
 		return g.session
 
+
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
 	csid = "{}-{}".format(cpid, ctid)
+
+	# print("Getting session for thread: %s" % csid)
+	# print(traceback.print_stack())
+	# print("==========================")
+
+
 	if not csid in SESSIONS:
 		with SESSION_LOCK:
 
@@ -135,7 +143,7 @@ def get_session():
 				return SESSIONS[csid][1]
 
 			SESSIONS[csid] = [time.time(), scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()]
-			print("Creating database interface:", SESSIONS[csid])
+			# print("Creating database interface:", SESSIONS[csid])
 
 			# Delete the session that's oldest.
 			if len(SESSIONS) > MAX_DB_SESSIONS:
@@ -157,14 +165,21 @@ def delete_session():
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
 	csid = "{}-{}".format(cpid, ctid)
+
+
+	# print("Releasing session for thread: %s" % csid)
+	# print(traceback.print_stack())
+	# print("==========================")
+
 	if csid in SESSIONS:
 		with SESSION_LOCK:
 			# check if the session was created while
 			# we were waiting for the lock
 			if not csid in SESSIONS:
 				return SESSIONS[csid]
+			SESSIONS[csid][1].close()
 			del SESSIONS[csid]
-			print("Deleted session for id: ", csid)
+			# print("Deleted session for id: ", csid)
 
 
 # import traceback

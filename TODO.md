@@ -3,8 +3,11 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+add flask flash about bugging me on the fprum too add a release source
+
 https://drive.google.com/folderview?id=0ByWXEuvheaD2bzdzM1pEZklka28&usp=drive_web
 scrape reddit ln page
+ignore titles where the number is preceeded by 'r' so 'r18' doesn't get interpreted as chp 18 every time
 
 add r search for alt titles to admin view
 

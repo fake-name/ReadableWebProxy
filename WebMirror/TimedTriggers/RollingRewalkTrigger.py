@@ -47,7 +47,8 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		threshold_time = datetime.datetime.now() - datetime.timedelta(days=3)
 
 		for url in bins[today]:
-
+			if "wattpad.com" in url:
+				continue
 			while 1:
 				try:
 					item = self.db.get_session().query(self.db.WebPages)             \
