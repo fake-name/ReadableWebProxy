@@ -668,7 +668,8 @@ class WebGetRobust:
 		if returnMultiple:
 			return pgctnt, pghandle
 		else:
-			pghandle.close()
+			if pghandle:
+				pghandle.close()
 			return pgctnt
 
 	def syncCookiesFromFile(self):
@@ -732,7 +733,11 @@ class WebGetRobust:
 
 	def saveCookies(self, halting=False):
 
-		self.cookie_lock.acquire()
+		locked = self.cookie_lock.acquire(timeout=5)
+		if not locked:
+			self.log.error("Failed to acquire cookie-lock!")
+			return
+
 		# print("Have %d cookies before saving cookiejar" % len(self.cj))
 		try:
 			# self.log.info("Trying to save cookies!")

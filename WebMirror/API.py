@@ -5,8 +5,9 @@ import os.path
 import contextlib
 
 import WebMirror.Engine
-import WebMirror.runtime_engines
+# import WebMirror.runtime_engines
 from WebMirror.Exceptions import DownloadException, getErrorDiv
+from flask import g
 
 
 def td_format(td_object):
@@ -44,8 +45,9 @@ class RemoteContentObject(object):
 		self.url     = url
 		self.fetched = False
 		self.job     = None
-		print("RemoteContentObject instantiated. Available fetchers: %s" % WebMirror.runtime_engines.fetchers.qsize())
-		self.archiver = WebMirror.runtime_engines.fetchers.get()
+		# print("RemoteContentObject instantiated. Available fetchers: %s" % WebMirror.runtime_engines.fetchers.qsize())
+		# self.archiver = WebMirror.runtime_engines.fetchers.get()
+		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False, run_filters=False, db_interface=g.session)
 
 
 	def fetch(self, ignore_cache=False, version=None):
@@ -125,12 +127,12 @@ class RemoteContentObject(object):
 
 
 	def close(self):
-		WebMirror.runtime_engines.fetchers.put(self.archiver)
+		# WebMirror.runtime_engines.fetchers.put(self.archiver)
 		self.archiver = None
 
-	def __del__(self):
-		if self.archiver != None:
-			print("ERROR! Archiver not released!")
+	# def __del__(self):
+	# 	if self.archiver != None:
+	# 		print("ERROR! Archiver not released!")
 
 
 

@@ -361,6 +361,15 @@ class Crawler(object):
 							tasks.append(proc)
 							proc.start()
 							procno += 1
+
+						# clok_locked = COOKIE_LOCK.acquire(blocking=False)
+						# if clok_locked:
+						# 	COOKIE_LOCK.release()
+						# jlok_locked = JOB_GET_LOCK.acquire(blocking=False)
+						# if jlok_locked:
+						# 	JOB_GET_LOCK.release()
+
+						# self.log.info("Living processes: %s (%s, %s)", living, not clok_locked, not jlok_locked)
 						self.log.info("Living processes: %s", living)
 
 

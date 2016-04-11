@@ -46,7 +46,6 @@ def before_request():
 
 	g.user = current_user
 	g.locale = get_locale()
-
 	g.session = database.checkout_session()
 
 
