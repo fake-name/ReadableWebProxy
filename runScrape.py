@@ -63,7 +63,7 @@ def go():
 		MAX_DB_SESSIONS = NO_PROCESSES + 2
 
 
-	runner = WebMirror.Runner.Crawler(thread_count=processes)
+	runner = WebMirror.Runner.Crawler(thread_count=NO_PROCESSES)
 	runner.run()
 
 	# print("Thread halted. App exiting.")
