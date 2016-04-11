@@ -106,7 +106,7 @@ def test_all_rss():
 def db_fiddle():
 	print("Fixing DB things.")
 	print("Getting IDs")
-	have = db.get_session().execute("""
+	have = db.get_db_session().execute("""
 		SELECT id FROM web_pages WHERE url LIKE 'https://www.wattpad.com/story%' AND state != 'new';
 		""")
 	print("Query executed. Fetching results")
@@ -122,19 +122,19 @@ def db_fiddle():
 		if count % 1000 == 0:
 
 
-			statement = db.get_session().query(db.WebPages) \
+			statement = db.get_db_session().query(db.WebPages) \
 				.filter(db.WebPages.state != 'new')        \
 				.filter(db.WebPages.id.in_(chunk))
 
-			# statement = db.get_session().update(db.WebPages)
+			# statement = db.get_db_session().update(db.WebPages)
 			statement.update({db.WebPages.state : 'new'}, synchronize_session=False)
 			chunk = []
 			print(count, item)
-			db.get_session().commit()
+			db.get_db_session().commit()
 
 def longest_rows():
 	print("Getting longest rows from database")
-	have = db.get_session().execute("""
+	have = db.get_db_session().execute("""
 		SELECT
 			id, url, length(content), content
 		FROM
@@ -167,10 +167,10 @@ def fix_null():
 	step = 50000
 
 
-	end = db.get_session().execute("""SELECT MAX(id) FROM web_pages WHERE  ignoreuntiltime IS NULL;""")
+	end = db.get_db_session().execute("""SELECT MAX(id) FROM web_pages WHERE  ignoreuntiltime IS NULL;""")
 	end = list(end)[0][0]
 
-	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE ignoreuntiltime IS NULL;""")
+	start = db.get_db_session().execute("""SELECT MIN(id) FROM web_pages WHERE ignoreuntiltime IS NULL;""")
 	start = list(start)[0][0]
 
 	changed = 0
@@ -186,16 +186,16 @@ def fix_null():
 		# Only done because I can't easily find how to make sqlalchemy
 		# bind parameters ignore the postgres specific cast
 		# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-		have = db.get_session().execute("""UPDATE web_pages SET ignoreuntiltime = 'epoch'::timestamp WHERE ignoreuntiltime IS NULL AND id < %s AND id >= %s;""" % (x, x-step))
+		have = db.get_db_session().execute("""UPDATE web_pages SET ignoreuntiltime = 'epoch'::timestamp WHERE ignoreuntiltime IS NULL AND id < %s AND id >= %s;""" % (x, x-step))
 		# print()
 		print('%10i, %7.4f, %6i' % (x, x/end * 100, have.rowcount))
 		changed += have.rowcount
 		if changed > 10000:
 			print("Committing (%s changed rows)...." % changed, end=' ')
-			db.get_session().commit()
+			db.get_db_session().commit()
 			print("done")
 			changed = 0
-	db.get_session().commit()
+	db.get_db_session().commit()
 
 
 def fix_tsv():
@@ -203,10 +203,10 @@ def fix_tsv():
 
 
 	print("Determining extents that need to be changed.")
-	start = db.get_session().execute("""SELECT MIN(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL AND id != 60903982;""")
+	start = db.get_db_session().execute("""SELECT MIN(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL AND id != 60903982;""")
 	start = list(start)[0][0]
 
-	end = db.get_session().execute("""SELECT MAX(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
+	end = db.get_db_session().execute("""SELECT MAX(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
 	end = list(end)[0][0]
 
 	changed = 0
@@ -226,21 +226,21 @@ def fix_tsv():
 			# Only done because I can't easily find how to make sqlalchemy
 			# bind parameters ignore the postgres specific cast
 			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-			have = db.get_session().execute("""UPDATE web_pages SET tsv_content = to_tsvector(coalesce(content)) WHERE tsv_content IS NULL AND content IS NOT NULL AND id < %s AND id >= %s;""" % (x, x-step))
+			have = db.get_db_session().execute("""UPDATE web_pages SET tsv_content = to_tsvector(coalesce(content)) WHERE tsv_content IS NULL AND content IS NOT NULL AND id < %s AND id >= %s;""" % (x, x-step))
 			# print()
 			print('%10i, %10i, %7.4f, %6i' % (x, end, (x-start)/(end-start) * 100, have.rowcount))
 			changed += have.rowcount
 			if changed > step:
 				print("Committing (%s changed rows)...." % changed, end=' ')
-				db.get_session().commit()
+				db.get_db_session().commit()
 				print("done")
 				changed = 0
 		except sqlalchemy.exc.OperationalError:
-			db.get_session().rollback()
+			db.get_db_session().rollback()
 			print("Error!")
 			traceback.print_exc()
 
-	db.get_session().commit()
+	db.get_db_session().commit()
 
 
 def clear_bad():
@@ -259,24 +259,24 @@ def clear_bad():
 				print(badword)
 			else:
 
-				q = db.get_session().query(db.WebPages)                   \
+				q = db.get_db_session().query(db.WebPages)                   \
 					.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
 					.filter(db.WebPages.url.like("%{}%".format(badword)))
 				items = q.count()
 				if items:
 					print("%s results for : '%s'" % (items, badword))
 
-					q = db.get_session().query(db.WebPages)                   \
+					q = db.get_db_session().query(db.WebPages)                   \
 						.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
 						.filter(db.WebPages.url.like("%{}%".format(badword))) \
 						.delete(synchronize_session=False)
-					db.get_session().commit()
+					db.get_db_session().commit()
 
 
 
 def delete_comment_feed_items():
 
-	sess = db.get_session()
+	sess = db.get_db_session()
 	bad = sess.query(db.FeedItems) \
 			.filter(or_(
 				db.FeedItems.contenturl.like("%#comment-%"),
@@ -308,7 +308,7 @@ def delete_comment_feed_items():
 
 def update_feed_names():
 	for key, value in feedNameLut.mapper.items():
-		feed_items = db.get_session().query(db.FeedItems) \
+		feed_items = db.get_db_session().query(db.FeedItems) \
 				.filter(db.FeedItems.srcname == key)    \
 				.all()
 		if feed_items:
@@ -316,13 +316,13 @@ def update_feed_names():
 				item.srcname = value
 			print(len(feed_items))
 			print(key, value)
-			db.get_session().commit()
+			db.get_db_session().commit()
 
 
 def purge_invalid_urls():
 
 
-	sess = db.get_session()
+	sess = db.get_db_session()
 	for ruleset in WebMirror.rules.load_rules():
 		opts = []
 		if ruleset['starturls'] and ruleset['netlocs'] and ruleset['badwords']:
@@ -425,7 +425,7 @@ def rss_db_sync(target = None, days=False):
 
 	if target:
 		print("Limiting to '%s' source." % target)
-		feed_items = db.get_session().query(db.FeedItems) \
+		feed_items = db.get_db_session().query(db.FeedItems) \
 				.filter(db.FeedItems.srcname == target)    \
 				.order_by(db.FeedItems.srcname)           \
 				.order_by(db.FeedItems.title)           \
@@ -433,13 +433,13 @@ def rss_db_sync(target = None, days=False):
 	elif days:
 		print("RSS age override: ", days)
 		cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
-		feed_items = db.get_session().query(db.FeedItems) \
+		feed_items = db.get_db_session().query(db.FeedItems) \
 				.filter(db.FeedItems.published > cutoff)  \
 				.order_by(db.FeedItems.srcname)           \
 				.order_by(db.FeedItems.title)             \
 				.all()
 	else:
-		feed_items = db.get_session().query(db.FeedItems) \
+		feed_items = db.get_db_session().query(db.FeedItems) \
 				.order_by(db.FeedItems.srcname)           \
 				.order_by(db.FeedItems.title)           \
 				.all()
@@ -473,18 +473,18 @@ def clear_blocked():
 			# mask = [db.WebPages.url.like("%{}%".format(tmp)) for tmp in ruleset['badwords'] if not "%" in tmp]
 
 			for badword in ruleset['badwords']:
-				feed_items = db.get_session().query(db.WebPages)          \
+				feed_items = db.get_db_session().query(db.WebPages)          \
 					.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
 					.filter(db.WebPages.url.like("%{}%".format(badword))) \
 					.count()
 
 				if feed_items:
 					print("Have:  ", feed_items, badword)
-					feed_items = db.get_session().query(db.WebPages)          \
+					feed_items = db.get_db_session().query(db.WebPages)          \
 						.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
 						.filter(db.WebPages.url.like("%{}%".format(badword))) \
 						.delete(synchronize_session=False)
-					db.get_session().expire_all()
+					db.get_db_session().expire_all()
 
 				else:
 					print("Empty: ", feed_items, badword)

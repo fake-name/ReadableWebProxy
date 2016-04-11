@@ -16,7 +16,7 @@ class Clean(object):
 
 	def clean_files(self):
 
-		session = db.get_session()
+		session = db.get_db_session()
 		q = session.query(db.WebFiles) \
 			.filter(db.WebFiles.fspath != None)
 

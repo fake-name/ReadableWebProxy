@@ -389,6 +389,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'pageUrl',
 			'pgContent',
 			'mimeType',
+			'db_sess',
 			'baseUrls',
 			'loggerPath',
 			'badwords',

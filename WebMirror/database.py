@@ -118,14 +118,16 @@ def release_session(session):
 	POOL.put(session)
 	print("Returning db handle to pool. Handles available: %s" % (POOL.qsize(), ))
 
-def get_session():
+
+
+def get_db_session(postfix=""):
 	if flags.IS_FLASK:
 		return g.session
 
 
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
-	csid = "{}-{}".format(cpid, ctid)
+	csid = "{}-{}-{}".format(cpid, ctid, postfix)
 
 	# print("Getting session for thread: %s" % csid)
 	# print(traceback.print_stack())
@@ -161,10 +163,10 @@ def get_session():
 	SESSIONS[csid][0] = time.time()
 	return SESSIONS[csid][1]
 
-def delete_session():
+def delete_db_session(postfix=""):
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
-	csid = "{}-{}".format(cpid, ctid)
+	csid = "{}-{}-{}".format(cpid, ctid, postfix)
 
 
 	# print("Releasing session for thread: %s" % csid)
@@ -296,7 +298,7 @@ class Author(Base):
 
 def tag_creator(tag):
 
-	tmp = get_session().query(Tags) \
+	tmp = get_db_session().query(Tags) \
 		.filter(Tags.tag == tag)    \
 		.scalar()
 	if tmp:
@@ -305,7 +307,7 @@ def tag_creator(tag):
 	return Tags(tag=tag)
 
 def author_creator(author):
-	tmp = get_session().query(Author)    \
+	tmp = get_db_session().query(Author)    \
 		.filter(Author.author == author) \
 		.scalar()
 	if tmp:

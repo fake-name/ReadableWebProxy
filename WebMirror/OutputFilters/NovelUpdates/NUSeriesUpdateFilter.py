@@ -71,6 +71,7 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
+		self.db_sess    = kwargs['sess']
 
 		self.log.info("Processing NovelUpdates Item")
 		super().__init__(**kwargs)
@@ -105,11 +106,11 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def retrigger_pages(self, releases):
 		self.log.info("Total releases found on page: %s. Forcing retrigger of item pages.", len(releases))
-		session = db.get_session()
+
 		for release_url in releases:
 			while 1:
 				try:
-					have = session.query(db.WebPages) \
+					have = self.db_sess.query(db.WebPages) \
 						.filter(db.WebPages.url == release_url)   \
 						.scalar()
 
@@ -127,21 +128,21 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 					self.log.info("Retriggering page '%s'", release_url)
 					have.state = 'new'
-					session.commit()
+					self.db_sess.commit()
 					break
 
 
 				except sqlalchemy.exc.InvalidRequestError:
 					print("InvalidRequest error!")
-					session.rollback()
+					self.db_sess.rollback()
 					traceback.print_exc()
 				except sqlalchemy.exc.OperationalError:
 					print("InvalidRequest error!")
-					session.rollback()
+					self.db_sess.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					print("[upsertRssItems] -> Integrity error!")
 					traceback.print_exc()
-					session.rollback()
+					self.db_sess.rollback()
 
 
 

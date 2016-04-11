@@ -46,12 +46,13 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, rules, target_url, start_url, job, cookie_lock=None, wg_handle=None, response_queue=None):
+	def __init__(self, rules, target_url, db_sess, start_url, job, cookie_lock=None, wg_handle=None, response_queue=None):
 		# print("Fetcher init()")
 		super().__init__()
 
 		self.response_queue = response_queue
-		self.job = job
+		self.job            = job
+		self.db_sess        = db_sess
 
 		if wg_handle:
 			self.wg = wg_handle
@@ -153,6 +154,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'pageUrl'         : url,
 									'pgContent'       : content,
 									'mimeType'        : mimeType,
+									'db_sess'         : self.db_sess,
 									'baseUrls'        : self.start_url,
 									'loggerPath'      : self.loggerPath,
 									'badwords'        : self.rules['badwords'],

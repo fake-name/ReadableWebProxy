@@ -55,11 +55,11 @@ FETCH_LOCK = multiprocessing.Lock()
 
 log = logging.getLogger("Main.Web.SpecialCaseHandler")
 
-def handleRemoteFetch(params, job, engine):
+def handleRemoteFetch(params, job, engine, db_sess):
 	# print("Remote fetch command!")
 	pass
 
-def handleRateLimiting(params, job, engine):
+def handleRateLimiting(params, job, engine, db_sess):
 	allowable = params[0]
 	with FETCH_LOCK:
 		if not job.netloc in ACTIVE_FETCHES:
@@ -69,7 +69,7 @@ def handleRateLimiting(params, job, engine):
 	if ACTIVE_FETCHES[job.netloc] > allowable:
 		log.info("Too many instances of fetchers for domain %s active. Forcing requests to sleep for a while", job.netloc)
 		job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(seconds=60*5 + random.randrange(0, 60*5))
-		db.get_session().commit()
+		db_sess.commit()
 		return
 	else:
 		with FETCH_LOCK:
@@ -88,11 +88,11 @@ dispatchers = {
 }
 
 
-def handleSpecialCase(job, engine, rules):
+def handleSpecialCase(job, engine, rules, db_sess):
 	commands = rules[job.netloc]
 	op, params = commands[0], commands[1:]
 	if op in dispatchers:
-		dispatchers[op](params, job, engine)
+		dispatchers[op](params, job, engine, db_sess)
 	else:
 		log.error("Error! Unknown special-case filter!")
 		print("Filter name: '%s', parameters: '%s', job URL: '%s'", op, params, job.url)

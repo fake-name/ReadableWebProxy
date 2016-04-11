@@ -186,14 +186,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, job_get_lock=False, run_filters=True, response_queue=None):
+	def __init__(self, cookie_lock, db_interface, job_get_lock=False, run_filters=True, response_queue=None):
 		# print("SiteArchiver __init__()")
 		super().__init__()
 
-		self.db = db
 		self.job_get_lock = job_get_lock
 		self.cookie_lock = cookie_lock
-		self.resp_q = response_queue
+		self.resp_q  = response_queue
+		self.db_sess = db_interface
+		self.db      = db
 
 		# print("SiteArchiver database imported")
 		ruleset = WebMirror.rules.load_rules()
@@ -250,7 +251,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	# Minimal proxy because I want to be able to call the fetcher without affecting the DB.
 	def fetch(self, job):
-		fetcher = self.fetcher(rules=self.ruleset, target_url=job.url, start_url=job.starturl, cookie_lock=self.cookie_lock, job=job, wg_handle=self.wg, response_queue=self.resp_q)
+		fetcher = self.fetcher(rules=self.ruleset, target_url=job.url, start_url=job.starturl, cookie_lock=self.cookie_lock, job=job, wg_handle=self.wg, response_queue=self.resp_q, db_sess=self.db_sess)
 		response = fetcher.fetch()
 		return response
 
@@ -278,7 +279,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def special_case_handle(self, job):
-		WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers)
+		WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers, self.db_sess)
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
@@ -306,17 +307,17 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 				job.fetchtime = datetime.datetime.now()
 
-				self.db.get_session().commit()
+				self.db_sess.commit()
 				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
 				break
 			except sqlalchemy.exc.OperationalError:
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 
 	def insertRssItem(self, entry, feedurl):
 
-		have = self.db.get_session().query(self.db.FeedItems) \
+		have = self.db_sess.query(self.db.FeedItems) \
 			.filter(self.db.FeedItems.contentid == entry['guid'])   \
 			.limit(1)                                  \
 			.scalar()
@@ -354,8 +355,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 					published  = datetime.datetime.fromtimestamp(entry['published'])
 				)
 
-			self.db.get_session().add(new)
-			self.db.get_session().commit()
+			self.db_sess.add(new)
+			self.db_sess.commit()
 
 
 
@@ -364,26 +365,26 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		while 1:
 			try:
-				self.db.get_session().flush()
+				self.db_sess.flush()
 				if not (job.state == "fetching" or job.state == 'processing'):
 					self.log.critical("Someone else modified row first? State: %s, url: %s", job.state, job.url)
 				job.state     = 'complete'
 				job.fetchtime = datetime.datetime.now()
-				self.db.get_session().commit()
+				self.db_sess.commit()
 				self.log.info("Marked RSS job with id %s, url %s as complete (%s)!", job.id, job.url, job.state)
 				break
 
 			except sqlalchemy.exc.InvalidRequestError:
 				print("InvalidRequest error!")
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 				traceback.print_exc()
 			except sqlalchemy.exc.OperationalError:
 				print("InvalidRequest error!")
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 			except sqlalchemy.exc.IntegrityError:
 				print("[upsertRssItems] -> Integrity error!")
 				traceback.print_exc()
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 
 		# print("InsertFeed!")
 		for feedentry in entrylist:
@@ -400,15 +401,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 				except sqlalchemy.exc.InvalidRequestError:
 					print("InvalidRequest error!")
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 					traceback.print_exc()
 				except sqlalchemy.exc.OperationalError:
 					print("InvalidRequest error!")
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					print("[upsertRssItems] -> Integrity error!")
 					traceback.print_exc()
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 
 	def generalLinkClean(self, link, badwords):
 		if link.startswith("data:"):
@@ -472,7 +473,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
 
-		if self.resp_q != None:
+		if self.resp_q != None and False:
 			for link, istext in items:
 				start = urllib.parse.urlsplit(link).netloc
 
@@ -525,19 +526,19 @@ class SiteArchiver(LogBase.LoggerMixin):
 									(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
 								ON CONFLICT DO NOTHING
 								""")
-						self.db.get_session().execute(cmd, params=new)
+						self.db_sess.execute(cmd, params=new)
 
-					self.db.get_session().commit()
+					self.db_sess.commit()
 					break
 				except sqlalchemy.exc.InternalError:
 					self.log.info("SQLAlchemy InternalError - Retrying.")
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 				except sqlalchemy.exc.OperationalError:
 					self.log.info("SQLAlchemy OperationalError - Retrying.")
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 				except sqlalchemy.exc.InvalidRequestError:
 					self.log.info("SQLAlchemy InvalidRequestError - Retrying.")
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 
 	def upsertFileResponse(self, job, response):
 		# Response dict structure:
@@ -552,13 +553,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 			try:
 				# Look for existing files with the same MD5sum. If there are any, just point the new file at the
 				# fsPath of the existing one, rather then creating a new file on-disk.
-				have = self.db.get_session().query(self.db.WebFiles) \
+				have = self.db_sess.query(self.db.WebFiles) \
 					.filter(self.db.WebFiles.fhash == fHash)   \
 					.limit(1)                                  \
 					.scalar()
 
 				if have:
-					match = self.db.get_session().query(self.db.WebFiles)              \
+					match = self.db_sess.query(self.db.WebFiles)              \
 						.filter(self.db.WebFiles.fhash == fHash)                \
 						.filter(self.db.WebFiles.filename == response['fName']) \
 						.limit(1)                                               \
@@ -571,8 +572,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 							fhash    = fHash,
 							fspath   = have.fspath,
 							)
-						self.db.get_session().add(new)
-						self.db.get_session().commit()
+						self.db_sess.add(new)
+						self.db_sess.commit()
 						job.file = new.id
 				else:
 					savedpath = saveCoverFile(response['content'], fHash, response['fName'])
@@ -581,8 +582,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 						fhash    = fHash,
 						fspath   = savedpath,
 						)
-					self.db.get_session().add(new)
-					self.db.get_session().commit()
+					self.db_sess.add(new)
+					self.db_sess.commit()
 					job.file = new.id
 
 				job.state     = 'complete'
@@ -592,12 +593,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 				self.log.info("Marked file job with id %s, url %s as complete!", job.id, job.url)
 
 				job.mimetype = response['mimeType']
-				self.db.get_session().commit()
+				self.db_sess.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 		# print("have:", have)
 
 
@@ -667,26 +668,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		start = time.time()
 
-		sess = self.db.get_session()
 		while runStatus.run_state.value == 1:
 			try:
-				rid = sess.execute(raw_query).scalar()
-				sess.commit()
+				rid = self.db_sess.execute(raw_query).scalar()
+				self.db_sess.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
 				delay = random.random() / 3
-				traceback.print_exc()
+				# traceback.print_exc()
 				self.log.warn("Error getting job (OperationalError)! Delaying %s.", delay)
 				time.sleep(delay)
-				sess.rollback()
-				sess.flush()
-				sess.expire_all()
+				self.db_sess.rollback()
+				self.db_sess.flush()
+				self.db_sess.expire_all()
 			except sqlalchemy.exc.InvalidRequestError:
 				traceback.print_exc()
 				self.log.warn("Error getting job (InvalidRequestError)!")
-				sess.rollback()
-				sess.flush()
-				sess.expire_all()
+				self.db_sess.rollback()
+				self.db_sess.flush()
+				self.db_sess.expire_all()
 
 		# If we broke because a user-interrupt, we may not have a
 		# valid rid at this point.
@@ -706,25 +706,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
 
 
-		job = sess.query(self.db.WebPages) \
+		job = self.db_sess.query(self.db.WebPages) \
 			.filter(self.db.WebPages.id == rid)             \
 			.one()
-		sess.flush()
+		self.db_sess.flush()
 
 		if not job:
-			sess.commit()
+			self.db_sess.commit()
 			return False
 
 		if job.state != 'fetching':
-			sess.commit()
+			self.db_sess.commit()
 			sleeptime = random.random()
 			self.log.info("Wat? How did the query return?")
 			return False
 
-		sess.commit()
+		self.db_sess.commit()
 		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
 
-		sess.flush()
+		self.db_sess.flush()
 
 
 		return job
@@ -735,7 +735,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		Also updates the row to be in the "fetching" state.
 		'''
-		# self.db.get_session().begin()
+		# self.db_sess.begin()
 
 		# Try to get a task untill we are explicitly out of tasks,
 		# return self._get_task_internal(wattpad)
@@ -764,7 +764,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# job.raw_content = content
 			job.state = 'error'
 			job.errno = -1
-			self.db.get_session().commit()
+			self.db_sess.commit()
 			self.log.error("`urllib.error.URLError` Exception when downloading.")
 		except ValueError:
 			content = "DOWNLOAD FAILED - ValueError"
@@ -774,7 +774,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# job.raw_content = content
 			job.state = 'error'
 			job.errno = -3
-			self.db.get_session().commit()
+			self.db_sess.commit()
 		except DownloadException:
 			content = "DOWNLOAD FAILED - DownloadException"
 			content += "<br>"
@@ -783,7 +783,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# job.raw_content = content
 			job.state = 'error'
 			job.errno = -2
-			self.db.get_session().commit()
+			self.db_sess.commit()
 			self.log.error("`DownloadException` Exception when downloading.")
 		except KeyboardInterrupt:
 			runStatus.run = False
@@ -817,7 +817,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					fp.write("Job-netloc: {val}\n".format(val=job.netloc))
 					fp.write("Job-url: {val}\n".format(val=job.url))
 					job.state = "error"
-					self.db.get_session().commit()
+					self.db_sess.commit()
 
 				fp.write(traceback.format_exc())
 
@@ -825,14 +825,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 			for line in traceback.format_exc().split("\n"):
 				self.log.critical("%s", line.rstrip())
 
-		finally:
-			try:
-				# Sessions are per-task.
-				self.db.delete_session()
-			except KeyError:
-				print("Deleting session failed!")
-				traceback.print_exc()
-				pass
+		# finally:
+		# 	try:
+		# 		# Sessions are per-task.
+		# 		self.db.delete_session()
+		# 	except KeyError:
+		# 		print("Deleting session failed!")
+		# 		traceback.print_exc()
+		# 		pass
 
 	def get_row(self, url, distance=None, priority=None):
 		if distance == None:
@@ -845,16 +845,16 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# just do a simple check for the row first. That'll
 		# probably be faster in the /great/ majority of cases.
 		while 1:
-			# self.db.get_session().begin()
+			# self.db_sess.begin()
 			try:
-				row =  self.db.get_session().query(self.db.WebPages) \
+				row =  self.db_sess.query(self.db.WebPages) \
 					.filter(self.db.WebPages.url == url)       \
 					.scalar()
 
-				self.db.get_session().commit()
+				self.db_sess.commit()
 				break
 			except sqlalchemy.exc.InvalidRequestError:
-				self.db.get_session().rollback()
+				self.db_sess.rollback()
 
 
 		if row:
@@ -883,25 +883,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# fetch the row inserted by another thread at the same time.
 			while 1:
 				try:
-					# self.db.get_session().begin()
-					self.db.get_session().add(row)
-					self.db.get_session().commit()
+					# self.db_sess.begin()
+					self.db_sess.add(row)
+					self.db_sess.commit()
 					print("Row added?")
 					break
 				except sqlalchemy.exc.InvalidRequestError:
 					print("InvalidRequest error!")
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 					traceback.print_exc()
 				except sqlalchemy.exc.OperationalError:
 					print("InvalidRequest error!")
-					self.db.get_session().rollback()
+					self.db_sess.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					print("[synchronousJobRequest] -> Integrity error!")
-					self.db.get_session().rollback()
-					row = self.db.get_session().query(self.db.WebPages) \
+					self.db_sess.rollback()
+					row = self.db_sess.query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)            \
 						.one()
-					self.db.get_session().commit()
+					self.db_sess.commit()
 					break
 		return row
 
@@ -913,7 +913,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fetcher = self.fetcher(self.ruleset, url, parentjob.starturl, job=row, cookie_lock=None, wg_handle=self.wg, response_queue=self.resp_q)
 		ret = fetcher.dispatchContent(content, filename, mimetype)
 		self.processResponse(row, ret)
-		self.db.get_session.close()
+
 
 
 	def synchronousJobRequest(self, url, ignore_cache=False):
@@ -951,7 +951,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.dispatchRequest(row)
 
 		# Commit, because why not
-		self.db.get_session().commit()
+		self.db_sess.commit()
 
 		return row
 

@@ -22,26 +22,28 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 	def retriggerPages(self):
 
+		sess = self.db.get_db_session()
+
 		for url in self.pages:
 			while 1:
 				try:
-					have = self.db.get_session().query(self.db.WebPages) \
+					have = sess.query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)  \
 						.scalar()
 					if have and have.state != "new":
 						have.state    = "new"
 						have.distance = self.db.MAX_DISTANCE-3
 						have.priority = self.db.DB_HIGH_PRIORITY
-						self.db.get_session().commit()
+						sess.commit()
 						break
 					elif have:
 						if have.priority != self.db.DB_HIGH_PRIORITY:
 							have.priority = self.db.DB_HIGH_PRIORITY
-							self.db.get_session().commit()
+							sess.commit()
 
 						if have.distance != self.db.MAX_DISTANCE-3:
 							have.distance = self.db.MAX_DISTANCE-3
-							self.db.get_session().commit()
+							sess.commit()
 						break
 					else:
 						new = self.db.WebPages(
@@ -51,22 +53,22 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 								priority = self.db.DB_HIGH_PRIORITY,
 								distance = self.db.MAX_DISTANCE-3,
 							)
-						self.db.get_session().add(new)
-						self.db.get_session().commit()
+						sess.add(new)
+						sess.commit()
 						break
 
 				except sqlalchemy.exc.InternalError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 				except sqlalchemy.exc.OperationalError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 				except sqlalchemy.exc.InvalidRequestError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 
 		self.log.info("Pages retrigger complete.")
 

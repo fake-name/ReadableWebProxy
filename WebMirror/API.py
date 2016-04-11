@@ -111,7 +111,7 @@ class RemoteContentObject(object):
 		job.url       = self.url
 		job.starturl  = "http://www.example.org"
 		job.distaance = WebMirror.database.MAX_DISTANCE-2
-		fetcher       = self.archiver.fetcher(self.archiver.ruleset, job.url, job.starturl, job=job, cookie_lock=False)
+		fetcher       = self.archiver.fetcher(self.archiver.ruleset, target_url=job.url, start_url=job.starturl, db_sess=self.archiver.db_sess, job=job, cookie_lock=False)
 		print(fetcher)
 		ret          = fetcher.dispatchContent(content, "None", "text/html")
 		content = ret['contents']

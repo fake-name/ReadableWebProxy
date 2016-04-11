@@ -32,11 +32,11 @@ NO_PROCESSES = 24
 # NO_PROCESSES = 1
 
 # For synchronizing saving cookies to disk
-cookie_lock = multiprocessing.Lock()
-job_get_lock = multiprocessing.Lock()
+COOKIE_LOCK  = multiprocessing.Lock()
+JOB_GET_LOCK = multiprocessing.Lock()
 
-# from pympler.tracker import SummaryTracker, summary, muppy
-# import tracemalloc
+from pympler.tracker import SummaryTracker, summary, muppy
+import tracemalloc
 import objgraph
 import random
 import gc
@@ -47,73 +47,43 @@ def halt_exc(x, y):
 		raise KeyboardInterrupt
 
 class RunInstance(object):
-	def __init__(self, num, rules, response_queue, nosig=True):
+	def __init__(self, num, response_queue, cookie_lock, job_get_lock, nosig=True):
 		print("RunInstance %s init!" % num)
 		if nosig:
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
 		self.num = num
 		self.log = logging.getLogger("Main.Text.Web")
+		self.resp_queue = response_queue
+		self.cookie_lock = cookie_lock
+		self.job_get_lock = job_get_lock
 
-		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock, job_get_lock=job_get_lock, response_queue=response_queue)
 		print("RunInstance %s MOAR init!" % num)
 
+	def __del__(self):
+		db.delete_db_session()
 
 	def do_task(self):
+
+		self.db_handle = db.get_db_session()
+
+		self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, job_get_lock=self.job_get_lock, response_queue=self.resp_queue, db_interface=self.db_handle)
 		self.archiver.taskProcess()
+		# Clear out the sqlalchemy state
+		self.db_handle.expunge_all()
+		db.delete_db_session()
 
 	def go(self):
 
-		# tracemalloc.start()
+		tracemalloc.start()
 		self.log.info("RunInstance starting!")
 		loop = 0
 
-		count = 0
-
-		while 1:
+		# We have to only let the child threads run for a period of time, or something
+		# somewhere in sqlalchemy appears to be leaking memory.
+		for dummy_x in range(500):
 			if runStatus.run_state.value == 1:
-
-				# tr = SummaryTracker()
-
-
-				# snapshot1 = tracemalloc.take_snapshot()
 				# objgraph.show_growth(limit=3)
 				self.do_task()
-				# objgraph.show_growth()
-				# count += 1
-				# gc.collect()
-
-				# subnode = 1
-				# for tmp in objgraph.by_type('AttributeState'):
-				# 	objgraph.show_chain(
-				# 		objgraph.find_backref_chain(
-				# 			tmp,
-				# 			objgraph.is_proper_module),
-				# 		filename='chain %s %s (%s).png' % (self.num, count, subnode))
-				# 	subnode += 1
-
-				# objgraph.show_backrefs(objgraph.by_type('Nondestructible'), filename='./finalizers %s.png' % count)
-				# snapshot2 = tracemalloc.take_snapshot()
-
-
-				# top_stats = snapshot2.compare_to(snapshot1, 'lineno')
-				# print("[ Top 10 differences ]")
-				# for stat in top_stats[:10]:
-				# 	print(stat)
-				# 	for line in stat.traceback:
-				# 		print("	", line)
-				# biggest = top_stats[0]
-
-				# top_stats = snapshot2.compare_to(snapshot1, 'lineno')
-
-				# del snapshot1
-				# del snapshot2
-				# del top_stats
-
-				# tr.print_diff()
-				# del tr
-				# sum1 = summary.summarize(muppy.get_objects())
-				# summary.print_(sum1)
-
 			else:
 				self.log.info("Thread %s exiting.", self.num)
 				break
@@ -128,10 +98,10 @@ class RunInstance(object):
 
 
 	@classmethod
-	def run(cls, num, rules, response_queue, nosig=True):
+	def run(cls, num, response_queue, cookie_lock, job_get_lock, nosig=True):
 		print("Running!")
 		try:
-			run = cls(num, rules, response_queue, nosig)
+			run = cls(num, response_queue, cookie_lock, job_get_lock, nosig)
 			print("Class instantiated: ", run)
 			run.go()
 		except Exception:
@@ -141,7 +111,7 @@ class RunInstance(object):
 
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
-	sess = db.get_session()
+	sess = db.get_db_session()
 	for ruleset in [rset for rset in rules if rset['starturls']]:
 		for starturl in ruleset['starturls']:
 			have = sess.query(db.WebPages) \
@@ -162,22 +132,20 @@ def initializeStartUrls(rules):
 				sess.add(new)
 		sess.commit()
 	sess.close()
-
+	db.delete_db_session()
 def resetInProgress():
 	print("Resetting any stalled downloads from the previous session.")
 
-	# db.get_session().begin()
-	sess = db.get_session()
+	sess = db.get_db_session()
 	sess.query(db.WebPages) \
 		.filter((db.WebPages.state == "fetching") | (db.WebPages.state == "processing"))   \
 		.update({db.WebPages.state : "new"})
 	sess.commit()
 	sess.close()
-	sess.close()
-
+	db.delete_db_session()
 
 class UpdateAggregator(object):
-	def __init__(self, msg_queue):
+	def __init__(self, msg_queue, db_interface):
 		self.queue = msg_queue
 		self.log = logging.getLogger("Main.Agg.Manager")
 
@@ -199,6 +167,8 @@ class UpdateAggregator(object):
 
 		self.batched_links = []
 
+		self.db_int = db_interface
+
 	def do_amqp(self, pkt):
 		self.amqpUpdateCount += 1
 
@@ -215,7 +185,6 @@ class UpdateAggregator(object):
 
 		self.log.info("Inserting %s items into DB in batch.", len(self.batched_links))
 
-		sess = db.get_session()
 		while 1:
 			try:
 
@@ -228,22 +197,22 @@ class UpdateAggregator(object):
 						ON CONFLICT DO NOTHING
 						""")
 				for paramset in self.batched_links:
-					sess.execute(cmd, params=paramset)
-				sess.commit()
+					self.db_int.execute(cmd, params=paramset)
+				self.db_int.commit()
 				self.batched_links = []
 				break
 			except KeyboardInterrupt:
 				self.log.info("Keyboard Interrupt?")
-				sess.rollback()
+				self.db_int.rollback()
 			except sqlalchemy.exc.InternalError:
 				self.log.info("Transaction error. Retrying.")
 				traceback.print_exc()
-				sess.rollback()
+				self.db_int.rollback()
 			except sqlalchemy.exc.OperationalError:
 				self.log.info("Transaction error. Retrying.")
 				traceback.print_exc()
-				sess.rollback()
-		sess.close()
+				self.db_int.rollback()
+		self.db_int.close()
 
 
 	def do_link(self, linkdict):
@@ -331,11 +300,16 @@ class UpdateAggregator(object):
 				self.log.error("Exception in aggregator!")
 				for line in traceback.format_exc():
 					self.log.error(line.rstrip())
+	@classmethod
+	def launch_agg(cls, agg_queue):
+		agg_db = db.get_db_session()
+		instance = cls(agg_queue, agg_db)
+		instance.run()
 
 class Crawler(object):
 	def __init__(self, thread_count=NO_PROCESSES):
 		self.log = logging.getLogger("Main.Text.Manager")
-		self.rules = WebMirror.rules.load_rules()
+		WebMirror.rules.load_rules()
 		self.agg_queue = multiprocessing.Queue()
 
 		self.log.info("Scraper executing with %s processes", thread_count)
@@ -343,8 +317,7 @@ class Crawler(object):
 
 	def start_aggregator(self):
 
-		agg = UpdateAggregator(self.agg_queue)
-		self.agg_proc = multiprocessing.Process(target=agg.run)
+		self.agg_proc = multiprocessing.Process(target=UpdateAggregator.launch_agg, args=(self.agg_queue, ))
 		self.agg_proc.start()
 
 	def join_aggregator(self):
@@ -362,10 +335,11 @@ class Crawler(object):
 
 		self.start_aggregator()
 
+
 		if self.thread_count == 1:
 			self.log.info("Running in single process mode!")
 			try:
-				RunInstance.run(procno, self.rules, self.agg_queue, nosig=False)
+				RunInstance.run(procno, self.agg_queue, cookie_lock=COOKIE_LOCK, job_get_lock=JOB_GET_LOCK, nosig=False)
 			except KeyboardInterrupt:
 				runStatus.run_state.value = 0
 
@@ -383,11 +357,26 @@ class Crawler(object):
 						living = sum([task.is_alive() for task in tasks])
 						for dummy_x in range(self.thread_count - living):
 							self.log.warning("Insufficent living child threads! Creating another thread with number %s", procno)
-							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.rules, self.agg_queue))
+							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.agg_queue), kwargs={'cookie_lock':COOKIE_LOCK, 'job_get_lock':JOB_GET_LOCK})
 							tasks.append(proc)
 							proc.start()
 							procno += 1
 						self.log.info("Living processes: %s", living)
+
+
+						clean_tasks = []
+						cleaned_count = len(tasks)
+						for task in tasks:
+							if not task.is_alive():
+								task.join()
+							else:
+								clean_tasks.append(task)
+						tasks = clean_tasks
+						cleaned_count -= len(tasks)
+						if cleaned_count > 0:
+							self.log.warning("Run manager cleared out %s exited task instances.", cleaned_count)
+
+
 
 			except KeyboardInterrupt:
 				runStatus.run_state.value = 0

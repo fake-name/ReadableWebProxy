@@ -47,7 +47,7 @@ class MetaUpdater(WebMirror.LogBase.LoggerMixin):
 		return pack_message("system-feed-counts", data)
 
 	def get_times(self):
-		conn = database.get_session()
+		conn = database.get_db_session()
 		aps = conn.execute("SELECT job_state FROM apscheduler_jobs;")
 
 		update_times = []
@@ -61,7 +61,7 @@ class MetaUpdater(WebMirror.LogBase.LoggerMixin):
 		data = {
 			"update-times" : update_times,
 		}
-		database.delete_session()
+		database.delete_db_session()
 
 		return pack_message("system-update-times", data)
 

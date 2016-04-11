@@ -46,36 +46,39 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 		threshold_time = datetime.datetime.now() - datetime.timedelta(days=3)
 
+
+		sess = self.db.get_db_session()
+
 		for url in bins[today]:
 			if "wattpad.com" in url:
 				continue
 			while 1:
 				try:
-					item = self.db.get_session().query(self.db.WebPages)             \
+					item = sess.query(self.db.WebPages)             \
 						.filter(self.db.WebPages.fetchtime < threshold_time)  \
 						.filter(self.db.WebPages.state   != "new")            \
 						.filter(self.db.WebPages.url == url)             \
 						.scalar()
 					if not item:
 						break
-					print(item, item.fetchtime)
+					print("Retriggering: ", item, item.fetchtime, item.url)
 					item.state    = "new"
 					item.distance = 0
 					item.priority = dbm.DB_IDLE_PRIORITY
-					self.db.get_session().commit()
+					sess.commit()
 
 				except sqlalchemy.exc.InternalError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 				except sqlalchemy.exc.OperationalError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 				except sqlalchemy.exc.InvalidRequestError:
 					self.log.info("Transaction error. Retrying.")
-					self.db.get_session().rollback()
+					sess.rollback()
 
 		self.log.info("Old files retrigger complete.")
 
