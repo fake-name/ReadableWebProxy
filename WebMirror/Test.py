@@ -243,6 +243,80 @@ def fix_tsv():
 	db.get_db_session().commit()
 
 
+def disable_wattpad():
+	step = 50000
+
+
+	print("Determining extents that need to be changed.")
+	start = db.get_db_session().execute("""
+		SELECT
+			MIN(id)
+		FROM
+			web_pages
+		WHERE
+			(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
+		AND
+			(content IS NOT NULL or content != '');""")
+
+	start = list(start)[0][0]
+
+	end = db.get_db_session().execute("""
+		SELECT
+			MAX(id)
+		FROM
+			web_pages
+		WHERE
+			(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
+		AND
+			(content IS NOT NULL or content != '');""")
+	end = list(end)[0][0]
+
+	changed = 0
+	print("Start: ", start)
+	print("End: ", end)
+
+
+	if not start:
+		print("No null rows to fix!")
+		return
+
+	start = start - (start % step)
+
+	for x in range(start, end, step):
+		try:
+			# SQL String munging! I'm a bad person!
+			# Only done because I can't easily find how to make sqlalchemy
+			# bind parameters ignore the postgres specific cast
+			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+			have = db.get_db_session().execute("""
+				UPDATE
+					web_pages
+				SET
+					state = 'removed'
+				WHERE
+						(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
+					AND
+						(content IS NOT NULL or content != '')
+					AND
+						id < %s
+					AND
+						id >= %s;""" % (x, x-step))
+			# print()
+			print('%10i, %10i, %7.4f, %6i' % (x, end, (x-start)/(end-start) * 100, have.rowcount))
+			changed += have.rowcount
+			if changed > step / 2:
+				print("Committing (%s changed rows)...." % changed, end=' ')
+				db.get_db_session().commit()
+				print("done")
+				changed = 0
+		except sqlalchemy.exc.OperationalError:
+			db.get_db_session().rollback()
+			print("Error!")
+			traceback.print_exc()
+
+	db.get_db_session().commit()
+
+
 def clear_bad():
 	from sqlalchemy.dialects import postgresql
 
@@ -542,6 +616,8 @@ def decode(*args):
 			purge_invalid_urls()
 		elif op == "longest-rows":
 			longest_rows()
+		elif op == "disable-wattpad":
+			disable_wattpad()
 		elif op == "fix-null":
 			fix_null()
 		elif op == "missing-lut":

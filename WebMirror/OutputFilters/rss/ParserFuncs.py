@@ -1332,6 +1332,10 @@ def extractRebirthOnlineWorld(item):
 		return buildReleaseMessage(item, 'Earth\'s Core', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Jikuu Mahou TL' in item['tags']:
 		return buildReleaseMessage(item, 'Jikuu Mahou de Isekai to Chikyuu wo Ittarikitari', vol, chp, frag=frag, postfix=postfix)
+	if 'Monster Musume' in item['tags']:
+		return buildReleaseMessage(item, 'Monster Musume Harem o Tsukurou!', vol, chp, frag=frag, postfix=postfix)
+	if 'Monster Musume' in item['PRC']:
+		return buildReleaseMessage(item, 'Parameter Remote Controller', vol, chp, frag=frag, postfix=postfix)
 	if 'goddess grant me a girlfriend' in item['tags']:
 		return buildReleaseMessage(item, 'Goddess Grant me a Girlfriend', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Loiterous' in item['tags']:
@@ -5196,7 +5200,7 @@ def extractHyorinmaruBlog(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
-	if item['title'].lower().strip().startswith("martial world – "):
+	if item['title'].lower().strip().startswith("martial world – ") or 'Martial World' in item['tags']:
 		return buildReleaseMessage(item, 'Martial World', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractJanukeTranslations(item):
@@ -5414,12 +5418,6 @@ def extractDragonMT(item):
 	return False
 
 
-
-def extractHyorinmaru(item):                        # 'Hyorinmaru'
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
-	return False
 def extractTinkerbellsan(item):                     # 'Tinkerbell-san'
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():

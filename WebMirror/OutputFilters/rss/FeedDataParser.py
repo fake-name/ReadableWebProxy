@@ -279,7 +279,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Hold \'X\' and Click'                                          : pfuncs.extractHoldX,
 				'Hot Cocoa Translations'                                        : pfuncs.extractHotCocoa,
 				'Hyorinmaru Blog'                                               : pfuncs.extractHyorinmaruBlog,
-				'Hyorinmaru'                                                    : pfuncs.extractHyorinmaru,
+				'Hyorinmaru'                                                    : pfuncs.extractHyorinmaruBlog,
 				'Imoutolicious Light Novel Translations'                        : pfuncs.extractImoutolicious,
 				'Infinite Novel Translations'                                   : pfuncs.extractInfiniteNovelTranslations,
 				'Infinite Translations'                                         : pfuncs.extractInfiniteTranslations,

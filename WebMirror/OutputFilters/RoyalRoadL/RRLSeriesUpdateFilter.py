@@ -81,7 +81,7 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
-		self.db_sess    = kwargs['sess']
+		self.db_sess    = kwargs['db_sess']
 
 		self.log.info("Processing RoyalRoadL Item")
 		super().__init__(**kwargs)

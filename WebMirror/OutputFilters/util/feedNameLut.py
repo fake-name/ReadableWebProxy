@@ -676,7 +676,6 @@ mapper = {
 	'gaochaotranslations.wordpress.com'               : 'Gaochao Translations',
 	'halfelementmaster.wordpress.com'                 : 'HalfElementMaster Translation',
 	'honyakusite.wordpress.com'                       : 'Hon\'yaku',
-	'hyorinmarublog.wordpress.com'                    : 'Hyorinmaru Blog',
 	'januketranslations.wordpress.com'                : 'Januke Translations',
 	'japanesemafialady.wordpress.com'                 : 'Kakkokari',
 	'karkiat.wordpress.com'                           : 'Disappointing Translations',
@@ -800,6 +799,7 @@ mapper = {
 	'littleshanks.net'                                : 'LittleShanks Translations',
 	'littlenovel.com'                                 : 'Little Novel Translation',
 	'hyorinmaru.net'                                  : 'Hyorinmaru',
+	'hyorinmarublog.wordpress.com'                    : 'Hyorinmaru',
 
 
 

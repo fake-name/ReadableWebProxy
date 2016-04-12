@@ -12,13 +12,17 @@ import WebMirror.LogBase
 import WebMirror.rules
 import WebMirror.OutputFilters.AmqpInterface
 from WebMirror.OutputFilters.util.MessageConstructors import pack_message
+import WebMirror.TimedTriggers.TriggerBase
 
-class MetaUpdater(WebMirror.LogBase.LoggerMixin):
 
-	loggerPath = "Main.MetaUpdater"
+class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
+
+	pluginName = "Meta Updater"
+
+	loggerPath = 'MetaUpdater'
 
 	def __init__(self):
-
+		super().__init__()
 		# print()
 		if config.C_DO_RABBIT:
 			print("No message queue! Doing independent RabbitMQ connection!")
@@ -65,18 +69,16 @@ class MetaUpdater(WebMirror.LogBase.LoggerMixin):
 
 		return pack_message("system-update-times", data)
 
-	def do_update(self):
+	def go(self):
 		feeds = self.get_feed_count_message()
 		times = self.get_times()
 		self._amqpint.put_item(feeds)
 		self._amqpint.put_item(times)
 
-	def _go(self):
-		self.do_update()
 
 def do_meta_update():
 	updator = MetaUpdater()
-	updator.do_update()
+	updator._go()
 
 
 if __name__ == '__main__':
