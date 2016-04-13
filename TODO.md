@@ -3,7 +3,7 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
-add flask flash about bugging me on the fprum too add a release source
+most rated page wln
 
 https://drive.google.com/folderview?id=0ByWXEuvheaD2bzdzM1pEZklka28&usp=drive_web
 scrape reddit ln page

@@ -49,7 +49,7 @@ pre {
 }
 
 
-table, td, th
+table:not(.noborder), td:not(table.noborder), th:not(table.noborder)
 {
 
 	border-color: #666;
@@ -58,7 +58,7 @@ table, td, th
 	padding: 2px;
 }
 
-table
+table:not(.noborder)
 {
 	border-color: #666;
 	border-width: 1px 1px 1px 1px;

@@ -181,25 +181,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			if instance.name == 'body':
 				continue
 
-			instance.decompose() # This call permutes the tree!
-
-		# for key in toDecompose:
-		# 	try:
-		# 		if not soup:
-		# 			print("Soup is false? Wat?")
-		# 		have = soup.find_all(True, attrs=key)
-
-		# 		for instance in have:
-		# 			# print("Need to decompose for ", key)
-		# 			# So.... yeah. At least one blogspot site has EVERY class used in the
-		# 			# <body> tag, for no coherent reason. Therefore, *never* decompose the <body>
-		# 			# tag, even if it has a bad class in it.
-		# 			if instance.name == 'body':
-		# 				continue
-
-		# 			instance.decompose() # This call permutes the tree!
-		# 	except AttributeError:
-		# 		pass
+			instance.decompose()
 
 		return soup
 
@@ -341,8 +323,12 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			'href',
 			'src',
 			'style',
-
+			'cellspacing',
+			'cellpadding',
+			'border',
+			'colspan',
 		]
+		print("RemoveClasses call!")
 
 		for item in [item for item in soup.find_all(True) if item]:
 			tmp_valid = validattrs[:]
@@ -351,6 +337,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				if item.name == name:
 					if attr:
 						tmp_valid.append(attr)
+
 					else:
 						# Preserve all attributes
 						clean = False
@@ -361,6 +348,13 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 						del item[attr]
 					elif attr not in tmp_valid:
 						del item[attr]
+
+			# Set the class of tables set to have no borders to the no-border css class for later rendering.
+			if item.name == "table" and item.has_attr("border") and item['border'] == "0":
+				if not item.has_attr("class"):
+					item['class'] = ""
+				item['class'] += " noborder"
+
 
 		return soup
 

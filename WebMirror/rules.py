@@ -220,6 +220,11 @@ def getSpecialFilters(ruleset):
 			ret[netloc] = params
 	return ret
 
+def getAttributeRewriteRules(ruleset):
+	if not 'rewriteAttrs' in ruleset:
+		return False
+	return ruleset['rewriteAttrs']
+
 
 def transmitFeeds(ruleset):
 	assert 'send_raw_feed' in ruleset, "'send_raw_feed' flag missing from ruleset!"
@@ -265,6 +270,8 @@ def validateRuleKeys(dat, fname):
 		'send_raw_feed',
 		'special_case_filters',
 
+		'rewriteAttrs',
+
 		# Not currently implemented, but useful
 		'titleTweakLut',
 		]
@@ -279,6 +286,7 @@ def load_validate_rules(fname, dat):
 
 	rules = {}
 	rules['starturls']             = getStartURLs(dat)
+	rules['attrRewriteRules']      = getAttributeRewriteRules(dat)
 	rules['feedurls']              = getFeedUrls(dat)
 
 	rules['badwords']              = getUrlBadWords(dat)

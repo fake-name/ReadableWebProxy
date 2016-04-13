@@ -7,7 +7,9 @@ type: "western"
 
 send_raw_feed: False
 baseUrl: [
+	"https://www.royalroadl.com/",
 	"http://www.royalroadl.com/",
+	"https://royalroadl.com/",
 	"http://royalroadl.com/",
 	]
 
@@ -33,7 +35,46 @@ preserveAttrs: [
 	["a", "onclick"],
 ]
 
+rewriteAttrs: [
+	{"name" : "table", "class" : ['tborder', 'tfixed'], "out_attr" : {"border" : 0}}
+]
+
 decompose: [
+	{"class" : "tgrpmainheader"},
+	{"class" : "tgrpheader"},
+	{"class" : "tgheaderwrap"},
+	{"class" : "tgfooter"},
+	{"class" : "tgtop"},
+	{"class" : "breadcrumb"},
+	{"class" : "responsivecrumb"},
+	{"class" : "bam_announcements"},
+	{"class" : "bam_announcement"},
+	{"class" : "thread_tools"},
+	{"class" : "popup_menu"},
+	{"class" : "showthread_spinner"},
+	{"class" : "new_reply_button"},
+	{"class" : "smalltext"},
+	{"class" : "tfoot"},
+	{"class" : "post_controls"},
+	{"class" : "author_avatar"},
+	{"class" : "author_information"},
+	{"class" : "author_statistics"},
+	{"class" : "adsbygoogle"},
+	{"class" : "tgbg"},
+	{"class" : "bgmodalhead"},
+	{"class" : "tgbackgrounds"},
+	{"class" : "ccgtheadpostoptions"},
+
+	{"id"    : "game-popup"},
+	{"id"    : "top"},
+	{"id"    : "quickreply_spinner"},
+	{"id"    : "quick_reply_form"},
+
+	{"original-title" : "Online"},
+	{"original-title" : "Offline"},
+
+
+	# Old (pre recent rework, probably can be deleted)
 	{"class" : "widget-wrapper"},
 	{"class" : "search"},
 	{"class" : "subscribe"},
@@ -82,7 +123,7 @@ decompose: [
 
 ]
 
-stripTitle: ['guhehe.TRANSLATIONS |', " - Royal Road"]
+stripTitle: [" - Royal Road"]
 
 
 
