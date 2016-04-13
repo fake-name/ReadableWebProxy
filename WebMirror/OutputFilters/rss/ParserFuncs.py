@@ -1334,7 +1334,7 @@ def extractRebirthOnlineWorld(item):
 		return buildReleaseMessage(item, 'Jikuu Mahou de Isekai to Chikyuu wo Ittarikitari', vol, chp, frag=frag, postfix=postfix)
 	if 'Monster Musume' in item['tags']:
 		return buildReleaseMessage(item, 'Monster Musume Harem o Tsukurou!', vol, chp, frag=frag, postfix=postfix)
-	if 'Monster Musume' in item['PRC']:
+	if 'Monster Musume' in item['tags']:
 		return buildReleaseMessage(item, 'Parameter Remote Controller', vol, chp, frag=frag, postfix=postfix)
 	if 'goddess grant me a girlfriend' in item['tags']:
 		return buildReleaseMessage(item, 'Goddess Grant me a Girlfriend', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
@@ -6250,6 +6250,8 @@ def extractRumanshisLair(item):
 		return buildReleaseMessage(item, 'I Aim to Be an Adventurer with the Jobclass of "Jobless"', vol, chp, frag=frag, postfix=postfix)
 
 	if 'The Harem Was a Forced Goal' in item['tags'] or 'THWAFG' in item['title']:
+		if "SS" in item['title'] and not postfix:
+			postfix = "Side Story"
 		return buildReleaseMessage(item, 'The Harem Was a Forced Goal', vol, chp, frag=frag, postfix=postfix)
 	if 'Isekai Cheat' in item['tags'] or 'Isekai Cheat' in item['title']:
 		return buildReleaseMessage(item, 'Different World Reincarnation ~ Enjoying the new world as a cheat ~', vol, chp, frag=frag, postfix=postfix)
