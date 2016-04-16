@@ -76,7 +76,15 @@ class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 		self._amqpint.put_item(times)
 
 
+
+
 def do_meta_update():
+	updator = MetaUpdater()
+	updator._go()
+
+	updator = MetaUpdater()
+	updator._go()
+
 	updator = MetaUpdater()
 	updator._go()
 

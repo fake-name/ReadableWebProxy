@@ -32,6 +32,7 @@ baseUrl: [
 	'http://saibaichiroku.wordpress.com',
 	'http://sakurahonyaku.wordpress.com',
 	'http://setsuna86blog.wordpress.com',
+	'https://norvablog.wordpress.com',
 	'http://silenttl.wordpress.com',
 	'http://soojiki.wordpress.com',
 	'http://stcon.wordpress.com',
@@ -446,6 +447,7 @@ baseUrl: [
 	'https://zentranslations.wordpress.com',
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
+	'https://realmofchaosblog.wordpress.com',
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	 # This is WP, but it uses an custom theme I haven't tested against.
 	# New:

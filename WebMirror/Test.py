@@ -255,10 +255,10 @@ def disable_wattpad():
 			web_pages
 		WHERE
 			(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
-		AND
-			(content IS NOT NULL or content != '');""")
+		;""")
 
 	start = list(start)[0][0]
+	print("Start: ", start)
 
 	end = db.get_db_session().execute("""
 		SELECT
@@ -267,12 +267,10 @@ def disable_wattpad():
 			web_pages
 		WHERE
 			(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
-		AND
-			(content IS NOT NULL or content != '');""")
+		;""")
 	end = list(end)[0][0]
 
 	changed = 0
-	print("Start: ", start)
 	print("End: ", end)
 
 
@@ -292,17 +290,17 @@ def disable_wattpad():
 				UPDATE
 					web_pages
 				SET
-					state = 'removed'
+					state = 'disabled'
 				WHERE
 						(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
 					AND
-						(content IS NOT NULL or content != '')
+						(state = 'new' OR state = 'fetching' OR state = 'processing')
 					AND
 						id < %s
 					AND
 						id >= %s;""" % (x, x-step))
 			# print()
-			print('%10i, %10i, %7.4f, %6i' % (x, end, (x-start)/(end-start) * 100, have.rowcount))
+			print('%10i, %10i, %10i, %7.4f, %6i' % (start, x, end, (x-start)/(end-start) * 100, have.rowcount))
 			changed += have.rowcount
 			if changed > step / 2:
 				print("Committing (%s changed rows)...." % changed, end=' ')

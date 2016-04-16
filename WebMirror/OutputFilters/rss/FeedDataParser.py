@@ -664,12 +664,12 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Blazing Translations'                                          : pfuncs.extractKnW,
 				'CapsUsingShift Tl'                                             : pfuncs.extractKnW,
 				'Insignia Pierce'                                               : pfuncs.extractKnW,
-				'Kiriko Translations'                                           : pfuncs.extractKnW,
 				'Konjiki no Wordmaster'                                         : pfuncs.extractKnW,
 				'Loliquent'                                                     : pfuncs.extractKnW,
 				'Pummels Translations'                                          : pfuncs.extractKnW,
-				'XCrossJ'                                                       : pfuncs.extractKnW,
 
+				'Kiriko Translations'                                           : pfuncs.extractKirikoTranslations,
+				'XCrossJ'                                                       : pfuncs.extractXCrossJ,
 				# No Posts yet?
 				'Novel Trans'                                                   : pfuncs.extractNovelTrans,
 				'The Bathrobe Knight'                                           : pfuncs.extractBathrobeKnight,
