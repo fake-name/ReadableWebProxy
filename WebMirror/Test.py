@@ -49,8 +49,6 @@ def print_html_response(archiver, new, ret):
 	for link in filteredr:
 		print("	'%s'" % link.replace("\n", ""))
 
-def print_rss_response(archiver, new, ret):
-	pass
 
 def test_retrieve(url, debug=True, rss_debug=False):
 	if rss_debug:
@@ -73,8 +71,14 @@ def test_retrieve(url, debug=True, rss_debug=False):
 
 	if debug:
 		print(new)
-	archiver = SiteArchiver(None)
-	archiver.taskProcess(job_test=new)
+
+	try:
+		archiver = SiteArchiver(None, db.get_db_session())
+		archiver.taskProcess(job_test=new)
+		db.delete_db_session()
+	except Exception as e:
+		traceback.print_exc()
+
 
 	# if debug:
 	# 	print(archiver)
@@ -600,9 +604,10 @@ def decode(*args):
 
 	if len(args) == 1:
 		op = args[0]
+		print("Single arg op: '%s'" % op )
 		if op == "rss":
 			test_all_rss()
-		if op == "sync":
+		elif op == "sync":
 			WebMirror.SiteSync.fetch.fetch_other_sites()
 		elif op == "rss-del-comments":
 			delete_comment_feed_items()

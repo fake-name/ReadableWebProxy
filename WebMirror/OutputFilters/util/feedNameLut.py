@@ -801,6 +801,20 @@ mapper = {
 	'hyorinmaru.net'                                  : 'Hyorinmaru',
 	'hyorinmarublog.wordpress.com'                    : 'Hyorinmaru',
 
+	'realmofchaosblog.wordpress.com'                  : 'Realm of Chaos',
+	'albertkenoreijou.wordpress.com'                  : 'Albert Kenoreijou',
+	'piggybottle.wordpress.com'                       : 'PiggyBottle Translations',
+	'projecthydrogen.wordpress.com'                   : 'Sandwich Kingdom',
+	'tyrantseyetranslations.wordpress.com'            : 'Tyrant\'s Eye Translations',
+	'kondeesite.wordpress.com'                        : 'KONDEE Translations',
+	'ukel2x.wordpress.com'                            : 'Ukel2x',
+	'procrastranslation.wordpress.com'                : 'ProcrasTranslation',
+	'novelsjapan.wordpress.com'                       : 'Novels Japan',
+	'7daystrial.wordpress.com'                        : '7 Days Trial',
+	'dokuhanatl.wordpress.com'                        : 'DokuHana Translations',
+	'ensigblog.wordpress.com'                         : 'Ensig\'s Writings',
+
+
 
 
 

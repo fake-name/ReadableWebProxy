@@ -647,6 +647,19 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'ZSW'                                                           : pfuncs.extractZSW,
 				'~Taffy Translations~'                                          : pfuncs.extractTaffyTranslations,
 
+				'Realm of Chaos'                                                : pfuncs.extractRealmOfChaos,
+				'Albert Kenoreijou'                                             : pfuncs.extractAlbertKenoreijou,
+				'PiggyBottle Translations'                                      : pfuncs.extractPiggyBottleTranslations,
+				'Sandwich Kingdom'                                              : pfuncs.extractSandwichKingdom,
+				'Tyrant\'s Eye Translations'                                    : pfuncs.extractTyrantsEyeTranslations,
+				'KONDEE Translations'                                           : pfuncs.extractKONDEETranslations,
+				'Ukel2x'                                                        : pfuncs.extractUkel2x,
+				'ProcrasTranslation'                                            : pfuncs.extractProcrasTranslation,
+				'Novels Japan'                                                  : pfuncs.extractNovelsJapan,
+				'7 Days Trial'                                                  : pfuncs.extract7DaysTrial,
+				'DokuHana Translations'                                         : pfuncs.extractDokuHanaTranslations,
+				'Ensig\'s Writings'                                             : pfuncs.extractEnsigsWritings,
+
 				'ℝeanとann@'                                                     : pfuncs.extractReantoAnna,
 				'「\u3000」'                                                      : pfuncs.extractU3000,
 				'お兄ちゃん、やめてぇ！'                                               : pfuncs.extractOniichanyamete,
@@ -799,6 +812,15 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		except TypeError:
 			return None
 
+	# Manual patches for dealing with a few broken feeds.
+	def checkIgnore(self, feedDat):
+
+		# Japtem seems to put their comments in their main feed, for no good reason.
+		if feedDat['srcname'] == "Japtem" and feedDat['title'].startswith("By: "):
+			return True
+
+		return False
+
 	def processFeedData(self, feedDat, tx_raw=True, tx_parse=True):
 
 		if any([item in feedDat['linkUrl'] for item in skip_filter]):
@@ -812,6 +834,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if not nicename:
 			nicename = netloc
 		feedDat['srcname'] = nicename
+
+		if self.checkIgnore(feedDat):
+			return
 
 		# print("ProcessFeedData! ", netloc)
 		if not WebMirror.rules.netloc_send_feed(netloc):

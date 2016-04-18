@@ -448,6 +448,20 @@ baseUrl: [
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
 	'https://realmofchaosblog.wordpress.com',
+
+	'https://albertkenoreijou.wordpress.com',
+	'https://piggybottle.wordpress.com',
+	'https://projecthydrogen.wordpress.com',
+	'https://tyrantseyetranslations.wordpress.com',
+	'https://kondeesite.wordpress.com',
+	'https://ukel2x.wordpress.com',
+	'https://procrastranslation.wordpress.com',
+	'https://novelsjapan.wordpress.com',
+	'https://7daystrial.wordpress.com',
+	'https://dokuhanatl.wordpress.com',
+
+
+
 	 # Non explicitly wordpress blogs (that use wordpress internally)
 	 # This is WP, but it uses an custom theme I haven't tested against.
 	# New:

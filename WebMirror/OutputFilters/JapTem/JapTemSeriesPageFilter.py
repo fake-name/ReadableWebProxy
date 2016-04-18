@@ -140,7 +140,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['homepage']    = ''
 		seriesmeta['desc']        = " ".join([str(para) for para in desc])
 		seriesmeta['tl_type']     = 'oel'
-		seriesmeta['sourcesite']  = 'JapTem'
+		seriesmeta['sourcesite']  = 'JapTem Fanfic'
 
 
 		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
@@ -148,7 +148,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		extra = {}
 		extra['tags']     = tags
 		extra['homepage'] = ''
-		extra['sourcesite']  = 'JapTem'
+		extra['sourcesite']  = 'JapTem Fanfic'
 
 		retval = []
 
@@ -168,7 +168,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# print("Chp title: '{}'".format(chp_title))
 				vol, chp, frag, post = extractTitle(agg_title)
 				raw_item = {}
-				raw_item['srcname']   = "JapTem"
+				raw_item['srcname']   = 'JapTem Fanfic'
 				raw_item['published'] = reldate
 				releaseurl = urllib.parse.urljoin(seriesPageUrl, release.a['href'])
 				raw_item['linkUrl']   = releaseurl

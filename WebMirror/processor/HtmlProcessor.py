@@ -327,6 +327,9 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			'cellpadding',
 			'border',
 			'colspan',
+			'onclick',
+			'type',
+			'value',
 		]
 		print("RemoveClasses call!")
 

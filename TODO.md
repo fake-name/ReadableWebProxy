@@ -3,6 +3,7 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+https://www.wlnupdates.com/group-id/18/ is a bit excessive. maybe separate out the oel bits
 most rated page wln
 
 https://drive.google.com/folderview?id=0ByWXEuvheaD2bzdzM1pEZklka28&usp=drive_web
@@ -13,17 +14,11 @@ add r search for alt titles to admin view
 
 tag similar
 
-
-https://lasciviousimouto.wordpress.com/translation/le-festin-de-vampire/
-
 fix linkbucks
 
 levenshtein series merger
 also tl gropus
 and everything else?
-
-text color: http://tony-yon-ka.blogspot.com/2015/06/manowa-25.html
-spoiler at http://10.1.1.43:5001/view?url=http%3A//aquarilasscenario.blogspot.com/2016/01/in-that-moment-of-suffering-chapter-27.html
 
 Adult link pages: 
 http://www.fictionmania.tv/links/linksdisplay.html?thelink=a09
@@ -31,11 +26,6 @@ http://www.asstr.org/~lostboy/storylinks.html
 
 fiddle with tsvector threshold
 wlnupdates average release interval
-
-colspan? http://royalroadl.com/forum/showthread.php?tid=47458
-
-smartquotes in tl geoup name
-https://www.wlnupdates.com/series-id/34541/
 
 last release time on group page
 
@@ -46,6 +36,43 @@ The Spellmonger series (massive, pure fantasy, awesome worldbuilding)
 Daniel Black series (adult themed OP summoned hero, awesome world building)
 Portals of Infinity series (adult themed OP world hopping hero)
 
+=============================================================== 
+
+New:  penumbrale.livejournal.com
+New:  zips-17.livejournal.com
+New:  hiirowing.livejournal.com
+
+New:  amethystcria.tumblr.com
+New:  xia0yuer.tumblr.com
+New:  doushinojikan.tumblr.com
+New:  tang-wei.tumblr.com
+New:  2minutesofyourtime.tumblr.com
+
+New:  sincere.dreamwidth.org
+New:  shikkakutranslations.org
+New:  toriitranslations.animeholics.org
+New:  jolecole.blogspot.com
+New:  quartia.dreamwidth.org
+
+New:  www.wangkaiinternational.com
+New:  lightnovelcafe.com
+New:  reincarnationtranslations.com
+New:  www.xianxiaworld.net
+New:  www.hasutsuki.com
+New:  novel.oddsquad.org
+New:  levitytales.com
+New:  chillock-amt.blogspot.com
+New:  www.aoitenshi.com
+New:  justblthings.weebly.com
+New:  ckmscans.halofight.com
+New:  sinnesspiel.dreamwidth.org
+New:  trungtnguyen123.org
+New:  notaboutlogic.dreamwidth.org
+New:  www.gundamwingtales.com
+New:  www.ameryedge.com
+New:  miracletranslations.azurewebsites.net
+
+===============================================================
 
 
 quartia.dreamwidth.org
