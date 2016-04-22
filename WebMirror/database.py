@@ -372,6 +372,7 @@ sa.orm.configure_mappers()
 #
 # Essential for fast task get queries
 # CREATE INDEX ix_web_pages_distance_filtered ON web_pages (priority ASC NULLS LAST) WHERE web_pages.state = 'new'::dlstate_enum AND web_pages.distance < 1000000;
+# CREATE INDEX ix_web_pages_distance_filtered_2 ON web_pages (priority ASC NULLS LAST, distance, normal_fetch_mode, ignoreuntiltime) WHERE web_pages.state = 'new'::dlstate_enum AND web_pages.distance < 1000000;
 #
 
 

@@ -3,8 +3,13 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
-https://www.wlnupdates.com/group-id/18/ is a bit excessive. maybe separate out the oel bits
-most rated page wln
+moonbunny cloudflare
+
+fapoff intersitals?
+also fucking linkbucks
+
+check urls have a path on submission
+http://www.yamitranslations.com/tondemo-skill-chapter-list/chapter-1
 
 https://drive.google.com/folderview?id=0ByWXEuvheaD2bzdzM1pEZklka28&usp=drive_web
 scrape reddit ln page

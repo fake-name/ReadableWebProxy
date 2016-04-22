@@ -96,7 +96,8 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		container = soup.find('div', class_='fiction-list-wrapper')
 		# print("container: ", container)
-
+		if not container:
+			return []
 		urls = []
 		for item in container.find_all("li", class_='fiction'):
 			url = item.find('a', text='Fiction Page')['href']

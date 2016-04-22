@@ -77,12 +77,16 @@ import WebMirror.PreProcessors.LiveJournalPreprocess
 import WebMirror.PreProcessors.RedditPreprocess
 import WebMirror.PreProcessors.WattPadPreprocess
 import WebMirror.PreProcessors.TgStoryTimePreprocess
+import WebMirror.PreProcessors.RRLPreprocess
 
 PREPROCESSORS = [
 	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor,
 	WebMirror.PreProcessors.RedditPreprocess.RedditPreprocessor,
 	WebMirror.PreProcessors.WattPadPreprocess.WattPadPreprocessor,
 	WebMirror.PreProcessors.TgStoryTimePreprocess.TgStoryTimePreprocessor,
+	WebMirror.PreProcessors.RRLPreprocess.RRLListPagePreprocessor,
+	WebMirror.PreProcessors.RRLPreprocess.RRLSeriesPagePreprocessor,
+	WebMirror.PreProcessors.RRLPreprocess.RRLChapterPagePreprocessor,
 ]
 
 

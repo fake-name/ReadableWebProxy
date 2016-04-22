@@ -135,8 +135,9 @@ class WebGetRobust:
 	cookielib = None
 	opener = None
 
-	errorOutCount = 3
-	retryDelay = 1.5
+	errorOutCount = 2
+	# retryDelay = 0.1
+	retryDelay = 0.0
 
 
 	data = None
@@ -291,7 +292,7 @@ class WebGetRobust:
 
 					# Scramble our current UA
 					self.browserHeaders = getUserAgent()
-					time.sleep(3)
+					time.sleep(self.retryDelay)
 				else:
 					self.log.error("JSON Parsing issue, and retries exhausted!")
 					# self.log.error("Page content:")
@@ -596,9 +597,9 @@ class WebGetRobust:
 				except urllib.error.HTTPError as e:								# Lotta logging
 					self.log.warning("Error opening page: %s at %s On Attempt %s.", pgreq.get_full_url(), time.ctime(time.time()), retryCount)
 					self.log.warning("Error Code: %s", e)
+					print
 
 					#traceback.print_exc()
-					lastErr = e
 					try:
 
 						self.log.warning("Original URL: %s", requestedUrl)
@@ -612,7 +613,11 @@ class WebGetRobust:
 						break
 
 					time.sleep(self.retryDelay)
-
+					if e.code == 503:
+						errcontent = e.read()
+						if b'This process is automatic. Your browser will redirect to your requested content shortly.' in errcontent:
+							self.log.warn("Cloudflare failure! Doing automatic step-through.")
+							self.stepThroughCloudFlare(requestedUrl, titleNotContains="Just a moment...")
 				except UnicodeEncodeError:
 					self.log.critical("Unrecoverable Unicode issue retreiving page - %s", requestedUrl)
 					for line in traceback.format_exc().split("\n"):
@@ -638,7 +643,7 @@ class WebGetRobust:
 					self.log.warning(lastErr)
 					self.log.warning(traceback.format_exc())
 
-					self.log.warning("Error Retrieving Page! - Trying again - Waiting 2.5 seconds")
+					self.log.warning("Error Retrieving Page! - Trying again - Waiting %s seconds", self.retryDelay)
 
 					try:
 						self.log.critical("Error on page - %s", requestedUrl)

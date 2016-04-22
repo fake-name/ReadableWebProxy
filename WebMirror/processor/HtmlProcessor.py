@@ -240,9 +240,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				ststr = item['style']
 
 				# Prevent inline fonts.
-				if 'font' in ststr.lower():
+				if 'font:' in ststr.lower() or 'font :' in ststr.lower() :
 					item['style'] = ''
-
 				# Disable all explicit width settings.
 				if 'width' in ststr.lower():
 					item['style'] = ''

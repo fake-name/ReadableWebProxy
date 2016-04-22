@@ -24,6 +24,10 @@ badwords: [
 			"/forum",
 			"/games/",
 			"&pid=",
+			"/assets/assets/",
+			"/scripts/scripts/",
+			"/assets/scripts/",
+			"/scripts/assets/",
 			]
 
 # Content Stripping needs to be determined.
@@ -32,7 +36,10 @@ decomposeBefore: [
 ]
 
 preserveAttrs: [
-	["a", "onclick"],
+	["a",     "onclick"],
+	["span",  "style"],
+	["table", "style"],
+	["table", "class"],
 ]
 
 rewriteAttrs: [
