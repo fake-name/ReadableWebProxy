@@ -52,6 +52,8 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		for url in bins[today]:
 			if "wattpad.com" in url:
 				continue
+			if "booksie.com" in url:
+				continue
 			while 1:
 				try:
 					item = sess.query(self.db.WebPages)             \

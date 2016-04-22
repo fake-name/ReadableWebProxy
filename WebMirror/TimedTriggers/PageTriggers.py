@@ -24,8 +24,11 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 		sess = self.db.get_db_session()
 
-		for url in self.pages:
+		for x in range(len(self.pages)):
 			while 1:
+				url = self.pages[x]
+				if x % 50 == 0:
+					self.log.info("Retriggering step %s", x)
 				try:
 					have = sess.query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)  \
@@ -100,7 +103,7 @@ class HourlyPageTrigger(PageTriggerBase):
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
-	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(5500)]
+	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(6000)]
 	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(700)]
 	pages = rrl_pages + japtem_pages
 
