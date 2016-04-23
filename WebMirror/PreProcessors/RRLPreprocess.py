@@ -10,6 +10,7 @@ import re
 import datetime
 import markdown
 import bbcode
+import WebMirror.OutputFilters.FilterBase
 
 def ago(then):
 	if then == None:

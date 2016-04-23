@@ -84,9 +84,12 @@ PREPROCESSORS = [
 	WebMirror.PreProcessors.RedditPreprocess.RedditPreprocessor,
 	WebMirror.PreProcessors.WattPadPreprocess.WattPadPreprocessor,
 	WebMirror.PreProcessors.TgStoryTimePreprocess.TgStoryTimePreprocessor,
-	WebMirror.PreProcessors.RRLPreprocess.RRLListPagePreprocessor,
-	WebMirror.PreProcessors.RRLPreprocess.RRLSeriesPagePreprocessor,
-	WebMirror.PreProcessors.RRLPreprocess.RRLChapterPagePreprocessor,
+
+
+	# Disable the RRL Preprocessor since they rolled back the site.
+	# WebMirror.PreProcessors.RRLPreprocess.RRLListPagePreprocessor,
+	# WebMirror.PreProcessors.RRLPreprocess.RRLSeriesPagePreprocessor,
+	# WebMirror.PreProcessors.RRLPreprocess.RRLChapterPagePreprocessor,
 ]
 
 

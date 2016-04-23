@@ -2,6 +2,9 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
+ 
+pagefilter goes in the preprocessor - lessmwork, why not?
+http://royalroadl.com/forum/showthread.php?tid=53834 old urls not rewritten properly
 
 moonbunny cloudflare
 
