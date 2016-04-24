@@ -14,6 +14,7 @@ import os
 import sys
 import sqlalchemy.exc
 import random
+import settings
 
 import Misc.diff_match_patch as dmp
 from sqlalchemy import desc
@@ -32,12 +33,11 @@ from sqlalchemy.sql import func
 import WebMirror.util.webFunctions as webFunctions
 
 import hashlib
-from WebMirror.Fetch import DownloadException
+from WebMirror.Exceptions import DownloadException
 import WebMirror.Fetch
 import WebMirror.database as db
 from config import C_RESOURCE_DIR
 
-from activePlugins import INIT_CALLS
 
 if "debug" in sys.argv:
 	CACHE_DURATION = 1
@@ -162,7 +162,14 @@ def saveCoverFile(filecont, fHash, filename):
 		locpath = locpath[1:]
 	return locpath
 
+def build_rewalk_time_lut(rules):
+	ret = {}
 
+	for rset in rules:
+		if rset['netlocs']:
+			for netloc in rset['netlocs']:
+				ret[netloc] = rset['rewalk_interval_days']
+	return ret
 
 ########################################################################################################################
 #
@@ -198,12 +205,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		# print("SiteArchiver database imported")
 		ruleset = WebMirror.rules.load_rules()
+		self.netloc_rewalk_times = build_rewalk_time_lut(ruleset)
 		self.ruleset = ruleset
 		self.fetcher = WebMirror.Fetch.ItemFetcher
 		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
 
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
+
+		from activePlugins import INIT_CALLS
 		for item in INIT_CALLS:
 			item(self)
 
@@ -234,7 +244,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# print(item['fileDomains'])
 			# rsc_vals  = self.buildUrlPermutations(item['fileDomains'], item['netlocs'])
 
-		self.log.info("Content filter size: %s. Resource filter size %s.", len(self.ctnt_filters), len(self.rsc_filters))
+		# self.log.info("Content filter size: %s. Resource filter size %s.", len(self.ctnt_filters), len(self.rsc_filters))
 		# print("SiteArchiver initializer complete")
 
 	########################################################################################################################
@@ -497,48 +507,98 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 			self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
 		else:
-			while 1:
-				try:
-					for link, istext in items:
+
+			#  Fucking huzzah for ON CONFLICT!
+			cmd = text("""
+					INSERT INTO
+						web_pages
+						(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+					VALUES
+						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :addtime, :state)
+					ON CONFLICT (url) DO
+						UPDATE
+							SET
+								state     = EXCLUDED.state,
+								starturl  = EXCLUDED.starturl,
+								netloc    = EXCLUDED.netloc,
+								is_text   = EXCLUDED.is_text,
+								distance  = EXCLUDED.distance,
+								priority  = EXCLUDED.priority,
+								addtime   = EXCLUDED.addtime
+							WHERE
+								web_pages.addtime < :threshtime
+							AND
+								web_pages.url = EXCLUDED.url
+							AND
+								(web_pages.state = 'complete' OR web_pages.state = 'error')
+						;
+					""".replace("	", " ").replace("\n", " "))
+
+			# cmd = text("""
+			# 		INSERT INTO
+			# 			web_pages
+			# 			(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+			# 		VALUES
+			# 			(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :addtime, :state)
+			# 		ON CONFLICT DO NOTHING
+			# 			;
+			# 		""".replace("	", " ").replace("\n", " "))
+
+			# Only commit per-URL if we're tried to do the update in batch, and failed.
+			commit_each = False
+			for link, istext in items:
+				while 1:
+					try:
 						start = urllib.parse.urlsplit(link).netloc
 
 						assert link.startswith("http")
 						assert start
 
+						interval = settings.REWALK_INTERVAL_DAYS
+						if start in self.netloc_rewalk_times:
+							interval = self.netloc_rewalk_times[start]
+						threshtime = datetime.datetime.now() - datetime.timedelta(days=interval)
+
+
 						new = {
-							'url'       : link,
-							'starturl'  : job.starturl,
-							'netloc'    : start,
-							'distance'  : job.distance+1,
-							'is_text'   : istext,
-							'priority'  : job.priority,
-							'type'      : job.type,
-							'state'     : "new",
-							'fetchtime' : datetime.datetime.now(),
+							'url'        : link,
+							'starturl'   : job.starturl,
+							'netloc'     : start,
+							'distance'   : job.distance+1,
+							'is_text'    : istext,
+							'priority'   : job.priority,
+							'type'       : job.type,
+							'state'      : "new",
+							'addtime'    : datetime.datetime.now(),
+							'threshtime' : threshtime,
 							}
-
-						#  Fucking huzzah for ON CONFLICT!
-						cmd = text("""
-								INSERT INTO
-									web_pages
-									(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
-								VALUES
-									(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
-								ON CONFLICT DO NOTHING
-								""")
 						self.db_sess.execute(cmd, params=new)
+						if commit_each:
+							self.db_sess.commit()
+						break
+					except sqlalchemy.exc.ProgrammingError:
+						self.log.warn("SQLAlchemy ProgrammingError - Retrying.")
+						self.db_sess.rollback()
+						commit_each = True
+					except sqlalchemy.exc.InternalError:
+						self.log.warn("SQLAlchemy InternalError - Retrying.")
+						self.db_sess.rollback()
+						commit_each = True
+					except sqlalchemy.exc.OperationalError:
+						self.log.warn("SQLAlchemy OperationalError - Retrying.")
+						self.db_sess.rollback()
+						commit_each = True
+						time.sleep(random.random())
+					except sqlalchemy.exc.InvalidRequestError:
+						self.log.warn("SQLAlchemy InvalidRequestError - Retrying.")
+						self.db_sess.rollback()
+						commit_each = True
+					except sqlalchemy.exc.SQLAlchemyError:
+						self.log.warn("SQLAlchemy SQLAlchemyError - Retrying.")
+						self.db_sess.rollback()
+						commit_each = True
 
-					self.db_sess.commit()
-					break
-				except sqlalchemy.exc.InternalError:
-					self.log.info("SQLAlchemy InternalError - Retrying.")
-					self.db_sess.rollback()
-				except sqlalchemy.exc.OperationalError:
-					self.log.info("SQLAlchemy OperationalError - Retrying.")
-					self.db_sess.rollback()
-				except sqlalchemy.exc.InvalidRequestError:
-					self.log.info("SQLAlchemy InvalidRequestError - Retrying.")
-					self.db_sess.rollback()
+			self.db_sess.commit()
 
 	def upsertFileResponse(self, job, response):
 		# Response dict structure:
@@ -989,7 +1049,13 @@ def test():
 	# print(archiver.taskProcess())
 	pass
 
+def test2():
+	ruleset = WebMirror.rules.load_rules()
+	netloc_rewalk_times = build_rewalk_time_lut(ruleset)
+	print(netloc_rewalk_times)
+
+
 if __name__ == "__main__":
-	test()
+	test2()
 
 

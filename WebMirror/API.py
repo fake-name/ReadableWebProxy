@@ -41,13 +41,19 @@ def replace_links(content):
 
 
 class RemoteContentObject(object):
-	def __init__(self, url):
+	def __init__(self, url, db_session = None):
 		self.url     = url
 		self.fetched = False
 		self.job     = None
+
+		if db_session:
+			self.db_sess = db_session
+		else:
+			self.db_sess = g.session
+
 		# print("RemoteContentObject instantiated. Available fetchers: %s" % WebMirror.runtime_engines.fetchers.qsize())
 		# self.archiver = WebMirror.runtime_engines.fetchers.get()
-		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False, run_filters=False, db_interface=g.session)
+		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False, run_filters=False, db_interface=self.db_sess)
 
 
 	def fetch(self, ignore_cache=False, version=None):
@@ -201,9 +207,9 @@ def getResource(url, ignore_cache=False):
 		page.close()
 	return mimetype, fname, content, cachestate
 
-def processFetchedContent(url, content, mimetype, parentjob):
+def processFetchedContent(url, content, mimetype, parentjob, db_session=None):
 
-	page = RemoteContentObject(url)
+	page = RemoteContentObject(url, db_session=db_session)
 	try:
 		ret = page.dispatchRetreived(parentjob, content, mimetype)
 	finally:

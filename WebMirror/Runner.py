@@ -64,20 +64,22 @@ class RunInstance(object):
 
 	def do_task(self):
 
-		self.db_handle = db.get_db_session()
+		db_handle = db.get_db_session()
 
-		self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, job_get_lock=self.job_get_lock, response_queue=self.resp_queue, db_interface=self.db_handle)
-		self.archiver.taskProcess()
-		# Clear out the sqlalchemy state
-		self.db_handle.expunge_all()
-		db.delete_db_session()
+		try:
+			self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, job_get_lock=self.job_get_lock, response_queue=self.resp_queue, db_interface=db_handle)
+			self.archiver.taskProcess()
+		finally:
+			# Clear out the sqlalchemy state
+			db_handle.expunge_all()
+			db.delete_db_session()
+
+
 
 	def go(self):
 
-		tracemalloc.start()
 		self.log.info("RunInstance starting!")
 		loop = 0
-
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
 		for dummy_x in range(500):
@@ -92,9 +94,6 @@ class RunInstance(object):
 			if loop == 15:
 				loop = 0
 				self.log.info("Thread %s awake. Runstate: %s", self.num, runStatus.run_state.value)
-
-
-
 
 
 	@classmethod
@@ -369,7 +368,7 @@ class Crawler(object):
 						if jlok_locked:
 							JOB_GET_LOCK.release()
 
-						self.log.info("Living processes: %s (%s, %s)", living, not clok_locked, not jlok_locked)
+						self.log.info("Living processes: %s (Cookie lock acquired: %s, job lock acquired: %s, exiting: %s)", living, not clok_locked, not jlok_locked, runStatus.run_state.value)
 						# self.log.info("Living processes: %s", living)
 
 

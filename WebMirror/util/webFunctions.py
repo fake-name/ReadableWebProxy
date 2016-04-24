@@ -194,7 +194,7 @@ class WebGetRobust:
 			if os.path.isfile(self.COOKIEFILE):
 				try:
 					self.cj.load(self.COOKIEFILE)
-					self.log.info("Loading CookieJar")
+					# self.log.info("Loading CookieJar")
 				except:
 					self.log.critical("Cookie file is corrupt/damaged?")
 					try:
@@ -202,7 +202,7 @@ class WebGetRobust:
 					except FileNotFoundError:
 						pass
 			if http.cookiejar is not None:
-				self.log.info("Installing CookieJar")
+				# self.log.info("Installing CookieJar")
 				self.log.debug(self.cj)
 				cookieHandler = urllib.request.HTTPCookieProcessor(self.cj)
 				if self.credHandler:

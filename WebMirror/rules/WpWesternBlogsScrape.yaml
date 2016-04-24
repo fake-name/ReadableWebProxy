@@ -1,9 +1,9 @@
 
-
-
 type: "western"
 
 send_raw_feed: True
+
+rewalk_interval_days: 30
 
 baseUrl: [
 	 "http://fuzionlife.wordpress.com",
@@ -84,6 +84,7 @@ baseUrl: [
 
 	'https://senjiqcreations.wordpress.com',
 	'http://lsdell.com',
+	'https://ezanifiction.wordpress.com',
 
 	# REALLY custom theme, not sure how it'll parse.
 	'http://www.bladeofhearts.com',

@@ -237,7 +237,7 @@ class GFileExtractor(object):
 
 def makeDriveDisambiguation(urls, pageHeader):
 
-	soup = WebMirror.util.webFunctions.as_soup()
+	soup = WebMirror.util.webFunctions.as_soup("")
 
 	tag = soup.new_tag('h3')
 	tag.string = 'Google Drive directory: %s' % pageHeader

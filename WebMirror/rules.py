@@ -225,6 +225,11 @@ def getAttributeRewriteRules(ruleset):
 		return False
 	return ruleset['rewriteAttrs']
 
+def getRewalkIntervalDays(ruleset):
+	if not 'rewalk_interval_days' in ruleset:
+		return False
+	return ruleset['rewalk_interval_days']
+
 
 def transmitFeeds(ruleset):
 	assert 'send_raw_feed' in ruleset, "'send_raw_feed' flag missing from ruleset!"
@@ -271,6 +276,7 @@ def validateRuleKeys(dat, fname):
 		'special_case_filters',
 
 		'rewriteAttrs',
+		'rewalk_interval_days',
 
 		# Not currently implemented, but useful
 		'titleTweakLut',
@@ -304,6 +310,7 @@ def load_validate_rules(fname, dat):
 	rules['send_raw_feed']         = transmitFeeds(dat)
 	rules['destyle']               = getDestyles(dat)
 	rules['preserveAttrs']         = getPreserveAttrs(dat)
+	rules['rewalk_interval_days']  = getRewalkIntervalDays(dat)
 
 	rules['trigger']               = getTrigger(dat)
 	if not rules['trigger']:
@@ -402,7 +409,7 @@ def load_special_case_sites():
 		flags.RULE_CACHE = rules
 		flags.SPECIAL_CASE_CACHE = specials
 	else:
-		print("Using cached special-handling command set")
+		# print("Using cached special-handling command set")
 		specials = flags.SPECIAL_CASE_CACHE
 	return specials
 

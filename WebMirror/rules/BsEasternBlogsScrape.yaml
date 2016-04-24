@@ -8,6 +8,8 @@ FOLLOW_GOOGLE_LINKS: True
 
 send_raw_feed: True
 
+rewalk_interval_days: 30
+
 baseUrl: [
 
 	'http://a0132.blogspot.ca',

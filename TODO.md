@@ -3,9 +3,11 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
  
-pagefilter goes in the preprocessor - lessmwork, why not?
-http://royalroadl.com/forum/showthread.php?tid=53834 old urls not rewritten properly
+ 
+ rrl remove signatures
+ pagefilter goes in the preprocessor - lesswork, why not?
 
+http://royalroadl.com/forum/showthread.php?tid=53834 old urls not rewritten properly
 moonbunny cloudflare
 
 fapoff intersitals?

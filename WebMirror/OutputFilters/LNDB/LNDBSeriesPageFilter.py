@@ -69,6 +69,8 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
 
+		self.db_sess    = kwargs['db_sess']
+
 		self.log.info("Processing LNDB Item")
 		super().__init__()
 
@@ -156,7 +158,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# You have to specify the 'X-Requested-With' param, or you'll get a 404
 				content = self.wg.getpage(url, addlHeaders={'Referer': referrer, 'X-Requested-With': 'XMLHttpRequest'})
 				# print("Wat wat?")
-				WebMirror.API.processFetchedContent(url, content, "text/html", self.job)
+				WebMirror.API.processFetchedContent(url, content, "text/html", self.job, db_session=self.db_sess)
 				soup = WebMirror.util.webFunctions.as_soup(content)
 				break
 			except urllib.error.URLError:

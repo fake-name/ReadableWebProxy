@@ -25,31 +25,27 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		self.log.info("Rolling re-trigger of starting URLs.")
 
 
+
 		starturls = []
-		[starturls.extend(ruleset['starturls']) for ruleset in rules if ruleset and ruleset['starturls']]
+		for ruleset in [tmp for tmp in rules if (tmp and tmp['starturls'])]:
+			for starturl in ruleset['starturls']:
+				if not ruleset['rewalk_interval_days']:
+					interval = settings.REWALK_INTERVAL_DAYS
+				else:
+					interval = ruleset['rewalk_interval_days']
+				starturls.append((interval, starturl))
 
-		bins = {}
-
-		for url in starturls:
-			hval = zlib.crc32(url.encode("utf-8"))
-			day = hval % settings.REWALK_INTERVAL_DAYS
-			if not day in bins:
-				bins[day] = []
-			bins[day].append(url)
-
-		today = int(time.time() / (60*60*24)) % settings.REWALK_INTERVAL_DAYS
-
-
-		if not today in bins:
-			return
 
 
 		threshold_time = datetime.datetime.now() - datetime.timedelta(days=3)
-
-
 		sess = self.db.get_db_session()
 
-		for url in bins[today]:
+		for interval, url in starturls:
+			hval = zlib.crc32(url.encode("utf-8"))
+
+			day   = hval % interval
+			today = int(time.time() / (60*60*24)) % interval
+
 			if "wattpad.com" in url:
 				continue
 			if "booksie.com" in url:
@@ -63,11 +59,14 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 						.scalar()
 					if not item:
 						break
-					print("Retriggering: ", item, item.fetchtime, item.url)
-					item.state    = "new"
-					item.distance = 0
-					item.priority = dbm.DB_IDLE_PRIORITY
-					sess.commit()
+
+					if day == today or item.fetchtime < (datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS)):
+						print("Retriggering: ", item, item.fetchtime, item.url)
+						item.state    = "new"
+						item.distance = 0
+						item.priority = dbm.DB_IDLE_PRIORITY
+						sess.commit()
+					break
 
 				except sqlalchemy.exc.InternalError:
 					self.log.info("Transaction error. Retrying.")
