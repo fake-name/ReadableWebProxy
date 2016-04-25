@@ -648,6 +648,7 @@ mapper = {
 
 	'slothtranslationsblog.wordpress.com'             : 'Sloth Translations Blog',
 	'dadishero.wordpress.com'                         : 'DadIsHero Fan Translations',
+	'ezanifiction.wordpress.com'                      : 'E. Zani Fiction',
 
 
 	'chronazero.blogspot.com'                         : 'Chrona Zero',

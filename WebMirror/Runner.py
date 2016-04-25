@@ -66,15 +66,16 @@ class RunInstance(object):
 
 		db_handle = db.get_db_session()
 
+		hadjob = False
 		try:
 			self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, job_get_lock=self.job_get_lock, response_queue=self.resp_queue, db_interface=db_handle)
-			self.archiver.taskProcess()
+			hadjob = self.archiver.taskProcess()
 		finally:
 			# Clear out the sqlalchemy state
 			db_handle.expunge_all()
 			db.delete_db_session()
 
-
+		return hadjob
 
 	def go(self):
 
@@ -85,11 +86,23 @@ class RunInstance(object):
 		for dummy_x in range(500):
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
-				self.do_task()
+				hadjob = self.do_task()
 			else:
 				self.log.info("Thread %s exiting.", self.num)
 				break
 			loop += 1
+
+			# If there was nothing to do, sleep 30 seconds and recheck.
+			# This is because with 50 workers with a sleep-time of 5 seconds on job-miss,
+			# it was causing 100% CPU usage on the DB just for the getjob queries. (I think)
+			if not hadjob:
+				sleeptime = 90
+				self.log.info("Nothing for thread %s to do. Sleeping %s seconds.", self.num, sleeptime)
+				for _x in range(sleeptime):
+					time.sleep(1)
+					if runStatus.run_state.value != 1:
+						self.log.info("Thread %s saw exit flag while waiting for jobs. Runstate: %s", self.num, runStatus.run_state.value)
+						return
 
 			if loop == 15:
 				loop = 0

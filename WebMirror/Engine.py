@@ -755,16 +755,16 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		xqtim = time.time() - start
 
-		if not rid:
-			return False
 
 		if xqtim > 0.5:
 			self.log.error("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
-		if xqtim > 0.1:
+		elif xqtim > 0.1:
 			self.log.warn("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
 		else:
 			self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
 
+		if not rid:
+			return False
 
 		job = self.db_sess.query(self.db.WebPages) \
 			.filter(self.db.WebPages.id == rid)             \
@@ -851,7 +851,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 			print("Keyboard Interrupt!")
 
 	def taskProcess(self, job_test=None):
-
+		'''
+		Return true if there was something to do, false if not.
+		'''
 		job = None
 		try:
 			if job_test:
@@ -859,8 +861,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			else:
 				job = self.getTask()
 			if not job:
-				time.sleep(5)
-				return
+				return False
+
 
 			if job.netloc in self.specialty_handlers:
 				self.log.info("Job %s for url %s has a specialty handler!", job, job.url)
@@ -884,15 +886,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 			for line in traceback.format_exc().split("\n"):
 				self.log.critical("%s", line.rstrip())
-
-		# finally:
-		# 	try:
-		# 		# Sessions are per-task.
-		# 		self.db.delete_session()
-		# 	except KeyError:
-		# 		print("Deleting session failed!")
-		# 		traceback.print_exc()
-		# 		pass
+		return True
 
 	def get_row(self, url, distance=None, priority=None):
 		if distance == None:
