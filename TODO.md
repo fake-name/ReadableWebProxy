@@ -4,6 +4,8 @@
  - "https://xxjohnsmithxx.wordpress.com", parser
  
  
+history flattener
+ 
  rrl remove signatures
  pagefilter goes in the preprocessor - lesswork, why not?
 

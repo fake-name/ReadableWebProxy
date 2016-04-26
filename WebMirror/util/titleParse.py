@@ -26,6 +26,7 @@ FRAGMENT_KEYS = [
 		'episode',
 		'pt',
 		'part',
+		'parts',
 		'page',
 		'p',
 		'pt.',

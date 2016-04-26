@@ -193,6 +193,13 @@ tr.red-highlight:nth-of-type(even) {
 	background-color: #ffe0e0 !important;
 }
 
+tr.yellow-highlight:nth-of-type(odd) {
+	background-color: #eaffea !important;
+}
+tr.yellow-highlight:nth-of-type(even) {
+	background-color: #e0ffe0 !important;
+}
+
 tr.green-highlight:nth-of-type(odd) {
 	background-color: #eaffea !important;
 }

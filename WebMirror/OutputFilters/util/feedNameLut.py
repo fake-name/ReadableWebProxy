@@ -252,6 +252,7 @@ mapper = {
 	'pikatranslations.wordpress.com'                  : 'Pika Translations',
 	'pippisite.wordpress.com'                         : 'Pippi Site',
 	'pirateyoshi.wordpress.com'                       : 'Ziru\'s Musings | Translations~',
+	'zirusmusings.com'                                : 'Ziru\'s Musings | Translations~',
 	'pizzasandcoke.wordpress.com'                     : 'Madao Translations',
 	'plainlybored.wordpress.com'                      : 'PlainlyBored',
 	'polyphonicstory.wordpress.com'                   : 'Polyphonic Story Translation Group',

@@ -155,10 +155,9 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 		for entry in entries:
 
-
-			# if entry['title'].startswith('User:'):
-			# 	# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
-			# 	continue
+			if entry['title'].startswith('User:'):
+				# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
+				continue
 
 			if not 'guid' in entry:
 				# print("if not 'guid' in entry:")
@@ -207,6 +206,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 			# print("Keys: ", list(item.keys()))
 
+
 			# processFeedData() call has to be /before/ we convert the tags to a json object.
 			self.processFeedData(item)
 
@@ -225,7 +225,14 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 		feed = self.parseFeed(self.content)
-		data = self.processFeed(feed, self.pageUrl)
+		try:
+			data = self.processFeed(feed, self.pageUrl)
+		except Exception as e:
+			self.log.critical("Failure parsing RSS feed!")
+			for line in traceback.format_exc().split("\n"):
+				self.log.critical(line)
+			raise e
+
 
 		# print(data)
 		# self.insertFeed(tableName, tableKey, pluginName, feedUrl, data, badwords)

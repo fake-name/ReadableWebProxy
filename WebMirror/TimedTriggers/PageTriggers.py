@@ -75,8 +75,6 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 		self.log.info("Pages retrigger complete.")
 
-
-
 	def go(self):
 		self.log.info("Retriggering %s pages.", len(self.pages))
 		self.retriggerPages()
@@ -98,13 +96,14 @@ class HourlyPageTrigger(PageTriggerBase):
 		# NovelUpdates
 		'http://www.novelupdates.com',
 
-		# BT Twitter feed.
+		# Twitter feeds for annoying sites without better release mechanisms.
 		'https://twitter.com/Baka_Tsuki',
+		'https://twitter.com/Nano_Desu_Yo',
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
 	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(6000)]
-	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(700)]
+	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(800)]
 	pages = rrl_pages + japtem_pages
 
 if __name__ == "__main__":
