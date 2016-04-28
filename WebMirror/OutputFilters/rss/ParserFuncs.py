@@ -1502,6 +1502,8 @@ def extractBureiDan(item):
 		return buildReleaseMessage(item, 'Kenja ni Natta', vol, chp, frag=frag, postfix=postfix)
 	if 'Han-Ryuu Shoujo no Dorei Raifu' in item['tags'] and (chp or vol or frag or postfix):
 		return buildReleaseMessage(item, 'Han-Ryuu Shoujo no Dorei Raifu', vol, chp, frag=frag, postfix=postfix)
+	if 'To Aru Ninki Jikkou Player no VRMMO Funtou Ki' in item['tags'] and (chp or vol or frag or postfix):
+		return buildReleaseMessage(item, 'To Aru Ninki Jikkou Player no VRMMO Funtou Ki', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 ####################################################################################################################################################
@@ -1816,11 +1818,15 @@ def extractIzra709(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
+	if not postfix and "–" in item['title']:
+		postfix = item['title'].split('–')[-1]
 
 	if 'monohito chapter' in item['title'].lower():
 		return buildReleaseMessage(item, 'Monogatari no Naka no Hito', vol, chp, frag=frag, postfix=postfix)
 	if 'b group chapter' in item['title'].lower():
 		return buildReleaseMessage(item, 'B Group no Shounen', vol, chp, frag=frag, postfix=postfix)
+	if 'assassin chapter' in item['title'].lower():
+		return buildReleaseMessage(item, 'Other World Assassin Life of a Man who was a Shut-in', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -4928,6 +4934,8 @@ def extractWordofCraft(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Toaru Ossan no VRMMO katsudouki' in item['tags']:
+		return buildReleaseMessage(item, 'Toaru Ossan no VRMMO katsudouki', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractWorldofSummie(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -5618,6 +5626,8 @@ def extractRidwanTrans(item):                       # 'RidwanTrans'
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Isekai Meikyuu no Saishinbu wo Mezasou' in item['title']:
+		return buildReleaseMessage(item, 'Isekai Meikyuu no Saishinbu wo Mezasou', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractRinOtakuBlog(item):                      # 'RinOtakuBlog'
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])

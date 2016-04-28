@@ -3,11 +3,11 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
  
- 
+next prev on https://bunimithetranslation.wordpress.com/volume-1/chapter-1/
 history flattener
  
- rrl remove signatures
- pagefilter goes in the preprocessor - lesswork, why not?
+rrl remove signatures
+pagefilter goes in the preprocessor - lesswork, why not?
 
 http://royalroadl.com/forum/showthread.php?tid=53834 old urls not rewritten properly
 moonbunny cloudflare

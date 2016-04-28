@@ -72,6 +72,9 @@ decompose: [
 	{"class" : "tgbackgrounds"},
 	{"class" : "ccgtheadpostoptions"},
 
+	# Fuck your shitty signature
+	{"class" : "signature"},
+
 	{"id"    : "game-popup"},
 	{"id"    : "top"},
 	{"id"    : "quickreply_spinner"},
