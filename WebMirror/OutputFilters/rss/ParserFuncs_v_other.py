@@ -7,23 +7,6 @@ from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentP
 import re
 
 ####################################################################################################################################################
-#
-####################################################################################################################################################
-def extractWIP(item):
-	'''
-
-	'''
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol) or "preview" in item['title'].lower():
-		return False
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
-	return False
-
-####################################################################################################################################################
 def extractYoraikun(item):
 	'''
 	# Yoraikun
@@ -110,7 +93,6 @@ def extractZiruTranslations(item):
 	'''
 	chp, vol, frag = extractChapterVolFragment(item['title'])
 
-	print(item['title'], chp, vol, frag)
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
@@ -274,11 +256,12 @@ def extractYukkuri(item):
 	if '10 nen goshi no HikiNEET o Yamete Gaishutsushitara Jitaku goto Isekai ni Ten’ishiteta' in item['tags'] or \
 		 'When I was going out from my house to stop become a Hiki-NEET after 10 years I was transported to another world' in item['tags']:
 		return buildReleaseMessage(item, '10 nen goshi no HikiNEET o Yamete Gaishutsushitara Jitaku goto Isekai ni Ten’ishiteta', vol, chp, frag=frag, postfix=postfix)
-	elif 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru' in item['tags']:
+	elif 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru' in item['tags'] or \
+		'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru.' in item['title']:
 		return buildReleaseMessage(item, 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru', vol, chp, frag=frag, postfix=postfix)
 	elif 'Tenseisha wa Cheat o Nozomanai' in item['tags']:
 		return buildReleaseMessage(item, 'Tenseisha wa Cheat o Nozomanai', vol, chp, frag=frag, postfix=postfix)
-	elif 'Genjitsushugisha no Oukoku Kaizouki' in item['tags']:
+	elif 'Genjitsushugisha no Oukoku Kaizouki' in item['tags'] or item['title'].startswith("Genjitsushugisha no Oukoku Kaizouki"):
 		return buildReleaseMessage(item, 'Genjitsushugisha no Oukoku Kaizouki', vol, chp, frag=frag, postfix=postfix)
 	elif 'I Won 4 Billion in a Lottery But I Went to Another World' in item['tags']:
 		return buildReleaseMessage(item, 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru', vol, chp, frag=frag, postfix=postfix)
@@ -424,9 +407,6 @@ def extractXantAndMinions(item):
 	if "Legend of Xingfeng" in item['title']:
 		return buildReleaseMessage(item, "Legend of Xingfeng", vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
 
@@ -771,6 +751,8 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, 'Great Demon King', vol, chp, frag=frag, postfix=postfix)
 	if 'Sovereign of the Three Realms' in item['tags']:
 		return buildReleaseMessage(item, 'Sovereign of the Three Realms', vol, chp, frag=frag, postfix=postfix)
+	if 'Age of Lazurite' in item['tags']:
+		return buildReleaseMessage(item, 'Age of Lazurite, Tower of Glass', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -958,3 +940,14 @@ def  extract77Novel(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
 	return False
+
+
+def extractWishUponAHope(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+
+
+

@@ -6,9 +6,6 @@ from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentP
 
 import re
 
-
-
-
 ####################################################################################################################################################
 def extractFlowerBridgeToo(item):
 	'''
@@ -34,6 +31,8 @@ def extractFlowerBridgeToo(item):
 def extractGravityTranslation(item):
 	'''
 	# Gravity Translation
+	also
+	# Gravity Tales
 
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -92,7 +91,7 @@ def extractGravityTranslation(item):
 		return buildReleaseMessage(item, 'Shadow Rogue', vol, chp, frag=frag, postfix=postfix)
 	if 'the divine elements' in ltags:
 		return buildReleaseMessage(item, 'The Divine Elements', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'cult of the sacred runes' in ltags:
+	if 'cult of the sacred runes' in ltags or item['title'].startswith("Cult of the Sacred Runes"):
 		return buildReleaseMessage(item, 'Cult of the Sacred Runes', vol, chp, frag=frag, postfix=postfix)
 	if 'Blood Hourglass' in item['title']:
 		return buildReleaseMessage(item, 'Blood Hourglass', vol, chp, frag=frag, postfix=postfix)
@@ -871,10 +870,6 @@ def extractCookiePasta(item):
 
 	return buildReleaseMessage(item, 'Douluo Dalu 2 - Jueshi Tangmen', vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
 	return False
 
 ####################################################################################################################################################
@@ -893,10 +888,6 @@ def extractDreamsOfJianghu(item):
 	if 'WC' in item['tags']:
 		return buildReleaseMessage(item, 'World of Cultivation', vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
 	return False
 
 ####################################################################################################################################################
@@ -912,10 +903,6 @@ def extractDaoSeekerBlog(item):
 
 	if 'Otherworldly Evil Monarch' in item['tags'] or 'Chapter' in item['title']:
 		return buildReleaseMessage(item, 'Otherworldly Evil Monarch', vol, chp, frag=frag, postfix=postfix)
-
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
 
@@ -1205,9 +1192,9 @@ def extractFrostfire10(item):
 #
 ####################################################################################################################################################
 def extractGrimdarkZTranslations(item):
-'''
-
-'''               # 'GrimdarkZ Translations'
+	'''
+	# 'GrimdarkZ Translations'
+	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
@@ -1659,6 +1646,8 @@ def  extractBakaPervert(item):
 		return False
 	if "antihero" in item['title'].lower():
 		return buildReleaseMessage(item, 'Ultimate Antihero', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('hxh'):
+		return buildReleaseMessage(item, 'Hybrid x Heart Magis Academy Ataraxia', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractAsd398(item):
@@ -1672,6 +1661,8 @@ def  extractAsd398(item):
 		return buildReleaseMessage(item, "Don't tell me this is the true history of the Three Kingdoms!", vol, chp, frag=frag, postfix=postfix)
 	if 'Leading an Explosive Revolution in Another World!' in item['tags']:
 		return buildReleaseMessage(item, 'Leading an Explosive Revolution in Another World!', vol, chp, frag=frag, postfix=postfix)
+	if 'No Battle No Life' in item['tags']:
+		return buildReleaseMessage(item, 'No Battle No Life', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractCrazyForHENovels(item):
@@ -2423,10 +2414,6 @@ def  extractCrackofDawnTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
-
 	return False
 
 
@@ -2500,4 +2487,24 @@ def  extractAranTranslations(item):
 		return False
 	if item['title'].startswith("IGE – "):
 		return buildReleaseMessage(item, 'Imperial God Emperor', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+def extractBluePhoenix(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if item['title'].startswith("Chapter") and item['tags'] == ['Uncategorized']:
+		return buildReleaseMessage(item, 'Blue Phoenix', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	return False
+def extractDemonTranslations(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'The Gate Of Good Fortune' in item['tags']:
+		return buildReleaseMessage(item, 'The Gate Of Good Fortune', vol, chp, frag=frag, postfix=postfix)
+	return False
+def extractFantasyNovels(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
 	return False

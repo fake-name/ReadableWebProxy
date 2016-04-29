@@ -21,9 +21,6 @@ def extractSousetsuka(item):
 		if extract and not vol:
 			vol = int(extract.group(1))
 			chp = int(extract.group(2))
-			# print("'{}' '{}', '{}', '{}', '{}'".format(item['title'], vol, chp, frag, postfix))
-
-		# print(item['tags'],)
 		return buildReleaseMessage(item, "Death March kara Hajimaru Isekai Kyousoukyoku", vol, chp, frag=frag, postfix=postfix)
 
 	return False
@@ -128,27 +125,10 @@ def extractOniichanyamete(item):
 	# 	# self.log.warning("Cannot decode item:")
 	# 	# self.log.warning("%s", item['title'])
 	# 	# self.log.warning("Cannot decode item: '%s'", item['title'])
-	# 	# print(item['tags'])
 	return False
 
 
 
-####################################################################################################################################################
-def extractNatsuTl(item):
-	'''
-	# Natsu TL
-	'''
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol) or "preview" in item['title'].lower():
-		return False
-
-	if 'Jikuu' in item['tags']:
-		return buildReleaseMessage(item, "Jikuu Mahou de Isekai to Chikyuu wo ittarikitari", vol, chp, frag=frag, postfix=postfix)
-
-	if 'Magi Craft Meister' in item['tags']:
-		return buildReleaseMessage(item, 'Magi Craft Meister', vol, chp, frag=frag, postfix=postfix)
-
-	return False
 
 ####################################################################################################################################################
 def extractTheLazy9(item):
@@ -1138,9 +1118,6 @@ def extractSoraTranslations(item):
 	if 'Isekai Mahou....' in item['tags']:
 		return buildReleaseMessage(item, 'Isekai Mahou wa Okureteru!', vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
 
@@ -1379,7 +1356,6 @@ def extractUntunedTranslation(item):
 	if 'lillia and treize' in item['tags'] and chp and vol:
 		return buildReleaseMessage(item, 'Lillia to Treize', vol, chp, frag=frag, postfix=postfix)
 
-	print((item['title'], title, vol, chp, frag, postfix, item['tags']))
 
 	# TODO: Needs the facility to parse roman numerals!
 
@@ -1523,10 +1499,12 @@ def extractSilvasLibrary(item):
 		return buildReleaseMessage(item, "Silva's Diary - Zero no Tsukaima", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'God of Destruction' in item['tags'] :
 		return buildReleaseMessage(item, 'God of Destruction', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'My Path of Justice' in item['tags'] :
+	if 'My Path of Justice' in item['tags'] or 'MPJ1' in item['tags']:
 		return buildReleaseMessage(item, 'My Path of Justice', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Truth and Myths' in item['tags'] :
 		return buildReleaseMessage(item, 'Truth and Myths', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Soft Spoken Brutality' in item['tags'] :
+		return buildReleaseMessage(item, 'Soft Spoken Brutality', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'World of Immortals' in item['tags'] :
 		return buildReleaseMessage(item, 'World of Immortals', vol, chp, frag=frag, postfix=postfix)
 	if 'Bu ni mi' in item['tags'] :
@@ -1600,9 +1578,6 @@ def extractSutekiDaNe(item):
 	if "Black Bellied Prince's Stunning Abandoned Consort" in item['tags']:
 		return buildReleaseMessage(item, "Black Bellied Prince's Stunning Abandoned Consort", vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
 
@@ -1703,6 +1678,8 @@ def  extractProcrasTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Slowlife' in item['tags']:
+		return buildReleaseMessage(item, 'Tensei Shite Inaka de Slowlife wo Okuritai', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -2430,6 +2407,8 @@ def  extractSandwichKingdom(item):
 		return buildReleaseMessage(item, 'Sougen no Okite ~Shii yatsu ga moteru, ii buzoku ni umarekawatta zo~', vol, chp, frag=frag, postfix=postfix)
 	if 'kininaru kanojo wo tokoton okashi tsukusu hanshi' in item['tags']:
 		return buildReleaseMessage(item, 'Kininaru Kanojo wo Totokon Okashi Tsukusu Hanashi', vol, chp, frag=frag, postfix=postfix)
+	if 'game sekai tenseishitara' in item['tags']:
+		return buildReleaseMessage(item, 'After Reincarnating Into This Game World I Seemed to Have Taken Over the Control of Status', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -2533,7 +2512,7 @@ def  extractTurtleandHareTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
-	if 'Time (对的时间对的人)' in item['title']:
+	if 'Time (对的时间对的人)' in item['title'] or 'Time (对的时间对的人)' in item['tags']:
 		return buildReleaseMessage(item, 'Time', vol, chp, frag=frag, postfix=postfix)
 	return False
 
@@ -2983,6 +2962,27 @@ def  extractUnlimitedNovelFailures(item):
 	'''
 	# 'Unlimited Novel Failures'
 	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def extractRinkageTranslation(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractRosyFantasy(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractSelkinNovel(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractStartlingSurprisesAtEveryStep(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False

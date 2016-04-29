@@ -34,6 +34,22 @@ def extractJaptem(item):
 	return False
 
 
+####################################################################################################################################################
+def extractNatsuTl(item):
+	'''
+	# Natsu TL
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if 'Jikuu' in item['tags']:
+		return buildReleaseMessage(item, "Jikuu Mahou de Isekai to Chikyuu wo ittarikitari", vol, chp, frag=frag, postfix=postfix)
+
+	if 'Magi Craft Meister' in item['tags']:
+		return buildReleaseMessage(item, 'Magi Craft Meister', vol, chp, frag=frag, postfix=postfix)
+
+	return False
 
 ####################################################################################################################################################
 def extractLygarTranslations(item):
@@ -453,6 +469,8 @@ def extractInfiniteNovelTranslations(item):
 		return buildReleaseMessage(item, 'Nidoume no Jinsei wo Isekai de', vol, chp, frag=frag, postfix=postfix)
 	if 'Hachi-nan' in item['tags'] and (chp or vol):
 		return buildReleaseMessage(item, 'Hachinan tte, Sore wa Nai Deshou!', vol, chp, frag=frag, postfix=postfix)
+	if 'Summoned Slaughterer' in item['tags'] and (chp or vol):
+		return buildReleaseMessage(item, 'Yobidasareta Satsuriku-sha', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -913,9 +931,6 @@ def extractNovelsNao(item):
 	if "Dragon's Soul" in item['tags']:
 		return buildReleaseMessage(item, "Dragon's Soul", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
 
@@ -1097,9 +1112,6 @@ def extractHoldXandClick(item):
 	if 'Bishoujo wo Jouzu ni Nikubenki ni Suru Houhou' in item['tags'] :
 		return buildReleaseMessage(item, 'Bishoujo wo Jouzu ni Nikubenki ni Suru Houhou', vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
 
@@ -1188,9 +1200,6 @@ def extractNekoyashiki(item):
 	if 'Yamato Nadeshiko' in item['tags']:
 		return buildReleaseMessage(item, 'Yamato Nadeshiko, Koibana no Gotoku', vol, chp, frag=frag, postfix=postfix)
 
-	print(item['title'])
-	print(item['tags'])
-	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
 
 	return False
 
@@ -2040,6 +2049,8 @@ def  extractLittleShanksTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Rebirth Thief' in item['tags']:
+		return buildReleaseMessage(item, 'Rebirth of the Thief Who Roamed The World', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractNovelTrans(item):
@@ -2292,6 +2303,8 @@ def  extractMonkotosTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Chapter Release' in item['tags'] and 'Ryuugoroshi' in item['title']:
+		return buildReleaseMessage(item, 'Ryugoroshi no Sugosuhibi', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractKurotsukiNovel(item):
@@ -2630,3 +2643,20 @@ def  extractNanoDesuGJBu(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
 	return False
+
+def extractHalfElementMasterTranslation(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractLoveMeIfYouDare(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractMineralWaterTranslation(item):
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+

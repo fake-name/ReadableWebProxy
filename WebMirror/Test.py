@@ -472,11 +472,13 @@ def sort_json(json_name):
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")
 
-def rss_db_sync(target = None, days=False):
+def rss_db_sync(target = None, days=False, silent=False):
 
 	json_file = 'rss_filter_misses-1.json'
 
 	write_debug = True
+	if silent:
+		config.C_DO_RABBIT = False
 	if target:
 		config.C_DO_RABBIT = False
 		flags.RSS_DEBUG    = True
@@ -631,6 +633,8 @@ def decode(*args):
 			clear_bad()
 		elif op == "rss-db":
 			rss_db_sync()
+		elif op == "rss-db-silent":
+			rss_db_sync(silent=True)
 		elif op == "sort-json":
 			sort_json('rss_filter_misses-1.json')
 		elif op == "rss-day":
@@ -686,6 +690,7 @@ if __name__ == "__main__":
 		print('	purge-from-rules')
 		print('	rss-day')
 		print('	rss-db')
+		print('	rss-db-silent')
 		print('	rss-del-comments')
 		print('	rss-month')
 		print('	rss-name')

@@ -22,6 +22,7 @@ baseUrl: [
 	'http://konobuta.wordpress.com',
 	'http://lagnos.wordpress.com',
 	'http://lasciviousimouto.wordpress.com',
+	'https://lasciviousimouto.net',
 	'http://lunaris111.wordpress.com',
 	'http://monktranslation.wordpress.com',
 	'http://morrighansucks.wordpress.com',
@@ -102,6 +103,7 @@ baseUrl: [
 	'https://choukun.wordpress.com',
 	'https://chronontranslations.wordpress.com',
 	'https://chubbycheeksthoughts.wordpress.com',
+	'https://chubbycheeksthoughts.com',
 	'https://cloudmanor.wordpress.com',
 	'https://cloudtranslations.wordpress.com',
 	'https://clover7snook.wordpress.com',
@@ -171,6 +173,7 @@ baseUrl: [
 	'https://grimgalthetranslation.wordpress.com',
 	'https://hajiko.wordpress.com',
 	'https://halfelementmaster.wordpress.com',
+	'https://halfelementmaster.com',
 	'https://hamster428.wordpress.com',
 	'https://hanagiku.wordpress.com',
 	'https://harezora.wordpress.com',
@@ -194,6 +197,7 @@ baseUrl: [
 	'https://infinitetranslations.wordpress.com',
 	'https://insigniapierce.wordpress.com',
 	'https://intensedessugar.wordpress.com',
+	'https://intensedessugar.com',
 	'https://isekaicyborg.wordpress.com',
 	'https://isekailunatic.wordpress.com',
 	'https://isekaimahou.wordpress.com',
@@ -356,9 +360,12 @@ baseUrl: [
 	'https://shenyuanlangmtl.wordpress.com',
 	'https://shermatranslations.wordpress.com',
 	'https://shikkakutranslations.wordpress.com',
+	'https://shikkakutranslations.org',
 	'https://shincodezeroblog.wordpress.com',
 	'https://shinsoritranslations.wordpress.com',
 	'https://shintranslations.wordpress.com',
+	'https://shintranslations.com',
+	'https://www.shintranslations.com',
 	'https://shokyuutranslations.wordpress.com',
 	'https://silvalau.wordpress.com',
 	'https://skullsquadorn.wordpress.com',
@@ -459,9 +466,12 @@ baseUrl: [
 	'https://ukel2x.wordpress.com',
 	'https://procrastranslation.wordpress.com',
 	'https://novelsjapan.wordpress.com',
+	'https://novelsjapan.com',
 	'https://7daystrial.wordpress.com',
 	'https://dokuhanatl.wordpress.com',
-
+	'https://wltranslations.com',
+	'http://bookbychapters.com',
+	'https://demontranslations.com',
 
 
 	 # Non explicitly wordpress blogs (that use wordpress internally)
@@ -508,6 +518,7 @@ baseUrl: [
 	'http://liveandlearn88.com',
 	'http://lmsmachinetranslations.com',
 	'http://machineslicedbread.xyz',
+	'http://www.machineslicedbread.xyz',
 	'http://moonbunnycafe.com',
 	'http://mousou-haven.com',
 	'http://nightbreezetranslations.com',
@@ -519,6 +530,7 @@ baseUrl: [
 	'http://pikatranslations.com',
 	'http://project-accelerator.net',
 	'http://raisingthedead.ninja',
+	'http://www.raisingthedead.ninja',
 	'http://rancerqz.com',
 	'http://rebirthonlineworld.com',
 	'http://risingdragons.co',
@@ -540,6 +552,7 @@ baseUrl: [
 	'http://volaretranslations.com',
 	'http://walkthejianghu.com',
 	'http://worldofwatermelons.com',
+	'http://www.worldofwatermelons.com',
 	'http://wuxiasociety.com',
 	'http://wuxiaworld.com',
 	'http://www.anotherparallel.space',
@@ -573,6 +586,8 @@ baseUrl: [
 	'https://wuxiaheroes.com',
 	'https://www.wuxiaheroes.com',
 	'https://zirusmusings.com',
+	'https://rosyfantasy.net',
+	'https://rinkagetranslation.com',
 
 
 
@@ -587,6 +602,7 @@ baseUrl: [
 
 	# Very custom theme:
 	'http://weaboodesu.com',
+	'http://Weaboodesu.com',
 
 	# Private:
 	# 'koongkoongtranslations.com',
