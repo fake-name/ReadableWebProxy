@@ -538,3 +538,423 @@ def extractWebNovelJapaneseTranslation(item):
 
 
 
+
+def  extractWeleTranslation(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if item['title'].lower().startswith('sin city'):
+		return buildReleaseMessage(item, 'Sin City', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('zhan xian'):
+		return buildReleaseMessage(item, 'Zhan Xian', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('heaven awakening path'):
+		return buildReleaseMessage(item, 'Heaven Awakening Path', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('immortal executioner'):
+		return buildReleaseMessage(item, 'Immortal Executioner', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractWalkTheJiangHu(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+	if 'TTNH Chapter' in item['title']:
+		return buildReleaseMessage(item, "Transcending the Nine Heavens", vol, chp, frag=frag, postfix=postfix)
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractYiYueTranslation(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractZxzxzxsBlog(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+
+def  extract一期一会万歳(item):
+	'''
+	# '一期一会, 万歳!'
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+
+def  extractWhenTheHuntingPartyCame(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractXiaowen206sBlog(item):
+	'''
+	# "Xiaowen206's Blog"
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWhiteTigerTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if item['title'].lower().startswith('mp volume'):
+		return buildReleaseMessage(item, 'Martial Peak', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('ipash chapter'):
+		return buildReleaseMessage(item, 'Martial Peak', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractZombieKnight(item):
+	'''
+
+	'''
+	titleconcat = " ".join(item['tags']) + item['title']
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(titleconcat)
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	return buildReleaseMessage(item, 'The Zombie Knight', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractWuxiwish(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWIP(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	print(item['title'])
+	print(item['tags'])
+	print("'{}', '{}', '{}', '{}'".format(vol, chp, frag, postfix))
+
+	return False
+
+
+
+
+
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractZenTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWorldofSummie(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWizThiefsNovels(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'My immortality It’s in a Death game' in item['title']:
+		return buildReleaseMessage(item, 'My immortality It\'s in a Death game', vol, chp, frag=frag, postfix=postfix)
+	if 'Thanks to a different world reincarnation' in item['title']:
+		return buildReleaseMessage(item, 'Thanks to a different world reincarnation', vol, chp, frag=frag, postfix=postfix)
+	if 'Grave “Z”' in item['title']:
+		return buildReleaseMessage(item, 'Grave "Z"', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+def  extractVillageTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWuxiaTranslators(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'World Defying Dan God' in item['tags']:
+		return buildReleaseMessage(item, 'World Defying Dan God', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+def  extractWillfulCasual(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if 'Chu Wang Fei' in item['tags']:
+		return buildReleaseMessage(item, "Chu Wang Fei", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractVolareTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+	if 'Great Demon King' in item['tags']:
+		return buildReleaseMessage(item, 'Great Demon King', vol, chp, frag=frag, postfix=postfix)
+	if 'Sovereign of the Three Realms' in item['tags']:
+		return buildReleaseMessage(item, 'Sovereign of the Three Realms', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractZeonic(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extract天才創造すなわち百合(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWhimsicalLand(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extract12Superlatives(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWeavingstoriesandbuildingcastlesintheclouds(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWelcomeToTheUnderdark(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extract輝く世界(item):
+	'''
+	# '輝く世界'
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+
+def  extractYoutsubasilversBlog(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWatermelonHelmets(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+	if 'Dragon Life' in item['tags'] or 'Dragon Life: Chapter' in item['title']:
+		return buildReleaseMessage(item, 'Dragon Life', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+####################################################################################################################################################
+#
+####################################################################################################################################################
+
+def  extractXantDoesStuffAndThings(item):
+	'''
+	# 'Xant Does Stuff and Things'
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractXantbos(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extractWordofCraft(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'Toaru Ossan no VRMMO katsudouki' in item['tags']:
+		return buildReleaseMessage(item, 'Toaru Ossan no VRMMO katsudouki', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+def  extractWLTranslations(item):
+	'''
+	# 'WL Translations'
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'Chapter Releases' in item['tags'] and 'OSI' in item['tags']:
+		return buildReleaseMessage(item, 'One Sword to Immortality', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+def  extract睡眠中毒(item):
+	'''
+	# '睡眠中毒'
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+
+def  extractYoukoAdvent(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	# No chapter numbers in titles. Arrrgh
+
+	return False
+
+def  extractWormACompleteWebSerial(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def  extract7DaysTrial(item):
+	'''
+	#'7 Days Trial'
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	if 'content' in item['tags']:
+		return buildReleaseMessage(item, 'War of the Supreme', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+
+def  extract77Novel(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
