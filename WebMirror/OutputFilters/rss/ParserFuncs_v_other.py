@@ -885,7 +885,7 @@ def  extractWLTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
-	if 'Chapter Releases' in item['tags'] and 'OSI' in item['tags']:
+	if 'Chapter Releases' in item['tags'] and ('OSI' in item['tags'] or item['title'].startswith("OSI Chapter")):
 		return buildReleaseMessage(item, 'One Sword to Immortality', vol, chp, frag=frag, postfix=postfix)
 	return False
 

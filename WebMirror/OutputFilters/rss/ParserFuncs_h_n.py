@@ -978,6 +978,8 @@ def extractNutty(item):
 
 	if 'A Mistaken Marriage Match' in item['tags'] and 'a generation of military counselor' in item['tags']:
 		return buildReleaseMessage(item, 'A mistaken marriage match: A generation of military counselor', vol, chp, frag=frag, postfix=postfix)
+	if 'A Mistaken Marriage Match' in item['tags'] and 'Record of Washed Grievances Chapter' in item['title']:
+		return buildReleaseMessage(item, 'A mistaken marriage match: Record of washed grievances', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1963,7 +1965,7 @@ def  extractLynfamily(item):
 
 def  extractKokumaTranslations(item):
 	'''
-
+	'Kokuma Translations'
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
@@ -1999,6 +2001,8 @@ def  extractHamster428(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Mei Gongqing' in item['tags']:
+		return buildReleaseMessage(item, 'Mei Gongqing', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractIntenseDesSugar(item):

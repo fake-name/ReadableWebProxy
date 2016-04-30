@@ -499,7 +499,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Roasted Tea'                                                   : pfuncs_o_u.extractRoastedTea,
 				'Romantic Dreamer\'s Sanctuary'                                 : pfuncs_o_u.extractRomanticDreamersSanctuary,
 				'Root of Evil'                                                  : pfuncs_o_u.extractRootOfEvil,
-				'Rosyfantasy - Always Dreaming'                                 : pfuncs_o_u.extractRosyfantasy,
+				'Rosyfantasy - Always Dreaming'                                 : pfuncs_o_u.extractRosyFantasy,
+				'Rosy Fantasy'                                                  : pfuncs_o_u.extractRosyFantasy,
 				'Roxism HQ'                                                     : pfuncs_o_u.extractRoxism,
 				"Rui's Translations"                                            : pfuncs_o_u.extractRuisTranslations,
 				'Rumanshi\'s Lair'                                              : pfuncs_o_u.extractRumanshisLair,
@@ -701,7 +702,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Love me if you dare'                                           : pfuncs_h_n.extractLoveMeIfYouDare,
 				'Mineral Water Translation'                                     : pfuncs_h_n.extractMineralWaterTranslation,
 				'Rinkage Translation'                                           : pfuncs_o_u.extractRinkageTranslation,
-				'Rosy Fantasy'                                                  : pfuncs_o_u.extractRosyFantasy,
 				'Selkin Novel'                                                  : pfuncs_o_u.extractSelkinNovel,
 				'Shikkaku Translations'                                         : pfuncs_o_u.extractShikkakuTranslations,
 				'Startling Surprises at Every Step'                             : pfuncs_o_u.extractStartlingSurprisesAtEveryStep,
@@ -834,6 +834,11 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# Japtem seems to put their comments in their main feed, for no good reason.
 		if feedDat['srcname'] == "Japtem" and feedDat['title'].startswith("By: "):
 			return True
+		if feedDat['srcname'] == "Zeonic" and feedDat['title'].startswith("By: "):
+			return True
+		if feedDat['srcname'] == 'Sora Translations' and feedDat['title'].startswith("Comment on"):
+			return True
+
 
 		return False
 

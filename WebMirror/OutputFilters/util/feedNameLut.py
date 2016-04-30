@@ -278,6 +278,7 @@ mapper = {
 	'risingdragons.wordpress.com'                     : 'Rising Dragons Translation',
 	'rokkathetranslation.wordpress.com'               : '(NanoDesu) - Rokka no Yuusha',
 	'rosyfantasy.wordpress.com'                       : 'Rosyfantasy - Always Dreaming',
+	'rosyfantasy.net'                                 : 'Rosyfantasy - Always Dreaming',
 	'rumorblock.wordpress.com'                        : 'Rumor\'s Block',
 	'ruzetranslations.wordpress.com'                  : 'Ruze Translations',
 	'sabertranslations.wordpress.com'                 : 'Saber Translations',
@@ -838,7 +839,6 @@ mapper = {
 	'wltranslations.com'                              : 'WL Translations',
 
 	'shikkakutranslations.org'                        : 'Shikkaku Translations',
-	'rosyfantasy.net'                                 : 'Rosy Fantasy',
 
 
 
@@ -868,6 +868,11 @@ mapper = {
 	'cacatuasulphureacitrinocristata.tumblr.com'      : 'cacatuasulphureacitrinocristata.tumblr.com',  # 'A lil\' shipping never hurts',   # More naruto bs
 	'raspomme.tumblr.com'                             : 'raspomme.tumblr.com',                         # 'Soup Fanclub',            # raspomme.tumblr.com/rss
 	'shuuen-scans.tumblr.com'                         : 'shuuen-scans.tumblr.com',                     # 'Shuuen Scanlations',        # shuuen-scans.tumblr.com/rss
+
+
+
+	# Fix things
+	'Rosy Fantasy' : 'Rosyfantasy - Always Dreaming',
 
 
 }

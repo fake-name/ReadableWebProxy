@@ -769,11 +769,11 @@ def extractCircusTranslations(item):
 		return False
 
 	if 'German Translation' in item['tags']:
-		return False
+		return None
 	if 'Turkish Translation' in item['tags']:
-		return False
+		return None
 	if 'Spanish translation' in item['tags']:
-		return False
+		return None
 
 	if chp or vol:
 		return buildReleaseMessage(item, 'Tensei Shitara Slime Datta Ken', vol, chp, frag=frag, postfix=postfix)
@@ -1454,6 +1454,9 @@ def  extractAquaScans(item):
 	'''
 
 	'''
+	if 'Manga' in item['tags']:
+		return None
+
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
@@ -1890,6 +1893,8 @@ def  extractAPearlyView(item):
 	'''
 
 	'''
+	if 'K-Drama Recaps' in item['tags']:
+		return None
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
@@ -2382,6 +2387,14 @@ def  extractCloudManor(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Book of Sun & Moon Swordplay' in item['tags']:
+		return buildReleaseMessage(item, 'Book of Sun & Moon Swordplay', vol, chp, frag=frag, postfix=postfix)
+	if 'It is a Straight Road' in item['tags']:
+		return buildReleaseMessage(item, 'It is a Straight Road', vol, chp, frag=frag, postfix=postfix)
+	if 'Pursuit of Liao Yue Murderer' in item['tags']:
+		return buildReleaseMessage(item, 'Pursuit of Liao Yue Murderer', vol, chp, frag=frag, postfix=postfix)
+	if 'Rice Pot Next Door' in item['tags']:
+		return buildReleaseMessage(item, 'Rice Pot Next Door', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractEnsigsWritings(item):
@@ -2500,8 +2513,10 @@ def extractDemonTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
-	if 'The Gate Of Good Fortune' in item['tags']:
+	if 'The Gate Of Good Fortune' in item['tags'] or item['title'].startswith('New TGOGF Chapter Release!!'):
 		return buildReleaseMessage(item, 'The Gate Of Good Fortune', vol, chp, frag=frag, postfix=postfix)
+	if 'The Unsuspecting Journey' in item['tags']:
+		return buildReleaseMessage(item, 'The Unsuspecting Journey', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 def extractFantasyNovels(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
