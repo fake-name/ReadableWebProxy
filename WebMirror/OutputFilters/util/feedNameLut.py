@@ -772,6 +772,8 @@ mapper = {
 	'mahoukoukoku.blogspot.co.id'                     : 'Mahou Koukoku',
 	'asiaisaru.livejournal.com'                       : 'Death, taxes, and fandom.',
 	'dandeliontrail.livejournal.com'                  : 'Dandelion Trail',
+	'hugginglove.blogspot.my'                         : 'Hugs & Love',
+	'hugginglove.blogspot.com'                        : 'Hugs & Love',
 
 	'polaristranslations.tumblr.com'                  : 'Polaris Translations',
 	'freezinglightnovels.wordpress.com'               : 'Freezing Light Novels',

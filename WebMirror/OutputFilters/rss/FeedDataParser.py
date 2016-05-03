@@ -263,6 +263,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Hold \'X\' and Click'                                          : pfuncs_h_n.extractHoldX,
 				"Hon'yaku"                                                      : pfuncs_h_n.extractHonyaku,
 				'Hot Cocoa Translations'                                        : pfuncs_h_n.extractHotCocoa,
+				"Hugs & Love"                                                   : pfuncs_h_n.extractHugsAndLove,
 				'Hyorinmaru Blog'                                               : pfuncs_h_n.extractHyorinmaruBlog,
 				'Hyorinmaru'                                                    : pfuncs_h_n.extractHyorinmaruBlog,
 				'Imoutolicious Light Novel Translations'                        : pfuncs_h_n.extractImoutolicious,
@@ -763,7 +764,12 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			# False means not caught. None means intentionally ignored.
 
 			if ret == False and (vol or chp or frag) and not "teaser" in item['title'].lower():
-				print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
+				print("Missed:")
+				print("	Source: '%s'" % (item['srcname'], ))
+				print("	Title:  '%s'" % (item['title'], ))
+				print("	Tags:   '%s'" % (item['tags'], ))
+				print("	Vol %s, chp %s, fragment %s, postfix '%s'" % (vol, chp, frag, postfix))
+				# print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
 			elif ret:
 				pass
 				# print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], item['title']))
