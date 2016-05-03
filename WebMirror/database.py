@@ -456,5 +456,25 @@ BEFORE INSERT OR UPDATE ON
     web_pages
 FOR EACH ROW EXECUTE PROCEDURE
     web_pages_content_update_func();
+
+
+
+
+DELETE FROM
+    web_pages_version
+WHERE
+    url
+IN
+(
+    SELECT
+        url
+    FROM
+        web_pages_version
+    GROUP BY
+        url HAVING COUNT(url) > 100
+)
+
+
+
 '''
 

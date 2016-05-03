@@ -24,9 +24,13 @@
 			</div>
 
 			<ul>
+					<span class='pull-right'><a href='/history?{{ {"url" : req_url, "version" : -1, "delete_id" : -1, "delete" : True} | urlencode }}'>[delete all old]</a></span>
 				<li>Version: <a href='/view?{{ {"url" : req_url } | urlencode }}'>Current</a></li>
 				{% for indice, version in versions %}
-					<li>Version: <a href='/view?{{ {"url" : req_url, "version" : indice} | urlencode }}'>#{{indice}}, {{version.fetchtime}}</a></li>
+					<li>
+						<span class='pull-right'><a href='/history?{{ {"url" : req_url, "version" : indice, "delete_id" : version.id, "delete" : True} | urlencode }}'>[delete]</a></span>
+						Version: <a href='/history?{{ {"url" : req_url, "version" : indice} | urlencode }}'>#{{indice}}, {{version.fetchtime}}</a>
+					</li>
 				{% endfor %}
 			</ul>
 		</div>

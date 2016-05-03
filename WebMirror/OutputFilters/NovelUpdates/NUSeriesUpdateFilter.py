@@ -55,8 +55,8 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		want = [
-			r'http://www\.novelupdates\.com/?$',
-			r'http://www\.novelupdates\.com/\?pg=\d+$',
+			r'https?://www\.novelupdates\.com/?$',
+			r'https?://www\.novelupdates\.com/\?pg=\d+$',
 		]
 		if any([re.match(pattern, url) for pattern in want]):
 			return True
@@ -84,10 +84,10 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
-		container = soup.find('div', class_='l-content release')
+		container = soup.find('div', class_='l-content')
 		# print("container: ", container)
 
-		release_tables = container.find_all('div', class_='table-container')
+		release_tables = container.find_all('table', class_='tablesorter')
 
 		# print("Release tables:", release_tables)
 
@@ -122,10 +122,12 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 						break
 
 					# Also, don't reset if it's in-progress
-					if have.state in ['new', 'fetching', 'processing', 'removed']:
-						self.log.info("Skipping: '%s' (%s)", release_url, have.state)
+					if have.state in ['new', 'fetching', 'processing', 'removed'] and have.distance < 1000000:
+						self.log.info("Skipping: '%s' (%s, %s, %s)", release_url, have.state, have.distance, have.priority)
 						break
 
+					have.distance = 999999
+					have.priority = db.DB_IDLE_PRIORITY
 					self.log.info("Retriggering page '%s'", release_url)
 					have.state = 'new'
 					self.db_sess.commit()
@@ -151,6 +153,11 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def processPage(self, url, content):
 		soup = WebMirror.util.webFunctions.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
+		relcnt = len(releases)
+		if relcnt > 0:
+			self.log.info("Found %s items to retrigger", relcnt)
+		else:
+			self.log.error("Found no items to retrigger via NovelUpdates!")
 		if releases:
 			self.retrigger_pages(releases)
 
@@ -166,7 +173,7 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractContent(self):
 		# print("Call to extract!")
 		# print(self.amqpint)
-
+		self.log.info("NovelUpdates series page filter processing content.")
 		self.processPage(self.pageUrl, self.content)
 
 

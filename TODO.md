@@ -5,8 +5,9 @@
  
 next prev on https://bunimithetranslation.wordpress.com/volume-1/chapter-1/
 history flattener
+
+pngcrush reader images?
  
-rrl remove signatures
 pagefilter goes in the preprocessor - lesswork, why not?
 
 http://royalroadl.com/forum/showthread.php?tid=53834 old urls not rewritten properly
