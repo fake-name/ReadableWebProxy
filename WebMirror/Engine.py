@@ -16,7 +16,6 @@ import sqlalchemy.exc
 import random
 import settings
 
-import Misc.diff_match_patch as dmp
 from sqlalchemy import desc
 
 from sqlalchemy.sql import text

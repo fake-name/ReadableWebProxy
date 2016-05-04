@@ -7,7 +7,6 @@ if __name__ == "__main__":
 import WebMirror.rules
 import WebMirror.LogBase as LogBase
 
-import datetime
 
 import WebMirror.util.urlFuncs as url_util
 import urllib.parse
@@ -18,7 +17,6 @@ import WebMirror.processor.ProcessorBase
 
 from activePlugins import PREPROCESSORS
 from activePlugins import PLUGINS
-from activePlugins import FILTERS
 
 from WebMirror.Exceptions import DownloadException
 
@@ -74,10 +72,6 @@ class ItemFetcher(LogBase.LoggerMixin):
 			else:
 				self.plugin_modules[key] = [item]
 
-
-		self.filter_modules = []
-		for item in FILTERS:
-			self.filter_modules.append(item)
 
 
 		self.preprocessor_modules = []
@@ -238,14 +232,6 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		if preprocess_counts > 1:
 			raise ValueError("Multiple preprocess executions for the same content (%s, %s, %s). Wat?" % (self.target_url, self.fName, self.mimeType))
-
-		# Feed content through filters that want it (if any):
-		for filter_plg in self.filter_modules:
-			if (mimeType.lower() in filter_plg.wanted_mimetypes or filter_plg.mimetype_catchall) and \
-					filter_plg.wantsUrl(self.target_url)       and \
-					filter_plg.wantsFromContent(content):
-				self.plugin_dispatch(filter_plg, self.target_url, content, fName, mimeType, no_ret=True)
-
 
 		# Then actually process it.
 		keys = list(self.plugin_modules.keys())

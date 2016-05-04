@@ -7,13 +7,6 @@ from settings import DATABASE_PASS          as C_DATABASE_PASS
 
 from settings import RELINK_SECRET          as C_RELINK_SECRET
 from settings import RESOURCE_DIR           as C_RESOURCE_DIR
-from settings import RABBIT_ENABLED         as C_DO_RABBIT
-
-
-from settings import RABBIT_LOGIN           as C_RABBIT_LOGIN
-from settings import RABBIT_PASWD           as C_RABBIT_PASWD
-from settings import RABBIT_SRVER           as C_RABBIT_SRVER
-from settings import RABBIT_VHOST           as C_RABBIT_VHOST
 
 
 import os
@@ -74,11 +67,3 @@ class BaseConfig(object):
 
 
 	RESOURCE_DIR = C_RESOURCE_DIR
-
-	# The WTF protection doesn't have to persist across
-	# execution sessions, since that'll break any
-	# active sessions anyways. Therefore, just generate
-	# them randomly at each start.
-	SECRET_KEY             = get_random(20)
-	WTF_CSRF_SECRET_KEY    = get_random(20)
-

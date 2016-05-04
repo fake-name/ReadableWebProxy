@@ -7,7 +7,9 @@
 # Anyways, build a venv that works.
 
 python3.4 -m venv --without-pip flask
+source flask/bin/activate
 wget https://bootstrap.pypa.io/get-pip.py
-./flask/bin/python3.4 get-pip.py
+python get-pip.py
 rm get-pip.py
+pip install requests
 ./flask/bin/pip install --upgrade -r requirements.txt

@@ -235,8 +235,6 @@ class WebPages(Base):
 	# fetch scheduling to operate within the same database.
 	normal_fetch_mode = Column(Boolean, default=True)
 
-	tsv_content       = Column(TSVectorType('content'))
-
 	file_item         = relationship("WebFiles")
 
 
@@ -261,87 +259,6 @@ class WebFiles(Base):
 ##########################################################################################
 
 
-feed_tags_link = Table(
-		'feed_tags_link', Base.metadata,
-		Column('releases_id', Integer, ForeignKey('feed_pages.id'), nullable=False),
-		Column('tags_id',     Integer, ForeignKey('feed_tags.id'),     nullable=False),
-		PrimaryKeyConstraint('releases_id', 'tags_id')
-	)
-
-feed_author_link = Table(
-		'feed_authors_link', Base.metadata,
-		Column('releases_id', Integer, ForeignKey('feed_pages.id'), nullable=False),
-		Column('author_id',   Integer, ForeignKey('feed_author.id'),     nullable=False),
-		PrimaryKeyConstraint('releases_id', 'author_id')
-	)
-
-
-class Tags(Base):
-	__tablename__ = 'feed_tags'
-	id          = Column(Integer, primary_key=True)
-	tag         = Column(citext.CIText(), nullable=False, index=True)
-
-	__table_args__ = (
-		UniqueConstraint('tag'),
-		)
-
-
-class Author(Base):
-	__tablename__ = 'feed_author'
-	id          = Column(Integer, primary_key=True)
-	author      = Column(citext.CIText(), nullable=False, index=True)
-
-	__table_args__ = (
-		UniqueConstraint('author'),
-		)
-
-
-def tag_creator(tag):
-
-	tmp = get_db_session().query(Tags) \
-		.filter(Tags.tag == tag)    \
-		.scalar()
-	if tmp:
-		return tmp
-
-	return Tags(tag=tag)
-
-def author_creator(author):
-	tmp = get_db_session().query(Author)    \
-		.filter(Author.author == author) \
-		.scalar()
-	if tmp:
-		return tmp
-	return Author(author=author)
-
-
-class FeedItems(Base):
-	__tablename__ = 'feed_pages'
-
-	id          = Column(Integer, primary_key=True)
-
-	type        = Column(itemtype_enum, default='unknown', index=True)
-
-	srcname      = Column(Text, nullable=False, index=True)
-	feedurl      = Column(Text, nullable=False, index=True)
-	contenturl   = Column(Text, nullable=False, index=True)
-	contentid    = Column(Text, nullable=False, index=True, unique=True)
-
-	title        = Column(Text)
-	contents     = Column(Text)
-	author       = Column(Text)
-
-
-	updated      = Column(DateTime, default=datetime.datetime.min)
-	published    = Column(DateTime, nullable=False)
-
-	tag_rel       = relationship('Tags',       secondary=feed_tags_link,   backref='feed_pages')
-	author_rel    = relationship('Author',     secondary=feed_author_link, backref='feed_pages')
-
-
-	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
-	author        = association_proxy('author_rel',   'author',    creator=author_creator)
-
 
 # Tools for tracking plugins
 class PluginStatus(Base):
@@ -361,7 +278,7 @@ class PluginStatus(Base):
 
 sa.orm.configure_mappers()
 
-# Base.metadata.create_all(bind=get_engine(), checkfirst=True)
+Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 
 
 
