@@ -1761,7 +1761,7 @@ def  extractFalinmer(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
 	if item['title'].lower().startswith("mcm") and not "raw" in item['title'].lower():
-		return buildReleaseMessage(item, 'Isekai ni kanaderu densetsu ~toki wo tomeru mono~', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Magi Craft Meister', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractBearBearTranslations(item):

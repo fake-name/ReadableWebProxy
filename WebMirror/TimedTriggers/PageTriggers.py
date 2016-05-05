@@ -47,6 +47,9 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 						if have.distance != self.db.MAX_DISTANCE-3:
 							have.distance = self.db.MAX_DISTANCE-3
 							sess.commit()
+						# if len(have.versions):
+						# 	for item in have.versions[1::]:
+						# 		sess.delete(item)
 						break
 					else:
 						new = self.db.WebPages(

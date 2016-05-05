@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
 
 # This HAS to be included before the app, to prevent circular dependencies.
-import WebMirror.runtime_engines
+# import WebMirror.runtime_engines
 
 import WebMirror.Runner
 import WebMirror.rules

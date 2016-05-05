@@ -4,9 +4,6 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-# This HAS to be included before the app, to prevent circular dependencies.
-import WebMirror.runtime_engines
-
 import WebMirror.database as db
 import datetime
 from WebMirror.Engine import SiteArchiver

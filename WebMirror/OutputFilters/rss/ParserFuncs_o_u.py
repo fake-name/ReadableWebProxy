@@ -2047,7 +2047,6 @@ def  extractRealmOfChaos(item):
 		postfix_out = ", ".join(names)
 		if postfix:
 			postfix_out +=  " - " + postfix
-		print("Postix:", postfix_out)
 		return buildReleaseMessage(item, 'Myriad of Shades', vol, chp, frag=frag, postfix=postfix_out, tl_type='oel')
 	return False
 
@@ -2708,6 +2707,10 @@ def  extractRidwanTrans(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
 	if 'Isekai Meikyuu no Saishinbu wo Mezasou' in item['title']:
+		extract = re.search(r'Chapter (\d+)\-(\d+)', item['title'], re.IGNORECASE)
+		if extract and not frag:
+			chp  = int(extract.group(1))
+			frag = int(extract.group(2))
 		return buildReleaseMessage(item, 'Isekai Meikyuu no Saishinbu wo Mezasou', vol, chp, frag=frag, postfix=postfix)
 	return False
 
