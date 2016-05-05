@@ -1,10 +1,10 @@
 import os
 from flask import Flask
 from flask.json import JSONEncoder
-from flask.ext.login import LoginManager
+# from flask.ext.login import LoginManager
 
-from flask.ext.babel import Babel, lazy_gettext
-from flask_wtf.csrf import CsrfProtect
+# from flask.ext.babel import Babel, lazy_gettext
+# from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
 from config import basedir
 import datetime
@@ -36,14 +36,14 @@ if "debug" in sys.argv:
 	app.debug = True
 app.config.from_object('config.BaseConfig')
 
-lm = LoginManager()
-lm.anonymous_user = AnonUser
-lm.init_app(app)
-lm.login_view = 'login'
-lm.login_message = lazy_gettext('Please log in to access this page.')
+# lm = LoginManager()
+# lm.anonymous_user = AnonUser
+# lm.init_app(app)
+# lm.login_view = 'login'
+# lm.login_message = lazy_gettext('Please log in to access this page.')
 
-babel = Babel(app)
-CsrfProtect(app)
+# babel = Babel(app)
+# CsrfProtect(app)
 
 if "debug" in sys.argv:
 	print("Installing debug toolbar!")

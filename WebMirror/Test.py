@@ -4,9 +4,6 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-# This HAS to be included before the app, to prevent circular dependencies.
-import WebMirror.runtime_engines
-
 import WebMirror.database as db
 import datetime
 from WebMirror.Engine import SiteArchiver
@@ -18,12 +15,10 @@ import os.path
 import config
 import calendar
 import json
-import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 import urllib.parse
 import urllib.error
 import WebMirror.rules
 import flags
-import WebMirror.SiteSync.fetch
 from sqlalchemy import or_
 from sqlalchemy import and_
 import WebMirror.Exceptions

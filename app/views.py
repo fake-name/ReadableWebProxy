@@ -17,8 +17,8 @@ from app import AnonUser
 import traceback
 from app import app
 
-from app import lm
-from app import babel
+# from app import lm
+# from app import babel
 
 from WebMirror import database
 
@@ -26,26 +26,24 @@ from WebMirror import database
 import WebMirror.API
 
 import app.sub_views.content_views as content_views
-import app.sub_views.rss_views     as rss_views
-import app.sub_views.search_views  as search_views
 import app.sub_views.status_view   as status_view
 
 
-@lm.user_loader
-def load_user(id):
-	return AnonUser()
+# @lm.user_loader
+# def load_user(id):
+# 	return AnonUser()
 
 
-@babel.localeselector
-def get_locale():
-	return 'en'
+# @babel.localeselector
+# def get_locale():
+# 	return 'en'
 
 
 @app.before_request
 def before_request():
 
-	g.user = current_user
-	g.locale = get_locale()
+	# g.user = current_user
+	# g.locale = get_locale()
 	g.session = database.checkout_session()
 
 

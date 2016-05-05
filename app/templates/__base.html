@@ -9,7 +9,7 @@
 
 		<!-- Base template header -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="csrf-token" content="{{ csrf_token() }}">
+
 		<!-- Sub template header -->
 		{%- block header -%}{%- endblock -%}
 		<!-- template header end -->
@@ -41,9 +41,7 @@
 	<script src="/static/js/jquery-latest.min.js"></script>
 	<script src="/static/js/bootstrap.min.js"></script>
 	<!-- Admin template-footer -->
-	{%- if g.user.is_mod() -%}
-		{%- include '_block_admin_scripts.html' -%}
-	{%- endif -%}
+
 	<!-- Sub template-footer -->
 	{%- block footer -%}{%- endblock -%}
 	<!-- Template footer end -->

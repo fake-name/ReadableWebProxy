@@ -407,9 +407,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'job',
 		]
 
-		assert len(params) == len(expected)
-		for expect in expected:
-			assert expect in params
+		# assert len(params) == len(expected)
+		# for expect in expected:
+		# 	assert expect in params
 
 		instance = cls(**params)
 		# print("Instantiated plugin: ", instance)

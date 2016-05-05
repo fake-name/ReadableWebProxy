@@ -34,7 +34,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	loggerPath = "Main.Text.HtmlProc"
 
-	def __init__(self, baseUrls, pageUrl, pgContent, loggerPath, relinkable, **kwargs):
+	def __init__(self, pageUrl, pgContent, **kwargs):
 
 		self._tld           = set()
 		self._fileDomains   = set()
@@ -44,41 +44,9 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		self.content = pgContent
 		self.pageUrl = pageUrl
 
-		# kwargs.setdefault("badwords",           [])
-		# kwargs.setdefault("decompose",          [])
-		# kwargs.setdefault("decomposeBefore",    [])
-		# kwargs.setdefault("fileDomains",        [])
-		# kwargs.setdefault("allImages",          True)
-		# kwargs.setdefault("followGLinks",       True)
-		# kwargs.setdefault("ignoreBadLinks",     False)
-		# kwargs.setdefault("tld",                set())
-		# kwargs.setdefault("stripTitle",         '')
-		# kwargs.setdefault("ignoreMissingTitle", False)
-		# kwargs.setdefault("destyle",            [])
-
-		# `_decompose` and `_decomposeBefore` are the actual arrays of items to decompose, that are loaded with the contents of
-		# `decompose` and `decomposeBefore` on plugin initialization
-
 
 		self._decompose       = copy.copy(ProcessorBase.GLOBAL_DECOMPOSE_AFTER)
 		self._decomposeBefore = copy.copy(ProcessorBase.GLOBAL_DECOMPOSE_BEFORE)
-		self.stripTitle       = copy.copy(kwargs['stripTitle'])
-		self.destyle          = copy.copy(kwargs['destyle'])
-		self.preserveAttrs    = copy.copy(kwargs['preserveAttrs'])
-
-
-		appends = [
-			(kwargs["decompose"],       self._decompose),
-			(kwargs["decomposeBefore"], self._decomposeBefore),
-		]
-
-		# Move the plugin-defined decompose calls into the control lists
-		for src, dst in appends:
-			for item in src:
-				dst.append(item)
-
-
-
 
 
 	########################################################################################################################
@@ -286,32 +254,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		return soup
 
-	def cleanHtmlPage(self, soup, url=None):
-
-		soup = self.relink(soup)
-
-		title = self.extractTitle(soup, url)
-
-
-		if isinstance(self.stripTitle, (list, set)):
-			for stripTitle in self.stripTitle:
-				title = title.replace(stripTitle, "")
-		else:
-			title = title.replace(self.stripTitle, "")
-
-		title = title.strip()
-
-		# Since the content we're extracting will be embedded into another page, we want to
-		# strip out the <body> and <html> tags. `unwrap()`  replaces the soup with the contents of the
-		# tag it's called on. We end up with just the contents of the <body> tag.
-		if soup.body:
-			soup.body.unwrap()
-		elif soup.html:
-			soup.html.unwrap()
-
-		contents = soup.prettify()
-
-		return title, contents
 
 
 
@@ -406,12 +348,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		soup = WebMirror.util.webFunctions.as_soup(self.content)
 
 
-		# Allow child-class hooking
-		soup = self.preprocessBody(soup)
-
-		# Clear out any particularly obnoxious content before doing any parsing.
-		soup = self.decomposeItems(soup, self._decomposeBefore)
-
 		# Make all the page URLs fully qualified, so they're unambiguous
 		soup = urlFuncs.canonizeUrls(soup, self.pageUrl)
 
@@ -420,22 +356,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		plainLinks = self.extractLinks(soup, self.pageUrl)
 		imageLinks = self.extractImages(soup, self.pageUrl)
 
-		# Do the later cleanup to prep the content for local rendering.
-		soup = self.decomposeItems(soup, self._decompose)
-
-		soup = self.decomposeAdditional(soup)
-		soup = self.spotPatch(soup)
-		soup = self.destyleItems(soup)
-
-		# Allow child-class hooking
-		soup = self.postprocessBody(soup)
-
-		soup = self.removeClasses(soup)
-
-		soup = self.fixCss(soup)
-
 		# Process page with readability, extract title.
-		pgTitle, pgBody = self.cleanHtmlPage(soup, url=self.pageUrl)
+		pgTitle = self.extractTitle(soup, url=self.pageUrl)
 
 		ret = {}
 
@@ -448,10 +370,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		ret['plainLinks'] = plainLinks
 		ret['rsrcLinks']  = imageLinks
 		ret['title']      = pgTitle
-		ret['contents']   = pgBody
+		ret['contents']   = self.content
 
 
 		return ret
-
-		# self.updateDbEntry(url=url, title=pgTitle, contents=pgBody, mimetype=mimeType, dlstate=2)
 

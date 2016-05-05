@@ -212,18 +212,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
 
-		from activePlugins import INIT_CALLS
-		for item in INIT_CALLS:
-			item(self)
-
-		# print("SiteArchiver rules loaded")
-		self.relinkable = set()
-		for item in ruleset:
-			[self.relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
-			if item['netlocs'] != None:
-				[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
-
-
 		self.ctnt_filters = {}
 		self.rsc_filters  = {}
 

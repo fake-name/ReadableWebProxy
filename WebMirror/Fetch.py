@@ -85,12 +85,6 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		self.ruleset = rules
 
-		self.relinkable = set()
-		for item in self.ruleset:
-			[self.relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
-			[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
-
-
 		netloc = urllib.parse.urlsplit(target_url).netloc
 
 		self.rules = None
@@ -150,19 +144,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'mimeType'        : mimeType,
 									'db_sess'         : self.db_sess,
 									'baseUrls'        : self.start_url,
-									'loggerPath'      : self.loggerPath,
-									'badwords'        : self.rules['badwords'],
-									'decompose'       : self.rules['decompose'],
-									'decomposeBefore' : self.rules['decomposeBefore'],
 									'fileDomains'     : self.rules['fileDomains'],
-									'allImages'       : self.rules['allImages'],
 									'ignoreBadLinks'  : self.rules['IGNORE_MALFORMED_URLS'],
-									'stripTitle'      : self.rules['stripTitle'],
-									'relinkable'      : self.relinkable,
-									'destyle'         : self.rules['destyle'],
-									'preserveAttrs'   : self.rules['preserveAttrs'],
 									'type'            : self.rules['type'],
-									'message_q'       : self.response_queue,
 									'job'             : self.job,
 		}
 
