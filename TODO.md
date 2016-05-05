@@ -3,8 +3,13 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
  
+ex search downvoted tags
+ 
 next prev on https://bunimithetranslation.wordpress.com/volume-1/chapter-1/
 history flattener
+
+titleparse - tokenize, run processing passes that restructure tokens, then extract
+tl;dr funky 'optimization' passes
 
 pngcrush reader images?
  

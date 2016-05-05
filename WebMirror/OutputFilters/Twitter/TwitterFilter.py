@@ -111,6 +111,8 @@ NANO_DESU_MAP = {
 	'www.oregairuthetranslation.wordpress.com'      : 'Yahari Ore no Seishun Love Come wa Machigatteiru',
 	'www.zeromahouthetranslation.wordpress.com'     : 'Zero Kara Hajimeru Mahou no Sho',
 	'zeromahouthetranslation.wordpress.com'         : 'Zero Kara Hajimeru Mahou no Sho',
+	'bunimithetranslation.wordpress.com'            : 'Bu ni Mi wo Sasagete Hyaku to Yonen. Elf de Yarinaosu Musha Shugyou',
+	'www.bunimithetranslation.wordpress.com'        : 'Bu ni Mi wo Sasagete Hyaku to Yonen. Elf de Yarinaosu Musha Shugyou',
 }
 
 class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -128,8 +130,10 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		if url == "https://twitter.com/Baka_Tsuki":
+			print("TwitterProcessor want Baka-Tsuki URL")
 			return True
 		if url == "https://twitter.com/Nano_Desu_Yo":
+			print("TwitterProcessor want NanoDesu URL")
 			return True
 		return False
 
@@ -152,6 +156,10 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if dosuper:
 			super().__init__(**kwargs)
+
+
+		self.log.info("TwitterFilter interface processing content.")
+
 
 ##################################################################################################################################
 ##################################################################################################################################
@@ -179,8 +187,7 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def dispatchNanoDesu(self, netloc, itemurl, itemtxt):
 		itemtitle = NANO_DESU_MAP[netloc]
 		vol, chp, frag, post = extractTitle(itemtxt)
-
-		if not vol or chp:
+		if not (vol or chp):
 			return None
 
 		raw_item = {}
@@ -209,7 +216,6 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 					continue
 
 				urlnl = urllib.parse.urlsplit(itemurl).netloc.lower()
-
 				if urlnl == 'www.baka-tsuki.org':
 					msg = self.dispatchBT(itemurl, itemtxt)
 					if msg:
@@ -219,7 +225,7 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 					if msg:
 						releases.append(msg)
 
-		self.log.info("Found %s releases from Baka-Tsuki Twitter Feed", len(releases))
+		self.log.info("Found %s releases from Twitter Feed", len(releases))
 		if releases:
 			self.sendReleases(releases)
 
