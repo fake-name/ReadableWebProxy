@@ -85,9 +85,18 @@ class RemoteContentObject(object):
 
 
 		content = self.job.content
-		if content:
+
+		if self.job.file_item:
+			fname = self.job.file_item.filename
+			itempath = os.path.join(app.config['RESOURCE_DIR'], self.job.file_item.fspath)
+			with open(itempath, "rb") as fp:
+				contents = fp.read()
+			return self.job.mimetype, fname, contents
+		else:
+			content = self.job.content
 			content = replace_links(content)
-		return content
+			return self.job.mimetype, None, content
+
 
 	def getResource(self):
 		"""
@@ -100,9 +109,12 @@ class RemoteContentObject(object):
 
 		itempath = os.path.join(app.config['RESOURCE_DIR'], self.job.file_item.fspath)
 		fname = self.job.file_item.filename
-		with open(itempath, "rb") as fp:
-			contents = fp.read()
-		return self.job.mimetype, fname, contents
+		if fname:
+			with open(itempath, "rb") as fp:
+				contents = fp.read()
+		else:
+			content = self.job.content
+
 
 	def getCacheState(self):
 		assert self.fetched
@@ -157,6 +169,8 @@ def getPage(url, ignore_cache=False, version=None):
 
 	assert not (version and ignore_cache)
 
+	ignore_cache = True
+
 	page = RemoteContentObject(url)
 
 	if version:
@@ -166,14 +180,15 @@ def getPage(url, ignore_cache=False, version=None):
 		page.fetch(ignore_cache, version)
 
 		title      = page.getTitle()
-		content    = page.getContent("/view?url=")
+		mimetype, fname, content    = page.getContent("/view?url=")
+
 		cachestate = page.getCacheState()
 	except DownloadException:
 		title, content, cachestate = getErrorDiv()
 	finally:
 		page.close()
 
-	return title, content, cachestate
+	return title, content, cachestate, mimetype, fname
 
 
 @contextlib.contextmanager
@@ -189,23 +204,6 @@ def getPageRow(url):
 	finally:
 		page.close()
 
-
-
-
-def getResource(url, ignore_cache=False):
-	'''
-	Get a url that (probably) contains resource content synchronously.
-	Return is a 4-tuple consisting of (mimetype, filename, filecontent, cache-state)
-	'''
-	page = RemoteContentObject(url)
-	try:
-		page.fetch(ignore_cache)
-
-		mimetype, fname, content = page.getResource()
-		cachestate               = page.getCacheState()
-	finally:
-		page.close()
-	return mimetype, fname, content, cachestate
 
 def processFetchedContent(url, content, mimetype, parentjob, db_session=None):
 

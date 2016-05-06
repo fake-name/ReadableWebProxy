@@ -65,5 +65,6 @@ class BaseConfig(object):
 	DATABASE_USER          = C_DATABASE_USER
 	DATABASE_PASS          = C_DATABASE_PASS
 
+	SECRET_KEY = "ljksfghjksglkjhsfgljhasdfguohasdfgljhasfdguohasdfuiohasduoipwenjklsvnm,vxcnm,"
 
 	RESOURCE_DIR = C_RESOURCE_DIR

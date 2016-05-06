@@ -111,7 +111,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		return inUrl
 
 
-	def convertToReaderUrl(self, inUrl, resource=False):
+	def convertToReaderUrl(self, inUrl):
 		inUrl = urlFuncs.urlClean(inUrl)
 		inUrl = self.preprocessReaderUrl(inUrl)
 		# The link will have been canonized at this point
@@ -134,120 +134,32 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				scheme = "http"
 			inUrl = "{}:{}".format(scheme, inUrl)
 
-		if resource:
-			prefix = "RESOURCE:{}".format(config.relink_secret)
-		else:
-			prefix = "CONTENT:{}".format(config.relink_secret)
+		prefix = "CONTENT:{}".format(config.relink_secret)
 		url = '%s%s' % (prefix.lower(), urllib.parse.quote(inUrl))
 		return url
 
-	def convertToReaderImage(self, inStr):
-		inStr = urlFuncs.urlClean(inStr)
-		return self.convertToReaderUrl(inStr, resource=True)
+	def relink(self, soup):
 
-	def relink(self, soup, imRelink=None):
-		# The google doc reader relinking mechanisms requires overriding the
-		# image relinking mechanism. As such, allow that to be overridden
-		# if needed
-		# print("relink call!")
-		# print(self._relinkDomains)
-		if not imRelink:
-			imRelink = self.convertToReaderImage
+		for (dummy_isimg, tag, attr) in urlFuncs.urlContainingTargets:
+
+			for link in soup.findAll(tag):
+				try:
+					link[attr] = self.convertToReaderUrl(link[attr])
+				except KeyError:
+					continue
 
 
-		for (isImg, tag, attr) in urlFuncs.urlContainingTargets:
-
-			if not isImg:
-				for link in soup.findAll(tag):
-					try:
-						# print("Link!", self.checkRelinkDomain(link[attr]), link[attr])
-						# if self.checkRelinkDomain(link[attr]):
-						link[attr] = self.convertToReaderUrl(link[attr])
-
-						if "google.com" in urllib.parse.urlsplit(link[attr].lower()).netloc:
-							link[attr] = urlFuncs.trimGDocUrl(link[attr])
-							# print("Relinked", link[attr])
-					except KeyError:
-						continue
-
-			else:
-				for link in soup.findAll(tag):
-					try:
-						link[attr] = imRelink(link[attr])
-
-						if tag == 'img':
-							# Force images that are oversize to fit the window.
-							link["style"] = 'max-width: 95%;'
-
-							if 'width' in link.attrs:
-								del link.attrs['width']
-							if 'height' in link.attrs:
-								del link.attrs['height']
-
-					except KeyError:
-						continue
-
-
-		# Keyhole patch for fictionpress next/prev buttons onclick elements.
-		for button in [item for item in soup.findAll('button') if item.has_attr("onclick")]:
-			if button['onclick'].startswith("self.location='") \
-				and button['onclick'].endswith("'")            \
-				and button['onclick'].count("'") == 2:
-				prefix, url, postfix = button['onclick'].split("'")
-				url = urlFuncs.rebaseUrl(url, self.pageUrl)
-				url = self.convertToReaderUrl(url)
-				button['onclick'] = "'".join((prefix, url, postfix))
+		# # Keyhole patch for fictionpress next/prev buttons onclick elements.
+		# for button in [item for item in soup.findAll('button') if item.has_attr("onclick")]:
+		# 	if button['onclick'].startswith("self.location='") \
+		# 		and button['onclick'].endswith("'")            \
+		# 		and button['onclick'].count("'") == 2:
+		# 		prefix, url, postfix = button['onclick'].split("'")
+		# 		url = urlFuncs.rebaseUrl(url, self.pageUrl)
+		# 		url = self.convertToReaderUrl(url)
+		# 		button['onclick'] = "'".join((prefix, url, postfix))
 
 		return soup
-
-
-
-	# check if domain `url` is a sub-domain of the domains we should relink.
-	def checkRelinkDomain(self, url):
-		# if "drive" in url:
-
-		# print("CheckDomain", any([rootUrl in url.lower() for rootUrl in self._relinkDomains]), url)
-		# print(self._relinkDomains)
-		# dom = list(self._relinkDomains)
-		# dom.sort()
-		# for rootUrl in dom:
-		# 	print(rootUrl in url.lower(), rootUrl)
-
-		return any([rootUrl in url.lower() for rootUrl in self._relinkDomains])
-
-
-
-	# check if domain `url` is a sub-domain of the scanned domains.
-	def checkDomain(self, url):
-		# if "drive" in url:
-		for rootUrl in self._scannedDomains:
-			if urllib.parse.urlsplit(url).netloc:
-				if urllib.parse.urlsplit(url).netloc == rootUrl:
-					return True
-
-			if url.lower().startswith(rootUrl):
-				return True
-
-		# print("CheckDomain False", url)
-		return False
-
-	def checkFollowGoogleUrl(self, url):
-		'''
-		I don't want to scrape outside of the google doc document context.
-
-		Therefore, if we have a URL that's on docs.google.com, and doesn't have
-		'/document/d/ in the URL, block it.
-		'''
-		# Short circuit for non docs domains
-		url = url.lower()
-		netloc = urllib.parse.urlsplit(url).netloc
-		if not "docs.google.com" in netloc:
-			return True
-
-		if '/document/d/' in url:
-			return True
-
-		return False
 
 
 	def processLinkItem(self, url, baseUrl):
@@ -350,6 +262,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 
 	def processNewUrl(self, url, baseUrl=None, istext=True):
+		if url.startswith("data:"):
+			return url
 		if not url.lower().startswith("http"):
 			if baseUrl:
 				# If we have a base-url to extract the scheme from, we pull that out, concatenate
@@ -378,6 +292,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if '/view/export?format=zip' in url:
 			raise ValueError("Wat?")
 
+		print("NewURL: ", url, baseUrl, istext)
 		return url
 
 

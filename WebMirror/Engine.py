@@ -957,7 +957,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 
-	def synchronousJobRequest(self, url, ignore_cache=False):
+	def synchronousJobRequest(self, url, ignore_cache=True):
 		"""
 		trigger an immediate, synchronous dispatch of a job for url `url`,
 		and return the fetched row upon completion

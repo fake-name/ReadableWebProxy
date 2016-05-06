@@ -142,6 +142,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'pageUrl'         : url,
 									'pgContent'       : content,
 									'mimeType'        : mimeType,
+									'loggerPath'      : self.loggerPath,
 									'db_sess'         : self.db_sess,
 									'baseUrls'        : self.start_url,
 									'fileDomains'     : self.rules['fileDomains'],
