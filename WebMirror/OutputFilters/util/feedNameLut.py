@@ -880,6 +880,7 @@ mapper = {
 	'yamitranslations.com'                            : 'Yami Translations',
 	'sakurane.sky-field.org'                          : 'Sakurane',
 	'reincarnationtranslations.com'                   : 'Reincarnation Translations',
+	'spiritgodshura35.wordpress.com'                  : 'Spirit God Shura',
 
 	# Redirect loop.
 	'lightnovelcafe.com'                              : 'Light Novel Cafe',
