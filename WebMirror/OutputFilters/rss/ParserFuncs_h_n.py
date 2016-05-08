@@ -1,6 +1,7 @@
 
+# pylint: disable=C0112,R0911,R0912,W0612
+
 from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
-from WebMirror.OutputFilters.util.TitleParsers import extractChapterVol
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
@@ -963,6 +964,11 @@ def extractMachineSlicedBread(item):
 	if 'Grassland TL' in item['tags']:
 		return buildReleaseMessage(item, 'Sougen no Okite ~Shii yatsu ga moteru, ii buzoku ni umarekawatta zo~', vol, chp, frag=frag, postfix=postfix)
 
+	if 'Kemono TL' in item['tags']:
+		return buildReleaseMessage(item, 'Flirting with beast girls! Doing nothing but copulation!', vol, chp, frag=frag, postfix=postfix)
+	if 'Game World TL' in item['tags']:
+		return buildReleaseMessage(item, 'After Reincarnating Into This Game World I Seemed to Have Taken Over the Control of Status', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 ####################################################################################################################################################
@@ -1233,7 +1239,7 @@ def extractLasciviousImouto(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if ('The Beast of the 17th District' in item['tags'] or "the beast of the 17th district" in item['title'].lower()):
+	if 'The Beast of the 17th District' in item['tags'] or "the beast of the 17th district" in item['title'].lower():
 		return buildReleaseMessage(item, 'The Beast of the 17th District', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Le Festin de Vampire' in item['tags']:
 		return buildReleaseMessage(item, 'Le Festin de Vampire', vol, chp, frag=frag, postfix=postfix)
@@ -2193,6 +2199,8 @@ def  extractHellYeah524(item):
 		return False
 	if item['tags'] == ['Uncategorized'] and item['title'].startswith("Chapter"):
 		return buildReleaseMessage(item, 'Awakening – 仿如昨日', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Awakening: Chapter"):
+		return buildReleaseMessage(item, 'Awakening – 仿如昨日', vol, chp, frag=frag, postfix=postfix)
 	if item['tags'] == ['Uncategorized'] and item['title'].startswith("Shadow Rogue: "):
 		return buildReleaseMessage(item, 'Shadow Rogue', vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -2681,3 +2689,60 @@ def extractHugsAndLove(item):
 		return buildReleaseMessage(item, "Armageddon", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
+
+def extractHiohbyeTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractLevityTales(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractLightNovelCafe(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractMyoniyoniTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractNoNameTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractNoobMtl(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractNovelsChill(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False

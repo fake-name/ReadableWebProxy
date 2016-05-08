@@ -692,6 +692,32 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 
+				# Recently added.
+
+				'Alternative Projects'                              : pfuncs_a_g.extractAlternativeProjects,
+				'Apollo Translations'                               : pfuncs_a_g.extractApolloTranslations,
+				'Elemental Cobalt'                                  : pfuncs_a_g.extractElementalCobalt,
+				'Hiohbye Translations'                              : pfuncs_h_n.extractHiohbyeTranslations,
+				'levitytales.com'                                   : pfuncs_h_n.extractLevityTales,
+				'Light Novel Cafe'                                  : pfuncs_h_n.extractLightNovelCafe,
+				'Myoniyoni Translations'                            : pfuncs_h_n.extractMyoniyoniTranslations,
+				'No Name Translations'                              : pfuncs_h_n.extractNoNameTranslations,
+				'Noob Mtl'                                          : pfuncs_h_n.extractNoobMtl,
+				'Novels&Chill'                                      : pfuncs_h_n.extractNovelsChill,
+				'Path of Translation'                               : pfuncs_o_u.extractPathOfTranslation,
+				'Reincarnation Translations'                        : pfuncs_o_u.extractReincarnationTranslations,
+				'Sakurane'                                          : pfuncs_o_u.extractSakurane,
+				'Soul Permutation'                                  : pfuncs_o_u.extractSoulPermutation,
+				'Torii Translations'                                : pfuncs_o_u.extractToriiTranslations,
+				'Wums Translations'                                 : pfuncs_v_other.extractWumsTranslations,
+				'Xianxia Tales'                                     : pfuncs_v_other.extractXianxiaTales,
+				'Yami Translations'                                 : pfuncs_v_other.extractYamiTranslations,
+				'Zero Translations'                                 : pfuncs_v_other.extractZeroTranslations,
+
+
+
+
+
 				# Broken
 				'Require: Cookie'                                               : pfuncs_stub.extractNop,
 
@@ -704,7 +730,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Mineral Water Translation'                                     : pfuncs_h_n.extractMineralWaterTranslation,
 				'Rinkage Translation'                                           : pfuncs_o_u.extractRinkageTranslation,
 				'Selkin Novel'                                                  : pfuncs_o_u.extractSelkinNovel,
-				'Shikkaku Translations'                                         : pfuncs_o_u.extractShikkakuTranslations,
 				'Startling Surprises at Every Step'                             : pfuncs_o_u.extractStartlingSurprisesAtEveryStep,
 				'Wish Upon A Hope'                                              : pfuncs_v_other.extractWishUponAHope,
 

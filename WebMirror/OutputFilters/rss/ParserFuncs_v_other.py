@@ -1,6 +1,7 @@
 
+# pylint: disable=C0112,R0911,R0912,W0612
+
 from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
-from WebMirror.OutputFilters.util.TitleParsers import extractChapterVol
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
@@ -948,6 +949,39 @@ def extractWishUponAHope(item):
 		return False
 	return False
 
+
+def extractWumsTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractXianxiaTales(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractYamiTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractZeroTranslations(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
 
 
 

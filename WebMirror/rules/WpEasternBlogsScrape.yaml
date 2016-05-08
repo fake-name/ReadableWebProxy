@@ -472,12 +472,43 @@ baseUrl: [
 	'https://wltranslations.com',
 	'http://bookbychapters.com',
 	'https://demontranslations.com',
+	'https://polarbearcatcher.wordpress.com',
+	'https://apollotrans.wordpress.com',
+	'https://vermillionthetranslation.wordpress.com',
+	'https://wumstranslations.wordpress.com',
+	'https://poorqualitytl.wordpress.com',
+	'https://hiohbye.wordpress.com',
+	'https://daupao.wordpress.com',
+
+ 	'https://soulpermutation.wordpress.com',
+	'https://wisnujr.wordpress.com',
+	'https://zerotranslations.wordpress.com',
+	'https://elementalcobalt.wordpress.com',
+	'https://xianxiatales.wordpress.com',
+	'https://ceiphiedknightandbanditsplight.wordpress.com',
+	'https://pathoftranslation.wordpress.com',
+	'https://myoniyonitranslations.wordpress.com',
+	'https://alternativeprojects.wordpress.com',
+	'https://yamettetranslations.wordpress.com',
+	'https://euphmoria.wordpress.com',
 
 
-	 # Non explicitly wordpress blogs (that use wordpress internally)
-	 # This is WP, but it uses an custom theme I haven't tested against.
+	# Non explicitly wordpress blogs (that use wordpress internally)
+	# This is WP, but it uses an custom theme I haven't tested against.
 	# New:
 	# The wordpress address redirects to the plain URL,
+	'https://novelsnchill.com',
+	'https://lightnovelcafe.com',
+	'http://ameryedge.com',
+	'http://trungtnguyen123.org',
+	'http://noodletowntranslated.com',
+	'https://levitytales.com',
+	'http://faktranslations.com',
+	'http://www.mayyth.com',
+	'https://yamitranslations.com',
+	'http://sakurane.sky-field.org',
+	'https://reincarnationtranslations.com',
+	'http://toriitranslations.animeholics.org',
 	"http://moonbunnycafe.com",
 	"https://wartdf.wordpress.com",
 	'http://77novel.com',

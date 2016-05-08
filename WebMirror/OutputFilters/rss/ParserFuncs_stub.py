@@ -1,4 +1,7 @@
 
+# pylint: disable=C0112,R0911,R0912,W0612
+
+
 from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVol
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment

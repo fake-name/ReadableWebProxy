@@ -2,17 +2,17 @@
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
- 
-ex search downvoted tags
- 
-next prev on https://bunimithetranslation.wordpress.com/volume-1/chapter-1/
-history flattener
+
+
+archiveteam manga warc 
+wln similar title search
+wln novelupdates search
 
 titleparse - tokenize, run processing passes that restructure tokens, then extract
 tl;dr funky 'optimization' passes
 
 pngcrush reader images?
- 
+
 pagefilter goes in the preprocessor - lesswork, why not?
 
 http://royalroadl.com/forum/showthread.php?tid=53834 old urls not rewritten properly
@@ -56,85 +56,49 @@ Portals of Infinity series (adult themed OP world hopping hero)
 
 =============================================================== 
 
-New:  penumbrale.livejournal.com
-New:  zips-17.livejournal.com
-New:  hiirowing.livejournal.com
+New:  sinnesspiel.dreamwidth.org
+New:  quartia.dreamwidth.org 
 
-New:  amethystcria.tumblr.com
-New:  xia0yuer.tumblr.com
-New:  doushinojikan.tumblr.com
-New:  tang-wei.tumblr.com
-New:  2minutesofyourtime.tumblr.com
-
-New:  sincere.dreamwidth.org
 New:  shikkakutranslations.org
 New:  toriitranslations.animeholics.org
-New:  jolecole.blogspot.com
-New:  quartia.dreamwidth.org
 
-New:  www.wangkaiinternational.com
-New:  lightnovelcafe.com
-New:  reincarnationtranslations.com
-New:  www.xianxiaworld.net
-New:  www.hasutsuki.com
-New:  novel.oddsquad.org
-New:  levitytales.com
+New:  jolecole.blogspot.com
 New:  chillock-amt.blogspot.com
-New:  www.aoitenshi.com
-New:  justblthings.weebly.com
+
+New:  artonelico.wikia.com
 New:  ckmscans.halofight.com
-New:  sinnesspiel.dreamwidth.org
-New:  trungtnguyen123.org
-New:  notaboutlogic.dreamwidth.org
-New:  www.gundamwingtales.com
-New:  www.ameryedge.com
+New:  elwiki.net
+New:  justblthings.weebly.com
+New:  levitytales.com
+New:  lightnovelcafe.com
 New:  miracletranslations.azurewebsites.net
+New:  novel.oddsquad.org
+New:  reincarnationtranslations.com
+New:  transtranstrans.hatenablog.com
+New:  trungtnguyen123.org
+New:  weletranslation.com
+New:  www.ameryedge.com
+New:  www.aoitenshi.com
+New:  www.gundamwingtales.com
+New:  www.hasutsuki.com (blogger)
+New:  www.ultimaguil.org
+New:  www.wangkaiinternational.com
+New:  www.xianxiaworld.net
+New:  blcxtranslations.github.io
+New:  cautrs.com
+New:  minashiro.co.vu
+
+# Blogger:
+New:  www.aresnovels.com
+New:  www.pegasusfarts.com
+New:  novel.oddsquad.org
+
 
 ===============================================================
 
-
-quartia.dreamwidth.org
-sincere.dreamwidth.org
-notaboutlogic.dreamwidth.org
-sinnesspiel.dreamwidth.org
-
-ckmscans.halofight.com
-justblthings.weebly.com
-miracletranslations.azurewebsites.net
-novel.oddsquad.org
-toriitranslations.animeholics.org
-www.gundamwingtales.com
-
-www.xianxiaworld.net
-www.aoitenshi.com
-www.hasutsuki.com
-
-
-## Todo:
-www.aoitenshi.com
-
-# Blogger:
-www.aresnovels.com
-www.pegasusfarts.com
-novel.oddsquad.org
-
-# Custom: 
-www.gundamwingtales.com
-
-# Scans?
-
+ 
 # ..... Anime?
 mazuisubs.com
-
-
-blcxtranslations.github.io
-cautrs.com
-ckmscans.halofight.com
-justblthings.weebly.com
-
-minashiro.co.vu
-novel.oddsquad.org
-quartia.dreamwidth.org
 
 
 # Scanlators: (?)
@@ -147,15 +111,8 @@ september.strawberrywine.org
 www.world-three.org
 www.zeonic-republic.net
 
-## Not WP:
-http://www.aoitenshi.com
-http://www.gundamwingtales.com
-
- 
 
 
-http://laute.tumblr.com
-http://www.deadlylegends.com/translations 
 
 fictionmania js links 
  

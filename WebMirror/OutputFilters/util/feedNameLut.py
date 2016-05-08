@@ -339,6 +339,7 @@ mapper = {
 	'trippingoverwn.wordpress.com'                    : 'Tripp Translations',
 	'trueidentitynovel.wordpress.com'                 : 'Origin Novels',
 	'trungtnguyen123.wordpress.com'                   : 'Trungt Nguyen 123',
+	'trungtnguyen123.org'                             : 'Trungt Nguyen 123',
 	'tsaltranslation.wordpress.com'                   : 'Light Novel translations',
 	'tsuigeki.wordpress.com'                          : 'Tsuigeki Translations',
 	'tthcs.wordpress.com'                             : 'Ten Thousand Heaven Controlling Sword',
@@ -659,6 +660,7 @@ mapper = {
 	'youjinsite.com'                                  : 'Youjinsite Translations',
 	'yuujinchou.livejournal.com'                      : 'Yuujinchou',
 	'zhuanji.livejournal.com'                         : '未完待续',
+	'toriitranslations.animeholics.org'               : 'Torii Translations',
 
 	'fgilantranslations.wordpress.com'                : 'fgiLaN translations',
 	'fgilantranslations.com'                          : 'fgiLaN translations',
@@ -792,6 +794,7 @@ mapper = {
 	'shell2ly.wordpress.com'                          : 'Shell2ly C-Novel Site',
 	'harezora.wordpress.com'                          : 'Ling Translates Sometimes',
 	'noodletowntranslated.wordpress.com'              : 'Noodletown Translated',
+	'noodletowntranslated.com'                        : 'Noodletown Translated',
 	'mayy91.wordpress.com'                            : 'Twelve Months of May',
 	'lypheonblog.wordpress.com'                       : 'Lypheon Machine Translation',
 	'novelisation.wordpress.com'                      : 'Novelisation',
@@ -802,6 +805,7 @@ mapper = {
 	'bayabuscotranslation.wordpress.com'              : 'Bayabusco Translation',
 	'lohithbbtls.wordpress.com'                       : 'Lohithbb TLs',
 	'faktranslations.wordpress.com'                   : 'Fak Translations',
+	'faktranslations.com'                             : 'Fak Translations',
 	'epithetic.wordpress.com'                         : 'Epithetic',
 	'mtlcrap.wordpress.com'                           : 'MTLCrap',
 	'redlanternarchives.wordpress.com'                : 'Red Lantern Archives',
@@ -830,6 +834,7 @@ mapper = {
 	'tyrantseyetranslations.wordpress.com'            : 'Tyrant\'s Eye Translations',
 	'kondeesite.wordpress.com'                        : 'KONDEE Translations',
 	'ukel2x.wordpress.com'                            : 'Ukel2x',
+	'ukel2x.blogspot.com'                             : 'Ukel2x',
 	'procrastranslation.wordpress.com'                : 'ProcrasTranslation',
 	'novelsjapan.wordpress.com'                       : 'Novels Japan',
 	'novelsjapan.com'                                 : 'Novels Japan',
@@ -842,7 +847,42 @@ mapper = {
 
 	'shikkakutranslations.org'                        : 'Shikkaku Translations',
 
+	'polarbearcatcher.wordpress.com'                  : 'Polar Bear Catcher',
+	'apollotrans.wordpress.com'                       : 'Apollo Translations',
+	'vermillionthetranslation.wordpress.com'          : '(NanoDesu) - Vermillion',
+	'leechervamparis.wordpress.com'                   : 'leechervamparis.wordpress.com',
+	'wumstranslations.wordpress.com'                  : 'Wums Translations',
+	'poorqualitytl.wordpress.com'                     : 'Poor Quality Translations',
+	'hiohbye.wordpress.com'                           : 'Hiohbye Translations',
+	'daupao.wordpress.com'                            : 'Daupao',
+	'soulpermutation.wordpress.com'                   : 'Soul Permutation',
+	'wisnujr.wordpress.com'                           : 'Noob Mtl',
+	'zerotranslations.wordpress.com'                  : 'Zero Translations',
+	'elementalcobalt.wordpress.com'                   : 'Elemental Cobalt',
+	'xianxiatales.wordpress.com'                      : 'Xianxia Tales',
+	'ceiphiedknightandbanditsplight.wordpress.com'    : 'Chaos Words',
+	'pathoftranslation.wordpress.com'                 : 'Path of Translation',
+	'myoniyonitranslations.wordpress.com'             : 'Myoniyoni Translations',
+	'alternativeprojects.wordpress.com'               : 'Alternative Projects',
+	'yamettetranslations.wordpress.com'               : 'Yamette Translations',
+	'euphmoria.wordpress.com'                         : 'No Name Translations',
 
+	'godawfultranslator.blogspot.com'                 : 'God Awful Machine Translator',
+	'imperatorarcana.blogspot.com'                    : 'Imperator',
+	'zips-17.livejournal.com'                         : 'Zips_17',
+	'penumbrale.livejournal.com'                      : 'Penumbrale',
+	'2minutesofyourtime.tumblr.com'                   : 'Pleiades',
+	'himegaminomiko.tumblr.com'                       : 'Himegami no Miko Translated',
+	'mirroredtranslations.tumblr.com'                 : '鏡像翻訳',
+	'novelsnchill.com'                                : 'Novels&Chill',
+	'levitytales.com'                                 : 'Levity Tales',
+	'www.mayyth.com'                                  : 'Twelve Months of May',
+	'yamitranslations.com'                            : 'Yami Translations',
+	'sakurane.sky-field.org'                          : 'Sakurane',
+	'reincarnationtranslations.com'                   : 'Reincarnation Translations',
+
+	# Redirect loop.
+	'lightnovelcafe.com'                              : 'Light Novel Cafe',
 
 
 	# Low quality
@@ -850,10 +890,15 @@ mapper = {
 	'chilly-territory.tumblr.com'                     : 'Chilly Territory',
 	'theyseemewhalin.tumblr.com'                      : 'The Captain\'s Log',
 
-
+	# Currently empty?
+	'evernightblog.wordpress.com'                     : 'evernightblog.wordpress.com',
 
 	# Private
 	'hereticlnt.blogspot.ca'                          : 'hereticlnt.blogspot.ca',
+	'heartlapsed.wordpress.com'                       : 'heartlapsed.wordpress.com',
+
+	# Gone
+	'thepaperfictions.wordpress.com'                  : 'thepaperfictions.wordpress.com',
 
 	# Broken?
 	'novelcow.com'                                    : 'NovelCow',
