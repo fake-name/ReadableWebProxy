@@ -613,7 +613,6 @@ mapper = {
 	'tsukilining.livejournal.com'                     : 'Tsuki\'s Miscellaneous',
 	'turtleme.me'                                     : 'The Beginning After The End',
 	'unlimitednovelfailures.mangamatters.com'         : 'Unlimited Novel Failures',
-	'vaancruze.com'                                   : 'VaanCruze',
 	'vgperson.tumblr.com'                             : 'VgPerson',
 	'volaretranslations.com'                          : 'Volare Translations',
 	'walkthejianghu.com'                              : 'Walk the Jiang Hu',
@@ -881,6 +880,10 @@ mapper = {
 	'sakurane.sky-field.org'                          : 'Sakurane',
 	'reincarnationtranslations.com'                   : 'Reincarnation Translations',
 	'spiritgodshura35.wordpress.com'                  : 'Spirit God Shura',
+	'lightsways.wordpress.com'                        : 'The Boy Who Couldn\'t Be A Hero',
+	'landoflightnovels.wordpress.com'                 : 'Land of Light Novels',
+	'reitransblog.wordpress.com'                      : 'Rei TransBlog',
+
 
 	# Redirect loop.
 	'lightnovelcafe.com'                              : 'Light Novel Cafe',

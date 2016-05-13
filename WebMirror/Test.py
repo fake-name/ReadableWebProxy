@@ -597,6 +597,26 @@ def missing_lut():
 		if not fnl.getNiceName(feed):
 			print("Missing: ", urllib.parse.urlsplit(feed).netloc)
 
+def delete_feed(feed_name, do_delete, search_str):
+
+	sess = db.get_db_session()
+	items = sess.query(db.FeedItems)               \
+		.filter(db.FeedItems.srcname == feed_name) \
+		.all()
+
+	do_delete = "true" in do_delete.lower()
+
+	searchitems = search_str.split("|")
+	for item in items:
+		itemall = " ".join([item.title] + item.tags)
+		if all([searchstr in itemall for searchstr in searchitems]):
+			print(itemall)
+			if do_delete:
+				print("Deleting item")
+				sess.delete(item)
+
+	sess.commit()
+
 
 def decode(*args):
 	print("Args:", args)
@@ -667,6 +687,10 @@ def decode(*args):
 
 		else:
 			print("ERROR: Unknown command!")
+
+	if len(args) == 4:
+		if args[0] == "delete-feed":
+			delete_feed(args[1], args[2], args[3])
 
 
 if __name__ == "__main__":
