@@ -181,6 +181,8 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		raw_item['published'] = time.time()
 		raw_item['linkUrl']   = itemurl
 
+		self.put_page_link(itemurl)
+
 		msg = msgpackers.buildReleaseMessage(raw_item, probSeries, vol, chp, frag, postfix=post)
 		msg = msgpackers.createReleasePacket(msg)
 
@@ -194,6 +196,8 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		raw_item['srcname']   = "Nano Desu"
 		raw_item['published'] = time.time()
 		raw_item['linkUrl']   = itemurl
+
+		self.put_page_link(itemurl)
 
 		msg = msgpackers.buildReleaseMessage(raw_item, itemtitle, vol, chp, frag, postfix=post)
 		msg = msgpackers.createReleasePacket(msg)

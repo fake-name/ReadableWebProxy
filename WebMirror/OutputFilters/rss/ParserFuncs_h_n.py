@@ -969,6 +969,11 @@ def extractMachineSlicedBread(item):
 	if 'Game World TL' in item['tags']:
 		return buildReleaseMessage(item, 'After Reincarnating Into This Game World I Seemed to Have Taken Over the Control of Status', vol, chp, frag=frag, postfix=postfix)
 
+	if 'Hero TL' in item['tags']:
+		return buildReleaseMessage(item, 'Hero Manufacturing Machine ~A Job to Make Children~', vol, chp, frag=frag, postfix=postfix)
+	if 'Inmajutsu TL' in item['tags']:
+		return buildReleaseMessage(item, 'Ore ga Inmajutsu de Dorei Harem wo Tsukuru Hanashi', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 ####################################################################################################################################################
@@ -1137,6 +1142,8 @@ def extractKoreYoriHachidori(item):
 		return buildReleaseMessage(item, 'Seiun wo Kakeru', vol, chp, frag=frag, postfix=postfix)
 	if 'Ochitekita'.lower() in item['title'].lower() or 'Ochitekita Naga to Majo no Kuni' in item['tags']:
 		return buildReleaseMessage(item, 'Ochitekita Naga to Majo no Kuni', vol, chp, frag=frag, postfix=postfix)
+	if 'Humans are the Strongest Race' in item['tags']:
+		return buildReleaseMessage(item, 'Humans are the Strongest Race ~Starting a Slow Life with an Elf Wife in a Different World~', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 ####################################################################################################################################################
@@ -2289,6 +2296,10 @@ def  extractNovelsJapan(item):
 	'''
 	#'Novels Japan'
 	'''
+	if item['title'].endswith(" (Sponsored)"):
+		item['title'] = item['title'][:-1*len(" (Sponsored)")]
+	if item['title'].endswith(" and Announcement"):
+		item['title'] = item['title'][:-1*len(" and Announcement")]
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
@@ -2296,6 +2307,13 @@ def  extractNovelsJapan(item):
 		return buildReleaseMessage(item, 'I who is a Loner, Using cheats adapts to the Dungeon', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().endswith('vending machine'):
 		return buildReleaseMessage(item, 'I was Reborn as a Vending Machine, Wandering in the Dungeon', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().endswith('login bonus'):
+		return buildReleaseMessage(item, 'Skill Up with Login Bonus', vol, chp, frag=frag, postfix=postfix)
+	if (
+		item['title'].lower().endswith('lv2 cheat') or
+		item['title'].lower().endswith("ex-hero candidate’s, who turned out to be a cheat from lv2, laid-back life in another world")
+		):
+		return buildReleaseMessage(item, "Ex-Hero Candidate's, Who Turned Out To Be A Cheat From Lv2, Laid-back Life In Another World", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -2582,6 +2600,11 @@ def  extractHikkinoMoriTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+
+	if item['title'].lower().startswith("chapter") or \
+		item['title'].lower().startswith("hyaku ma no shu"):
+		return buildReleaseMessage(item, 'Hyaku ma no Shu', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def  extractMidnightTranslationBlog(item):
@@ -2705,6 +2728,10 @@ def extractLevityTales(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if item['title'].startswith('Overthrowing Fate'):
+		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('Ancient Godly Monarch'):
+		return buildReleaseMessage(item, 'Ancient Godly Monarch', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractLightNovelCafe(item):
 	'''
@@ -2745,4 +2772,10 @@ def extractNovelsChill(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if item['title'].startswith('EIF'):
+		return buildReleaseMessage(item, 'Everlasting Immortal Firmament', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('FiLI'):
+		return None  # Manhua
+	if item['title'].startswith('TSM'):
+		return buildReleaseMessage(item, 'The Skill Maker', vol, chp, frag=frag, postfix=postfix)
 	return False

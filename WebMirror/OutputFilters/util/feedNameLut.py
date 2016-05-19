@@ -883,7 +883,7 @@ mapper = {
 	'lightsways.wordpress.com'                        : 'The Boy Who Couldn\'t Be A Hero',
 	'landoflightnovels.wordpress.com'                 : 'Land of Light Novels',
 	'reitransblog.wordpress.com'                      : 'Rei TransBlog',
-
+	'whitenightsite.wordpress.com'                    : 'White Night Site',
 
 	# Redirect loop.
 	'lightnovelcafe.com'                              : 'Light Novel Cafe',

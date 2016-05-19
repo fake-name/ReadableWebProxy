@@ -483,8 +483,8 @@ baseUrl: [
 	'https://zetianjitranslation.wordpress.com',
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
- 	'https://soulpermutation.wordpress.com',
-
+	'https://soulpermutation.wordpress.com',
+	'https://whitenightsite.wordpress.com',
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	# This is WP, but it uses an custom theme I haven't tested against.

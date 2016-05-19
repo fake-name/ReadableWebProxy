@@ -3,6 +3,10 @@
 import WebMirror.OutputFilters.AmqpInterface
 import config
 import traceback
+import sqlalchemy.exc
+import urllib.parse
+import datetime
+import time
 from WebMirror.processor.ProcessorBase import PageProcessor
 
 class FilterBase(PageProcessor):
@@ -34,8 +38,49 @@ class FilterBase(PageProcessor):
 
 					self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
-
 		self._no_ret = True
+
+		self.kwargs = kwargs
+
+		# 'pageUrl'         : url,
+		# 'pgContent'       : content,
+		# 'mimeType'        : mimeType,
+		# 'db_sess'         : self.db_sess,
+		# 'baseUrls'        : self.start_url,
+		# 'loggerPath'      : self.loggerPath,
+		# 'badwords'        : self.rules['badwords'],
+		# 'decompose'       : self.rules['decompose'],
+		# 'decomposeBefore' : self.rules['decomposeBefore'],
+		# 'fileDomains'     : self.rules['fileDomains'],
+		# 'allImages'       : self.rules['allImages'],
+		# 'ignoreBadLinks'  : self.rules['IGNORE_MALFORMED_URLS'],
+		# 'stripTitle'      : self.rules['stripTitle'],
+		# 'relinkable'      : self.relinkable,
+		# 'destyle'         : self.rules['destyle'],
+		# 'preserveAttrs'   : self.rules['preserveAttrs'],
+		# 'type'            : self.rules['type'],
+		# 'message_q'       : self.response_queue,
+		# 'job'             : self.job,
+
+	def put_page_link(self, link):
+		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None and False:
+			start = urllib.parse.urlsplit(link).netloc
+
+			assert link.startswith("http")
+			assert start
+			new = {
+				'url'       : link,
+				'starturl'  : self.kwargs['job'].starturl,
+				'netloc'    : start,
+				'distance'  : self.kwargs['job'].distance+1,
+				'is_text'   : True,
+				'priority'  : self.kwargs['job'].priority,
+				'type'      : self.kwargs['job'].type,
+				'state'     : "new",
+				'fetchtime' : datetime.datetime.now(),
+				}
+			self.kwargs['message_q'].put(("new_link", new))
+
 
 	def amqp_put_item(self, item):
 		if not self._needs_amqp:
@@ -54,3 +99,43 @@ class FilterBase(PageProcessor):
 				self._amqpint.put_item(item)
 		else:
 			self.log.info("NOT Putting item in to AMQP queue!")
+
+
+	def retrigger_page(self, release_url):
+
+		while 1:
+			try:
+				have = self.db_sess.query(db.WebPages) \
+					.filter(db.WebPages.url == release_url)   \
+					.scalar()
+
+				# If we don't have the page, ignore
+				# it as the normal new-link upsert mechanism
+				# will add it.
+				if not have:
+					self.log.info("New: '%s'", release_url)
+					break
+
+				# Also, don't reset if it's in-progress
+				if have.state in ['new', 'fetching', 'processing', 'removed']:
+					self.log.info("Skipping: '%s' (%s)", release_url, have.state)
+					break
+
+				self.log.info("Retriggering page '%s'", release_url)
+				have.state = 'new'
+				self.db_sess.commit()
+				break
+
+
+			except sqlalchemy.exc.InvalidRequestError:
+				print("InvalidRequest error!")
+				self.db_sess.rollback()
+				traceback.print_exc()
+			except sqlalchemy.exc.OperationalError:
+				print("InvalidRequest error!")
+				self.db_sess.rollback()
+			except sqlalchemy.exc.IntegrityError:
+				print("[upsertRssItems] -> Integrity error!")
+				traceback.print_exc()
+				self.db_sess.rollback()
+

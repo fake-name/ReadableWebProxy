@@ -1,5 +1,6 @@
 
 
+import pprint
 import json
 import ftfy
 
@@ -68,12 +69,12 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 		the relevant sort segment.
 	'''
 
-
 	ret = {
 		'srcname'      : raw_item['srcname'],
 		'series'       : fix_string(series),
 		'vol'          : vol,
-		'chp'          : packChapterFragments(chap, frag),
+		'chp'          : chap,
+		'frag'         : frag,
 		'published'    : raw_item['published'],
 		'itemurl'      : raw_item['linkUrl'],
 		'postfix'      : fix_string(postfix),
@@ -83,30 +84,13 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 
 	}
 
+	# pprint.pprint(ret)
+
 	for key, value in extraData.items():
 		assert key not in ret
 		ret[key] = value
 
 	return ret
-
-
-def packChapterFragments(chapStr, fragStr):
-	if not chapStr and not fragStr:
-		return None
-	if not fragStr:
-		return chapStr
-
-	# Handle cases where the fragment is present,
-	# but the chapStr is None
-	if chapStr == None:
-		chapStr = 0
-
-	chap = float(chapStr)
-	frag = float(fragStr)
-	frag = min(frag, 99)
-	return '%0.2f' % (chap + (frag / 100.0))
-
-
 
 
 def createSeriesInfoPacket(data, beta=False, matchAuthor=False):

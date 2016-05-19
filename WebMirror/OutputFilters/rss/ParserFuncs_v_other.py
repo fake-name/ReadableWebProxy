@@ -74,6 +74,8 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, 'Wu Dong Qian Kun', vol, chp, frag=frag)
 	if 'Perfect World' in item['tags']:
 		return buildReleaseMessage(item, 'Perfect World', vol, chp, frag=frag)
+	if 'Gate of Revelation' in item['tags']:
+		return buildReleaseMessage(item, 'The Gate of Revelation', vol, chp, frag=frag)
 	if 'Upgrade Specialist in Another World' in item['tags']:
 		return buildReleaseMessage(item, 'Upgrade Specialist in Another World', vol, chp, frag=frag)
 	if 'Renegade Immortal' in item['tags']:
@@ -617,6 +619,19 @@ def  extractWhiteTigerTranslations(item):
 		return buildReleaseMessage(item, 'Martial Peak', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith('ipash chapter'):
 		return buildReleaseMessage(item, 'Martial Peak', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+def  extractWhiteNightSite(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if 'What Came to Mind During My Third Time in Another World Was to for Now, Get Naked.' in item['tags']:
+		return buildReleaseMessage(item, 'What Came to Mind During My Third Time in Another World Was to for Now, Get Naked.', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

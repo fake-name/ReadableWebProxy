@@ -51,19 +51,21 @@ class RabbitQueueHandler(object):
 
 		curDir = os.path.split(curFile)[0]
 		caCert = os.path.abspath(os.path.join(curDir, './cert/cacert.pem'))
-		cert = os.path.abspath(os.path.join(curDir, './cert/cert.pem'))
-		keyf = os.path.abspath(os.path.join(curDir, './cert/key.pem'))
+		cert = os.path.abspath(os.path.join(curDir, './cert/cert1.pem'))
+		keyf = os.path.abspath(os.path.join(curDir, './cert/key1.pem'))
 
 		assert os.path.exists(caCert), "No certificates found on path '%s'" % caCert
 		assert os.path.exists(cert), "No certificates found on path '%s'" % cert
 		assert os.path.exists(keyf), "No certificates found on path '%s'" % keyf
 
-
-		return {"cert_reqs" : ssl.CERT_REQUIRED,
+		ret = {"cert_reqs" : ssl.CERT_REQUIRED,
 				"ca_certs" : caCert,
 				"keyfile"  : keyf,
 				"certfile"  : cert,
 			}
+		print("Certificate config: ", ret)
+
+		return ret
 
 	def put_item(self, data):
 		# self.log.info("Putting data: %s", data)
@@ -85,4 +87,20 @@ class RabbitQueueHandler(object):
 			self.connector.stop()
 			self.connector = None
 
+if __name__ == '__main__':
+	import logSetup
+	logSetup.initLogging()
+
+	import config
+
+
+	amqp_settings = {
+		"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
+		"RABBIT_PASWD" : config.C_RABBIT_PASWD,
+		"RABBIT_SRVER" : config.C_RABBIT_SRVER,
+		"RABBIT_VHOST" : config.C_RABBIT_VHOST,
+	}
+
+	amqpint = RabbitQueueHandler(amqp_settings)
+	print(amqpint)
 

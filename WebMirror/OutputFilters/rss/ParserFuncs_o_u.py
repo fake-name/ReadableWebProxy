@@ -905,6 +905,8 @@ def extractShiroyukineko(item):
 		return buildReleaseMessage(item, 'Ze Tian Ji', vol, chp, frag=frag, postfix=postfix)
 	if 'The Strongest Dan God' in item['tags']:
 		return buildReleaseMessage(item, 'The Strongest Dan God', vol, chp, frag=frag, postfix=postfix)
+	if 'Scriptures of the Great Emperor' in item['tags']:
+		return buildReleaseMessage(item, 'Scriptures of the Great Emperor', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1684,7 +1686,7 @@ def extractProjectAccelerator(item):
 
 
 
-def  extractPrideXReVamp(item):
+def extractPrideXReVamp(item):
 	'''
 	# 'Pride X ReVamp'
 	'''
@@ -1693,7 +1695,7 @@ def  extractPrideXReVamp(item):
 		return False
 	return False
 
-def  extractRaisingAngelsDefection(item):
+def extractRaisingAngelsDefection(item):
 	'''
 
 	'''
@@ -1702,7 +1704,7 @@ def  extractRaisingAngelsDefection(item):
 		return False
 	return False
 
-def  extractProcrasTranslation(item):
+def extractProcrasTranslation(item):
 	'''
 	#'ProcrasTranslation'
 	'''
@@ -1714,7 +1716,7 @@ def  extractProcrasTranslation(item):
 	return False
 
 
-def  extractPeaTranslation(item):
+def extractPeaTranslation(item):
 	'''
 
 	'''
@@ -1723,7 +1725,7 @@ def  extractPeaTranslation(item):
 		return False
 	return False
 
-def  extractPekaboBlog(item):
+def extractPekaboBlog(item):
 	'''
 
 	'''
@@ -1732,7 +1734,7 @@ def  extractPekaboBlog(item):
 		return False
 	return False
 
-def  extractTerminusTranslation(item):
+def extractTerminusTranslation(item):
 	'''
 
 	'''
@@ -1741,7 +1743,7 @@ def  extractTerminusTranslation(item):
 		return False
 	return False
 
-def  extractTaint(item):
+def extractTaint(item):
 	'''
 
 	'''
@@ -1762,7 +1764,7 @@ def  extractTaint(item):
 #
 ####################################################################################################################################################
 
-def  extractUselessno4(item):
+def extractUselessno4(item):
 	'''
 
 	'''
@@ -1771,7 +1773,7 @@ def  extractUselessno4(item):
 		return False
 	return False
 
-def  extractPettankoTranslations(item):
+def extractPettankoTranslations(item):
 	'''
 
 	'''
@@ -1782,7 +1784,7 @@ def  extractPettankoTranslations(item):
 		return buildReleaseMessage(item, 'Isekai C-mart Hanjouki', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractQualityMistranslations(item):
+def extractQualityMistranslations(item):
 	'''
 
 	'''
@@ -1791,7 +1793,7 @@ def  extractQualityMistranslations(item):
 		return False
 	return False
 
-def  extractShell2lyCNovelSite(item):
+def extractShell2lyCNovelSite(item):
 	'''
 	# 'Shell2ly C-Novel Site'
 	'''
@@ -1806,7 +1808,7 @@ def  extractShell2lyCNovelSite(item):
 		return buildReleaseMessage(item, 'Madam, Master Said to Eat Meal', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractOregaHeroineinEnglish(item):
+def extractOregaHeroineinEnglish(item):
 	'''
 
 	'''
@@ -1815,7 +1817,7 @@ def  extractOregaHeroineinEnglish(item):
 		return False
 	return False
 
-def  extractSnowyPublications(item):
+def extractSnowyPublications(item):
 	'''
 
 	'''
@@ -1826,7 +1828,7 @@ def  extractSnowyPublications(item):
 		return buildReleaseMessage(item, 'Whisper of the Nightingale', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
-def  extractPandorasBook(item):
+def extractPandorasBook(item):
 	'''
 
 	'''
@@ -1835,7 +1837,7 @@ def  extractPandorasBook(item):
 		return False
 	return False
 
-def  extractSlothTranslationsBlog(item):
+def extractSlothTranslationsBlog(item):
 	'''
 	# 'Sloth Translations Blog'
 	'''
@@ -1847,7 +1849,7 @@ def  extractSlothTranslationsBlog(item):
 
 	return False
 
-def  extractPatriarchReliance(item):
+def extractPatriarchReliance(item):
 	'''
 	# 'Patriarch Reliance'
 	'''
@@ -1861,7 +1863,7 @@ def  extractPatriarchReliance(item):
 
 	return False
 
-def  extractTentativelyUnderconstruction(item):
+def extractTentativelyUnderconstruction(item):
 	'''
 
 	'''
@@ -1870,7 +1872,7 @@ def  extractTentativelyUnderconstruction(item):
 		return False
 	return False
 
-def  extractTwig(item):
+def extractTwig(item):
 	'''
 	# 'Twig'
 	'''
@@ -1879,7 +1881,7 @@ def  extractTwig(item):
 		return False
 	return False
 
-def  extractSunShowerFields(item):
+def extractSunShowerFields(item):
 	'''
 
 	'''
@@ -1888,7 +1890,7 @@ def  extractSunShowerFields(item):
 		return False
 	return False
 
-def  extractTinkerbellsan(item):
+def extractTinkerbellsan(item):
 	'''
 	# 'Tinkerbell-san'
 	'''
@@ -1899,7 +1901,7 @@ def  extractTinkerbellsan(item):
 		return buildReleaseMessage(item, 'Caught in my Own Trap', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractPenguinOverlordTranslations(item):
+def extractPenguinOverlordTranslations(item):
 	'''
 
 	'''
@@ -1908,7 +1910,7 @@ def  extractPenguinOverlordTranslations(item):
 		return False
 	return False
 
-def  extractPactWebSerial(item):
+def extractPactWebSerial(item):
 	'''
 
 	'''
@@ -1917,7 +1919,7 @@ def  extractPactWebSerial(item):
 		return False
 	return False
 
-def  extractTatakauShishoLightNovelTranslation(item):
+def extractTatakauShishoLightNovelTranslation(item):
 	'''
 
 	'''
@@ -1926,7 +1928,7 @@ def  extractTatakauShishoLightNovelTranslation(item):
 		return False
 	return False
 
-def  extractShokyuuTranslations(item):
+def extractShokyuuTranslations(item):
 	'''
 
 	'''
@@ -1935,7 +1937,7 @@ def  extractShokyuuTranslations(item):
 		return False
 	return False
 
-def  extractPriddlesTranslations(item):
+def extractPriddlesTranslations(item):
 	'''
 
 	'''
@@ -1952,7 +1954,7 @@ def  extractPriddlesTranslations(item):
 #
 ####################################################################################################################################################
 
-def  extractTyrantsEyeTranslations(item):
+def extractTyrantsEyeTranslations(item):
 	'''
 	#'Tyrant\'s Eye Translations'
 	'''
@@ -1962,7 +1964,7 @@ def  extractTyrantsEyeTranslations(item):
 	return False
 
 
-def  extractTheLastSkull(item):
+def extractTheLastSkull(item):
 	'''
 	# 'The Last Skull'
 	'''
@@ -1971,7 +1973,7 @@ def  extractTheLastSkull(item):
 		return False
 	return False
 
-def  extractTranslationsFromOuterSpace(item):
+def extractTranslationsFromOuterSpace(item):
 	'''
 
 	'''
@@ -1980,7 +1982,7 @@ def  extractTranslationsFromOuterSpace(item):
 		return False
 	return False
 
-def  extractRuisTranslations(item):
+def extractRuisTranslations(item):
 	'''
 
 	'''
@@ -1991,7 +1993,7 @@ def  extractRuisTranslations(item):
 		return buildReleaseMessage(item, 'A Mismatched Marriage: Records of Washed Away Injustices', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractSenjiQcreations(item):
+def extractSenjiQcreations(item):
 	'''
 
 	'''
@@ -2002,7 +2004,7 @@ def  extractSenjiQcreations(item):
 		return buildReleaseMessage(item, 'Sandstorm Story', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
-def  extractPsicernTranslations(item):
+def extractPsicernTranslations(item):
 	'''
 
 	'''
@@ -2011,7 +2013,7 @@ def  extractPsicernTranslations(item):
 		return False
 	return False
 
-def  extractSymbiote(item):
+def extractSymbiote(item):
 	'''
 
 	'''
@@ -2020,7 +2022,7 @@ def  extractSymbiote(item):
 		return False
 	return False
 
-def  extractUnlimitedStoryWorks(item):
+def extractUnlimitedStoryWorks(item):
 	'''
 
 	'''
@@ -2029,7 +2031,7 @@ def  extractUnlimitedStoryWorks(item):
 		return False
 	return False
 
-def  extractTalesOfPaulTwister(item):
+def extractTalesOfPaulTwister(item):
 	'''
 
 	'''
@@ -2052,7 +2054,7 @@ def  extractTalesOfPaulTwister(item):
 #
 ####################################################################################################################################################
 
-def  extractRejectHero(item):
+def extractRejectHero(item):
 	'''
 
 	'''
@@ -2061,7 +2063,16 @@ def  extractRejectHero(item):
 		return False
 	return False
 
-def  extractRealmOfChaos(item):
+def extractReiTransBlog(item):
+	'''
+
+	'''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+
+def extractRealmOfChaos(item):
 	'''
 	#'Realm of Chaos'
 	'''
@@ -2077,7 +2088,7 @@ def  extractRealmOfChaos(item):
 		return buildReleaseMessage(item, 'Myriad of Shades', vol, chp, frag=frag, postfix=postfix_out, tl_type='oel')
 	return False
 
-def  extractTieshaunn(item):
+def extractTieshaunn(item):
 	'''
 
 	'''
@@ -2086,7 +2097,7 @@ def  extractTieshaunn(item):
 		return False
 	return False
 
-def  extractSTLTranslations(item):
+def extractSTLTranslations(item):
 	'''
 
 	'''
@@ -2095,7 +2106,7 @@ def  extractSTLTranslations(item):
 		return False
 	return False
 
-def  extractTowardsTheSky(item):
+def extractTowardsTheSky(item):
 	'''
 	# 'Towards the Sky~'
 	'''
@@ -2104,7 +2115,7 @@ def  extractTowardsTheSky(item):
 		return False
 	return False
 
-def  extractSinsOfTheFathers(item):
+def extractSinsOfTheFathers(item):
 	'''
 
 	'''
@@ -2118,7 +2129,7 @@ def  extractSinsOfTheFathers(item):
 #
 ####################################################################################################################################################
 
-def  extractTofubyu(item):
+def extractTofubyu(item):
 	'''
 
 	'''
@@ -2127,7 +2138,7 @@ def  extractTofubyu(item):
 		return False
 	return False
 
-def  extractSkullSquadron(item):
+def extractSkullSquadron(item):
 	'''
 	# 'Skull Squadron'
 	'''
@@ -2136,7 +2147,7 @@ def  extractSkullSquadron(item):
 		return False
 	return False
 
-def  extractSuperPotatoTranslations(item):
+def extractSuperPotatoTranslations(item):
 	'''
 
 	'''
@@ -2145,7 +2156,7 @@ def  extractSuperPotatoTranslations(item):
 		return False
 	return False
 
-def  extractU3000(item):
+def extractU3000(item):
 	'''
 
 	'''
@@ -2154,7 +2165,7 @@ def  extractU3000(item):
 		return False
 	return False
 
-def  extractStarrydawnTranslations(item):
+def extractStarrydawnTranslations(item):
 	'''
 	# 'Starrydawn Translations'
 	'''
@@ -2163,7 +2174,7 @@ def  extractStarrydawnTranslations(item):
 		return False
 	return False
 
-def  extractSnowTranslations(item):
+def extractSnowTranslations(item):
 	'''
 	# 'Snow Translations'
 	'''
@@ -2172,7 +2183,7 @@ def  extractSnowTranslations(item):
 		return False
 	return False
 
-def  extractTalesofTheForgottenslayer(item):
+def extractTalesofTheForgottenslayer(item):
 	'''
 
 	'''
@@ -2183,7 +2194,7 @@ def  extractTalesofTheForgottenslayer(item):
 		return buildReleaseMessage(item, 'The Botched Summoning', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
-def  extractShermaTranslations(item):
+def extractShermaTranslations(item):
 	'''
 
 	'''
@@ -2192,7 +2203,7 @@ def  extractShermaTranslations(item):
 		return False
 	return False
 
-def  extractPumpkinTranslations(item):
+def extractPumpkinTranslations(item):
 	'''
 
 	'''
@@ -2201,7 +2212,7 @@ def  extractPumpkinTranslations(item):
 		return False
 	return False
 
-def  extractPremiumRedTea(item):
+def extractPremiumRedTea(item):
 	'''
 
 	'''
@@ -2210,7 +2221,7 @@ def  extractPremiumRedTea(item):
 		return False
 	return False
 
-def  extractTseirpTranslations(item):
+def extractTseirpTranslations(item):
 	'''
 	# 'Tseirp Translations'
 	'''
@@ -2225,7 +2236,7 @@ def  extractTseirpTranslations(item):
 		return buildReleaseMessage(item, 'I\'ve Became Able to Do Anything With My Growth Cheat, but I Can\'t Seem to Get Out of Being Jobless', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractStoneBurners(item):
+def extractStoneBurners(item):
 	'''
 
 	'''
@@ -2234,7 +2245,7 @@ def  extractStoneBurners(item):
 		return False
 	return False
 
-def  extractPandafuqTranslations(item):
+def extractPandafuqTranslations(item):
 	'''
 
 	'''
@@ -2251,7 +2262,7 @@ def  extractPandafuqTranslations(item):
 #
 ####################################################################################################################################################
 
-def  extractPippiSite(item):
+def extractPippiSite(item):
 	'''
 
 	'''
@@ -2268,7 +2279,7 @@ def  extractPippiSite(item):
 #
 ####################################################################################################################################################
 
-def  extractSweetACollections(item):
+def extractSweetACollections(item):
 	'''
 	# 'Sweet A Collections'
 	'''
@@ -2277,7 +2288,7 @@ def  extractSweetACollections(item):
 		return False
 	return False
 
-def  extractRoastedTea(item):
+def extractRoastedTea(item):
 	'''
 
 	'''
@@ -2286,7 +2297,7 @@ def  extractRoastedTea(item):
 		return False
 	return False
 
-def  extractSpringScents(item):
+def extractSpringScents(item):
 	'''
 
 	'''
@@ -2295,7 +2306,7 @@ def  extractSpringScents(item):
 		return False
 	return False
 
-def  extractOpinisaya(item):
+def extractOpinisaya(item):
 	'''
 	# 'Opinisaya.com'
 	'''
@@ -2304,7 +2315,7 @@ def  extractOpinisaya(item):
 		return False
 	return False
 
-def  extractTaidadonoTranslations(item):
+def extractTaidadonoTranslations(item):
 	'''
 
 	'''
@@ -2313,7 +2324,7 @@ def  extractTaidadonoTranslations(item):
 		return False
 	return False
 
-def  extractSaurisTLBlog(item):
+def extractSaurisTLBlog(item):
 	'''
 
 	'''
@@ -2322,7 +2333,7 @@ def  extractSaurisTLBlog(item):
 		return False
 	return False
 
-def  extractSilverButterfly(item):
+def extractSilverButterfly(item):
 	'''
 
 	'''
@@ -2331,7 +2342,7 @@ def  extractSilverButterfly(item):
 		return False
 	return False
 
-def  extractTheSphere(item):
+def extractTheSphere(item):
 	'''
 
 	'''
@@ -2340,7 +2351,7 @@ def  extractTheSphere(item):
 		return False
 	return False
 
-def  extractSnowDust(item):
+def extractSnowDust(item):
 	'''
 
 	'''
@@ -2349,7 +2360,7 @@ def  extractSnowDust(item):
 		return False
 	return False
 
-def  extractRiptranslations(item):
+def extractRiptranslations(item):
 	'''
 
 	'''
@@ -2358,7 +2369,7 @@ def  extractRiptranslations(item):
 		return False
 	return False
 
-def  extractTheBeginningAfterTheEnd(item):
+def extractTheBeginningAfterTheEnd(item):
 	'''
 
 	'''
@@ -2375,7 +2386,7 @@ def  extractTheBeginningAfterTheEnd(item):
 #
 ####################################################################################################################################################
 
-def  extractSoltarinationScanlations (item):
+def extractSoltarinationScanlations (item):
 	'''
 	# 'Soltarination Scanlations'
 	'''
@@ -2384,7 +2395,7 @@ def  extractSoltarinationScanlations (item):
 		return False
 	return False
 
-def  extractRosyFantasy(item):
+def extractRosyFantasy(item):
 	'''
 
 	'''
@@ -2413,7 +2424,7 @@ def  extractRosyFantasy(item):
 #
 ####################################################################################################################################################
 
-def  extractTrungNguyen(item):
+def extractTrungNguyen(item):
 	'''
 
 	'''
@@ -2425,7 +2436,7 @@ def  extractTrungNguyen(item):
 		return buildReleaseMessage(item, 'Bringing the Farm to Live in Another World', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractRedDragonTranslations(item):
+def extractRedDragonTranslations(item):
 	'''
 
 	'''
@@ -2441,7 +2452,7 @@ def  extractRedDragonTranslations(item):
 #
 ####################################################################################################################################################
 
-def  extractThisWorldWork(item):
+def extractThisWorldWork(item):
 	'''
 
 	'''
@@ -2450,7 +2461,7 @@ def  extractThisWorldWork(item):
 		return False
 	return False
 
-def  extractSandwichKingdom(item):
+def extractSandwichKingdom(item):
 	'''
 	#'Sandwich Kingdom'
 	'''
@@ -2466,7 +2477,7 @@ def  extractSandwichKingdom(item):
 	return False
 
 
-def  extractRinOtakuBlog(item):
+def extractRinOtakuBlog(item):
 	'''
 	# 'RinOtakuBlog'
 	'''
@@ -2479,7 +2490,7 @@ def  extractRinOtakuBlog(item):
 		return buildReleaseMessage(item, 'Sonohi Sekai ga Kawatta', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractTheNamed(item):
+def extractTheNamed(item):
 	'''
 
 	'''
@@ -2488,7 +2499,7 @@ def  extractTheNamed(item):
 		return False
 	return False
 
-def  extractTarableTranslations(item):
+def extractTarableTranslations(item):
 	'''
 	# 'Tarable Translations'
 	'''
@@ -2497,7 +2508,7 @@ def  extractTarableTranslations(item):
 		return False
 	return False
 
-def  extractReadMeTranslations(item):
+def extractReadMeTranslations(item):
 	'''
 	# 'Read Me Translations'
 	'''
@@ -2509,7 +2520,7 @@ def  extractReadMeTranslations(item):
 		return buildReleaseMessage(item, 'Wo De Meinu Zongcai Laopo', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractTheAsianCult(item):
+def extractTheAsianCult(item):
 	'''
 	# 'The Asian Cult'
 	'''
@@ -2518,7 +2529,7 @@ def  extractTheAsianCult(item):
 		return False
 	return False
 
-def  extractPolyphonicStoryTranslationGroup(item):
+def extractPolyphonicStoryTranslationGroup(item):
 	'''
 
 	'''
@@ -2527,7 +2538,7 @@ def  extractPolyphonicStoryTranslationGroup(item):
 		return False
 	return False
 
-def  extractPridesFamiliarsMaidens(item):
+def extractPridesFamiliarsMaidens(item):
 	'''
 
 	'''
@@ -2536,7 +2547,7 @@ def  extractPridesFamiliarsMaidens(item):
 		return False
 	return False
 
-def  extractTheMustangTranslator(item):
+def extractTheMustangTranslator(item):
 	'''
 
 	'''
@@ -2553,7 +2564,7 @@ def  extractTheMustangTranslator(item):
 #
 ####################################################################################################################################################
 
-def  extractPopsiclete(item):
+def extractPopsiclete(item):
 	'''
 
 	'''
@@ -2562,7 +2573,7 @@ def  extractPopsiclete(item):
 		return False
 	return False
 
-def  extractTurtleandHareTranslations(item):
+def extractTurtleandHareTranslations(item):
 	'''
 
 	'''
@@ -2573,7 +2584,7 @@ def  extractTurtleandHareTranslations(item):
 		return buildReleaseMessage(item, 'Time', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractSaberTranslations(item):
+def extractSaberTranslations(item):
 	'''
 
 	'''
@@ -2582,7 +2593,7 @@ def  extractSaberTranslations(item):
 		return False
 	return False
 
-def  extractRomanticDreamersSanctuary(item):
+def extractRomanticDreamersSanctuary(item):
 	'''
 
 	'''
@@ -2591,7 +2602,7 @@ def  extractRomanticDreamersSanctuary(item):
 		return False
 	return False
 
-def  extractTLSyosetsu(item):
+def extractTLSyosetsu(item):
 	'''
 
 	'''
@@ -2602,7 +2613,7 @@ def  extractTLSyosetsu(item):
 		return buildReleaseMessage(item, 'Defiled Hero', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractQualideaofScumandaGoldCoin(item):
+def extractQualideaofScumandaGoldCoin(item):
 	'''
 
 	'''
@@ -2611,7 +2622,7 @@ def  extractQualideaofScumandaGoldCoin(item):
 		return False
 	return False
 
-def  extractSoltarination(item):
+def extractSoltarination(item):
 	'''
 
 	'''
@@ -2620,7 +2631,7 @@ def  extractSoltarination(item):
 		return False
 	return False
 
-def  extractPlainlyBored(item):
+def extractPlainlyBored(item):
 	'''
 
 	'''
@@ -2636,7 +2647,7 @@ def  extractPlainlyBored(item):
 #
 ####################################################################################################################################################
 
-def  extractTheDefendTranslations(item):
+def extractTheDefendTranslations(item):
 	'''
 
 	'''
@@ -2645,7 +2656,7 @@ def  extractTheDefendTranslations(item):
 		return False
 	return False
 
-def  extractSlimeLv1(item):
+def extractSlimeLv1(item):
 	'''
 
 	'''
@@ -2654,7 +2665,7 @@ def  extractSlimeLv1(item):
 		return False
 	return False
 
-def  extractUniversesWithMeaning(item):
+def extractUniversesWithMeaning(item):
 	'''
 
 	'''
@@ -2672,7 +2683,7 @@ def  extractUniversesWithMeaning(item):
 #
 ####################################################################################################################################################
 
-def  extractOtomeRevolution(item):
+def extractOtomeRevolution(item):
 	'''
 
 	'''
@@ -2681,7 +2692,7 @@ def  extractOtomeRevolution(item):
 		return False
 	return False
 
-def  extractSleepyTranslations(item):
+def extractSleepyTranslations(item):
 	'''
 	# 'Sleepy Translations'
 	'''
@@ -2690,7 +2701,7 @@ def  extractSleepyTranslations(item):
 		return False
 	return False
 
-def  extractTheIronTeeth(item):
+def extractTheIronTeeth(item):
 	'''
 
 	'''
@@ -2699,7 +2710,7 @@ def  extractTheIronTeeth(item):
 		return False
 	return False
 
-def  extractUndecentTranslations(item):
+def extractUndecentTranslations(item):
 	'''
 
 	'''
@@ -2708,7 +2719,7 @@ def  extractUndecentTranslations(item):
 		return False
 	return False
 
-def  extractTenThousandHeavenControllingSword(item):
+def extractTenThousandHeavenControllingSword(item):
 	'''
 	# 'Ten Thousand Heaven Controlling Sword'
 	'''
@@ -2717,7 +2728,7 @@ def  extractTenThousandHeavenControllingSword(item):
 		return False
 	return False
 
-def  extractTaptrans(item):
+def extractTaptrans(item):
 	'''
 
 	'''
@@ -2726,7 +2737,7 @@ def  extractTaptrans(item):
 		return False
 	return False
 
-def  extractRidwanTrans(item):
+def extractRidwanTrans(item):
 	'''
 	# 'RidwanTrans'
 	'''
@@ -2741,7 +2752,7 @@ def  extractRidwanTrans(item):
 		return buildReleaseMessage(item, 'Isekai Meikyuu no Saishinbu wo Mezasou', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractOyasumiReads(item):
+def extractOyasumiReads(item):
 	'''
 
 	'''
@@ -2750,7 +2761,7 @@ def  extractOyasumiReads(item):
 		return False
 	return False
 
-def  extractUDonateWeTranslate(item):
+def extractUDonateWeTranslate(item):
 	'''
 
 	'''
@@ -2767,7 +2778,7 @@ def  extractUDonateWeTranslate(item):
 #
 ####################################################################################################################################################
 
-def  extractPiggyBottleTranslations(item):
+def extractPiggyBottleTranslations(item):
 	'''
 	#'PiggyBottle Translations'
 	'''
@@ -2779,7 +2790,7 @@ def  extractPiggyBottleTranslations(item):
 	return False
 
 
-def  extractRumanshisLair(item):
+def extractRumanshisLair(item):
 	'''
 
 	'''
@@ -2807,7 +2818,7 @@ def  extractRumanshisLair(item):
 #
 ####################################################################################################################################################
 
-def  extractSpiritualTranscription(item):
+def extractSpiritualTranscription(item):
 	'''
 
 	'''
@@ -2821,7 +2832,7 @@ def  extractSpiritualTranscription(item):
 
 	return False
 
-def  extractPaztok(item):
+def extractPaztok(item):
 	'''
 
 	'''
@@ -2841,7 +2852,7 @@ def  extractPaztok(item):
 #
 ####################################################################################################################################################
 
-def  extractTranslationTreasureBox(item):
+def extractTranslationTreasureBox(item):
 	'''
 
 	'''
@@ -2850,7 +2861,7 @@ def  extractTranslationTreasureBox(item):
 		return False
 	return False
 
-def  extractRedLanternArchives(item):
+def extractRedLanternArchives(item):
 	'''
 	# 'Red Lantern Archives'
 	'''
@@ -2861,7 +2872,7 @@ def  extractRedLanternArchives(item):
 		return buildReleaseMessage(item, 'Outaishihi ni Nante Naritakunai!!', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractTranslatingForYourPleasure(item):
+def extractTranslatingForYourPleasure(item):
 	'''
 
 	'''
@@ -2872,7 +2883,7 @@ def  extractTranslatingForYourPleasure(item):
 		return buildReleaseMessage(item, "The Inverted Dragon's Scale", vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractSETSUNA86BLOG(item):
+def extractSETSUNA86BLOG(item):
 	'''
 
 	'''
@@ -2881,7 +2892,7 @@ def  extractSETSUNA86BLOG(item):
 		return False
 	return False
 
-def  extractTryTranslations(item):
+def extractTryTranslations(item):
 	'''
 
 	'''
@@ -2892,7 +2903,7 @@ def  extractTryTranslations(item):
 
 
 
-def  extractTrinityArchive(item):
+def extractTrinityArchive(item):
 	'''
 	# 'Trinity Archive'
 	'''
@@ -2903,7 +2914,7 @@ def  extractTrinityArchive(item):
 		return buildReleaseMessage(item, 'Summoned Slaughterer', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractPielordTranslations(item):
+def extractPielordTranslations(item):
 	'''
 
 	'''
@@ -2912,7 +2923,7 @@ def  extractPielordTranslations(item):
 		return False
 	return False
 
-def  extractTwelveMonthsofMay(item):
+def extractTwelveMonthsofMay(item):
 	'''
 	# 'Twelve Months of May'
 	'''
@@ -2923,7 +2934,7 @@ def  extractTwelveMonthsofMay(item):
 		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractUkel2x(item):
+def extractUkel2x(item):
 	'''
 	#'Ukel2x
 	'''
@@ -2937,7 +2948,7 @@ def  extractUkel2x(item):
 	return False
 
 
-def  extractRootOfEvil(item):
+def extractRootOfEvil(item):
 	'''
 	# 'Root of Evil'
 	'''
@@ -2946,7 +2957,7 @@ def  extractRootOfEvil(item):
 		return False
 	return False
 
-def  extractStellarTransformationCon(item):
+def extractStellarTransformationCon(item):
 	'''
 
 	'''
@@ -2955,7 +2966,7 @@ def  extractStellarTransformationCon(item):
 		return False
 	return False
 
-def  extractUnnamedtranslations(item):
+def extractUnnamedtranslations(item):
 	'''
 	# 'unnamedtranslations.blogspot.com'
 	'''
@@ -2964,7 +2975,7 @@ def  extractUnnamedtranslations(item):
 		return False
 	return False
 
-def  extractTusTrans(item):
+def extractTusTrans(item):
 	'''
 
 	'''
@@ -2973,7 +2984,7 @@ def  extractTusTrans(item):
 		return False
 	return False
 
-def  extractTumbleIntoFantasy(item):
+def extractTumbleIntoFantasy(item):
 	'''
 
 	'''
@@ -2982,7 +2993,7 @@ def  extractTumbleIntoFantasy(item):
 		return False
 	return False
 
-def  extractQualiTeaTranslations(item):
+def extractQualiTeaTranslations(item):
 	'''
 	# 'QualiTeaTranslations'
 	'''
@@ -3003,7 +3014,7 @@ def  extractQualiTeaTranslations(item):
 #
 ####################################################################################################################################################
 
-def  extractSolstar24(item):
+def extractSolstar24(item):
 	'''
 
 	'''
@@ -3016,7 +3027,7 @@ def  extractSolstar24(item):
 		return buildReleaseMessage(item, 'Dao Qing', vol, chp, frag=frag, postfix=postfix)
 	return False
 
-def  extractSloth(item):
+def extractSloth(item):
 	'''
 
 	'''
@@ -3025,7 +3036,7 @@ def  extractSloth(item):
 		return False
 	return False
 
-def  extractUnlimitedNovelFailures(item):
+def extractUnlimitedNovelFailures(item):
 	'''
 	# 'Unlimited Novel Failures'
 	'''

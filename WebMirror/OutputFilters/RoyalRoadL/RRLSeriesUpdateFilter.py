@@ -14,7 +14,6 @@ from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 import bs4
 import re
 import calendar
-import sqlalchemy.exc
 import traceback
 import datetime
 import time
@@ -112,41 +111,7 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.log.info("Total releases found on page: %s. Forcing retrigger of item pages.", len(releases))
 
 		for release_url in releases:
-			while 1:
-				try:
-					have = self.db_sess.query(db.WebPages) \
-						.filter(db.WebPages.url == release_url)   \
-						.scalar()
-
-					# If we don't have the page, ignore
-					# it as the normal new-link upsert mechanism
-					# will add it.
-					if not have:
-						self.log.info("New: '%s'", release_url)
-						break
-
-					# Also, don't reset if it's in-progress
-					if have.state in ['new', 'fetching', 'processing', 'removed']:
-						self.log.info("Skipping: '%s' (%s)", release_url, have.state)
-						break
-
-					self.log.info("Retriggering page '%s'", release_url)
-					have.state = 'new'
-					self.db_sess.commit()
-					break
-
-
-				except sqlalchemy.exc.InvalidRequestError:
-					print("InvalidRequest error!")
-					self.db_sess.rollback()
-					traceback.print_exc()
-				except sqlalchemy.exc.OperationalError:
-					print("InvalidRequest error!")
-					self.db_sess.rollback()
-				except sqlalchemy.exc.IntegrityError:
-					print("[upsertRssItems] -> Integrity error!")
-					traceback.print_exc()
-					self.db_sess.rollback()
+			self.retrigger_page(release_url)
 
 
 

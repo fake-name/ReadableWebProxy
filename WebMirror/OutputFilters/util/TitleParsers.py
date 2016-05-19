@@ -27,6 +27,17 @@ def extractTitle(inStr):
 	chp  = p.getChapter()
 	frag = p.getFragment()
 	post = p.getPostfix()
+
+	if chp and not frag:
+		chp = int(chp)
+		frag = int(chp * 100) % 100
+	if chp:
+		assert float(int(float(chp))) == float(chp)
+	if vol:
+		assert float(int(float(vol))) == float(vol)
+	if frag:
+		assert float(int(float(frag))) == float(frag)
+
 	return vol, chp, frag, post
 
 def extractChapterVol(inStr):

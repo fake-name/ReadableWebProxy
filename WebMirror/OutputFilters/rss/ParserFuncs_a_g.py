@@ -16,16 +16,16 @@ def extractFlowerBridgeToo(item):
 	'''
 	# Seriously, you were too lazy to type out the *tags*?
 	# You only have to do it ONCE!
-	if 'MGA Translation' in item['tags']:
-		chp, vol = extractChapterVol(item['title'])
-		# Also called "Martial God Asura"
-		return buildReleaseMessage(item, 'Xiuluo Wushen', vol, chp)
-	elif 'Xian Ni' in item['tags'] or 'Xian Ni Translation' in item['tags']:
-		chp, vol = extractChapterVol(item['title'])
-		return buildReleaseMessage(item, 'Xian Ni', vol, chp)
-	elif 'JMG Translation' in item['tags']:  # Series was dropped, have lots of old releases
-		chp, vol = extractChapterVol(item['title'])
-		return buildReleaseMessage(item, 'Shaonian Yixian', vol, chp)
+	# if 'MGA Translation' in item['tags']:
+	# 	chp, vol = extractChapterVol(item['title'])
+	# 	# Also called "Martial God Asura"
+	# 	return buildReleaseMessage(item, 'Xiuluo Wushen', vol, chp)
+	# elif 'Xian Ni' in item['tags'] or 'Xian Ni Translation' in item['tags']:
+	# 	chp, vol = extractChapterVol(item['title'])
+	# 	return buildReleaseMessage(item, 'Xian Ni', vol, chp)
+	# elif 'JMG Translation' in item['tags']:  # Series was dropped, have lots of old releases
+	# 	chp, vol = extractChapterVol(item['title'])
+	# 	return buildReleaseMessage(item, 'Shaonian Yixian', vol, chp)
 	return False
 
 
@@ -1932,6 +1932,10 @@ def  extractAoriTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'WT' in item['tags']:
+		return buildReleaseMessage(item, "World Teacher - Different World Style Education Agent", vol, chp, frag=frag, postfix=postfix)
+	if 'Lv2' in item['tags']:
+		return buildReleaseMessage(item, "Ex-Hero Candidate's, Who Turned Out To Be A Cheat From Lv2, Laid-back Life In Another World", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractCloudTranslations(item):
