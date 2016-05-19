@@ -170,6 +170,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'type'            : self.rules['type'],
 									'message_q'       : self.response_queue,
 									'job'             : self.job,
+									'wg'              : self.wg,
 		}
 
 		ret = plugin.process(params)

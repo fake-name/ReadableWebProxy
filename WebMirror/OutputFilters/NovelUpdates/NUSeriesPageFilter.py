@@ -17,6 +17,7 @@ import time
 import json
 import WebMirror.util.webFunctions
 import bleach
+import unshortenit
 
 MIN_RATING = 5
 
@@ -63,6 +64,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
+		self.wg         = kwargs['wg']
 
 		self.log.info("Processing NovelUpdates series page")
 		super().__init__(**kwargs)
@@ -226,7 +228,11 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item = {}
 			raw_item['srcname']   = msgpackers.fixSmartQuotes(group_name)
 			raw_item['published'] = reldate
-			raw_item['linkUrl']   = chp_tg.a['href']
+
+			raw_item['linkUrl'] = self.wg.getHead(chp_tg.a['href'], addlHeaders={"Referer" : seriesPageUrl})
+
+			assert isinstance(raw_item['linkUrl'], str), "novelupdates link not a string?"
+			assert not "www.novelupdates.com/extnu/" in raw_item['linkUrl'], "NovelUpdates creepy outbound link thing"
 
 			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=data_sets['authortg'], postfix=chp_title, tl_type='translated', extraData=extra, matchAuthor=True)
 			retval.append(msg)

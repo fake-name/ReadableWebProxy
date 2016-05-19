@@ -405,11 +405,12 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'type',
 			'message_q',
 			'job',
+			'wg',
 		]
 
-		assert len(params) == len(expected)
+		assert len(params) == len(expected), "Incorrect number of passed plugin parameters?"
 		for expect in expected:
-			assert expect in params
+			assert expect in params, "Plugin missing expected argument: '%s'" % expect
 
 		instance = cls(**params)
 		# print("Instantiated plugin: ", instance)

@@ -98,6 +98,33 @@ class title_not_contains(object):
 
 #pylint: disable-msg=E1101, C0325, R0201, W0702, W0703
 
+
+class HeadRequest(urllib.request.Request):
+	def get_method(self):
+		return "HEAD"
+
+class HTTPRedirectBlockerErrorHandler(urllib.request.HTTPErrorProcessor):
+
+	def http_response(self, request, response):
+		code, msg, hdrs = response.code, response.msg, response.info()
+
+		# only add this line to stop 302 redirection.
+		if code == 302:
+			print("Code!", 302)
+			return response
+		if code == 301:
+			print("Code!", 301)
+			return response
+
+		print("[HTTPRedirectBlockerErrorHandler] http_response! code:", code)
+		print(hdrs)
+		print(msg)
+		if not (200 <= code < 300):
+			response = self.parent.error('http', request, response, code, msg, hdrs)
+		return response
+
+	https_response = http_response
+
 # A urllib2 wrapper that provides error handling and logging, as well as cookie management. It's a bit crude, but it works.
 # Also supports transport compresion.
 # OOOOLLLLLLDDDDD, has lots of creaky internals. Needs some cleanup desperately, but lots of crap depends on almost everything.
@@ -325,7 +352,7 @@ class WebGetRobust:
 		return pgctnt, hName
 
 
-	def buildRequest(self, pgreq, postData, addlHeaders, binaryForm):
+	def buildRequest(self, pgreq, postData, addlHeaders, binaryForm, req_class = urllib.request.Request):
 		# Encode Unicode URL's properly
 
 		try:
@@ -354,7 +381,7 @@ class WebGetRobust:
 				headers['Content-length'] =  len(params['data'])
 
 
-			return urllib.request.Request(pgreq, headers=headers, **params)
+			return req_class(pgreq, headers=headers, **params)
 
 		except:
 			self.log.critical("Invalid header or url")
@@ -679,6 +706,26 @@ class WebGetRobust:
 				pghandle.close()
 			return pgctnt
 
+	def getHead(self, url, addlHeaders = {}):
+		for x in range(3):
+			try:
+				self.log.info("Doing HTTP HEAD request for '%s'", url)
+				pgreq = self.buildRequest(url, None, addlHeaders, None, req_class=HeadRequest)
+				pghandle = self.opener.open(pgreq, timeout=30)
+				returl = pghandle.geturl()
+				if returl != url:
+					self.log.info("HEAD request returned a different URL '%s'", returl)
+
+				return returl
+			except socket.timeout as e:
+				self.log.info("Timeout, retrying....")
+			except urllib.error.URLError as e:
+				# Continue even in the face of cloudflare crapping it's pants
+				if e.code == 500 and e.geturl():
+					return e.geturl()
+				self.log.info("URLError, retrying....")
+		raise e
+
 	def syncCookiesFromFile(self):
 		# self.log.info("Synchronizing cookies with cookieFile.")
 		if os.path.isfile(self.COOKIEFILE):
@@ -707,23 +754,23 @@ class WebGetRobust:
 		'''
 		# print cookieDict
 		cookie = http.cookiejar.Cookie(
-				version=0,
-				name=cookieDict['name'],
-				value=cookieDict['value'],
-				port=None,
-				port_specified=False,
-				domain=cookieDict['domain'],
-				domain_specified=True,
-				domain_initial_dot=False,
-				path=cookieDict['path'],
-				path_specified=False,
-				secure=cookieDict['secure'],
-				expires=cookieDict['expiry'],
-				discard=False,
-				comment=None,
-				comment_url=None,
-				rest={"httponly":"%s" % cookieDict['httponly']},
-				rfc2109=False
+				version            = 0,
+				name               = cookieDict['name'],
+				value              = cookieDict['value'],
+				port               = None,
+				port_specified     = False,
+				domain             = cookieDict['domain'],
+				domain_specified   = True,
+				domain_initial_dot = False,
+				path               = cookieDict['path'],
+				path_specified     = False,
+				secure             = cookieDict['secure'],
+				expires            = cookieDict['expiry'],
+				discard            = False,
+				comment            = None,
+				comment_url        = None,
+				rest               = {"httponly":"%s" % cookieDict['httponly']},
+				rfc2109            = False
 			)
 
 		self.cj.set_cookie(cookie)
@@ -1241,31 +1288,33 @@ if __name__ == "__main__":
 
 
 
-	# content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/07/Arifureta.png", returnMultiple = True)
-	# print((handle.headers.get('Content-Encoding')))
-	# print(len(content))
-	# content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/03/knm.png", returnMultiple = True)
-	# print((handle.headers.get('Content-Encoding')))
-	# content, handle = wg.getpage("https://www.google.com/images/srpr/logo11w.png", returnMultiple = True)
-	# print((handle.headers.get('Content-Encoding')))
-	# content, handle = wg.getpage("http://www.doujin-moe.us/ajax/newest.php", returnMultiple = True)
-	# print((handle.headers.get('Content-Encoding')))
+	wg.getHead("http://www.novelupdates.com/extnu/125399/", addlHeaders={"Referer" : "http://www.novelupdates.com/series/limitless-sword-god/"})
 
-	# print("SoupGet")
-	# content_1 = wg.getpage("http://www.lighttpd.net", soup = True)
+	# # content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/07/Arifureta.png", returnMultiple = True)
+	# # print((handle.headers.get('Content-Encoding')))
+	# # print(len(content))
+	# # content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/03/knm.png", returnMultiple = True)
+	# # print((handle.headers.get('Content-Encoding')))
+	# # content, handle = wg.getpage("https://www.google.com/images/srpr/logo11w.png", returnMultiple = True)
+	# # print((handle.headers.get('Content-Encoding')))
+	# # content, handle = wg.getpage("http://www.doujin-moe.us/ajax/newest.php", returnMultiple = True)
+	# # print((handle.headers.get('Content-Encoding')))
 
-	# content_2 = wg.getSoup("http://www.lighttpd.net")
-	# assert(content_1 == content_2)
+	# # print("SoupGet")
+	# # content_1 = wg.getpage("http://www.lighttpd.net", soup = True)
 
-	gTest = wg.getpage('https://drive.google.com/folderview?id=0B2lnOX3NF2LOeW55WlpYQWIxYnM')
-	print(type(gTest))
+	# # content_2 = wg.getSoup("http://www.lighttpd.net")
+	# # assert(content_1 == content_2)
 
-	gTest = wg.getpage('https://www.google.com/search?q=Gödel')
-	gTest = wg.getpage('https://www.google.com/search?q=禁断の愛')
-	gTest = wg.getpage('http://www.fanfiction.net/s/6711282/1/Jag-%C3%A4lskar-dig')
-	print(type(gTest))
+	# gTest = wg.getpage('https://drive.google.com/folderview?id=0B2lnOX3NF2LOeW55WlpYQWIxYnM')
+	# print(type(gTest))
+
+	# gTest = wg.getpage('https://www.google.com/search?q=Gödel')
+	# gTest = wg.getpage('https://www.google.com/search?q=禁断の愛')
+	# gTest = wg.getpage('http://www.fanfiction.net/s/6711282/1/Jag-%C3%A4lskar-dig')
+	# print(type(gTest))
 
 
 
-if __name__ == "__main__":
-	print("User agent", getUserAgent())
+# if __name__ == "__main__":
+# 	print("User agent", getUserAgent())
