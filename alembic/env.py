@@ -4,6 +4,10 @@ from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
 
 
+# Path hackery
+import os.path
+import sys
+sys.path.append(os.path.abspath(os.getcwd()))
 
 # this will overwrite the ini-file sqlalchemy.url path
 # with the path given in the config of the main code

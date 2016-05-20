@@ -218,7 +218,7 @@ class WebPages(Base):
 
 	title             = Column(citext.CIText)
 	mimetype          = Column(Text)
-	type              = Column(itemtype_enum, default='unknown', index=True)
+	type              = Column(itemtype_enum, default='unknown')
 
 	# Disabled due to disk-space issues.
 	# raw_content       = Column(Text)
@@ -228,7 +228,7 @@ class WebPages(Base):
 	fetchtime         = Column(DateTime, default=datetime.datetime.min)
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
 
-	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min, index=True, nullable=False)
+	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min, nullable=False)
 
 	# Items with `normal_fetch_mode` set to false are not retreived by the normal scheduling system
 	# in WebMirror\Engine.py. This is to allow external systems that need to manage their own
@@ -357,6 +357,16 @@ class PluginStatus(Base):
 
 	last_error     = Column(DateTime)
 	last_error_msg = Column(Text)
+
+
+# Tools for tracking plugins
+class NuOutboundWrapperMap(Base):
+	__tablename__ = 'nu_outbound_wrappers'
+	id             = Column(Integer, primary_key = True)
+
+	container_page    = Column(Text, index=True)
+	link_url          = Column(Text, index=True)
+	target_url        = Column(Text)
 
 
 sa.orm.configure_mappers()

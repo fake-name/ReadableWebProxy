@@ -27,6 +27,9 @@ badwords: [
 
 			"/post.php?",
 			"/author.php?",
+			'/more-reviews/',
+			'/readlist/',
+			'/extnu/',
 			]
 
 # Content Stripping needs to be determined.
@@ -47,3 +50,9 @@ destyle : [
 preserveAttrs : [
 ]
 
+special_case_filters : {
+
+	# Apparently they don't like bots. Well, too bad.
+	"www.novelupdates.com" : ["remote_fetch", "getNuSeriesPage", "getpage"],
+	"novelupdates.com"     : ["remote_fetch", "getNuSeriesPage", "getpage"],
+}

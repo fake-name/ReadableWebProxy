@@ -229,6 +229,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['srcname']   = msgpackers.fixSmartQuotes(group_name)
 			raw_item['published'] = reldate
 
+			# TODO: This has to move into a preprocessor!
 			raw_item['linkUrl'] = self.wg.getHead(chp_tg.a['href'], addlHeaders={"Referer" : seriesPageUrl})
 
 			assert isinstance(raw_item['linkUrl'], str), "novelupdates link not a string?"

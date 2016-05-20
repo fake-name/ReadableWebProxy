@@ -434,6 +434,6 @@ startup()
 if __name__ == "__main__":
 	print(load_special_case_sites())
 
-	for ruleset in load_rules():
-		if ruleset['send_raw_feed'] == False:
-			print(ruleset['netlocs'])
+	# for ruleset in load_rules():
+	# 	if ruleset['send_raw_feed'] == False:
+	# 		print(ruleset['netlocs'])

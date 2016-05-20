@@ -175,7 +175,7 @@ special_case_filters : {
 	"pokegirls.org"       : ["rate_limit", 1],
 	# They do temporary IP-bans if you hammer them too much.
 
-	"storiesonline.net" : ["remote_fetch", "StoriesOnlineFetch", "getpage"],
+	"storiesonline.net" : ["so_remote_fetch", "StoriesOnlineFetch", "getpage"],
 	# Bullshit account requirement. Circumvent via distributed fetching infrastructure.
 }
 

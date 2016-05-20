@@ -706,8 +706,8 @@ class WebGetRobust:
 				pghandle.close()
 			return pgctnt
 
-	def getHead(self, url, addlHeaders = {}):
-		for x in range(3):
+	def getHead(self, url, addlHeaders):
+		for x in range(9999):
 			try:
 				self.log.info("Doing HTTP HEAD request for '%s'", url)
 				pgreq = self.buildRequest(url, None, addlHeaders, None, req_class=HeadRequest)
@@ -719,12 +719,17 @@ class WebGetRobust:
 				return returl
 			except socket.timeout as e:
 				self.log.info("Timeout, retrying....")
+				if x >= 3:
+					self.log.error("Failure fetching: %s", url)
+					raise e
 			except urllib.error.URLError as e:
 				# Continue even in the face of cloudflare crapping it's pants
 				if e.code == 500 and e.geturl():
 					return e.geturl()
 				self.log.info("URLError, retrying....")
-		raise e
+				if x >= 3:
+					self.log.error("Failure fetching: %s", url)
+					raise e
 
 	def syncCookiesFromFile(self):
 		# self.log.info("Synchronizing cookies with cookieFile.")
