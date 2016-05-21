@@ -1,8 +1,10 @@
+
 #!/usr/bin/env python3
 import AmqpConnector
 import logging
 import os.path
 import ssl
+import time
 
 
 class RabbitQueueHandler(object):
@@ -17,31 +19,31 @@ class RabbitQueueHandler(object):
 
 
 		# Require clientID in settings
-		assert "RABBIT_LOGIN"       in settings
-		assert "RABBIT_PASWD"       in settings
-		assert "RABBIT_SRVER"       in settings
-		assert "RABBIT_VHOST"       in settings
+		assert "RPC_RABBIT_LOGIN"       in settings
+		assert "RPC_RABBIT_PASWD"       in settings
+		assert "RPC_RABBIT_SRVER"       in settings
+		assert "RPC_RABBIT_VHOST"       in settings
 
 		sslopts = self.getSslOpts()
 
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
-												password           = settings["RABBIT_PASWD"],
-												host               = settings["RABBIT_SRVER"],
-												virtual_host       = settings["RABBIT_VHOST"],
+		self.connector = AmqpConnector.Connector(userid            = settings["RPC_RABBIT_LOGIN"],
+												password           = settings["RPC_RABBIT_PASWD"],
+												host               = settings["RPC_RABBIT_SRVER"],
+												virtual_host       = settings["RPC_RABBIT_VHOST"],
 												ssl                = sslopts,
 												master             = True,
 												synchronous        = False,
 												flush_queues       = False,
 												prefetch           = 25,
 												durable            = True,
-												task_exchange_type = "fanout",
+												task_exchange_type = "direct",
 												task_queue         = 'task.master.q',
 												response_queue     = 'response.master.q',
 												)
 
 
 		self.log.info("Connected AMQP Interface: %s", self.connector)
-		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
+		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RPC_RABBIT_LOGIN"], settings["RPC_RABBIT_PASWD"], settings["RPC_RABBIT_SRVER"], settings["RPC_RABBIT_VHOST"])
 
 	def getSslOpts(self):
 		'''
@@ -94,12 +96,24 @@ if __name__ == '__main__':
 
 
 	amqp_settings = {
-		"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
-		"RABBIT_PASWD" : config.C_RABBIT_PASWD,
-		"RABBIT_SRVER" : config.C_RABBIT_SRVER,
-		"RABBIT_VHOST" : config.C_RABBIT_VHOST,
+		"RPC_RABBIT_LOGIN" : config.C_RPC_RABBIT_LOGIN,
+		"RPC_RABBIT_PASWD" : config.C_RPC_RABBIT_PASWD,
+		"RPC_RABBIT_SRVER" : config.C_RPC_RABBIT_SRVER,
+		"RPC_RABBIT_VHOST" : config.C_RPC_RABBIT_VHOST,
 	}
 
 	amqpint = RabbitQueueHandler(amqp_settings)
 	print(amqpint)
+
+	while 1:
+		try:
+			time.sleep(1)
+		except KeyboardInterrupt:
+			break
+
+	try:
+		amqpint.close()
+	except ValueError:
+		pass
+
 

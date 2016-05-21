@@ -15,6 +15,11 @@ from settings import RABBIT_PASWD           as C_RABBIT_PASWD
 from settings import RABBIT_SRVER           as C_RABBIT_SRVER
 from settings import RABBIT_VHOST           as C_RABBIT_VHOST
 
+from settings import RPC_RABBIT_LOGIN           as C_RPC_RABBIT_LOGIN
+from settings import RPC_RABBIT_PASWD           as C_RPC_RABBIT_PASWD
+from settings import RPC_RABBIT_SRVER           as C_RPC_RABBIT_SRVER
+from settings import RPC_RABBIT_VHOST           as C_RPC_RABBIT_VHOST
+
 
 import os
 import sys

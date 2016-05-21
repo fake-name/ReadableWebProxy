@@ -37,6 +37,8 @@ import WebMirror.processor.BinaryProcessor
 import WebMirror.processor.RssProcessor
 import WebMirror.processor.WattPadJsonProcessor
 
+import WebMirror.processor.NovelUpdates.Main
+
 PLUGINS = [
 	WebMirror.processor.HtmlProcessor.HtmlPageProcessor,
 	WebMirror.processor.GDriveDirProcessor.GDriveDirProcessor,
@@ -45,6 +47,9 @@ PLUGINS = [
 	WebMirror.processor.BinaryProcessor.BinaryResourceProcessor,
 	WebMirror.processor.RssProcessor.RssProcessor,
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
+
+	# Specialized stuff for additional scrapers
+	WebMirror.processor.NovelUpdates.Main.NovelUpdatesHtmlPageProcessor,
 ]
 
 

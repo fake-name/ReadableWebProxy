@@ -13,3 +13,6 @@ __pycache__
 /ScraperResourceStore
 /reading_list.txt
 /WebMirror/OutputFilters/cert
+/rabbit_pub_cert
+/rss_filter_misses-1.json
+/rss_filter_misses-1.json.pyout

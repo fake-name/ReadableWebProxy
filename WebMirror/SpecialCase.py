@@ -15,6 +15,7 @@ FETCH_LOCK = multiprocessing.Lock()
 
 log = logging.getLogger("Main.Web.SpecialCaseHandler")
 
+
 def handleRemoteFetch(params, job, engine, db_sess):
 	# print("Remote fetch command!")
 	pass
@@ -52,6 +53,15 @@ dispatchers = {
 
 }
 
+
+def doSpecialCase():
+	'''
+	Handle processing AMQP queue responses here.
+	Return true if there was a queue responseto handle, false if there was not.
+	'''
+	had_job = False
+
+	return had_job
 
 def handleSpecialCase(job, engine, rules, db_sess):
 	commands = rules[job.netloc]

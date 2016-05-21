@@ -84,9 +84,12 @@ class RunInstance(object):
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
 		for dummy_x in range(500):
+
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
-				hadjob = self.do_task()
+				hadjob = WebMirror.SpecialCase.doSpecialCase()
+				if not hadjob:
+					hadjob = self.do_task()
 			else:
 				self.log.info("Thread %s exiting.", self.num)
 				break

@@ -191,7 +191,7 @@ def delete_db_session(postfix=""):
 Base = declarative_base()
 make_searchable()
 
-dlstate_enum   = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', 'disabled', name='dlstate_enum')
+dlstate_enum   = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', 'disabled', 'specialty_deferred', name='dlstate_enum')
 itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype_enum')
 
 
