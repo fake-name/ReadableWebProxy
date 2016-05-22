@@ -112,6 +112,8 @@ def extractGravityTranslation(item):
 		return buildReleaseMessage(item, 'A Record of a Mortal\'s Journey to Immortality', vol, chp, frag=frag, postfix=postfix)
 	if 'martial world' in ltags:
 		return buildReleaseMessage(item, 'Martial World', vol, chp, frag=frag, postfix=postfix)
+	if 'ancient godly monarch' in ltags:
+		return buildReleaseMessage(item, 'Ancient Godly Monarch', vol, chp, frag=frag, postfix=postfix)
 	if "The Beginning After the End" in item['tags']:
 		return buildReleaseMessage(item, "The Beginning After the End", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 

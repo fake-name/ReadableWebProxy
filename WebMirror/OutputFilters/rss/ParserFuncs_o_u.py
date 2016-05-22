@@ -1544,6 +1544,10 @@ def extractSilvasLibrary(item):
 		return buildReleaseMessage(item, 'Rinkan no Madoushi', vol, chp, frag=frag, postfix=postfix)
 	if 'Arifureta' in item['tags'] :
 		return buildReleaseMessage(item, 'Arifureta Shokugyou de Sekai Saikyou', vol, chp, frag=frag, postfix=postfix)
+	if 'High Comprehension Low Strength' in item['tags'] :
+		return buildReleaseMessage(item, 'High Comprehension Low Strength', vol, chp, frag=frag, postfix=postfix)
+	if 'Martial Void King' in item['tags'] :
+		return buildReleaseMessage(item, 'Martial Void King', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 ####################################################################################################################################################
@@ -2470,6 +2474,8 @@ def extractSandwichKingdom(item):
 		return False
 	if 'sougen no okite' in item['tags']:
 		return buildReleaseMessage(item, 'Sougen no Okite ~Shii yatsu ga moteru, ii buzoku ni umarekawatta zo~', vol, chp, frag=frag, postfix=postfix)
+	if 'Q.Maou-sama A.Mamono' in item['tags']:
+		return buildReleaseMessage(item, 'Q. Maou-sama no oshigoto wa? A. Mamono musume e no tanetsuke desu', vol, chp, frag=frag, postfix=postfix)
 	if 'kininaru kanojo wo tokoton okashi tsukusu hanshi' in item['tags']:
 		return buildReleaseMessage(item, 'Kininaru Kanojo wo Totokon Okashi Tsukusu Hanashi', vol, chp, frag=frag, postfix=postfix)
 	if 'game sekai tenseishitara' in item['tags']:
@@ -3106,6 +3112,10 @@ def extractSoulPermutation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if 'Elf-San with Master' in item['tags']:
+		return buildReleaseMessage(item, 'Elf-San with Master', vol, chp, frag=frag, postfix=postfix)
+	if 'Levelmaker' in item['tags']:
+		return buildReleaseMessage(item, 'Levelmaker', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractToriiTranslations(item):
 	'''

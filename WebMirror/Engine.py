@@ -522,7 +522,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 								starturl  = EXCLUDED.starturl,
 								netloc    = EXCLUDED.netloc,
 								is_text   = EXCLUDED.is_text,
-								distance  = EXCLUDED.distance,
+								distance  = LEAST(EXCLUDED.distance, web_pages.distance),
 								priority  = EXCLUDED.priority,
 								addtime   = EXCLUDED.addtime
 							WHERE
@@ -850,6 +850,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			runStatus.run_state.value = 0
 			print("Keyboard Interrupt!")
 
+
 	def taskProcess(self, job_test=None):
 		'''
 		Return true if there was something to do, false if not.
@@ -857,12 +858,22 @@ class SiteArchiver(LogBase.LoggerMixin):
 		job = None
 		try:
 			if job_test:
-				job = job_test
+
+				# If we had a test job that's a valid row,
+				# use that. If we have a test job /without/ a real URL,
+				# create the appropriate row and replace the test-row with the
+				# created (valid) row.
+				if job_test.id == None:
+					job = self.get_row(job_test.url)
+				else:
+					job = job_test
+				assert job.id != None
+
 			else:
 				job = self.getTask()
+
 			if not job:
 				return False
-
 
 			if job.netloc in self.specialty_handlers:
 				self.log.info("Job %s for url %s has a specialty handler!", job, job.url)

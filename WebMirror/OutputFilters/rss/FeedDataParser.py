@@ -3,6 +3,7 @@
 # from profilehooks import profile
 import urllib.parse
 import json
+import traceback
 import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 
 
@@ -900,7 +901,14 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			print("Not sending data for netloc: ", netloc)
 			return
 
-		new = self.getProcessedReleaseInfo(feedDat)
+		try:
+			new = self.getProcessedReleaseInfo(feedDat)
+		except AssertionError:
+			self.log.error("Exception when processing release!")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line.rstrip())
+
+			return
 
 		if tx_parse:
 			if new:

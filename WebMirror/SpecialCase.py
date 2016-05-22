@@ -1,10 +1,18 @@
 
+if __name__ == '__main__':
+	import logSetup
+	logSetup.initLogging()
+
 import logging
 import datetime
 import random
 import WebMirror.database as db
 import multiprocessing
+import traceback
 import time
+
+from WebMirror.SpecialHandlers import AmqpHandler
+
 random.seed()
 
 ACTIVE_FETCHES = {
@@ -16,12 +24,50 @@ FETCH_LOCK = multiprocessing.Lock()
 log = logging.getLogger("Main.Web.SpecialCaseHandler")
 
 
+AMQP_FETCHER = None
+def startAmqpFetcher():
+	global AMQP_FETCHER
+	if AMQP_FETCHER != None:
+		log.error("AmqpFetcher RPC instantiated twice!")
+		for line in traceback.format_exc().split("\n"):
+			log.error(line)
+
+		raise RuntimeError("AmqpFetcher instantiated twice!")
+
+	AMQP_FETCHER = AmqpHandler.AmqpRemoteJobManager()
+
+
 def handleRemoteFetch(params, job, engine, db_sess):
-	# print("Remote fetch command!")
-	pass
+	if AMQP_FETCHER == None:
+		return
+
+	print("Remote fetch command!")
+	module, call = params
+
+	assert job.id != None
+
+	# Be sure to update the DB state.
+	job.state = 'specialty_deferred'
+	db.get_db_session().commit()
+
+	raw_job = AmqpHandler.buildjob(
+			module         = module,
+			call           = call,
+			dispatchKey    = "fetcher",
+			jobid          = job.id,
+			args           = [job.url],
+			kwargs         = {},
+			additionalData = None,
+			postDelay      = 0
+		)
+
+
+	AMQP_FETCHER.put_job(raw_job)
+
+
 
 def handleSoRemoteFetch(params, job, engine, db_sess):
-	# print("Remote fetch command!")
+	print("StoriesOnline Remote fetch command!")
 	pass
 
 def handleRateLimiting(params, job, engine, db_sess):
@@ -76,8 +122,7 @@ def test():
 	pass
 
 if __name__ == '__main__':
-	import logSetup
-	logSetup.initLogging()
+	test()
 
 
 

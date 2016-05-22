@@ -24,6 +24,8 @@ import WebMirror.SiteSync.fetch
 from sqlalchemy import or_
 from sqlalchemy import and_
 import WebMirror.Exceptions
+import WebMirror.SpecialCase
+
 
 def print_html_response(archiver, new, ret):
 	print("Plain links:")
@@ -670,11 +672,13 @@ def decode(*args):
 		tgt = args[1]
 
 		if op == "fetch":
+			WebMirror.SpecialCase.startAmqpFetcher()
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test_retrieve(tgt)
 		elif op == "rss-db":
 			rss_db_sync(tgt)
 		elif op == "fetch-silent":
+			WebMirror.SpecialCase.startAmqpFetcher()
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test_retrieve(tgt, debug=False)
 		elif op == "fetch-rss":

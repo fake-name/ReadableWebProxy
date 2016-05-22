@@ -3,9 +3,30 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+nu scraper shared database of novel url outbound map
+gap between cover image amd well
+
+rewalk trikkered by date ago + timeout
+
+back date old japtem contemt
+
+https://soulpermutation.wordpress.com/
+rewalker not rewalking?
+
+http://extantvisions.com/
+
+feed issue flagging system
+new bool column to completely hide releases
+weight tag similarity by number of tags in other series
+
+limit wln search returms to items with released chapters
+sort tags
+
+allow deletion of dup eleases witn novelupdates postfixes - remove nu postfix if it's only for a singlemchapter too
+
+tbate postfix no longer working
 
 archiveteam manga warc 
-wln similar title search
 wln novelupdates search
 
 titleparse - tokenize, run processing passes that restructure tokens, then extract
