@@ -50,6 +50,7 @@ def print_html_response(archiver, new, ret):
 
 
 def test_retrieve(url, debug=True, rss_debug=False):
+	WebMirror.SpecialCase.startAmqpFetcher()
 	if rss_debug:
 		print("Debugging RSS")
 		flags.RSS_DEBUG = True
@@ -79,15 +80,17 @@ def test_retrieve(url, debug=True, rss_debug=False):
 		traceback.print_exc()
 
 
-	# if debug:
-	# 	print(archiver)
-	# 	print(ret.keys())
+def test_head(url, referrer):
 
-	# 	if "plainLinks" in ret and "rsrcLinks" in ret: # Looks like a HTML page. Print the relevant info
-	# 		print_html_response(archiver, new, ret)
-	# 	if "rss-content" in ret:
-	# 		print_rss_response(archiver, new, ret)
+	try:
+		WebMirror.SpecialCase.startAmqpFetcher()
+	except RuntimeError:  # Fetcher already started
+		pass
 
+	WebMirror.SpecialCase.blockingRemoteHead(url, referrer)
+
+	print("test_head complete!")
+	WebMirror.SpecialCase.stopAmqpFetcher()
 
 
 def test_all_rss():
@@ -672,13 +675,11 @@ def decode(*args):
 		tgt = args[1]
 
 		if op == "fetch":
-			WebMirror.SpecialCase.startAmqpFetcher()
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test_retrieve(tgt)
 		elif op == "rss-db":
 			rss_db_sync(tgt)
 		elif op == "fetch-silent":
-			WebMirror.SpecialCase.startAmqpFetcher()
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test_retrieve(tgt, debug=False)
 		elif op == "fetch-rss":
@@ -691,6 +692,14 @@ def decode(*args):
 
 		else:
 			print("ERROR: Unknown command!")
+
+	if len(args) == 3:
+		op  = args[0]
+		param1 = args[1]
+		param2 = args[2]
+		if op == "head":
+			print("Test HEAD command! Retreiving actual path from URL: '%s'" % param1)
+			test_head(param1, param2)
 
 	if len(args) == 4:
 		if args[0] == "delete-feed":

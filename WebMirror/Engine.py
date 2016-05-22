@@ -280,7 +280,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		elif 'rss-content' in response:
 			self.upsertRssItems(job, response['rss-content'], job.url)
 			self.upsertResponseLinks(job, plain=[entry['linkUrl'] for entry in response['rss-content']])
-
 		else:
 			self.upsertReponseContent(job, response)
 			self.upsertResponseLinks(job, plain=response['plainLinks'], resource=response['rsrcLinks'])

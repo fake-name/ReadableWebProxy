@@ -53,9 +53,9 @@ preserveAttrs : [
 special_case_filters : {
 
 	# Apparently they don't like bots. Well, too bad.
-	"www.novelupdates.com" : ["remote_fetch", "WebRequest", "getpage"],
-	"novelupdates.com"     : ["remote_fetch", "WebRequest", "getpage"],
+	"www.novelupdates.com" : ["remote_fetch", "WebRequest", "getItem"],
+	"novelupdates.com"     : ["remote_fetch", "WebRequest", "getItem"],
 
 	# So I can test against someone less bot-sensitive
-	"www.google.com" : ["remote_fetch", "WebRequest", "getpage"],
+	"www.google.com" : ["remote_fetch", "WebRequest", "getItem"],
 }

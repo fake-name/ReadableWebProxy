@@ -9,6 +9,8 @@ import WebMirror.OutputFilters.FilterBase
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
+import WebMirror.SpecialCase
+
 import bs4
 import re
 import calendar
@@ -230,7 +232,9 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = reldate
 
 			# TODO: This has to move into a preprocessor!
-			raw_item['linkUrl'] = self.wg.getHead(chp_tg.a['href'], addlHeaders={"Referer" : seriesPageUrl})
+
+			raw_item['linkUrl'] = WebMirror.SpecialCase.blockingRemoteHead(chp_tg.a['href'], referrer=seriesPageUrl)
+			# raw_item['linkUrl'] = self.wg.getHead(chp_tg.a['href'], addlHeaders={"Referer" : seriesPageUrl})
 
 			assert isinstance(raw_item['linkUrl'], str), "novelupdates link not a string?"
 			assert not "www.novelupdates.com/extnu/" in raw_item['linkUrl'], "NovelUpdates creepy outbound link thing"

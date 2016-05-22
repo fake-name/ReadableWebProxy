@@ -36,6 +36,20 @@ def startAmqpFetcher():
 
 	AMQP_FETCHER = AmqpHandler.AmqpRemoteJobManager()
 
+def stopAmqpFetcher():
+	global AMQP_FETCHER
+	print("Trying to stop fetcher")
+	if AMQP_FETCHER == None:
+		log.error("Cannot stop AMQP fetcher that is not running!!")
+		for line in traceback.format_exc().split("\n"):
+			log.error(line)
+
+		raise RuntimeError("Cannot stop AMQP fetcher that is not running!!")
+
+	AMQP_FETCHER.close()
+	del AMQP_FETCHER
+	AMQP_FETCHER = None
+
 
 def handleRemoteFetch(params, job, engine, db_sess):
 	if AMQP_FETCHER == None:
@@ -57,13 +71,54 @@ def handleRemoteFetch(params, job, engine, db_sess):
 			jobid          = job.id,
 			args           = [job.url],
 			kwargs         = {},
-			additionalData = None,
+			additionalData = {'mode' : 'fetch'},
 			postDelay      = 0
 		)
 
 
 	AMQP_FETCHER.put_job(raw_job)
 
+def doRemoteHead(url, referrer):
+	# remote_fetch, WebRequest, getItem
+	raw_job = AmqpHandler.buildjob(
+			module         = 'WebRequest',
+			call           = 'getHead',
+			dispatchKey    = "fetcher",
+			jobid          = url,
+			args           = [url],
+			kwargs         = {'addlHeaders' : {'Referer' : referrer}},
+			additionalData = {
+					'mode' : 'head',
+					'wrapped_url' : url,
+					'referrer' : referrer,
+				},
+			postDelay      = 0
+		)
+
+
+	AMQP_FETCHER.put_job(raw_job)
+
+
+def blockingRemoteHead(url, referrer):
+
+	timeout = 60 # 60 seconds.
+	db_sess = db.get_db_session()
+
+	transmitted = False
+
+	for x in range(timeout):
+		row =  db_sess.query(db.NuOutboundWrapperMap)                    \
+			.filter(db.NuOutboundWrapperMap.container_page == referrer ) \
+			.filter(db.NuOutboundWrapperMap.link_url       == url )      \
+			.scalar()
+		if row:
+			return row.target_url
+		if not transmitted:
+			transmitted = True
+			doRemoteHead(url, referrer)
+		time.sleep(1)
+
+	raise RuntimeError("Failed to fetch response for remote HEAD call!")
 
 
 def handleSoRemoteFetch(params, job, engine, db_sess):

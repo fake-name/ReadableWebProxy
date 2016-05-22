@@ -8,10 +8,12 @@ import os.path
 import ssl
 import time
 import msgpack
+import traceback
+import sqlalchemy.exc
 import multiprocessing
 import queue
 import config
-
+import WebMirror.database as database
 
 class RabbitQueueHandler(object):
 	die = False
@@ -99,9 +101,95 @@ def nop(dummy_1, dummy_2):
 	pass
 
 def handleFetchResponse(message):
-	pass
+	print("handleFetchResponse()")
+	assert len(message['ret']) == 3
+	content, fname, mimetype = message['ret']
+
+	if not "text" in mimetype or "application" in mimetype:
+		print("ERROR.")
+		print("ERROR: Remote system cannot currently handle non-text page content")
+		print("ERROR.")
+		return
+
+	db_sess = database.get_db_session()
+	try:
+		while 1:
+			try:
+				row =  db_sess.query(database.WebPages) \
+					.filter(database.WebPages.id == message['jobid'])       \
+					.one()
+
+				row.content = content
+				row.title = fname
+				row.mimetype = mimetype
+				row.state = "specialty_ready"
+				db_sess.commit()
+				break
+
+			except sqlalchemy.exc.InvalidRequestError:
+				print("InvalidRequest error!")
+				db_sess.rollback()
+				traceback.print_exc()
+			except sqlalchemy.exc.OperationalError:
+				print("InvalidRequest error!")
+				db_sess.rollback()
+			except sqlalchemy.exc.IntegrityError:
+				print("[upsertRssItems] -> Integrity error!")
+				traceback.print_exc()
+				db_sess.rollback()
+
+
+	finally:
+		database.delete_db_session()
+	print("Specialty response updated!")
+
 def handleheadResponse(message):
-	pass
+	print("handleheadResponse()")
+
+	target_url     = message['ret']
+	link_url       = message['extradat']['wrapped_url']
+	container_page = message['extradat']['referrer']
+
+	db_sess = database.get_db_session()
+	try:
+		while 1:
+			try:
+				row =  db_sess.query(database.NuOutboundWrapperMap)                          \
+					.filter(database.NuOutboundWrapperMap.container_page == container_page ) \
+					.filter(database.NuOutboundWrapperMap.link_url       == link_url )       \
+					.scalar()
+				if row:
+					print("Have HEAD response row")
+					assert row.target_url == target_url
+				else:
+					print("New HEAD response row")
+					new = database.NuOutboundWrapperMap(
+							target_url     = target_url,
+							link_url       = link_url,
+							container_page = container_page,
+						)
+
+					db_sess.add(new)
+					db_sess.commit()
+
+				break
+
+			except sqlalchemy.exc.InvalidRequestError:
+				print("InvalidRequest error!")
+				db_sess.rollback()
+				traceback.print_exc()
+			except sqlalchemy.exc.OperationalError:
+				print("InvalidRequest error!")
+				db_sess.rollback()
+			except sqlalchemy.exc.IntegrityError:
+				print("[upsertRssItems] -> Integrity error!")
+				traceback.print_exc()
+				db_sess.rollback()
+
+
+	finally:
+		database.delete_db_session()
+	print("handleheadResponse processing complete!")
 
 job_handlers = {
 	"fetch" : handleFetchResponse,
@@ -109,8 +197,15 @@ job_handlers = {
 }
 
 def processResponse(message):
-	assert message['']
+	assert 'jobid' in message
+	assert message['jobid']
+	assert 'extradat' in message
+	assert message['extradat']
+	assert 'mode' in message['extradat']
+	assert message['extradat']['mode']
 
+	assert message['extradat']['mode'] in job_handlers
+	job_handlers[message['extradat']['mode']](message)
 
 class AmqpRemoteJobManager():
 	def __init__(self):
@@ -130,6 +225,12 @@ class AmqpRemoteJobManager():
 		self.rets = {}
 
 	def __del__(self):
+		try:
+			self.close()
+		except Exception:
+			pass
+	def close(self):
+
 		self.run.value = 0
 		self.thread.join()
 
