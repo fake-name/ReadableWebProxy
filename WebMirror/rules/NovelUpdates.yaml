@@ -38,7 +38,7 @@ badwords: [
 
 			# Don't actually spider the site, just let the update triggers
 			# do their thing.
-			# 'www.novelupdates.com',
+			'www.novelupdates.com',
 			]
 
 # Content Stripping needs to be determined.
@@ -62,9 +62,9 @@ preserveAttrs : [
 special_case_filters : {
 
 	# Apparently they don't like bots. Well, too bad.
-	"www.novelupdates.com" : ["remote_fetch", "WebRequest", "getItem"],
-	"novelupdates.com"     : ["remote_fetch", "WebRequest", "getItem"],
+	"www.novelupdates.com" : ["remote_fetch", "NUWebRequest", "getItem"],
+	"novelupdates.com"     : ["remote_fetch", "NUWebRequest", "getItem"],
 
 	# So I can test against someone less bot-sensitive
-	"www.google.com" : ["remote_fetch", "WebRequest", "getItem"],
+	"www.google.com" : ["remote_fetch", "NUWebRequest", "getItem"],
 }

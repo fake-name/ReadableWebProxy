@@ -96,7 +96,7 @@ def handleRemoteFetch(params, job, engine, db_sess):
 def doRemoteHead(url, referrer):
 	# remote_fetch, WebRequest, getItem
 	raw_job = AmqpHandler.buildjob(
-			module         = 'WebRequest',
+			module         = 'NUWebRequest',
 			call           = 'getHead',
 			dispatchKey    = "fetcher",
 			jobid          = url,
@@ -110,7 +110,7 @@ def doRemoteHead(url, referrer):
 			postDelay      = 0
 		)
 
-
+	# print(raw_job)
 	AMQP_FETCHER.put_job(raw_job)
 
 
@@ -132,12 +132,11 @@ def blockingRemoteHead(url, referrer):
 				return row.target_url
 			if not transmitted:
 				transmitted = True
-				print("Dping ")
 				doRemoteHead(url, referrer)
 			time.sleep(1)
 			db_sess.rollback()
 
-			print("[blockingRemoteHead()] sleeping!")
+			print("[blockingRemoteHead()] sleeping %s!" % (timeout-x))
 	raise RuntimeError("Failed to fetch response for remote HEAD call!")
 
 
@@ -170,6 +169,7 @@ def handleRateLimiting(params, job, engine, db_sess):
 dispatchers = {
 	'so_remote_fetch' : handleSoRemoteFetch,
 	'remote_fetch'    : handleRemoteFetch,
+	# 'remote_fetch'    : handleSoRemoteFetch,
 	'rate_limit'      : handleRateLimiting,
 
 }

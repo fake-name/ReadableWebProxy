@@ -79,6 +79,7 @@ def test_retrieve(url, debug=True, rss_debug=False):
 	except Exception as e:
 		traceback.print_exc()
 
+	WebMirror.SpecialCase.stopAmqpFetcher()
 
 def test_head(url, referrer):
 
