@@ -15,6 +15,7 @@ if __name__ == "__main__":
 
 import WebMirror.Runner
 import WebMirror.rules
+import WebMirror.SpecialCase
 import runScheduler
 
 
@@ -62,9 +63,10 @@ def go():
 		NO_PROCESSES = processes
 		MAX_DB_SESSIONS = NO_PROCESSES + 2
 
-
+	WebMirror.SpecialCase.startAmqpFetcher()
 	runner = WebMirror.Runner.Crawler(thread_count=NO_PROCESSES)
 	runner.run()
+	WebMirror.SpecialCase.stopAmqpFetcher()
 
 	# print("Thread halted. App exiting.")
 

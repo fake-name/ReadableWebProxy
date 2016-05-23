@@ -6,14 +6,10 @@
 nu scraper shared database of novel url outbound map
 gap between cover image amd well
 
-rewalk trikkered by date ago + timeout
+rewalk triggered by date ago + timeout
 
 back date old japtem contemt
-
-https://soulpermutation.wordpress.com/
 rewalker not rewalking?
-
-http://extantvisions.com/
 
 feed issue flagging system
 new bool column to completely hide releases

@@ -328,6 +328,7 @@ def clear_bad():
 
 	for ruleset in rules:
 
+		print("Cleaning ruleset")
 		# print(ruleset['netlocs'])
 		# print(ruleset.keys())
 		for badword in ruleset['badwords']:
@@ -336,7 +337,7 @@ def clear_bad():
 			if "%" in badword:
 				print(badword)
 			else:
-
+				print("Deleting items containing string: '%s'" % badword)
 				q = db.get_db_session().query(db.WebPages)                   \
 					.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
 					.filter(db.WebPages.url.like("%{}%".format(badword)))

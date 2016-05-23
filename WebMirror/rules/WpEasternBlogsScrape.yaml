@@ -485,6 +485,7 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 	'https://soulpermutation.wordpress.com',
 	'https://whitenightsite.wordpress.com',
+	'https://soulpermutation.wordpress.com',
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	# This is WP, but it uses an custom theme I haven't tested against.

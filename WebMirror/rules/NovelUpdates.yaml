@@ -30,6 +30,15 @@ badwords: [
 			'/more-reviews/',
 			'/readlist/',
 			'/extnu/',
+
+			'/wp-content/themes/',
+			'/login/?redirect_to',
+			'/wp-content/uploads/',
+
+
+			# Don't actually spider the site, just let the update triggers
+			# do their thing.
+			# 'www.novelupdates.com',
 			]
 
 # Content Stripping needs to be determined.
