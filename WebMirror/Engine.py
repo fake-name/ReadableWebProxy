@@ -288,7 +288,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def special_case_handle(self, job):
-		WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers, self.db_sess)
+		response_job = WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers, self.db_sess)
+		if response_job:
+			fetcher = self.fetcher(rules=self.ruleset, target_url=job.url, start_url=job.starturl, cookie_lock=self.cookie_lock, job=job, wg_handle=self.wg, response_queue=self.resp_q, db_sess=self.db_sess)
+			# content, fName, mimeType
+			response = fetcher.dispatchContent(response_job.content, response_job.title, response_job.mimetype)
+			self.processResponse(job, response)
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):

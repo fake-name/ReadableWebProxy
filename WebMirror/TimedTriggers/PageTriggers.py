@@ -99,13 +99,18 @@ class HourlyPageTrigger(PageTriggerBase):
 		'http://japtem.com/fanfic.php?action=last_updated',
 		'http://japtem.com/fanfic.php',
 
-		# NovelUpdates
-		'http://www.novelupdates.com',
-
 		# Twitter feeds for annoying sites without better release mechanisms.
 		'https://twitter.com/Baka_Tsuki',
 		'https://twitter.com/Nano_Desu_Yo',
 	]
+
+class EveryFourHoursPageTrigger(PageTriggerBase):
+	pages = [
+		# NovelUpdates
+		'http://www.novelupdates.com',
+
+	]
+
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
 	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(6000)]

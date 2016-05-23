@@ -51,7 +51,8 @@ def stopAmqpFetcher():
 	AMQP_FETCHER = None
 
 
-def handleRemoteFetch(params, job, engine, db_sess):
+
+def dispatchRemoteFetch(params, job):
 	if AMQP_FETCHER == None:
 		return
 
@@ -78,6 +79,20 @@ def handleRemoteFetch(params, job, engine, db_sess):
 
 	AMQP_FETCHER.put_job(raw_job)
 
+def handleRemoteFetch(params, job, engine, db_sess):
+
+	dispatchRemoteFetch(params, job)
+	for x in range(60*5):
+		time.sleep(1)
+
+		# Clear the implicit transaction context so we can actually see changes by other threads.
+		db_sess.rollback()
+		db_sess.refresh(job)
+
+		if job.state == "specialty_ready":
+			return job
+	return None
+
 def doRemoteHead(url, referrer):
 	# remote_fetch, WebRequest, getItem
 	raw_job = AmqpHandler.buildjob(
@@ -101,23 +116,28 @@ def doRemoteHead(url, referrer):
 
 def blockingRemoteHead(url, referrer):
 
-	timeout = 60 # 60 seconds.
+	retries = 2 # 60 seconds.
+	timeout = 60*5 # 60 seconds.
 	db_sess = db.get_db_session()
 
 	transmitted = False
+	for y in range(retries):
+		for x in range(timeout):
+			row =  db_sess.query(db.NuOutboundWrapperMap)                    \
+				.filter(db.NuOutboundWrapperMap.container_page == referrer ) \
+				.filter(db.NuOutboundWrapperMap.link_url       == url )      \
+				.scalar()
+			if row:
+				print("Had outbound row wrapper for %s" % url)
+				return row.target_url
+			if not transmitted:
+				transmitted = True
+				print("Dping ")
+				doRemoteHead(url, referrer)
+			time.sleep(1)
+			db_sess.rollback()
 
-	for x in range(timeout):
-		row =  db_sess.query(db.NuOutboundWrapperMap)                    \
-			.filter(db.NuOutboundWrapperMap.container_page == referrer ) \
-			.filter(db.NuOutboundWrapperMap.link_url       == url )      \
-			.scalar()
-		if row:
-			return row.target_url
-		if not transmitted:
-			transmitted = True
-			doRemoteHead(url, referrer)
-		time.sleep(1)
-
+			print("[blockingRemoteHead()] sleeping!")
 	raise RuntimeError("Failed to fetch response for remote HEAD call!")
 
 
@@ -168,7 +188,7 @@ def handleSpecialCase(job, engine, rules, db_sess):
 	commands = rules[job.netloc]
 	op, params = commands[0], commands[1:]
 	if op in dispatchers:
-		dispatchers[op](params, job, engine, db_sess)
+		return dispatchers[op](params, job, engine, db_sess)
 	else:
 		log.error("Error! Unknown special-case filter!")
 		print("Filter name: '%s', parameters: '%s', job URL: '%s'", op, params, job.url)

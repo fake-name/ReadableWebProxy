@@ -153,7 +153,12 @@ def resetInProgress():
 
 	sess = db.get_db_session()
 	sess.query(db.WebPages) \
-		.filter((db.WebPages.state == "fetching") | (db.WebPages.state == "processing"))   \
+		.filter(
+				(db.WebPages.state == "fetching")           |
+				(db.WebPages.state == "processing")         |
+				(db.WebPages.state == "specialty_deferred") |
+				(db.WebPages.state == "specialty_ready")
+				)   \
 		.update({db.WebPages.state : "new"})
 	sess.commit()
 	sess.close()

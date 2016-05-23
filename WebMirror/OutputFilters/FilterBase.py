@@ -41,7 +41,7 @@ class FilterBase(PageProcessor):
 		self._no_ret = True
 
 		self.kwargs = kwargs
-
+		self.db_sess = kwargs['db_sess']
 		# 'pageUrl'         : url,
 		# 'pgContent'       : content,
 		# 'mimeType'        : mimeType,

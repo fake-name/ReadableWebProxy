@@ -101,7 +101,7 @@ def nop(dummy_1, dummy_2):
 	pass
 
 def handleFetchResponse(message):
-	print("handleFetchResponse()")
+	print("handleFetchResponse() called!")
 	assert len(message['ret']) == 3
 	content, fname, mimetype = message['ret']
 
@@ -118,11 +118,12 @@ def handleFetchResponse(message):
 				row =  db_sess.query(database.WebPages) \
 					.filter(database.WebPages.id == message['jobid'])       \
 					.one()
-
+				print(row)
 				row.content = content
 				row.title = fname
 				row.mimetype = mimetype
 				row.state = "specialty_ready"
+				print("Remote fetch set to specialty_ready!")
 				db_sess.commit()
 				break
 
