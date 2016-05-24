@@ -227,6 +227,10 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			group_name = group_tg.get_text().strip()
 			vol, chp, frag, post = extractTitle(chp_title)
 
+			# Clean up empty chapter numbers that are duplicated in the actual chapter data.
+			if re.match(r'^(V\d+)?(C\d+)?( part\d+)?$', chp_title, re.IGNORECASE):
+				chp_title = ""
+
 			raw_item = {}
 			raw_item['srcname']   = msgpackers.fixSmartQuotes(group_name)
 			raw_item['published'] = reldate

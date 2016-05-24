@@ -3,6 +3,10 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+write a better cookie jar - db backed
+
+cf failure regen useragent
+
 nu scraper shared database of novel url outbound map
 gap between cover image amd well
 

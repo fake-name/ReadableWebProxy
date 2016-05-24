@@ -104,13 +104,12 @@ class HourlyPageTrigger(PageTriggerBase):
 		'https://twitter.com/Nano_Desu_Yo',
 	]
 
-class EveryFourHoursPageTrigger(PageTriggerBase):
+class EverySixHoursPageTrigger(PageTriggerBase):
 	pages = [
 		# NovelUpdates
 		'http://www.novelupdates.com',
 
 	]
-
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
 	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(6000)]

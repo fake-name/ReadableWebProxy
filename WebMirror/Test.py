@@ -50,7 +50,12 @@ def print_html_response(archiver, new, ret):
 
 
 def test_retrieve(url, debug=True, rss_debug=False):
-	WebMirror.SpecialCase.startAmqpFetcher()
+
+	try:
+		WebMirror.SpecialCase.startAmqpFetcher()
+	except RuntimeError:  # Fetcher already started
+		pass
+
 	if rss_debug:
 		print("Debugging RSS")
 		flags.RSS_DEBUG = True
@@ -78,8 +83,8 @@ def test_retrieve(url, debug=True, rss_debug=False):
 		db.delete_db_session()
 	except Exception as e:
 		traceback.print_exc()
-
-	WebMirror.SpecialCase.stopAmqpFetcher()
+	finally:
+		WebMirror.SpecialCase.stopAmqpFetcher()
 
 def test_head(url, referrer):
 
@@ -88,7 +93,12 @@ def test_head(url, referrer):
 	except RuntimeError:  # Fetcher already started
 		pass
 
-	WebMirror.SpecialCase.blockingRemoteHead(url, referrer)
+	try:
+		WebMirror.SpecialCase.blockingRemoteHead(url, referrer)
+	except Exception as e:
+		traceback.print_exc()
+	finally:
+		WebMirror.SpecialCase.stopAmqpFetcher()
 
 	print("test_head complete!")
 	WebMirror.SpecialCase.stopAmqpFetcher()

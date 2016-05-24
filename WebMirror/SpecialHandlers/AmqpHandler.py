@@ -200,7 +200,7 @@ job_handlers = {
 def processResponse(message):
 	assert 'jobid' in message
 	assert message['jobid']
-	assert 'extradat' in message
+	assert 'extradat' in message, "missing extradat from packet: %s" % message
 	assert message['extradat']
 	assert 'mode' in message['extradat']
 	assert message['extradat']['mode']
