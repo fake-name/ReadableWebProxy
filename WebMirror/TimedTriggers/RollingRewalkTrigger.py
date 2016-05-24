@@ -7,6 +7,7 @@ import datetime
 import time
 import zlib
 import settings
+import datetime
 import sqlalchemy.exc
 
 import WebMirror.database as dbm
@@ -65,6 +66,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 						item.state    = "new"
 						item.distance = 0
 						item.priority = dbm.DB_IDLE_PRIORITY
+						item.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 						sess.commit()
 					break
 

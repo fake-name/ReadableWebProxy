@@ -4,6 +4,7 @@ import WebMirror.rules
 import WebMirror.TimedTriggers.TriggerBase
 
 import urllib.parse
+import datetime
 import sqlalchemy.exc
 
 class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
@@ -26,9 +27,11 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 					if have and have.state != "new":
 						have.state    = "new"
 						have.priority = self.db.DB_HIGH_PRIORITY
+						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 						sess.commit()
 						break
 					elif have:
+						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 						if have.priority != self.db.DB_HIGH_PRIORITY:
 							have.priority = self.db.DB_HIGH_PRIORITY
 							sess.commit()
