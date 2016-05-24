@@ -168,7 +168,8 @@ def build_rewalk_time_lut(rules):
 	for rset in rules:
 		if rset['netlocs']:
 			for netloc in rset['netlocs']:
-				ret[netloc] = rset['rewalk_interval_days']
+				if rset['rewalk_interval_days']:
+					ret[netloc] = rset['rewalk_interval_days']
 	return ret
 
 ########################################################################################################################
@@ -297,12 +298,23 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
+
+		start = urllib.parse.urlsplit(job.starturl).netloc
+		interval = settings.REWALK_INTERVAL_DAYS
+		if start in self.netloc_rewalk_times and self.netloc_rewalk_times[start]:
+			interval = self.netloc_rewalk_times[start]
+
+		assert interval > 7
+		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
+		print("[upsertFileResponse] Ignore until: ", ignoreuntiltime)
+
 		while 1:
 			try:
 
-				job.title    = response['title']
-				job.content  = response['contents']
-				job.mimetype = response['mimeType']
+				job.title           = response['title']
+				job.content         = response['contents']
+				job.mimetype        = response['mimeType']
+				job.ignoreuntiltime = ignoreuntiltime
 
 				# Update the tsv_content column if we have data for it.
 				if response['contents']:
@@ -377,13 +389,22 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	def upsertRssItems(self, job, entrylist, feedurl):
 
+		start = urllib.parse.urlsplit(job.starturl).netloc
+		interval = settings.REWALK_INTERVAL_DAYS
+		if start in self.netloc_rewalk_times:
+			interval = self.netloc_rewalk_times[start]
+		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
+		print("[upsertFileResponse] Ignore until: ", ignoreuntiltime)
+
 		while 1:
 			try:
 				self.db_sess.flush()
 				if not (job.state == "fetching" or job.state == 'processing'):
 					self.log.critical("Someone else modified row first? State: %s, url: %s", job.state, job.url)
-				job.state     = 'complete'
-				job.fetchtime = datetime.datetime.now()
+				job.state           = 'complete'
+				job.fetchtime       = datetime.datetime.now()
+				job.ignoreuntiltime = ignoreuntiltime
+
 				self.db_sess.commit()
 				self.log.info("Marked RSS job with id %s, url %s as complete (%s)!", job.id, job.url, job.state)
 				break
@@ -522,19 +543,21 @@ class SiteArchiver(LogBase.LoggerMixin):
 					ON CONFLICT (url) DO
 						UPDATE
 							SET
-								state     = EXCLUDED.state,
-								starturl  = EXCLUDED.starturl,
-								netloc    = EXCLUDED.netloc,
-								is_text   = EXCLUDED.is_text,
-								distance  = LEAST(EXCLUDED.distance, web_pages.distance),
-								priority  = EXCLUDED.priority,
-								addtime   = EXCLUDED.addtime
+								state           = EXCLUDED.state,
+								starturl        = EXCLUDED.starturl,
+								netloc          = EXCLUDED.netloc,
+								is_text         = EXCLUDED.is_text,
+								distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+								priority        = EXCLUDED.priority,
+								addtime         = EXCLUDED.addtime
 							WHERE
-								web_pages.addtime < :threshtime
-							AND
-								web_pages.url = EXCLUDED.url
-							AND
-								(web_pages.state = 'complete' OR web_pages.state = 'error')
+							(
+									web_pages.ignoreuntiltime < :ignoreuntiltime
+								AND
+									web_pages.url = EXCLUDED.url
+								AND
+									(web_pages.state = 'complete' OR web_pages.state = 'error')
+							)
 						;
 					""".replace("	", " ").replace("\n", " "))
 
@@ -558,23 +581,21 @@ class SiteArchiver(LogBase.LoggerMixin):
 						assert link.startswith("http")
 						assert start
 
-						interval = settings.REWALK_INTERVAL_DAYS
-						if start in self.netloc_rewalk_times:
-							interval = self.netloc_rewalk_times[start]
-						threshtime = datetime.datetime.now() - datetime.timedelta(days=interval)
 
-
+						# Forward-data the next walk, time, rather then using now-value for the thresh.
 						new = {
-							'url'        : link,
-							'starturl'   : job.starturl,
-							'netloc'     : start,
-							'distance'   : job.distance+1,
-							'is_text'    : istext,
-							'priority'   : job.priority,
-							'type'       : job.type,
-							'state'      : "new",
-							'addtime'    : datetime.datetime.now(),
-							'threshtime' : threshtime,
+							'url'             : link,
+							'starturl'        : job.starturl,
+							'netloc'          : start,
+							'distance'        : job.distance+1,
+							'is_text'         : istext,
+							'priority'        : job.priority,
+							'type'            : job.type,
+							'state'           : "new",
+							'addtime'         : datetime.datetime.now(),
+
+							# Don't retrigger unless the ignore time has elaped.
+							'ignoreuntiltime' : datetime.datetime.now(),
 							}
 						self.db_sess.execute(cmd, params=new)
 						if commit_each:
@@ -583,6 +604,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					except sqlalchemy.exc.ProgrammingError:
 						self.log.warn("SQLAlchemy ProgrammingError - Retrying.")
 						self.db_sess.rollback()
+						traceback.print_exc()
 						commit_each = True
 					except sqlalchemy.exc.InternalError:
 						self.log.warn("SQLAlchemy InternalError - Retrying.")
@@ -612,6 +634,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fHash = getHash(response['content'])
 
 
+		start = urllib.parse.urlsplit(job.starturl).netloc
+		interval = settings.REWALK_INTERVAL_DAYS
+		if start in self.netloc_rewalk_times:
+			interval = self.netloc_rewalk_times[start]
+
+		assert interval > 7
+		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
+		print("[upsertFileResponse] Ignore until: ", ignoreuntiltime)
 
 		while 1:
 			try:
@@ -650,9 +680,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 					self.db_sess.commit()
 					job.file = new.id
 
-				job.state     = 'complete'
-				job.is_text   = False
-				job.fetchtime = datetime.datetime.now()
+				job.state           = 'complete'
+				job.is_text         = False
+				job.fetchtime       = datetime.datetime.now()
+				job.ignoreuntiltime = ignoreuntiltime
 
 				self.log.info("Marked file job with id %s, url %s as complete!", job.id, job.url)
 
