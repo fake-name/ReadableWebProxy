@@ -73,7 +73,7 @@ def dispatchRemoteFetch(params, job):
 			args           = [job.url],
 			kwargs         = {},
 			additionalData = {'mode' : 'fetch'},
-			postDelay      = 0
+			postDelay      = 5
 		)
 
 

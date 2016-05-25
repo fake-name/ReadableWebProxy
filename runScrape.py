@@ -1,4 +1,5 @@
 #!flask/bin/python
+import time
 
 from WebMirror.Runner import NO_PROCESSES
 from settings import MAX_DB_SESSIONS
@@ -70,6 +71,15 @@ def go():
 
 	# print("Thread halted. App exiting.")
 
+def go_amqp():
+	WebMirror.SpecialCase.startAmqpFetcher()
+	try:
+		while 1:
+			time.sleep(1)
+	except KeyboardInterrupt:
+		pass
+	WebMirror.SpecialCase.stopAmqpFetcher()
+
 def profile():
 	import cProfile
 	import pstats
@@ -99,7 +109,12 @@ if __name__ == "__main__":
 		global MAX_DB_SESSIONS
 		MAX_DB_SESSIONS = 4
 		runScheduler.go_sched()
-	if "test" in largv:
+	elif "amqp" in sys.argv:
+		global NO_PROCESSES
+		global MAX_DB_SESSIONS
+		MAX_DB_SESSIONS = 4
+		go_amqp()
+	elif "test" in largv:
 		go_test()
 	elif "profile" in largv:
 		profile()

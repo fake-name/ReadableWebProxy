@@ -9,6 +9,7 @@ import ssl
 import time
 import msgpack
 import traceback
+import pprint
 import sqlalchemy.exc
 import multiprocessing
 import queue
@@ -41,6 +42,7 @@ class RabbitQueueHandler(object):
 												synchronous        = False,
 												flush_queues       = False,
 												prefetch           = 25,
+												heartbeat          = 20,    # Fail fast, if possible.
 												durable            = True,
 												task_exchange_type = "direct",
 												task_queue         = 'task.master.q',
@@ -259,7 +261,6 @@ class AmqpRemoteJobManager():
 		self.log.info("AMQP Worker halted!")
 
 	def process_queues(self):
-		import pprint
 		try:
 			data = self.input_queue.get_nowait()
 			with open("fetchresult.txt", "w") as fp:
@@ -274,7 +275,16 @@ class AmqpRemoteJobManager():
 			new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
 			with open("fetchresult.txt", "a") as fp:
 				fp.write(pprint.pformat(new))
-			processResponse(new)
+			try:
+				processResponse(new)
+			except Exception:
+				self.log.error("Failure when parsing response message!")
+				for line in pprint.pformat(new).split("\n"):
+					self.log.error(line)
+				self.log.error("")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+				self.log.error("")
 
 
 	def put_job(self, new_job):

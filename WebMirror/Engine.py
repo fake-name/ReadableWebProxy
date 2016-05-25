@@ -548,7 +548,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 								netloc          = EXCLUDED.netloc,
 								is_text         = EXCLUDED.is_text,
 								distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-								priority        = EXCLUDED.priority,
+								priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
 								addtime         = EXCLUDED.addtime
 							WHERE
 							(
@@ -802,7 +802,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			return False
 
 		job = self.db_sess.query(self.db.WebPages) \
-			.filter(self.db.WebPages.id == rid)             \
+			.filter(self.db.WebPages.id == rid)    \
 			.one()
 		self.db_sess.flush()
 

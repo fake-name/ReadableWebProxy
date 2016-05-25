@@ -36,20 +36,16 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 						.scalar()
 					if have and have.state != "new":
 						have.state    = "new"
-						have.distance = self.db.MAX_DISTANCE-3
+						have.distance = 0
 						have.priority = self.db.DB_HIGH_PRIORITY
 						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 						sess.commit()
 						break
 					elif have:
 						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
-						if have.priority != self.db.DB_HIGH_PRIORITY:
-							have.priority = self.db.DB_HIGH_PRIORITY
-							sess.commit()
-
-						if have.distance != self.db.MAX_DISTANCE-3:
-							have.distance = self.db.MAX_DISTANCE-3
-							sess.commit()
+						have.priority = self.db.DB_HIGH_PRIORITY
+						have.distance = 0
+						sess.commit()
 						# if len(have.versions):
 						# 	for item in have.versions[1::]:
 						# 		sess.delete(item)
@@ -60,7 +56,7 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 								starturl = url,
 								netloc   = urllib.parse.urlsplit(url).netloc,
 								priority = self.db.DB_HIGH_PRIORITY,
-								distance = self.db.MAX_DISTANCE-3,
+								distance = 0,
 							)
 						sess.add(new)
 						sess.commit()
@@ -124,6 +120,6 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 	run = HourlyPageTrigger()
 	run._go()
-	run = EveryOtherDayPageTrigger()
-	run._go()
+	# run = EveryOtherDayPageTrigger()
+	# run._go()
 

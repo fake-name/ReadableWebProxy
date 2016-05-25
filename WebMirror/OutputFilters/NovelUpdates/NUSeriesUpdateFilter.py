@@ -119,19 +119,38 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 					# will add it.
 					if not have:
 						self.log.info("New: '%s'", release_url)
-						break
 
-					# Also, don't reset if it's in-progress
-					if have.state in ['new', 'fetching', 'processing', 'removed'] and have.distance < 1000000:
-						self.log.info("Skipping: '%s' (%s, %s, %s)", release_url, have.state, have.distance, have.priority)
-						break
+						new = db.WebPages(
+								url             = release_url,
+								starturl        = "https://www.novelupdates.com/",
+								netloc          = 'www.novelupdates.com',
+								distance        = 0,
+								is_text         = True,
+								priority        = db.DB_HIGH_PRIORITY,
+								state           = "new",
+								addtime         = datetime.datetime.now(),
 
-					have.distance = 999999
-					have.priority = db.DB_IDLE_PRIORITY
-					self.log.info("Retriggering page '%s'", release_url)
-					have.state = 'new'
-					self.db_sess.commit()
-					break
+								# Don't retrigger unless the ignore time has elaped.
+								ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
+							)
+						self.db_sess.add(new)
+						self.db_sess.commit()
+
+
+
+					else:
+						# Also, don't reset if it's in-progress
+						if have.state in ['new', 'fetching', 'processing', 'removed'] and have.distance < 1000000:
+							self.log.info("Skipping: '%s' (%s, %s, %s)", release_url, have.state, have.distance, have.priority)
+							break
+
+						have.distance        = 0
+						have.priority        = db.DB_HIGH_PRIORITY
+						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
+						self.log.info("Retriggering page '%s'", release_url)
+						have.state = 'new'
+						self.db_sess.commit()
+						break
 
 
 				except sqlalchemy.exc.InvalidRequestError:

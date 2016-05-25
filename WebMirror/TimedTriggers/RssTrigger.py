@@ -32,13 +32,9 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 						break
 					elif have:
 						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
-						if have.priority != self.db.DB_HIGH_PRIORITY:
-							have.priority = self.db.DB_HIGH_PRIORITY
-							sess.commit()
-
-						if have.distance != self.db.MAX_DISTANCE-3:
-							have.distance = self.db.MAX_DISTANCE-3
-							sess.commit()
+						have.priority = self.db.DB_HIGH_PRIORITY
+						have.distance = 0
+						sess.commit()
 						break
 					else:
 						new = self.db.WebPages(
@@ -46,7 +42,7 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 								starturl = url,
 								netloc   = urllib.parse.urlsplit(url).netloc,
 								priority = self.db.DB_HIGH_PRIORITY,
-								distance = self.db.MAX_DISTANCE-2,
+								distance = 0
 							)
 						sess.add(new)
 						sess.commit()
