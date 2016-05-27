@@ -78,7 +78,7 @@ def test_retrieve(url, debug=True, rss_debug=False):
 		print(new)
 
 	try:
-		archiver = SiteArchiver(None, db.get_db_session())
+		archiver = SiteArchiver(None, db.get_db_session(), None)
 		archiver.taskProcess(job_test=new)
 		db.delete_db_session()
 	except Exception as e:

@@ -2,7 +2,9 @@
 import sys
 import codecs
 
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import os.path
 
 import time
@@ -15,6 +17,7 @@ import zlib
 import bs4
 import re
 import gzip
+import string
 import io
 import socket
 import json
@@ -125,6 +128,77 @@ class HTTPRedirectBlockerErrorHandler(urllib.request.HTTPErrorProcessor):
 
 	https_response = http_response
 
+
+
+# Custom redirect handler to work around
+# issue https://bugs.python.org/issue17214
+class HTTPRedirectHandler(urllib.request.HTTPRedirectHandler):
+	# Implementation note: To avoid the server sending us into an
+	# infinite loop, the request object needs to track what URLs we
+	# have already seen.  Do this by adding a handler-specific
+	# attribute to the Request object.
+	def http_error_302(self, req, fp, code, msg, headers):
+		# Some servers (incorrectly) return multiple Location headers
+		# (so probably same goes for URI).  Use first header.
+		if "location" in headers:
+			newurl = headers["location"]
+		elif "uri" in headers:
+			newurl = headers["uri"]
+		else:
+			return
+
+		# fix a possible malformed URL
+		urlparts = urllib.parse.urlparse(newurl)
+
+		# For security reasons we don't allow redirection to anything other
+		# than http, https or ftp.
+
+		if urlparts.scheme not in ('http', 'https', 'ftp', ''):
+			raise urllib.error.HTTPError(
+				newurl, code,
+				"%s - Redirection to url '%s' is not allowed" % (msg, newurl),
+				headers, fp)
+
+		if not urlparts.path:
+			urlparts = list(urlparts)
+			urlparts[2] = "/"
+		newurl = urllib.parse.urlunparse(urlparts)
+
+		# http.client.parse_headers() decodes as ISO-8859-1.  Recover the
+		# original bytes and percent-encode non-ASCII bytes, and any special
+		# characters such as the space.
+		newurl = urllib.parse.quote(
+			newurl, encoding="iso-8859-1", safe=string.punctuation)
+		newurl = urllib.parse.urljoin(req.full_url, newurl)
+
+		# XXX Probably want to forget about the state of the current
+		# request, although that might interact poorly with other
+		# handlers that also use handler-specific request attributes
+		new = self.redirect_request(req, fp, code, msg, headers, newurl)
+		if new is None:
+			return
+
+		# loop detection
+		# .redirect_dict has a key url if url was previously visited.
+		if hasattr(req, 'redirect_dict'):
+			visited = new.redirect_dict = req.redirect_dict
+			if (visited.get(newurl, 0) >= self.max_repeats or
+				len(visited) >= self.max_redirections):
+				raise urllib.error.HTTPError(req.full_url, code,
+								self.inf_msg + msg, headers, fp)
+		else:
+			visited = new.redirect_dict = req.redirect_dict = {}
+		visited[newurl] = visited.get(newurl, 0) + 1
+
+		# Don't close the fp until we are sure that we won't use it
+		# with HTTPError.
+		fp.read()
+		fp.close()
+
+		return self.parent.open(new, timeout=req.timeout)
+
+
+
 # A urllib2 wrapper that provides error handling and logging, as well as cookie management. It's a bit crude, but it works.
 # Also supports transport compresion.
 # OOOOLLLLLLDDDDD, has lots of creaky internals. Needs some cleanup desperately, but lots of crap depends on almost everything.
@@ -234,10 +308,10 @@ class WebGetRobust:
 				cookieHandler = urllib.request.HTTPCookieProcessor(self.cj)
 				if self.credHandler:
 					print("Have cred handler. Building opener using it")
-					self.opener = urllib.request.build_opener(cookieHandler, self.credHandler)
+					self.opener = urllib.request.build_opener(cookieHandler, self.credHandler, HTTPRedirectHandler)
 				else:
 					# print("No cred handler")
-					self.opener = urllib.request.build_opener(cookieHandler)
+					self.opener = urllib.request.build_opener(cookieHandler, HTTPRedirectHandler)
 				#self.opener.addheaders = [('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)')]
 				self.opener.addheaders = self.browserHeaders
 				#urllib2.install_opener(self.opener)
