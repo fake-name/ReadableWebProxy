@@ -23,8 +23,8 @@ import WebMirror.util.StatusUpdater.Updater
 scrapePlugins = {
 	0  : (WebMirror.TimedTriggers.RssTrigger.RssTriggerBase,                     minutes(10)),
 	# 1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase, minutes(90)),
-	2  : (WebMirror.TimedTriggers.PageTriggers.HourlyPageTrigger,                minutes(60)),
-	2  : (WebMirror.TimedTriggers.PageTriggers.EverySixHoursPageTrigger,            hours(6)),
+	2  : (WebMirror.TimedTriggers.PageTriggers.HourlyPageTrigger,                minutes(30)),
+	2  : (WebMirror.TimedTriggers.PageTriggers.EverySixHoursPageTrigger,            hours(4)),
 	3  : (WebMirror.TimedTriggers.PageTriggers.EveryOtherDayPageTrigger,             days(2)),
 	4  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                      minutes(10)),
 }

@@ -101,7 +101,6 @@ def test_head(url, referrer):
 		WebMirror.SpecialCase.stopAmqpFetcher()
 
 	print("test_head complete!")
-	WebMirror.SpecialCase.stopAmqpFetcher()
 
 
 def test_all_rss():

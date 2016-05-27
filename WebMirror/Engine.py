@@ -8,6 +8,7 @@ import WebMirror.rules
 import WebMirror.SpecialCase
 import WebMirror.LogBase as LogBase
 import runStatus
+import queue
 import time
 import os.path
 import os
@@ -194,11 +195,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, db_interface, job_get_lock=False, run_filters=True, response_queue=None):
+	def __init__(self, cookie_lock, db_interface, new_job_queue, run_filters=True, response_queue=None):
 		# print("SiteArchiver __init__()")
 		super().__init__()
 
-		self.job_get_lock = job_get_lock
+		self.new_job_queue = new_job_queue
 		self.cookie_lock = cookie_lock
 		self.resp_q  = response_queue
 		self.db_sess = db_interface
@@ -611,8 +612,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 						self.db_sess.rollback()
 						commit_each = True
 					except sqlalchemy.exc.OperationalError:
-						self.log.warn("SQLAlchemy OperationalError - Retrying.")
+						if not commit_each:
+							self.log.warn("SQLAlchemy OperationalError - Retrying with commit_each.")
+						else:
+							self.log.warn("SQLAlchemy OperationalError with commit_each. Retrying.")
 						self.db_sess.rollback()
+						traceback.print_exc()
 						commit_each = True
 						time.sleep(random.random())
 					except sqlalchemy.exc.InvalidRequestError:
@@ -713,91 +718,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	def _get_task_internal(self):
-
-		# Hand-tuned query, I couldn't figure out how to
-		# get sqlalchemy to emit /exactly/ what I wanted.
-		# TINY changes will break the query optimizer, and
-		# the 10 ms query will suddenly take 10 seconds!
-		raw_query = text('''
-				UPDATE
-				    web_pages
-				SET
-				    state = 'fetching'
-				WHERE
-				    web_pages.id = (
-				        SELECT
-				            web_pages.id
-				        FROM
-				            web_pages
-				        WHERE
-				            web_pages.state = 'new'
-				        AND
-				            normal_fetch_mode = true
-				        AND
-				            web_pages.priority = (
-				               SELECT
-				                    min(priority)
-				                FROM
-				                    web_pages
-				                WHERE
-				                    state = 'new'::dlstate_enum
-				                AND
-				                    distance < 1000000
-				                AND
-				                    normal_fetch_mode = true
-				                AND
-				                    web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-				            )
-				        AND
-				            web_pages.distance < 1000000
-				        AND
-				            web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
-				        LIMIT 1
-				    )
-				AND
-				    web_pages.state = 'new'
-				RETURNING
-				    web_pages.id;
-			''')
-
-
-		start = time.time()
-
-		while runStatus.run_state.value == 1:
-			try:
-				rid = self.db_sess.execute(raw_query).scalar()
-				self.db_sess.commit()
-				break
-			except sqlalchemy.exc.OperationalError:
-				delay = random.random() / 3
-				# traceback.print_exc()
-				self.log.warn("Error getting job (OperationalError)! Delaying %s.", delay)
-				time.sleep(delay)
-				self.db_sess.rollback()
-				self.db_sess.flush()
-				self.db_sess.expire_all()
-			except sqlalchemy.exc.InvalidRequestError:
-				traceback.print_exc()
-				self.log.warn("Error getting job (InvalidRequestError)!")
-				self.db_sess.rollback()
-				self.db_sess.flush()
-				self.db_sess.expire_all()
-
-		# If we broke because a user-interrupt, we may not have a
-		# valid rid at this point.
-		if runStatus.run_state.value != 1:
+		self.log.info("Trying to get a job.")
+		try:
+			rid = self.new_job_queue.get_nowait()
+			self.log.info("New job: %s", rid)
+		except queue.Empty:
+			self.log.info("No jobs in queue? (qsize =  %s)", self.new_job_queue.qsize())
 			return False
-
-		xqtim = time.time() - start
-
-
-		if xqtim > 0.5:
-			self.log.error("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
-		elif xqtim > 0.1:
-			self.log.warn("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
-		else:
-			self.log.info("Query execution time: %s ms. Job ID = %s", xqtim * 1000, rid)
-
 		if not rid:
 			return False
 
@@ -836,16 +763,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# return self._get_task_internal(wattpad)
 
 		while runStatus.run_state.value == 1:
-			if self.job_get_lock:
-				acq = self.job_get_lock.acquire(timeout=1)
-				if not acq:
-					continue
-				try:
-					return self._get_task_internal()
-				finally:
-					self.job_get_lock.release()
-			else:
-				return self._get_task_internal()
+			return self._get_task_internal()
+
 
 
 	def do_job(self, job):

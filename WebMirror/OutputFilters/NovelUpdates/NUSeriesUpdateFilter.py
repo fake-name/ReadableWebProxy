@@ -140,7 +140,7 @@ class NUSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 					else:
 						# Also, don't reset if it's in-progress
-						if have.state in ['new', 'fetching', 'processing', 'removed'] and have.distance < 1000000:
+						if have.state in ['fetching', 'processing', 'error', 'removed', 'disabled', 'specialty_deferred', 'specialty_ready'] and have.distance < 1000000:
 							self.log.info("Skipping: '%s' (%s, %s, %s)", release_url, have.state, have.distance, have.priority)
 							break
 

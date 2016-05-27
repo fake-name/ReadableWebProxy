@@ -41,7 +41,12 @@ def stopAmqpFetcher():
 	print("Trying to stop fetcher")
 	if AMQP_FETCHER == None:
 		log.error("Cannot stop AMQP fetcher that is not running!!")
-		for line in traceback.format_exc().split("\n"):
+		try:
+			fexc = traceback.format_exc()
+		except Exception:
+			return
+
+		for line in fexc.split("\n"):
 			log.error(line)
 
 		raise RuntimeError("Cannot stop AMQP fetcher that is not running!!")
@@ -135,6 +140,8 @@ def blockingRemoteHead(url, referrer):
 				doRemoteHead(url, referrer)
 			time.sleep(1)
 			db_sess.rollback()
+			
+			# TODO: EXIT FLAG CHECKING GOES HERE
 
 			print("[blockingRemoteHead()] sleeping %s!" % (timeout-x))
 	raise RuntimeError("Failed to fetch response for remote HEAD call!")
@@ -168,8 +175,8 @@ def handleRateLimiting(params, job, engine, db_sess):
 
 dispatchers = {
 	'so_remote_fetch' : handleSoRemoteFetch,
-	'remote_fetch'    : handleRemoteFetch,
-	# 'remote_fetch'    : handleSoRemoteFetch,
+	# 'remote_fetch'    : handleRemoteFetch,
+	'remote_fetch'    : handleSoRemoteFetch,
 	'rate_limit'      : handleRateLimiting,
 
 }

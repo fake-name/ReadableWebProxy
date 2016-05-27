@@ -19,6 +19,7 @@ import time
 import json
 import WebMirror.util.webFunctions
 import bleach
+import multiprocessing
 import unshortenit
 
 MIN_RATING = 5
@@ -35,7 +36,9 @@ MIN_RATING = 5
 #
 ########################################################################################################################
 
-
+# There's some weird statefulness somewhere in the NU remote fetch system, so
+# just force it to be serialized.
+NU_FETCH_LOCK = multiprocessing.Lock()
 
 
 class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -286,7 +289,8 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def processPage(self, url, content):
 
 		soup = WebMirror.util.webFunctions.as_soup(self.content)
-		releases = self.extractSeriesReleases(self.pageUrl, soup)
+		with NU_FETCH_LOCK:
+			releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.sendReleases(releases)
 

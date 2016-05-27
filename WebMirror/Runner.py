@@ -15,6 +15,7 @@ import runStatus
 import queue
 import sqlalchemy.exc
 import WebMirror.database as db
+import WebMirror.NewJobQueue as njq
 
 import WebMirror.OutputFilters.AmqpInterface
 import config
@@ -33,7 +34,6 @@ NO_PROCESSES = 24
 
 # For synchronizing saving cookies to disk
 COOKIE_LOCK  = multiprocessing.Lock()
-JOB_GET_LOCK = multiprocessing.Lock()
 
 from pympler.tracker import SummaryTracker, summary, muppy
 import tracemalloc
@@ -47,15 +47,15 @@ def halt_exc(x, y):
 		raise KeyboardInterrupt
 
 class RunInstance(object):
-	def __init__(self, num, response_queue, cookie_lock, job_get_lock, nosig=True):
+	def __init__(self, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		print("RunInstance %s init!" % num)
 		if nosig:
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
 		self.num = num
 		self.log = logging.getLogger("Main.Text.Web")
-		self.resp_queue = response_queue
-		self.cookie_lock = cookie_lock
-		self.job_get_lock = job_get_lock
+		self.resp_queue    = response_queue
+		self.cookie_lock   = cookie_lock
+		self.new_job_queue = new_job_queue
 
 		print("RunInstance %s MOAR init!" % num)
 
@@ -68,7 +68,7 @@ class RunInstance(object):
 
 		hadjob = False
 		try:
-			self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, job_get_lock=self.job_get_lock, response_queue=self.resp_queue, db_interface=db_handle)
+			self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, new_job_queue=self.new_job_queue, response_queue=self.resp_queue, db_interface=db_handle)
 			hadjob = self.archiver.taskProcess()
 		finally:
 			# Clear out the sqlalchemy state
@@ -99,7 +99,7 @@ class RunInstance(object):
 			# This is because with 50 workers with a sleep-time of 5 seconds on job-miss,
 			# it was causing 100% CPU usage on the DB just for the getjob queries. (I think)
 			if not hadjob:
-				sleeptime = 90
+				sleeptime = 10
 				self.log.info("Nothing for thread %s to do. Sleeping %s seconds.", self.num, sleeptime)
 				for _x in range(sleeptime):
 					time.sleep(1)
@@ -113,10 +113,10 @@ class RunInstance(object):
 
 
 	@classmethod
-	def run(cls, num, response_queue, cookie_lock, job_get_lock, nosig=True):
+	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		print("Running!")
 		try:
-			run = cls(num, response_queue, cookie_lock, job_get_lock, nosig)
+			run = cls(num, response_queue, new_job_queue, cookie_lock, nosig)
 			print("Class instantiated: ", run)
 			run.go()
 		except Exception:
@@ -347,6 +347,18 @@ class Crawler(object):
 		self.agg_proc.join(0)
 		self.log.info("Aggregator joined.")
 
+	def start_job_fetcher(self):
+		job_queue = multiprocessing.Queue()
+		self.job_agg = njq.JobAggregator(job_queue)
+		return job_queue
+
+	def join_job_fetcher(self):
+		self.log.info("Asking Job source task to halt.")
+
+		self.job_agg.join_proc()
+		self.log.info("Job source halted.")
+
+
 	def run(self):
 
 		tasks =[]
@@ -354,12 +366,13 @@ class Crawler(object):
 		procno = 0
 
 		self.start_aggregator()
+		self.job_queue = self.start_job_fetcher()
 
 
 		if self.thread_count == 1:
 			self.log.info("Running in single process mode!")
 			try:
-				RunInstance.run(procno, self.agg_queue, cookie_lock=COOKIE_LOCK, job_get_lock=JOB_GET_LOCK, nosig=False)
+				RunInstance.run(procno, self.agg_queue, self.job_queue, cookie_lock=COOKIE_LOCK, nosig=False)
 			except KeyboardInterrupt:
 				runStatus.run_state.value = 0
 
@@ -377,7 +390,7 @@ class Crawler(object):
 						living = sum([task.is_alive() for task in tasks])
 						for dummy_x in range(self.thread_count - living):
 							self.log.warning("Insufficent living child threads! Creating another thread with number %s", procno)
-							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.agg_queue), kwargs={'cookie_lock':COOKIE_LOCK, 'job_get_lock':JOB_GET_LOCK})
+							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.agg_queue, self.job_queue), kwargs={'cookie_lock':COOKIE_LOCK})
 							tasks.append(proc)
 							proc.start()
 							procno += 1
@@ -385,11 +398,8 @@ class Crawler(object):
 						clok_locked = COOKIE_LOCK.acquire(block=False)
 						if clok_locked:
 							COOKIE_LOCK.release()
-						jlok_locked = JOB_GET_LOCK.acquire(block=False)
-						if jlok_locked:
-							JOB_GET_LOCK.release()
 
-						self.log.info("Living processes: %s (Cookie lock acquired: %s, job lock acquired: %s, exiting: %s)", living, not clok_locked, not jlok_locked, runStatus.run_state.value)
+						self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)", living, not clok_locked, self.job_queue.qsize(), runStatus.run_state.value)
 						# self.log.info("Living processes: %s", living)
 
 
@@ -427,6 +437,7 @@ class Crawler(object):
 
 
 			self.log.info("All processes halted.")
+		self.join_job_fetcher()
 		self.join_aggregator()
 
 

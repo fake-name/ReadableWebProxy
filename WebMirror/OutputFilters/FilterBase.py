@@ -7,6 +7,7 @@ import sqlalchemy.exc
 import urllib.parse
 import datetime
 import time
+import WebMirror.database as db
 from WebMirror.processor.ProcessorBase import PageProcessor
 
 class FilterBase(PageProcessor):

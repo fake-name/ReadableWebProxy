@@ -3,7 +3,10 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+http://10.1.1.60:5001/view?url=http%3A//lightnovelcafe.com/life-mission-vol-1-chapter-1/ float garbage
+
 write a better cookie jar - db backed
+fictionhub
 
 cf failure regen useragent
 
