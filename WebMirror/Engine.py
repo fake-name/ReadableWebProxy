@@ -440,7 +440,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					self.db_sess.rollback()
 					traceback.print_exc()
 				except sqlalchemy.exc.OperationalError:
-					print("InvalidRequest error!")
+					print("OperationalError error!")
 					self.db_sess.rollback()
 				except sqlalchemy.exc.IntegrityError:
 					print("[upsertRssItems] -> Integrity error!")
@@ -617,7 +617,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 						else:
 							self.log.warn("SQLAlchemy OperationalError with commit_each. Retrying.")
 						self.db_sess.rollback()
-						traceback.print_exc()
+						# traceback.print_exc()
 						commit_each = True
 						time.sleep(random.random())
 					except sqlalchemy.exc.InvalidRequestError:

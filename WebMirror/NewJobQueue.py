@@ -38,18 +38,22 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	loggerPath = "Main.JobAggregator"
 
-	def __init__(self, job_queue):
+	def __init__(self):
 		# print("Job __init__()")
 		super().__init__()
 
 
 		self.db      = db
 
-		self.out_queue = job_queue
+		self.normal_out_queue  = multiprocessing.Queue()
+		self.special_out_queue = multiprocessing.Queue()
 
 
 		self.j_fetch_proc = multiprocessing.Process(target=self.queue_filler_proc)
 		self.j_fetch_proc.start()
+
+	def get_queues(self):
+		return self.normal_out_queue, self.special_out_queue
 
 	def join_proc(self):
 		runStatus.job_run_state.value = 0
@@ -64,21 +68,41 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		self.db_sess = self.db.checkout_session()
 
+		msg_loop = 0
 		while runStatus.job_run_state.value == 1:
-			if self.out_queue.qsize() < 200:
+			msg_loop += 1
+			if self.normal_out_queue.qsize() < 200:
 				self._get_task_internal()
+				msg_loop = 30
 			else:
 				time.sleep(1)
+			if msg_loop > 20:
+				self.log.info("Job queue filler process. Current job queue sizes: normal: %s, specialty: %s",
+					self.normal_out_queue.qsize(),
+					self.special_out_queue.qsize(),
+					)
+				msg_loop = 0
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.db.release_session(self.db_sess)
 
 		# Consume the remaining items in the output queue so it shuts down cleanly.
 		try:
-			while not self.out_queue.empty():
-				self.out_queue.get_nowait()
+			while 1:
+				self.normal_out_queue.get_nowait()
 		except queue.Empty:
 			pass
+		try:
+			while 1:
+				self.special_out_queue.get_nowait()
+		except queue.Empty:
+			pass
+
+		self.log.info("Job queue filler process. Current job queue sizes: normal: %s, specialty: %s",
+			self.normal_out_queue.qsize(),
+			self.special_out_queue.qsize(),
+			)
+
 		self.log.info("Job queue fetcher halted.")
 
 
@@ -127,7 +151,7 @@ class JobAggregator(LogBase.LoggerMixin):
 				AND
 				    web_pages.state = 'new'
 				RETURNING
-				    web_pages.id;
+				    web_pages.id, web_pages.netloc;
 			''')
 
 
@@ -153,10 +177,13 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.db_sess.flush()
 				self.db_sess.expire_all()
 
+		if runStatus.run_state.value != 1:
+			return
+
 		if not rids:
 			return
 
-		rids = [tmp[0] for tmp in rids]
+		rids = list(rids)
 		# If we broke because a user-interrupt, we may not have a
 		# valid rids at this point.
 		if runStatus.run_state.value != 1:
@@ -172,8 +199,11 @@ class JobAggregator(LogBase.LoggerMixin):
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
-		for rid in rids:
-			self.out_queue.put(rid)
+		for rid, netloc in rids:
+			if "novelupdates.com" in netloc:
+				self.special_out_queue.put(rid)
+			else:
+				self.normal_out_queue.put(rid)
 
 
 def test2():

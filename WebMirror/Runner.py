@@ -348,9 +348,10 @@ class Crawler(object):
 		self.log.info("Aggregator joined.")
 
 	def start_job_fetcher(self):
-		job_queue = multiprocessing.Queue()
-		self.job_agg = njq.JobAggregator(job_queue)
-		return job_queue
+		self.job_agg = njq.JobAggregator()
+
+
+		return self.job_agg.get_queues()
 
 	def join_job_fetcher(self):
 		self.log.info("Asking Job source task to halt.")
@@ -366,13 +367,13 @@ class Crawler(object):
 		procno = 0
 
 		self.start_aggregator()
-		self.job_queue = self.start_job_fetcher()
 
+		self.normal_out_queue, self.special_out_queue, self.wattpad_out_queue = self.start_job_fetcher()
 
 		if self.thread_count == 1:
 			self.log.info("Running in single process mode!")
 			try:
-				RunInstance.run(procno, self.agg_queue, self.job_queue, cookie_lock=COOKIE_LOCK, nosig=False)
+				RunInstance.run(procno, self.agg_queue, self.normal_out_queue, cookie_lock=COOKIE_LOCK, nosig=False)
 			except KeyboardInterrupt:
 				runStatus.run_state.value = 0
 
@@ -390,7 +391,7 @@ class Crawler(object):
 						living = sum([task.is_alive() for task in tasks])
 						for dummy_x in range(self.thread_count - living):
 							self.log.warning("Insufficent living child threads! Creating another thread with number %s", procno)
-							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.agg_queue, self.job_queue), kwargs={'cookie_lock':COOKIE_LOCK})
+							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.agg_queue, self.normal_out_queue), kwargs={'cookie_lock':COOKIE_LOCK})
 							tasks.append(proc)
 							proc.start()
 							procno += 1
@@ -399,7 +400,7 @@ class Crawler(object):
 						if clok_locked:
 							COOKIE_LOCK.release()
 
-						self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)", living, not clok_locked, self.job_queue.qsize(), runStatus.run_state.value)
+						self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)", living, not clok_locked, self.normal_out_queue.qsize(), runStatus.run_state.value)
 						# self.log.info("Living processes: %s", living)
 
 
@@ -415,6 +416,12 @@ class Crawler(object):
 						if cleaned_count > 0:
 							self.log.warning("Run manager cleared out %s exited task instances.", cleaned_count)
 
+
+					try:
+						while 1:
+							self.wattpad_out_queue.get_nowait()
+					except queue.Empty:
+						pass
 
 
 			except KeyboardInterrupt:
@@ -436,9 +443,31 @@ class Crawler(object):
 
 
 
+
 			self.log.info("All processes halted.")
+		self.log.info("Flusing queues")
+
+		try:
+			while 1:
+				self.normal_out_queue.get_nowait()
+		except queue.Empty:
+			pass
+
+		try:
+			while 1:
+				self.special_out_queue.get_nowait()
+		except queue.Empty:
+			pass
+
+		try:
+			while 1:
+				self.wattpad_out_queue.get_nowait()
+		except queue.Empty:
+			pass
+
 		self.join_job_fetcher()
 		self.join_aggregator()
+
 
 
 if __name__ == "__main__":
