@@ -140,7 +140,7 @@ def blockingRemoteHead(url, referrer):
 				doRemoteHead(url, referrer)
 			time.sleep(1)
 			db_sess.rollback()
-			
+
 			# TODO: EXIT FLAG CHECKING GOES HERE
 
 			print("[blockingRemoteHead()] sleeping %s!" % (timeout-x))
@@ -175,8 +175,8 @@ def handleRateLimiting(params, job, engine, db_sess):
 
 dispatchers = {
 	'so_remote_fetch' : handleSoRemoteFetch,
-	# 'remote_fetch'    : handleRemoteFetch,
-	'remote_fetch'    : handleSoRemoteFetch,
+	'remote_fetch'    : handleRemoteFetch,
+	# 'remote_fetch'    : handleSoRemoteFetch,
 	'rate_limit'      : handleRateLimiting,
 
 }

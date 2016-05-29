@@ -326,8 +326,57 @@ class UpdateAggregator(object):
 		instance = cls(agg_queue, agg_db)
 		instance.run()
 
+class MultiJobManager(object):
+	def __init__(self, max_tasks, target, target_args, target_kwargs):
+		self.max_tasks     = max_tasks
+		self.target        = target
+		self.target_args   = target_args
+		self.target_kwargs = target_kwargs
+
+		self.procno        = 0
+
+		self.log = logging.getLogger("Main.Job.Launcher")
+
+		self.tasklist = []
+
+	def check_run_jobs(self):
+
+		living = sum([task.is_alive() for task in self.tasklist])
+		for dummy_x in range(self.max_tasks - living):
+			self.log.warning("Insufficent living child threads! Creating another thread with number %s", self.procno)
+			proc = multiprocessing.Process(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
+			self.tasklist.append(proc)
+			proc.start()
+			self.procno += 1
+
+		cleaned = 0
+		for task in self.tasklist:
+			if not task.is_alive():
+				task.join()
+				cleaned += 1
+
+		if cleaned > 0:
+			self.tasklist = [task for task in self.tasklist if task.is_alive()]
+			self.log.warning("Run manager cleared out %s exited task instances.", cleaned)
+
+		return len(self.tasklist)
+
+	def join_jobs(self):
+
+		self.log.info("Run manager waiting on tasks to exit. Runstate = %s", runStatus.run_state.value)
+		while 1:
+			living = sum([task.is_alive() for task in self.tasklist])
+			for task in self.tasklist:
+				task.join(3.0/(living+1))
+			self.log.info("Living processes: '%s'", living)
+			if living == 0:
+				break
+
 class Crawler(object):
 	def __init__(self, thread_count=NO_PROCESSES):
+
+		self.process_lookup = {}
+
 		self.log = logging.getLogger("Main.Text.Manager")
 		WebMirror.rules.load_rules()
 		self.agg_queue = multiprocessing.Queue()
@@ -359,100 +408,64 @@ class Crawler(object):
 		self.job_agg.join_proc()
 		self.log.info("Job source halted.")
 
+	def launchProcessesFromQueue(self, processes, job_in_queue):
+		pass
+
 
 	def run(self):
 
-		tasks =[]
 		cnt = 10
-		procno = 0
 
 		self.start_aggregator()
 
-		self.normal_out_queue, self.special_out_queue = self.start_job_fetcher()
+		normal_out_queue, special_out_queue = self.start_job_fetcher()
 
-		if self.thread_count == 1:
-			self.log.info("Running in single process mode!")
-			try:
-				RunInstance.run(procno, self.agg_queue, self.normal_out_queue, cookie_lock=COOKIE_LOCK, nosig=False)
-			except KeyboardInterrupt:
-				runStatus.run_state.value = 0
+		assert self.thread_count >= 1
 
+		mainManager    = MultiJobManager(max_tasks=self.thread_count, target=RunInstance.run, target_args=(self.agg_queue,  normal_out_queue), target_kwargs={'cookie_lock':COOKIE_LOCK})
+		specialManager = MultiJobManager(max_tasks=1,                 target=RunInstance.run, target_args=(self.agg_queue, special_out_queue), target_kwargs={'cookie_lock':COOKIE_LOCK})
 
-		elif self.thread_count < 1:
-			self.log.error("Wat?")
-		elif self.thread_count > 1:
-			try:
-				while runStatus.run_state.value:
-					time.sleep(1)
-
-					cnt += 1
-					if cnt >= 10:
-						cnt = 0
-						living = sum([task.is_alive() for task in tasks])
-						for dummy_x in range(self.thread_count - living):
-							self.log.warning("Insufficent living child threads! Creating another thread with number %s", procno)
-							proc = multiprocessing.Process(target=RunInstance.run, args=(procno, self.agg_queue, self.normal_out_queue), kwargs={'cookie_lock':COOKIE_LOCK})
-							tasks.append(proc)
-							proc.start()
-							procno += 1
-
-						clok_locked = COOKIE_LOCK.acquire(block=False)
-						if clok_locked:
-							COOKIE_LOCK.release()
-
-						self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)", living, not clok_locked, self.normal_out_queue.qsize(), runStatus.run_state.value)
-						# self.log.info("Living processes: %s", living)
+		managers = [mainManager, specialManager]
 
 
-						clean_tasks = []
-						cleaned_count = len(tasks)
-						for task in tasks:
-							if not task.is_alive():
-								task.join()
-							else:
-								clean_tasks.append(task)
-						tasks = clean_tasks
-						cleaned_count -= len(tasks)
-						if cleaned_count > 0:
-							self.log.warning("Run manager cleared out %s exited task instances.", cleaned_count)
+		try:
+			while runStatus.run_state.value:
+				time.sleep(1)
+
+				cnt += 1
+				if cnt >= 10:
+					cnt = 0
+
+					living = sum([manager.check_run_jobs() for manager in managers])
+
+					clok_locked = COOKIE_LOCK.acquire(block=False)
+					if clok_locked:
+						COOKIE_LOCK.release()
+
+					self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)",
+						living, not clok_locked, (normal_out_queue.qsize(), special_out_queue.qsize() ), runStatus.run_state.value)
 
 
-
-
-			except KeyboardInterrupt:
-				runStatus.run_state.value = 0
+		except KeyboardInterrupt:
+			runStatus.run_state.value = 0
 
 			self.log.info("Crawler allowing ctrl+c to propagate.")
 			time.sleep(1)
 			runStatus.run_state.value = 0
 
-
-			self.log.info("Crawler waiting on executor to complete: Runstate = %s", runStatus.run_state.value)
-			while 1:
-				living = sum([task.is_alive() for task in tasks])
-				[task.join(3.0/(living+1)) for task in tasks]
-				self.log.info("Living processes: '%s'", living)
-				if living == 0:
-					break
-
-
-
-
+			for manager in managers:
+				manager.join_jobs()
 
 			self.log.info("All processes halted.")
+
 		self.log.info("Flusing queues")
 
-		try:
-			while 1:
-				self.normal_out_queue.get_nowait()
-		except queue.Empty:
-			pass
-
-		try:
-			while 1:
-				self.special_out_queue.get_nowait()
-		except queue.Empty:
-			pass
+		for job_queue in [normal_out_queue, special_out_queue]:
+			try:
+				while 1:
+					job_queue.get_nowait()
+			except queue.Empty:
+				pass
 
 		self.join_job_fetcher()
 		self.join_aggregator()

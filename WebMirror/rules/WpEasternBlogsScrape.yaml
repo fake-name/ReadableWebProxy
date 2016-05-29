@@ -706,6 +706,9 @@ badwords: [
 	 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
 	 '&author=',
 	 '/#comment-',
+
+	# Siiigh.
+	'demo-to-prevent-copy-paste-on-blogger_files',
 	]
 
 decompose: [
