@@ -263,9 +263,9 @@ class AmqpRemoteJobManager():
 	def process_queues(self):
 		try:
 			data = self.input_queue.get_nowait()
-			with open("fetchresult.txt", "w") as fp:
-				fp.write(pprint.pformat(msgpack.unpackb(data, encoding='utf-8', use_list=False)))
-				fp.write("\n\n\n")
+			# with open("fetchresult.txt", "w") as fp:
+			# 	fp.write(pprint.pformat(msgpack.unpackb(data, encoding='utf-8', use_list=False)))
+			# 	fp.write("\n\n\n")
 			self.connector.put_item(data)
 		except queue.Empty:
 			time.sleep(0.05)
@@ -273,8 +273,8 @@ class AmqpRemoteJobManager():
 		if new:
 			self.log.info("Processing AMQP response item!")
 			new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
-			with open("fetchresult.txt", "a") as fp:
-				fp.write(pprint.pformat(new))
+			# with open("fetchresult.txt", "a") as fp:
+			# 	fp.write(pprint.pformat(new))
 			try:
 				processResponse(new)
 			except Exception:

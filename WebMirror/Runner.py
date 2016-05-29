@@ -368,7 +368,7 @@ class Crawler(object):
 
 		self.start_aggregator()
 
-		self.normal_out_queue, self.special_out_queue, self.wattpad_out_queue = self.start_job_fetcher()
+		self.normal_out_queue, self.special_out_queue = self.start_job_fetcher()
 
 		if self.thread_count == 1:
 			self.log.info("Running in single process mode!")
@@ -417,11 +417,6 @@ class Crawler(object):
 							self.log.warning("Run manager cleared out %s exited task instances.", cleaned_count)
 
 
-					try:
-						while 1:
-							self.wattpad_out_queue.get_nowait()
-					except queue.Empty:
-						pass
 
 
 			except KeyboardInterrupt:
@@ -456,12 +451,6 @@ class Crawler(object):
 		try:
 			while 1:
 				self.special_out_queue.get_nowait()
-		except queue.Empty:
-			pass
-
-		try:
-			while 1:
-				self.wattpad_out_queue.get_nowait()
 		except queue.Empty:
 			pass
 

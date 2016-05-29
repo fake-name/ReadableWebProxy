@@ -16,3 +16,6 @@ __pycache__
 /rabbit_pub_cert
 /rss_filter_misses-1.json
 /rss_filter_misses-1.json.pyout
+/ghostdriver.log
+/runExtra.py
+/sql_scratch.sql

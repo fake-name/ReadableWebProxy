@@ -1,32 +1,18 @@
 #!flask/bin/python
-import time
 
-from WebMirror.Runner import NO_PROCESSES
-from settings import MAX_DB_SESSIONS
-MAX_DB_SESSIONS = NO_PROCESSES + 5
 
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-
-
 # This HAS to be included before the app, to prevent circular dependencies.
 # import WebMirror.runtime_engines
 
+from settings import MAX_DB_SESSIONS
+from WebMirror.Runner import NO_PROCESSES
 import WebMirror.Runner
 import WebMirror.rules
 import WebMirror.SpecialCase
-import runScheduler
-
-
-def go_test():
-	import WebMirror.Engine
-
-	engine = WebMirror.Engine.SiteArchiver(None)
-	print(engine)
-	for x in range(100):
-		engine.getTask()
 
 def go():
 
@@ -43,6 +29,7 @@ def go():
 
 	global NO_PROCESSES
 	global MAX_DB_SESSIONS
+	MAX_DB_SESSIONS = NO_PROCESSES + 5
 
 	processes = 50
 	NO_PROCESSES = processes
@@ -71,59 +58,17 @@ def go():
 
 	# print("Thread halted. App exiting.")
 
-def go_amqp():
-	WebMirror.SpecialCase.startAmqpFetcher()
-	try:
-		while 1:
-			time.sleep(1)
-	except KeyboardInterrupt:
-		pass
-	WebMirror.SpecialCase.stopAmqpFetcher()
-
-def profile():
-	import cProfile
-	import pstats
-	cProfile.run('go()', "run.stats")
-	p = pstats.Stats("run.stats")
-	p.sort_stats('tottime')
-	p.print_stats(250)
-
-
-def gprofile():
-	import cProfile
-	import pstats
-	from pycallgraph import PyCallGraph
-	from pycallgraph.output import GraphvizOutput
-	with PyCallGraph(output=GraphvizOutput()):
-		go()
-
 if __name__ == "__main__":
 	import sys
-	print("Auxilliary modes: 'test', 'scheduler'.")
-
 
 	largv = [tmp.lower() for tmp in sys.argv]
 
 	if "scheduler" in sys.argv:
-		global NO_PROCESSES
-		global MAX_DB_SESSIONS
-		MAX_DB_SESSIONS = 4
-		runScheduler.go_sched()
-	elif "amqp" in sys.argv:
-		global NO_PROCESSES
-		global MAX_DB_SESSIONS
-		MAX_DB_SESSIONS = 4
-		go_amqp()
-	elif "test" in largv:
-		go_test()
-	elif "profile" in largv:
-		profile()
-	elif "graph-profile" in largv:
-		gprofile()
+		print("Please use runScheduler.py instead!")
+		sys.exit(1)
 	else:
 
 		started = False
 		if not started:
 			started = True
-
 			go()

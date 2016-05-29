@@ -1,25 +1,17 @@
 
-
-
 import multiprocessing
 import time
 import traceback
 import queue
 import random
 import signal
-import logSetup
 
 import sqlalchemy.exc
+from sqlalchemy.sql import text
+
 import WebMirror.database as db
 import WebMirror.LogBase as LogBase
 import runStatus
-from sqlalchemy.sql import text
-
-
-if __name__ == "__main__":
-	import logSetup
-	logSetup.initLogging()
-
 
 ########################################################################################################################
 #
@@ -32,7 +24,6 @@ if __name__ == "__main__":
 #	##     ## ##     ## #### ##    ##     ######  ######## ##     ##  ######   ######
 #
 ########################################################################################################################
-
 
 class JobAggregator(LogBase.LoggerMixin):
 
@@ -198,15 +189,24 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.log.warn("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
-
+		deleted = 0
 		for rid, netloc in rids:
 			if "novelupdates.com" in netloc:
 				self.special_out_queue.put(rid)
+			if netloc == "www.wattpad.com" or netloc == "a.wattpad.com":
+				deleted += 1
+				self.db_sess.query(self.db.WebPages) \
+					.filter((db.WebPages.id == rid)) \
+					.delete()
 			else:
 				self.normal_out_queue.put(rid)
+		if deleted > 0:
+			self.log.info("Deleted rows: %s", deleted)
 
+		self.db_sess.commit()
 
 def test2():
+	import logSetup
 	logSetup.initLogging()
 
 	jque = multiprocessing.Queue()
