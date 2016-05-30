@@ -270,9 +270,17 @@ def extractSkythewood(item):
 		return buildReleaseMessage(item, 'Genocide Reality', vol, chp, frag=frag)
 	if 'Youjo Senki' in item['tags']:
 		return buildReleaseMessage(item, 'Youjo Senki', vol, chp, frag=frag)
+	if 'Isekai Mahou' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Mahou wa Okureteru!', vol, chp, frag=frag)
 
-	if item['title'].startswith('A Tale of Two Shadows'):
+	if item['title'].startswith('A Tale of Two Shadows') or item['title'].startswith("The Legend of Faro: A Tale of Two Shadows Chapter"):
 		return buildReleaseMessage(item, 'A Tale of Two Shadows', vol, chp, frag=frag)
+	if item['title'].startswith('Overlord'):
+		return buildReleaseMessage(item, 'Overlord', vol, chp, frag=frag)
+	if item['title'].startswith('Hyperion 7'):
+		return buildReleaseMessage(item, 'Hyperion 7', vol, chp, frag=frag)
+	if item['title'].startswith('I Want A Harem But She Is Very...'):
+		return buildReleaseMessage(item, 'I Want A Harem But She Is Very…', vol, chp, frag=frag)
 	if item['title'].startswith('Gate of Twilight'):
 		return buildReleaseMessage(item, 'Gate of Twilight', vol, chp, frag=frag)
 

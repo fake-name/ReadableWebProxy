@@ -74,7 +74,6 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 						'referrer'         : currentUrl,
 						'outbound_wrapper' : release.find('a', class_='chp-release')['href'],
 						'actual_target'    : None,
-						'addtime'          : datetime.datetime.now(),
 					}
 					releases.append(release)
 
@@ -122,7 +121,6 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 					'referrer'         : currentUrl,
 					'outbound_wrapper' : link.a['href'],
 					'actual_target'    : None,
-					'addtime'          : datetime.datetime.now(),
 				}
 				releases.append(release)
 
@@ -180,7 +178,7 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 			referrer         = release['referrer'],
 			outbound_wrapper = release['outbound_wrapper'],
 			actual_target    = driver.current_url,
-			addtime          = release['addtime'],
+			addtime          = datetime.datetime.now(),
 			)
 
 		self.db_sess.add(new)

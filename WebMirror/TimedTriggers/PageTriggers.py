@@ -106,7 +106,7 @@ class HourlyPageTrigger(PageTriggerBase):
 class EverySixHoursPageTrigger(PageTriggerBase):
 	pages = [
 		# NovelUpdates
-		'http://www.novelupdates.com',
+		# 'http://www.novelupdates.com',
 
 	]
 
