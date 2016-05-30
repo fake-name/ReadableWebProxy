@@ -22,8 +22,9 @@ then
 	source venv/bin/activate
 else
 	echo "No Venv! Checking dependencies are installed."
+	sudo apt-get install build-essential
 	sudo apt-get install libxml2 libxslt1-dev python3-dev libz-dev -y
-	# sudo apt-get install phantomjs -y
+	sudo apt-get install phantomjs -y
 	echo "Creating venv."
 
 	python3 -m venv --without-pip venv
