@@ -18,7 +18,7 @@ from sqlalchemy import DateTime
 SQLALCHEMY_DATABASE_URI = 'sqlite:///linkwrappers.db'
 
 
-engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
 Base = declarative_base()
 
 class LinkWrappers(Base):

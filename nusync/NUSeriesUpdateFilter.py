@@ -153,7 +153,7 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 		if have:
 			release['actual_target'] = have.actual_target
 			self.log.info("Have: %s (%s, %s)", have, release['outbound_wrapper'], release['seriesname'])
-			return
+			return False  # Don't sleep, since we didn't do a remote fetch.
 
 		driver = self.wg.pjs_driver
 		basepage = release['referrer']
@@ -207,22 +207,25 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 		else:
 			self.log.error("Could not use back nav control to return to base-page!")
 
+		return True
 
 	def qualifyLinks(self, releaselist):
 		for release in releaselist:
+			sleep = True
 			try:
-				self.qualifyLink(release)
+				sleep = self.qualifyLink(release)
 			except selenium.common.exceptions.WebDriverException:
 				self.log.error("Error when resolving outbound referrer!")
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 				raise
 
-			sleeptime = random.randint(15, 10*60)
-			for x in range(sleeptime):
-				if x % 15 == 0:
-					self.log.info("Sleeping %s seconds (%s remaining)", sleeptime, sleeptime-x)
-				time.sleep(1)
+			if sleep:
+				sleeptime = random.randint(15, 10*60)
+				for x in range(sleeptime):
+					if x % 15 == 0:
+						self.log.info("Sleeping %s seconds (%s remaining)", sleeptime, sleeptime-x)
+					time.sleep(1)
 
 
 
