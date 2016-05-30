@@ -1,0 +1,14 @@
+feedparser
+SQLAlchemy
+colorama
+ftfy
+lxml
+selenium
+requests
+
+apscheduler
+git+https://github.com/fake-name/AmqpConnector.git
+git+https://github.com/jkehler/unshortenit.git
+
+## BS4 4.4.0 has some bugs.
+BeautifulSoup4==4.3.2

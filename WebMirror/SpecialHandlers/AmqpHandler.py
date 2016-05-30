@@ -107,6 +107,10 @@ def handleFetchResponse(message):
 	assert len(message['ret']) == 3
 	content, fname, mimetype = message['ret']
 
+	with open("page.txt", "w") as fp:
+		message_str = pprint.pformat(message)
+		fp.write(message_str)
+
 	if not "text" in mimetype or "application" in mimetype:
 		print("ERROR.")
 		print("ERROR: Remote system cannot currently handle non-text page content")
@@ -271,10 +275,11 @@ class AmqpRemoteJobManager():
 			time.sleep(0.05)
 		new = self.connector.get_item()
 		if new:
+			print("Processing AMQP response item!")
 			self.log.info("Processing AMQP response item!")
 			new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
-			# with open("fetchresult.txt", "a") as fp:
-			# 	fp.write(pprint.pformat(new))
+			with open("fetchresult.txt", "a") as fp:
+				fp.write(pprint.pformat(new))
 			try:
 				processResponse(new)
 			except Exception:

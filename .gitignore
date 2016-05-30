@@ -19,3 +19,5 @@ __pycache__
 /ghostdriver.log
 /runExtra.py
 /sql_scratch.sql
+/nusync/venv
+/nusync/linkwrappers.db

@@ -89,11 +89,11 @@ def handleRemoteFetch(params, job, engine, db_sess):
 	dispatchRemoteFetch(params, job)
 	for x in range(60*5):
 		time.sleep(1)
-
 		# Clear the implicit transaction context so we can actually see changes by other threads.
 		db_sess.rollback()
 		db_sess.refresh(job)
 
+		print("Sleeping. Job state = ", job.state)
 		if job.state == "specialty_ready":
 			return job
 	return None
@@ -175,8 +175,8 @@ def handleRateLimiting(params, job, engine, db_sess):
 
 dispatchers = {
 	'so_remote_fetch' : handleSoRemoteFetch,
-	'remote_fetch'    : handleRemoteFetch,
-	# 'remote_fetch'    : handleSoRemoteFetch,
+	# 'remote_fetch'    : handleRemoteFetch,
+	'remote_fetch'    : handleSoRemoteFetch,
 	'rate_limit'      : handleRateLimiting,
 
 }
