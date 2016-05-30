@@ -218,6 +218,12 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 					self.log.error(line)
 				raise
 
+			sleeptime = random.randint(15, 10*60)
+			for x in range(sleeptime):
+				if x % 15 == 0:
+					self.log.info("Sleeping %s seconds (%s remaining)", sleeptime, sleeptime-x)
+				time.sleep(1)
+
 
 
 	def handlePage(self, url):
