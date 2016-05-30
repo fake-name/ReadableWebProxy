@@ -24,7 +24,13 @@ else
 	echo "No Venv! Checking dependencies are installed."
 	sudo apt-get install build-essential
 	sudo apt-get install libxml2 libxslt1-dev python3-dev libz-dev -y
-	sudo apt-get install phantomjs -y
+
+	# 16.04 phantomjs apt package is fucked, crashes on start.
+	# sudo apt-get install phantomjs -y
+	wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+	tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
+	mv ./phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/
+	rm -rf phantomjs-2.1.1-linux-x86_64
 	echo "Creating venv."
 
 	python3 -m venv --without-pip venv
