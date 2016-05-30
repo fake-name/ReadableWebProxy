@@ -82,6 +82,8 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, 'Renegade Immortal', vol, chp, frag=frag)
 	if 'Sovereign of the Three Realms' in item['tags']:
 		return buildReleaseMessage(item, 'Sovereign of the Three Realms', vol, chp, frag=frag)
+	if 'Terror Infinity' in item['tags']:
+		return buildReleaseMessage(item, 'Terror Infinity', vol, chp, frag=frag)
 
 	return False
 
@@ -272,6 +274,8 @@ def extractYukkuri(item):
 		return buildReleaseMessage(item,  'The Curious Girl and The Traveler', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	elif  'Yukkuri Oniisan' in item['tags']:
 		return buildReleaseMessage(item,  'Yukkuri Oniisan', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	elif  'The Valtras Myth' in item['tags']:
+		return buildReleaseMessage(item,  'The Valtras Myth', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 	return False
 

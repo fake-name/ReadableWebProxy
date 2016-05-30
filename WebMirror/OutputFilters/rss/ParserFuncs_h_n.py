@@ -548,6 +548,8 @@ def extractLarvyde(item):
 		return buildReleaseMessage(item, 'Saenai Heroine no Sodatekata', vol, chp, frag=frag, postfix=postfix)
 	if 'Genjitsushugisha no Oukokukaizouki' in item['tags']:
 		return buildReleaseMessage(item, 'Genjitsushugisha no Oukokukaizouki', vol, chp, frag=frag, postfix=postfix)
+	if 'Hitokui Dungeon e Youkoso' in item['tags']:
+		return buildReleaseMessage(item, 'Hitokui Dungeon e Youkoso', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -781,6 +783,11 @@ def extractMoonBunnyCafe(item):
 		return buildReleaseMessage(item, 'Cultivating to Become a Great Celestial', vol, chp, frag=frag, postfix=postfix)
 	if 'time' in ltags:
 		return buildReleaseMessage(item, 'Time', vol, chp, frag=frag, postfix=postfix)
+
+	if 'i’m a neet but when i went to hello work i got taken to another world' in item['tags']:
+		return buildReleaseMessage(item, 'NEET dakedo Hello Work ni Ittara Isekai ni Tsuretekareta', vol, chp, frag=frag, postfix=postfix)
+	if 'muimui-tan' in item['tags']:
+		return buildReleaseMessage(item, 'Muimui-Tan', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2141,6 +2148,10 @@ def  extractLightNovelsTranslations(item):
 		return buildReleaseMessage(item, "The Mage Will Master Magic Efficiently In His Second Life", vol, chp, frag=frag, postfix=postfix)
 	if 'The Man Who Would Be King' in item['tags']:
 		return buildReleaseMessage(item, 'The Man Who Would Be King', vol, chp, frag=frag, postfix=postfix)
+	if 'maou no hajimekata' in item['tags']:
+		return buildReleaseMessage(item, 'Maou no Hajimekata', vol, chp, frag=frag, postfix=postfix)
+	if 'House Magic' in item['tags']:
+		return buildReleaseMessage(item, 'My House is a Magic Power Spot~ Just by Living there I Become the Strongest in the World', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2732,6 +2743,10 @@ def extractLevityTales(item):
 		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith('Ancient Godly Monarch'):
 		return buildReleaseMessage(item, 'Ancient Godly Monarch', vol, chp, frag=frag, postfix=postfix)
+	if 'Chaotic Lightning Cultivation' in item['tags']:
+		return buildReleaseMessage(item, 'Chaotic Lightning Cultivation', vol, chp, frag=frag, postfix=postfix)
+	if 'Overthrowing Fate' in item['tags']:
+		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractLightNovelCafe(item):
 	'''

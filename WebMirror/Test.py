@@ -509,6 +509,7 @@ def rss_db_sync(target = None, days=False, silent=False):
 															type        = 'application/atom+xml',
 															transfer    = False,
 															debug_print = True,
+															db_sess = None,
 															write_debug = write_debug)
 
 

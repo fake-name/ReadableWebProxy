@@ -673,6 +673,8 @@ def extractTranslationNations(item):
 		return buildReleaseMessage(item, 'God and Devil World', vol, chp, frag=frag, postfix=postfix)
 	if 'Limitless Sword God' in item['tags']:
 		return buildReleaseMessage(item, 'Limitless Sword God', vol, chp, frag=frag, postfix=postfix)
+	if 'Undefeated God of War' in item['tags']:
+		return buildReleaseMessage(item, 'Undefeated God of War', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 ####################################################################################################################################################
@@ -750,6 +752,12 @@ def extractRebirthOnlineWorld(item):
 		return buildReleaseMessage(item, 'Tensei Shoujo no Rirekisho', vol, chp, frag=frag, postfix=postfix)
 	if 'TWVUE' in item['tags']:
 		return buildReleaseMessage(item, 'Tales of the Wickedly Vicious Underground Empire', vol, chp, frag=frag, postfix=postfix)
+	if 'Parallel World Mafia' in item['tags']:
+		return buildReleaseMessage(item, 'In A Parallel World With Random Skills, I Reluctantly Become A Mafia Boss?', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'PRC' in item['tags']:
+		return buildReleaseMessage(item, 'Parameter Remote Control', vol, chp, frag=frag, postfix=postfix)
+	if 'TOWN' in item['tags']:
+		return buildReleaseMessage(item, 'The Ability to make town!? ~Let’s make a Japanese Town in Different world~', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2949,6 +2957,8 @@ def extractUkel2x(item):
 		return False
 	if item['title'].lower().startswith('volume'):
 		return buildReleaseMessage(item, 'Kokugensou wo Item Cheat de Ikinuku', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('dungeon kurashi no moto yuusha chapter'):
+		return buildReleaseMessage(item, 'Dungeon Kurashi No Moto Yuusha', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith('munivit anima chapter'):
 		return buildReleaseMessage(item, 'Munivit Anima', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
@@ -3086,6 +3096,12 @@ def extractPathOfTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+	if "Emperor's Domination" in item['tags']:
+		return buildReleaseMessage(item, "Emperor's Domination", vol, chp, frag=frag, postfix=postfix)
+	if 'Big Life' in item['tags']:
+		return buildReleaseMessage(item, 'Big Life', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('Game Market 1983'):
+		return buildReleaseMessage(item, 'Game Market 1983', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractReincarnationTranslations(item):
 	'''

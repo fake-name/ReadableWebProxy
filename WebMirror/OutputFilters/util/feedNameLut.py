@@ -482,6 +482,7 @@ mapper = {
 	'webnoveltranslations.blogspot.com'               : 'Neo Translations',
 	'webnoveltranslations.blogspot.in'                : 'Neo Translations',
 	'webnoveltranslations.blogspot.se'                : 'Neo Translations',
+	'jigglypuffsdiary.com'                            : 'Neo Translations',
 	'wishuponahope.blogspot.co.nz'                    : 'Wish Upon A Hope',
 	'wishuponahope.blogspot.com'                      : 'Wish Upon A Hope',
 	'witchlifenovel.blogspot.com'                     : 'Witch Life Novel',
@@ -849,7 +850,7 @@ mapper = {
 	'polarbearcatcher.wordpress.com'                  : 'Polar Bear Catcher',
 	'apollotrans.wordpress.com'                       : 'Apollo Translations',
 	'vermillionthetranslation.wordpress.com'          : '(NanoDesu) - Vermillion',
-	'leechervamparis.wordpress.com'                   : 'leechervamparis.wordpress.com',
+	'leechervamparis.wordpress.com'                   : 'Leecher Vamparis Translations',
 	'wumstranslations.wordpress.com'                  : 'Wums Translations',
 	'poorqualitytl.wordpress.com'                     : 'Poor Quality Translations',
 	'hiohbye.wordpress.com'                           : 'Hiohbye Translations',
@@ -895,7 +896,7 @@ mapper = {
 	'theyseemewhalin.tumblr.com'                      : 'The Captain\'s Log',
 
 	# Currently empty?
-	'evernightblog.wordpress.com'                     : 'evernightblog.wordpress.com',
+	'evernightblog.wordpress.com'                     : 'Ever Night Blog',
 
 	# Private
 	'hereticlnt.blogspot.ca'                          : 'hereticlnt.blogspot.ca',

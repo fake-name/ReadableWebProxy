@@ -28,16 +28,16 @@ def extractTitle(inStr):
 	frag = p.getFragment()
 	post = p.getPostfix()
 
-	if (chp and not frag) or (chp and float(int(float(chp))) != float(chp) and (frag == 0 or frag == None)):
+	if (chp and not frag) or (chp and float(int(float(chp))) != float(chp) and (frag == 0 or frag is None)):
 		chp = int(chp)
 		frag = int(chp * 100) % 100
 
-	if chp:
-		assert float(int(float(chp))) == float(chp), "chp is not an integer ('%s', %s, %s, %s)! Wat?" % (inStr, vol, chp, frag)
-	if vol:
-		assert float(int(float(vol))) == float(vol), "vol is not an integer ('%s', %s, %s, %s)! Wat?" % (inStr, vol, chp, frag)
-	if frag:
-		assert float(int(float(frag))) == float(frag), "frag is not an integer ('%s', %s, %s, %s)! Wat?" % (inStr, vol, chp, frag)
+	# if chp:
+	# 	assert float(int(float(chp))) == float(chp), "chp is not an integer ('%s', %s, %s, %s)! Wat?" % (inStr, vol, chp, frag)
+	# if vol:
+	# 	assert float(int(float(vol))) == float(vol), "vol is not an integer ('%s', %s, %s, %s)! Wat?" % (inStr, vol, chp, frag)
+	# if frag:
+	# 	assert float(int(float(frag))) == float(frag), "frag is not an integer ('%s', %s, %s, %s)! Wat?" % (inStr, vol, chp, frag)
 
 
 

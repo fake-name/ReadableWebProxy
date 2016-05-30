@@ -38,7 +38,6 @@ import WebMirror.processor.BinaryProcessor
 import WebMirror.processor.RssProcessor
 import WebMirror.processor.WattPadJsonProcessor
 
-import WebMirror.processor.NovelUpdates.Main
 
 PLUGINS = [
 	WebMirror.processor.HtmlProcessor.HtmlPageProcessor,
@@ -48,9 +47,6 @@ PLUGINS = [
 	WebMirror.processor.BinaryProcessor.BinaryResourceProcessor,
 	WebMirror.processor.RssProcessor.RssProcessor,
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
-
-	# Specialized stuff for additional scrapers
-	WebMirror.processor.NovelUpdates.Main.NovelUpdatesHtmlPageProcessor,
 ]
 
 
@@ -60,8 +56,6 @@ import WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter
 import WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter
 import WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter
 import WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter
-import WebMirror.OutputFilters.NovelUpdates.NUSeriesUpdateFilter
-import WebMirror.OutputFilters.NovelUpdates.NUSeriesPageFilter
 import WebMirror.OutputFilters.Twitter.TwitterFilter
 
 FILTERS = [
@@ -73,8 +67,6 @@ FILTERS = [
 	WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter.BooksieSeriesPageProcessor,
 	WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter.LNDBSeriesPageFilter,
 
-	WebMirror.OutputFilters.NovelUpdates.NUSeriesUpdateFilter.NUSeriesUpdateFilter,
-	WebMirror.OutputFilters.NovelUpdates.NUSeriesPageFilter.NUSeriesPageProcessor,
 
 	WebMirror.OutputFilters.Twitter.TwitterFilter.TwitterProcessor,
 ]

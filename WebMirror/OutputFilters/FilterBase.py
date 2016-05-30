@@ -103,7 +103,8 @@ class FilterBase(PageProcessor):
 
 
 	def retrigger_page(self, release_url):
-
+		if self.db_sess is None:
+			return
 		while 1:
 			try:
 				have = self.db_sess.query(db.WebPages) \

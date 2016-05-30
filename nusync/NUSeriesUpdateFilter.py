@@ -190,6 +190,7 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 
 		self.log.info("New entry!")
 		self.log.info("	Series:   '%s'", release['seriesname'])
+		self.log.info("	Release:  '%s'", release['releaseinfo'])
 		self.log.info("	Group:    '%s'", release['groupinfo'])
 		self.log.info("	Outbound: '%s'", release['outbound_wrapper'])
 		self.log.info("	Referrer: '%s'", release['referrer'])
@@ -221,7 +222,7 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 				raise
 
 			if sleep:
-				sleeptime = random.randint(15, 10*60)
+				sleeptime = random.randint(15, 30*60)
 				for x in range(sleeptime):
 					if x % 15 == 0:
 						self.log.info("Sleeping %s seconds (%s remaining)", sleeptime, sleeptime-x)
