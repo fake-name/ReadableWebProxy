@@ -74,6 +74,14 @@ badwords: [
 			'/toonerotica/images/s/',
 			'/css/s/stories/',
 			'/css/s/css/',
+			'/stories/s/css/',
+			'/russian3/p/03/',
+			'/p/02/css/',
+			'/css/stories/s/',
+			'/s/css/stories/',
+			'/css/stories/contest.php/',
+
+			'/stories/report_story.php?',
 
 			'/css/css/s/',
 			"/forum/",

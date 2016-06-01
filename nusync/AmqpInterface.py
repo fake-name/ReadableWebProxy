@@ -48,7 +48,7 @@ class RabbitQueueHandler(object):
 		'''
 		Verify the SSL cert exists in the proper place.
 		'''
-		certpaths = ['../rabbit_pub_cert/', './rabbit_pub_cert/']
+		certpaths = ['./rabbit_pub_cert/', '../rabbit_pub_cert/']
 		for certpath in certpaths:
 
 			caCert = os.path.abspath(os.path.join(certpath, './cacert.pem'))
@@ -59,14 +59,16 @@ class RabbitQueueHandler(object):
 				assert os.path.exists(caCert), "No certificates found on path '%s'" % caCert
 				assert os.path.exists(cert), "No certificates found on path '%s'" % cert
 				assert os.path.exists(keyf), "No certificates found on path '%s'" % keyf
+				print("Found certificates on path: ", certpath)
 				break
 			except AssertionError:
+				print("No certificates on path: ", certpath)
 				pass
 
 
-		ret = {"cert_reqs" : ssl.CERT_REQUIRED,
-				"ca_certs" : caCert,
-				"keyfile"  : keyf,
+		ret = {"cert_reqs"  : ssl.CERT_REQUIRED,
+				"ca_certs"  : caCert,
+				"keyfile"   : keyf,
 				"certfile"  : cert,
 			}
 		print("Certificate config: ", ret)

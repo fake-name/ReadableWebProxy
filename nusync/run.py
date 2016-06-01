@@ -7,7 +7,6 @@ from apscheduler.schedulers.blocking  import BlockingScheduler
 from apscheduler.executors.pool       import ThreadPoolExecutor
 
 import AmqpInterface
-import database as db
 import logSetup
 
 import NUSeriesUpdateFilter
@@ -19,11 +18,17 @@ def load_settings():
 
 
 def go():
-	settings = load_settings()
+	try:
+		import database as db
+		settings = load_settings()
 
-	fetcher = NUSeriesUpdateFilter.NUSeriesUpdateFilter(db.session(), settings)
-	print(fetcher.handlePage("https://www.novelupdates.com"))
+		fetcher = NUSeriesUpdateFilter.NUSeriesUpdateFilter(db.session(), settings)
+		print(fetcher.handlePage("https://www.novelupdates.com"))
+	except:
+		import traceback
 
+		print("ERROR: Failure when running job!")
+		traceback.print_exc()
 
 executors = {
 	'main_jobstore': ThreadPoolExecutor(5),
@@ -47,10 +52,10 @@ def run():
 	sched.add_job(go,
 				# args               = (callee.__name__, ),
 				trigger            = 'interval',
-				seconds            = 60*60*1,
+				seconds            = 60*60*2,
 				start_date         = startTime,
 				id                 = 0,
-				max_instances      =  1,
+				max_instances      = 1,
 				replace_existing   = True,
 				jobstore           = "main_jobstore",
 				misfire_grace_time = 2**30)
@@ -58,6 +63,8 @@ def run():
 	sched.start()
 
 def dump_db():
+
+	import database as db
 	settings = load_settings()
 	amqp = AmqpInterface.RabbitQueueHandler(settings)
 	print(amqp)
