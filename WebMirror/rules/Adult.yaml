@@ -72,6 +72,8 @@ badwords: [
 			'/stories/stories/s/',
 			'/stories/stories/stories/',
 			'/toonerotica/images/s/',
+			'/css/s/stories/',
+			'/css/s/css/',
 
 			'/css/css/s/',
 			"/forum/",

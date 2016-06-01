@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import AmqpConnector
 import logging
 import os.path
@@ -8,7 +9,7 @@ import ssl
 class RabbitQueueHandler(object):
 	die = False
 
-	def __init__(self, settings):
+	def __init__(self, settings, master=False):
 
 		logPath = 'Main.Feeds.RPC'
 
@@ -29,14 +30,14 @@ class RabbitQueueHandler(object):
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
 												ssl                = sslopts,
-												master             = True,
+												master             = master,
 												synchronous        = False,
 												flush_queues       = False,
 												prefetch           = 25,
 												durable            = True,
 												task_exchange_type = "fanout",
-												task_queue         = 'task.master.q',
-												response_queue     = 'response.master.q',
+												task_queue         = 'nuresponse.master.q',
+												response_queue     = 'nureleases.master.q',
 												)
 
 
@@ -47,15 +48,21 @@ class RabbitQueueHandler(object):
 		'''
 		Verify the SSL cert exists in the proper place.
 		'''
-		certpath = './rabbit_pub_cert/'
+		certpaths = ['../rabbit_pub_cert/', './rabbit_pub_cert/']
+		for certpath in certpaths:
 
-		caCert = os.path.abspath(os.path.join(certpath, './cacert.pem'))
-		cert = os.path.abspath(os.path.join(certpath, './cert1.pem'))
-		keyf = os.path.abspath(os.path.join(certpath, './key1.pem'))
+			caCert = os.path.abspath(os.path.join(certpath, './cacert.pem'))
+			cert = os.path.abspath(os.path.join(certpath, './cert1.pem'))
+			keyf = os.path.abspath(os.path.join(certpath, './key1.pem'))
 
-		assert os.path.exists(caCert), "No certificates found on path '%s'" % caCert
-		assert os.path.exists(cert), "No certificates found on path '%s'" % cert
-		assert os.path.exists(keyf), "No certificates found on path '%s'" % keyf
+			try:
+				assert os.path.exists(caCert), "No certificates found on path '%s'" % caCert
+				assert os.path.exists(cert), "No certificates found on path '%s'" % cert
+				assert os.path.exists(keyf), "No certificates found on path '%s'" % keyf
+				break
+			except AssertionError:
+				pass
+
 
 		ret = {"cert_reqs" : ssl.CERT_REQUIRED,
 				"ca_certs" : caCert,
@@ -86,20 +93,19 @@ class RabbitQueueHandler(object):
 			self.connector.stop()
 			self.connector = None
 
-if __name__ == '__main__':
-	import logSetup
-	logSetup.initLogging()
+	def putRow(self, row):
 
-	import config
-
-
-	amqp_settings = {
-		"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
-		"RABBIT_PASWD" : config.C_RABBIT_PASWD,
-		"RABBIT_SRVER" : config.C_RABBIT_SRVER,
-		"RABBIT_VHOST" : config.C_RABBIT_VHOST,
-	}
-
-	amqpint = RabbitQueueHandler(amqp_settings)
-	print(amqpint)
+		message = {
+			"nu_release" : {
+				"seriesname"       : row.seriesname,
+				"releaseinfo"      : row.releaseinfo,
+				"groupinfo"        : row.groupinfo,
+				"referrer"         : row.referrer,
+				"outbound_wrapper" : row.outbound_wrapper,
+				"actual_target"    : row.actual_target,
+				"addtime"          : row.addtime.isoformat(),
+			}
+		}
+		msg = json.dumps(message)
+		self.put_item(msg)
 

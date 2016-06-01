@@ -111,7 +111,7 @@ class EverySixHoursPageTrigger(PageTriggerBase):
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
-	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(6000)]
+	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(10000)]
 	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(800)]
 	pages = rrl_pages + japtem_pages
 
@@ -120,6 +120,6 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 	run = HourlyPageTrigger()
 	run._go()
-	# run = EveryOtherDayPageTrigger()
-	# run._go()
+	run = EveryOtherDayPageTrigger()
+	run._go()
 

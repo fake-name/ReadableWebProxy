@@ -13,8 +13,9 @@ import sqlalchemy.exc
 
 import LogBase
 import database as db
+import mmh3
 
-
+import AmqpInterface
 import WebRequest
 
 MIN_RATING = 5
@@ -40,11 +41,14 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 	_needs_amqp = False
 
 
-	def __init__(self, db_sess):
+	def __init__(self, db_sess, settings):
 		super().__init__()
 
+		self.settings = settings
 		self.db_sess = db_sess
+		self.amqp = AmqpInterface.RabbitQueueHandler(settings)
 		self.wg = WebRequest.WebGetRobust(cloudflare=True)
+
 
 ##################################################################################################################################
 ##################################################################################################################################
@@ -151,6 +155,7 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 		if have:
 			release['actual_target'] = have.actual_target
 			self.log.info("Have: %s (%s, %s)", have, release['outbound_wrapper'], release['seriesname'])
+			self.amqp.putRow(have)
 			return False  # Don't sleep, since we didn't do a remote fetch.
 
 		driver = self.wg.pjs_driver
@@ -184,6 +189,8 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 		self.db_sess.add(new)
 		self.db_sess.commit()
 
+		self.amqp.putRow(new)
+
 		release['actual_target'] = driver.current_url
 
 		self.log.info("New entry!")
@@ -196,7 +203,7 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 
 		# driver.execute_script("window.history.go(-1)")
 		self.log.info("Attempting to go back to source page")
-		for x in range(5):
+		for dummy_x in range(5):
 			if driver.current_url.rstrip("/") != basepage.rstrip("/"):
 				driver.back()
 				time.sleep(2)
@@ -209,7 +216,19 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 		return True
 
 	def qualifyLinks(self, releaselist):
+		limit = 5
 		for release in releaselist:
+
+			# Hash the series name, modulo number of clients,
+			# and pick the series that match the active client.
+			# This makes each client "picky" about what series
+			# it "reads".
+			chp_hash = mmh3.hash(release['seriesname'])
+			chp_hash = chp_hash % self.settings['client_count']
+			if chp_hash != self.settings['client_number']:
+				self.log.info("This client doesn't 'want' entries for series '%s'", release['seriesname'])
+				continue
+
 			sleep = True
 			try:
 				sleep = self.qualifyLink(release)
@@ -220,6 +239,12 @@ class NUSeriesUpdateFilter(LogBase.LoggerMixin):
 				raise
 
 			if sleep:
+
+				# Fetch 5 items per hour max
+				limit = limit - 1
+				if limit <= 0:
+					return
+
 				sleeptime = random.randint(15, 30*60)
 				for x in range(sleeptime):
 					if x % 15 == 0:

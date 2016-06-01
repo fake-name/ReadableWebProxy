@@ -124,7 +124,10 @@ class FilterBase(PageProcessor):
 					break
 
 				self.log.info("Retriggering page '%s'", release_url)
-				have.state = 'new'
+				have.state           = 'new'
+				have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
+				have.distance        = 1
+				have.priority        = db.DB_MED_PRIORITY
 				self.db_sess.commit()
 				break
 

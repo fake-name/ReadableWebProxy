@@ -41,9 +41,10 @@ else
 	source venv/bin/activate
 	./venv/bin/pip install cython
 	./venv/bin/pip install requests
-	./venv/bin/pip install --upgrade -r requirements.txt
 
 fi;
+
+./venv/bin/pip install --upgrade -r requirements.txt
 
 # If we're in a docker instance, the credentials will have been passed in as a
 # env var. Therefore, dump them to the settings.json file.

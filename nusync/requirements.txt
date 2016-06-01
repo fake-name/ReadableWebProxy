@@ -11,3 +11,4 @@ git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/jkehler/unshortenit.git
 
 BeautifulSoup4
+mmh3 

@@ -28,8 +28,9 @@ def thread_run():
 				interface = FeedFeeder.FeedFeeder.FeedFeeder()
 			interface.process()
 		except Exception:
+			print("Attempting to reconnect. Please stand by.")
 			interface = None
-			time.sleep(60)
+			time.sleep(10)
 		time.sleep(1)
 
 
