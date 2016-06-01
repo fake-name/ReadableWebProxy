@@ -9,12 +9,12 @@ import ssl
 class RabbitQueueHandler(object):
 	die = False
 
-	def __init__(self, settings, master=False):
+	def __init__(self, settings, is_master=False):
 
 		logPath = 'Main.Feeds.RPC'
 
 		self.log = logging.getLogger(logPath)
-		self.log.info("RPC Management class instantiated.")
+		self.log.info("RPC Management class instantiated. Master: %s.", is_master)
 
 
 		# Require clientID in settings
@@ -30,7 +30,7 @@ class RabbitQueueHandler(object):
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
 												ssl                = sslopts,
-												master             = master,
+												master             = is_master,
 												synchronous        = False,
 												flush_queues       = False,
 												prefetch           = 25,

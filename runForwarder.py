@@ -29,7 +29,7 @@ def go():
 		"RABBIT_SRVER" : settings.NU_RABBIT_SRVER,
 		"RABBIT_VHOST" : settings.NU_RABBIT_VHOST,
 	}
-	nureleaseconsumer = AmqpInterface.RabbitQueueHandler(settings_dict, master=True)
+	nureleaseconsumer = AmqpInterface.RabbitQueueHandler(settings_dict, is_master=True)
 	print(nureleaseconsumer)
 	while 1:
 		time.sleep(1)
