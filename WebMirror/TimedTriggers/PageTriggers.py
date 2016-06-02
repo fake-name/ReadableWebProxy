@@ -35,14 +35,16 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 						.filter(self.db.WebPages.url == url)  \
 						.scalar()
 					if have and have.state != "new":
+						print("Retriggering: ", have.url)
 						have.state    = "new"
 						have.distance = 0
 						have.priority = self.db.DB_HIGH_PRIORITY
-						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
+						have.ignoreuntiltime = datetime.datetime.min
 						sess.commit()
 						break
 					elif have:
-						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
+						print("Retriggering: ", have.url)
+						have.ignoreuntiltime = datetime.datetime.min
 						have.priority = self.db.DB_HIGH_PRIORITY
 						have.distance = 0
 						sess.commit()
@@ -56,8 +58,10 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 								starturl = url,
 								netloc   = urllib.parse.urlsplit(url).netloc,
 								priority = self.db.DB_HIGH_PRIORITY,
+								ignoreuntiltime = datetime.datetime.min,
 								distance = 0,
 							)
+						print("New: ", new.url)
 						sess.add(new)
 						sess.commit()
 						break
@@ -85,14 +89,11 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 class HourlyPageTrigger(PageTriggerBase):
 	pages = [
 		# RoyalRoadL
-		#'http://royalroadl.com/fictions/newest',
-		#'http://royalroadl.com/fictions/popular-this-week',
-		#'http://royalroadl.com/fictions/best-rated',
-		#'http://royalroadl.com/fictions/latest-updates',
-		#'http://royalroadl.com/fictions/active-only',
+		'http://royalroadl.com/fictions/newest/',
+		'http://royalroadl.com/fictions/weekly-views-top-50/',
 		'http://royalroadl.com/fictions/latest-updates/',
 		'http://royalroadl.com/fictions/active-top-50/',
-		'http://royalroadl.com/fictions/weekly-views-top-50/',
+		'http://royalroadl.com/fictions/best-rated/',
 
 		# Japtem bits
 		'http://japtem.com/fanfic.php?action=last_updated',
@@ -120,6 +121,6 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 	run = HourlyPageTrigger()
 	run._go()
-	run = EveryOtherDayPageTrigger()
-	run._go()
+	# run = EveryOtherDayPageTrigger()
+	# run._go()
 

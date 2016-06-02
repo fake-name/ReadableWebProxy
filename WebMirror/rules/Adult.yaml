@@ -80,6 +80,10 @@ badwords: [
 			'/css/stories/s/',
 			'/s/css/stories/',
 			'/css/stories/contest.php/',
+			'/css/css/css/',
+			'/russian3/p/s/stories/',
+			'/www.elle.com.tw/',
+			'/lifestyle/news/',
 
 			'/stories/report_story.php?',
 

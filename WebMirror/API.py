@@ -53,7 +53,7 @@ class RemoteContentObject(object):
 
 		# print("RemoteContentObject instantiated. Available fetchers: %s" % WebMirror.runtime_engines.fetchers.qsize())
 		# self.archiver = WebMirror.runtime_engines.fetchers.get()
-		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False, run_filters=False, new_job_queue=None, db_interface=self.db_sess)
+		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False, run_filters=False, new_job_queue=None, db_interface=self.db_sess, use_socks=True)
 
 
 	def fetch(self, ignore_cache=False, version=None):

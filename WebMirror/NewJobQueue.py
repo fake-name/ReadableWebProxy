@@ -131,12 +131,12 @@ class JobAggregator(LogBase.LoggerMixin):
 				                AND
 				                    normal_fetch_mode = true
 				                AND
-				                    web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
+				                    web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 				            )
 				        AND
 				            web_pages.distance < 1000000
 				        AND
-				            web_pages.ignoreuntiltime < current_timestamp + '5 minutes'::interval
+				            web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 				        LIMIT 250
 				    )
 				AND

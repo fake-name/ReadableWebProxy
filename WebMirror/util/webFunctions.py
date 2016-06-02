@@ -5,6 +5,10 @@ import codecs
 import urllib.request
 import urllib.parse
 import urllib.error
+import socks
+from sockshandler import SocksiPyHandler
+
+
 import os.path
 
 import time
@@ -246,14 +250,14 @@ class WebGetRobust:
 	# if test=true, no resources are actually fetched (for testing)
 	# creds is a list of 3-tuples that gets inserted into the password manager.
 	# it is structured [(top_level_url1, username1, password1), (top_level_url2, username2, password2)]
-	def __init__(self, test=False, creds=None, logPath="Main.Web", cookie_lock=None):
+	def __init__(self, test=False, creds=None, logPath="Main.Web", cookie_lock=None, use_socks=False):
 
 		if cookie_lock:
 			self.cookie_lock = cookie_lock
 		else:
 			self.cookie_lock = COOKIEWRITELOCK
 
-
+		self.use_socks = use_socks
 		# Override the global default socket timeout, so hung connections will actually time out properly.
 		socket.setdefaulttimeout(30)
 
@@ -306,12 +310,15 @@ class WebGetRobust:
 				# self.log.info("Installing CookieJar")
 				self.log.debug(self.cj)
 				cookieHandler = urllib.request.HTTPCookieProcessor(self.cj)
+				args = (cookieHandler, HTTPRedirectHandler)
 				if self.credHandler:
 					print("Have cred handler. Building opener using it")
-					self.opener = urllib.request.build_opener(cookieHandler, self.credHandler, HTTPRedirectHandler)
-				else:
-					# print("No cred handler")
-					self.opener = urllib.request.build_opener(cookieHandler, HTTPRedirectHandler)
+					args += (self.credHandler, )
+				if self.use_socks:
+					print("Using Socks handler")
+					args = (SocksiPyHandler(socks.SOCKS5, "127.0.0.1", 9050), ) + args
+
+				self.opener = urllib.request.build_opener(*args)
 				#self.opener.addheaders = [('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)')]
 				self.opener.addheaders = self.browserHeaders
 				#urllib2.install_opener(self.opener)
