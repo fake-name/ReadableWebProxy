@@ -278,16 +278,15 @@ class ItemFetcher(LogBase.LoggerMixin):
 	#
 	########################################################################################################################
 
-	# This is the main function that's called by the task management system.
-	# Retreive remote content at `url`, call the appropriate handler for the
-	# transferred content (e.g. is it an image/html page/binary file)
-	def fetch(self):
-		self.target_url = url_util.urlClean(self.target_url)
+	# # This is the main function that's called by the task management system.
+	# # Retreive remote content at `url`, call the appropriate handler for the
+	# # transferred content (e.g. is it an image/html page/binary file)
+	def fetch(self, preretrieved):
 
-
-		content, fName, mimeType = self.getItem(self.target_url)
+		if not preretrieved:
+			self.target_url = url_util.urlClean(self.target_url)
+			content, fName, mimeType = self.getItem(self.target_url)
+		else:
+			content, fName, mimeType = preretrieved
 
 		return self.dispatchContent(content, fName, mimeType)
-
-
-		# self.upsertResponseLinks(job, response)

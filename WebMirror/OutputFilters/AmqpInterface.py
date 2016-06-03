@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import msgpack
 import AmqpConnector
 import logging
 import os.path
@@ -29,14 +30,14 @@ class RabbitQueueHandler(object):
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
 												ssl                = sslopts,
-												master             = True,
+												master             = settings.get('master', True),
 												synchronous        = False,
 												flush_queues       = False,
-												prefetch           = 25,
+												prefetch           = settings.get('prefetch', 25),
 												durable            = True,
-												task_exchange_type = "fanout",
-												task_queue         = 'task.master.q',
-												response_queue     = 'response.master.q',
+												task_exchange_type = settings.get('queue_mode', 'fanout'),
+												task_queue         = settings["taskq_task"],
+												response_queue     = settings["taskq_response"],
 												)
 
 
@@ -74,9 +75,31 @@ class RabbitQueueHandler(object):
 
 	def get_item(self):
 		ret = self.connector.getMessage()
-		self.log.info("Received data size: %s bytes.", len(ret))
+		if ret:
+			self.log.info("Received data size: %s bytes.", len(ret))
 		return ret
 
+	def get_job(self):
+
+		new = self.get_item()
+		if new:
+			print("Processing AMQP response item!")
+			self.log.info("Processing AMQP response item!")
+			new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
+			return new
+		return None
+
+	def put_job(self, new_job):
+		assert 'module'       in new_job
+		assert 'call'         in new_job
+		assert 'dispatch_key' in new_job
+		assert 'jobid'        in new_job
+		assert new_job['jobid'] != None
+
+		# Make sure we have a returned data list for the added job.
+
+		packed_job = msgpack.packb(new_job, use_bin_type=True)
+		self.put_item(packed_job)
 
 	def __del__(self):
 		self.close()

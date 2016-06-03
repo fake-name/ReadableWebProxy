@@ -1,9 +1,12 @@
+git+https://github.com/fake-name/AmqpConnector.git
+git+https://github.com/fake-name/unshortenit
+
 bleach
 Jinja2
 psycopg2
 SQLAlchemy
 sqlalchemy-citext
-AmqpConnector
+
 colorama
 pyyaml
 natsort
@@ -27,7 +30,6 @@ semantic
 sqlalchemy_continuum
 sqlalchemy_searchable
 requests
-git+https://github.com/fake-name/unshortenit
 
 ## BS4 4.4.0 has some bugs.
 BeautifulSoup4==4.3.2

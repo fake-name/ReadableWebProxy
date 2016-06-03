@@ -103,6 +103,9 @@ class FilterBase(PageProcessor):
 
 
 	def retrigger_page(self, release_url):
+
+		trigger_priority = db.DB_HIGH_PRIORITY
+
 		if self.db_sess is None:
 			return
 		while 1:
@@ -119,15 +122,15 @@ class FilterBase(PageProcessor):
 					break
 
 				# Also, don't reset if it's in-progress
-				if have.state in ['new', 'fetching', 'processing', 'removed']:
-					self.log.info("Skipping: '%s' (%s)", release_url, have.state)
+				if have.state in ['new', 'fetching', 'processing', 'removed'] and have.priority <= trigger_priority:
+					self.log.info("Skipping: '%s' (%s, %s)", release_url, have.state, have.priority)
 					break
 
-				self.log.info("Retriggering page '%s'", release_url)
+				self.log.info("Retriggering page '%s' (%s, %s)", release_url, have.state, have.priority)
 				have.state           = 'new'
 				have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 				have.distance        = 1
-				have.priority        = db.DB_MED_PRIORITY
+				have.priority        = trigger_priority
 				self.db_sess.commit()
 				break
 

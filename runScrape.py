@@ -31,7 +31,7 @@ def go():
 	global MAX_DB_SESSIONS
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 
-	processes = 50
+	processes = 6
 	NO_PROCESSES = processes
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 	if "medianprocesses" in largv:
@@ -51,10 +51,8 @@ def go():
 		NO_PROCESSES = processes
 		MAX_DB_SESSIONS = NO_PROCESSES + 2
 
-	WebMirror.SpecialCase.startAmqpFetcher()
 	runner = WebMirror.Runner.Crawler(thread_count=NO_PROCESSES)
 	runner.run()
-	WebMirror.SpecialCase.stopAmqpFetcher()
 
 	# print("Thread halted. App exiting.")
 

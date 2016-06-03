@@ -87,9 +87,7 @@ class RunInstance(object):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
-				hadjob = WebMirror.SpecialCase.doSpecialCase()
-				if not hadjob:
-					hadjob = self.do_task()
+				hadjob = self.do_task()
 			else:
 				self.log.info("Thread %s exiting.", self.num)
 				break
@@ -148,6 +146,7 @@ def initializeStartUrls(rules):
 		sess.commit()
 	sess.close()
 	db.delete_db_session()
+
 def resetInProgress():
 	print("Resetting any stalled downloads from the previous session.")
 
@@ -170,10 +169,12 @@ class UpdateAggregator(object):
 		self.log = logging.getLogger("Main.Agg.Manager")
 
 		amqp_settings = {
-			"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
-			"RABBIT_PASWD" : config.C_RABBIT_PASWD,
-			"RABBIT_SRVER" : config.C_RABBIT_SRVER,
-			"RABBIT_VHOST" : config.C_RABBIT_VHOST,
+			"RABBIT_LOGIN"   : config.C_RABBIT_LOGIN,
+			"RABBIT_PASWD"   : config.C_RABBIT_PASWD,
+			"RABBIT_SRVER"   : config.C_RABBIT_SRVER,
+			"RABBIT_VHOST"   : config.C_RABBIT_VHOST,
+			'taskq_task'     : 'task.master.q',
+			'taskq_response' : 'response.master.q',
 		}
 
 		if config.C_DO_RABBIT:
@@ -236,19 +237,6 @@ class UpdateAggregator(object):
 
 
 	def do_link(self, linkdict):
-		# print("Link upsert!")
-		# Linkdict structure
-		# new = {
-		# 	'url'       : link,
-		# 	'starturl'  : job.starturl,
-		# 	'netloc'    : start,
-		# 	'distance'  : job.distance+1,
-		# 	'is_text'   : istext,
-		# 	'priority'  : job.priority,
-		# 	'type'      : job.type,
-		# 	'state'     : "new",
-		# 	'fetchtime' : datetime.datetime.now(),
-		# }
 
 		assert 'url'       in linkdict
 		assert 'starturl'  in linkdict
@@ -418,14 +406,13 @@ class Crawler(object):
 
 		self.start_aggregator()
 
-		normal_out_queue, special_out_queue = self.start_job_fetcher()
+		normal_out_queue = self.start_job_fetcher()
 
 		assert self.thread_count >= 1
 
 		mainManager    = MultiJobManager(max_tasks=self.thread_count, target=RunInstance.run, target_args=(self.agg_queue,  normal_out_queue), target_kwargs={'cookie_lock':COOKIE_LOCK})
-		specialManager = MultiJobManager(max_tasks=1,                 target=RunInstance.run, target_args=(self.agg_queue, special_out_queue), target_kwargs={'cookie_lock':COOKIE_LOCK})
 
-		managers = [mainManager, specialManager]
+		managers = [mainManager]
 
 
 		try:
@@ -443,7 +430,7 @@ class Crawler(object):
 						COOKIE_LOCK.release()
 
 					self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)",
-						living, not clok_locked, (normal_out_queue.qsize(), special_out_queue.qsize() ), runStatus.run_state.value)
+						living, not clok_locked, (normal_out_queue.qsize(),  ), runStatus.run_state.value)
 
 
 		except KeyboardInterrupt:
@@ -460,7 +447,7 @@ class Crawler(object):
 
 		self.log.info("Flusing queues")
 
-		for job_queue in [normal_out_queue, special_out_queue]:
+		for job_queue in [normal_out_queue]:
 			try:
 				while 1:
 					job_queue.get_nowait()

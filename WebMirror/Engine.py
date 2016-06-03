@@ -262,16 +262,23 @@ class SiteArchiver(LogBase.LoggerMixin):
 	########################################################################################################################
 
 	# Minimal proxy because I want to be able to call the fetcher without affecting the DB.
-	def fetch(self, job):
-		fetcher = self.fetcher(rules=self.ruleset, target_url=job.url, start_url=job.starturl, cookie_lock=self.cookie_lock, job=job, wg_handle=self.wg, response_queue=self.resp_q, db_sess=self.db_sess)
-		response = fetcher.fetch()
+	def fetch(self, job, preretrieved=None):
+		fetcher = self.fetcher(rules       = self.ruleset,
+							target_url     = job.url,
+							start_url      = job.starturl,
+							cookie_lock    = self.cookie_lock,
+							job            = job,
+							wg_handle      = self.wg,
+							response_queue = self.resp_q,
+							db_sess        = self.db_sess)
+		response = fetcher.fetch(preretrieved = preretrieved)
 		return response
 
 	# This is the main function that's called by the task management system.
 	# Retreive remote content at `url`, call the appropriate handler for the
 	# transferred content (e.g. is it an image/html page/binary file)
-	def dispatchRequest(self, job):
-		response = self.fetch(job)
+	def dispatchRequest(self, job, preretrieved=None):
+		response = self.fetch(job, preretrieved=preretrieved)
 		self.log.info("Dispatching job: %s, url: %s", job, job.url)
 		self.processResponse(job, response)
 
@@ -289,13 +296,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# Reset the fetch time download
 
 
-	def special_case_handle(self, job):
-		response_job = WebMirror.SpecialCase.handleSpecialCase(job, self, self.specialty_handlers, self.db_sess)
-		if response_job:
-			fetcher = self.fetcher(rules=self.ruleset, target_url=job.url, start_url=job.starturl, cookie_lock=self.cookie_lock, job=job, wg_handle=self.wg, response_queue=self.resp_q, db_sess=self.db_sess)
-			# content, fName, mimeType
-			response = fetcher.dispatchContent(response_job.content, response_job.title, response_job.mimetype)
-			self.processResponse(job, response)
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
@@ -717,41 +717,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	########################################################################################################################
 
 
-	def _get_task_internal(self):
-		self.log.info("Trying to get a job.")
-		try:
-			rid = self.new_job_queue.get_nowait()
-			self.log.info("New job: %s", rid)
-		except queue.Empty:
-			self.log.info("No jobs in queue? (qsize =  %s)", self.new_job_queue.qsize())
-			return False
-		if not rid:
-			return False
-
-		job = self.db_sess.query(self.db.WebPages) \
-			.filter(self.db.WebPages.id == rid)    \
-			.one()
-		self.db_sess.flush()
-
-		if not job:
-			self.db_sess.commit()
-			return False
-
-		if job.state != 'fetching':
-			self.db_sess.commit()
-			sleeptime = random.random()
-			self.log.info("Wat? How did the query return?")
-			return False
-
-		self.db_sess.commit()
-		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
-
-		self.db_sess.flush()
-
-
-		return job
-
-	def getTask(self):
+	def getRpcResp(self):
 		'''
 		Get a job row item from the database.
 
@@ -762,14 +728,76 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# Try to get a task untill we are explicitly out of tasks,
 		# return self._get_task_internal(wattpad)
 
-		while runStatus.run_state.value == 1:
-			return self._get_task_internal()
 
-
-
-	def do_job(self, job):
+		self.log.info("Trying to get a job.")
 		try:
-			self.dispatchRequest(job)
+			job_item = self.new_job_queue.get_nowait()
+			# self.log.info("New job: %s", job_item)
+			return job_item
+		except queue.Empty:
+			self.log.info("No jobs in queue? (qsize =  %s)", self.new_job_queue.qsize())
+			return False
+		if not job_item:
+			return False
+
+		raise ValueError
+
+
+
+	def get_job_from_id(self, jobid):
+
+		self.db_sess.flush()
+		job = self.db_sess.query(self.db.WebPages) \
+			.filter(self.db.WebPages.id == jobid)    \
+			.one()
+		self.db_sess.flush()
+
+		if not job:
+			self.db_sess.commit()
+			return False
+
+		# Don't dump old jobs that have been accidentally reset.
+		if job.state == 'new':
+			job.state = 'fetching'
+			self.db_sess.commit()
+
+		if job.state != 'fetching':
+			self.db_sess.commit()
+			self.log.info("Job not in expected state (state: %s).", job.state)
+			return False
+
+		self.db_sess.commit()
+		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
+
+		self.db_sess.flush()
+
+
+		return job
+
+
+	def process_rpc_response(self, rpcresp):
+		"""
+		Expected response structure:
+			{
+			 'call': 'getItem',
+			 'cancontinue': True,
+			 'dispatch_key': 'fetcher',
+			 'extradat': {'mode': 'fetch'},
+			 'jobid': 547397438,
+			 'module': 'WebRequest',
+			 'ret': (item_content, item_filename, item_mimetype),
+			 'success': True,
+			 'user': 'client_2'
+			}
+		"""
+
+		try:
+			job = self.get_job_from_id(rpcresp['jobid'])
+			if not job:
+				self.log.error("Received job that doesn't exist in the database? Wut? (Id: %s -> %s)", rpcresp['jobid'], job)
+				return
+			preretrieved = rpcresp['ret']
+			self.dispatchRequest(job, preretrieved)
 		except urllib.error.URLError:
 			content = "DOWNLOAD FAILED - urllib URLError"
 			content += "<br>"
@@ -805,36 +833,24 @@ class SiteArchiver(LogBase.LoggerMixin):
 			print("Keyboard Interrupt!")
 
 
-	def taskProcess(self, job_test=None):
+	def taskProcess(self):
 		'''
 		Return true if there was something to do, false if not.
 		'''
 		job = None
 		try:
-			if job_test:
 
-				# If we had a test job that's a valid row,
-				# use that. If we have a test job /without/ a real URL,
-				# create the appropriate row and replace the test-row with the
-				# created (valid) row.
-				if job_test.id == None:
-					job = self.get_row(job_test.url)
-				else:
-					job = job_test
-				assert job.id != None
+			while runStatus.run_state.value == 1:
+				rpcresp = self.getRpcResp()
+				if not rpcresp:
+					return False
+				self.process_rpc_response(rpcresp)
 
-			else:
-				job = self.getTask()
-
-			if not job:
-				return False
-
-			if job.netloc in self.specialty_handlers:
-				self.log.info("Job %s for url %s has a specialty handler!", job, job.url)
-				self.special_case_handle(job)
-			else:
-				if job:
-					self.do_job(job)
+			# if job.netloc in self.specialty_handlers:
+			# 	self.log.info("Job %s for url %s has a specialty handler!", job, job.url)
+			# 	self.special_case_handle(job)
+			# else:
+			# 	if job:
 
 		except Exception:
 			err_f = os.path.join("./logs", "error - {}.txt".format(time.time()))
@@ -1002,9 +1018,9 @@ def test():
 	# print("Doneself. Ret:")
 	# print(ins)
 	# print(archiver.resetDlstate())
-	print(archiver.getTask())
-	# print(archiver.getTask())
-	# print(archiver.getTask())
+	print(archiver.getRpcResp())
+	# print(archiver.getRpcResp())
+	# print(archiver.getRpcResp())
 	# print(archiver.taskProcess())
 	pass
 

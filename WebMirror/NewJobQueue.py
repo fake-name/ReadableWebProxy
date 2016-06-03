@@ -9,8 +9,10 @@ import signal
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
+import settings
 import WebMirror.database as db
 import WebMirror.LogBase as LogBase
+import WebMirror.OutputFilters.AmqpInterface
 import runStatus
 
 ########################################################################################################################
@@ -25,6 +27,35 @@ import runStatus
 #
 ########################################################################################################################
 
+
+
+MAX_IN_FLIGHT_JOBS = 250
+
+def buildjob(
+			module,
+			call,
+			dispatchKey,
+			jobid,
+			args           = [],
+			kwargs         = {},
+			additionalData = None,
+			postDelay      = 0
+		):
+
+	job = {
+			'call'         : call,
+			'module'       : module,
+			'args'         : args,
+			'kwargs'       : kwargs,
+			'extradat'     : additionalData,
+			'jobid'        : jobid,
+			'dispatch_key' : dispatchKey,
+			'postDelay'    : postDelay,
+		}
+	return job
+
+
+
 class JobAggregator(LogBase.LoggerMixin):
 
 	loggerPath = "Main.JobAggregator"
@@ -37,21 +68,69 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.db      = db
 
 		self.normal_out_queue  = multiprocessing.Queue()
-		self.special_out_queue = multiprocessing.Queue()
-
 
 		self.j_fetch_proc = multiprocessing.Process(target=self.queue_filler_proc)
 		self.j_fetch_proc.start()
 
+		self.active_jobs = 0
+
 	def get_queues(self):
-		return self.normal_out_queue, self.special_out_queue
+
+		return self.normal_out_queue
 
 	def join_proc(self):
 		runStatus.job_run_state.value = 0
 		self.j_fetch_proc.join(0)
 
+	def put_outbound_job(self, jobid, joburl):
+		self.active_jobs += 1
+		raw_job = buildjob(
+			module         = 'WebRequest',
+			call           = 'getItem',
+			dispatchKey    = "fetcher",
+			jobid          = jobid,
+			args           = [joburl],
+			kwargs         = {},
+			additionalData = {'mode' : 'fetch'},
+			postDelay      = 0
+		)
+		self.amqp_int.put_job(raw_job)
+		# print("Raw job:", raw_job)
+		# print("Jobid, joburl: ", (jobid, joburl))
+
+	def fill_jobs(self):
+		while self.active_jobs < (MAX_IN_FLIGHT_JOBS / 2):
+			self._get_task_internal()
+
+	def process_responses(self):
+		while 1:
+			tmp = self.amqp_int.get_job()
+			if tmp:
+				self.active_jobs -= 1
+				if self.active_jobs < 0:
+					self.active_jobs = 0
+				self.log.info("Job response received. Jobs in-flight: %s", self.active_jobs)
+				self.normal_out_queue.put(tmp)
+			else:
+				break
 
 	def queue_filler_proc(self):
+
+		amqp_settings = {
+			'RABBIT_LOGIN'    : settings.RPC_RABBIT_LOGIN,
+			'RABBIT_PASWD'    : settings.RPC_RABBIT_PASWD,
+			'RABBIT_SRVER'    : settings.RPC_RABBIT_SRVER,
+			'RABBIT_VHOST'    : settings.RPC_RABBIT_VHOST,
+			'master'          : True,
+			'prefetch'        : 250,
+			'queue_mode'      : 'direct',
+			'taskq_task'      : 'task.q',
+			'taskq_response'  : 'response.q',
+		}
+
+		self.active_jobs = 0
+
+		self.amqp_int = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
 		signal.signal(signal.SIGINT, signal.SIG_IGN)
 
@@ -61,21 +140,18 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		msg_loop = 0
 		while runStatus.job_run_state.value == 1:
+			self.fill_jobs()
+			self.process_responses()
+
 			msg_loop += 1
-			if self.normal_out_queue.qsize() < 200:
-				self._get_task_internal()
-				msg_loop = 30
-			else:
-				time.sleep(1)
+			time.sleep(1)
 			if msg_loop > 20:
-				self.log.info("Job queue filler process. Current job queue sizes: normal: %s, specialty: %s",
-					self.normal_out_queue.qsize(),
-					self.special_out_queue.qsize(),
-					)
+				self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.active_jobs, runStatus.job_run_state.value==1)
 				msg_loop = 0
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.db.release_session(self.db_sess)
+		self.amqp_int.close()
 
 		# Consume the remaining items in the output queue so it shuts down cleanly.
 		try:
@@ -83,16 +159,8 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.normal_out_queue.get_nowait()
 		except queue.Empty:
 			pass
-		try:
-			while 1:
-				self.special_out_queue.get_nowait()
-		except queue.Empty:
-			pass
 
-		self.log.info("Job queue filler process. Current job queue sizes: normal: %s, specialty: %s",
-			self.normal_out_queue.qsize(),
-			self.special_out_queue.qsize(),
-			)
+		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.active_jobs, runStatus.job_run_state.value==1)
 
 		self.log.info("Job queue fetcher halted.")
 
@@ -137,13 +205,13 @@ class JobAggregator(LogBase.LoggerMixin):
 				            web_pages.distance < 1000000
 				        AND
 				            web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				        LIMIT 250
+				        LIMIT {in_flight}
 				    )
 				AND
 				    web_pages.state = 'new'
 				RETURNING
-				    web_pages.id, web_pages.netloc;
-			''')
+				    web_pages.id, web_pages.netloc, web_pages.url;
+			'''.format(in_flight=MAX_IN_FLIGHT_JOBS))
 
 
 		start = time.time()
@@ -190,16 +258,14 @@ class JobAggregator(LogBase.LoggerMixin):
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		deleted = 0
-		for rid, netloc in rids:
-			if "novelupdates.com" in netloc:
-				self.special_out_queue.put(rid)
+		for rid, netloc, joburl in rids:
 			if netloc == "www.wattpad.com" or netloc == "a.wattpad.com":
 				deleted += 1
 				self.db_sess.query(self.db.WebPages) \
 					.filter((db.WebPages.id == rid)) \
 					.delete()
 			else:
-				self.normal_out_queue.put(rid)
+				self.put_outbound_job(rid, joburl)
 		if deleted > 0:
 			self.log.info("Deleted rows: %s", deleted)
 
@@ -207,15 +273,26 @@ class JobAggregator(LogBase.LoggerMixin):
 
 def test2():
 	import logSetup
+	import pprint
 	logSetup.initLogging()
 
-	jque = multiprocessing.Queue()
-	agg = JobAggregator(jque)
-
+	agg = JobAggregator()
+	outq = agg.get_queues()
 	for x in range(20):
 		print("Sleeping, ", x)
 		time.sleep(1)
+		try:
+			j = outq.get_nowait()
+			print("Received job! %s", len(j))
+			with open("jobs.txt", "a") as fp:
+				fp.write("\n\n\n")
+				fp.write(pprint.pformat(j))
+			print(j)
+		except queue.Empty:
+			pass
+	print("Joining on the aggregator")
 	agg.join_proc()
+	print("Joined.")
 
 if __name__ == "__main__":
 	test2()
