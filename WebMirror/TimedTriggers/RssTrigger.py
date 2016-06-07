@@ -24,19 +24,27 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 					have = sess.query(self.db.WebPages) \
 						.filter(self.db.WebPages.url == url)  \
 						.scalar()
-					if have and have.state != "new":
+					if have and have.state in ['fetching', 'processing']:
+						self.log.warning("Page being processed (%s, %s)?", have.url, have.state)
+
+					if have and have.state in ['disabled', 'specialty_deferred', 'specialty_ready']:
+						self.log.warning("Page disabled or being processed by specialty handler: (%s, %s)?", have.url, have.state)
+					elif have and have.state not in ['new', 'disabled', 'specialty_deferred', 'specialty_ready']:
+						self.log.info("Retriggering feed URL: %s", url)
 						have.state    = "new"
 						have.priority = self.db.DB_HIGH_PRIORITY
 						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 						sess.commit()
 						break
 					elif have:
+						self.log.warning("Feed URL already in 'new' state: %s", url)
 						have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 						have.priority = self.db.DB_HIGH_PRIORITY
 						have.distance = 0
 						sess.commit()
 						break
 					else:
+						self.log.info("New Feed URL: %s", url)
 						new = self.db.WebPages(
 								url      = url,
 								starturl = url,

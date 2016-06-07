@@ -68,8 +68,6 @@ class RemoteContentObject(object):
 			self.job = self.job.versions[version]
 
 
-		# print(self.job)
-
 	def getTitle(self):
 		assert self.fetched
 		assert self.job

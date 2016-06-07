@@ -35,6 +35,8 @@ class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 				"RABBIT_PASWD" : config.C_RABBIT_PASWD,
 				"RABBIT_SRVER" : config.C_RABBIT_SRVER,
 				"RABBIT_VHOST" : config.C_RABBIT_VHOST,
+				'taskq_task'     : 'task.master.q',
+				'taskq_response' : 'response.master.q',
 			}
 
 			self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)

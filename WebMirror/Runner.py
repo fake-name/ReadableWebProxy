@@ -430,7 +430,7 @@ class Crawler(object):
 						COOKIE_LOCK.release()
 
 					self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)",
-						living, not clok_locked, (normal_out_queue.qsize(),  ), runStatus.run_state.value)
+						living, not clok_locked, normal_out_queue.qsize(), runStatus.run_state.value == 0)
 
 
 		except KeyboardInterrupt:

@@ -3,6 +3,41 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+if item has content and no history, explicitly rewrite content with itself to push old content into change table
+rrl trigger not causing series page rewalk
+
+Light novels on Kindle Unlimited (self.LightNovels)
+Hey everyone, I'm not a subscriber to the service yet but I was considering it because I'm getting through so many books... before I do, does anyone know if there's any/many light novels on there or if I should just stick to hard copies?
+
+Thanks in advance!!!
+
+[–]Animes2Deep4U 2 points 19 hours ago 
+
+
+Another: Episode S
+ The Asterisk War
+ Baccano!
+ Black Bullet
+ A Certain Magical Index
+ Devil is a Part-Timer!
+ Durarara!!
+ Is it Wrong to Try to Pick Up Girls in a Dungeon?
+ Is it Wrong to Try to Pick Up Girls in a Dungeon? Sword Oratoria
+ Kagerou Daze
+ Legend of Galactic Heroes
+ Naruto Novels
+ No Game No Life
+ Overlord
+ Pandora Hearts: Caucus Race
+ Psycome
+ Re:Zero
+ Rising of the Shield Hero
+ Strike the Blood 
+
+These are the series that have digital release that you can currently get on Amazon Kindle I believe, don't know if they are on Kindle Unlimited as well but I doubt it however you can always sign up for the 30 days free trial and see for yourself
+
+
+
 http://10.1.1.60:5001/view?url=http%3A//lightnovelcafe.com/life-mission-vol-1-chapter-1/ float garbage
 
 write a better cookie jar - db backed

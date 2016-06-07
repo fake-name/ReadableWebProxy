@@ -41,6 +41,8 @@ jobstores = {
 
 CALLABLE_LUT = {}
 for item, dummy_interval in activePlugins.scrapePlugins.values():
+	print("Plugin: ", item.__name__)
+	assert item.__name__ not in CALLABLE_LUT, "Plugin appears twice in call lookup table (%s)?" % item.__name__
 	CALLABLE_LUT[item.__name__] = item
 
 

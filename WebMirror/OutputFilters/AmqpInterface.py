@@ -36,6 +36,7 @@ class RabbitQueueHandler(object):
 												prefetch           = settings.get('prefetch', 25),
 												durable            = True,
 												task_exchange_type = settings.get('queue_mode', 'fanout'),
+												poll_rate          = settings.get('poll_rate', 1.0/4),
 												task_queue         = settings["taskq_task"],
 												response_queue     = settings["taskq_response"],
 												)
@@ -83,7 +84,6 @@ class RabbitQueueHandler(object):
 
 		new = self.get_item()
 		if new:
-			print("Processing AMQP response item!")
 			self.log.info("Processing AMQP response item!")
 			new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
 			return new

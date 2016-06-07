@@ -30,6 +30,7 @@ import runStatus
 
 
 MAX_IN_FLIGHT_JOBS = 250
+MAX_IN_FLIGHT_JOBS = 1000
 
 def buildjob(
 			module,
@@ -100,7 +101,10 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	def fill_jobs(self):
 		while self.active_jobs < (MAX_IN_FLIGHT_JOBS / 2):
+			self.log.info("Need to add jobs to the job queue!")
 			self._get_task_internal()
+			if runStatus.run_state.value != 1:
+				return
 
 	def process_responses(self):
 		while 1:
@@ -126,6 +130,9 @@ class JobAggregator(LogBase.LoggerMixin):
 			'queue_mode'      : 'direct',
 			'taskq_task'      : 'task.q',
 			'taskq_response'  : 'response.q',
+
+			"poll_rate"       : 1/100,
+
 		}
 
 		self.active_jobs = 0
@@ -250,6 +257,12 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		xqtim = time.time() - start
 
+		if len(rids) == 0:
+			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
+			for x in range(5):
+				if runStatus.run_state.value == 1:
+					time.sleep(5)
+			return
 
 		if xqtim > 0.5:
 			self.log.error("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))

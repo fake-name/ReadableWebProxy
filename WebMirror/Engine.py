@@ -16,6 +16,7 @@ import sys
 import sqlalchemy.exc
 import random
 import settings
+import pprint
 
 import Misc.diff_match_patch as dmp
 from sqlalchemy import desc
@@ -307,7 +308,26 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		assert interval > 7
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
-		print("[upsertFileResponse] Ignore until: ", ignoreuntiltime)
+
+		while True:
+			history_size = len(list(job.versions))
+			if history_size > 0:
+				break
+			try:
+				self.log.info("Need to push content into history table (current length: %s).", history_size)
+				job.title           = (job.title + " ")    if job.title    else " "
+				job.content         = (job.content + " ")  if job.content  else " "
+				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
+
+				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
+
+				self.db_sess.commit()
+				self.log.info("Pushing old job content into history table!")
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
 
 		while 1:
 			try:
@@ -317,9 +337,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 				job.mimetype        = response['mimeType']
 				job.ignoreuntiltime = ignoreuntiltime
 
-				# Update the tsv_content column if we have data for it.
-				if response['contents']:
-					job.tsv_content = func.to_tsvector(func.coalesce(response['contents']))
 
 				if "text" in job.mimetype:
 					job.is_text  = True
@@ -729,13 +746,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# return self._get_task_internal(wattpad)
 
 
-		self.log.info("Trying to get a job.")
+		# self.log.info("Trying to get a job.")
 		try:
 			job_item = self.new_job_queue.get_nowait()
 			# self.log.info("New job: %s", job_item)
 			return job_item
 		except queue.Empty:
-			self.log.info("No jobs in queue? (qsize =  %s)", self.new_job_queue.qsize())
+			# self.log.info("No jobs in queue? (qsize =  %s)", self.new_job_queue.qsize())
 			return False
 		if not job_item:
 			return False
@@ -789,6 +806,36 @@ class SiteArchiver(LogBase.LoggerMixin):
 			 'success': True,
 			 'user': 'client_2'
 			}
+
+		Response on error:
+
+			{
+			 'cancontinue': True,
+			 'error': 'unknown',
+			 'jobid': 570102816,
+			 'success': False,
+			 'traceback': 'Traceback (most recent call last):\n'
+			              '  File "/root/AutoTriever/client.py", line 85, in _process\n'
+			              '    ret = self.process(body)\n'
+			              '  File "/root/AutoTriever/dispatcher.py", line 99, in '
+			              'process\n'
+			              "    ret = self.doCall(command['module'], command['call'], "
+			              'args, kwargs)\n'
+			              '  File "/root/AutoTriever/dispatcher.py", line 60, in doCall\n'
+			              '    return self.classCache[module].calls[call](*call_args, '
+			              '**call_kwargs)\n'
+			              '  File "/root/AutoTriever/util/WebRequest.py", line 543, in '
+			              'getItem\n'
+			              '    raise urllib.error.URLError("Failed to retreive file from '
+			              'page \'%s\'!" % itemUrl)\n'
+			              'urllib.error.URLError: <urlopen error Failed to retreive file '
+			              'from page '
+			              "'http://dandeliontrail.livejournal.com/data/rss?tag=once "
+			              "promised'!>\n",
+			 'user': 'client_1'
+			}
+
+
 		"""
 
 		try:
@@ -796,37 +843,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 			if not job:
 				self.log.error("Received job that doesn't exist in the database? Wut? (Id: %s -> %s)", rpcresp['jobid'], job)
 				return
-			preretrieved = rpcresp['ret']
-			self.dispatchRequest(job, preretrieved)
-		except urllib.error.URLError:
-			content = "DOWNLOAD FAILED - urllib URLError"
-			content += "<br>"
-			content += traceback.format_exc()
-			job.content = content
-			# job.raw_content = content
-			job.state = 'error'
-			job.errno = -1
-			self.db_sess.commit()
-			self.log.error("`urllib.error.URLError` Exception when downloading.")
-		except ValueError:
-			content = "DOWNLOAD FAILED - ValueError"
-			content += "<br>"
-			content += traceback.format_exc()
-			job.content = content
-			# job.raw_content = content
-			job.state = 'error'
-			job.errno = -3
-			self.db_sess.commit()
-		except DownloadException:
-			content = "DOWNLOAD FAILED - DownloadException"
-			content += "<br>"
-			content += traceback.format_exc()
-			job.content = content
-			# job.raw_content = content
-			job.state = 'error'
-			job.errno = -2
-			self.db_sess.commit()
-			self.log.error("`DownloadException` Exception when downloading.")
+
+			if 'ret' in rpcresp:
+				preretrieved = rpcresp['ret']
+				self.dispatchRequest(job, preretrieved)
+			else:
+				content = "DOWNLOAD FAILED"
+				content += "<br>"
+				if 'traceback' in rpcresp:
+					content += "<pre>"
+					content += rpcresp['traceback']
+					content += "</pre>"
+					for line in rpcresp['traceback'].strip().split("\n"):
+						self.log.error("Remote traceback: %s", line)
+				# job.raw_content = content
+				job.state = 'error'
+				job.errno = -4
+				self.db_sess.commit()
+				self.log.error("Error in remote fetch.")
+
 		except KeyboardInterrupt:
 			runStatus.run = False
 			runStatus.run_state.value = 0
