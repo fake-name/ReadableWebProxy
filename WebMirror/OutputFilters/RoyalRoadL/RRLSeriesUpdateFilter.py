@@ -105,8 +105,6 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		return set(urls)
 
 
-
-
 	def retrigger_pages(self, releases):
 		self.log.info("Total releases found on page: %s. Forcing retrigger of item pages.", len(releases))
 

@@ -31,7 +31,7 @@ class RabbitQueueHandler(object):
 												virtual_host       = settings["RABBIT_VHOST"],
 												ssl                = sslopts,
 												master             = settings.get('master', True),
-												synchronous        = False,
+												synchronous        = settings.get('synchronous', False),
 												flush_queues       = False,
 												prefetch           = settings.get('prefetch', 25),
 												durable            = True,

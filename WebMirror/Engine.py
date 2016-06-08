@@ -99,6 +99,10 @@ GLOBAL_BAD = [
 			'://tumblr.com',
 			'&share=tumblr',
 
+			'/wp-content/plugins/',
+			'/wp-content/themes/',
+			'/wp-json/oembed/',
+
 			# At least one site (booksie) is serving the favicon with a mime-type
 			# of "text/plain", which then confuses the absolute crap out of the
 			# mime-type dispatcher.
@@ -567,7 +571,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 								is_text         = EXCLUDED.is_text,
 								distance        = LEAST(EXCLUDED.distance, web_pages.distance),
 								priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
-								addtime         = EXCLUDED.addtime
+								addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 							WHERE
 							(
 									web_pages.ignoreuntiltime < :ignoreuntiltime

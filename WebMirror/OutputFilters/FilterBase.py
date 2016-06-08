@@ -124,7 +124,12 @@ class FilterBase(PageProcessor):
 					break
 
 				# Also, don't reset if it's in-progress
-				if have.state in ['new', 'fetching', 'processing', 'removed'] and have.priority <= trigger_priority:
+				if (
+						have.state in ['new', 'fetching', 'processing', 'removed']
+						and have.priority <= trigger_priority
+						and have.distance > 1
+						and have.ignoreuntiltime > datetime.datetime.now() - datetime.timedelta(hours=1)
+					):
 					self.log.info("Skipping: '%s' (%s, %s)", release_url, have.state, have.priority)
 					break
 

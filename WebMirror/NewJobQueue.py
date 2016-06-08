@@ -103,6 +103,10 @@ class JobAggregator(LogBase.LoggerMixin):
 		while self.active_jobs < (MAX_IN_FLIGHT_JOBS / 2):
 			self.log.info("Need to add jobs to the job queue!")
 			self._get_task_internal()
+
+			# We have to handle job responses here too, or the response queue can bloat horribly
+			# while we're waiting for the output job queue to fill.
+			self.process_responses()
 			if runStatus.run_state.value != 1:
 				return
 
@@ -116,6 +120,7 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.log.info("Job response received. Jobs in-flight: %s", self.active_jobs)
 				self.normal_out_queue.put(tmp)
 			else:
+				self.log.info("No job responses available.")
 				break
 
 	def queue_filler_proc(self):
@@ -259,9 +264,9 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		if len(rids) == 0:
 			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
-			for x in range(5):
+			for dummy_x in range(5):
 				if runStatus.run_state.value == 1:
-					time.sleep(5)
+					time.sleep(1)
 			return
 
 		if xqtim > 0.5:

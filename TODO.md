@@ -3,7 +3,6 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
-if item has content and no history, explicitly rewrite content with itself to push old content into change table
 rrl trigger not causing series page rewalk
 
 Light novels on Kindle Unlimited (self.LightNovels)
