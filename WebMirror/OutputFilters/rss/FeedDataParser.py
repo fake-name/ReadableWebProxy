@@ -153,7 +153,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'C-Novel Tranlations…'                                          : pfuncs_a_g.extractCNovelTranlations,
 				'Code-Zero\'s Blog'                                             : pfuncs_a_g.extractCodeZerosBlog,
 				'CookiePasta'                                                   : pfuncs_a_g.extractCookiePasta,
-				'CookiePasta Translations'                                      : pfuncs_a_g.extractCookiePastaTranslations,
+				'CookiePasta Translations'                                      : pfuncs_a_g.extractCookiePasta,
 				'Cosmic Translation'                                            : pfuncs_a_g.extractCosmicTranslation,
 				'Crack of Dawn Translations'                                    : pfuncs_a_g.extractCrackofDawnTranslations,
 				'Crappy Machine Translation'                                    : pfuncs_a_g.extractCrappyMachineTranslation,
@@ -214,6 +214,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Etheria Translations'                                          : pfuncs_a_g.extractEtheriaTranslations,
 				'Eugene Rain'                                                   : pfuncs_a_g.extractEugeneRain,
 				"Evida's Indo Romance"                                          : pfuncs_a_g.extractEvidasIndoRomance,
+				'Extant Visions'                                                : pfuncs_a_g.extractExtantVisions,
 				'Eye of Adventure '                                             : pfuncs_a_g.extractEyeofAdventure,
 				'EZ Translations'                                               : pfuncs_a_g.extractEZTranslations,
 				'Fake typist'                                                   : pfuncs_a_g.extractFaketypist,
@@ -703,6 +704,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Elemental Cobalt'                                  : pfuncs_a_g.extractElementalCobalt,
 				'Hiohbye Translations'                              : pfuncs_h_n.extractHiohbyeTranslations,
 				'levitytales.com'                                   : pfuncs_h_n.extractLevityTales,
+				'Levity Tales'                                      : pfuncs_h_n.extractLevityTales,
 				'Light Novel Cafe'                                  : pfuncs_h_n.extractLightNovelCafe,
 				'Myoniyoni Translations'                            : pfuncs_h_n.extractMyoniyoniTranslations,
 				'No Name Translations'                              : pfuncs_h_n.extractNoNameTranslations,
@@ -762,7 +764,16 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if "(NanoDesu)" in item['srcname'] and not ret:
 			return False
 
-		if (flags.RSS_DEBUG or self.dbg_print) and self.write_debug and ret == False and not "teaser" in item['title'].lower():
+		if ret is None:
+			return False
+
+
+		if (
+				(flags.RSS_DEBUG or self.dbg_print) and
+				self.write_debug                    and
+				ret is False                        and
+				not "teaser" in item['title'].lower()
+			):
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if vol or chp or frag and not flags.RSS_DEBUG:
 
@@ -792,7 +803,11 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if self.dbg_print or flags.RSS_DEBUG:
 			# False means not caught. None means intentionally ignored.
 
-			if ret == False and (vol or chp or frag) and not "teaser" in item['title'].lower():
+			if (
+					ret is False         and
+					(vol or chp or frag) and
+					not "teaser" in item['title'].lower()
+				):
 				print("Missed:")
 				print("	Source: '%s'" % (item['srcname'], ))
 				print("	Title:  '%s'" % (item['title'], ))
@@ -821,9 +836,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if ret:
 			assert 'tl_type' in ret
 
-
-		if ret == None:
-			ret = False
 
 
 		return ret

@@ -18,7 +18,10 @@ class TgStoryTimePreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPr
 	def acceptAdult(self, content, url):
 
 		soup = bs4.BeautifulSoup(content)
-		newloc = soup.find('div', class_='errormsg').a['href']
+		newloc = soup.find('div', class_='errormsg')
+		if not newloc:
+			return content
+		newloc = newloc.a['href']
 		tgt = urllib.parse.urljoin(url, newloc)
 		new = self.wg.getpage(tgt)
 		assert 'This story has explicit content.' not in new

@@ -785,7 +785,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if job.state != 'fetching':
 			self.db_sess.commit()
 			self.log.info("Job not in expected state (state: %s).", job.state)
-			return False
+			return None
 
 		self.db_sess.commit()
 		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
@@ -844,8 +844,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		try:
 			job = self.get_job_from_id(rpcresp['jobid'])
-			if not job:
+			if job == False:
 				self.log.error("Received job that doesn't exist in the database? Wut? (Id: %s -> %s)", rpcresp['jobid'], job)
+				return
+			if job == None:
+				self.log.error("Job already being processed? Wut? (Id: %s)", rpcresp['jobid'])
 				return
 
 			if 'ret' in rpcresp:

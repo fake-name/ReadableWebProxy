@@ -85,6 +85,7 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	def put_outbound_job(self, jobid, joburl):
 		self.active_jobs += 1
+		self.jobs_out += 1
 		raw_job = buildjob(
 			module         = 'WebRequest',
 			call           = 'getItem',
@@ -115,6 +116,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			tmp = self.amqp_int.get_job()
 			if tmp:
 				self.active_jobs -= 1
+				self.jobs_in += 1
 				if self.active_jobs < 0:
 					self.active_jobs = 0
 				self.log.info("Job response received. Jobs in-flight: %s", self.active_jobs)
@@ -141,6 +143,8 @@ class JobAggregator(LogBase.LoggerMixin):
 		}
 
 		self.active_jobs = 0
+		self.jobs_out = 0
+		self.jobs_in = 0
 
 		self.amqp_int = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
@@ -158,7 +162,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			msg_loop += 1
 			time.sleep(1)
 			if msg_loop > 20:
-				self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.active_jobs, runStatus.job_run_state.value==1)
+				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.job_run_state.value==1)
 				msg_loop = 0
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")

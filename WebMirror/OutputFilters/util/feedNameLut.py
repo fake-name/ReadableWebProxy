@@ -885,6 +885,7 @@ mapper = {
 	'landoflightnovels.wordpress.com'                 : 'Land of Light Novels',
 	'reitransblog.wordpress.com'                      : 'Rei TransBlog',
 	'whitenightsite.wordpress.com'                    : 'White Night Site',
+	'extantvisions.com'                               : 'Extant Visions',
 
 	# Redirect loop.
 	'lightnovelcafe.com'                              : 'Light Novel Cafe',

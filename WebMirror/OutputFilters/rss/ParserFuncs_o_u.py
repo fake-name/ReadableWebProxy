@@ -424,8 +424,15 @@ def extractRaisingTheDead(item):
 	if 'Game nai ni haitte Doragon o hanto' in item['tags'] \
 		or item['title'].startswith('(R18) Frequenting Brothels'):
 		return buildReleaseMessage(item, 'Game nai ni haitte Dragon o Hanto Shinagara Shokan ni Kayoi Tsumeru Hanashi.', vol, chp, frag=frag)
+
 	if 'Yuusha Ga Onna Da to Dame Desu Ka?' in item['tags']:
 		return buildReleaseMessage(item, 'Yuusha Ga Onna Da to Dame Desu Ka?', vol, chp, frag=frag)
+	if 'Invincible Magician' in item['tags']:
+		return buildReleaseMessage(item, 'Invincible Magician ~ Akashic Record Overwrite~', vol, chp, frag=frag)
+	if 'I Said Make My Abilities Average!' in item['tags'] or 'Average Abilities' in item['tags']:
+		return buildReleaseMessage(item, 'I Said Make My Abilities Average!', vol, chp, frag=frag)
+	if 'Science Shall Prevail over Magic' in item['tags']:
+		return buildReleaseMessage(item, 'Science shall Prevail over Magic', vol, chp, frag=frag)
 
 	if 'Is Heaven Supposed To Be Like This?!' in item['tags']:
 		return buildReleaseMessage(item, "Is Heaven Supposed to Be Like This?!", vol, chp, frag=frag, tl_type='oel')
@@ -683,6 +690,8 @@ def extractTranslationNations(item):
 		return buildReleaseMessage(item, 'Limitless Sword God', vol, chp, frag=frag, postfix=postfix)
 	if 'Undefeated God of War' in item['tags']:
 		return buildReleaseMessage(item, 'Undefeated God of War', vol, chp, frag=frag, postfix=postfix)
+	if 'Path to Heaven' in item['tags']:
+		return buildReleaseMessage(item, 'Path to Heaven', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 ####################################################################################################################################################
@@ -713,6 +722,10 @@ def extractRebirthOnlineWorld(item):
 		return buildReleaseMessage(item, 'Earth\'s Core', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Jikuu Mahou TL' in item['tags']:
 		return buildReleaseMessage(item, 'Jikuu Mahou de Isekai to Chikyuu wo Ittarikitari', vol, chp, frag=frag, postfix=postfix)
+	if 'Isekai Shoukan' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Shoukan Makikomu Ijousha', vol, chp, frag=frag, postfix=postfix)
+	if 'Magic Bullet' in item['tags']:
+		return buildReleaseMessage(item, 'Magic Bullet in Magic Land', vol, chp, frag=frag, postfix=postfix)
 	if 'Monster Musume' in item['tags']:
 		return buildReleaseMessage(item, 'Monster Musume Harem o Tsukurou!', vol, chp, frag=frag, postfix=postfix)
 	if 'Monster Musume' in item['tags']:
@@ -983,13 +996,13 @@ def extractRadiantTranslations(item):
 		return buildReleaseMessage(item, 'The Legend of the Dragon King', vol, chp, frag=frag, postfix=postfix)
 	if 'Zither Emperor' in item['tags']:
 		return buildReleaseMessage(item, 'Zither Emperor', vol, chp, frag=frag, postfix=postfix)
+	if 'Lord Xue Ying' in item['tags']:
+		return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
 	if 'Chapter Release' in item['tags']:
 		if 'Child of Light' in item['tags'] or 'Guang Zhi Zi' in item['tags']:
 			return buildReleaseMessage(item, 'Guang Zhi Zi', vol, chp, frag=frag, postfix=postfix)
 		if 'Bing Huo Mo Chu' in item['tags'] or 'Magic Chef of Ice and Fire' in item['tags']:
 			return buildReleaseMessage(item, 'Bing Huo Mo Chu', vol, chp, frag=frag, postfix=postfix)
-		if 'Lord Xue Ying' in item['tags']:
-			return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
 		if 'The Legend of the Dragon King' in item['tags']:
 			return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
 		if ('dragon marked war god' in item['title'].lower().replace("-", " ") or
@@ -1866,6 +1879,8 @@ def extractSlothTranslationsBlog(item):
 		return False
 	if item['title'].startswith("Re:Master Magic "):
 		return buildReleaseMessage(item, 'The Mage Will Master Magic Efficiently In His Second Life', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith("blacksmith chapter "):
+		return buildReleaseMessage(item, 'Botsuraku youtei nanode, Kajishokunin wo mezasu', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2254,6 +2269,8 @@ def extractTseirpTranslations(item):
 		return buildReleaseMessage(item, 'Invincible Saint ~Salaryman, the Path I Walk to Survive in This Other World~', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("GC "):
 		return buildReleaseMessage(item, 'I\'ve Became Able to Do Anything With My Growth Cheat, but I Can\'t Seem to Get Out of Being Jobless', vol, chp, frag=frag, postfix=postfix)
+	if 'Live Dungeon' in item['tags']:
+		return buildReleaseMessage(item, 'Live Dungeon', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractStoneBurners(item):
@@ -2952,7 +2969,7 @@ def extractTwelveMonthsofMay(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
-	if 'My Mister Ostrich' in item['tags'] and 'English translation' in item['tags']:
+	if 'My Mister Ostrich' in item['tags']:
 		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
 	return False
 

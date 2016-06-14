@@ -3,6 +3,8 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+nu series trigger clear hiatory
+also rss stuff
 rrl trigger not causing series page rewalk
 
 Light novels on Kindle Unlimited (self.LightNovels)

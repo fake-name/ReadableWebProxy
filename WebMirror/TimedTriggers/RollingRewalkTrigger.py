@@ -13,6 +13,7 @@ import sqlalchemy.exc
 import WebMirror.database as dbm
 
 
+
 class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 
@@ -51,37 +52,17 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 				continue
 			if "booksie.com" in url:
 				continue
-			while 1:
-				try:
-					item = sess.query(self.db.WebPages)             \
-						.filter(self.db.WebPages.fetchtime < threshold_time)  \
-						.filter(self.db.WebPages.state   != "new")            \
-						.filter(self.db.WebPages.url == url)             \
-						.scalar()
-					if not item:
-						break
 
-					if day == today or item.fetchtime < (datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS)):
-						print("Retriggering: ", item, item.fetchtime, item.url)
-						item.state    = "new"
-						item.distance = 0
-						item.priority = dbm.DB_IDLE_PRIORITY
-						item.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
-						sess.commit()
-					break
+			def conditional_check(row):
+				if day == today or row.fetchtime < (datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS)):
+					print("Retriggering: ", row, row.fetchtime, row.url)
+					row.state    = "new"
+					row.distance = 0
+					row.priority = dbm.DB_IDLE_PRIORITY
+					row.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
 
-				except sqlalchemy.exc.InternalError:
-					self.log.info("Transaction error. Retrying.")
-					sess.rollback()
-				except sqlalchemy.exc.OperationalError:
-					self.log.info("Transaction error. Retrying.")
-					sess.rollback()
-				except sqlalchemy.exc.IntegrityError:
-					self.log.info("Transaction error. Retrying.")
-					sess.rollback()
-				except sqlalchemy.exc.InvalidRequestError:
-					self.log.info("Transaction error. Retrying.")
-					sess.rollback()
+			self.retriggerUrl(url, conditional=conditional_check)
+
 
 		self.log.info("Old files retrigger complete.")
 

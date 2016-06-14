@@ -166,7 +166,8 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 				self._amqpint.close()
 				self._amqpint = None
 				return
-
+	def _go(self, *args, **kwargs):
+		self.go()
 
 if __name__ == '__main__':
 	import logSetup

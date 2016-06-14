@@ -702,6 +702,9 @@ def extractMoonBunnyCafe(item):
 
 	ltags = [tmp.lower() for tmp in item['tags']]
 
+	if 'manhua' in ltags or "manga" in ltags:
+		return None
+
 	if 'my disciple died yet again' in ltags:
 		return buildReleaseMessage(item, 'My Disciple Died Yet Again', vol, chp, frag=frag)
 	if 'monogatari no naka no hito' in ltags:
@@ -732,6 +735,8 @@ def extractMoonBunnyCafe(item):
 		return buildReleaseMessage(item, 'Magic Mechanics Shuraba', vol, chp, frag=frag, postfix=postfix)
 	if "shura's wrath" in ltags:
 		return buildReleaseMessage(item, "Shura's Wrath", vol, chp, frag=frag, postfix=postfix)
+	if 'i became an in-game npc' in ltags:
+		return buildReleaseMessage(item, 'I Became an In-game NPC', vol, chp, frag=frag, postfix=postfix)
 	if 'against the gods' in ltags:
 		return buildReleaseMessage(item, 'Against The Gods', vol, chp, frag=frag, postfix=postfix)
 	if 'b group no shounen' in ltags:
@@ -980,6 +985,8 @@ def extractMachineSlicedBread(item):
 		return buildReleaseMessage(item, 'Hero Manufacturing Machine ~A Job to Make Children~', vol, chp, frag=frag, postfix=postfix)
 	if 'Inmajutsu TL' in item['tags']:
 		return buildReleaseMessage(item, 'Ore ga Inmajutsu de Dorei Harem wo Tsukuru Hanashi', vol, chp, frag=frag, postfix=postfix)
+	if 'Yandere TL' in item['tags']:
+		return buildReleaseMessage(item, 'My elder sister fell in love with me and transformed into a yandere', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1990,6 +1997,10 @@ def  extractKokumaTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+
+	if item['tags'] == ['Uncategorized'] and item['title'].startswith("Arena Chapter"):
+		return buildReleaseMessage(item, 'Arena', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def  extractNovelsGround(item):
@@ -2109,6 +2120,8 @@ def  extractNakimushi(item):
 		return False
 	if 'Renai Kakumei Onii-chan' in item['tags']:
 		return buildReleaseMessage(item, 'I, am Playing the Role of the Older Brother in Heart-throb Love Revolution.', vol, chp, frag=frag, postfix=postfix)
+	if 'Takamura-kun is Cursed.' in item['tags']:
+		return buildReleaseMessage(item, 'Takamura-kun is Cursed', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractNationalNEET(item):
@@ -2322,7 +2335,9 @@ def  extractNovelsJapan(item):
 		return buildReleaseMessage(item, 'Skill Up with Login Bonus', vol, chp, frag=frag, postfix=postfix)
 	if (
 		item['title'].lower().endswith('lv2 cheat') or
-		item['title'].lower().endswith("ex-hero candidate’s, who turned out to be a cheat from lv2, laid-back life in another world")
+		item['title'].lower().endswith("ex-hero candidate’s, who turned out to be a cheat from lv2, laid-back life in another world") or
+		'Lv2 Cheat' in item['tags']
+
 		):
 		return buildReleaseMessage(item, "Ex-Hero Candidate's, Who Turned Out To Be A Cheat From Lv2, Laid-back Life In Another World", vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -2747,6 +2762,11 @@ def extractLevityTales(item):
 		return buildReleaseMessage(item, 'Chaotic Lightning Cultivation', vol, chp, frag=frag, postfix=postfix)
 	if 'Overthrowing Fate' in item['tags']:
 		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)
+	if 'Overthrowing Fate' in item['tags']:
+		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)
+	if 'Overthrowing Fate' in item['tags']:
+		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 def extractLightNovelCafe(item):
 	'''

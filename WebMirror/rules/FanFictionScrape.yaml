@@ -27,6 +27,7 @@ badwords: [
 			"/forum",
 			"/forums/",
 			"/forums",
+			'/atom/',
 			"/games/",
 			"/betareaders/",
 			"/poetry/", # Really?
