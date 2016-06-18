@@ -35,9 +35,8 @@ NO_PROCESSES = 24
 # For synchronizing saving cookies to disk
 COOKIE_LOCK  = multiprocessing.Lock()
 
-from pympler.tracker import SummaryTracker, summary, muppy
-import tracemalloc
-import objgraph
+# from pympler.tracker import SummaryTracker, summary, muppy
+# import tracemalloc
 import random
 import gc
 

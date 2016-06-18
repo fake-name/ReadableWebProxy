@@ -3,6 +3,8 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+Job fetch system gets wedged if it can't successfully query the database for new jobs (like when the scheduler is inserting a pile of new jobs).
+
 nu series trigger clear hiatory
 also rss stuff
 rrl trigger not causing series page rewalk

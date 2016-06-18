@@ -3,10 +3,15 @@
 import sys
 import traceback
 import datetime
+import time
+from pytz import reference
+import pytz
+
 
 import sqlalchemy.exc
 
 from apscheduler.schedulers.blocking  import BlockingScheduler
+from apscheduler.schedulers.background  import BackgroundScheduler
 from apscheduler.executors.pool       import ProcessPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
@@ -28,7 +33,6 @@ executors = {
 }
 job_defaults = {
 	'coalesce': True,
-	'max_instances': 3,
 }
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)
@@ -147,14 +151,16 @@ def scheduleJobs(sched, timeToStart):
 
 	for jobId, callee, interval, startWhen in jobs:
 		jId = callee.__name__
-		print("JobID = ", jId)
 		activeJobs.append(jId)
-		if not sched.get_job(jId):
+		if sched.get_job(jId):
+			print("JobID %s already scheduled." % jId)
+		else:
+			print("Need to add new job for ID: ", jId)
 			sched.add_job(do_call,
 						args               = (callee.__name__, ),
 						trigger            = 'interval',
 						seconds            = interval,
-						start_date         = startWhen,
+						next_run_time      = startWhen,
 						id                 = jId,
 						max_instances      =  1,
 						replace_existing   = True,
@@ -164,6 +170,7 @@ def scheduleJobs(sched, timeToStart):
 
 	for job in sched.get_jobs('main_jobstore'):
 		if not job.id in activeJobs:
+			print("Extra job in jobstore: %s. Removing." % job.id)
 			sched.remove_job(job.id, 'main_jobstore')
 
 	print("JobSetup call resetting run-states!")
@@ -174,14 +181,30 @@ def scheduleJobs(sched, timeToStart):
 
 	print("Run-states reset.")
 
+def dump_scheduled_jobs(sched):
+	print("Scheduled jobs:")
+	existing = sched.get_jobs()
+	if not existing:
+		print("	No jobs in scheduler!")
+
+	tznow = datetime.datetime.now(tz=pytz.utc)
+	for job in existing:
+		print("	", job, "running in:", job.next_run_time - tznow)
 
 def go_sched():
+	sched = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
 
-	sched = BlockingScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
+	print("Jobs in scheduler:")
+	dump_scheduled_jobs(sched)
 
-	startTime = datetime.datetime.now()+datetime.timedelta(seconds=10)
+	startTime = datetime.datetime.now(tz=pytz.utc)+datetime.timedelta(seconds=10)
 	scheduleJobs(sched, startTime)
+	dump_scheduled_jobs(sched)
+	print("Starting scheduler.")
 	sched.start()
+	while 1:
+		dump_scheduled_jobs(sched)
+		time.sleep(30)
 
 
 

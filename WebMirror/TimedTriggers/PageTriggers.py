@@ -25,11 +25,10 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 
 		for x in range(len(self.pages)):
-			while 1:
-				url = self.pages[x]
-				if x % 50 == 0:
-					self.log.info("Retriggering step %s", x)
-				self.retriggerUrl(url)
+			url = self.pages[x]
+			if x % 50 == 0:
+				self.log.info("Retriggering step %s", x)
+			self.retriggerUrl(url)
 
 		self.log.info("Pages retrigger complete.")
 

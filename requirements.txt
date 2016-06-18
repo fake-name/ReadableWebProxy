@@ -1,3 +1,5 @@
+requests
+git+https://github.com/fake-name/py-amqp.git
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit
 
@@ -6,6 +8,12 @@ Jinja2
 psycopg2
 SQLAlchemy
 sqlalchemy-citext
+
+PySocks
+msgpack-python
+python-dateutil
+bbcode
+pympler
 
 colorama
 pyyaml
@@ -26,10 +34,9 @@ Flask-SQLAlchemy
 flask-paginate
 Flask-WTF
 apscheduler
-semantic
+## semantic
 sqlalchemy_continuum
 sqlalchemy_searchable
-requests
 
 ## BS4 4.4.0 has some bugs.
 BeautifulSoup4==4.3.2
