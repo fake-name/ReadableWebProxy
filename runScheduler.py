@@ -13,6 +13,7 @@ import sqlalchemy.exc
 from apscheduler.schedulers.blocking  import BlockingScheduler
 from apscheduler.schedulers.background  import BackgroundScheduler
 from apscheduler.executors.pool       import ProcessPoolExecutor
+from apscheduler.executors.pool       import ThreadPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 import config
@@ -29,7 +30,8 @@ from settings import MAX_DB_SESSIONS
 import activePlugins
 
 executors = {
-	'main_jobstore': ProcessPoolExecutor(10),
+	'default'     : ThreadPoolExecutor(10),
+	# 'ProcessPool' : ProcessPoolExecutor(10),
 }
 job_defaults = {
 	'coalesce': True,
@@ -38,7 +40,7 @@ job_defaults = {
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)
 
 jobstores = {
-	'main_jobstore'      : SQLAlchemyJobStore(url=SQLALCHEMY_DATABASE_URI)
+	'default'      : SQLAlchemyJobStore(url=SQLALCHEMY_DATABASE_URI)
 
 }
 
@@ -159,12 +161,13 @@ def scheduleJobs(sched, timeToStart):
 			sched.add_job(do_call,
 						args               = (callee.__name__, ),
 						trigger            = 'interval',
+						# jobstore           = 'sqlalchemy',
 						seconds            = interval,
 						next_run_time      = startWhen,
 						id                 = jId,
-						max_instances      =  1,
 						replace_existing   = True,
-						jobstore           = "main_jobstore",
+						max_instances      = 1,
+						coalesce           = True,
 						misfire_grace_time = 2**30)
 
 
@@ -173,13 +176,15 @@ def scheduleJobs(sched, timeToStart):
 			print("Extra job in jobstore: %s. Removing." % job.id)
 			sched.remove_job(job.id, 'main_jobstore')
 
+
+def resetRunStates():
 	print("JobSetup call resetting run-states!")
 	session = db.get_db_session()
 	session.query(db.PluginStatus).update({db.PluginStatus.is_running : False})
 	session.commit()
 	db.delete_db_session()
-
 	print("Run-states reset.")
+
 
 def dump_scheduled_jobs(sched):
 	print("Scheduled jobs:")
@@ -189,23 +194,51 @@ def dump_scheduled_jobs(sched):
 
 	tznow = datetime.datetime.now(tz=pytz.utc)
 	for job in existing:
-		print("	", job, "running in:", job.next_run_time - tznow)
+		print("	", job, job.args, "running in:", job.next_run_time - tznow)
+
+
+	# session = db.get_db_session()
+	# items = session.query(db.PluginStatus).all()
+	# print("Jobs in DB:")
+	# for item in items:
+	# 	print("	", item)
+	# db.delete_db_session()
+
 
 def go_sched():
-	sched = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
+	resetRunStates()
+
+	sched = BackgroundScheduler({
+			'apscheduler.jobstores.default': {
+				'type': 'sqlalchemy',
+				'url': SQLALCHEMY_DATABASE_URI
+			},
+			'apscheduler.executors.default': {
+				'class': 'apscheduler.executors.pool:ThreadPoolExecutor',
+				'max_workers': '10'
+			},
+			'apscheduler.job_defaults.coalesce': 'true',
+			'apscheduler.job_defaults.max_instances': '5',
+		})
+
+	# Apparently the scheduler pull the jobs from the backend until you start it,
+	# so if you're trying to validate the jobs already present, you have to start it
+	# before iterating over jobs in the jobstore.
+	sched.start()
 
 	print("Jobs in scheduler:")
 	dump_scheduled_jobs(sched)
-
 	startTime = datetime.datetime.now(tz=pytz.utc)+datetime.timedelta(seconds=10)
 	scheduleJobs(sched, startTime)
 	dump_scheduled_jobs(sched)
 	print("Starting scheduler.")
-	sched.start()
 	while 1:
-		dump_scheduled_jobs(sched)
-		time.sleep(30)
-
+		try:
+			dump_scheduled_jobs(sched)
+			time.sleep(30)
+		except KeyboardInterrupt:
+			break
+	sched.shutdown()
 
 
 if __name__ == "__main__":

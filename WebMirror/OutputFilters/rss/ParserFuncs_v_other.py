@@ -84,6 +84,8 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, 'Sovereign of the Three Realms', vol, chp, frag=frag)
 	if 'Terror Infinity' in item['tags']:
 		return buildReleaseMessage(item, 'Terror Infinity', vol, chp, frag=frag)
+	if 'Warlock of the Magus World' in item['tags']:
+		return buildReleaseMessage(item, 'Warlock of the Magus World', vol, chp, frag=frag)
 
 	return False
 

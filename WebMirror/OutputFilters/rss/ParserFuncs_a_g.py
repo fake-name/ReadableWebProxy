@@ -1396,6 +1396,8 @@ def  extractDailyDallying(item):
 		return buildReleaseMessage(item, 'Stealing Hero\'s Lovers', vol, chp, frag=frag, postfix=postfix)
 	if 'Nidome no Yuusha' in item['tags']:
 		return buildReleaseMessage(item, 'Nidome no Yuusha', vol, chp, frag=frag, postfix=postfix)
+	if "Nobunaga's Imouto" in item['tags']:
+		return buildReleaseMessage(item, "Nobunaga's Younger Sister is My Wife", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractDistractedChinese(item):
@@ -1790,6 +1792,12 @@ def  extractFalinmer(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+
+	match = re.search(r'(\d+)\-(\d+)', item['title'])
+	if not vol and match:
+		vol = match.group(1)
+		chp = match.group(2)
+
 	if item['title'].lower().startswith("mcm") and not "raw" in item['title'].lower():
 		return buildReleaseMessage(item, 'Magi Craft Meister', vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -2228,6 +2236,8 @@ def  extractCurrentlyTLingBuniMi(item):
 		return buildReleaseMessage(item, 'Bu ni Mi wo Sasagete Hyaku to Yonen. Elf de Yarinaosu Musha Shugyou', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("[DD]"):
 		return buildReleaseMessage(item, 'Doll Dungeon', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("[HCLS]"):
+		return buildReleaseMessage(item, 'High Comprehension Low Strength', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractGOChronicles(item):

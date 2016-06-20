@@ -987,6 +987,10 @@ def extractMachineSlicedBread(item):
 		return buildReleaseMessage(item, 'Ore ga Inmajutsu de Dorei Harem wo Tsukuru Hanashi', vol, chp, frag=frag, postfix=postfix)
 	if 'Yandere TL' in item['tags']:
 		return buildReleaseMessage(item, 'My elder sister fell in love with me and transformed into a yandere', vol, chp, frag=frag, postfix=postfix)
+	if 'Semen TL' in item['tags']:
+		return buildReleaseMessage(item, 'Curing Incurable Disease With Semen', vol, chp, frag=frag, postfix=postfix)
+	if 'Xray TL' in item['tags']:
+		return buildReleaseMessage(item, 'X-ray Is More Than I Thought', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1063,7 +1067,7 @@ def extractKobatoChanDaiSukiScan(item):
 	if 'God of Crime' in item['tags'] :
 		return buildReleaseMessage(item, 'God of Crime', vol, chp, frag=frag, postfix=postfix)
 	if "The Overlord's Elite is now a Human?!" in item['tags'] :
-		return buildReleaseMessage(item, "The Overlord's Elite is now a Human?!", vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, "The Overlord's Elite is now a Human?!", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'The Bird That Drinks Tears' in item['tags'] :
 		return buildReleaseMessage(item, 'The Bird That Drinks Tears', vol, chp, frag=frag, postfix=postfix)
 	if 'Survival World RPG' in item['tags'] :

@@ -78,6 +78,11 @@ def extractOniichanyamete(item):
 	if 'Kenkyo Kenjitu' in item['tags'] or 'Reika-sama' in item['title']:
 		return buildReleaseMessage(item, 'Kenkyo Kenjitu', vol, chp, postfix=postfix)
 
+	if 'My Sister the Heroine and I the Villainess' in item['tags']:
+		return buildReleaseMessage(item, 'My Sister the Heroine, and I the Villainess', vol, chp, postfix=postfix)
+	if 'Vampire Nap' in item['tags']:
+		return buildReleaseMessage(item, 'The Reincarnated Vampire Wants an Afternoon Nap', vol, chp, postfix=postfix)
+
 	if 'The Bathroom Goddess' in item['tags']:
 		return buildReleaseMessage(item, 'The Bathroom Goddess', vol, chp, postfix=postfix)
 	if 'a wild boss appeared' in item['tags']:
@@ -91,6 +96,8 @@ def extractOniichanyamete(item):
 
 	if "I'm the Final Boss!?" in item['tags']:
 		return buildReleaseMessage(item, "I'm the Final Boss!?", vol, chp, tl_type='oel')
+	if 'Tiger Story' in item['tags']:
+		return buildReleaseMessage(item, "Tiger Story", vol, chp, tl_type='oel')
 
 	elif 'otoburi' in item['tags'] or 'Otoburi' in item['tags']:
 		# Arrrgh, the volume/chapter structure for this series is a disaster!
@@ -2798,6 +2805,10 @@ def extractOyasumiReads(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return False
+
+	if 'ISEKAIJIN NO TEBIKISHO' in item['tags']:
+		return buildReleaseMessage(item, 'Isekaijin no Tebikisho', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def extractUDonateWeTranslate(item):

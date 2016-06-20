@@ -3,6 +3,9 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+retriggering use on conflict
+search only items with releases
+
 Job fetch system gets wedged if it can't successfully query the database for new jobs (like when the scheduler is inserting a pile of new jobs).
 
 nu series trigger clear hiatory

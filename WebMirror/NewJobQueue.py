@@ -1,9 +1,11 @@
 
 import multiprocessing
+import threading
 import time
 import traceback
 import queue
 import random
+import datetime
 import signal
 
 import sqlalchemy.exc
@@ -29,8 +31,9 @@ import runStatus
 
 
 
+NO_JOB_TIMEOUT_MINUTES = 10
 MAX_IN_FLIGHT_JOBS = 250
-MAX_IN_FLIGHT_JOBS = 1000
+# MAX_IN_FLIGHT_JOBS = 1000
 
 def buildjob(
 			module,
@@ -65,15 +68,19 @@ class JobAggregator(LogBase.LoggerMixin):
 		# print("Job __init__()")
 		super().__init__()
 
+		self.last_rx = datetime.datetime.now()
+		self.active_jobs = 0
+		self.jobs_out = 0
+		self.jobs_in = 0
 
 		self.db      = db
 
+		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
 		self.normal_out_queue  = multiprocessing.Queue()
 
-		self.j_fetch_proc = multiprocessing.Process(target=self.queue_filler_proc)
+		self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
 		self.j_fetch_proc.start()
 
-		self.active_jobs = 0
 
 	def get_queues(self):
 
@@ -85,6 +92,7 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	def put_outbound_job(self, jobid, joburl):
 		self.active_jobs += 1
+		self.log.info("Dispatching new job (active jobs: %s)", self.active_jobs)
 		self.jobs_out += 1
 		raw_job = buildjob(
 			module         = 'WebRequest',
@@ -101,8 +109,8 @@ class JobAggregator(LogBase.LoggerMixin):
 		# print("Jobid, joburl: ", (jobid, joburl))
 
 	def fill_jobs(self):
-		while self.active_jobs < (MAX_IN_FLIGHT_JOBS / 2):
-			self.log.info("Need to add jobs to the job queue!")
+		while self.active_jobs < (MAX_IN_FLIGHT_JOBS / 2) and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
+			self.log.info("Need to add jobs to the job queue (%s active)!", self.active_jobs)
 			self._get_task_internal()
 
 			# We have to handle job responses here too, or the response queue can bloat horribly
@@ -110,6 +118,16 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.process_responses()
 			if runStatus.run_state.value != 1:
 				return
+
+		# If we haven't had a received job in 10 minutes, reset the job counter because we might
+		# have leaked the jobs away somehow.
+		if (self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES)) < datetime.datetime.now():
+			if self.normal_out_queue.qsize() > MAX_IN_FLIGHT_JOBS:
+				self.log.warn("Long latency since last received job, but received job queue contains lots of jobs. Huh? (Jobqueue size: %s)", self.normal_out_queue.qsize())
+			else:
+				self.log.error("Timeout since last job seen. Resetting active job counter. (lastJob: %s)", self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES))
+				self.active_jobs = 0
+				self.last_rx = datetime.datetime.now()
 
 	def process_responses(self):
 		while 1:
@@ -120,6 +138,7 @@ class JobAggregator(LogBase.LoggerMixin):
 				if self.active_jobs < 0:
 					self.active_jobs = 0
 				self.log.info("Job response received. Jobs in-flight: %s", self.active_jobs)
+				self.last_rx = datetime.datetime.now()
 				self.normal_out_queue.put(tmp)
 			else:
 				self.log.info("No job responses available.")
@@ -142,13 +161,13 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		}
 
-		self.active_jobs = 0
-		self.jobs_out = 0
-		self.jobs_in = 0
 
 		self.amqp_int = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
-		signal.signal(signal.SIGINT, signal.SIG_IGN)
+		try:
+			signal.signal(signal.SIGINT, signal.SIG_IGN)
+		except ValueError:
+			self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
 
 		self.log.info("Job queue fetcher starting.")
 
@@ -232,6 +251,14 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		start = time.time()
 
+		print("")
+		print("")
+		print("")
+		print("Fetching jobs!")
+		print("")
+		print("")
+		print("")
+
 		while runStatus.run_state.value == 1:
 			try:
 				rids = self.db_sess.execute(raw_query)
@@ -292,6 +319,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.log.info("Deleted rows: %s", deleted)
 
 		self.db_sess.commit()
+		self.db_sess.expire_all()
 
 def test2():
 	import logSetup
