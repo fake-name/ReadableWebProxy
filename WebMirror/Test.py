@@ -51,10 +51,10 @@ def print_html_response(archiver, new, ret):
 
 def test_retrieve(url, debug=True, rss_debug=False):
 
-	try:
-		WebMirror.SpecialCase.startAmqpFetcher()
-	except RuntimeError:  # Fetcher already started
-		pass
+	# try:
+	# 	WebMirror.SpecialCase.startAmqpFetcher()
+	# except RuntimeError:  # Fetcher already started
+	# 	pass
 
 	if rss_debug:
 		print("Debugging RSS")
@@ -79,12 +79,12 @@ def test_retrieve(url, debug=True, rss_debug=False):
 
 	try:
 		archiver = SiteArchiver(None, db.get_db_session(), None)
-		archiver.taskProcess(job_test=new)
-		db.delete_db_session()
+		job     = archiver.synchronousJobRequest(url, ignore_cache=True)
 	except Exception as e:
 		traceback.print_exc()
 	finally:
-		WebMirror.SpecialCase.stopAmqpFetcher()
+		db.delete_db_session()
+
 
 def test_head(url, referrer):
 

@@ -587,6 +587,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'The Mustang Translator'                                        : pfuncs_o_u.extractTheMustangTranslator,
 				'The Named'                                                     : pfuncs_o_u.extractTheNamed,
 				'The Sphere'                                                    : pfuncs_o_u.extractTheSphere,
+				'The Undying Cultivator'                                        : pfuncs_o_u.extractTheUndyingCultivator,
 				'This World Work'                                               : pfuncs_o_u.extractThisWorldWork,
 				'Thunder Translation'                                           : pfuncs_o_u.extractThunder,
 				'Thyaeria Translations'                                         : pfuncs_o_u.extractThyaeria,

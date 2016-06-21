@@ -390,6 +390,7 @@ mapper = {
 	'sparklingdawnlights.blogspot.com'                : 'Little Translations',
 	'tbatenovel.com'                                  : 'The Beginning After The End Novel',
 	'thebeginningaftertheendblog.wordpress.com'       : 'The Beginning After The End Novel',
+	'theundyingblog.wordpress.com'                    : 'The Undying Cultivator',
 
 	# Blogspot
 	'trungnguyenwriter.blogspot.com'                  : 'Trung Nguyen',
