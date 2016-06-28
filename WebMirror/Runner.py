@@ -82,7 +82,7 @@ class RunInstance(object):
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
-		for dummy_x in range(20):
+		for dummy_x in range(10):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
@@ -104,9 +104,12 @@ class RunInstance(object):
 						self.log.info("Thread %s saw exit flag while waiting for jobs. Runstate: %s", self.num, runStatus.run_state.value)
 						return
 
-			if loop == 15:
-				loop = 0
-				self.log.info("Thread %s awake. Runstate: %s", self.num, runStatus.run_state.value)
+		if runStatus.run_state.value:
+			self.log.info("Thread %s restarting. Runstate: %s", self.num, runStatus.run_state.value)
+		else:
+			self.log.info("Thread %s halting. Runstate: %s", self.num, runStatus.run_state.value)
+
+
 
 
 	@classmethod

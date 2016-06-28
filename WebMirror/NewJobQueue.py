@@ -32,8 +32,9 @@ import runStatus
 
 
 NO_JOB_TIMEOUT_MINUTES = 10
-MAX_IN_FLIGHT_JOBS = 250
-# MAX_IN_FLIGHT_JOBS = 1000
+# MAX_IN_FLIGHT_JOBS = 250
+MAX_IN_FLIGHT_JOBS = 1000
+# MAX_IN_FLIGHT_JOBS = 3000
 
 def buildjob(
 			module,
@@ -109,7 +110,7 @@ class JobAggregator(LogBase.LoggerMixin):
 		# print("Jobid, joburl: ", (jobid, joburl))
 
 	def fill_jobs(self):
-		while self.active_jobs < (MAX_IN_FLIGHT_JOBS / 2) and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
+		while self.active_jobs < MAX_IN_FLIGHT_JOBS and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
 			self.log.info("Need to add jobs to the job queue (%s active)!", self.active_jobs)
 			self._get_task_internal()
 
@@ -246,18 +247,18 @@ class JobAggregator(LogBase.LoggerMixin):
 				    web_pages.state = 'new'
 				RETURNING
 				    web_pages.id, web_pages.netloc, web_pages.url;
-			'''.format(in_flight=MAX_IN_FLIGHT_JOBS))
+			'''.format(in_flight=50))
 
 
 		start = time.time()
 
-		print("")
-		print("")
-		print("")
-		print("Fetching jobs!")
-		print("")
-		print("")
-		print("")
+		# print("")
+		# print("")
+		# print("")
+		# print("Fetching jobs!")
+		# print("")
+		# print("")
+		# print("")
 
 		while runStatus.run_state.value == 1:
 			try:

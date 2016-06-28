@@ -48,7 +48,8 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 				elif conditional and not conditional(have):
 					sess.commit()
 				elif (
-						have.state in ['new', 'fetching', 'processing', 'removed']
+						have
+						and have.state in ['new', 'fetching', 'processing', 'removed']
 						and have.priority <= self.db.DB_HIGH_PRIORITY
 						and have.distance > 1
 						and have.ignoreuntiltime > datetime.datetime.now() - datetime.timedelta(hours=1)

@@ -35,9 +35,9 @@ class RabbitQueueHandler(object):
 												flush_queues       = False,
 												prefetch           = settings.get('prefetch', 25),
 												durable            = True,
-												heartbeat          = 20,
+												heartbeat          = 60,
 												task_exchange_type = settings.get('queue_mode', 'fanout'),
-												poll_rate          = settings.get('poll_rate', 1.0/4),
+												poll_rate          = settings.get('poll_rate', 1.0/100),
 												task_queue         = settings["taskq_task"],
 												response_queue     = settings["taskq_response"],
 												)

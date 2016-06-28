@@ -749,6 +749,7 @@ if __name__ == "__main__":
 		print('	fetch-silent {url}')
 		print('	fetch-rss {url}')
 		print('	filter-new-links {file-path}')
+		print('	delete-feed {feed name} {do delete (true/false)} {search term}')
 
 		sys.exit(1)
 

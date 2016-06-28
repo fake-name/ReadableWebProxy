@@ -895,17 +895,16 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# 	if job:
 
 		except Exception:
-			err_f = os.path.join("./logs", "error - {}.txt".format(time.time()))
-			with open(err_f, "w") as fp:
-				if job:
-					fp.write("Job: {val}\n".format(val=job))
-					fp.write("Job-netloc: {val}\n".format(val=job.netloc))
-					fp.write("Job-url: {val}\n".format(val=job.url))
-					job.state = "error"
-					self.db_sess.commit()
+			# err_f = os.path.join("./logs", "error - {}.txt".format(time.time()))
+			# with open(err_f, "w") as fp:
+			# 	if job:
+			# 		fp.write("Job: {val}\n".format(val=job))
+			# 		fp.write("Job-netloc: {val}\n".format(val=job.netloc))
+			# 		fp.write("Job-url: {val}\n".format(val=job.url))
+			# 		job.state = "error"
+			# 		self.db_sess.commit()
 
-				fp.write(traceback.format_exc())
-
+			# 	fp.write(traceback.format_exc())
 
 			for line in traceback.format_exc().split("\n"):
 				self.log.critical("%s", line.rstrip())
@@ -931,6 +930,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 				self.db_sess.commit()
 				break
 			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.IntegrityError:
 				self.db_sess.rollback()
 
 

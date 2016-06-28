@@ -5,6 +5,7 @@ import colorama as clr
 import threading
 import os.path
 import sys
+import re
 import time
 import traceback
 # Pylint can't figure out what's in the record library for some reason
@@ -72,10 +73,45 @@ class ColourHandler(logging.Handler):
 		record.padding = ""
 		print((self.format(record)))
 
+ansi_escape = re.compile(r'\x1b[^m]*m')
+
 class RobustFileHandler(logging.FileHandler):
 	"""
 	A handler class which writes formatted logging records to disk files.
 	"""
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+
+		self.output_streams = {}
+
+	def stream_emit(self, record, source_name):
+		"""
+		Emit a record.
+
+		If a formatter is specified, it is used to format the record.
+		The record is then written to the stream with a trailing newline.  If
+		exception information is present, it is formatted using
+		traceback.print_exception and appended to the stream.  If the stream
+		has an 'encoding' attribute, it is used to determine how to do the
+		output to the stream.
+		"""
+
+		if not source_name in self.output_streams:
+			out_path = os.path.abspath("./logs")
+			logpath = ansi_escape.sub('', source_name.replace("/", ";").replace(":", ";").replace("?", "-"))
+			filename = "log {path}.txt".format(path=logpath)
+			print("Opening output log file for path: %s" % filename)
+			self.output_streams[source_name] = open(os.path.join(out_path, filename), self.mode, encoding=self.encoding)
+
+		stream = self.output_streams[source_name]
+		try:
+			msg = self.format(record)
+			stream.write(msg)
+			stream.write(self.terminator)
+			stream.flush()
+			self.flush()
+		except Exception:
+			self.handleError(record)
 
 	def emit(self, record):
 		"""
@@ -85,21 +121,9 @@ class RobustFileHandler(logging.FileHandler):
 		constructor, open it before calling the superclass's emit.
 		"""
 		failures = 0
-		while self.stream is None:
-			try:
-				self.stream = self._open()
-			except:
-
-				time.sleep(1)
-				if failures > 3:
-					traceback.print_exc()
-					print("Cannot open log file?")
-					return
-				failures += 1
-		failures = 0
 		while failures < 3:
 			try:
-				logging.StreamHandler.emit(self, record)
+				self.stream_emit(record, record.name)
 				break
 			except:
 				failures += 1
@@ -147,10 +171,10 @@ def initLogging(logLevel=logging.INFO):
 	ch = ColourHandler()
 	mainLogger.addHandler(ch)
 
-	# logName	= "Error - %s.txt" % (time.strftime("%Y-%m-%d %H;%M;%S", time.gmtime()))
+	logName	= "log - %s.txt" % (time.strftime("%Y-%m-%d %H;%M;%S", time.gmtime()))
 
-	# errLogHandler = RobustFileHandler(os.path.join("./logs", logName))
-	# errLogHandler.setLevel(logging.WARNING)
+	errLogHandler = RobustFileHandler(os.path.join("./logs", logName))
+	errLogHandler.setLevel(logging.INFO)
 	# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 	# errLogHandler.setFormatter(formatter)
 

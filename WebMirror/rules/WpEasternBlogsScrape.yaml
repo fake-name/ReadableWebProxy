@@ -616,7 +616,7 @@ baseUrl: [
 	'https://rinkagetranslation.com',
 	'https://rosyfantasy.net',
 	'https://silvalibrary.com',
-	'https://wuxiaheroes.com',
+	'http://www.wuxiaheroes.com',
 	'https://www.wuxiaheroes.com',
 	'https://yamitranslations.com',
 	'https://zirusmusings.com',
@@ -684,6 +684,7 @@ badwords: [
 
 
 	" http://gravitytales.com",
+	" http:/gravitytales.com",
 	"%20http%3A//gravitytales.com",
 
 

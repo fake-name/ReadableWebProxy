@@ -1789,6 +1789,7 @@ def extractTaint(item):
 	'''
 	titletmp = item['title'] + " ".join(item['tags'])
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(titletmp)
+
 	if not (chp or vol or frag) and not "preview" in item['title']:
 		return False
 
