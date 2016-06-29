@@ -359,14 +359,31 @@ class PluginStatus(Base):
 	last_error_msg = Column(Text)
 
 
+
+# 'seriesname'       : series.get_text().strip(),
+# 'releaseinfo'      : release.get_text().strip(),
+# 'groupinfo'        : group.get_text().strip(),
+# 'referrer'         : currentUrl,
+# 'outbound_wrapper' : release.find('a', class_='chp-release')['href'],
+# 'actual_target'    : None,
+
+# 'client_id'        : self.settings['clientid'],
+# 'client_key'       : self.settings['client_key'],
+
 # Tools for tracking plugins
 class NuOutboundWrapperMap(Base):
 	__tablename__ = 'nu_outbound_wrappers'
-	id             = Column(Integer, primary_key = True)
+	id               = Column(Integer, primary_key = True)
 
-	container_page    = Column(Text, index=True)
-	link_url          = Column(Text, index=True)
-	target_url        = Column(Text)
+	client_id        = Column(Text, index=True)
+	client_key       = Column(Text, index=True)
+
+	seriesname       = Column(Text, index=True)
+	releaseinfo      = Column(Text)
+	groupinfo        = Column(Text, index=True)
+	referrer         = Column(Text)
+	outbound_wrapper = Column(Text)
+	actual_target    = Column(Text)
 
 
 sa.orm.configure_mappers()
