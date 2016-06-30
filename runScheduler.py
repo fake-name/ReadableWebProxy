@@ -30,8 +30,8 @@ from settings import MAX_DB_SESSIONS
 import activePlugins
 
 executors = {
-	'default'     : ThreadPoolExecutor(10),
-	# 'ProcessPool' : ProcessPoolExecutor(10),
+	# 'default'     : ThreadPoolExecutor(10),
+	'default' : ProcessPoolExecutor(10),
 }
 job_defaults = {
 	'coalesce': True,

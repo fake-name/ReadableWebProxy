@@ -47,9 +47,11 @@ def install_pystuck():
 		try:
 			pystuck.run_server(port=stuck_port)
 			print("PyStuck installed to process, running on port %s" % stuck_port)
-			break
+			return
 		except OSError:
 			stuck_port += 1
+		if stuck_port > 7000:
+			raise RuntimeError("wat?")
 
 def halt_exc(x, y):
 	if runStatus.run_state.value == 0:
