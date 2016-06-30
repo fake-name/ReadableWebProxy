@@ -16,6 +16,8 @@ import WebMirror.SpecialCase
 
 def go():
 
+	import pystuck; pystuck.run_server()
+
 	largv = [tmp.lower() for tmp in sys.argv]
 
 	if not "noreset" in largv:

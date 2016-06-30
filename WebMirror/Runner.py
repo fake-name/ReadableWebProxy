@@ -40,6 +40,17 @@ COOKIE_LOCK  = multiprocessing.Lock()
 import random
 import gc
 
+def install_pystuck():
+	import pystuck
+	stuck_port = 6666
+	while 1:
+		try:
+			pystuck.run_server(port=stuck_port)
+			print("PyStuck installed to process, running on port %s" % stuck_port)
+			break
+		except OSError:
+			stuck_port += 1
+
 def halt_exc(x, y):
 	if runStatus.run_state.value == 0:
 		print("Raising Keyboard Interrupt")
@@ -114,6 +125,9 @@ class RunInstance(object):
 
 	@classmethod
 	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
+
+		install_pystuck()
+
 		print("Running!")
 		try:
 			run = cls(num, response_queue, new_job_queue, cookie_lock, nosig)
@@ -312,6 +326,7 @@ class UpdateAggregator(object):
 					self.log.error(line.rstrip())
 	@classmethod
 	def launch_agg(cls, agg_queue):
+		install_pystuck()
 		agg_db = db.get_db_session()
 		instance = cls(agg_queue, agg_db)
 		instance.run()
