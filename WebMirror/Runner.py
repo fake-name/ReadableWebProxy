@@ -1,30 +1,34 @@
 
-if __name__ == "__main__":
-	import logSetup
-	logSetup.initLogging()
-
-import WebMirror.rules
-import WebMirror.util.urlFuncs as urlFuncs
 import time
 import multiprocessing
 import signal
 import logging
 import traceback
-import WebMirror.Engine
-import runStatus
+import threading
 import queue
+
+# from pympler.tracker import SummaryTracker, summary, muppy
+# import tracemalloc
+import pystuck
+
 import sqlalchemy.exc
-import WebMirror.database as db
-import WebMirror.NewJobQueue as njq
-
-import WebMirror.OutputFilters.AmqpInterface
-import config
-import os.path
-
-
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
+
+
+if __name__ == "__main__":
+	import logSetup
+	logSetup.initLogging()
+
+import config
+import runStatus
+
+import WebMirror.Engine
+import WebMirror.OutputFilters.AmqpInterface
+import WebMirror.rules
+import WebMirror.util.urlFuncs as urlFuncs
 import WebMirror.database as db
+import WebMirror.NewJobQueue as njq
 
 NO_PROCESSES = 24
 # NO_PROCESSES = 16
@@ -35,18 +39,13 @@ NO_PROCESSES = 24
 # For synchronizing saving cookies to disk
 COOKIE_LOCK  = multiprocessing.Lock()
 
-# from pympler.tracker import SummaryTracker, summary, muppy
-# import tracemalloc
-import random
-import gc
 
 def install_pystuck():
-	import pystuck
 	stuck_port = 6666
 	while 1:
 		try:
 			pystuck.run_server(port=stuck_port)
-			print("PyStuck installed to process, running on port %s" % stuck_port)
+			# print("PyStuck installed to process, running on port %s" % stuck_port)
 			return
 		except OSError:
 			stuck_port += 1
@@ -58,11 +57,18 @@ def halt_exc(x, y):
 		print("Raising Keyboard Interrupt")
 		raise KeyboardInterrupt
 
+def handler(signum, frame):
+	for th in threading.enumerate():
+		print("Dumping stack for thread: ", th)
+		traceback.print_stack(sys._current_frames()[th.ident])
+		print()
+
 class RunInstance(object):
 	def __init__(self, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		print("RunInstance %s init!" % num)
 		if nosig:
-			signal.signal(signal.SIGINT, signal.SIG_IGN)
+			signal.signal(signal.SIGINT, handler)
+			# signal.signal(signal.SIGINT, signal.SIG_IGN)
 		self.num = num
 		self.log = logging.getLogger("Main.Text.Web")
 		self.resp_queue    = response_queue
@@ -130,10 +136,10 @@ class RunInstance(object):
 
 		install_pystuck()
 
-		print("Running!")
+		# print("Running!")
 		try:
 			run = cls(num, response_queue, new_job_queue, cookie_lock, nosig)
-			print("Class instantiated: ", run)
+			# print("Class instantiated: ", run)
 			run.go()
 		except Exception:
 			print()

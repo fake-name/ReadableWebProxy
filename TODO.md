@@ -3,6 +3,8 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+http://transtranstrans.hatenablog.com/entry/2016/04/27/041607
+
 retriggering use on conflict
 search only items with releases
 

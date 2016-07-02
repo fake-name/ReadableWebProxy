@@ -82,6 +82,7 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
 		self.j_fetch_proc.start()
 
+		self.print_mod = 0
 
 	def get_queues(self):
 
@@ -142,7 +143,10 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.last_rx = datetime.datetime.now()
 				self.normal_out_queue.put(tmp)
 			else:
-				self.log.info("No job responses available.")
+				self.print_mod += 1
+				if self.print_mod > 20:
+					self.log.info("No job responses available.")
+					self.print_mod = 0
 				break
 
 	def queue_filler_proc(self):
