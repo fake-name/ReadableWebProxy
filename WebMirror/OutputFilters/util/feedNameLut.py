@@ -501,6 +501,7 @@ mapper = {
 	'adorablexd.wordpress.com'                        : 'Joie de Vivre',
 	'daike1234.wordpress.com'                         : 'Crappy Machine Translation',
 	'dekinaidiary.wordpress.com'                      : 'Dekinai Diary',
+	'v7silent.wordpress.com'                          : 'v7 Silent',
 
 
 	"sousetsuka.blogspot.com"                         : "Sousetsuka",

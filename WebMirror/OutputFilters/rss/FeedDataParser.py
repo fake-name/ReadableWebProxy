@@ -636,6 +636,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'unnamedtranslations.blogspot.com'                              : pfuncs_o_u.extractUnnamedtranslations,
 				'Untuned Translation Blog'                                      : pfuncs_o_u.extractUntunedTranslation,
 				'Useless no 4'                                                  : pfuncs_o_u.extractUselessno4,
+				'v7 Silent'                                                     : pfuncs_v_other.extractV7Silent,
 				'Verathragana Stories'                                          : pfuncs_v_other.extractVerathragana,
 				'Village Translations'                                          : pfuncs_v_other.extractVillageTranslations,
 				'Void Translations'                                             : pfuncs_v_other.extractVoidTranslations,
