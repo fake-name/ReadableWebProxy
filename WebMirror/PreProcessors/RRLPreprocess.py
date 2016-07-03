@@ -33,7 +33,7 @@ def ago(then):
 
 
 def build_item_summary(release_struct):
-	d_s = bs4.BeautifulSoup("<b></b>")
+	d_s = bs4.BeautifulSoup("<b></b>", "lxml")
 	tag = d_s.new_tag("div")
 
 	header          = d_s.new_tag("h2")
@@ -52,7 +52,7 @@ def build_item_summary(release_struct):
 
 	main = release_struct['description'].replace("\n", "<br>")
 	main = markdown.markdown(main, extensions=["linkify"])
-	for chunk in bs4.BeautifulSoup(main).body:
+	for chunk in bs4.BeautifulSoup(main, "lxml").body:
 		content.append(chunk)
 	link            = d_s.new_tag("div")
 	linka           = d_s.new_tag("a")
@@ -195,7 +195,7 @@ class RRLSeriesPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.Content
 
 	def build_chapter_list(self, chapters_json, fid):
 
-		d_s = bs4.BeautifulSoup("<b></b>")
+		d_s = bs4.BeautifulSoup("<b></b>", "lxml")
 		release = d_s.new_tag("ul")
 
 		#
@@ -277,7 +277,7 @@ class RRLChapterPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 	loggerPath = "Main.Preprocessor.RoyalRoadL-Chapter"
 
 	def build_item_page(self, fid, chapter_struct):
-		d_s = bs4.BeautifulSoup("<b></b>")
+		d_s = bs4.BeautifulSoup("<b></b>", "lxml")
 		tag = d_s.new_tag("div")
 
 		title          = d_s.new_tag("h2")
@@ -294,7 +294,7 @@ class RRLChapterPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 		main = chapter_struct['content']
 		parser = build_bbcode_parser()
 		main = parser.format(main)
-		for chunk in bs4.BeautifulSoup(main).body:
+		for chunk in bs4.BeautifulSoup(main, "lxml").body:
 			content.append(chunk)
 
 		link            = d_s.new_tag("div")
@@ -329,7 +329,7 @@ class RRLChapterPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 
 
 	def build_proper_page(self, dummy_url, fid, sid):
-		soup = bs4.BeautifulSoup("")
+		soup = bs4.BeautifulSoup("", "lxml")
 
 		release_info  = self.wg.getJson("http://api.royalroadl.com/fiction_chapters.php?fid={fid}&tid={sid}".format(fid=fid, sid=sid))
 		adjacent_info = self.wg.getJson("http://api.royalroadl.com/fiction_chapters.php?action=getNavChapter&tid={sid}".format(fid=fid, sid=sid))

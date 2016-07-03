@@ -17,7 +17,7 @@ class TgStoryTimePreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPr
 
 	def acceptAdult(self, content, url):
 
-		soup = bs4.BeautifulSoup(content)
+		soup = bs4.BeautifulSoup(content, "lxml")
 		newloc = soup.find('div', class_='errormsg')
 		if not newloc:
 			return content

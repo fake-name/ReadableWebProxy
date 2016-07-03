@@ -136,8 +136,6 @@ def db_fiddle():
 
 		count += 1
 		if count % 1000 == 0:
-
-
 			statement = db.get_db_session().query(db.WebPages) \
 				.filter(db.WebPages.state != 'new')        \
 				.filter(db.WebPages.id.in_(chunk))
@@ -485,6 +483,51 @@ def sort_json(json_name):
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")
 
+# Re-order the missed file list by order of misses.
+def sort_thing(json_name):
+	with open(json_name) as fp:
+		cont = fp.readlines()
+	print("Json file has %s lines." % len(cont))
+
+	data = {}
+	for line in cont:
+		val = json.loads(line.replace("'", '"'))
+		name = val['nu_release']['groupinfo']
+		if not name in data:
+			data[name] = []
+
+		data[name].append(val)
+	out = []
+	for key in data:
+		out.append((len(data[key]), data[key]))
+
+	out.sort(key=lambda x: (x[0], x[1]*-1))
+	out.sort(key=lambda x: (x[1]*-1))
+
+	key_order = [
+		'groupinfo',
+		'seriesname',
+		'releaseinfo',
+		'actual_target',
+		'addtime',
+		'outbound_wrapper',
+		'referrer',
+	]
+
+	outf = json_name+".pyout"
+	try:
+		os.unlink(outf)
+	except FileNotFoundError:
+		pass
+
+	with open(outf, "w") as fp:
+		for item in out:
+			# print(item[1])
+			for value in item[1]:
+				for key in key_order:
+					fp.write("%s, " % ((key, value['nu_release'][key]), ))
+				fp.write("\n")
+
 def rss_db_sync(target = None, days=False, silent=False):
 
 	json_file = 'rss_filter_misses-1.json'
@@ -671,6 +714,8 @@ def decode(*args):
 			rss_db_sync(silent=True)
 		elif op == "sort-json":
 			sort_json('rss_filter_misses-1.json')
+		elif op == "sort-txt":
+			sort_thing('nu_missing_releases.txt')
 		elif op == "rss-day":
 			rss_db_sync(days=1)
 		elif op == "rss-week":

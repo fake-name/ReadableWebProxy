@@ -15,6 +15,7 @@ import time
 import http.cookiejar
 
 import traceback
+import multiprocessing
 
 import logging
 import zlib
@@ -39,7 +40,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 def as_soup(str):
-	return bs4.BeautifulSoup(str)
+	return bs4.BeautifulSoup(str, "lxml")
 
 
 def determine_json_encoding(json_bytes):

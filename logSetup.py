@@ -1,6 +1,7 @@
 
 
 import logging
+import multiprocessing
 import colorama as clr
 import threading
 import os.path
@@ -18,7 +19,11 @@ def getColor(idx):
 
 
 
-
+def getProcessSafeLogger(logPath):
+	if multiprocessing.current_process().name == "MainProcess":
+		return logging.getLogger(logPath)
+	else:
+		return multiprocessing.get_logger(logPath)
 
 
 class ColourHandler(logging.Handler):

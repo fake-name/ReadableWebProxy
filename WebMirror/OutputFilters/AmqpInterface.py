@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import msgpack
+import multiprocessing
 import AmqpConnector
 import logging
 import os.path

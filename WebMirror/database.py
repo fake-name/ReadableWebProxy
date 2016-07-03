@@ -38,6 +38,7 @@ from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import PrimaryKeyConstraint
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 
@@ -385,6 +386,10 @@ class NuOutboundWrapperMap(Base):
 	outbound_wrapper = Column(Text)
 	actual_target    = Column(Text)
 
+
+	__table_args__ = (
+		UniqueConstraint('client_id', 'client_key', 'seriesname', 'releaseinfo', 'groupinfo'),
+		)
 
 sa.orm.configure_mappers()
 

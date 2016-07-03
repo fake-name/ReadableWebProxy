@@ -16,7 +16,7 @@ class LJPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreprocesso
 	loggerPath = "Main.Preprocessor.Livejournal"
 
 	def acceptAdult(self, content, url):
-		soup = bs4.BeautifulSoup(content)
+		soup = bs4.BeautifulSoup(content, "lxml")
 		formdiv = soup.find('div', class_='b-msgsystem-warningbox-confirm')
 
 		target = formdiv.form['action']
