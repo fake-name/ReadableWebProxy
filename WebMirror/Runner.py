@@ -5,6 +5,7 @@ import signal
 import logging
 import traceback
 import threading
+import sys
 import queue
 
 # from pympler.tracker import SummaryTracker, summary, muppy
@@ -65,7 +66,7 @@ def handler(signum, frame):
 
 class RunInstance(object):
 	def __init__(self, num, response_queue, new_job_queue, cookie_lock, nosig=True):
-		print("RunInstance %s init!" % num)
+		# print("RunInstance %s init!" % num)
 		if nosig:
 			signal.signal(signal.SIGINT, handler)
 			# signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -75,7 +76,7 @@ class RunInstance(object):
 		self.cookie_lock   = cookie_lock
 		self.new_job_queue = new_job_queue
 
-		print("RunInstance %s MOAR init!" % num)
+		# print("RunInstance %s MOAR init!" % num)
 
 	def __del__(self):
 		db.delete_db_session()

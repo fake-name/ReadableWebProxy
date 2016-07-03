@@ -105,6 +105,7 @@ def view_history():
 		return render_template('history.html', title = 'Item History', page = page, req_url = req_url, versions=versions)
 
 
+ # @no_cache
 @app.route('/render', methods=['GET'])
 def render():
 	req_url = request.args.get('url')
@@ -158,6 +159,12 @@ def render_resource():
 	response = make_response(content)
 	response.headers['Content-Type'] = mimetype
 	response.headers["Content-Disposition"] = "attachment; filename={}".format(fname)
+
+
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"] = "no-cache"
+	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
 
 	return response
 	# return render_template('render.html',
