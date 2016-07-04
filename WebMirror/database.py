@@ -386,9 +386,11 @@ class NuOutboundWrapperMap(Base):
 	outbound_wrapper = Column(Text)
 	actual_target    = Column(Text)
 
+	validated        = Column(Boolean, default=False)
+
 
 	__table_args__ = (
-		UniqueConstraint('client_id', 'client_key', 'seriesname', 'releaseinfo', 'groupinfo'),
+		UniqueConstraint('client_id', 'client_key', 'seriesname', 'releaseinfo', 'groupinfo', 'actual_target'),
 		)
 
 sa.orm.configure_mappers()

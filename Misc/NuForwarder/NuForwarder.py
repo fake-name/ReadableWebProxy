@@ -106,6 +106,43 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		db.delete_db_session(postfix='nu_forwarder')
 
 
+	def insert_new_release(self, input_data):
+		new = db.NuOutboundWrapperMap(
+				client_id        = input_data['nu_release']['client_id'],
+				client_key       = input_data['nu_release']['client_key'],
+				seriesname       = input_data['nu_release']['seriesname'],
+				releaseinfo      = input_data['nu_release']['releaseinfo'],
+				groupinfo        = input_data['nu_release']['groupinfo'],
+				referrer         = input_data['nu_release']['referrer'],
+				outbound_wrapper = input_data['nu_release']['outbound_wrapper'],
+				actual_target    = input_data['nu_release']['actual_target'],
+			)
+
+		while 1:
+			try:
+				self.db_sess.add(new)
+				self.db_sess.commit()
+				return
+
+			except sqlalchemy.exc.InvalidRequestError:
+				print("InvalidRequest error!")
+				self.db_sess.rollback()
+				traceback.print_exc()
+			except sqlalchemy.exc.OperationalError:
+				print("InvalidRequest error!")
+				self.db_sess.rollback()
+			except sqlalchemy.exc.IntegrityError:
+
+				with open("nu_db_collisions.txt", "wa") as fp:
+					fp.write(str(input_data))
+					fp.write("\n")
+
+				print("[upsertRssItems] -> Integrity error!")
+				traceback.print_exc()
+				self.db_sess.rollback()
+				break
+
+
 	def add_release(self, input_data):
 
 		expected = [
@@ -144,79 +181,18 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 				fp.write("\n")
 
 			print(input_data['nu_release'])
-			return
+			raise ValueError("Wat?")
 
-		# else:
-		# 	with open("nu release %s.txt" % time.time(), "w") as fp:
-		# 		fp.write("Apparently valid packet:\n")
-		# 		fp.write(str(input_data))
-		# 		fp.write("\n")
-
-		# vol, chap, frag, postfix = extractVolChapterFragmentPostfix(item['releaseinfo'])
-
-		print(input_data['nu_release'])
-		new = db.NuOutboundWrapperMap(
-				client_id        = input_data['nu_release']['client_id'],
-				client_key       = input_data['nu_release']['client_key'],
-				seriesname       = input_data['nu_release']['seriesname'],
-				releaseinfo      = input_data['nu_release']['releaseinfo'],
-				groupinfo        = input_data['nu_release']['groupinfo'],
-				referrer         = input_data['nu_release']['referrer'],
-				outbound_wrapper = input_data['nu_release']['outbound_wrapper'],
-				actual_target    = input_data['nu_release']['actual_target'],
-			)
-
-		while 1:
-			try:
-				self.db_sess.add(new)
-				self.db_sess.commit()
-				return
-
-			except sqlalchemy.exc.InvalidRequestError:
-				print("InvalidRequest error!")
-				self.db_sess.rollback()
-				traceback.print_exc()
-			except sqlalchemy.exc.OperationalError:
-				print("InvalidRequest error!")
-				self.db_sess.rollback()
-			except sqlalchemy.exc.IntegrityError:
-				print("[upsertRssItems] -> Integrity error!")
-				traceback.print_exc()
-				self.db_sess.rollback()
-
-
-		# 'seriesname'       : series.get_text().strip(),
-		# 'releaseinfo'      : release.get_text().strip(),
-		# 'groupinfo'        : group.get_text().strip(),
-		# 'referrer'         : currentUrl,
-		# 'outbound_wrapper' : release.find('a', class_='chp-release')['href'],
-		# 'actual_target'    : None,
-
-		# 'client_id'        : self.settings['clientid'],
-		# 'client_key'       : self.settings['client_key'],
-
-
-
-		# ret = {
-		# 	'srcname'      : fix_string(item['groupinfo']),
-		# 	'series'       : fix_string(item['seriesname']),
-		# 	'vol'          : vol,
-		# 	'chp'          : chap,
-		# 	'frag'         : frag,
-		# 	'published'    : calendar.timegm(datetime.datetime.strptime(item['addtime'], '%Y-%m-%dT%H:%M:%S.%f').timetuple()),
-		# 	'itemurl'      : item['actual_target'],
-		# 	'postfix'      : fix_string(postfix),
-		# 	'author'       : None,
-		# 	'tl_type'      : 'translated',
-		# 	'match_author' : False,
-
-		# 	'nu_release'   : True
-
-		# }
-
-		# release = createReleasePacket(ret, beta=False)
-		# print("Packed release:", release)
-		# self.amqp_put_item(release)
+		have = self.db_sess.query(db.NuOutboundWrapperMap)                                                  \
+				.filter(db.NuOutboundWrapperMap.client_id     == input_data['nu_release']['client_id'])     \
+				.filter(db.NuOutboundWrapperMap.client_key    == input_data['nu_release']['client_key'])    \
+				.filter(db.NuOutboundWrapperMap.seriesname    == input_data['nu_release']['seriesname'])    \
+				.filter(db.NuOutboundWrapperMap.releaseinfo   == input_data['nu_release']['releaseinfo'])   \
+				.filter(db.NuOutboundWrapperMap.groupinfo     == input_data['nu_release']['groupinfo'])     \
+				.filter(db.NuOutboundWrapperMap.actual_target == input_data['nu_release']['actual_target']) \
+				.scalar()
+		if not have:
+			self.insert_new_release(input_data)
 
 	def go(self):
 		empties = 0

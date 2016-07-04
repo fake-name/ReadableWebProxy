@@ -29,6 +29,7 @@ import app.sub_views.content_views as content_views
 import app.sub_views.rss_views     as rss_views
 import app.sub_views.search_views  as search_views
 import app.sub_views.status_view   as status_view
+import app.sub_views.nu_views      as nu_views
 
 
 @lm.user_loader
@@ -43,7 +44,6 @@ def get_locale():
 
 @app.before_request
 def before_request():
-
 	g.user = current_user
 	g.locale = get_locale()
 	g.session = database.checkout_session()

@@ -54,7 +54,7 @@ def go():
 
 	if "debug" in sys.argv:
 		print("Running in debug mode.")
-		app.run(host='0.0.0.0', port=5001)
+		app.run(host='0.0.0.0', port=5001, debug=True)
 	else:
 		print("Running in normal mode.")
 		# app.run(host='0.0.0.0', port=5001, processes=10)

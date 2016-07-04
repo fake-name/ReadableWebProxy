@@ -95,7 +95,7 @@
 			$.ajax({
 				url      : url,
 				success  : content_load_cb,
-				error    : content_load_cb,
+				error    : content_load_fail,
 				dataType : "json",
 
 			})

@@ -1,0 +1,162 @@
+<!-- extend base layout -->
+{% extends "__base.html" %}
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well">
+
+
+		<h2>NU Items</h2>
+
+		<div class="well">
+
+			<h4>
+				Releases: {{"All" if all_releases else "Unverified"}}
+			</h4>
+			<button onclick="apply_changes()">Apply changes</button>
+			<div>
+				<table class='table-striped' style='width:100%'>
+					<colgroup>
+						<col>
+						<col style='width: 110px;'>
+						<col>
+						<col>
+						<col>
+						<col>
+						<col>
+					</colgroup>
+					<tr>
+						<th>Valid</th>
+						<th>Worker</th>
+						<th>TL Group</th>
+						<th>Series</th>
+						<th>Chapter</th>
+						<th>Target URL</th>
+
+						<th>Client-UUID</th>
+					</tr>
+					{%- for row in new -%}
+						<tr>
+							<td><center><input class='row-checkbox' type="checkbox" data-row-id="{{row.id}}" data-original-value="{{'true' if row.validated else 'false'}}" {{'checked="true"' if row.validated else ''}}></center></td>
+							<td>{{row.client_id}}</td>
+							<td>{{row.groupinfo}}</td>
+							<td>{{row.seriesname}}</td>
+							<td>{{row.releaseinfo}}</td>
+							<td>{{row.actual_target}}</td>
+
+							<td>{{row.client_key.split(":")[-1]}}</td>
+						</tr>
+					{%- endfor -%}
+				</table>
+			</div>
+			<button onclick="apply_changes()">Apply changes</button>
+		</div>
+	</div>
+
+{% endblock %}
+
+
+{% block header %}
+	<style>
+		#segment_container {
+			max-width: none !important;
+		}
+		body {
+			max-width: none !important;
+		}
+	</style>
+{% endblock %}
+
+
+{% block footer %}
+	{% if g.user.is_mod() %}
+		{% include '_block_admin_scripts.html' %}
+	{% endif %}
+
+	<script>
+
+		var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				console.log("Ajax setup!", csrftoken);
+				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken)
+				}
+			}
+		})
+
+		function content_load_cb(data, textStatus, jqXHR)
+		{
+			console.log("Wat?")
+		};
+
+		function content_load_fail(jqXHR, textStatus, errorThrown)
+		{
+			alert("Failed to fetch content!\nError: " + errorThrown + "\nStatus text: " + textStatus);
+		}
+
+
+		function apply_changes()
+		{
+			var rows = $(".row-checkbox");
+
+			var changes = [];
+			rows.each(function( index, value ) {
+				var itm = $(this);
+
+				if ( itm.data('originalValue') != itm.is(':checked'))
+				{
+					console.log( itm.data(), itm.is(':checked') );
+					changes.push({
+						'id'  : itm.data().rowId,
+						'old' : itm.data().originalValue,
+						'new' : itm.is(':checked'),
+					});
+				}
+			});
+			console.log("Changes:", changes.length, changes)
+
+
+			if (changes.length)
+			{
+				console.log("Making request")
+				$.ajax({
+					url         : '/nu_api/',
+					data        : JSON.stringify({"nu release validity update" : changes}),
+					success     : content_load_cb,
+					error       : content_load_fail,
+					method      : "POST",
+					dataType    : 'json',
+					contentType : "application/json;",
+
+			})
+			}
+
+			// var url = "/render?{{ {"url" : req_url, "version" : version} | urlencode | safe }}";
+
+			// $.ajax({
+			// 	url      : url,
+			// 	success  : content_load_cb,
+			// 	error    : content_load_cb,
+			// 	dataType : "json",
+			// 	cache    : false,
+
+			// })
+
+		}
+
+		function load_nocache()
+		{
+
+			var content = $("#content");
+			content.html('<div class="center-block text-center"><h4>Re-Loading</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>');
+
+
+		}
+
+
+
+	</script>
+{% endblock %}
+
