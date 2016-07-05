@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import msgpack
 import multiprocessing
-import AmqpConnector
+import LocalAmqpConnector
 import logging
 import os.path
 import ssl
@@ -24,9 +24,12 @@ class RabbitQueueHandler(object):
 		assert "RABBIT_SRVER"       in settings
 		assert "RABBIT_VHOST"       in settings
 
+		assert "taskq_task"         in settings
+		assert "taskq_response"     in settings
+
 		sslopts = self.getSslOpts()
 
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
+		self.connector = LocalAmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
 												password           = settings["RABBIT_PASWD"],
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
@@ -107,15 +110,30 @@ class RabbitQueueHandler(object):
 		self.close()
 
 	def close(self):
-		if self.connector:
+		if hasattr(self, "connector") and self.connector:
 			self.connector.stop()
 			self.connector = None
+
+
+def test(amqp_settings, is_master):
+	amqp_settings['master'] = is_master
+	amqpint = RabbitQueueHandler(amqp_settings)
+	print(amqpint)
+	delay = 10
+	for x in range(delay):
+		time.sleep(1)
+		msg = 'wat %s' % x
+		amqpint.put_item(msg.encode("ascii"))
+		print("Slept %s of %s" % (x, delay))
+	amqpint.close()
+
 
 if __name__ == '__main__':
 	import logSetup
 	logSetup.initLogging()
 
 	import config
+	import time
 
 
 	amqp_settings = {
@@ -123,8 +141,10 @@ if __name__ == '__main__':
 		"RABBIT_PASWD" : config.C_RABBIT_PASWD,
 		"RABBIT_SRVER" : config.C_RABBIT_SRVER,
 		"RABBIT_VHOST" : config.C_RABBIT_VHOST,
+		"taskq_task"     : 'tasks.test.q',
+		"taskq_response" : 'resps.test.q',
 	}
 
-	amqpint = RabbitQueueHandler(amqp_settings)
-	print(amqpint)
-
+	while 1:
+		test(amqp_settings, is_master=True)
+		test(amqp_settings, is_master=False)
