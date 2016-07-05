@@ -57,7 +57,7 @@ def pack_message(type, data, is_beta=False):
 		# to the prod env
 		'beta'      : is_beta,
 	}
-	return json.dumps(ret)
+	return json.dumps(ret).encode("utf-8")
 
 
 

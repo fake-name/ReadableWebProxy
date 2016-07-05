@@ -251,20 +251,6 @@ class ConnectorManager:
 				self._connect()
 				connected = True
 
-			# hearbeat_packet_interval
-			# hearbeat_packet_timeout
-			# if self.last_hearbeat_sent + self.config['hearbeat_packet_interval'] < time.time():
-			# 	self.log.info("Keepalive ping! (last heartbeat: %s, %s)", self.connection.last_heartbeat_received, time.time()-self.last_hearbeat_received)
-			# 	self.last_hearbeat_sent += self.config['hearbeat_packet_interval']
-			# 	msg = amqp.basic_message.Message(body="keepalive")
-			# 	self.channel.basic_publish(msg, exchange=self.keepalive_exchange_name, routing_key="nak")
-
-			# self.connection.heartbeat_tick(rate=self.config['hearbeat_packet_interval'])
-
-			# If the heartbeat has been missing for greater then the timeout, throw an exception
-			# if self.last_hearbeat_received + self.config['hearbeat_packet_timeout'] < time.time():
-			# 	raise Heartbeat_Timeout_Exception("Heartbeat missed")
-
 			time.sleep(loop_delay)
 
 			self._publishOutgoing()
@@ -297,23 +283,6 @@ class ConnectorManager:
 
 		self.log.info("AMQP Thread exited")
 
-	# def _hearbeat_callback(self, msg):
-	# 	# self.log.info("Received packet via callback (%s items in queue)! Processing.", self.task_queue.qsize())
-	# 	self.log.info("Heartbeat ping received! Sent messages: %s. Received messages: %s", self.sent_messages, self.recv_messages)
-	# 	msg.channel.basic_ack(msg.delivery_info['delivery_tag'])
-	# 	self.connection.send_heartbeat()
-	# 	self.last_hearbeat_received = time.time()
-
-	# def _message_callback(self, msg):
-	# 	self.delivered += 1
-	# 	if self.delivered >= 25:
-	# 		self.log.info("Received packet via callback (%s items in queue)! Processing.", self.task_queue.qsize())
-	# 		self.delivered = 0
-	# 	if self.config['ack_rx']:
-	# 		msg.channel.basic_ack(msg.delivery_info['delivery_tag'])
-	# 	self.task_queue.put(msg.body)
-	# 	self.recv_messages += 1
-
 	def _processReceiving(self):
 		for item in self.in_q:
 			# Prevent never breaking from the loop if the feeding queue is backed up.
@@ -328,6 +297,9 @@ class ConnectorManager:
 
 				self.session_fetched += 1
 				item.ack()
+
+				while self.task_queue.qsize() > self.config['prefetch']:
+					time.sleep(1)
 
 				if self.atFetchLimit():
 					self.log.info("Session fetch limit reached. Not fetching any additional content.")
