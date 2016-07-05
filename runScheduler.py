@@ -29,20 +29,7 @@ from settings import MAX_DB_SESSIONS
 
 import activePlugins
 
-executors = {
-	# 'default'     : ThreadPoolExecutor(10),
-	'default' : ProcessPoolExecutor(10),
-}
-job_defaults = {
-	'coalesce': True,
-}
-
 SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)
-
-jobstores = {
-	'default'      : SQLAlchemyJobStore(url=SQLALCHEMY_DATABASE_URI)
-
-}
 
 
 CALLABLE_LUT = {}
@@ -214,7 +201,7 @@ def go_sched():
 				'url': SQLALCHEMY_DATABASE_URI
 			},
 			'apscheduler.executors.default': {
-				'class': 'apscheduler.executors.pool:ThreadPoolExecutor',
+				'class': 'apscheduler.executors.pool:ProcessPoolExecutor',
 				'max_workers': '10'
 			},
 			'apscheduler.job_defaults.coalesce': 'true',
