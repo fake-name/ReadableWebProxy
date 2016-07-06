@@ -122,7 +122,8 @@ class ConnectorManager:
 		# Finally, deincrement the active count
 		self.active_connections.value = 0
 
-		self.rx_thread.join()
+		if hasattr(self, "rx_thread"):
+			self.rx_thread.join()
 
 	def _connect(self):
 
@@ -255,8 +256,10 @@ class ConnectorManager:
 
 			self._publishOutgoing()
 			# Reset the print integrator.
-			if integrator > 5:
+			if integrator > print_time:
 				integrator = 0
+				with self.active_lock:
+					self.log.info("AMQP Interface process. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
 			integrator += loop_delay
 
 		self.log.info("AMQP Thread Exiting")
@@ -290,12 +293,12 @@ class ConnectorManager:
 			if item:
 				self.log.info("Received packet from queue '%s'! Processing.", self.in_queue)
 				self.task_queue.put(item.body)
-				self.recv_messages += 1
 
 				with self.active_lock:
 					self.active += 1
+					self.recv_messages += 1
+					self.session_fetched += 1
 
-				self.session_fetched += 1
 				item.ack()
 
 				while self.task_queue.qsize() > self.config['prefetch']:
@@ -319,12 +322,12 @@ class ConnectorManager:
 				put = self.response_queue.get_nowait()
 				# self.log.info("Publishing message of len '%0.3f'K to exchange '%s'", len(put)/1024, out_queue)
 				# message = amqp.basic_message.Message(body=put)
-				self.sent_messages += 1
 				msg_prop = {}
 				if self.config['durable']:
 					msg_prop["delivery_mode"] = 2
 				self.channel.basic_publish(body=put, exchange=out_queue, routing_key=out_key, properties=msg_prop)
 				with self.active_lock:
+					self.sent_messages += 1
 					self.active -= 1
 
 			except queue.Empty:

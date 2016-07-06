@@ -68,8 +68,8 @@ class RunInstance(object):
 	def __init__(self, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		# print("RunInstance %s init!" % num)
 		if nosig:
-			signal.signal(signal.SIGINT, handler)
-			# signal.signal(signal.SIGINT, signal.SIG_IGN)
+			# signal.signal(signal.SIGINT, handler)
+			signal.signal(signal.SIGINT, signal.SIG_IGN)
 		self.num = num
 		self.log = logging.getLogger("Main.Text.Web")
 		self.resp_queue    = response_queue
