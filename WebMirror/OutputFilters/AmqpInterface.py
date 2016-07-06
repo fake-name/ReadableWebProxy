@@ -12,9 +12,9 @@ class RabbitQueueHandler(object):
 
 	def __init__(self, settings):
 
-		logPath = 'Main.Feeds.RPC'
+		self.logPath = 'Main.Feeds.RPC'
 
-		self.log = logging.getLogger(logPath)
+		self.log = logging.getLogger(self.logPath)
 		self.log.info("RPC Management class instantiated.")
 
 
@@ -110,6 +110,7 @@ class RabbitQueueHandler(object):
 		self.close()
 
 	def close(self):
+		print("Closing connector wrapper: ", self.logPath)
 		if hasattr(self, "connector") and self.connector:
 			self.connector.stop()
 			self.connector = None

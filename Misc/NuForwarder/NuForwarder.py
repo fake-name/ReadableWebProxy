@@ -199,6 +199,8 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		while 1:
 			new = self.data_in.get_item()
 			if new:
+				if isinstance(new, bytes):
+					new = new.decode("utf-8")
 				new = json.loads(new)
 				self.add_release(new)
 

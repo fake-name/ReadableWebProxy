@@ -9,10 +9,15 @@
 		<h2>NU Items</h2>
 
 		<div class="well">
-
-			<h4>
-				Releases: {{"All" if all_releases else "Unverified"}}
+			<div class="pull-right">
+				<a href='/nu_releases/?view=all'>All</a>
+				<a href='/nu_releases/?view=unverified'>Unverified</a>
+				<a href='/nu_releases/?view=verified'>Verified</a>
+			</div>
+			<h4 class="pull-left">
+				Releases: {{release_selector}}
 			</h4>
+			<div class="clearfix"></div>
 			<button onclick="apply_changes()">Apply changes</button>
 			<div>
 				<table class='table-striped' style='width:100%'>
@@ -33,18 +38,16 @@
 						<th>Chapter</th>
 						<th>Target URL</th>
 
-						<th>Client-UUID</th>
 					</tr>
-					{%- for row in new -%}
+					{%- for rowlist in new -%}
 						<tr>
-							<td><center><input class='row-checkbox' type="checkbox" data-row-id="{{row.id}}" data-original-value="{{'true' if row.validated else 'false'}}" {{'checked="true"' if row.validated else ''}}></center></td>
-							<td>{{row.client_id}}</td>
-							<td>{{row.groupinfo}}</td>
-							<td>{{row.seriesname}}</td>
-							<td>{{row.releaseinfo}}</td>
-							<td>{{row.actual_target}}</td>
+							<td><center><input class='row-checkbox' type="checkbox" data-row-id="{{rowlist[0].id}}" data-original-value="{{'true' if rowlist[0].validated else 'false'}}" {{'checked="true"' if rowlist[0].validated else ''}}></center></td>
+							<td>{% for row in rowlist %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
+							<td>{{rowlist[0].groupinfo}}</td>
+							<td>{{rowlist[0].seriesname}}</td>
+							<td>{{rowlist[0].releaseinfo}}</td>
+							<td><a href='{{rowlist[0].actual_target}}'>{{rowlist[0].actual_target}}</a></td>
 
-							<td>{{row.client_key.split(":")[-1]}}</td>
 						</tr>
 					{%- endfor -%}
 				</table>
@@ -58,11 +61,20 @@
 
 {% block header %}
 	<style>
-		#segment_container {
+		#segment_container
+		{
 			max-width: none !important;
 		}
-		body {
+		body
+		{
 			max-width: none !important;
+		}
+		table, th, td {
+		    border: 1px solid black !important;
+		}
+		th, td
+		{
+			padding : 2px !important;
 		}
 	</style>
 {% endblock %}
@@ -88,7 +100,10 @@
 
 		function content_load_cb(data, textStatus, jqXHR)
 		{
-			console.log("Wat?")
+			if (data['error'] == false)
+				location.reload();
+			else
+				alert("Failed to fetch content!\nError: " + textStatus + "\nStatus text: " + data);
 		};
 
 		function content_load_fail(jqXHR, textStatus, errorThrown)
@@ -123,7 +138,7 @@
 				console.log("Making request")
 				$.ajax({
 					url         : '/nu_api/',
-					data        : JSON.stringify({"nu release validity update" : changes}),
+					data        : JSON.stringify({'op' : 'nu release validity update', 'data' : changes}),
 					success     : content_load_cb,
 					error       : content_load_fail,
 					method      : "POST",
