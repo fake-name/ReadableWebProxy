@@ -47,6 +47,8 @@ class ConnectorManager:
 		self.active_connections = active
 		self.response_queue     = response_queue
 
+		self.connected          = multiprocessing.Value("i", 0)
+
 
 		self.session_fetched        = 0
 		self.queue_fetched          = 0
@@ -129,6 +131,7 @@ class ConnectorManager:
 
 		assert self.active_connections.value == 0
 		self.active_connections.value = 1
+		self.connected.value = 1
 
 		self.log.info("Initializing AMQP connection.")
 		# Connect to server
@@ -248,9 +251,8 @@ class ConnectorManager:
 		# we've flushed the outgoing items out the queue
 		while self.runstate.value or self.response_queue.qsize():
 
-			if not connected:
+			if not self.connected.value:
 				self._connect()
-				connected = True
 
 			time.sleep(loop_delay)
 
@@ -278,36 +280,45 @@ class ConnectorManager:
 			self.in_q.stop_consuming()
 			self.connection.close()
 		except rabbitpy.exceptions.RabbitpyException as e:
-			# We don't really care about exceptions on teardown
 			self.log.error("Error on interface teardown!")
 			self.log.error("	%s", e)
-			# for line in traceback.format_exc().split('\n'):
-			# 	self.log.error(line)
+			self.active_connections.value = 0
+			self.connected.value = 0
 
 		self.log.info("AMQP Thread exited")
 
 	def _processReceiving(self):
-		for item in self.in_q:
-			# Prevent never breaking from the loop if the feeding queue is backed up.
 
-			if item:
-				self.log.info("Received packet from queue '%s'! Processing.", self.in_queue)
-				self.task_queue.put(item.body)
+		while self.runstate.value:
+			try:
+				for item in self.in_q:
+					# Prevent never breaking from the loop if the feeding queue is backed up.
 
-				with self.active_lock:
-					self.active += 1
-					self.recv_messages += 1
-					self.session_fetched += 1
+					if item:
 
-				item.ack()
+						self.log.info("Received packet from queue '%s'! Processing.", self.in_queue)
+						self.task_queue.put(item.body)
 
-				while self.task_queue.qsize() > self.config['prefetch']:
-					time.sleep(1)
+						with self.active_lock:
+							self.active += 1
+							self.recv_messages += 1
+							self.session_fetched += 1
 
-				if self.atFetchLimit():
-					self.log.info("Session fetch limit reached. Not fetching any additional content.")
-					break
+						item.ack()
 
+						while self.task_queue.qsize() > self.config['prefetch']:
+							time.sleep(1)
+
+						if self.atFetchLimit():
+							self.log.info("Session fetch limit reached. Not fetching any additional content.")
+							break
+
+
+			except rabbitpy.exceptions.RabbitpyException as e:
+				self.log.error("Error while polling interface!")
+				self.log.error("	%s", e)
+				self.connected.value = 0
+				self.active_connections.value = 0
 
 	def _publishOutgoing(self):
 		if self.config['master']:
