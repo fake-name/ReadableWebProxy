@@ -3,6 +3,7 @@ import time
 import multiprocessing
 import signal
 import logging
+import logSetup
 import traceback
 import threading
 import sys
@@ -18,7 +19,6 @@ from sqlalchemy.sql import func
 
 
 if __name__ == "__main__":
-	import logSetup
 	logSetup.initLogging()
 
 import config
@@ -134,6 +134,7 @@ class RunInstance(object):
 
 	@classmethod
 	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
+		logSetup.resetLoggingLocks()
 
 		install_pystuck()
 

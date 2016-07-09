@@ -18,6 +18,25 @@ def getColor(idx):
 	return colours[idx%len(colours)]
 
 
+class UnlockedHandler(logging.Handler):
+
+	def acquire(self):
+		"""
+		Acquire the I/O thread lock.
+		"""
+		return
+
+	def release(self):
+		"""
+		Release the I/O thread lock.
+		"""
+		return
+
+
+
+# THIS IS HORRIBLE
+logging.Handler = UnlockedHandler
+
 
 def getProcessSafeLogger(logPath):
 	if multiprocessing.current_process().name == "MainProcess":
@@ -26,14 +45,49 @@ def getProcessSafeLogger(logPath):
 		return multiprocessing.get_logger(logPath)
 
 
-class ColourHandler(logging.Handler):
+def resetLoggingLocks():
+	'''
+	This function is a HACK!
+
+	Basically, if we fork() while a logging lock is held, the lock
+	is /copied/ while in the acquired state. However, since we've
+	forked, the thread that acquired the lock no longer exists,
+	so it can never unlock the lock, and we end up blocking
+	forever.
+
+	Therefore, we manually enter the logging module, and forcefully
+	release all the locks it holds.
+
+	THIS IS NOT SAFE (or thread-safe).
+	Basically, it MUST be called right after a process
+	starts, and no where else.
+	'''
+	try:
+		logging._releaseLock()
+	except RuntimeError:
+		pass  # The lock is already released
+
+	# Iterate over the root logger hierarchy, and
+	# force-free all locks.
+	# if logging.Logger.root
+	for handler in logging.Logger.manager.loggerDict.values():
+		if hasattr(handler, "lock") and handler.lock:
+			try:
+				handler.lock.release()
+			except RuntimeError:
+				pass  # The lock is already released
+
+
+
+class ColourHandler(UnlockedHandler):
 
 	def __init__(self, level=logging.DEBUG):
-		logging.Handler.__init__(self, level)
-		self.formatter = logging.Formatter('\r%(name)s%(padding)s - %(style)s%(levelname)s - %(message)s'+clr.Style.RESET_ALL)
+		UnlockedHandler.__init__(self, level)
+		self.formatter = logging.Formatter('\r%(name)s - %(style)s%(levelname)s - %(message)s'+clr.Style.RESET_ALL)
 		clr.init()
 
 		self.logPaths = {}
+
 
 	def emit(self, record):
 
@@ -75,8 +129,9 @@ class ColourHandler(logging.Handler):
 		else:
 			record.style = clr.Style.NORMAL
 
-		record.padding = ""
-		print((self.format(record)))
+		# record.padding = ""
+		outstr = self.format(record)
+		print(outstr)
 
 ansi_escape = re.compile(r'\x1b[^m]*m')
 
@@ -88,6 +143,19 @@ class RobustFileHandler(logging.FileHandler):
 		super().__init__(*args, **kwargs)
 
 		self.output_streams = {}
+
+	def acquire(self):
+		"""
+		Acquire the I/O thread lock.
+		"""
+		return
+
+	def release(self):
+		"""
+		Release the I/O thread lock.
+		"""
+		return
+
 
 	def stream_emit(self, record, source_name):
 		"""
