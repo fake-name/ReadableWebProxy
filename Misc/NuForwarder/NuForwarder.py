@@ -1,10 +1,13 @@
 
 
 import time
+import urllib.parse
 import pprint
 import json
 import datetime
 import traceback
+import os.path
+import json
 import calendar
 
 import sqlalchemy.exc
@@ -194,7 +197,7 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if not have:
 			self.insert_new_release(input_data)
 
-	def go(self):
+	def process_inbound_messages(self):
 		empties = 0
 		while 1:
 			new = self.data_in.get_item()
@@ -211,21 +214,141 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			print("Looping!", empties)
 			if empties > 10:
 				print("returning?")
-				self.data_in.close()
-				self.data_in = None
-				self._amqpint.close()
-				self._amqpint = None
 				return
+
+	def go(self):
+		self.process_inbound_messages()
+		self.fix_names()
+		self.emit_verified_releases()
+
+	def fix_names(self):
+		lut = load_lut()
+		for old, new in lut.items():
+			have = self.db_sess.query(db.NuOutboundWrapperMap)         \
+				.filter(db.NuOutboundWrapperMap.seriesname     == old) \
+				.all()
+			for row in have:
+				assert row.seriesname == old
+				row.seriesname = new
+				print("Fixing row: ", old, row.seriesname)
+
+		self.db_sess.commit()
+
+
+	def do_release(self, item):
+
+		vol, chap, frag, postfix = extractVolChapterFragmentPostfix(item['releaseinfo'])
+
+
+		ret = {
+			'srcname'      : fix_string(item['groupinfo']),
+			'series'       : fix_string(item['seriesname']),
+			'vol'          : vol,
+			'chp'          : chap,
+			'frag'         : frag,
+			'published'    : calendar.timegm(item['addtime'].timetuple()),
+			'itemurl'      : item['actual_target'],
+			'postfix'      : fix_string(postfix),
+			'author'       : None,
+			'tl_type'      : 'translated',
+			'match_author' : False,
+
+			'nu_release'   : True
+
+		}
+
+		release = createReleasePacket(ret, beta=False)
+		# print("Packed release:", release)
+		self.amqp_put_item(release)
+
+
+	def emit_verified_releases(self):
+			have = self.db_sess.query(db.NuOutboundWrapperMap)     \
+				.filter(db.NuOutboundWrapperMap.validated == True) \
+				.all()
+			agg_releases = {}
+			for row in have:
+				key = (row.seriesname, row.releaseinfo, row.groupinfo)
+				if not key in agg_releases:
+
+					agg_releases[key] = {
+						'releaseinfo'   : row.releaseinfo,
+						'groupinfo'     : row.groupinfo,
+						'seriesname'    : row.seriesname,
+						'addtime'       : row.released_on,
+						'actual_target' : row.actual_target,
+					}
+				else:
+					assert str(row.releaseinfo)   == agg_releases[key]['releaseinfo'],   "Wat? (%s) %s -> %s" % (
+						row.releaseinfo   == agg_releases[key]['releaseinfo'], row.releaseinfo,     agg_releases[key]['releaseinfo'])
+					assert str(row.groupinfo)     == agg_releases[key]['groupinfo'],     "Wat? (%s) %s -> %s" % (
+						row.groupinfo     == agg_releases[key]['groupinfo'], row.groupinfo,         agg_releases[key]['groupinfo'])
+					assert str(row.seriesname)    == agg_releases[key]['seriesname'],    "Wat? (%s) %s -> %s" % (
+						row.seriesname    == agg_releases[key]['seriesname'], row.seriesname,       agg_releases[key]['seriesname'])
+
+					if 'blogspot' in row.actual_target:
+						# Blogspot is ANNOYING, and has a bajillion possible TLDs that all resolve the same place.
+						# Therefore, ignore the TLD from the netloc
+						url1 = urllib.parse.urlsplit(row.actual_target)
+						url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
+						url1 = (url1.scheme, url1.netloc.rsplit(".", 1)[0], url1.path, url1.query, url1.fragment)
+						url2 = (url2.scheme, url2.netloc.rsplit(".", 1)[0], url2.path, url2.query, url2.fragment)
+						assert url1 == url2
+					elif 'docs.google.com' in row.actual_target:
+						# We don't care about the query or fragment for google doc entries.
+						url1 = urllib.parse.urlsplit(row.actual_target)
+						url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
+						url1 = (url1.scheme, url1.netloc, url1.path)
+						url2 = (url2.scheme, url2.netloc, url2.path)
+						assert url1 == url2, "wat? %s -> %s" % (url1, url2)
+
+					else:
+						assert str(row.actual_target) == agg_releases[key]['actual_target'], "Wat? (%s) %s -> %s" % (row.actual_target == agg_releases[key]['actual_target'], row.actual_target, agg_releases[key]['actual_target'])
+
+
+			for release in agg_releases.values():
+				self.do_release(release)
+			# print("Valid releases:")
+			# print(agg_releases)
+
+
+	def close(self):
+		print("Closing")
+		self.data_in.close()
+		self.data_in = None
+		self._amqpint.close()
+		self._amqpint = None
+
+
+	def __del__(self):
+		try:
+			self.close()
+		except Exception:
+			pass
+
 
 	def _go(self, *args, **kwargs):
 		self.go()
+
+def load_lut():
+	outf = os.path.join(os.path.split(__file__)[0], 'name_fix_lut.json')
+	jctnt = open(outf).read()
+	lut = json.loads(jctnt)
+	return lut
+
+
 
 if __name__ == '__main__':
 	import logSetup
 	logSetup.initLogging()
 
+	print(load_lut())
+
 	intf = NuForwarder()
-	print(intf)
-	print(intf.go())
+	intf.fix_names()
+	intf.emit_verified_releases()
+	# print(intf)
+	# print(intf.go())
+	intf.close()
 
 

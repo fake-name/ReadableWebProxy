@@ -386,6 +386,8 @@ class NuOutboundWrapperMap(Base):
 	outbound_wrapper = Column(Text)
 	actual_target    = Column(Text)
 
+	released_on      = Column(DateTime, default=datetime.datetime.utcnow)
+
 	validated        = Column(Boolean, default=False)
 
 

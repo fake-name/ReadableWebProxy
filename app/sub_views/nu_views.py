@@ -66,11 +66,15 @@ def toggle_row(sess, rid, oldv, newv):
 	row.validated = newv
 
 def release_validity_toggle(sess, data):
+	sess.expire_all()
 	for change in data:
 		toggle_row(sess, change['id'], change['old'], change['new'])
 		print("Change:", change)
 
 	sess.commit()
+
+	sess.expire_all()
+
 	return {"error" : False,
 			'message' : "Changes applied!"}
 
@@ -85,20 +89,29 @@ def nu_view():
 	release_selector = request.args.get('view')
 
 	session = g.session
+	session.expire_all()
+	session.commit()
 	new = get_nu_items(g.session, release_selector)
 	session.commit()
 	new.sort(key=lambda x: x[0].seriesname)
 	new.sort(key=lambda x: '...' in x[0].seriesname)
 	new.sort(key=lambda x: 'https://www.novelupdates.com' in x[0].actual_target)
 
-	return render_template('nu_releases.html',
+	response = make_response(render_template('nu_releases.html',
 						   new          = new,
 						   release_selector = release_selector,
-						   )
+						   ))
+	session.expire_all()
+
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"] = "no-cache"
+	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+	return response
 
 @app.route('/nu_api/', methods=['GET'])
 def nu_api_get():
-	response = jsonify({"error" : True, "message" : "This endpoint only accepts POST requests."})
+	response = make_response(jsonify({"error" : True, "message" : "This endpoint only accepts POST requests."}))
 	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
 	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
 	response.headers["Pragma"] = "no-cache"
@@ -130,13 +143,16 @@ def nu_api():
 	else:
 
 		data = {"wat": "wat"}
+
+	g.session.expire_all()
+	# response = make_response(jsonify(data))
 	response = jsonify(data)
 
 	print("response", response)
-	# response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-	# response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-	# response.headers["Pragma"] = "no-cache"
-	# response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"] = "no-cache"
+	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
 
 	return response
 
