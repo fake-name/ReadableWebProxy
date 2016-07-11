@@ -359,10 +359,11 @@ class MultiJobManager(object):
 		living = sum([task.is_alive() for task in self.tasklist])
 		for dummy_x in range(self.max_tasks - living):
 			self.log.warning("Insufficent living child threads! Creating another thread with number %s", self.procno)
-			proc = multiprocessing.Process(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
-			self.tasklist.append(proc)
-			proc.start()
-			self.procno += 1
+			with logSetup.stdout_lock:
+				proc = multiprocessing.Process(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
+				self.tasklist.append(proc)
+				proc.start()
+				self.procno += 1
 
 		cleaned = 0
 		for task in self.tasklist:
@@ -400,9 +401,9 @@ class Crawler(object):
 		self.thread_count = thread_count
 
 	def start_aggregator(self):
-
-		self.agg_proc = multiprocessing.Process(target=UpdateAggregator.launch_agg, args=(self.agg_queue, ))
-		self.agg_proc.start()
+		with logSetup.stdout_lock:
+			self.agg_proc = multiprocessing.Process(target=UpdateAggregator.launch_agg, args=(self.agg_queue, ))
+			self.agg_proc.start()
 
 	def join_aggregator(self):
 

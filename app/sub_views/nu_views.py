@@ -31,13 +31,15 @@ def aggregate_nu_items(in_rows):
 			agg[uniq] = []
 		agg[uniq].append(row)
 
-	for rowset in agg.values():
-		assert(all([rowset[0].seriesname == row.seriesname for row in rowset]))
-		assert(all([rowset[0].outbound_wrapper == row.outbound_wrapper for row in rowset]))
-		assert(all([rowset[0].groupinfo == row.groupinfo for row in rowset]))
-		assert(all([rowset[0].releaseinfo == row.releaseinfo for row in rowset]))
-		assert(all([rowset[0].actual_target == row.actual_target for row in rowset]))
-
+	for key, rowset in list(agg.items()):
+		try:
+			assert(all([rowset[0].seriesname == row.seriesname for row in rowset])),             'Wat: %s' % ([row.seriesname       for row in rowset])
+			assert(all([rowset[0].outbound_wrapper == row.outbound_wrapper for row in rowset])), 'Wat: %s' % ([row.outbound_wrapper for row in rowset])
+			assert(all([rowset[0].groupinfo == row.groupinfo for row in rowset])),               'Wat: %s' % ([row.groupinfo        for row in rowset])
+			assert(all([rowset[0].releaseinfo == row.releaseinfo for row in rowset])),           'Wat: %s' % ([row.releaseinfo      for row in rowset])
+			assert(all([rowset[0].actual_target == row.actual_target for row in rowset])),       'Wat: %s' % ([row.actual_target    for row in rowset])
+		except AssertionError:
+			del agg[key]
 	return list(agg.values())
 
 
@@ -109,17 +111,7 @@ def nu_view():
 	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
 	return response
 
-@app.route('/nu_api/', methods=['GET'])
-def nu_api_get():
-	response = make_response(jsonify({"error" : True, "message" : "This endpoint only accepts POST requests."}))
-	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-	response.headers["Pragma"] = "no-cache"
-	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
-	return response
-
-
-@app.route('/nu_api/', methods=['POST'])
+@app.route('/nu_api/', methods=['GET', 'POST'])
 def nu_api():
 	if not request.json:
 		# print("Non-JSON request!")
@@ -139,20 +131,24 @@ def nu_api():
 
 	if 'op' in request.json and 'data' in request.json and request.json['op'] in ops:
 		data = ops[request.json['op']](g.session, request.json['data'])
-
 	else:
-
 		data = {"wat": "wat"}
 
 	g.session.expire_all()
 	# response = make_response(jsonify(data))
 	response = jsonify(data)
 
-	print("response", response)
-	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-	response.headers["Pragma"] = "no-cache"
-	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+	# print("response", response)
+	# response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	# response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	# response.headers["Pragma"] = "no-cache"
+	# response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+
+	print("ResponseData: ", data)
+	print("Response: ", response)
+
+	response.status_code = 200
+	response.mimetype="application/json"
 
 	return response
 

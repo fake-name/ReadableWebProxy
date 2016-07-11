@@ -19,6 +19,8 @@
 			</h4>
 			<div class="clearfix"></div>
 			<button onclick="apply_changes()">Apply changes</button>
+			<button onclick="check_multiple_hit_two()">Check rows with two sources</button>
+			<button onclick="check_multiple_hit_three()">Check rows with three sources</button>
 			<div>
 				<table class='table-striped' style='width:100%'>
 					<colgroup>
@@ -41,7 +43,7 @@
 					</tr>
 					{%- for rowlist in new -%}
 						<tr>
-							<td><center><input class='row-checkbox' type="checkbox" data-row-id="{{rowlist[0].id}}" data-original-value="{{'true' if rowlist[0].validated else 'false'}}" {{'checked="true"' if rowlist[0].validated else ''}}></center></td>
+							<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{rowlist[0].seriesname}}' data-row-id="[{% for row in rowlist %}{{row.id}}{% if not loop.last %},{% endif %}{% endfor %}]" data-original-value="{{'true' if rowlist[0].validated else 'false'}}" {{'checked="true"' if rowlist[0].validated else ''}}></center></td>
 							<td>{% for row in rowlist %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
 							<td>{{rowlist[0].groupinfo}}</td>
 							<td>{{rowlist[0].seriesname}}</td>
@@ -100,10 +102,11 @@
 
 		function content_load_cb(data, textStatus, jqXHR)
 		{
+			console.log("Response: ", data)
 			if (data['error'] == false)
 				location.reload();
 			else
-				alert("Failed to fetch content!\nError: " + textStatus + "\nStatus text: " + data);
+				alert("Non-False error response!\nError: " + textStatus + "\nStatus text: " + data);
 		};
 
 		function content_load_fail(jqXHR, textStatus, errorThrown)
@@ -123,11 +126,14 @@
 				if ( itm.data('originalValue') != itm.is(':checked'))
 				{
 					console.log( itm.data(), itm.is(':checked') );
-					changes.push({
-						'id'  : itm.data().rowId,
-						'old' : itm.data().originalValue,
-						'new' : itm.is(':checked'),
-					});
+					for (var idx in itm.data().rowId)
+					{
+						changes.push({
+							'id'  : itm.data().rowId[idx],
+							'old' : itm.data().originalValue,
+							'new' : itm.is(':checked'),
+						});
+					}
 				}
 			});
 			console.log("Changes:", changes.length, changes)
@@ -145,29 +151,33 @@
 					dataType    : 'json',
 					contentType : "application/json;",
 
-			})
+				})
 			}
-
-			// var url = "/render?{{ {"url" : req_url, "version" : version} | urlencode | safe }}";
-
-			// $.ajax({
-			// 	url      : url,
-			// 	success  : content_load_cb,
-			// 	error    : content_load_cb,
-			// 	dataType : "json",
-			// 	cache    : false,
-
-			// })
 
 		}
 
-		function load_nocache()
+		function check_multiple_hit_two()
 		{
+			check_multiple_hit(2);
+		}
+		function check_multiple_hit_three()
+		{
+			check_multiple_hit(3);
+		}
+		function check_multiple_hit(num)
+		{
+			console.log("Wat?")
+			var rows = $(".row-checkbox");
+			rows.each(function( index, value ) {
+				var itm = $(this);
 
-			var content = $("#content");
-			content.html('<div class="center-block text-center"><h4>Re-Loading</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>');
-
-
+				if (itm.data().rowId.length >= num)
+				{
+					console.log( itm.data(), itm.is(':checked'), itm.data().rowId.length, itm.data().seriesName );
+					if (!itm.data().seriesName.endsWith('...'))
+						itm.prop( "checked", true );
+				}
+			});
 		}
 
 

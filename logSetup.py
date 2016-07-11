@@ -33,6 +33,8 @@ class UnlockedHandler(logging.Handler):
 		return
 
 
+stdout_lock = multiprocessing.Lock()
+
 
 # THIS IS HORRIBLE
 logging.Handler = UnlockedHandler
@@ -130,8 +132,12 @@ class ColourHandler(UnlockedHandler):
 			record.style = clr.Style.NORMAL
 
 		# record.padding = ""
-		outstr = self.format(record)
-		print(outstr)
+		record.msg = str(record.msg).encode("utf-8", "replace").decode("utf-8")
+		record.padding = ""
+		msg = self.format(record)
+		msg = str(msg).encode("utf-8", "replace").decode("utf-8")
+		with stdout_lock:
+			print(msg)
 
 ansi_escape = re.compile(r'\x1b[^m]*m')
 

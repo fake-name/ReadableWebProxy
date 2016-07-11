@@ -159,6 +159,10 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'client_key',
 		]
 
+		# I think the redirect unwrapper occationally times out, or something?
+		if input_data['nu_release']['actual_target'].startswith('https://www.novelupdates.com'):
+			return
+
 		if not 'nu_release' in input_data:
 			with open("nu bad release %s.txt" % time.time(), "w") as fp:
 				fp.write("Release packet that doesn't seem valid?\n")
@@ -220,19 +224,25 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.process_inbound_messages()
 		self.fix_names()
 		self.emit_verified_releases()
+		self.close()
 
 	def fix_names(self):
 		lut = load_lut()
 		for old, new in lut.items():
-			have = self.db_sess.query(db.NuOutboundWrapperMap)         \
-				.filter(db.NuOutboundWrapperMap.seriesname     == old) \
-				.all()
-			for row in have:
-				assert row.seriesname == old
-				row.seriesname = new
-				print("Fixing row: ", old, row.seriesname)
+			try:
+				have = self.db_sess.query(db.NuOutboundWrapperMap)         \
+					.filter(db.NuOutboundWrapperMap.seriesname     == old) \
+					.all()
+				for row in have:
+					assert row.seriesname == old
+					row.seriesname = new
+					self.log.info("Fixing row: %s -> %s", old, row.seriesname)
 
-		self.db_sess.commit()
+				self.db_sess.commit()
+			except sqlalchemy.exc.IntegrityError:
+				self.db_sess.rollback()
+
+
 
 
 	def do_release(self, item):
@@ -291,9 +301,14 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 						# Therefore, ignore the TLD from the netloc
 						url1 = urllib.parse.urlsplit(row.actual_target)
 						url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
-						url1 = (url1.scheme, url1.netloc.rsplit(".", 1)[0], url1.path, url1.query, url1.fragment)
-						url2 = (url2.scheme, url2.netloc.rsplit(".", 1)[0], url2.path, url2.query, url2.fragment)
-						assert url1 == url2
+						nl1 = url1.netloc.split(".")
+						nl2 = url2.netloc.split(".")
+						l = max(min(len(nl1), len(nl2))-1, 1)
+						print("l", l)
+
+						url1 = (url1.scheme, nl1[0:l], url1.path, url1.query, url1.fragment)
+						url2 = (url2.scheme, nl2[0:l], url2.path, url2.query, url2.fragment)
+						assert url1 == url2, "wat? %s -> %s" % (url1, url2)
 					elif 'docs.google.com' in row.actual_target:
 						# We don't care about the query or fragment for google doc entries.
 						url1 = urllib.parse.urlsplit(row.actual_target)
@@ -342,13 +357,9 @@ if __name__ == '__main__':
 	import logSetup
 	logSetup.initLogging()
 
-	print(load_lut())
+	#print(load_lut())
 
 	intf = NuForwarder()
-	intf.fix_names()
-	intf.emit_verified_releases()
-	# print(intf)
-	# print(intf.go())
-	intf.close()
+	intf.go()
 
 
