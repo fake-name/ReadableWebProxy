@@ -3,6 +3,8 @@
  - Search for proximate words.
  - "https://xxjohnsmithxx.wordpress.com", parser
 
+https://nadenadeshitai.wordpress.com/command-sousa-skill-de-isekai-no-subete-wo-kage-kara-shihaishitemita/
+
 http://transtranstrans.hatenablog.com/entry/2016/04/27/041607
 
 retriggering use on conflict
@@ -13,6 +15,10 @@ Job fetch system gets wedged if it can't successfully query the database for new
 nu series trigger clear hiatory
 also rss stuff
 rrl trigger not causing series page rewalk
+
+
+'ishioto'
+
 
 Light novels on Kindle Unlimited (self.LightNovels)
 Hey everyone, I'm not a subscriber to the service yet but I was considering it because I'm getting through so many books... before I do, does anyone know if there's any/many light novels on there or if I should just stick to hard copies?
@@ -123,37 +129,29 @@ Portals of Infinity series (adult themed OP world hopping hero)
 
 =============================================================== 
 
+New:  sincere.dreamwidth.org
 New:  sinnesspiel.dreamwidth.org
-New:  quartia.dreamwidth.org 
+New:  quartia.dreamwidth.org
+New:  notaboutlogic.dreamwidth.org
 
-New:  shikkakutranslations.org
-New:  toriitranslations.animeholics.org
-
-New:  jolecole.blogspot.com
-New:  chillock-amt.blogspot.com
+New:  www.ultimaguil.org
 
 New:  artonelico.wikia.com
+New:  blcxtranslations.github.io
 New:  ckmscans.halofight.com
 New:  elwiki.net
+New:  hiirowing.livejournal.com
 New:  justblthings.weebly.com
 New:  levitytales.com
-New:  lightnovelcafe.com
 New:  miracletranslations.azurewebsites.net
 New:  novel.oddsquad.org
-New:  reincarnationtranslations.com
+New:  toriitranslations.animeholics.org
 New:  transtranstrans.hatenablog.com
 New:  trungtnguyen123.org
-New:  weletranslation.com
-New:  www.ameryedge.com
-New:  www.aoitenshi.com
 New:  www.gundamwingtales.com
 New:  www.hasutsuki.com (blogger)
-New:  www.ultimaguil.org
-New:  www.wangkaiinternational.com
+New:  www.lannyland.com
 New:  www.xianxiaworld.net
-New:  blcxtranslations.github.io
-New:  cautrs.com
-New:  minashiro.co.vu
 
 # Blogger:
 New:  www.aresnovels.com
@@ -177,6 +175,7 @@ riceballicious.info
 september.strawberrywine.org
 www.world-three.org
 www.zeonic-republic.net
+www.aoitenshi.com
 
 
 

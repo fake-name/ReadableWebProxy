@@ -221,26 +221,30 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 				return
 
 	def go(self):
-		self.process_inbound_messages()
-		self.fix_names()
-		self.emit_verified_releases()
-		self.close()
+		try:
+			self.process_inbound_messages()
+			self.fix_names()
+			self.emit_verified_releases()
+		finally:
+			self.close()
 
 	def fix_names(self):
 		lut = load_lut()
 		for old, new in lut.items():
-			try:
-				have = self.db_sess.query(db.NuOutboundWrapperMap)         \
-					.filter(db.NuOutboundWrapperMap.seriesname     == old) \
-					.all()
-				for row in have:
+			have = self.db_sess.query(db.NuOutboundWrapperMap)         \
+				.filter(db.NuOutboundWrapperMap.seriesname     == old) \
+				.all()
+			for row in have:
+				try:
 					assert row.seriesname == old
 					row.seriesname = new
 					self.log.info("Fixing row: %s -> %s", old, row.seriesname)
 
-				self.db_sess.commit()
-			except sqlalchemy.exc.IntegrityError:
-				self.db_sess.rollback()
+					self.db_sess.commit()
+				except sqlalchemy.exc.IntegrityError:
+					self.log.error("Failure")
+					traceback.print_exc()
+					self.db_sess.rollback()
 
 
 
@@ -358,8 +362,11 @@ if __name__ == '__main__':
 	logSetup.initLogging()
 
 	#print(load_lut())
-
 	intf = NuForwarder()
-	intf.go()
+	try:
+		intf.fix_names()
+	finally:
+		intf.close()
+	# intf.go()
 
 
