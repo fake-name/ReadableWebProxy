@@ -62,10 +62,13 @@ def toggle_row(sess, rid, oldv, newv):
 
 	row = sess.query(db.NuOutboundWrapperMap)     \
 		.filter(db.NuOutboundWrapperMap.id == rid) \
-		.one()
-	assert(row.validated == oldv)
-	assert(oldv != newv)
-	row.validated = newv
+		.scalar()
+	if not row:
+		print("Row missing!")
+	else:
+		assert(row.validated == oldv)
+		assert(oldv != newv)
+		row.validated = newv
 
 def release_validity_toggle(sess, data):
 	sess.expire_all()
