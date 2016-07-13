@@ -39,7 +39,6 @@ class ConnectorManager:
 		assert 'hearbeat_packet_timeout'  in config
 		assert 'ack_rx'                   in config
 
-
 		self.log = logging.getLogger("Main.Connector.Internal(%s)" % config['virtual_host'])
 		self.runstate           = runstate
 		self.config             = config
@@ -62,21 +61,19 @@ class ConnectorManager:
 		self.connection     = None
 		self.channel        = None
 
+		self.in_q  = None
+		self.nak_q = None
+
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
 
 		self.delivered = 0
-
-		self._connect()
-
 
 		if self.config['master']:
 			self.in_queue = self.config['response_queue_name']
 		else:
 			self.in_queue = self.config['task_queue_name']
 
-
-		self.in_q = rabbitpy.Queue(self.connection.channel(), self.in_queue)
-
+		self._connect()
 
 		self.rx_thread = threading.Thread(target=self._processReceiving, daemon=False)
 		self.rx_thread.start()
@@ -173,10 +170,12 @@ class ConnectorManager:
 			)
 		self.connection = rabbitpy.Connection(uri)
 
+
+		self.bare_channel = self.connection.channel(blocking_read = True)
 		# self.connection.connect()
 
 		# Channel and exchange setup
-		self.channel = rabbitpy.AMQP(self.connection.channel(blocking_read = True))
+		self.channel = rabbitpy.AMQP(self.bare_channel)
 		self.channel.basic_qos(
 				prefetch_size  = 0,
 				prefetch_count = self.config['prefetch'],
@@ -201,30 +200,75 @@ class ConnectorManager:
 
 	def _setupQueues(self):
 
-		self.channel.exchange_declare(self.config['task_exchange'],     exchange_type=self.config['task_exchange_type'],     auto_delete=False, durable=self.config['durable'])
-		self.channel.exchange_declare(self.config['response_exchange'], exchange_type=self.config['response_exchange_type'], auto_delete=False, durable=self.config['durable'])
+
+		task_exchange = rabbitpy.Exchange(
+					self.bare_channel,
+					name=self.config['task_exchange'],
+					exchange_type=self.config['task_exchange_type'],
+					durable=self.config['durable']
+				)
+		task_exchange.declare()
+
+		resp_exchange = rabbitpy.Exchange(
+					self.bare_channel,
+					name=self.config['response_exchange'],
+					exchange_type=self.config['response_exchange_type'],
+					durable=self.config['durable']
+				)
+		resp_exchange.declare()
+
+		keepalive_exchange = rabbitpy.Exchange(
+					self.bare_channel,
+					name=self.keepalive_exchange_name,
+					durable=False,
+					auto_delete=True,
+				)
+		keepalive_exchange.declare()
+
+		self.nak_q = rabbitpy.Queue(self.bare_channel, name=self.keepalive_exchange_name+'.nak.q', durable=False, auto_delete=True, expires=1000*self.config['hearbeat_packet_timeout']*10)
+		self.nak_q.declare()
+		self.nak_q.bind(keepalive_exchange, routing_key="nak")
 
 		# set up consumer and response queues
 		if self.config['master']:
+			self.in_q  = rabbitpy.Queue(self.bare_channel, name=self.config['response_queue_name'], durable=self.config['durable'],  auto_delete=False)
+			self.in_q.bind(resp_exchange, routing_key=self.config['response_queue_name'].split(".")[0])
+
 			# Master has to declare the response queue so it can listen for responses
-			self.channel.queue_declare(self.config['response_queue_name'], auto_delete=False, durable=self.config['durable'])
-			self.channel.queue_bind(   self.config['response_queue_name'], exchange=self.config['response_exchange'], routing_key=self.config['response_queue_name'].split(".")[0])
+			# self.channel.queue_declare(self.config['response_queue_name'], auto_delete=False, durable=self.config['durable'])
+			# self.channel.queue_bind(   self.config['response_queue_name'], exchange=self.config['response_exchange'], routing_ke0y=self.config['response_queue_name'].split(".")[0])
 			self.log.info("Binding queue %s to exchange %s.", self.config['response_queue_name'], self.config['response_exchange'])
 
-		if not self.config['master']:
+		else:
+			self.in_q  = rabbitpy.Queue(self.bare_channel, name=self.config['task_queue_name'], durable=self.config['durable'],  auto_delete=False)
+			self.in_q.bind(task_exchange, routing_key=self.config['task_queue_name'].split(".")[0])
+
 			# Clients need to declare their task queues, so the master can publish into them.
-			self.channel.queue_declare(self.config['task_queue_name'], auto_delete=False, durable=self.config['durable'])
-			self.channel.queue_bind(   self.config['task_queue_name'], exchange=self.config['task_exchange'], routing_key=self.config['task_queue_name'].split(".")[0])
+			# self.channel.queue_declare(self.config['task_queue_name'], auto_delete=False, durable=self.config['durable'])
+			# self.channel.queue_bind(   self.config['task_queue_name'], exchange=self.config['task_exchange'], routing_key=self.config['task_queue_name'].split(".")[0])
 			self.log.info("Binding queue %s to exchange %s.", self.config['task_queue_name'], self.config['task_exchange'])
+
+		self.in_q.declare()
 
 		# "NAK" queue, used for keeping the event loop ticking when we
 		# purposefully do not want to receive messages
 		# THIS IS A SHITTY WORKAROUND for keepalive issues.
-		self.channel.exchange_declare(self.keepalive_exchange_name, exchange_type="direct", auto_delete=True, durable=False, arguments={"x-expires" : 5*60*1000})
-		self.channel.queue_declare('nak.q', auto_delete=False, durable=False)
-		self.channel.queue_bind('nak.q',    exchange=self.keepalive_exchange_name, routing_key="nak")
 
+		# self.channel.exchange_declare(self.keepalive_exchange_name, exchange_type="direct", auto_delete=True, durable=False, arguments={"x-expires" : 5*60*1000})
+		# self.channel.queue_declare('nak.q', auto_delete=True, durable=False)
+		# self.channel.queue_bind('nak.q',    exchange=self.keepalive_exchange_name, routing_key="nak")
 
+	def keepalive_ticker(self):
+		nak = self.nak_q.get()
+		if nak:
+			nak.ack()
+			self.last_hearbeat_received = time.time()
+			self.log.info("Heartbeat packet received!")
+		self.channel.basic_publish(body={'wat' : 'wat'}, exchange=self.keepalive_exchange_name, routing_key='nak')
+
+		if (time.time() - self.last_hearbeat_received) > self.config['hearbeat_packet_timeout']:
+			self.log.error("Timeout!")
+			self.close()
 
 	def poll(self):
 		'''
@@ -261,6 +305,7 @@ class ConnectorManager:
 			if integrator > print_time:
 				integrator = 0
 				with self.active_lock:
+					self.keepalive_ticker()
 					self.log.info("AMQP Interface process. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
 			integrator += loop_delay
 
@@ -278,14 +323,24 @@ class ConnectorManager:
 		# Close the connection once it's empty.
 		try:
 			self.in_q.stop_consuming()
+			self.nak_q.stop_consuming()
 			self.connection.close()
+			self.bare_channel.close()
 		except rabbitpy.exceptions.RabbitpyException as e:
 			self.log.error("Error on interface teardown!")
 			self.log.error("	%s", e)
+		finally:
 			self.active_connections.value = 0
 			self.connected.value = 0
 
-		self.log.info("AMQP Thread exited")
+			self.bare_channel     = None
+			self.connection     = None
+			self.channel        = None
+
+			self.in_q  = None
+			self.nak_q = None
+
+			self.log.info("AMQP Thread exited")
 
 	def _processReceiving(self):
 
@@ -306,8 +361,17 @@ class ConnectorManager:
 
 						item.ack()
 
+						blocked = 0
 						while self.task_queue.qsize() > self.config['prefetch']:
+							if not self.runstate.value:
+								self.log.info("Receving loop saw exit flag. Breaking!")
+								return
+
 							time.sleep(1)
+							blocked += 1
+							if blocked > 10:
+								self.log.warning("Receive loop blocked due to excessive rx queue size (%s).", self.task_queue.qsize())
+								blocked = 0
 
 						if self.atFetchLimit():
 							self.log.info("Session fetch limit reached. Not fetching any additional content.")

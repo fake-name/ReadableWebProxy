@@ -90,8 +90,17 @@ class RabbitQueueHandler(object):
 		new = self.get_item()
 		if new:
 			self.log.info("Processing AMQP response item!")
-			new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
-			return new
+			try:
+				new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
+				return new
+			except ValueError:
+				self.log.error("Failure unpacking message!")
+				msgstr = str(new)
+				if len(new) < 5000:
+					self.log.error("Message content: %s", msgstr)
+				else:
+					self.log.error("Message length: '%s'", len(msgstr))
+				return None
 		return None
 
 	def put_job(self, new_job):
