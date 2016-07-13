@@ -518,6 +518,8 @@ class Connector:
 			else:
 				config['host'] += ":5672"
 
+		self.is_master = config['master']
+
 		self.session_fetch_limit = config['session_fetch_limit']
 		self.queue_fetched       = 0
 		self.queue_put           = 0
@@ -612,11 +614,16 @@ class Connector:
 		'''
 		self.log.info("Stopping AMQP interface thread.")
 		self.runstate.value = 0
-		while self.responseQueue.qsize() > 0:
-			self.log.info("%s remaining outgoing AMQP items.", self.responseQueue.qsize())
+		if self.is_master:
+			resp_q = self.taskQueue
+		else:
+			resp_q = self.responseQueue
+
+		while resp_q.qsize() > 0:
+			self.log.info("%s remaining outgoing AMQP items.", resp_q.qsize())
 			time.sleep(1)
 
-		self.log.info("%s remaining outgoing AMQP items.", self.responseQueue.qsize())
+		self.log.info("%s remaining outgoing AMQP items.", resp_q.qsize())
 
 		self.thread.join()
 		self.log.info("AMQP interface thread halted.")

@@ -86,22 +86,22 @@ class RabbitQueueHandler(object):
 		return ret
 
 	def get_job(self):
-
-		new = self.get_item()
-		if new:
-			self.log.info("Processing AMQP response item!")
-			try:
-				new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
-				return new
-			except ValueError:
-				self.log.error("Failure unpacking message!")
-				msgstr = str(new)
-				if len(new) < 5000:
-					self.log.error("Message content: %s", msgstr)
-				else:
-					self.log.error("Message length: '%s'", len(msgstr))
+		while True:
+			new = self.get_item()
+			if new:
+				self.log.info("Processing AMQP response item!")
+				try:
+					new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
+					return new
+				except ValueError:
+					self.log.error("Failure unpacking message!")
+					msgstr = str(new)
+					if len(new) < 5000:
+						self.log.error("Message content: %s", msgstr)
+					else:
+						self.log.error("Message length: '%s'", len(msgstr))
+			else:
 				return None
-		return None
 
 	def put_job(self, new_job):
 		assert 'module'       in new_job
