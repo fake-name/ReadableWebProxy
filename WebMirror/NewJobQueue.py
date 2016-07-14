@@ -1,4 +1,4 @@
-
+import sys
 import multiprocessing
 import threading
 import time
@@ -111,6 +111,9 @@ class JobAggregator(LogBase.LoggerMixin):
 		# print("Jobid, joburl: ", (jobid, joburl))
 
 	def fill_jobs(self):
+		if 'drain' in sys.argv:
+			return
+
 		while self.active_jobs < MAX_IN_FLIGHT_JOBS and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
 			self.log.info("Need to add jobs to the job queue (%s active)!", self.active_jobs)
 			self._get_task_internal()

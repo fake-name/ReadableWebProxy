@@ -93,7 +93,7 @@ class RabbitQueueHandler(object):
 				try:
 					new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
 					return new
-				except ValueError:
+				except Exception:
 					self.log.error("Failure unpacking message!")
 					msgstr = str(new)
 					if len(new) < 5000:

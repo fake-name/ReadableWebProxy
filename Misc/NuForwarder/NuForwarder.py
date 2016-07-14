@@ -282,51 +282,57 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 				.all()
 			agg_releases = {}
 			for row in have:
-				key = (row.seriesname, row.releaseinfo, row.groupinfo)
-				if not key in agg_releases:
+				try:
+					key = (row.seriesname, row.releaseinfo, row.groupinfo)
+					if not key in agg_releases:
 
-					agg_releases[key] = {
-						'releaseinfo'   : row.releaseinfo,
-						'groupinfo'     : row.groupinfo,
-						'seriesname'    : row.seriesname,
-						'addtime'       : row.released_on,
-						'actual_target' : row.actual_target,
-					}
-				else:
-					assert str(row.releaseinfo)   == agg_releases[key]['releaseinfo'],   "Wat? (%s) %s -> %s" % (
-						row.releaseinfo   == agg_releases[key]['releaseinfo'], row.releaseinfo,     agg_releases[key]['releaseinfo'])
-					assert str(row.groupinfo)     == agg_releases[key]['groupinfo'],     "Wat? (%s) %s -> %s" % (
-						row.groupinfo     == agg_releases[key]['groupinfo'], row.groupinfo,         agg_releases[key]['groupinfo'])
-					assert str(row.seriesname)    == agg_releases[key]['seriesname'],    "Wat? (%s) %s -> %s" % (
-						row.seriesname    == agg_releases[key]['seriesname'], row.seriesname,       agg_releases[key]['seriesname'])
-
-					if 'blogspot' in row.actual_target:
-						# Blogspot is ANNOYING, and has a bajillion possible TLDs that all resolve the same place.
-						# Therefore, ignore the TLD from the netloc
-						url1 = urllib.parse.urlsplit(row.actual_target)
-						url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
-						nl1 = url1.netloc.split(".")
-						nl2 = url2.netloc.split(".")
-						l = max(min(len(nl1), len(nl2))-1, 1)
-						print("l", l)
-
-						url1 = (url1.scheme, nl1[0:l], url1.path, url1.query, url1.fragment)
-						url2 = (url2.scheme, nl2[0:l], url2.path, url2.query, url2.fragment)
-						assert url1 == url2, "wat? %s -> %s" % (url1, url2)
-					elif 'docs.google.com' in row.actual_target:
-						# We don't care about the query or fragment for google doc entries.
-						url1 = urllib.parse.urlsplit(row.actual_target)
-						url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
-						url1 = (url1.scheme, url1.netloc, url1.path)
-						url2 = (url2.scheme, url2.netloc, url2.path)
-						assert url1 == url2, "wat? %s -> %s" % (url1, url2)
-
+						agg_releases[key] = {
+							'releaseinfo'   : row.releaseinfo,
+							'groupinfo'     : row.groupinfo,
+							'seriesname'    : row.seriesname,
+							'addtime'       : row.released_on,
+							'actual_target' : row.actual_target,
+						}
 					else:
-						assert str(row.actual_target) == agg_releases[key]['actual_target'], "Wat? (%s) %s -> %s" % (row.actual_target == agg_releases[key]['actual_target'], row.actual_target, agg_releases[key]['actual_target'])
+						assert str(row.releaseinfo)   == agg_releases[key]['releaseinfo'],   "Wat? (%s) %s -> %s" % (
+							row.releaseinfo   == agg_releases[key]['releaseinfo'], row.releaseinfo,     agg_releases[key]['releaseinfo'])
+						assert str(row.groupinfo)     == agg_releases[key]['groupinfo'],     "Wat? (%s) %s -> %s" % (
+							row.groupinfo     == agg_releases[key]['groupinfo'], row.groupinfo,         agg_releases[key]['groupinfo'])
+						assert str(row.seriesname)    == agg_releases[key]['seriesname'],    "Wat? (%s) %s -> %s" % (
+							row.seriesname    == agg_releases[key]['seriesname'], row.seriesname,       agg_releases[key]['seriesname'])
+
+						if 'blogspot' in row.actual_target:
+							# Blogspot is ANNOYING, and has a bajillion possible TLDs that all resolve the same place.
+							# Therefore, ignore the TLD from the netloc
+							url1 = urllib.parse.urlsplit(row.actual_target)
+							url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
+							nl1 = url1.netloc.split(".")
+							nl2 = url2.netloc.split(".")
+							l = max(min(len(nl1), len(nl2))-1, 1)
+							print("l", l)
+
+							url1 = (url1.scheme, nl1[0:l], url1.path, url1.query, url1.fragment)
+							url2 = (url2.scheme, nl2[0:l], url2.path, url2.query, url2.fragment)
+							assert url1 == url2, "wat? %s -> %s" % (url1, url2)
+						elif 'docs.google.com' in row.actual_target:
+							# We don't care about the query or fragment for google doc entries.
+							url1 = urllib.parse.urlsplit(row.actual_target)
+							url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
+							url1 = (url1.scheme, url1.netloc, url1.path)
+							url2 = (url2.scheme, url2.netloc, url2.path)
+							assert url1 == url2, "wat? %s -> %s" % (url1, url2)
+
+						else:
+							assert str(row.actual_target) == agg_releases[key]['actual_target'], "Wat? (%s) %s -> %s" % (row.actual_target == agg_releases[key]['actual_target'], row.actual_target, agg_releases[key]['actual_target'])
+				except AssertionError:
+					agg_releases[key] = None
+				except TypeError:
+					agg_releases[key] = None
 
 
 			for release in agg_releases.values():
-				self.do_release(release)
+				if release:
+					self.do_release(release)
 			# print("Valid releases:")
 			# print(agg_releases)
 
@@ -363,10 +369,11 @@ if __name__ == '__main__':
 
 	#print(load_lut())
 	intf = NuForwarder()
-	try:
-		intf.fix_names()
-	finally:
-		intf.close()
-	# intf.go()
+	intf.go()
+	# try:
+	# 	intf.fix_names()
+	# finally:
+	# 	intf.close()
+	# # intf.go()
 
 
