@@ -469,8 +469,7 @@ class AMQPChannel(StatefulObject):
         self._waiting = False
 
         # Clear here to ensure out of processing loop before proceeding
+        # if self._interrupt_is_set:
         if self._interrupt_is_set and frame_type != "Basic.CancelOk":
             self._on_interrupt_set()
 
-# and not isinstance(method_frame, spec.Basic.Cancel)
-# and not isinstance(method_frame, spec.Basic.Cancel)

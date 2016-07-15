@@ -462,6 +462,11 @@ class Crawler(object):
 
 
 		except KeyboardInterrupt:
+
+			# Stop the job fetcher, and then let the active jobs
+			# flush down.
+			self.join_job_fetcher()
+
 			runStatus.run_state.value = 0
 
 			self.log.info("Crawler allowing ctrl+c to propagate.")
@@ -482,7 +487,6 @@ class Crawler(object):
 			except queue.Empty:
 				pass
 
-		self.join_job_fetcher()
 		self.join_aggregator()
 
 
