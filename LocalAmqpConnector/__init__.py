@@ -103,6 +103,7 @@ class AmqpContainer(object):
 		self.in_q.declare()
 
 		self.heartbeat_loops = 0
+		self.consumer_cycle = 0
 
 	def close(self):
 		# Stop the flow of new items
@@ -154,11 +155,14 @@ class AmqpContainer(object):
 
 	def get_rx(self):
 		print("Get_rx call()")
-		for item in self.in_q:
-			with self.rx_timeout_lock:
-				self.last_message_received = time.time()
-			self.log.info("Received packet from queue '%s'! Processing.", self.in_q.name)
-			yield item
+		try:
+			for item in self.in_q:
+				with self.rx_timeout_lock:
+					self.last_message_received = time.time()
+				self.log.info("Received packet from queue '%s'! Processing.", self.in_q.name)
+				yield item
+		except TypeError:
+			return None
 
 	def put_tx(self, message):
 		out_queue = self.task_exchange
@@ -167,6 +171,7 @@ class AmqpContainer(object):
 		msg_prop = {}
 		if self.durable:
 			msg_prop["delivery_mode"] = 2
+
 		self.channel.basic_publish(body=message, exchange=out_queue, routing_key=out_key, properties=msg_prop)
 
 
@@ -174,13 +179,29 @@ class AmqpContainer(object):
 		with self.heartbeat_timeout_lock:
 			if (time.time() - self.last_hearbeat_received) > self.hearbeat_packet_timeout:
 				with self.active_lock:
+					print()
+					print()
+					print()
+					print()
 					self.log.error("Heartbeat Timeout!")
+					print()
+					print()
+					print()
+					print()
 					raise Heartbeat_Timeout_Exception("Heartbeat timeout!")
 
 		with self.rx_timeout_lock:
 			if (time.time() - self.last_message_received) > self.hearbeat_packet_timeout:
 				with self.active_lock:
+					print()
+					print()
+					print()
+					print()
 					self.log.error("RX Message Timeout!")
+					print()
+					print()
+					print()
+					print()
 					raise Heartbeat_Timeout_Exception("RX Heartbeat timeout!")
 
 		self.heartbeat_loops += 1
@@ -191,6 +212,13 @@ class AmqpContainer(object):
 			with self.rx_timeout_lock:
 				last_rx = time.time() - self.last_message_received
 
+			self.consumer_cycle += 1
+			if self.consumer_cycle > 30:
+				# We periodically cycle the consuming state of the input queue, to stop it from being wedged.
+				try:
+					self.in_q.stop_consuming()
+				except rabbitpy.exceptions.NotConsumingError:
+					pass
 			self.log.info("Interface timeout thread. Ages: heartbeat -> %s, last message -> %s.", last_hb, last_rx)
 
 	def __del__(self):
@@ -234,7 +262,8 @@ class ConnectorManager:
 		self.response_queue     = response_queue
 
 		self.connected          = multiprocessing.Value("i", 0)
-		self.run_threads          = multiprocessing.Value("i", 1)
+
+		self.had_exception        = multiprocessing.Value("i", 0)
 
 
 		self.session_fetched        = 0
@@ -246,27 +275,8 @@ class ConnectorManager:
 		self.delivered = 0
 
 		self.connect_lock = threading.Lock()
-		self.connect()
 
-	def disconnect(self):
-
-		with self.connect_lock:
-			self.interface.close()
-			self.run_threads.value = 0
-
-			self.rx_thread.join()
-			self.timeout_thread.join()
-
-			try:
-				del self.rx_thread
-			except Exception:
-				pass
-			try:
-				del self.timeout_thread
-			except Exception:
-				pass
-
-	def connect(self):
+	def __connect(self):
 
 		conn_params = {
 			'task_queue_name'         : self.config['task_queue_name'],
@@ -280,7 +290,6 @@ class ConnectorManager:
 			'flush_queues'            : self.config['flush_queues'],
 			'hearbeat_packet_timeout' : self.config['hearbeat_packet_timeout'],
 		}
-
 
 		qs = urllib.parse.urlencode({
 			'cacertfile'           :self.config['sslopts']['ca_certs'],
@@ -305,63 +314,78 @@ class ConnectorManager:
 			)
 
 		with self.connect_lock:
-			self.run_threads.value = 1
+
 
 			self.interface = AmqpContainer(self.config['virtual_host'], uri, **conn_params)
 
-			self.rx_thread = threading.Thread(target=self._processReceiving, daemon=True)
-			self.timeout_thread = threading.Thread(target=self._timeoutWatcher, daemon=True)
+			self.rx_thread = threading.Thread(target=self._rx_poll, daemon=True)
+			self.tx_thread = threading.Thread(target=self._tx_poll, daemon=True)
 			self.rx_thread.start()
-			self.timeout_thread.start()
+			self.tx_thread.start()
+
+
+	def __disconnect(self):
+
+		with self.connect_lock:
+			self.interface.close()
+
+
+			self.rx_thread.join()
+			self.tx_thread.join()
+
+			try:
+				del self.rx_thread
+			except Exception:
+				pass
+			try:
+				del self.tx_thread
+			except Exception:
+				pass
 
 	def __del__(self):
 		try:
 			self.interface.close()
 		except Exception:
 			pass
-		self.run_threads.value = 0
+
 
 		self.rx_thread.join()
-		self.timeout_thread.join()
+		self.tx_thread.join()
 		self.interface = None
 
 
-	def tx_poll(self):
 
-
-		print_time = 15              # Print a status message every n seconds
-		integrator = 0               # Time since last status message emitted.
+	def _tx_poll(self):
 
 		# When run is false, don't halt until
 		# we've flushed the outgoing items out the queue
-		while self.runstate.value or self.response_queue.qsize():
-			# print("TX Polling!")
-			if not hasattr(self, 'interface') or not self.interface:
-				self.connect()
-
-			time.sleep(1)
-
-			self._publishOutgoing()
-			# Reset the print integrator.
-			if self.interface and integrator > print_time:
-				integrator = 0
-				self.interface.keepalive_ticker()
-				self.log.info("AMQP Interface process. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
-			integrator += 1
-
-
-	def _timeoutWatcher(self):
-		while self.runstate.value:
+		while (self.runstate.value or self.response_queue.qsize()) and self.had_exception.value == 0:
 			try:
-				self.interface.checkTimeouts()
+				for x in range(250):
+					try:
+						put = self.response_queue.get_nowait()
+						# self.log.info("Publishing message of len '%0.3f'K to exchange '%s'", len(put)/1024, out_queue)
+						# message = amqp.basic_message.Message(body=put)
+
+						self.interface.put_tx(put)
+						self.sent_messages += 1
+						self.active -= 1
+
+					except queue.Empty:
+						break
 				time.sleep(1)
-			except Heartbeat_Timeout_Exception:
-				self.disconnect()
+
+			except rabbitpy.exceptions.RabbitpyException as e:
+				self.log.error("Error while tx_polling interface!")
+				self.log.error("	%s", e)
+				self.had_exception.value = 1
+
+		self.log.info("TX Poll process dying")
 
 
-	def _processReceiving(self):
+	def _rx_poll(self):
 
-		while self.runstate.value:
+		while self.runstate.value and self.had_exception.value == 0:
 			try:
 				# # 	# Prevent never breaking from the loop if the feeding queue is backed up.
 				# item = self.in_q.get()
@@ -369,6 +393,8 @@ class ConnectorManager:
 				if self.interface:
 					# print("RX Polling")
 					for item in self.interface.get_rx():
+						if not item:
+							continue
 						self.task_queue.put(item.body)
 						item.ack()
 
@@ -393,22 +419,35 @@ class ConnectorManager:
 			except rabbitpy.exceptions.RabbitpyException as e:
 				self.log.error("Error while tx_polling interface!")
 				self.log.error("	%s", e)
-				self.disconnect()
+				self.had_exception.value = 1
 
-	def _publishOutgoing(self):
+
+	def timeoutWatcher(self):
+
+		print_time = 30              # Print a status message every n seconds
+		integrator =  0              # Time since last status message emitted.
+
 		while self.runstate.value:
 			try:
-				put = self.response_queue.get_nowait()
-				# self.log.info("Publishing message of len '%0.3f'K to exchange '%s'", len(put)/1024, out_queue)
-				# message = amqp.basic_message.Message(body=put)
+				if self.had_exception.value == 1:
+					self.__disconnect()
 
-				self.interface.put_tx(put)
-				self.sent_messages += 1
-				self.active -= 1
+				if not hasattr(self, 'interface') or not self.interface:
+					self.__connect()
+				self.interface.checkTimeouts()
+				time.sleep(1)
 
-			except queue.Empty:
-				break
-		time.sleep(1)
+				integrator += 1
+				# Reset the print integrator.
+				if self.interface and integrator > print_time:
+					integrator = 0
+					self.interface.keepalive_ticker()
+					self.log.info("AMQP Interface process. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
+			except Heartbeat_Timeout_Exception:
+				self.__disconnect()
+
+
+
 
 
 def run_fetcher(config, runstate, tx_q, rx_q):
@@ -428,7 +467,7 @@ def run_fetcher(config, runstate, tx_q, rx_q):
 		try:
 			if connection is False:
 				connection = ConnectorManager(config, runstate, active, tx_q, rx_q)
-			connection.tx_poll()
+			connection.timeoutWatcher()
 
 		except Exception:
 			log.error("Exception in connector! Terminating connection...")
@@ -544,7 +583,7 @@ class Connector:
 			self.log.error("")
 			self.log.error("")
 
-		self.thread = threading.Thread(target=run_fetcher, args=(self.__config, self.runstate, self.taskQueue, self.responseQueue), daemon=False)
+		self.thread = threading.Thread(target=run_fetcher, args=(self.__config, self.runstate, self.taskQueue, self.responseQueue), daemon=True)
 		self.thread.start()
 
 	def atQueueLimit(self):
@@ -617,7 +656,7 @@ class Connector:
 			if block > blocklen:
 				break
 
-		self.log.info("%s remaining outgoing AMQP items.", resp_q.qsize())
+		self.log.info("%s remaining outgoing AMQP items. Joining on thread.", resp_q.qsize())
 
 		self.thread.join()
 		self.log.info("AMQP interface thread halted.")

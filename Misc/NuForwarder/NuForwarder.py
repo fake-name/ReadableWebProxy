@@ -190,6 +190,8 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			print(input_data['nu_release'])
 			raise ValueError("Wat?")
 
+		self.retrigger_page(input_data['nu_release']['actual_target'])
+
 		have = self.db_sess.query(db.NuOutboundWrapperMap)                                                  \
 				.filter(db.NuOutboundWrapperMap.client_id     == input_data['nu_release']['client_id'])     \
 				.filter(db.NuOutboundWrapperMap.client_key    == input_data['nu_release']['client_key'])    \
