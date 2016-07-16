@@ -11,7 +11,6 @@ import queue
 
 # from pympler.tracker import SummaryTracker, summary, muppy
 # import tracemalloc
-import pystuck
 
 import sqlalchemy.exc
 from sqlalchemy.sql import text
@@ -31,8 +30,9 @@ import WebMirror.util.urlFuncs as urlFuncs
 import WebMirror.database as db
 import WebMirror.NewJobQueue as njq
 
-# NO_PROCESSES = 24
-NO_PROCESSES = 12
+NO_PROCESSES = 24
+# NO_PROCESSES = 12
+# NO_PROCESSES = 8
 # NO_PROCESSES = 4
 # NO_PROCESSES = 2
 # NO_PROCESSES = 1
@@ -42,6 +42,7 @@ COOKIE_LOCK  = multiprocessing.Lock()
 
 
 def install_pystuck():
+	import pystuck
 	stuck_port = 6666
 	while 1:
 		try:
@@ -102,7 +103,7 @@ class RunInstance(object):
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
-		for dummy_x in range(10):
+		for dummy_x in range(3):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
@@ -136,7 +137,7 @@ class RunInstance(object):
 	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
 
-		install_pystuck()
+		# install_pystuck()
 
 		# print("Running!")
 		try:

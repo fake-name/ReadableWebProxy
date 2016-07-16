@@ -34,7 +34,8 @@ import runStatus
 
 
 NO_JOB_TIMEOUT_MINUTES = 5
-MAX_IN_FLIGHT_JOBS = 250
+# MAX_IN_FLIGHT_JOBS = 75
+MAX_IN_FLIGHT_JOBS = 500
 # MAX_IN_FLIGHT_JOBS = 1000
 # MAX_IN_FLIGHT_JOBS = 3000
 
@@ -93,7 +94,6 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.print_mod = 0
 
 	def get_queues(self):
-
 		return self.normal_out_queue
 
 	def join_proc(self):

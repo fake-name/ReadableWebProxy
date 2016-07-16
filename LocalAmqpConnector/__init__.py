@@ -65,27 +65,11 @@ class AmqpContainer(object):
 					durable=config['durable']
 				)
 
-
-		# task_exchange = rabbitpy.Exchange(
-		# 			self.channel,
-		# 			name=config['task_exchange'],
-		# 			exchange_type=config['task_exchange_type'],
-		# 			durable=config['durable']
-		# 		)
-		# task_exchange.declare()
-
 		self.storm_channel.exchange.declare(
 					exchange=config['response_exchange'],
 					exchange_type=config['response_exchange_type'],
 					durable=config['durable']
 				)
-		# resp_exchange = rabbitpy.Exchange(
-		# 			self.channel,
-		# 			name=config['response_exchange'],
-		# 			exchange_type=config['response_exchange_type'],
-		# 			durable=config['durable']
-		# 		)
-		# resp_exchange.declare()
 
 		# # "NAK" queue, used for keeping the event loop ticking when we
 		# # purposefully do not want to receive messages
@@ -95,18 +79,6 @@ class AmqpContainer(object):
 					exchange=self.keepalive_exchange_name,
 					durable=False,
 					auto_delete=True)
-
-		# keepalive_exchange = rabbitpy.Exchange(
-		# 			self.channel,
-		# 			name=self.keepalive_exchange_name,
-		# 			durable=False,
-		# 			auto_delete=True,
-		# 		)
-		# keepalive_exchange.declare()
-
-		# self.nak_q = rabbitpy.Queue(self.channel, name=self.keepalive_exchange_name+'.nak.q', durable=False, auto_delete=True, expires=1000*self.hearbeat_packet_timeout*10)
-		# self.nak_q.declare()
-		# self.nak_q.bind(keepalive_exchange, routing_key="nak")
 
 		# TODO: Get queue expiry working?
 		self.storm_channel.queue.declare(
@@ -118,9 +90,6 @@ class AmqpContainer(object):
 					queue=self.keepalive_exchange_name+'.nak.q',
 					exchange=self.keepalive_exchange_name,
 					routing_key="nak")
-
-		# self.in_q  = rabbitpy.Queue(self.channel, name=config['response_queue_name'], durable=config['durable'],  auto_delete=False)
-		# self.in_q.bind(resp_exchange, routing_key=config['response_queue_name'].split(".")[0])
 
 		self.storm_channel.queue.declare(
 					queue=config['response_queue_name'],
@@ -137,7 +106,6 @@ class AmqpContainer(object):
 		self.storm_channel.basic.consume(self.handle_rx, queue=config['response_queue_name'],         no_ack=False)
 		self.storm_channel.basic.consume(self.handle_rx, queue=self.keepalive_exchange_name+'.nak.q', no_ack=False)
 		self.log.info("Consume triggered.")
-		# self.in_q.declare()
 
 		self.heartbeat_loops = 0
 		self.consumer_cycle = 0
@@ -373,16 +341,18 @@ class ConnectorManager:
 			except Exception:
 				pass
 
+	def __should_die(self):
+		return self.runstate.value != 1 or self.threads_live.value != 1 or self.had_exception.value != 0
 
 	def _tx_poll(self):
 		self.log.info("TX Poll process starting. Threads_live: %s, resp queue size: %s, had exception %s", self.threads_live.value, self.response_queue.qsize(), self.had_exception.value)
 
 		# When run is false, don't halt until
 		# we've flushed the outgoing items out the queue
-		while (self.threads_live.value or self.response_queue.qsize()) and self.had_exception.value == 0:
+		while not self.__should_die():
 			for dummy_x in range(250):
 
-				if not self.runstate.value:
+				if self.__should_die():
 					self.log.info("Transmit loop saw exit flag. Breaking!")
 					return
 
@@ -416,22 +386,8 @@ class ConnectorManager:
 					break
 			time.sleep(1)
 
-		self.log.info("TX Poll process dying. Threads_live: %s, resp queue size: %s, had exception %s", self.threads_live.value, self.response_queue.qsize(), self.had_exception.value)
-
-
-	def _rx_poll(self):
-
-		self.log.info("RX Poll process starting. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
-		try:
-			self.interface.enter_blocking_rx_loop()
-		except amqpstorm.AMQPError as e:
-			self.log.error("Error while in rx runloop!")
-			self.log.error("	%s", e)
-			for line in traceback.format_exc().split("\n"):
-				self.log.error(line)
-			self.had_exception.value = 1
-
-		self.log.info("RX Poll process dying. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
+		self.log.info("TX Poll process dying (should die: %s). Threads_live: %s, runstate: %s, resp queue size: %s, had exception %s.",
+			self.__should_die(), self.threads_live.value, self.runstate.value, self.response_queue.qsize(), self.had_exception.value)
 
 	def _timeout_watcher(self):
 
@@ -439,7 +395,7 @@ class ConnectorManager:
 		hb_time    =  5              # Print a status message every n seconds
 		integrator =  0              # Time since last status message emitted.
 
-		while self.threads_live.value and self.had_exception.value == 0:
+		while not self.__should_die():
 			try:
 
 				self.interface.checkTimeouts()
@@ -466,11 +422,27 @@ class ConnectorManager:
 					self.log.error(line)
 				self.had_exception.value = 1
 
+
+	def _rx_poll(self):
+
+		self.log.info("RX Poll process starting. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
+		try:
+			self.interface.enter_blocking_rx_loop()
+		except amqpstorm.AMQPError as e:
+			self.log.error("Error while in rx runloop!")
+			self.log.error("	%s", e)
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
+			self.had_exception.value = 1
+
+		self.log.info("RX Poll process dying. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
+
 	def monitor_loop(self):
 
 		while self.runstate.value:
 			try:
 				if self.had_exception.value == 1:
+					print("Disconnecting!")
 					self._disconnect()
 					time.sleep(5)
 
@@ -480,6 +452,9 @@ class ConnectorManager:
 				self._disconnect()
 				self.interface = None
 			time.sleep(1)
+
+	def shutdown(self):
+		self.threads_live.value = 0
 
 def run_fetcher(config, runstate, tx_q, rx_q):
 	'''
@@ -512,6 +487,7 @@ def run_fetcher(config, runstate, tx_q, rx_q):
 				for line in traceback.format_exc().split('\n'):
 					log.error(line)
 			try:
+				connection.shutdown()
 				del connection
 			except Exception:
 				log.info("")
@@ -521,7 +497,6 @@ def run_fetcher(config, runstate, tx_q, rx_q):
 			if runstate.value != 0:
 				connection = False
 				log.error("Triggering reconnection...")
-
 
 	log.info("")
 	log.info("Worker thread has terminated.")
