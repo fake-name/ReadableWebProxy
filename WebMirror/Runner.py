@@ -31,8 +31,8 @@ import WebMirror.util.urlFuncs as urlFuncs
 import WebMirror.database as db
 import WebMirror.NewJobQueue as njq
 
-NO_PROCESSES = 24
-# NO_PROCESSES = 16
+# NO_PROCESSES = 24
+NO_PROCESSES = 12
 # NO_PROCESSES = 4
 # NO_PROCESSES = 2
 # NO_PROCESSES = 1

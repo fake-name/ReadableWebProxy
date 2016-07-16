@@ -8,11 +8,13 @@ import random
 import datetime
 import signal
 
-import sqlalchemy.exc
-from sqlalchemy.sql import text
+# import sqlalchemy.exc
+# from sqlalchemy.sql import text
+
+import psycopg2
 
 import settings
-import WebMirror.database as db
+# import WebMirror.database as db
 import WebMirror.LogBase as LogBase
 import WebMirror.OutputFilters.AmqpInterface
 import runStatus
@@ -74,7 +76,13 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.jobs_out = 0
 		self.jobs_in = 0
 
-		self.db      = db
+
+		self.db_interface = psycopg2.connect(
+				database = settings.DATABASE_DB_NAME,
+				user     = settings.DATABASE_USER,
+				password = settings.DATABASE_PASS,
+				host     = settings.DATABASE_IP,
+			)
 
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
 		self.normal_out_queue  = multiprocessing.Queue()
@@ -179,7 +187,6 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		self.log.info("Job queue fetcher starting.")
 
-		self.db_sess = self.db.checkout_session()
 
 		msg_loop = 0
 		while runStatus.job_run_state.value == 1:
@@ -193,7 +200,6 @@ class JobAggregator(LogBase.LoggerMixin):
 				msg_loop = 0
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
-		self.db.release_session(self.db_sess)
 		self.amqp_int.close()
 
 		# Consume the remaining items in the output queue so it shuts down cleanly.
@@ -210,11 +216,12 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	def _get_task_internal(self):
 
+		cursor = self.db_interface.cursor()
 		# Hand-tuned query, I couldn't figure out how to
 		# get sqlalchemy to emit /exactly/ what I wanted.
 		# TINY changes will break the query optimizer, and
 		# the 10 ms query will suddenly take 10 seconds!
-		raw_query = text('''
+		raw_query = '''
 				UPDATE
 				    web_pages
 				SET
@@ -254,38 +261,23 @@ class JobAggregator(LogBase.LoggerMixin):
 				    web_pages.state = 'new'
 				RETURNING
 				    web_pages.id, web_pages.netloc, web_pages.url;
-			'''.format(in_flight=50))
+			'''.format(in_flight=50)
 
 
 		start = time.time()
 
-		# print("")
-		# print("")
-		# print("")
-		# print("Fetching jobs!")
-		# print("")
-		# print("")
-		# print("")
-
 		while runStatus.run_state.value == 1:
 			try:
-				rids = self.db_sess.execute(raw_query)
-				self.db_sess.commit()
+				cursor.execute(raw_query)
+				rids = cursor.fetchall()
+				self.db_interface.commit()
 				break
-			except sqlalchemy.exc.OperationalError:
+			except psycopg2.Error:
 				delay = random.random() / 3
 				# traceback.print_exc()
-				self.log.warn("Error getting job (OperationalError)! Delaying %s.", delay)
+				self.log.warn("Error getting job (psycopg2.Error)! Delaying %s.", delay)
 				time.sleep(delay)
-				self.db_sess.rollback()
-				self.db_sess.flush()
-				self.db_sess.expire_all()
-			except sqlalchemy.exc.InvalidRequestError:
-				traceback.print_exc()
-				self.log.warn("Error getting job (InvalidRequestError)!")
-				self.db_sess.rollback()
-				self.db_sess.flush()
-				self.db_sess.expire_all()
+				self.db_interface.rollback()
 
 		if runStatus.run_state.value != 1:
 			return
@@ -316,18 +308,10 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		deleted = 0
 		for rid, netloc, joburl in rids:
-			if netloc == "www.wattpad.com" or netloc == "a.wattpad.com":
-				deleted += 1
-				self.db_sess.query(self.db.WebPages) \
-					.filter((db.WebPages.id == rid)) \
-					.delete()
-			else:
-				self.put_outbound_job(rid, joburl)
-		if deleted > 0:
-			self.log.info("Deleted rows: %s", deleted)
+			self.put_outbound_job(rid, joburl)
 
-		self.db_sess.commit()
-		self.db_sess.expire_all()
+		cursor.close()
+
 
 def test2():
 	import logSetup
