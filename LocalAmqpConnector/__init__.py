@@ -1,5 +1,5 @@
 
-import rabbitpy
+import amqpstorm
 import urllib.parse
 import socket
 import traceback
@@ -11,11 +11,12 @@ import time
 
 class Heartbeat_Timeout_Exception(Exception):
 	pass
+
 class Message_Publish_Exception(Exception):
 	pass
 
 class AmqpContainer(object):
-	def __init__(self, vhost, uri, **config):
+	def __init__(self, conn_params, rx_queue, **config):
 
 
 		assert 'task_queue_name'          in config
@@ -31,7 +32,7 @@ class AmqpContainer(object):
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
 		self.hearbeat_packet_timeout = config['hearbeat_packet_timeout']
 
-		self.log = logging.getLogger("Main.Connector.Container(%s)" % vhost)
+		self.log = logging.getLogger("Main.Connector.Container(%s)" % conn_params['virtual_host'])
 
 		self.task_exchange   = config['task_exchange']
 		self.task_queue_name = config['task_queue_name']
@@ -39,19 +40,12 @@ class AmqpContainer(object):
 
 		self.log.info("Initializing AMQP connection.")
 
-		self.connection = rabbitpy.Connection(uri)
+		self.storm_connection = amqpstorm.Connection(**conn_params)
 
-		self.channel = self.connection.channel(blocking_read = True)
-		self.channel.prefetch_count(config['prefetch'])
-		# self.connection.connect()
+		self.log.info("Connection established. Setting up consumer.")
+		self.storm_channel = self.storm_connection.channel()
+		self.storm_channel.basic.qos(10)
 
-		# Channel and exchange setup
-		self.base_amqp = rabbitpy.AMQP(self.channel)
-		self.base_amqp.basic_qos(
-				prefetch_size  = 0,
-				prefetch_count = config['prefetch'],
-				global_flag    = False
-			)
 
 		self.last_hearbeat_received = time.time()
 		self.last_message_received = time.time()
@@ -60,46 +54,90 @@ class AmqpContainer(object):
 		self.heartbeat_timeout_lock = threading.Lock()
 		self.active_lock            = threading.Lock()
 
-		self.log.info("Connection established. Setting up consumer.")
-
+		self.rx_queue = rx_queue
 
 		self.log.info("Configuring queues.")
 
-		task_exchange = rabbitpy.Exchange(
-					self.channel,
-					name=config['task_exchange'],
+
+		self.storm_channel.exchange.declare(
+					exchange=config['task_exchange'],
 					exchange_type=config['task_exchange_type'],
 					durable=config['durable']
 				)
-		task_exchange.declare()
 
-		resp_exchange = rabbitpy.Exchange(
-					self.channel,
-					name=config['response_exchange'],
+
+		# task_exchange = rabbitpy.Exchange(
+		# 			self.channel,
+		# 			name=config['task_exchange'],
+		# 			exchange_type=config['task_exchange_type'],
+		# 			durable=config['durable']
+		# 		)
+		# task_exchange.declare()
+
+		self.storm_channel.exchange.declare(
+					exchange=config['response_exchange'],
 					exchange_type=config['response_exchange_type'],
 					durable=config['durable']
 				)
-		resp_exchange.declare()
+		# resp_exchange = rabbitpy.Exchange(
+		# 			self.channel,
+		# 			name=config['response_exchange'],
+		# 			exchange_type=config['response_exchange_type'],
+		# 			durable=config['durable']
+		# 		)
+		# resp_exchange.declare()
 
-		# "NAK" queue, used for keeping the event loop ticking when we
-		# purposefully do not want to receive messages
-		# THIS IS A SHITTY WORKAROUND for keepalive issues.
-		keepalive_exchange = rabbitpy.Exchange(
-					self.channel,
-					name=self.keepalive_exchange_name,
+		# # "NAK" queue, used for keeping the event loop ticking when we
+		# # purposefully do not want to receive messages
+		# # THIS IS A SHITTY WORKAROUND for keepalive issues.
+
+		self.storm_channel.exchange.declare(
+					exchange=self.keepalive_exchange_name,
 					durable=False,
-					auto_delete=True,
-				)
-		keepalive_exchange.declare()
+					auto_delete=True)
 
-		self.nak_q = rabbitpy.Queue(self.channel, name=self.keepalive_exchange_name+'.nak.q', durable=False, auto_delete=True, expires=1000*self.hearbeat_packet_timeout*10)
-		self.nak_q.declare()
-		self.nak_q.bind(keepalive_exchange, routing_key="nak")
+		# keepalive_exchange = rabbitpy.Exchange(
+		# 			self.channel,
+		# 			name=self.keepalive_exchange_name,
+		# 			durable=False,
+		# 			auto_delete=True,
+		# 		)
+		# keepalive_exchange.declare()
 
-		self.in_q  = rabbitpy.Queue(self.channel, name=config['response_queue_name'], durable=config['durable'],  auto_delete=False)
-		self.in_q.bind(resp_exchange, routing_key=config['response_queue_name'].split(".")[0])
+		# self.nak_q = rabbitpy.Queue(self.channel, name=self.keepalive_exchange_name+'.nak.q', durable=False, auto_delete=True, expires=1000*self.hearbeat_packet_timeout*10)
+		# self.nak_q.declare()
+		# self.nak_q.bind(keepalive_exchange, routing_key="nak")
 
-		self.in_q.declare()
+		# TODO: Get queue expiry working?
+		self.storm_channel.queue.declare(
+					queue=self.keepalive_exchange_name+'.nak.q',
+					durable=False,
+					auto_delete=True)
+
+		self.storm_channel.queue.bind(
+					queue=self.keepalive_exchange_name+'.nak.q',
+					exchange=self.keepalive_exchange_name,
+					routing_key="nak")
+
+		# self.in_q  = rabbitpy.Queue(self.channel, name=config['response_queue_name'], durable=config['durable'],  auto_delete=False)
+		# self.in_q.bind(resp_exchange, routing_key=config['response_queue_name'].split(".")[0])
+
+		self.storm_channel.queue.declare(
+					queue=config['response_queue_name'],
+					durable=config['durable'],
+					auto_delete=False)
+		self.log.info("Declared.")
+
+		self.storm_channel.queue.bind(
+					queue=config['response_queue_name'],
+					exchange=config['response_exchange'],
+					routing_key=config['response_queue_name'].split(".")[0])
+
+		self.log.info("Bound.")
+		self.storm_channel.basic.consume(self.handle_rx, queue=config['response_queue_name'],         no_ack=False)
+		self.storm_channel.basic.consume(self.handle_rx, queue=self.keepalive_exchange_name+'.nak.q', no_ack=False)
+		self.log.info("Consume triggered.")
+		# self.in_q.declare()
 
 		self.heartbeat_loops = 0
 		self.consumer_cycle = 0
@@ -115,56 +153,43 @@ class AmqpContainer(object):
 		# 		self.log.error("	%s", e)
 
 		# Close the connection once it's empty.
-		closers = [
-			self.in_q.stop_consuming,
-			self.nak_q.stop_consuming,
-			self.channel.close,
-			self.connection.close,
-		]
-		try:
-			for func in closers:
-				try:
-					func()
-				except rabbitpy.exceptions.RabbitpyException as e:
-					self.log.error("Error on interface teardown!")
-					self.log.error("	%s", e)
-		finally:
-			self.channel    = None
-			self.connection = None
-			self.channel    = None
 
-			self.in_q  = None
-			self.nak_q = None
+		self.storm_connection.close()
 
-			self.log.info("AMQP Thread exited")
+	def enter_blocking_rx_loop(self):
+		self.storm_channel.start_consuming(to_tuple=False)
 
-	def keepalive_ticker(self):
 
-		with self.active_lock:
-			nak = self.nak_q.get()
-			if nak:
-				nak.ack()
-				with self.heartbeat_timeout_lock:
-					self.last_hearbeat_received = time.time()
-				self.log.info("Heartbeat packet received!")
+	def handle_keepalive_rx(self, message):
 
-			# message = rabbitpy.Message(channel=self.channel, body_value={'wat' : 'wat'})
-			# message.publish(self.keepalive_exchange_name, 'nak')
-			# tx_ok = message.publish(self.keepalive_exchange_name, 'nak', mandatory=True)
-			# if not tx_ok:
-			# 	raise Message_Publish_Exception("Failed to publish message!")
-			self.base_amqp.basic_publish(body={'wat' : 'wat'}, exchange=self.keepalive_exchange_name, routing_key='nak')
+		with self.heartbeat_timeout_lock:
+			self.last_hearbeat_received = time.time()
+		message.ack()
+		self.log.info("Heartbeat packet received! %s", message.body)
 
-	def get_rx(self):
-		print("Get_rx call()")
-		try:
-			for item in self.in_q.consume():
-				with self.rx_timeout_lock:
-					self.last_message_received = time.time()
-				self.log.info("Received packet from queue '%s'! Processing.", self.in_q.name)
-				yield item
-		except TypeError:
-			return None
+	def handle_normal_rx(self, message):
+
+		with self.rx_timeout_lock:
+			self.last_message_received = time.time()
+		self.rx_queue.put(message.body)
+		message.ack()
+
+		self.log.info("Message packet received! %s", len(message.body))
+	def handle_rx(self, message):
+		# self.log.info("Received message!")
+		# self.log.info("Message channel: %s", message.channel)
+		# self.log.info("Message properties: %s", message.properties)
+		if message.properties['correlation_id'] == 'keepalive':
+			self.handle_keepalive_rx(message)
+		else:
+			self.handle_normal_rx(message)
+
+	def poke_keepalive(self):
+		self.storm_channel.basic.publish(body='wat', exchange=self.keepalive_exchange_name, routing_key='nak',
+			properties={
+				'correlation_id' : "keepalive"
+			})
+
 
 	def put_tx(self, message):
 		out_key   = self.task_queue_name.split(".")[0]
@@ -173,24 +198,10 @@ class AmqpContainer(object):
 		if self.durable:
 			msg_prop["delivery_mode"] = 2
 
-		if not self.channel:
+		if not self.storm_channel:
 			raise Message_Publish_Exception("Failed to publish message!")
 
-
-		# message = rabbitpy.Message(channel=self.channel, body_value=message)
-		# message.publish(self.task_exchange, out_key)
-		# return
-		# for x in range(4):
-		# 	tx_ok = message.publish(self.task_exchange, out_key, mandatory=True)
-		# 	if tx_ok:
-		# 		return
-		# 	time.sleep(0.1)
-		# 	self.log.warning("TX Publish failed. ")
-		# if not tx_ok:
-		# 	raise Message_Publish_Exception("Failed to publish message!")
-
-		self.base_amqp.basic_publish(body=message, exchange=self.task_exchange, routing_key=out_key, properties=msg_prop)
-
+		self.storm_channel.basic.publish(body=message, exchange=self.task_exchange, routing_key=out_key, properties=msg_prop)
 
 	def checkTimeouts(self):
 		with self.heartbeat_timeout_lock:
@@ -229,14 +240,11 @@ class AmqpContainer(object):
 			with self.rx_timeout_lock:
 				last_rx = time.time() - self.last_message_received
 
-			self.consumer_cycle += 1
-			if self.consumer_cycle > 30:
-				# We periodically cycle the consuming state of the input queue, to stop it from being wedged.
-				try:
-					self.in_q.stop_consuming()
-				except rabbitpy.exceptions.NotConsumingError:
-					pass
-			self.log.info("Interface timeout thread. Ages: heartbeat -> %s, last message -> %s.", last_hb, last_rx)
+			# self.consumer_cycle += 1
+			# if self.consumer_cycle > 30:
+			# 	# We periodically cycle the consuming state of the input queue, to stop it from being wedged.
+			# 	self.storm_channel.close()
+			self.log.info("Interface timeout thread. Ages: heartbeat -> %0.2f, last message -> %0.2f.", last_hb, last_rx)
 
 class ConnectorManager:
 	def __init__(self, config, runstate, active, task_queue, response_queue):
@@ -291,7 +299,7 @@ class ConnectorManager:
 
 	def __connect(self):
 
-		conn_params = {
+		rabbit_params = {
 			'task_queue_name'         : self.config['task_queue_name'],
 			'response_queue_name'     : self.config['response_queue_name'],
 			'task_exchange'           : self.config['task_exchange'],
@@ -304,37 +312,31 @@ class ConnectorManager:
 			'hearbeat_packet_timeout' : self.config['hearbeat_packet_timeout'],
 		}
 
-		qs = urllib.parse.urlencode({
-			'cacertfile'           :self.config['sslopts']['ca_certs'],
-			'certfile'             :self.config['sslopts']['certfile'],
-			'keyfile'              :self.config['sslopts']['keyfile'],
-
-			'verify'               : 'ignore',
-			'heartbeat'            : self.config['heartbeat'],
-
-			'connection_timeout'   : self.config['socket_timeout'],
-
-			})
-
-		uri = '{scheme}://{username}:{password}@{host}:{port}/{virtual_host}?{query_str}'.format(
-			scheme       = 'amqps',
-			username     = self.config['userid'],
-			password     = self.config['password'],
-			host         = self.config['host'].split(":")[0],
-			port         = self.config['host'].split(":")[1],
-			virtual_host = self.config['virtual_host'],
-			query_str    = qs,
-			)
+		conn_params = {
+				'hostname'     : self.config['host'].split(":")[0],
+				'username'     : self.config['userid'],
+				'password'     : self.config['password'],
+				'port'         : int(self.config['host'].split(":")[1]),
+				'virtual_host' : self.config['virtual_host'],
+				'heartbeat'    : 15,
+				'timeout'      : 30,
+				'ssl'          : True,
+				'ssl_options'  : {
+					'ca_certs'           : self.config['sslopts']['ca_certs'],
+					'certfile'             : self.config['sslopts']['certfile'],
+					'keyfile'              : self.config['sslopts']['keyfile'],
+				}
+			}
 
 		with self.connect_lock:
 			self.threads_live.value  = 1
 			self.had_exception.value = 0
 
-			self.interface = AmqpContainer(self.config['virtual_host'], uri, **conn_params)
+			self.interface = AmqpContainer(conn_params, self.task_queue, **rabbit_params)
 
-			self.rx_thread = threading.Thread(target=self._rx_poll, daemon=True)
-			self.tx_thread = threading.Thread(target=self._tx_poll, daemon=True)
-			self.hb_thread = threading.Thread(target=self._timeout_watcher, daemon=True)
+			self.rx_thread = threading.Thread(target=self._rx_poll,         daemon=False)
+			self.tx_thread = threading.Thread(target=self._tx_poll,         daemon=False)
+			self.hb_thread = threading.Thread(target=self._timeout_watcher, daemon=False)
 			self.rx_thread.start()
 			self.tx_thread.start()
 			self.hb_thread.start()
@@ -343,8 +345,8 @@ class ConnectorManager:
 	def _disconnect(self):
 
 		with self.connect_lock:
-			self.interface.close()
 			self.threads_live.value = 0
+			self.interface.close()
 
 			threads = [self.rx_thread, self.tx_thread, self.hb_thread]
 			while any([thread.is_alive() for thread in threads]):
@@ -397,7 +399,7 @@ class ConnectorManager:
 					self.sent_messages += 1
 					self.active -= 1
 
-				except rabbitpy.exceptions.RabbitpyException as e:
+				except amqpstorm.AMQPError as e:
 					self.log.error("Error while tx_polling interface!")
 					self.log.error("	%s", e)
 					for line in traceback.format_exc().split("\n"):
@@ -420,49 +422,21 @@ class ConnectorManager:
 	def _rx_poll(self):
 
 		self.log.info("RX Poll process starting. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
-		while self.threads_live.value and self.had_exception.value == 0:
-			try:
-				# # 	# Prevent never breaking from the loop if the feeding queue is backed up.
-				# item = self.in_q.get()
-				# if item:
-				if self.interface:
-					# print("RX Polling")
-					for item in self.interface.get_rx():
-						if not item:
-							continue
-						self.task_queue.put(item.body)
-						item.ack()
-
-						self.active += 1
-						self.recv_messages += 1
-						self.session_fetched += 1
-
-
-						blocked = 0
-						while self.task_queue.qsize() > self.config['prefetch']:
-							if not self.runstate.value:
-								self.log.info("Receving loop saw exit flag. Breaking!")
-								return
-
-							time.sleep(1)
-							blocked += 1
-							if blocked > 10:
-								self.log.warning("Receive loop blocked due to excessive rx queue size (%s).", self.task_queue.qsize())
-								blocked = 0
-				time.sleep(1)
-
-			except rabbitpy.exceptions.RabbitpyException as e:
-				self.log.error("Error while tx_polling interface!")
-				self.log.error("	%s", e)
-				for line in traceback.format_exc().split("\n"):
-					self.log.error(line)
-				self.had_exception.value = 1
+		try:
+			self.interface.enter_blocking_rx_loop()
+		except amqpstorm.AMQPError as e:
+			self.log.error("Error while in rx runloop!")
+			self.log.error("	%s", e)
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
+			self.had_exception.value = 1
 
 		self.log.info("RX Poll process dying. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
 
 	def _timeout_watcher(self):
 
 		print_time = 30              # Print a status message every n seconds
+		hb_time    =  5              # Print a status message every n seconds
 		integrator =  0              # Time since last status message emitted.
 
 		while self.threads_live.value and self.had_exception.value == 0:
@@ -473,15 +447,15 @@ class ConnectorManager:
 
 				integrator += 1
 				# Reset the print integrator.
-				if self.interface and integrator > print_time:
-					integrator = 0
-					self.interface.keepalive_ticker()
+				if self.interface and (integrator % hb_time) == 0:
+					self.interface.poke_keepalive()
+				if self.interface and (integrator % print_time) == 0:
 					self.log.info("AMQP Interface process. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
 			except Heartbeat_Timeout_Exception:
 				self.had_exception.value = 1
 			except Message_Publish_Exception:
 				self.had_exception.value = 1
-			except rabbitpy.exceptions.RabbitpyException:
+			except amqpstorm.AMQPError as e:
 				self.log.error("RabbitPy Exception in worker.")
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
