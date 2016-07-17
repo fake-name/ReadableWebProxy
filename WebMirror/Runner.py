@@ -335,12 +335,19 @@ class UpdateAggregator(object):
 				self.log.error("Exception in aggregator!")
 				for line in traceback.format_exc():
 					self.log.error(line.rstrip())
+
+	def close(self):
+		if config.C_DO_RABBIT:
+			self.log.info("Aggregator thread closing interface.")
+			self._amqpint.close()
+
 	@classmethod
 	def launch_agg(cls, agg_queue):
 		install_pystuck()
 		agg_db = db.get_db_session()
 		instance = cls(agg_queue, agg_db)
 		instance.run()
+		instance.close()
 
 class MultiJobManager(object):
 	def __init__(self, max_tasks, target, target_args, target_kwargs):

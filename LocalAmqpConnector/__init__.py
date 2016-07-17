@@ -26,6 +26,7 @@ class AmqpContainer(object):
 		assert 'response_exchange'        in config
 		assert 'response_exchange_type'   in config
 		assert 'durable'                  in config
+		assert 'prefetch'                 in config
 		assert 'flush_queues'             in config
 		assert 'hearbeat_packet_timeout'  in config
 
@@ -44,7 +45,7 @@ class AmqpContainer(object):
 
 		self.log.info("Connection established. Setting up consumer.")
 		self.storm_channel = self.storm_connection.channel()
-		self.storm_channel.basic.qos(10)
+		self.storm_channel.basic.qos(config['prefetch'])
 
 
 		self.last_hearbeat_received = time.time()
@@ -120,9 +121,19 @@ class AmqpContainer(object):
 		# 		self.log.error("Error on interface teardown!")
 		# 		self.log.error("	%s", e)
 
-		# Close the connection once it's empty.
+		# Apparently you can close the underlying connection, and have it's thread die, and
+		# somehow not have the channel consumer stop. Anyways, stop that first so it shouldn't
+		# get wedged in the future.
+		self.log.info("Closing channel")
+		self.storm_channel.close()
 
+		# Close the connection
+		self.log.info("Closing connection")
 		self.storm_connection.close()
+
+	def kill(self):
+		self.log.info("Killing connection")
+		self.storm_connection.kill()
 
 	def enter_blocking_rx_loop(self):
 		self.storm_channel.start_consuming(to_tuple=False)
@@ -187,7 +198,7 @@ class AmqpContainer(object):
 					raise Heartbeat_Timeout_Exception("Heartbeat timeout!")
 
 		with self.rx_timeout_lock:
-			if (time.time() - self.last_message_received) > self.hearbeat_packet_timeout:
+			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 5):
 				with self.active_lock:
 					print()
 					print()
@@ -310,17 +321,37 @@ class ConnectorManager:
 			self.hb_thread.start()
 
 
-	def _disconnect(self):
+	def disconnect(self):
 
 		with self.connect_lock:
 			self.threads_live.value = 0
 			self.interface.close()
-
+			failed_to_die = 0
 			threads = [self.rx_thread, self.tx_thread, self.hb_thread]
 			while any([thread.is_alive() for thread in threads]):
 				for thread in [thread for thread in threads if thread.is_alive()]:
 					thread.join(1)
-				self.log.warn("Waiting on threads to join!")
+				self.log.warning("Waiting on threads to join (tx: %s, rx: %s, hb: %s),  Threads_live: %s, had exception %s, resp queue size: %s!",
+					self.tx_thread.is_alive(),
+					self.rx_thread.is_alive(),
+					self.hb_thread.is_alive(),
+					self.threads_live.value,
+					self.had_exception.value,
+					self.response_queue.qsize(),
+					)
+				if self.rx_thread.is_alive():
+					failed_to_die += 1
+					if failed_to_die > 15:
+						self.log.warning("Attempting to kill interface!")
+						self.interface.kill()
+					try:
+						self.interface.close()
+					except Exception:
+						self.log.error("Closing interface failed!")
+
+						for line in traceback.format_exc().split("\n"):
+							self.log.error(line)
+
 			self.log.info("Interface threads joined")
 
 			try:
@@ -439,68 +470,79 @@ class ConnectorManager:
 
 	def monitor_loop(self):
 
+		self.had_exception.value = 0
 		while self.runstate.value:
 			try:
 				if self.had_exception.value == 1:
 					print("Disconnecting!")
-					self._disconnect()
+					self.disconnect()
 					time.sleep(5)
-
-				if not hasattr(self, 'interface') or not self.interface:
+					self.had_exception.value = 0
 					self.__connect()
+
 			except Exception:
-				self._disconnect()
-				self.interface = None
+				self.had_exception.value = 1
 			time.sleep(1)
 
 	def shutdown(self):
+		self.log.info("ConnectorManager shutdown called!")
 		self.threads_live.value = 0
+		self.disconnect()
 
-def run_fetcher(config, runstate, tx_q, rx_q):
-	'''
-	bleh
+	@classmethod
+	def run_fetcher(cls, config, runstate, tx_q, rx_q):
+		'''
+		bleh
 
-	'''
+		'''
 
-	# Active instances tracker
-	active = multiprocessing.Value("i", 0)
+		# Active instances tracker
+		active = multiprocessing.Value("i", 0)
 
-	log = logging.getLogger("Main.Connector.Manager")
+		log = logging.getLogger("Main.Connector.Manager(%s)" % config['virtual_host'])
 
-	log.info("Worker thread starting up.")
-	connection = False
-	while runstate.value != 0:
+		log.info("Worker thread starting up.")
 		try:
-			if connection is False:
-				connection = ConnectorManager(config, runstate, active, tx_q, rx_q)
-			connection.monitor_loop()
+			print()
+			print()
+			print("Connecting %s" % config['virtual_host'])
+			print()
+			print()
+			connection_manager = cls(config, runstate, active, tx_q, rx_q)
+			print()
+			print()
+			print("Entering monitor-loop %s" % config['virtual_host'])
+			print()
+			print()
+			connection_manager.monitor_loop()
 
 		except Exception:
 			log.error("Exception in connector! Terminating connection...")
 			for line in traceback.format_exc().split('\n'):
 				log.error(line)
 			try:
-				connection._disconnect()
+				connection_manager.disconnect()
 			except Exception:
 				log.info("")
 				log.error("Failed pre-emptive closing before reconnection. May not be a problem?")
 				for line in traceback.format_exc().split('\n'):
 					log.error(line)
 			try:
-				connection.shutdown()
-				del connection
+				connection_manager.shutdown()
+				del connection_manager
 			except Exception:
 				log.info("")
 				log.error("Failed pre-emptive closing before reconnection. May not be a problem?")
 				for line in traceback.format_exc().split('\n'):
 					log.error(line)
 			if runstate.value != 0:
-				connection = False
 				log.error("Triggering reconnection...")
 
-	log.info("")
-	log.info("Worker thread has terminated.")
-	log.info("")
+		if connection_manager:
+			connection_manager.shutdown()
+		log.info("")
+		log.info("Worker thread has terminated.")
+		log.info("")
 
 class Connector:
 
@@ -532,9 +574,9 @@ class Connector:
 			'prefetch'                 : kwargs.get('prefetch',                   1),
 			'session_fetch_limit'      : kwargs.get('session_fetch_limit',      None),
 			'durable'                  : kwargs.get('durable',                  False),
-			'socket_timeout'           : kwargs.get('socket_timeout',            10),
+			'socket_timeout'           : kwargs.get('socket_timeout',            30),
 
-			'hearbeat_packet_interval' : kwargs.get('hearbeat_packet_interval',  10),
+			'hearbeat_packet_interval' : kwargs.get('hearbeat_packet_interval',  60),
 			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  120),
 			'ack_rx'                   : kwargs.get('ack_rx',                   True),
 		}
@@ -596,7 +638,7 @@ class Connector:
 			self.log.error("")
 			self.log.error("")
 
-		self.thread = threading.Thread(target=run_fetcher, args=(self.__config, self.runstate, self.taskQueue, self.responseQueue), daemon=True)
+		self.thread = threading.Thread(target=ConnectorManager.run_fetcher, args=(self.__config, self.runstate, self.taskQueue, self.responseQueue), daemon=True)
 		self.thread.start()
 
 	def atQueueLimit(self):
@@ -678,50 +720,3 @@ class Connector:
 		# print("deleter: ", self.runstate, self.runstate.value)
 		if self.runstate.value:
 			self.stop()
-
-def test():
-	import json
-	import sys
-	import os.path
-	logging.basicConfig(level=logging.INFO)
-
-	sPaths = ['./settings.json', '../settings.json']
-
-	for sPath in sPaths:
-		if not os.path.exists(sPath):
-			continue
-		with open(sPath, 'r') as fp:
-			settings = json.load(fp)
-
-	isMaster = len(sys.argv) > 1
-	con = Connector(userid       = settings["RABBIT_LOGIN"],
-					password     = settings["RABBIT_PASWD"],
-					host         = settings["RABBIT_SRVER"],
-					virtual_host = settings["RABBIT_VHOST"],
-					master       = isMaster,
-					synchronous  = not isMaster,
-					flush_queues = isMaster)
-
-	while 1:
-		try:
-			# if not isMaster:
-			time.sleep(1)
-
-			new = con.getMessage()
-			if new:
-				# print(new)
-				if not isMaster:
-					con.putMessage("Hi Thar!")
-
-			if isMaster:
-				con.putMessage("Oh HAI")
-
-		except KeyboardInterrupt:
-			break
-
-	con.stop()
-
-if __name__ == "__main__":
-	test()
-
-

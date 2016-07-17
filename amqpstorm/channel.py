@@ -275,8 +275,12 @@ class Channel(BaseChannel):
 
         :return:
         """
-        while self.consumer_tags and not self.is_closed:
+        while self.consumer_tags:
+            closed = self.is_closed
+            if closed:
+                break
             self.process_data_events(to_tuple=to_tuple)
+            # print("start_consuming looping (state: %s)" % (self._state, ))
 
     def stop_consuming(self):
         """Stop consuming messages.

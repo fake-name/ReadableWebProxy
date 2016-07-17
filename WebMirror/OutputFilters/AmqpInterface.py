@@ -28,7 +28,7 @@ class RabbitQueueHandler(object):
 		assert "taskq_response"     in settings
 
 		sslopts = self.getSslOpts()
-
+		self.vhost = settings["RABBIT_VHOST"]
 		self.connector = LocalAmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
 												password           = settings["RABBIT_PASWD"],
 												host               = settings["RABBIT_SRVER"],
@@ -119,8 +119,8 @@ class RabbitQueueHandler(object):
 		self.close()
 
 	def close(self):
-		print("Closing connector wrapper: ", self.logPath)
 		if hasattr(self, "connector") and self.connector:
+			print("Closing connector wrapper: ", self.logPath, self.vhost)
 			self.connector.stop()
 			self.connector = None
 
