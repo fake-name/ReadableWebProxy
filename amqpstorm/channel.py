@@ -1,6 +1,7 @@
 """AMQP-Storm Connection.Channel."""
 
 import logging
+import multiprocessing
 from time import sleep
 
 from pamqp import specification as pamqp_spec
@@ -29,7 +30,7 @@ class Channel(BaseChannel):
     """Connection.channel"""
     __slots__ = [
         'confirming_deliveries', 'consumer_callback', 'rpc', '_basic',
-        '_connection', '_exchange', '_inbound', '_queue', '_tx'
+        '_connection', '_exchange', '_inbound', '_queue', '_tx', '_die'
     ]
 
     def __init__(self, channel_id, connection, rpc_timeout):
@@ -43,6 +44,8 @@ class Channel(BaseChannel):
         self._exchange = Exchange(self)
         self._tx = Tx(self)
         self._queue = Queue(self)
+
+        self._die = multiprocessing.Value("b", 0)
 
     def __enter__(self):
         return self
@@ -117,6 +120,9 @@ class Channel(BaseChannel):
                 yield message.to_tuple()
                 continue
             yield message
+
+    def kill(self):
+        self._die.value = 1
 
     def close(self, reply_code=0, reply_text=''):
         """Close Channel.
@@ -278,6 +284,8 @@ class Channel(BaseChannel):
         while self.consumer_tags:
             closed = self.is_closed
             if closed:
+                break
+            if self._die.value != 0:
                 break
             self.process_data_events(to_tuple=to_tuple)
             # print("start_consuming looping (state: %s)" % (self._state, ))

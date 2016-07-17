@@ -134,6 +134,7 @@ class AmqpContainer(object):
 	def kill(self):
 		self.log.info("Killing connection")
 		self.storm_connection.kill()
+		self.storm_channel.kill()
 
 	def enter_blocking_rx_loop(self):
 		self.storm_channel.start_consuming(to_tuple=False)
@@ -331,26 +332,26 @@ class ConnectorManager:
 			while any([thread.is_alive() for thread in threads]):
 				for thread in [thread for thread in threads if thread.is_alive()]:
 					thread.join(1)
-				self.log.warning("Waiting on threads to join (tx: %s, rx: %s, hb: %s),  Threads_live: %s, had exception %s, resp queue size: %s!",
+				self.log.warning("Waiting on threads to join (tx: %s, rx: %s, hb: %s),  Threads_live: %s, had exception %s, resp queue size: %s, die: %s!",
 					self.tx_thread.is_alive(),
 					self.rx_thread.is_alive(),
 					self.hb_thread.is_alive(),
 					self.threads_live.value,
 					self.had_exception.value,
 					self.response_queue.qsize(),
+					failed_to_die,
 					)
-				if self.rx_thread.is_alive():
-					failed_to_die += 1
-					if failed_to_die > 15:
-						self.log.warning("Attempting to kill interface!")
-						self.interface.kill()
-					try:
-						self.interface.close()
-					except Exception:
-						self.log.error("Closing interface failed!")
+				failed_to_die += 1
+				if failed_to_die > 15:
+					self.log.warning("Attempting to kill interface!")
+					self.interface.kill()
+				try:
+					self.interface.close()
+				except Exception:
+					self.log.error("Closing interface failed!")
 
-						for line in traceback.format_exc().split("\n"):
-							self.log.error(line)
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
 
 			self.log.info("Interface threads joined")
 
