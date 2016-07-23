@@ -18,7 +18,7 @@ class FilterBase(PageProcessor):
 
 	def __init__(self, **kwargs):
 		super().__init__()
-		if self._needs_amqp:
+		if self._needs_amqp and kwargs.get('connect', True):
 			if "message_q" in kwargs and kwargs['message_q']:
 				# print("Filter has a queue, not connecting directly.")
 				self.msg_q = kwargs['message_q']

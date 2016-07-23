@@ -507,9 +507,22 @@ IN
     FROM
         web_pages_version
     GROUP BY
-        url HAVING COUNT(url) > 100
+        url HAVING COUNT(url) > 1000
 )
 
+
+EXPLAIN
+SELECT
+    count(*), url
+FROM
+    web_pages_version
+GROUP BY
+    url
+HAVING
+    COUNT(*) > 1
+ORDER BY
+    COUNT(*) DESC
+;
 
 
 '''

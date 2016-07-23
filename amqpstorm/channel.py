@@ -109,6 +109,8 @@ class Channel(BaseChannel):
         """
         self.check_for_errors()
         while not self.is_closed:
+            if self._die.value != 0:
+                return
             message = self._build_message()
             if not message:
                 if break_on_empty:
@@ -123,6 +125,7 @@ class Channel(BaseChannel):
 
     def kill(self):
         self._die.value = 1
+        self.set_state(self.CLOSED)
 
     def close(self, reply_code=0, reply_text=''):
         """Close Channel.
@@ -250,6 +253,9 @@ class Channel(BaseChannel):
         if not self.consumer_callback:
             raise AMQPChannelError('no consumer_callback defined')
         for message in self.build_inbound_messages(break_on_empty=True):
+            if self._die.value != 0:
+                return
+
             if not to_tuple:
                 # noinspection PyCallingNonCallable
                 self.consumer_callback(message)
@@ -289,7 +295,11 @@ class Channel(BaseChannel):
                 break
             self.process_data_events(to_tuple=to_tuple)
             # print("start_consuming looping (state: %s)" % (self._state, ))
-
+        print()
+        print()
+        print("start_consuming exiting!")
+        print()
+        print()
     def stop_consuming(self):
         """Stop consuming messages.
 

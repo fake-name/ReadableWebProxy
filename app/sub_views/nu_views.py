@@ -8,6 +8,7 @@ from flask import jsonify
 import pickle
 import time
 import json
+import string
 import datetime
 from calendar import timegm
 
@@ -22,6 +23,20 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import func
 from tzlocal import get_localzone
 import WebMirror.API
+
+def add_highlight(from_name, from_chp, from_group, namestr):
+	splitstr = from_name + " " + from_group + " " + from_chp + " " + "".join([char for char in from_chp if char in " 0123456789"]) + \
+		" " + "".join([char for char in from_chp if char in string.ascii_letters + " "])
+	highlights = [val for val in splitstr.lower().split(" ") if val and (len(val) > 1 or any([char for char in val if char in "0123456789"]))]
+	namestr = namestr.lower()
+
+	for highlight in highlights:
+		if highlight in namestr:
+			splitted = namestr.split(highlight)
+			if len(splitted) > 1:
+				namestr = ("<b>"+highlight+"</b>").join(namestr.split(highlight))
+
+	return namestr
 
 def aggregate_nu_items(in_rows):
 	agg = {}
@@ -40,7 +55,13 @@ def aggregate_nu_items(in_rows):
 			assert(all([rowset[0].actual_target == row.actual_target for row in rowset])),       'Wat: %s' % ([row.actual_target    for row in rowset])
 		except AssertionError:
 			del agg[key]
-	return list(agg.values())
+	ret = []
+	for item in agg.values():
+		if item:
+			namestr = add_highlight(item[0].seriesname, item[0].releaseinfo, item[0].groupinfo, item[0].actual_target)
+			ret.append((namestr, item))
+
+	return ret
 
 
 def get_nu_items(sess, selector):
@@ -98,9 +119,9 @@ def nu_view():
 	session.commit()
 	new = get_nu_items(g.session, release_selector)
 	session.commit()
-	new.sort(key=lambda x: x[0].seriesname)
-	new.sort(key=lambda x: '...' in x[0].seriesname)
-	new.sort(key=lambda x: 'https://www.novelupdates.com' in x[0].actual_target)
+	new.sort(key=lambda x: x[1][0].seriesname)
+	new.sort(key=lambda x: '...' in x[1][0].seriesname)
+	new.sort(key=lambda x: 'https://www.novelupdates.com' in x[1][0].actual_target)
 
 	response = make_response(render_template('nu_releases.html',
 						   new          = new,

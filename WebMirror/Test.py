@@ -412,7 +412,8 @@ def purge_invalid_urls():
 	sess = db.get_db_session()
 	for ruleset in WebMirror.rules.load_rules():
 		opts = []
-		if ruleset['starturls'] and ruleset['netlocs'] and ruleset['badwords']:
+		if ruleset['netlocs'] and ruleset['badwords']:
+			# print("Clearing netloc set: ", ruleset['netlocs'])
 			loc = and_(
 					db.WebPages.netloc.in_(ruleset['netlocs']),
 					or_(*(db.WebPages.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
@@ -677,6 +678,25 @@ def delete_feed(feed_name, do_delete, search_str):
 
 	sess.commit()
 
+def consolidate_history():
+
+	sess = db.get_db_session()
+	print("Doing select")
+	end = sess.execute("""
+			SELECT
+				count(*), url
+			FROM
+				web_pages_version
+			GROUP BY
+				url
+			HAVING
+				COUNT(*) > 1
+			LIMIT
+				40
+		""")
+	print("Wut?")
+	print(end)
+
 
 def decode(*args):
 	print("Args:", args)
@@ -710,6 +730,8 @@ def decode(*args):
 			clear_bad()
 		elif op == "rss-db":
 			rss_db_sync()
+		elif op == "consolidate-history":
+			consolidate_history()
 		elif op == "rss-db-silent":
 			rss_db_sync(silent=True)
 		elif op == "sort-json":
@@ -788,6 +810,9 @@ if __name__ == "__main__":
 		print('	rss-week')
 		print('	sort-json')
 		print('	sync')
+		print('	rss')
+		print('	sort-txt')
+		print('	consolidate-history')
 
 		print('	rss-db {feedname}')
 		print('	fetch {url}')

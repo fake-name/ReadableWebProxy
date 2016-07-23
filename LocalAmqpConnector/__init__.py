@@ -473,16 +473,23 @@ class ConnectorManager:
 
 		self.had_exception.value = 0
 		while self.runstate.value:
-			try:
-				if self.had_exception.value == 1:
-					print("Disconnecting!")
+			if self.had_exception.value == 1:
+				print("Disconnecting!")
+				try:
 					self.disconnect()
-					time.sleep(5)
-					self.had_exception.value = 0
+				except Exception:
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
+					self.had_exception.value = 1
+				print("Reconnecting")
+				time.sleep(5)
+				try:
 					self.__connect()
-
-			except Exception:
-				self.had_exception.value = 1
+					self.had_exception.value = 0
+				except Exception:
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
+					self.had_exception.value = 1
 			time.sleep(1)
 
 	def shutdown(self):

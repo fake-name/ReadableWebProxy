@@ -29,6 +29,7 @@ import WebMirror.util.urlFuncs
 import urllib.parse
 import traceback
 import datetime
+import psycopg2
 
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
@@ -111,6 +112,10 @@ GLOBAL_BAD = [
 
 			# Try to not scrape inline images
 			';base64,',
+
+			"www.fashionmodeldirectory.com",
+			"www.watchingprivatepractice.com",
+			"Ebonyimages.jupiterimages.com",
 	]
 
 
@@ -530,6 +535,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
 
+
+
+		new_starturl = job.starturl,
+		new_distance = job.distance+1
+		new_priority = job.priority
+		new_type     = job.type
+
+		raw_cur = self.db_sess.connection().connection.cursor()
+
 		if self.resp_q != None and False:
 			for link, istext in items:
 				start = urllib.parse.urlsplit(link).netloc
@@ -538,12 +552,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 				assert start
 				new = {
 					'url'       : link,
-					'starturl'  : job.starturl,
+					'starturl'  : new_starturl,
 					'netloc'    : start,
-					'distance'  : job.distance+1,
+					'distance'  : new_distance,
 					'is_text'   : istext,
-					'priority'  : job.priority,
-					'type'      : job.type,
+					'priority'  : new_priority,
+					'type'      : new_type,
 					'state'     : "new",
 					'fetchtime' : datetime.datetime.now(),
 					}
@@ -556,12 +570,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 		else:
 
 			#  Fucking huzzah for ON CONFLICT!
-			cmd = text("""
+			cmd = """
 					INSERT INTO
 						web_pages
 						(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
 					VALUES
-						(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :addtime, :state)
+						(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
 					ON CONFLICT (url) DO
 						UPDATE
 							SET
@@ -574,14 +588,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 								addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 							WHERE
 							(
-									web_pages.ignoreuntiltime < :ignoreuntiltime
+									web_pages.ignoreuntiltime < %(ignoreuntiltime)s
 								AND
 									web_pages.url = EXCLUDED.url
 								AND
 									(web_pages.state = 'complete' OR web_pages.state = 'error')
 							)
 						;
-					""".replace("	", " ").replace("\n", " "))
+					""".replace("	", " ").replace("\n", " ")
 
 			# cmd = text("""
 			# 		INSERT INTO
@@ -605,52 +619,31 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 						# Forward-data the next walk, time, rather then using now-value for the thresh.
-						new = {
+						data = {
 							'url'             : link,
-							'starturl'        : job.starturl,
+							'starturl'        : new_starturl,
 							'netloc'          : start,
-							'distance'        : job.distance+1,
+							'distance'        : new_distance,
 							'is_text'         : istext,
-							'priority'        : job.priority,
-							'type'            : job.type,
+							'priority'        : new_priority,
+							'type'            : new_type,
 							'state'           : "new",
 							'addtime'         : datetime.datetime.now(),
 
 							# Don't retrigger unless the ignore time has elaped.
 							'ignoreuntiltime' : datetime.datetime.now(),
 							}
-						self.db_sess.execute(cmd, params=new)
+						raw_cur.execute(cmd, data)
 						if commit_each:
-							self.db_sess.commit()
+							raw_cur.execute("COMMIT;")
 						break
-					except sqlalchemy.exc.ProgrammingError:
-						self.log.warn("SQLAlchemy ProgrammingError - Retrying.")
-						self.db_sess.rollback()
+					except psycopg2.Error:
+						self.log.warn("psycopg2.Error - Retrying.")
+						raw_cur.execute("ROLLBACK;")
 						traceback.print_exc()
 						commit_each = True
-					except sqlalchemy.exc.InternalError:
-						self.log.warn("SQLAlchemy InternalError - Retrying.")
-						self.db_sess.rollback()
-						commit_each = True
-					except sqlalchemy.exc.OperationalError:
-						if not commit_each:
-							self.log.warn("SQLAlchemy OperationalError - Retrying with commit_each.")
-						else:
-							self.log.warn("SQLAlchemy OperationalError with commit_each. Retrying.")
-						self.db_sess.rollback()
-						# traceback.print_exc()
-						commit_each = True
-						time.sleep(random.random())
-					except sqlalchemy.exc.InvalidRequestError:
-						self.log.warn("SQLAlchemy InvalidRequestError - Retrying.")
-						self.db_sess.rollback()
-						commit_each = True
-					except sqlalchemy.exc.SQLAlchemyError:
-						self.log.warn("SQLAlchemy SQLAlchemyError - Retrying.")
-						self.db_sess.rollback()
-						commit_each = True
 
-			self.db_sess.commit()
+			raw_cur.execute("COMMIT;")
 
 	def upsertFileResponse(self, job, response):
 		# Response dict structure:

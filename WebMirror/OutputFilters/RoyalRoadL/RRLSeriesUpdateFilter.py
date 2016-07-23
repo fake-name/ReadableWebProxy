@@ -99,8 +99,11 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			return []
 		urls = []
 		for item in container.find_all("li", class_='fiction'):
-			url = item.find('a', text='Fiction Page')['href']
-			urls.append(url)
+			a = item.find('a', text='Fiction Page')
+			if a:
+				urls.append(a['href'])
+			else:
+				self.log.error("No series in container: %s", item)
 
 		return set(urls)
 

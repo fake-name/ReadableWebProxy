@@ -41,14 +41,14 @@
 						<th>Target URL</th>
 
 					</tr>
-					{%- for rowlist in new -%}
+					{%- for markedup_name, rowlist in new -%}
 						<tr>
 							<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{rowlist[0].seriesname}}' data-row-id="[{% for row in rowlist %}{{row.id}}{% if not loop.last %},{% endif %}{% endfor %}]" data-original-value="{{'true' if rowlist[0].validated else 'false'}}" {{'checked="true"' if rowlist[0].validated else ''}}></center></td>
 							<td>{% for row in rowlist %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
 							<td>{{rowlist[0].groupinfo}}</td>
 							<td>{{rowlist[0].seriesname}}</td>
 							<td>{{rowlist[0].releaseinfo}}</td>
-							<td><a href='{{rowlist[0].actual_target}}'>{{rowlist[0].actual_target}}</a></td>
+							<td><a href='{{rowlist[0].actual_target}}'>{{markedup_name | safe}}</a></td>
 
 						</tr>
 					{%- endfor -%}

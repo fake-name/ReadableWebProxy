@@ -75,7 +75,7 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 	loggerPath = "Main.Forwarder.Nu"
 
 
-	def __init__(self):
+	def __init__(self, connect=True):
 
 		input_settings = {
 			'RABBIT_LOGIN'      : settings.NU_RABBIT_LOGIN,
@@ -89,8 +89,8 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'taskq_response'    : 'nureleases.master.q',
 			'poll_rate'         : 1.0 / 25,
 		}
-
-		self.data_in = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(input_settings)
+		if connect:
+			self.data_in = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(input_settings)
 
 		# output_settings = {
 		# 	'RABBIT_LOGIN'      : settings.RABBIT_LOGIN,
@@ -101,8 +101,9 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# 	'taskq_response' : 'response.master.q',
 		# }
 
+		self.name_lut = load_lut()
 
-		super().__init__(db_sess = db.get_db_session(postfix='nu_forwarder'))
+		super().__init__(db_sess = db.get_db_session(postfix='nu_forwarder'), connect=connect)
 
 
 	def __del__(self):
@@ -158,6 +159,10 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'client_id',
 			'client_key',
 		]
+
+		# Patch incoming data using the series name LUT.
+		if input_data['nu_release']['seriesname'] in self.name_lut:
+			input_data['nu_release']['seriesname'] = self.name_lut[input_data['nu_release']['seriesname']]
 
 		# I think the redirect unwrapper occationally times out, or something?
 		if input_data['nu_release']['actual_target'].startswith('https://www.novelupdates.com'):
@@ -226,6 +231,7 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		try:
 			self.process_inbound_messages()
 			self.fix_names()
+			self.consolidate_validated()
 			self.emit_verified_releases()
 		finally:
 			self.close()
@@ -339,6 +345,23 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			# print(agg_releases)
 
 
+	def consolidate_validated(self):
+
+		rows = self.db_sess.query(db.NuOutboundWrapperMap).all()
+		rowlut = {}
+		for row in rows:
+			key = row.seriesname, row.releaseinfo, row.groupinfo, row.actual_target
+			if not key in rowlut:
+				rowlut[key] = []
+			rowlut[key].append(row)
+
+		for valueset in [tmp for tmp in rowlut.values() if len(tmp) > 1]:
+			if not all(x.validated == valueset[0].validated for x in valueset):
+				if any(x.validated == True for x in valueset):
+					for val in valueset:
+						val.validated = True
+		self.db_sess.commit()
+
 	def close(self):
 		print("Closing")
 		self.data_in.close()
@@ -369,13 +392,16 @@ if __name__ == '__main__':
 	import logSetup
 	logSetup.initLogging()
 
-	#print(load_lut())
 	intf = NuForwarder()
 	intf.go()
+	#print(load_lut())
+	# intf = NuForwarder(connect=False)
+	# intf.fix_names()
+	# intf.consolidate_validated()
 	# try:
 	# 	intf.fix_names()
 	# finally:
 	# 	intf.close()
-	# # intf.go()
+	# intf.go()
 
 

@@ -16,6 +16,9 @@ baseUrl: [
 send_raw_feed: False
 trigger: False
 
+
+extraStartUrls: []
+
 badwords: [
 			"/about/",
 			"/join-us/",
@@ -34,6 +37,10 @@ badwords: [
 
 			"/post.php?",
 			"/author.php?",
+
+			"www.fashionmodeldirectory.com",
+			"www.watchingprivatepractice.com",
+			"Ebonyimages.jupiterimages.com",
 			]
 
 # Content Stripping needs to be determined.

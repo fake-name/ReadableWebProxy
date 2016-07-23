@@ -242,6 +242,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				# Prevent inline fonts.
 				if 'font:' in ststr.lower() or 'font :' in ststr.lower() :
 					item['style'] = ''
+				if 'font-family:' in ststr.lower() or 'font-family :' in ststr.lower() :
+					item['style'] = ''
 				# Disable all explicit width settings.
 				if 'width' in ststr.lower():
 					item['style'] = ''
