@@ -638,9 +638,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 							raw_cur.execute("COMMIT;")
 						break
 					except psycopg2.Error:
-						self.log.warn("psycopg2.Error - Retrying.")
+						if commit_each is False:
+							self.log.warn("psycopg2.Error - Retrying with commit each.")
+						else:
+							self.log.warn("psycopg2.Error - Retrying.")
+							traceback.print_exc()
+
 						raw_cur.execute("ROLLBACK;")
-						traceback.print_exc()
 						commit_each = True
 
 			raw_cur.execute("COMMIT;")
