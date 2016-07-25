@@ -203,6 +203,11 @@ def getRefetch(ruleset):
 		return True
 	return ruleset['normal_fetch_mode']
 
+def getDisallowDuplicatePathComponents(ruleset):
+	if not 'disallow_duplicate_path_segments' in ruleset:
+		return True
+	return ruleset['disallow_duplicate_path_segments']
+
 def getIgnoreMalformed(ruleset):
 	if not 'IGNORE_MALFORMED_URLS' in ruleset:
 		return False
@@ -279,6 +284,7 @@ def validateRuleKeys(dat, fname):
 
 		'rewriteAttrs',
 		'rewalk_interval_days',
+		'disallow_duplicate_path_segments',
 
 		# Not currently implemented, but useful
 		'titleTweakLut',
@@ -313,6 +319,7 @@ def load_validate_rules(fname, dat):
 	rules['destyle']               = getDestyles(dat)
 	rules['preserveAttrs']         = getPreserveAttrs(dat)
 	rules['rewalk_interval_days']  = getRewalkIntervalDays(dat)
+	rules['disallow_duplicate_path_segments']  = getDisallowDuplicatePathComponents(dat)
 
 	rules['trigger']               = getTrigger(dat)
 	if not rules['trigger']:

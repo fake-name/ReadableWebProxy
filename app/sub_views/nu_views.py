@@ -24,10 +24,25 @@ from sqlalchemy.sql.expression import func
 from tzlocal import get_localzone
 import WebMirror.API
 
+def abbreviate(instr):
+	instr = "".join([char for char in instr if char in string.ascii_letters + " "])
+	segs = instr.split(" ")
+	segs = [seg[0] for seg in segs if seg]
+	ret = "".join(segs).lower()
+	return "" if len(ret) < 2 else ret
+
 def add_highlight(from_name, from_chp, from_group, namestr):
+	t1 = abbreviate(from_group)
+	t2 = abbreviate(from_name)
+
+	from_name  = from_name.replace("'", " ")  + " " + from_name.replace("'", "")
+	from_chp   = from_chp.replace("'", " ")   + " " + from_chp.replace("'", "")
+	from_group = from_group.replace("'", " ") + " " + from_group.replace("'", "")
 	splitstr = from_name + " " + from_group + " " + from_chp + " " + "".join([char for char in from_chp if char in " 0123456789"]) + \
-		" " + "".join([char for char in from_chp if char in string.ascii_letters + " "])
+		" " + "".join([char for char in from_chp if char in string.ascii_letters + " "]) + \
+		" " + t1 + " " + t2
 	highlights = [val for val in splitstr.lower().split(" ") if val and (len(val) > 1 or any([char for char in val if char in "0123456789"]))]
+
 	namestr = namestr.lower()
 
 	for highlight in highlights:

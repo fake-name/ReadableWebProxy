@@ -406,13 +406,22 @@ def update_feed_names():
 			db.get_db_session().commit()
 
 
-def purge_invalid_urls():
+def purge_invalid_urls(selected_netloc=None):
 
 
 	sess = db.get_db_session()
 	for ruleset in WebMirror.rules.load_rules():
 		opts = []
-		if ruleset['netlocs'] and ruleset['badwords']:
+
+		if      (
+						(ruleset['netlocs'] and ruleset['badwords'])
+					and
+					(
+						(ruleset['netlocs'] and ruleset['badwords'] and selected_netloc is None)
+						or
+						(selected_netloc != None and selected_netloc in ruleset['netlocs'])
+					)
+				):
 			# print("Clearing netloc set: ", ruleset['netlocs'])
 			loc = and_(
 					db.WebPages.netloc.in_(ruleset['netlocs']),
@@ -429,6 +438,8 @@ def purge_invalid_urls():
 				.filter(or_(*opts)) \
 				.delete(synchronize_session=False)
 			sess.commit()
+
+
 		# print(ruleset['netlocs'])
 		# print(ruleset['badwords'])
 
@@ -758,6 +769,8 @@ def decode(*args):
 			test_retrieve(tgt)
 		elif op == "rss-db":
 			rss_db_sync(tgt)
+		elif op == "purge-from-rules":
+			purge_invalid_urls(tgt)
 		elif op == "fetch-silent":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test_retrieve(tgt, debug=False)

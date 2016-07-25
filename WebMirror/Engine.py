@@ -476,10 +476,31 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def generalLinkClean(self, link, badwords):
 		if link.startswith("data:"):
 			return None
-		if any([item in link for item in badwords]):
+		if any([item.lower() in link.lower() for item in badwords]):
 			# print("Filtered:", link)
 			return None
 		return link
+	def haveBadPathSegments(self, url):
+		parsed = urllib.parse.urlsplit(url)
+		netloc = parsed.netloc
+		if not netloc:
+			self.log.error("Wat? No netloc for URL: %s", url)
+			return True
+
+		disallowDupe = False
+		for ruleset in self.ruleset:
+			if netloc in ruleset['netlocs']:
+				disallowDupe = ruleset['disallow_duplicate_path_segments'] or disallowDupe
+
+		if not disallowDupe:
+			return False
+
+		pathchunks = parsed.path.split("/")
+
+		if len(set(pathchunks)) == len(pathchunks):
+			return False
+		return True
+
 
 	# Todo: FIXME
 	def filterContentLinks(self, job, links, badwords):
@@ -488,6 +509,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 			link = self.generalLinkClean(link, badwords)
 			if not link:
 				continue
+			if self.haveBadPathSegments(link):
+				continue
+
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
 				# print("Valid content link: ", link)
@@ -499,6 +523,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 		for link in links:
 			link = self.generalLinkClean(link, badwords)
 			if not link:
+				continue
+			if self.haveBadPathSegments(link):
 				continue
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.rsc_filters:
