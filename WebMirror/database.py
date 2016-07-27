@@ -200,6 +200,7 @@ class WebPages(Base):
 	__versioned__ = {}
 
 	__tablename__ = 'web_pages'
+	name = 'web_pages'
 
 	id                = Column(Integer, primary_key = True, index = True)
 	state             = Column(dlstate_enum, default='new', index=True, nullable=False)
@@ -523,6 +524,10 @@ HAVING
 ORDER BY
     COUNT(*) DESC
 ;
+
+SELECT pg_terminate_backend(pid)
+  FROM pg_stat_activity
+ WHERE  usename='webarchuser';
 
 
 '''

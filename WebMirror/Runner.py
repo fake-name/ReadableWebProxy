@@ -1,9 +1,11 @@
 
 import time
+import os
 import multiprocessing
 import signal
 import logging
 import logSetup
+import cProfile
 import traceback
 import threading
 import sys
@@ -103,7 +105,7 @@ class RunInstance(object):
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
-		for dummy_x in range(30):
+		for dummy_x in range(100):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
@@ -134,12 +136,27 @@ class RunInstance(object):
 
 
 	@classmethod
+	def run_prof(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
+
+		pid = os.getpid()
+		try:
+			cProfile.runctx('cls.run(num, response_queue, new_job_queue, cookie_lock, nosig)', globals(), locals(), 'prof%d.prof' % pid)
+		except Exception as e:
+			print("Wat?")
+			print("Wat?")
+			print("Wat?")
+			print("Wat?")
+			print("Wat?")
+			print("Wat?")
+			print("Wat?")
+			traceback.print_exc()
+			raise e
+
+	@classmethod
 	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
 
-		# install_pystuck()
 
-		# print("Running!")
 		try:
 			run = cls(num, response_queue, new_job_queue, cookie_lock, nosig)
 			# print("Class instantiated: ", run)
@@ -170,7 +187,12 @@ def initializeStartUrls(rules):
 					)
 				print("Missing start-url for address: '{}'".format(starturl))
 				sess.add(new)
-		sess.commit()
+			try:
+				sess.commit()
+			except sqlalchemy.SQLAlchemyError:
+				print("Failure inserting start url for address: '{}'".format(starturl))
+
+				sess.rollback()
 	sess.close()
 	db.delete_db_session()
 
@@ -369,6 +391,7 @@ class MultiJobManager(object):
 			self.log.warning("Insufficent living child threads! Creating another thread with number %s", self.procno)
 			with logSetup.stdout_lock:
 				proc = multiprocessing.Process(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
+				# proc = threading.Thread(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
 				self.tasklist.append(proc)
 				proc.start()
 				self.procno += 1

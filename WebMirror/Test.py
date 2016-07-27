@@ -26,6 +26,7 @@ from sqlalchemy import and_
 import WebMirror.Exceptions
 import WebMirror.SpecialCase
 
+from sqlalchemy_continuum.utils import version_table
 
 def print_html_response(archiver, new, ret):
 	print("Plain links:")
@@ -411,7 +412,6 @@ def purge_invalid_urls(selected_netloc=None):
 
 	sess = db.get_db_session()
 	for ruleset in WebMirror.rules.load_rules():
-		opts = []
 
 		if      (
 						(ruleset['netlocs'] and ruleset['badwords'])
@@ -422,21 +422,54 @@ def purge_invalid_urls(selected_netloc=None):
 						(selected_netloc != None and selected_netloc in ruleset['netlocs'])
 					)
 				):
-			# print("Clearing netloc set: ", ruleset['netlocs'])
+			# We have to delete from the normal table before the versioning table,
+			# because deleting from the normal table causes inserts into the versioning table
+			# due to the change tracking triggers.
+
+			count = 1
+
 			loc = and_(
 					db.WebPages.netloc.in_(ruleset['netlocs']),
 					or_(*(db.WebPages.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
 				)
-			opts.append(loc)
+			# print("Doing count on table ")
+			# count = sess.query(db.WebPages) \
+			# 	.filter(or_(*opts)) \
+			# 	.count()
 
-			count = sess.query(db.WebPages) \
-				.filter(or_(*opts)) \
-				.count()
-			print("{num} items match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=count))
 
-			count = sess.query(db.WebPages) \
-				.filter(or_(*opts)) \
-				.delete(synchronize_session=False)
+			if count == 0:
+				print("{num} items match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=count))
+			else:
+				print("{num} items match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=count))
+
+				sess.query(db.WebPages) \
+					.filter(or_(*loc)) \
+					.delete(synchronize_session=False)
+
+
+			# # Do the delete from the versioning table now.
+			ctbl = version_table(db.WebPages)
+			loc2 = and_(
+					ctbl.c.netloc.in_(ruleset['netlocs']),
+					or_(*(ctbl.c.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
+				)
+			# print("Doing count on Versioning table ")
+			# count = sess.query(ctbl) \
+			# 	.filter(or_(*opts)) \
+			# 	.count()
+
+			if count == 0:
+				print("{num} items in versioning table match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=count))
+			else:
+				print("{num} items in versioning table match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=count))
+
+				sess.query(ctbl) \
+					.filter(or_(*loc2)) \
+					.delete(synchronize_session=False)
+
+
+
 			sess.commit()
 
 

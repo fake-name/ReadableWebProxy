@@ -27,13 +27,13 @@ def go():
 		print("Not resetting in-progress downloads.")
 
 	rules = WebMirror.rules.load_rules()
-	WebMirror.Runner.initializeStartUrls(rules)
+	# WebMirror.Runner.initializeStartUrls(rules)
 
 	global NO_PROCESSES
 	global MAX_DB_SESSIONS
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 
-	processes = 16
+	processes = 12
 	NO_PROCESSES = processes
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 	if "maxprocesses" in largv:

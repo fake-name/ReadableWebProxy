@@ -18,6 +18,8 @@ class Message_Publish_Exception(Exception):
 class AmqpContainer(object):
 	def __init__(self, conn_params, rx_queue, **config):
 
+		self.log = logging.getLogger("Main.Connector.Container(%s)" % conn_params['virtual_host'])
+
 
 		assert 'task_queue_name'          in config
 		assert 'response_queue_name'      in config
@@ -30,10 +32,16 @@ class AmqpContainer(object):
 		assert 'flush_queues'             in config
 		assert 'hearbeat_packet_timeout'  in config
 
+		self.log.info("Connection configuration:")
+		for key, value in conn_params.items():
+			self.log.info("	%s -> %s", key, value)
+
+		self.log.info("Config params:")
+		for key, value in config.items():
+			self.log.info("	%s -> %s", key, value)
+
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
 		self.hearbeat_packet_timeout = config['hearbeat_packet_timeout']
-
-		self.log = logging.getLogger("Main.Connector.Container(%s)" % conn_params['virtual_host'])
 
 		self.task_exchange   = config['task_exchange']
 		self.task_queue_name = config['task_queue_name']
@@ -44,7 +52,7 @@ class AmqpContainer(object):
 		self.storm_connection = amqpstorm.Connection(**conn_params)
 
 		self.log.info("Connection established. Setting up consumer.")
-		self.storm_channel = self.storm_connection.channel()
+		self.storm_channel = self.storm_connection.channel(rpc_timeout=conn_params['timeout'])
 		self.storm_channel.basic.qos(config['prefetch'])
 
 
@@ -249,7 +257,6 @@ class ConnectorManager:
 		assert 'session_fetch_limit'      in config
 		assert 'durable'                  in config
 		assert 'socket_timeout'           in config
-		assert 'hearbeat_packet_interval' in config
 		assert 'hearbeat_packet_timeout'  in config
 		assert 'ack_rx'                   in config
 
@@ -298,8 +305,8 @@ class ConnectorManager:
 				'password'     : self.config['password'],
 				'port'         : int(self.config['host'].split(":")[1]),
 				'virtual_host' : self.config['virtual_host'],
-				'heartbeat'    : 15,
-				'timeout'      : 30,
+				'heartbeat'    : self.config['socket_timeout'] // 2,
+				'timeout'      : self.config['socket_timeout'],
 				'ssl'          : True,
 				'ssl_options'  : {
 					'ca_certs'           : self.config['sslopts']['ca_certs'],
@@ -584,10 +591,13 @@ class Connector:
 			'durable'                  : kwargs.get('durable',                  False),
 			'socket_timeout'           : kwargs.get('socket_timeout',            30),
 
-			'hearbeat_packet_interval' : kwargs.get('hearbeat_packet_interval',  60),
-			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  120),
+			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  60),
 			'ack_rx'                   : kwargs.get('ack_rx',                   True),
 		}
+
+		assert config['hearbeat_packet_timeout'] > config['socket_timeout'],                                   \
+			"Heartbeat time must be greater then socket timeout! Heartbeat interval: %s. Socket timeout: %s" % \
+			(config['hearbeat_packet_timeout'], config['socket_timeout'])
 
 		self.log.info("Fetch limit: '%s'", config['session_fetch_limit'])
 		self.log.info("Comsuming from queue '%s', emitting responses on '%s'.", config['task_queue_name'], config['response_queue_name'])

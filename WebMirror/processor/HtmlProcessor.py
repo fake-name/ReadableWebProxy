@@ -312,6 +312,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			soup.html.unwrap()
 
 		contents = soup.prettify()
+		
+		# Goooooo FUCK YOURSELF
+		contents = contents.replace("This translation is property of Infinite Novel Translations.", "")
+		contents = contents.replace("This translation is property of Infinite NovelTranslations.", "")
 
 		return title, contents
 

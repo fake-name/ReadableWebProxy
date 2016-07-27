@@ -216,9 +216,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.db      = db
 
 		# print("SiteArchiver database imported")
-		ruleset = WebMirror.rules.load_rules()
-		self.netloc_rewalk_times = build_rewalk_time_lut(ruleset)
-		self.ruleset = ruleset
+
+		self.ruleset = WebMirror.rules.load_rules()
+		self.netloc_rewalk_times = build_rewalk_time_lut(self.ruleset)
 		self.fetcher = WebMirror.Fetch.ItemFetcher
 		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks)
 
@@ -231,7 +231,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		# print("SiteArchiver rules loaded")
 		self.relinkable = set()
-		for item in ruleset:
+		for item in self.ruleset:
 			[self.relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
 			if item['netlocs'] != None:
 				[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
@@ -241,7 +241,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.rsc_filters  = {}
 
 
-		for item in ruleset:
+		for item in self.ruleset:
 
 			if not item['netlocs']:
 				continue
@@ -476,7 +476,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def generalLinkClean(self, link, badwords):
 		if link.startswith("data:"):
 			return None
-		if any([item.lower() in link.lower() for item in badwords]):
+		linkl = link.lower()
+		if any([badword in linkl for badword in badwords]):
 			# print("Filtered:", link)
 			return None
 		return link
@@ -489,7 +490,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		disallowDupe = False
 		for ruleset in self.ruleset:
-			if netloc in ruleset['netlocs']:
+			if ruleset['netlocs'] and netloc in ruleset['netlocs']:
 				disallowDupe = ruleset['disallow_duplicate_path_segments'] or disallowDupe
 
 		if not disallowDupe:
@@ -509,8 +510,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			link = self.generalLinkClean(link, badwords)
 			if not link:
 				continue
-			if self.haveBadPathSegments(link):
-				continue
+			# if self.haveBadPathSegments(link):
+			# 	continue
 
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
@@ -524,8 +525,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			link = self.generalLinkClean(link, badwords)
 			if not link:
 				continue
-			if self.haveBadPathSegments(link):
-				continue
+			# if self.haveBadPathSegments(link):
+			# 	continue
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.rsc_filters:
 				# print("Valid resource link: ", link)
@@ -539,9 +540,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		# A "None" can occationally crop up. Filter it.
 		badwords = [badword for badword in badwords if badword]
+		badwords = [badword.lower() for badword in badwords]
+		badwords = list(set(badwords))
 		return badwords
 
 	def upsertResponseLinks(self, job, plain=[], resource=[]):
+		self.log.info("Updating database with response links")
 		plain    = set(plain)
 		resource = set(resource)
 
