@@ -101,7 +101,7 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# 	'taskq_response' : 'response.master.q',
 		# }
 
-		self.name_lut = load_lut()
+		self.name_lut, self.group_lut = load_lut()
 
 		super().__init__(db_sess = db.get_db_session(postfix='nu_forwarder'), connect=connect)
 
@@ -237,8 +237,7 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.close()
 
 	def fix_names(self):
-		lut = load_lut()
-		for old, new in lut.items():
+		for old, new in self.name_lut.items():
 			have = self.db_sess.query(db.NuOutboundWrapperMap)         \
 				.filter(db.NuOutboundWrapperMap.seriesname     == old) \
 				.all()
@@ -246,7 +245,25 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 				try:
 					assert row.seriesname == old
 					row.seriesname = new
-					self.log.info("Fixing row: %s -> %s", old, row.seriesname)
+					self.log.info("Fixing name row: %s -> %s", old, row.seriesname)
+
+					self.db_sess.commit()
+				except sqlalchemy.exc.IntegrityError:
+					self.log.error("Failure")
+					traceback.print_exc()
+					self.db_sess.rollback()
+					self.db_sess.delete(row)
+					self.db_sess.commit()
+
+		for old, new in self.group_lut.items():
+			have = self.db_sess.query(db.NuOutboundWrapperMap)         \
+				.filter(db.NuOutboundWrapperMap.groupinfo     == old) \
+				.all()
+			for row in have:
+				try:
+					assert row.groupinfo == old
+					row.groupinfo = new
+					self.log.info("Fixing group row: %s -> %s", old, row.groupinfo)
 
 					self.db_sess.commit()
 				except sqlalchemy.exc.IntegrityError:

@@ -346,6 +346,7 @@ class ConnectionParameterTests(unittest.TestCase):
     def test_connection_invalid_timeout_on_channel(self):
         connection = Connection('127.0.0.1', 'guest', 'guest', timeout=1,
                                 lazy=True)
+
         self.assertRaisesRegexp(AMQPInvalidArgument,
                                 'rpc_timeout should be an integer',
                                 connection.channel, None)

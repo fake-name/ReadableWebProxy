@@ -192,11 +192,12 @@ class IO(object):
     def _create_socket(self, socket_family):
         """Create Socket.
 
-        :param int family:
+        :param int socket_family:
         :rtype: socket.socket
         """
         sock = socket.socket(socket_family, socket.SOCK_STREAM, 0)
-        sock.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        if hasattr(socket, 'SOL_TCP'):
+            sock.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
         sock.settimeout(self._parameters['timeout'] or None)
         if self.use_ssl:
             if not compatibility.SSL_SUPPORTED:

@@ -25,6 +25,7 @@ class UriConnectionTests(unittest.TestCase):
     def test_uri_default(self):
         connection = \
             UriConnection('amqp://guest:guest@localhost:5672/%2F', True)
+
         self.assertEqual(connection.parameters['hostname'], 'localhost')
         self.assertEqual(connection.parameters['username'], 'guest')
         self.assertEqual(connection.parameters['password'], 'guest')
@@ -37,11 +38,13 @@ class UriConnectionTests(unittest.TestCase):
     def test_uri_ssl(self):
         connection = \
             UriConnection('amqps://guest:guest@localhost:5672/%2F', True)
+
         self.assertTrue(connection.parameters['ssl'])
 
     def test_uri_simple(self):
         connection = \
             UriConnection('amqps://localhost:5672/%2F', True)
+
         self.assertEqual(connection.parameters['hostname'], 'localhost')
         self.assertEqual(connection.parameters['username'], 'guest')
         self.assertEqual(connection.parameters['password'], 'guest')
@@ -50,6 +53,7 @@ class UriConnectionTests(unittest.TestCase):
         connection = \
             UriConnection('amqps://guest:guest@my-server:5672/%2F?'
                           'heartbeat=1337', True)
+
         self.assertIsInstance(connection.parameters['hostname'], str)
         self.assertEqual(connection.parameters['hostname'], 'my-server')
 
@@ -57,6 +61,7 @@ class UriConnectionTests(unittest.TestCase):
         connection = \
             UriConnection('amqps://username:guest@localhost:5672/%2F?'
                           'heartbeat=1337', True)
+
         self.assertIsInstance(connection.parameters['username'], str)
         self.assertEqual(connection.parameters['username'], 'username')
 
@@ -64,12 +69,14 @@ class UriConnectionTests(unittest.TestCase):
         connection = \
             UriConnection('amqps://guest:password@localhost:5672/%2F?'
                           'heartbeat=1337', True)
+
         self.assertIsInstance(connection.parameters['password'], str)
         self.assertEqual(connection.parameters['password'], 'password')
 
     def test_uri_set_port(self):
         connection = \
             UriConnection('amqps://guest:guest@localhost:1337/%2F', True)
+
         self.assertIsInstance(connection.parameters['port'], int)
         self.assertEqual(connection.parameters['port'], 1337)
 
@@ -77,6 +84,7 @@ class UriConnectionTests(unittest.TestCase):
         connection = \
             UriConnection('amqps://guest:guest@localhost:5672/%2F?'
                           'heartbeat=1337', True)
+
         self.assertIsInstance(connection.parameters['heartbeat'], int)
         self.assertEqual(connection.parameters['heartbeat'], 1337)
 
@@ -84,12 +92,14 @@ class UriConnectionTests(unittest.TestCase):
         connection = \
             UriConnection('amqps://guest:guest@localhost:5672/%2F?'
                           'timeout=1337', True)
+
         self.assertIsInstance(connection.parameters['timeout'], int)
         self.assertEqual(connection.parameters['timeout'], 1337)
 
     def test_uri_set_virtual_host(self):
         connection = \
             UriConnection('amqps://guest:guest@localhost:5672/travis', True)
+
         self.assertIsInstance(connection.parameters['virtual_host'], str)
         self.assertEqual(connection.parameters['virtual_host'], 'travis')
 
@@ -100,6 +110,7 @@ class UriConnectionTests(unittest.TestCase):
                                    'keyfile=file.key&'
                                    'certfile=file.crt&'
                                    'ca_certs=test', True)
+
         self.assertTrue(connection.parameters['ssl'])
         self.assertEqual(connection.parameters['ssl_options']['ssl_version'],
                          ssl.PROTOCOL_TLSv1)
@@ -115,12 +126,14 @@ class UriConnectionTests(unittest.TestCase):
     def test_uri_get_ssl_version(self):
         connection = \
             UriConnection('amqp://guest:guest@localhost:5672/%2F', True)
+
         self.assertEqual(ssl.PROTOCOL_TLSv1,
                          connection._get_ssl_version('protocol_tlsv1'))
 
     def test_uri_get_ssl_validation(self):
         connection = \
             UriConnection('amqps://guest:guest@localhost:5672/%2F', True)
+
         self.assertEqual(ssl.CERT_REQUIRED,
                          connection._get_ssl_validation('cert_required'))
 
@@ -134,6 +147,7 @@ class UriConnectionTests(unittest.TestCase):
             'certfile': ['file.crt']
         }
         ssl_options = connection._parse_ssl_options(ssl_kwargs)
+
         self.assertEqual(ssl_options['cert_reqs'], ssl.CERT_REQUIRED)
         self.assertEqual(ssl_options['ssl_version'], ssl.PROTOCOL_TLSv1)
         self.assertEqual(ssl_options['keyfile'], 'file.key')
@@ -175,6 +189,7 @@ class UriConnectionExceptionTests(unittest.TestCase):
             'unit_test': ['not_required'],
         }
         ssl_options = connection._parse_ssl_options(ssl_kwargs)
+
         self.assertFalse(ssl_options)
         self.assertIn("invalid option: unit_test",
                       self.logging_handler.messages['warning'][0])
@@ -182,6 +197,7 @@ class UriConnectionExceptionTests(unittest.TestCase):
     def test_uri_get_invalid_ssl_version(self):
         connection = \
             UriConnection('amqps://guest:guest@localhost:5672/%2F', True)
+
         self.assertEqual(connection._get_ssl_version('protocol_test'),
                          ssl.PROTOCOL_TLSv1)
         self.assertIn("ssl_options: ssl_version 'protocol_test' not found "
@@ -191,6 +207,7 @@ class UriConnectionExceptionTests(unittest.TestCase):
     def test_uri_get_invalid_ssl_validation(self):
         connection = \
             UriConnection('amqps://guest:guest@localhost:5672/%2F', True)
+
         self.assertEqual(ssl.CERT_NONE,
                          connection._get_ssl_validation('cert_test'))
         self.assertIn("ssl_options: cert_reqs 'cert_test' not found "

@@ -60,8 +60,7 @@ class Connection(Stateful):
         }
         self._validate_parameters()
         self._io = IO(self.parameters, exceptions=self._exceptions,
-                      on_read=self._read_buffer,
-                      name=kwargs.get('virtual_host', '/'))
+                      on_read=self._read_buffer)
         self._channel0 = Channel0(self)
         self._channels = {}
         self.heartbeat = Heartbeat(self.parameters['heartbeat'],

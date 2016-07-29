@@ -27,7 +27,8 @@ class Channel0Tests(unittest.TestCase):
         result = channel._client_properties()
 
         information = 'See https://github.com/eandersson/amqpstorm'
-        python_version = 'Python %s' % platform.python_version()
+        python_version = 'Python %s (%s)' % (platform.python_version(),
+                                             platform.python_implementation())
 
         self.assertIsInstance(result, dict)
         self.assertTrue(result['capabilities']['authentication_failure_close'])
@@ -53,10 +54,12 @@ class Channel0Tests(unittest.TestCase):
         channel = Channel0(connection)
 
         self.assertTrue(connection.is_open)
+
         channel._close_connection(
             Connection.Close(reply_text=b'',
                              reply_code=200)
         )
+
         self.assertEqual(connection.exceptions, [])
         self.assertTrue(connection.is_closed)
 
@@ -69,6 +72,7 @@ class Channel0Tests(unittest.TestCase):
             Connection.Close(reply_text=b'',
                              reply_code=500)
         )
+
         self.assertTrue(connection.is_closed)
         self.assertRaises(AMQPConnectionError, connection.check_for_errors)
 
@@ -80,7 +84,9 @@ class Channel0Tests(unittest.TestCase):
         channel._send_start_ok_frame(Connection.Start(mechanisms=b'PLAIN'))
 
         self.assertNotEqual(connection.frames_out, [])
+
         channel_id, frame_out = connection.frames_out.pop()
+
         self.assertEqual(channel_id, 0)
         self.assertIsInstance(frame_out, Connection.StartOk)
         self.assertNotEqual(frame_out.locale, '')
@@ -92,7 +98,9 @@ class Channel0Tests(unittest.TestCase):
         channel._send_tune_ok_frame()
 
         self.assertNotEqual(connection.frames_out, [])
+
         channel_id, frame_out = connection.frames_out.pop()
+
         self.assertEqual(channel_id, 0)
         self.assertIsInstance(frame_out, Connection.TuneOk)
 
@@ -102,7 +110,9 @@ class Channel0Tests(unittest.TestCase):
         channel.send_heartbeat()
 
         self.assertNotEqual(connection.frames_out, [])
+
         channel_id, frame_out = connection.frames_out.pop()
+
         self.assertEqual(channel_id, 0)
         self.assertIsInstance(frame_out, Heartbeat)
 
@@ -112,7 +122,9 @@ class Channel0Tests(unittest.TestCase):
         channel.send_close_connection_frame()
 
         self.assertNotEqual(connection.frames_out, [])
+
         channel_id, frame_out = connection.frames_out.pop()
+
         self.assertEqual(channel_id, 0)
         self.assertIsInstance(frame_out, Connection.Close)
 
@@ -122,6 +134,7 @@ class Channel0Tests(unittest.TestCase):
         channel = Channel0(connection)
         channel._send_start_ok_frame(
             Connection.Start(mechanisms='CRAM-MD5 SCRAM-SHA-1 SCRAM-SHA-256'))
+
         self.assertRaises(AMQPConnectionError, connection.check_for_errors)
 
 
@@ -153,7 +166,6 @@ class Channel0FrameTests(unittest.TestCase):
 
         self.assertTrue(connection.exceptions)
         self.assertTrue(connection.is_closed)
-
         self.assertRaisesRegexp(AMQPConnectionError,
                                 'Connection was closed by remote server: ',
                                 connection.check_for_errors)
@@ -162,7 +174,7 @@ class Channel0FrameTests(unittest.TestCase):
         connection = amqpstorm.Connection('localhost', 'guest', 'guest',
                                           lazy=True)
         channel = Channel0(connection)
-        channel.on_frame(Heartbeat())
+        self.assertIsNone(channel.on_frame(Heartbeat()))
 
     def test_channel0_is_blocked(self):
         connection = amqpstorm.Connection('localhost', 'guest', 'guest',

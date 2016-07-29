@@ -29,6 +29,7 @@ class TxTests(unittest.TestCase):
         channel = Channel(0, connection, 0.1)
         channel.set_state(Channel.OPEN)
         tx = Tx(channel)
+
         self.assertIsInstance(tx.select(), dict)
         self.assertTrue(tx._tx_active)
 
@@ -40,6 +41,7 @@ class TxTests(unittest.TestCase):
         channel = Channel(0, connection, 0.1)
         channel.set_state(Channel.OPEN)
         tx = Tx(channel)
+
         self.assertIsInstance(tx.commit(), dict)
         self.assertFalse(tx._tx_active)
 
@@ -51,6 +53,7 @@ class TxTests(unittest.TestCase):
         channel = Channel(0, connection, 0.1)
         channel.set_state(Channel.OPEN)
         tx = Tx(channel)
+
         self.assertIsInstance(tx.rollback(), dict)
         self.assertFalse(tx._tx_active)
 
@@ -69,6 +72,7 @@ class TxTests(unittest.TestCase):
         channel = Channel(0, connection, 0.1)
         channel.set_state(Channel.OPEN)
         tx = Tx(channel)
+
         with tx:
             self.assertTrue(tx._tx_active)
         self.assertFalse(tx._tx_active)
@@ -95,6 +99,7 @@ class TxTests(unittest.TestCase):
                 raise Exception('error')
         except Exception as why:
             self.assertEqual('error', str(why))
+
         self.assertFalse(tx._tx_active)
         self.assertEqual(self.logging_handler.messages['warning'][0],
                          'Leaving Transaction on exception: error')

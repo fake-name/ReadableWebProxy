@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 class Heartbeat(object):
     """AMQP Internal Heartbeat Checker"""
 
-    def __init__(self, interval, send_heartbeat=None):
+    def __init__(self, interval, send_heartbeat):
         self.send_heartbeat = send_heartbeat
         self._lock = threading.Lock()
         self._running = threading.Event()

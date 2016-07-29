@@ -2,6 +2,7 @@
 import bs4
 import copy
 import re
+import time
 import webcolors
 import urllib.parse
 import WebMirror.util.webFunctions
@@ -312,7 +313,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			soup.html.unwrap()
 
 		contents = soup.prettify()
-		
+
 		# Goooooo FUCK YOURSELF
 		contents = contents.replace("This translation is property of Infinite Novel Translations.", "")
 		contents = contents.replace("This translation is property of Infinite NovelTranslations.", "")
@@ -409,7 +410,18 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		self.log.info("Processing '%s' as HTML (size: %s).", self.pageUrl, len(self.content))
 		assert self.content
 		# print(type(self.content))
-		soup = WebMirror.util.webFunctions.as_soup(self.content)
+
+		badxmlprefix = '<?xml version="1.0"?>'
+		if self.content.strip().lower().startswith(badxmlprefix):
+			self.content = self.content[len(badxmlprefix):]
+
+
+		try:
+			soup = WebMirror.util.webFunctions.as_soup(self.content)
+		except AttributeError as e:
+			with open("badpage %s.html" % time.time(), "w") as fp:
+				fp.write(self.content)
+				raise e
 
 
 		# Allow child-class hooking

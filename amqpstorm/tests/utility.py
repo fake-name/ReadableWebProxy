@@ -3,6 +3,26 @@ import logging
 from amqpstorm.base import Stateful
 
 
+class SslTLSv1_2(object):
+    """Fake SSL Class with TLS v1_2 support used for Unit-Testing."""
+    PROTOCOL_TLSv1_2 = 5
+
+
+class SslTLSv1_1(object):
+    """Fake SSL Class with TLS v1_1 support used for Unit-Testing."""
+    PROTOCOL_TLSv1_1 = 4
+
+
+class SslTLSv1(object):
+    """Fake SSL Class with TLS v1 support used for Unit-Testing."""
+    PROTOCOL_TLSv1 = 3
+
+
+class SslTLSNone(object):
+    """Fake SSL Class with no TLS support used for Unit-Testing."""
+    pass
+
+
 class FakeConnection(Stateful):
     """Fake Connection for Unit-Testing."""
 
@@ -97,3 +117,8 @@ class MockLoggingHandler(logging.Handler):
 
     def emit(self, record):
         self.messages[record.levelname.lower()].append(record.getMessage())
+
+
+def fake_function():
+    """Fake Function used for Unit-Testing."""
+    pass

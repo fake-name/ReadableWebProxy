@@ -36,8 +36,8 @@ import runStatus
 NO_JOB_TIMEOUT_MINUTES = 5
 # MAX_IN_FLIGHT_JOBS = 10
 # MAX_IN_FLIGHT_JOBS = 75
-MAX_IN_FLIGHT_JOBS = 250
-# MAX_IN_FLIGHT_JOBS = 500
+# MAX_IN_FLIGHT_JOBS = 250
+MAX_IN_FLIGHT_JOBS = 500
 # MAX_IN_FLIGHT_JOBS = 1000
 # MAX_IN_FLIGHT_JOBS = 3000
 
@@ -170,7 +170,9 @@ class JobAggregator(LogBase.LoggerMixin):
 			'RABBIT_SRVER'    : settings.RPC_RABBIT_SRVER,
 			'RABBIT_VHOST'    : settings.RPC_RABBIT_VHOST,
 			'master'          : True,
-			'prefetch'        : 250,
+			# 'prefetch'        : 250,
+			# 'prefetch'        : 50,
+			'prefetch'        : 5,
 			'queue_mode'      : 'direct',
 			'taskq_task'      : 'task.q',
 			'taskq_response'  : 'response.q',

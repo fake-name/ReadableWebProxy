@@ -1017,7 +1017,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.log.info("Manually initiated dispatch for prefetched-content at '%s'", url)
 		row = self.get_row(url)
 
-		fetcher = self.fetcher(self.ruleset, url, parentjob.starturl, job=row, cookie_lock=None, wg_handle=self.wg, response_queue=self.resp_q)
+
+		fetcher = self.fetcher(rules           = self.ruleset,
+								target_url     = url,
+								start_url      = parentjob.starturl,
+								job            = row,
+								cookie_lock    = None,
+								wg_handle      = self.wg,
+								response_queue = self.resp_q,
+								db_sess        = self.db_sess)
 		ret = fetcher.dispatchContent(content, filename, mimetype)
 		self.processResponse(row, ret)
 

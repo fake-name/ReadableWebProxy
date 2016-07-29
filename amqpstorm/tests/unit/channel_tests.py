@@ -57,9 +57,11 @@ class ChannelTests(unittest.TestCase):
 
     def test_channel_id(self):
         channel = Channel(0, None, 360)
+
         self.assertEqual(int(channel), 0)
 
         channel = Channel(1557, None, 360)
+
         self.assertEqual(int(channel), 1557)
 
     def test_channel_close(self):
@@ -96,6 +98,7 @@ class ChannelTests(unittest.TestCase):
 class ChannelExceptionTests(unittest.TestCase):
     def test_chanel_invalid_close_parameter(self):
         channel = Channel(0, None, 360)
+
         self.assertRaisesRegexp(AMQPInvalidArgument,
                                 'reply_code should be an integer',
                                 channel.close, 'Hello', 'error')
@@ -105,6 +108,7 @@ class ChannelExceptionTests(unittest.TestCase):
 
     def test_chanel_callback_not_set(self):
         channel = Channel(0, None, 360)
+
         self.assertRaisesRegexp(AMQPChannelError,
                                 'no consumer_callback defined',
                                 channel.process_data_events)
@@ -276,6 +280,7 @@ class ChannelBuildMessageTests(unittest.TestCase):
 
         channel._inbound = [deliver, header]
         result = channel._build_message_headers()
+
         self.assertIsInstance(result[0], specification.Basic.Deliver)
         self.assertIsInstance(result[1], ContentHeader)
         self.assertEqual(result[1].body_size, 10)
@@ -288,6 +293,7 @@ class ChannelBuildMessageTests(unittest.TestCase):
 
         channel._inbound = [header, deliver]
         result = channel._build_message_headers()
+
         self.assertEqual(result, None)
         self.assertIn("Received an out-of-order frame:",
                       self.logging_handler.messages['warning'][0])
@@ -296,6 +302,7 @@ class ChannelBuildMessageTests(unittest.TestCase):
 
         channel._inbound = [deliver, deliver]
         result = channel._build_message_headers()
+
         self.assertEqual(result, None)
         self.assertIn("Received an out-of-order frame:",
                       self.logging_handler.messages['warning'][0])
@@ -349,6 +356,7 @@ class ChannelBuildMessageTests(unittest.TestCase):
         channel = Channel(0, FakeConnection(), 360)
         channel.set_state(Channel.OPEN)
         generator = channel.build_inbound_messages(break_on_empty=True)
+
         if hasattr(generator, 'next'):
             self.assertRaises(StopIteration, generator.next)
         else:

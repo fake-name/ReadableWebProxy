@@ -73,6 +73,7 @@ class BasicTests(unittest.TestCase):
         channel.confirming_deliveries = True
         channel.set_state(Channel.OPEN)
         basic = Basic(channel)
+
         self.assertTrue(basic.publish(body=message,
                                       routing_key='unittest'))
 
@@ -87,6 +88,7 @@ class BasicTests(unittest.TestCase):
         channel.confirming_deliveries = True
         channel.set_state(Channel.OPEN)
         basic = Basic(channel)
+
         self.assertFalse(basic.publish(body=message,
                                        routing_key='unittest'))
 
@@ -116,6 +118,7 @@ class BasicTests(unittest.TestCase):
             result_body = ''
             for frame in results:
                 result_body += frame.value
+
             self.assertEqual(result_body, message)
 
     def test_basic_create_content_body_long_string(self):
@@ -144,6 +147,7 @@ class BasicTests(unittest.TestCase):
         basic = Basic(channel)
         uuid = channel.rpc.register_request([body.name])
         channel.rpc.on_frame(body)
+
         self.assertEqual(basic._get_content_body(uuid, len(message)),
                          message)
 
@@ -154,6 +158,7 @@ class BasicTests(unittest.TestCase):
         basic = Basic(channel)
         uuid = channel.rpc.register_request([body.name])
         channel.rpc.on_frame(body)
+
         self.assertEqual(basic._get_content_body(uuid, 10), b'')
 
     @unittest.skipIf(sys.version_info[0] == 2, 'No bytes decoding in Python 2')
@@ -161,6 +166,7 @@ class BasicTests(unittest.TestCase):
         message = 'Hellå World!'
         basic = Basic(None)
         payload = basic._handle_utf8_payload(message, {})
+
         self.assertEqual(payload, b'Hell\xc3\xa5 World!')
 
     @unittest.skipIf(sys.version_info[0] == 3, 'No unicode obj in Python 3')
@@ -169,6 +175,7 @@ class BasicTests(unittest.TestCase):
         basic = Basic(None)
         properties = {}
         payload = basic._handle_utf8_payload(message, properties)
+
         self.assertEqual(payload, 'Hell\xc3\xa5 World!')
 
     def test_basic_content_not_in_properties(self):
@@ -176,12 +183,14 @@ class BasicTests(unittest.TestCase):
         basic = Basic(None)
         properties = {}
         basic._handle_utf8_payload(message, properties)
+
         self.assertEqual(properties['content_encoding'], 'utf-8')
 
     def test_basic_consume_add_tag(self):
         tag = 'unittest'
         channel = Channel(0, None, 1)
         basic = Basic(channel)
+
         self.assertEqual(basic._consume_add_and_get_tag({'consumer_tag': tag}),
                          tag)
         self.assertEqual(channel.consumer_tags[0], tag)
@@ -203,6 +212,7 @@ class BasicTests(unittest.TestCase):
         channel = Channel(9, connection, 1)
         channel.set_state(channel.OPEN)
         basic = Basic(channel)
+
         self.assertEqual(
             basic._consume_rpc_request({}, tag, True, True, True, ''),
             {'consumer_tag': 'unittest'})
@@ -240,6 +250,7 @@ class BasicExceptionTests(unittest.TestCase):
                                 basic.get, '', 'unittest')
 
         channel.consumer_tags.append('unittest')
+
         self.assertRaisesRegexp(exception.AMQPChannelError,
                                 "Cannot call 'get' when channel "
                                 "is set to consume",
@@ -376,6 +387,7 @@ class BasicExceptionTests(unittest.TestCase):
         channel.set_state(Channel.OPEN)
         basic = Basic(channel)
         uuid = channel.rpc.register_request([body.name])
+
         self.assertRaises(exception.AMQPChannelError, basic._get_content_body,
                           uuid, len(message))
 
@@ -387,6 +399,7 @@ class BasicExceptionTests(unittest.TestCase):
         channel.confirming_deliveries = True
         channel.set_state(Channel.OPEN)
         basic = Basic(channel)
+
         self.assertRaisesRegexp(exception.AMQPChannelError,
                                 "rpc requests",
                                 basic.publish, body=message,
@@ -403,6 +416,7 @@ class BasicExceptionTests(unittest.TestCase):
         channel.confirming_deliveries = True
         channel.set_state(Channel.OPEN)
         basic = Basic(channel)
+
         self.assertRaisesRegexp(exception.AMQPChannelError,
                                 "rpc requests",
                                 basic.publish, body=message,

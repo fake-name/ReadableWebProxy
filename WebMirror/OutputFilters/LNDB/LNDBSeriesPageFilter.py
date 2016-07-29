@@ -61,6 +61,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def __init__(self, **kwargs):
 
+		super().__init__(**kwargs)
 		self.kwargs     = kwargs
 		self.job        = kwargs['job']
 
@@ -72,7 +73,6 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.db_sess    = kwargs['db_sess']
 
 		self.log.info("Processing LNDB Item")
-		super().__init__()
 
 		self.wg = WebMirror.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
 

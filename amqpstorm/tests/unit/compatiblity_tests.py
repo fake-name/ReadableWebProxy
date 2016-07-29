@@ -10,6 +10,10 @@ except ImportError:
     import unittest
 
 from amqpstorm import compatibility
+from amqpstorm.tests.utility import SslTLSNone
+from amqpstorm.tests.utility import SslTLSv1
+from amqpstorm.tests.utility import SslTLSv1_1
+from amqpstorm.tests.utility import SslTLSv1_2
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -38,7 +42,7 @@ class CompatibilityTests(unittest.TestCase):
 
     @unittest.skipIf(sys.version_info[0] == 3, 'No unicode obj in Python 3')
     def test_compatibility_unicode_string(self):
-        x = u'å'
+        x = u'Mor, lilla mor, vem är väl som du'
         self.assertTrue(compatibility.is_string(x))
 
     def test_compatibility_is_not_string(self):
@@ -47,7 +51,7 @@ class CompatibilityTests(unittest.TestCase):
 
     @unittest.skipIf(sys.version_info[0] == 3, 'No unicode obj in Python 3')
     def test_compatibility_is_unicode(self):
-        x = u'å'
+        x = u'Mor, lilla mor, vem är väl som du'
         self.assertTrue(compatibility.is_unicode(x))
 
     def test_compatibility_is_not_unicode(self):
@@ -108,22 +112,6 @@ class CompatibilityTests(unittest.TestCase):
     def test_compatibility_patch_uri(self):
         self.assertEqual(compatibility.patch_uri('amqps://'), 'https://')
         self.assertEqual(compatibility.patch_uri('amqp://'), 'http://')
-
-
-class SslTLSv1_2(object):
-    PROTOCOL_TLSv1_2 = 5
-
-
-class SslTLSv1_1(object):
-    PROTOCOL_TLSv1_1 = 4
-
-
-class SslTLSv1(object):
-    PROTOCOL_TLSv1 = 3
-
-
-class SslTLSNone(object):
-    pass
 
 
 class CompatibilitySslTests(unittest.TestCase):

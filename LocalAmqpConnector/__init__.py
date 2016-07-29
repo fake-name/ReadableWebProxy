@@ -53,8 +53,9 @@ class AmqpContainer(object):
 
 		self.log.info("Connection established. Setting up consumer.")
 		self.storm_channel = self.storm_connection.channel(rpc_timeout=conn_params['timeout'])
-		self.storm_channel.basic.qos(config['prefetch'])
 
+		# Initial QoS is tiny, throttle it up after everything is actually running.
+		self.storm_channel.basic.qos(1, global_=True)
 
 		self.last_hearbeat_received = time.time()
 		self.last_message_received = time.time()
@@ -89,7 +90,6 @@ class AmqpContainer(object):
 					durable=False,
 					auto_delete=True)
 
-		# TODO: Get queue expiry working?
 		self.storm_channel.queue.declare(
 					queue=self.keepalive_exchange_name+'.nak.q',
 					durable=False,
@@ -115,6 +115,11 @@ class AmqpContainer(object):
 		self.storm_channel.basic.consume(self.handle_rx, queue=config['response_queue_name'],         no_ack=False)
 		self.storm_channel.basic.consume(self.handle_rx, queue=self.keepalive_exchange_name+'.nak.q', no_ack=False)
 		self.log.info("Consume triggered.")
+
+
+
+		self.storm_channel.basic.qos(config['prefetch'], global_=True)
+		self.log.info("Prefetch updated")
 
 		self.heartbeat_loops = 0
 		self.consumer_cycle = 0

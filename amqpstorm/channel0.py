@@ -132,32 +132,32 @@ class Channel0(object):
             self._connection.exceptions.append(exception)
             return
         credentials = self._plain_credentials()
-        frame = pamqp_connection.StartOk(
+        start_ok_frame = pamqp_connection.StartOk(
             mechanism=AUTH_MECHANISM,
             client_properties=self._client_properties(),
             response=credentials,
             locale=LOCALE)
-        self._write_frame(frame)
+        self._write_frame(start_ok_frame)
 
     def _send_tune_ok_frame(self):
         """Send Tune OK frame.
 
         :return:
         """
-        frame = pamqp_connection.TuneOk(channel_max=MAX_CHANNELS,
-                                        frame_max=FRAME_MAX,
-                                        heartbeat=self._heartbeat)
-        self._write_frame(frame)
+        tune_ok_frame = pamqp_connection.TuneOk(channel_max=MAX_CHANNELS,
+                                                frame_max=FRAME_MAX,
+                                                heartbeat=self._heartbeat)
+        self._write_frame(tune_ok_frame)
 
     def _send_open_connection(self):
         """Send Open Connection frame.
 
         :return:
         """
-        frame = pamqp_connection.Open(
+        open_frame = pamqp_connection.Open(
             virtual_host=self.parameters['virtual_host']
         )
-        self._write_frame(frame)
+        self._write_frame(open_frame)
 
     def _set_connection_state(self, state):
         """Set Connection state.
@@ -184,7 +184,8 @@ class Channel0(object):
         """
         return {
             'product': 'AMQP-Storm',
-            'platform': 'Python %s' % platform.python_version(),
+            'platform': 'Python %s (%s)' % (platform.python_version(),
+                                            platform.python_implementation()),
             'capabilities': {
                 'basic.nack': True,
                 'connection.blocked': True,
