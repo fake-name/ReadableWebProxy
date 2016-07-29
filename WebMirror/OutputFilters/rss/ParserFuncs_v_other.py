@@ -775,6 +775,20 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, 'Sovereign of the Three Realms', vol, chp, frag=frag, postfix=postfix)
 	if 'Age of Lazurite' in item['tags']:
 		return buildReleaseMessage(item, 'Age of Lazurite, Tower of Glass', vol, chp, frag=frag, postfix=postfix)
+	if 'Apartment from Hell' in item['tags']:
+		return buildReleaseMessage(item, "Apartment from Hell", vol, chp, frag=frag, postfix=postfix)
+	if 'Celestial Employee' in item['tags']:
+		return buildReleaseMessage(item, "Celestial Employee", vol, chp, frag=frag, postfix=postfix)
+	if 'Cultivation Chat Group' in item['tags']:
+		return buildReleaseMessage(item, "Cultivation Chat Group", vol, chp, frag=frag, postfix=postfix)
+	if 'Falling Dreams of Fang Hua' in item['tags']:
+		return buildReleaseMessage(item, "Falling Dreams of Fang Hua", vol, chp, frag=frag, postfix=postfix)
+	if 'My Wife is a Beautiful CEO' in item['tags']:
+		return buildReleaseMessage(item, "My Wife is a Beautiful CEO", vol, chp, frag=frag, postfix=postfix)
+	if 'Release that Witch' in item['tags']:
+		return buildReleaseMessage(item, "Release that Witch", vol, chp, frag=frag, postfix=postfix)
+	if 'Sword Spirit' in item['tags']:
+		return buildReleaseMessage(item, "Sword Spirit", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1019,4 +1033,84 @@ def extractV7Silent(item):
 	return False
 
 
+def extractWarriorWriting(item):
+	"""
+	Warrior Writing
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractWigglyTranslation(item):
+	"""
+	Wiggly Translation
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractWorldofHope(item):
+	"""
+	World of Hope
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractWorldTurtleTranslations(item):
+	"""
+	World Turtle Translations
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractYasashiHonyaku(item):
+	"""
+	Yasashi Honyaku
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractYeagdrasil(item):
+	"""
+	Yeagdrasil
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extractYourMajestyPleaseCalmDown(item):
+	"""
+	Your Majesty Please Calm Down
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extract書櫃(item):
+	"""
+	『書櫃』
+	"""
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
+def extract閒人ONLINE(item):
+	"""
+	閒人 • O N L I N E
+	"""
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return False
+	return False
 
