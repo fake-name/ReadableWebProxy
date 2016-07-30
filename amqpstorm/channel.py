@@ -67,6 +67,7 @@ class Channel(BaseChannel):
 
         :rtype: Basic
         """
+        # print("Access to basic?")
         return self._basic
 
     @property
@@ -109,6 +110,7 @@ class Channel(BaseChannel):
         """
         self.check_for_errors()
         while not self.is_closed:
+            # print("build_inbound_messages looping!")
             if self._die.value != 0:
                 return
             message = self._build_message()
@@ -203,6 +205,7 @@ class Channel(BaseChannel):
         :param pamqp.Frame frame_in: Amqp frame.
         :return:
         """
+        print("on_frame: ", frame_in.name)
         if self.rpc.on_frame(frame_in):
             return
 
@@ -221,6 +224,7 @@ class Channel(BaseChannel):
         elif frame_in.name == 'Channel.Flow':
             self.write_frame(pamqp_spec.Channel.FlowOk(frame_in.active))
         else:
+            print("Did not know how to handle frame?")
             LOGGER.error('[Channel%d] Unhandled Frame: %s -- %s',
                          self.channel_id, frame_in.name, dict(frame_in))
 
@@ -250,6 +254,7 @@ class Channel(BaseChannel):
 
         :return:
         """
+        # print("process_data_events")
         if not self.consumer_callback:
             raise AMQPChannelError('no consumer_callback defined')
         for message in self.build_inbound_messages(break_on_empty=True):
@@ -270,6 +275,7 @@ class Channel(BaseChannel):
         :param pamqp_spec.Frame frame_out: Amqp frame.
         :rtype: dict
         """
+        # print('rpc_request')
         with self.rpc.lock:
             uuid = self.rpc.register_request(frame_out.valid_responses)
             self.write_frame(frame_out)
@@ -295,11 +301,6 @@ class Channel(BaseChannel):
                 break
             self.process_data_events(to_tuple=to_tuple)
             # print("start_consuming looping (state: %s)" % (self._state, ))
-        print()
-        print()
-        print("start_consuming exiting!")
-        print()
-        print()
     def stop_consuming(self):
         """Stop consuming messages.
 
@@ -364,6 +365,7 @@ class Channel(BaseChannel):
 
         :rtype: Message
         """
+        # print("_build_message call")
         with self.lock:
             if len(self._inbound) < 2:
                 return None

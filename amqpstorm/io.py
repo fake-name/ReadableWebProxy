@@ -1,6 +1,7 @@
 """AMQP-Storm Connection.IO."""
 
 import logging
+import traceback
 import multiprocessing
 import select
 import socket
@@ -67,6 +68,7 @@ class IO(object):
         self.poller = None
         self.socket = None
         self.use_ssl = self._parameters['ssl']
+        print("IO Object timeout: ", self._parameters)
 
     def close(self):
         """Close Socket.
@@ -247,9 +249,10 @@ class IO(object):
             if self._die.value == 1:
                 print('_process_incoming_data saw die flag. Exiting')
                 break
-        print("_process_incoming_data() Thread named %s, ID: %s exiting." % (
+        print("_process_incoming_data() Thread named %s, ID: %s exiting. _running state: %s" % (
                         self.name,
-                        threading.get_ident()
+                        threading.get_ident(),
+                        self._running.is_set()
                     ))
 
     def _receive(self):
@@ -267,6 +270,8 @@ class IO(object):
             pass
         except (IOError, OSError) as why:
             self._exceptions.append(AMQPConnectionError(why))
+            traceback.print_exc()
+            print("[_receive (exception)] Clearing self._running"))
             self._running.clear()
         return data_in
 

@@ -111,18 +111,20 @@ class AmqpContainer(object):
 					exchange=config['response_exchange'],
 					routing_key=config['response_queue_name'].split(".")[0])
 
-		self.log.info("Bound.")
+		self.heartbeat_loops = 0
+		self.consumer_cycle = 0
+
+		self.prefetch_extended = False
+		self.prefetch_count = config['prefetch']
+
+	def start_consume(self, config):
+		self.log.info("Bound. Triggering consume")
 		self.storm_channel.basic.consume(self.handle_rx, queue=config['response_queue_name'],         no_ack=False)
 		self.storm_channel.basic.consume(self.handle_rx, queue=self.keepalive_exchange_name+'.nak.q', no_ack=False)
 		self.log.info("Consume triggered.")
 
 
 
-		self.storm_channel.basic.qos(config['prefetch'], global_=True)
-		self.log.info("Prefetch updated")
-
-		self.heartbeat_loops = 0
-		self.consumer_cycle = 0
 
 	def close(self):
 		# Stop the flow of new items
@@ -176,6 +178,11 @@ class AmqpContainer(object):
 			self.handle_keepalive_rx(message)
 		else:
 			self.handle_normal_rx(message)
+
+		if self.prefetch_extended is False:
+			self.prefetch_extended = True
+			self.storm_channel.basic.qos(self.prefetch_count, global_=True)
+			self.log.info("Prefetch updated")
 
 	def poke_keepalive(self):
 		self.storm_channel.basic.publish(body='wat', exchange=self.keepalive_exchange_name, routing_key='nak',
@@ -323,8 +330,24 @@ class ConnectorManager:
 		with self.connect_lock:
 			self.threads_live.value  = 1
 			self.had_exception.value = 0
-
+			print("Instantiating AMQP interface")
+			print("Instantiating AMQP interface")
+			print("Instantiating AMQP interface")
+			print("Instantiating AMQP interface")
+			print("Instantiating AMQP interface")
+			print("Instantiating AMQP interface")
+			print("Instantiating AMQP interface")
 			self.interface = AmqpContainer(conn_params, self.task_queue, **rabbit_params)
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
+			print("Starting threads")
 
 			self.rx_thread = threading.Thread(target=self._rx_poll,         daemon=False)
 			self.tx_thread = threading.Thread(target=self._tx_poll,         daemon=False)
@@ -332,10 +355,23 @@ class ConnectorManager:
 			self.rx_thread.start()
 			self.tx_thread.start()
 			self.hb_thread.start()
+			print("Living threads:")
+
+			print("rx_thread", self.rx_thread.is_alive())
+			print("tx_thread", self.tx_thread.is_alive())
+			print("hb_thread", self.hb_thread.is_alive())
+			self.interface.start_consume(rabbit_params)
 
 
 	def disconnect(self):
-
+		print("Disconnect")
+		print("Disconnect")
+		print("Disconnect")
+		print("Disconnect")
+		print("Disconnect")
+		print("Disconnect")
+		print("Disconnect")
+		print("Disconnect")
 		with self.connect_lock:
 			self.threads_live.value = 0
 			self.interface.close()
@@ -386,9 +422,18 @@ class ConnectorManager:
 				pass
 
 	def __should_die(self):
-		return self.runstate.value != 1 or self.threads_live.value != 1 or self.had_exception.value != 0
+		ret = self.runstate.value != 1 or self.threads_live.value != 1 or self.had_exception.value != 0
+		if ret:
+
+			self.log.warning("Should die flag! Runstate: %s, threads live: %s, had exception: %s.",
+				"running" if self.runstate.value == 1 else "halting",
+				"threads alive" if self.threads_live.value == 1 else "threads stopping",
+				"yes" if self.had_exception.value == 1 else "no"
+				)
+		return ret
 
 	def _tx_poll(self):
+		time.sleep(1)
 		self.log.info("TX Poll process starting. Threads_live: %s, resp queue size: %s, had exception %s", self.threads_live.value, self.response_queue.qsize(), self.had_exception.value)
 
 		# When run is false, don't halt until
@@ -434,7 +479,7 @@ class ConnectorManager:
 			self.__should_die(), self.threads_live.value, self.runstate.value, self.response_queue.qsize(), self.had_exception.value)
 
 	def _timeout_watcher(self):
-
+		time.sleep(1)
 		print_time = 30              # Print a status message every n seconds
 		hb_time    =  5              # Print a status message every n seconds
 		integrator =  0              # Time since last status message emitted.
@@ -468,10 +513,12 @@ class ConnectorManager:
 
 
 	def _rx_poll(self):
+		time.sleep(1)
 
 		self.log.info("RX Poll process starting. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
 		try:
-			self.interface.enter_blocking_rx_loop()
+			while not self.__should_die():
+				self.interface.enter_blocking_rx_loop()
 		except amqpstorm.AMQPError as e:
 			self.log.error("Error while in rx runloop!")
 			self.log.error("	%s", e)
@@ -479,7 +526,7 @@ class ConnectorManager:
 				self.log.error(line)
 			self.had_exception.value = 1
 
-		self.log.info("RX Poll process dying. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
+		self.log.info("RX Poll process dying. Threads_live: %s, had exception %s, should_die %s", self.threads_live.value, self.had_exception.value, self.__should_die())
 
 	def monitor_loop(self):
 
@@ -588,15 +635,15 @@ class Connector:
 			'master'                   : kwargs.get('master',                   False),
 			'synchronous'              : kwargs.get('synchronous',              True),
 			'flush_queues'             : kwargs.get('flush_queues',             False),
-			'heartbeat'                : kwargs.get('heartbeat',                 120),
+			'heartbeat'                : kwargs.get('heartbeat',                 360),
 			'sslopts'                  : kwargs.get('ssl',                      None),
 			'poll_rate'                : kwargs.get('poll_rate',                  0.25),
 			'prefetch'                 : kwargs.get('prefetch',                   1),
 			'session_fetch_limit'      : kwargs.get('session_fetch_limit',      None),
 			'durable'                  : kwargs.get('durable',                  False),
-			'socket_timeout'           : kwargs.get('socket_timeout',            30),
+			'socket_timeout'           : kwargs.get('socket_timeout',            240),
 
-			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  60),
+			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  360),
 			'ack_rx'                   : kwargs.get('ack_rx',                   True),
 		}
 
