@@ -330,24 +330,8 @@ class ConnectorManager:
 		with self.connect_lock:
 			self.threads_live.value  = 1
 			self.had_exception.value = 0
-			print("Instantiating AMQP interface")
-			print("Instantiating AMQP interface")
-			print("Instantiating AMQP interface")
-			print("Instantiating AMQP interface")
-			print("Instantiating AMQP interface")
-			print("Instantiating AMQP interface")
-			print("Instantiating AMQP interface")
+
 			self.interface = AmqpContainer(conn_params, self.task_queue, **rabbit_params)
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
-			print("Starting threads")
 
 			self.rx_thread = threading.Thread(target=self._rx_poll,         daemon=False)
 			self.tx_thread = threading.Thread(target=self._tx_poll,         daemon=False)
@@ -355,23 +339,16 @@ class ConnectorManager:
 			self.rx_thread.start()
 			self.tx_thread.start()
 			self.hb_thread.start()
-			print("Living threads:")
 
-			print("rx_thread", self.rx_thread.is_alive())
-			print("tx_thread", self.tx_thread.is_alive())
-			print("hb_thread", self.hb_thread.is_alive())
+			# print("Living threads:")
+			# print("rx_thread", self.rx_thread.is_alive())
+			# print("tx_thread", self.tx_thread.is_alive())
+			# print("hb_thread", self.hb_thread.is_alive())
+
 			self.interface.start_consume(rabbit_params)
 
 
 	def disconnect(self):
-		print("Disconnect")
-		print("Disconnect")
-		print("Disconnect")
-		print("Disconnect")
-		print("Disconnect")
-		print("Disconnect")
-		print("Disconnect")
-		print("Disconnect")
 		with self.connect_lock:
 			self.threads_live.value = 0
 			self.interface.close()
