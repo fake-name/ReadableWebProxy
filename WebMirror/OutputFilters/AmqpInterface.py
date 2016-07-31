@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import msgpack
 import multiprocessing
+import datetime
 import LocalAmqpConnector
 import logging
 import os.path
@@ -46,6 +47,7 @@ class RabbitQueueHandler(object):
 												response_queue     = settings["taskq_response"],
 												)
 
+		self.chunks = {}
 
 		self.log.info("Connected AMQP Interface: %s", self.connector)
 		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
@@ -85,14 +87,77 @@ class RabbitQueueHandler(object):
 			self.log.info("Received data size: %s bytes.", len(ret))
 		return ret
 
+	def process_chunk(self, chunk_message):
+		assert 'chunk-type'   in chunk_message
+		assert 'chunk-num'    in chunk_message
+		assert 'total-chunks' in chunk_message
+		assert 'data'         in chunk_message
+		assert 'merge-key'    in chunk_message
+
+		merge_key     = chunk_message['merge-key']
+		total_chunks  = chunk_message['total-chunks']
+		chunk_num     = chunk_message['chunk-num']
+		data          = chunk_message['data']
+		merge_key     = chunk_message['merge-key']
+
+		if not merge_key in self.chunks:
+			self.chunks[merge_key] = {
+				'first-seen'  : datetime.datetime.now(),
+				'chunk-count' : total_chunks,
+				'chunks'      : {}
+			}
+
+		# Check our chunk count is sane.
+		assert self.chunks[merge_key]['chunk-count'] == total_chunks
+		self.chunks[merge_key]['chunks'][chunk_num] = data
+
+		if len(self.chunks[merge_key]['chunks']) == total_chunks:
+			components = list(self.chunks[merge_key]['chunks'].items())
+			components.sort()
+			packed_message = b''.join([part[1] for part in components])
+			ret = msgpack.unpackb(packed_message, encoding='utf-8', use_list=False)
+
+			del self.chunks[merge_key]
+
+			self.log.info("Received all chunks for key %s! Decoded size: %0.3fk from %s chunks. Active partial chunked messages: %s.",
+				merge_key, len(packed_message) / 1024, len(components), len(self.chunks))
+
+			return ret
+
+		else:
+			return None
+
+	def unchunk(self, new_message):
+		new = msgpack.unpackb(new_message, encoding='utf-8', use_list=False)
+
+		# If we don't have a chunking type, it's probably an old-style message.
+		if not 'chunk-type' in new:
+			return new
+
+		# Messages smaller then the chunk_size are not split, and can just be returned.
+		if new['chunk-type'] == "complete-message":
+			assert 'chunk-type' in new
+			assert 'data'       in new
+			return new['data']
+		elif new['chunk-type'] == "chunked-message":
+			return self.process_chunk(new)
+		else:
+			raise RuntimeError("Unknown message type: %s", new['chunk-type'])
+
 	def get_job(self):
 		while True:
 			new = self.get_item()
 			if new:
 				self.log.info("Processing AMQP response item!")
 				try:
-					new = msgpack.unpackb(new, encoding='utf-8', use_list=False)
-					return new
+					tmp = self.unchunk(new)
+
+					# If unchunk returned something, return that.
+					# if it didn't return anything, it means that new
+					# was a message chunk, but we don't have the
+					# whole thing yet, so continue.
+					if tmp:
+						return tmp
 				except Exception:
 					self.log.error("Failure unpacking message!")
 					msgstr = str(new)
