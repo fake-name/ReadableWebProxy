@@ -445,6 +445,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Ore ga Heroine in English'                                     : pfuncs_o_u.extractOregaHeroineinEnglish,
 				'Origin Novels'                                                 : pfuncs_o_u.extractOriginNovels,
 				'Otome Revolution'                                              : pfuncs_o_u.extractOtomeRevolution,
+				'Otterspace Translation'                                        : pfuncs_o_u.extractOtterspaceTranslation,
 				'otterspacetranslation'                                         : pfuncs_o_u.extractOtterspaceTranslation,
 				'Outspan Foster'                                                : pfuncs_o_u.extractOutspanFoster,
 				'Oyasumi Reads'                                                 : pfuncs_o_u.extractOyasumiReads,
@@ -773,7 +774,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'MyEngTranslation'                                  : pfuncs_h_n.extractMyEngTranslation,
 				'Nadenadeshitai'                                    : pfuncs_h_n.extractNadenadeshitai,
 				'Nex Serus'                                         : pfuncs_h_n.extractNexSerus,
-				'Otterspace Translation'                            : pfuncs_o_u.extractOtterspaceTranslation,
 				'Pengu Taichou'                                     : pfuncs_o_u.extractPenguTaichou,
 				'Polar Bear Catcher'                                : pfuncs_o_u.extractPolarBearCatcher,
 				'Poor Quality Translations'                         : pfuncs_o_u.extractPoorQualityTranslations,
@@ -866,37 +866,48 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if ret is None:
 			return False
 
+		bad_starts = [
+			('FeedProxy', 'Comment on '),
+			("Krytyk's Translations", 'By: '),
+			('Prince Revolution!', 'By: '),
+			('Blazing Translations', 'By: '),
+			('Blazing Translations', 'Comment on '),
+			('Aran Translations', 'Comment on '),
+
+		]
 
 		if (
 				(flags.RSS_DEBUG or self.dbg_print) and
 				self.write_debug                    and
 				ret is False                        and
-				not "teaser" in item['title'].lower()
+				not "teaser" in item['title'].lower() and
+				not "Preview" in item['tags']
 			):
 			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 			if vol or chp or frag and not flags.RSS_DEBUG:
 
-				with open('rss_filter_misses-1.json', "a") as fp:
+				if not any([(item['title'].startswith(bad) and item['srcname'] == src) for src, bad in bad_starts]):
+					with open('rss_filter_misses-1.json', "a") as fp:
 
-					write_items = {
-						"SourceName" : item['srcname'],
-						"Title"      : item['title'],
-						"Tags"       : list(item['tags']),
-						"Vol"        : False if not vol else vol,
-						"Chp"        : False if not chp else chp,
-						"Frag"       : False if not frag else frag,
-						"Postfix"    : postfix,
-						"Feed URL"   : item['linkUrl'],
-						"GUID"       : item['guid'],
-						"Have Func"  : item['srcname'] in funcMap,
-					}
+						write_items = {
+							"SourceName" : item['srcname'],
+							"Title"      : item['title'],
+							"Tags"       : list(item['tags']),
+							"Vol"        : False if not vol else vol,
+							"Chp"        : False if not chp else chp,
+							"Frag"       : False if not frag else frag,
+							"Postfix"    : postfix,
+							"Feed URL"   : item['linkUrl'],
+							"GUID"       : item['guid'],
+							"Have Func"  : item['srcname'] in funcMap,
+						}
 
-					# fp.write("\n==============================\n")
-					# fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
-					# fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
+						# fp.write("\n==============================\n")
+						# fp.write("Feed URL: '%s', guid: '%s'" % (item['linkUrl'], item['guid']))
+						# fp.write("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'\n" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
 
-					fp.write("%s" % (json.dumps(write_items, )))
-					fp.write("\n")
+						fp.write("%s" % (json.dumps(write_items, )))
+						fp.write("\n")
 
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 		if self.dbg_print or flags.RSS_DEBUG:

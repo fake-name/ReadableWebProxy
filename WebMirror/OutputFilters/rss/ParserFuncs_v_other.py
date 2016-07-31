@@ -572,7 +572,7 @@ def  extractYiYueTranslation(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractZxzxzxsBlog(item):
@@ -581,7 +581,7 @@ def  extractZxzxzxsBlog(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 
@@ -591,7 +591,7 @@ def  extract一期一会万歳(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 
@@ -601,7 +601,7 @@ def  extractWhenTheHuntingPartyCame(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractXiaowen206sBlog(item):
@@ -610,7 +610,7 @@ def  extractXiaowen206sBlog(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWhiteTigerTranslations(item):
@@ -666,7 +666,7 @@ def  extractWuxiwish(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWIP(item):
@@ -698,7 +698,7 @@ def  extractZenTranslations(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWorldofSummie(item):
@@ -707,7 +707,7 @@ def  extractWorldofSummie(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWizThiefsNovels(item):
@@ -716,7 +716,7 @@ def  extractWizThiefsNovels(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	if 'My immortality It’s in a Death game' in item['title']:
 		return buildReleaseMessage(item, 'My immortality It\'s in a Death game', vol, chp, frag=frag, postfix=postfix)
 	if 'Thanks to a different world reincarnation' in item['title']:
@@ -731,7 +731,7 @@ def  extractVillageTranslations(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWuxiaTranslators(item):
@@ -740,7 +740,7 @@ def  extractWuxiaTranslators(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	if 'World Defying Dan God' in item['tags']:
 		return buildReleaseMessage(item, 'World Defying Dan God', vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -802,7 +802,7 @@ def  extractZeonic(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extract天才創造すなわち百合(item):
@@ -811,7 +811,7 @@ def  extract天才創造すなわち百合(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWhimsicalLand(item):
@@ -820,7 +820,7 @@ def  extractWhimsicalLand(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extract12Superlatives(item):
@@ -829,7 +829,7 @@ def  extract12Superlatives(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWeavingstoriesandbuildingcastlesintheclouds(item):
@@ -838,7 +838,7 @@ def  extractWeavingstoriesandbuildingcastlesintheclouds(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWelcomeToTheUnderdark(item):
@@ -847,7 +847,7 @@ def  extractWelcomeToTheUnderdark(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extract輝く世界(item):
@@ -856,7 +856,7 @@ def  extract輝く世界(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 
@@ -866,7 +866,7 @@ def  extractYoutsubasilversBlog(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWatermelonHelmets(item):
@@ -891,7 +891,7 @@ def  extractXantDoesStuffAndThings(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractXantbos(item):
@@ -900,7 +900,7 @@ def  extractXantbos(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extractWordofCraft(item):
@@ -909,7 +909,7 @@ def  extractWordofCraft(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	if 'Toaru Ossan no VRMMO katsudouki' in item['tags']:
 		return buildReleaseMessage(item, 'Toaru Ossan no VRMMO katsudouki', vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -920,7 +920,7 @@ def  extractWLTranslations(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	if 'Chapter Releases' in item['tags'] and ('OSI' in item['tags'] or item['title'].startswith("OSI Chapter")):
 		return buildReleaseMessage(item, 'One Sword to Immortality', vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -931,7 +931,7 @@ def  extract睡眠中毒(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 
@@ -953,7 +953,7 @@ def  extractWormACompleteWebSerial(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def  extract7DaysTrial(item):
@@ -962,7 +962,7 @@ def  extract7DaysTrial(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	if 'content' in item['tags']:
 		return buildReleaseMessage(item, 'War of the Supreme', vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -974,14 +974,14 @@ def  extract77Novel(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 
 def extractWishUponAHope(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 
@@ -991,7 +991,7 @@ def extractWumsTranslations(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractXianxiaTales(item):
 	'''
@@ -999,7 +999,7 @@ def extractXianxiaTales(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractYamiTranslations(item):
 	'''
@@ -1007,7 +1007,7 @@ def extractYamiTranslations(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractZeroTranslations(item):
 	'''
@@ -1015,7 +1015,7 @@ def extractZeroTranslations(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 
 def extractV7Silent(item):
@@ -1024,7 +1024,7 @@ def extractV7Silent(item):
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 
 	if 'The Demon Queen is My Fiancée!' in item['tags']:
 		return buildReleaseMessage(item, 'The Demon Queen is My Fiancée!', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
@@ -1040,7 +1040,7 @@ def extractWarriorWriting(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractWigglyTranslation(item):
 	"""
@@ -1049,7 +1049,9 @@ def extractWigglyTranslation(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
+	if item['title'].startswith("Man Huang Feng Bao: "):
+		return buildReleaseMessage(item, 'Man Huang Feng Bao', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractWorldofHope(item):
 	"""
@@ -1058,7 +1060,7 @@ def extractWorldofHope(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractWorldTurtleTranslations(item):
 	"""
@@ -1067,7 +1069,7 @@ def extractWorldTurtleTranslations(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractYasashiHonyaku(item):
 	"""
@@ -1076,7 +1078,7 @@ def extractYasashiHonyaku(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractYeagdrasil(item):
 	"""
@@ -1085,7 +1087,7 @@ def extractYeagdrasil(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extractYourMajestyPleaseCalmDown(item):
 	"""
@@ -1094,7 +1096,7 @@ def extractYourMajestyPleaseCalmDown(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extract書櫃(item):
 	"""
@@ -1103,7 +1105,7 @@ def extract書櫃(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
 	return False
 def extract閒人ONLINE(item):
 	"""
@@ -1111,6 +1113,8 @@ def extract閒人ONLINE(item):
 	"""
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return False
+		return None
+	if 'Great Tang Idyll' in item['tags']:
+		return buildReleaseMessage(item, 'Great Tang Idyll', vol, chp, frag=frag, postfix=postfix)
 	return False
 

@@ -612,15 +612,15 @@ class Connector:
 			'master'                   : kwargs.get('master',                   False),
 			'synchronous'              : kwargs.get('synchronous',              True),
 			'flush_queues'             : kwargs.get('flush_queues',             False),
-			'heartbeat'                : kwargs.get('heartbeat',                 360),
+			'heartbeat'                : kwargs.get('heartbeat',                 120),
 			'sslopts'                  : kwargs.get('ssl',                      None),
 			'poll_rate'                : kwargs.get('poll_rate',                  0.25),
 			'prefetch'                 : kwargs.get('prefetch',                   1),
 			'session_fetch_limit'      : kwargs.get('session_fetch_limit',      None),
 			'durable'                  : kwargs.get('durable',                  False),
-			'socket_timeout'           : kwargs.get('socket_timeout',            240),
+			'socket_timeout'           : kwargs.get('socket_timeout',            60),
 
-			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  360),
+			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  120),
 			'ack_rx'                   : kwargs.get('ack_rx',                   True),
 		}
 

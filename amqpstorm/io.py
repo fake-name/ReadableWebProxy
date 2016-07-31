@@ -271,7 +271,7 @@ class IO(object):
         except (IOError, OSError) as why:
             self._exceptions.append(AMQPConnectionError(why))
             traceback.print_exc()
-            print("[_receive (exception)] Clearing self._running"))
+            print("[_receive (exception)] Clearing self._running")
             self._running.clear()
         return data_in
 
