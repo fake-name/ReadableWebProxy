@@ -416,12 +416,13 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			self.content = self.content[len(badxmlprefix):]
 
 
-		try:
-			soup = WebMirror.util.webFunctions.as_soup(self.content)
-		except AttributeError as e:
-			with open("badpage %s.html" % time.time(), "w") as fp:
-				fp.write(self.content)
-				raise e
+		soup = WebMirror.util.webFunctions.as_soup(self.content)
+		# try:
+		# 	soup = WebMirror.util.webFunctions.as_soup(self.content)
+		# except AttributeError as e:
+		# 	with open("badpage %s.html" % time.time(), "w") as fp:
+		# 		fp.write(self.content)
+		# 		raise e
 
 
 		# Allow child-class hooking

@@ -111,6 +111,9 @@ class RabbitQueueHandler(object):
 		assert self.chunks[merge_key]['chunk-count'] == total_chunks
 		self.chunks[merge_key]['chunks'][chunk_num] = data
 
+
+		# TODO: clean out partial messages based on their age (see 'first-seen')
+
 		if len(self.chunks[merge_key]['chunks']) == total_chunks:
 			components = list(self.chunks[merge_key]['chunks'].items())
 			components.sort()

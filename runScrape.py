@@ -33,7 +33,7 @@ def go():
 	global MAX_DB_SESSIONS
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 
-	processes = 12
+	processes = 16
 	NO_PROCESSES = processes
 	MAX_DB_SESSIONS = NO_PROCESSES + 5
 	if "maxprocesses" in largv:
