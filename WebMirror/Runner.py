@@ -17,6 +17,7 @@ import queue
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
+import psycopg2
 
 
 if __name__ == "__main__":
@@ -49,7 +50,7 @@ def install_pystuck():
 	while 1:
 		try:
 			pystuck.run_server(port=stuck_port)
-			# print("PyStuck installed to process, running on port %s" % stuck_port)
+			print("PyStuck installed to process, running on port %s" % stuck_port)
 			return
 		except OSError:
 			stuck_port += 1
@@ -155,7 +156,7 @@ class RunInstance(object):
 	@classmethod
 	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
-
+		install_pystuck()
 
 		try:
 			run = cls(num, response_queue, new_job_queue, cookie_lock, nosig)
@@ -247,65 +248,156 @@ class UpdateAggregator(object):
 		self._amqpint.put_item(pkt)
 
 
-
-
 	def do_link_batch_update(self):
 		if not self.batched_links:
 			return
-
 		self.log.info("Inserting %s items into DB in batch.", len(self.batched_links))
 
+
+		raw_cur = self.db_int.connection().connection.cursor()
+
+		#  Fucking huzzah for ON CONFLICT!
+		cmd = """
+				INSERT INTO
+					web_pages
+					(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+				VALUES
+					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
+				ON CONFLICT (url) DO
+					UPDATE
+						SET
+							state           = EXCLUDED.state,
+							starturl        = EXCLUDED.starturl,
+							netloc          = EXCLUDED.netloc,
+							is_text         = EXCLUDED.is_text,
+							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+						WHERE
+						(
+								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
+							AND
+								web_pages.url = EXCLUDED.url
+							AND
+								(web_pages.state = 'complete' OR web_pages.state = 'error')
+						)
+					;
+				""".replace("	", " ").replace("\n", " ")
+
+		# Only commit per-URL if we're tried to do the update in batch, and failed.
+		commit_each = False
 		while 1:
 			try:
-
-				cmd = text("""
-						INSERT INTO
-							web_pages
-							(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
-						VALUES
-							(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
-						ON CONFLICT DO NOTHING
-						""")
 				for paramset in self.batched_links:
-					self.db_int.execute(cmd, params=paramset)
-				self.db_int.commit()
-				self.batched_links = []
+
+					# Forward-data the next walk, time, rather then using now-value for the thresh.
+					raw_cur.execute(cmd, paramset)
+					if commit_each:
+						raw_cur.execute("COMMIT;")
+
+				raw_cur.execute("COMMIT;")
 				break
-			except KeyboardInterrupt:
-				self.log.info("Keyboard Interrupt?")
-				self.db_int.rollback()
-			except sqlalchemy.exc.InternalError:
-				self.log.info("Transaction error. Retrying.")
-				traceback.print_exc()
-				self.db_int.rollback()
-			except sqlalchemy.exc.OperationalError:
-				self.log.info("Transaction error. Retrying.")
-				traceback.print_exc()
-				self.db_int.rollback()
-		self.db_int.close()
+
+			except psycopg2.Error:
+				if commit_each is False:
+					self.log.warning("psycopg2.Error - Retrying with commit each.")
+				else:
+					self.log.warning("psycopg2.Error - Retrying.")
+					traceback.print_exc()
+
+				raw_cur.execute("ROLLBACK;")
+				commit_each = True
+
+
+		self.batched_links = []
+
+
+
+
+		# while 1:
+		# 	try:
+
+		# 		cmd = text("""
+		# 				INSERT INTO
+		# 					web_pages
+		# 					(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+		# 				VALUES
+		# 					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
+		# 				ON CONFLICT (url) DO
+		# 					UPDATE
+		# 						SET
+		# 							state           = EXCLUDED.state,
+		# 							starturl        = EXCLUDED.starturl,
+		# 							netloc          = EXCLUDED.netloc,
+		# 							is_text         = EXCLUDED.is_text,
+		# 							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+		# 							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+		# 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+		# 						WHERE
+		# 						(
+		# 								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
+		# 							AND
+		# 								web_pages.url = EXCLUDED.url
+		# 							AND
+		# 								(web_pages.state = 'complete' OR web_pages.state = 'error')
+		# 						)
+		# 					;
+		# 				""".replace("	", " ").replace("\n", " "))
+
+
+		# 		# cmd = text("""
+		# 		# 		INSERT INTO
+		# 		# 			web_pages
+		# 		# 			(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
+		# 		# 		VALUES
+		# 		# 			(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
+		# 		# 		ON CONFLICT DO NOTHING
+		# 		# 		""")
+
+		# 		for paramset in self.batched_links:
+		# 			self.db_int.execute(cmd, params=paramset)
+		# 		self.db_int.commit()
+		# 		self.batched_links = []
+		# 		break
+		# 	except KeyboardInterrupt:
+		# 		self.log.info("Keyboard Interrupt?")
+		# 		self.db_int.rollback()
+		# 	except sqlalchemy.exc.InternalError:
+		# 		self.log.info("Transaction error. Retrying.")
+		# 		traceback.print_exc()
+		# 		self.db_int.rollback()
+		# 	except sqlalchemy.exc.OperationalError:
+		# 		self.log.info("Transaction error. Retrying.")
+		# 		traceback.print_exc()
+		# 		self.db_int.rollback()
+		# self.db_int.close()
 
 
 	def do_link(self, linkdict):
 
-		assert 'url'       in linkdict
-		assert 'starturl'  in linkdict
-		assert 'netloc'    in linkdict
-		assert 'distance'  in linkdict
-		assert 'is_text'   in linkdict
-		assert 'priority'  in linkdict
-		assert 'type'      in linkdict
-		assert 'state'     in linkdict
-		assert 'fetchtime' in linkdict
+		assert 'url'             in linkdict
+		assert 'starturl'        in linkdict
+		assert 'netloc'          in linkdict
+		assert 'distance'        in linkdict
+		assert 'is_text'         in linkdict
+		assert 'priority'        in linkdict
+		assert 'type'            in linkdict
+		assert 'state'           in linkdict
+		assert 'addtime'         in linkdict
+		assert 'ignoreuntiltime' in linkdict
 
 		url = linkdict['url']
 
 		if not url in self.seen:
 			# Fucking huzzah for ON CONFLICT!
 			self.batched_links.append(linkdict)
-			self.seen[url] = True
+			self.seen[url] = time.time()
 
 			if len(self.batched_links) > 100:
 				self.do_link_batch_update()
+		# 	print("Inserting", url, len(self.seen))
+		# else:
+		# 	print("Skipping", url)
 
 
 		# The seen dict was eating all my free memory (I think).
@@ -355,7 +447,7 @@ class UpdateAggregator(object):
 						break
 			except Exception:
 				self.log.error("Exception in aggregator!")
-				for line in traceback.format_exc():
+				for line in traceback.format_exc().split("\n"):
 					self.log.error(line.rstrip())
 
 	def close(self):
@@ -372,7 +464,7 @@ class UpdateAggregator(object):
 		instance.close()
 
 class MultiJobManager(object):
-	def __init__(self, max_tasks, target, target_args, target_kwargs):
+	def __init__(self, max_tasks, target, target_args=None, target_kwargs=None):
 		self.max_tasks     = max_tasks
 		self.target        = target
 		self.target_args   = target_args
@@ -390,7 +482,10 @@ class MultiJobManager(object):
 		for dummy_x in range(self.max_tasks - living):
 			self.log.warning("Insufficent living child threads! Creating another thread with number %s", self.procno)
 			with logSetup.stdout_lock:
-				proc = multiprocessing.Process(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
+				args = (self.procno, )
+				if self.target_args:
+					args += self.target_args
+				proc = multiprocessing.Process(target=self.target, args=args, kwargs=self.target_kwargs)
 				# proc = threading.Thread(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
 				self.tasklist.append(proc)
 				proc.start()
@@ -426,15 +521,17 @@ class Crawler(object):
 
 		self.log = logging.getLogger("Main.Text.Manager")
 		WebMirror.rules.load_rules()
-		self.agg_queue = multiprocessing.Queue()
+
 
 		self.log.info("Scraper executing with %s processes", thread_count)
 		self.thread_count = thread_count
 
 	def start_aggregator(self):
+		agg_queue = multiprocessing.Queue()
 		with logSetup.stdout_lock:
-			self.agg_proc = multiprocessing.Process(target=UpdateAggregator.launch_agg, args=(self.agg_queue, ))
+			self.agg_proc = multiprocessing.Process(target=UpdateAggregator.launch_agg, args=(agg_queue, ))
 			self.agg_proc.start()
+		return agg_queue
 
 	def join_aggregator(self):
 
@@ -463,13 +560,19 @@ class Crawler(object):
 
 		cnt = 10
 
-		self.start_aggregator()
+		new_url_aggreator_queue = self.start_aggregator()
 
-		normal_out_queue = self.start_job_fetcher()
+		new_job_queue = self.start_job_fetcher()
 
 		assert self.thread_count >= 1
 
-		mainManager    = MultiJobManager(max_tasks=self.thread_count, target=RunInstance.run, target_args=(self.agg_queue,  normal_out_queue), target_kwargs={'cookie_lock':COOKIE_LOCK})
+		# cls, num, response_queue, new_job_queue, cookie_lock
+		kwargs = {
+			'response_queue' : new_url_aggreator_queue,
+			'new_job_queue'  : new_job_queue,
+			'cookie_lock'    : COOKIE_LOCK,
+			}
+		mainManager    = MultiJobManager(max_tasks=self.thread_count, target=RunInstance.run, target_kwargs=kwargs)
 
 		managers = [mainManager]
 
@@ -489,7 +592,7 @@ class Crawler(object):
 						COOKIE_LOCK.release()
 
 					self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)",
-						living, not clok_locked, normal_out_queue.qsize(), runStatus.run_state.value == 0)
+						living, not clok_locked, new_job_queue.qsize(), runStatus.run_state.value == 0)
 
 
 		except KeyboardInterrupt:
@@ -511,7 +614,7 @@ class Crawler(object):
 
 		self.log.info("Flusing queues")
 
-		for job_queue in [normal_out_queue]:
+		for job_queue in [new_job_queue, new_url_aggreator_queue]:
 			try:
 				while 1:
 					job_queue.get_nowait()

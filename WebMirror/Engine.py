@@ -574,22 +574,25 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		raw_cur = self.db_sess.connection().connection.cursor()
 
-		if self.resp_q != None and False:
+		if self.resp_q != None:
 			for link, istext in items:
 				start = urllib.parse.urlsplit(link).netloc
 
 				assert link.startswith("http")
 				assert start
 				new = {
-					'url'       : link,
-					'starturl'  : new_starturl,
-					'netloc'    : start,
-					'distance'  : new_distance,
-					'is_text'   : istext,
-					'priority'  : new_priority,
-					'type'      : new_type,
-					'state'     : "new",
-					'fetchtime' : datetime.datetime.now(),
+						'url'             : link,
+						'starturl'        : new_starturl,
+						'netloc'          : start,
+						'distance'        : new_distance,
+						'is_text'         : istext,
+						'priority'        : new_priority,
+						'type'            : new_type,
+						'state'           : "new",
+						'addtime'         : datetime.datetime.now(),
+
+						# Don't retrigger unless the ignore time has elaped.
+						'ignoreuntiltime' : datetime.datetime.now(),
 					}
 				self.resp_q.put(("new_link", new))
 
@@ -891,6 +894,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					for line in rpcresp['traceback'].strip().split("\n"):
 						self.log.error("Remote traceback: %s", line)
 				# job.raw_content = content
+				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
 				job.state = 'error'
 				job.errno = -4
 				self.db_sess.commit()

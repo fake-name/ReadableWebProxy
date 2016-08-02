@@ -12,6 +12,7 @@ import signal
 # from sqlalchemy.sql import text
 
 import psycopg2
+import sys
 
 import settings
 # import WebMirror.database as db
@@ -34,12 +35,17 @@ import runStatus
 
 
 NO_JOB_TIMEOUT_MINUTES = 5
-# MAX_IN_FLIGHT_JOBS = 10
-# MAX_IN_FLIGHT_JOBS = 75
-# MAX_IN_FLIGHT_JOBS = 250
-MAX_IN_FLIGHT_JOBS = 500
-# MAX_IN_FLIGHT_JOBS = 1000
-# MAX_IN_FLIGHT_JOBS = 3000
+
+
+largv = [tmp.lower() for tmp in sys.argv]
+if "twoprocess" in largv or "oneprocess" in largv:
+	MAX_IN_FLIGHT_JOBS = 10
+else:
+	# MAX_IN_FLIGHT_JOBS = 75
+	# MAX_IN_FLIGHT_JOBS = 250
+	MAX_IN_FLIGHT_JOBS = 500
+	# MAX_IN_FLIGHT_JOBS = 1000
+	# MAX_IN_FLIGHT_JOBS = 3000
 
 def buildjob(
 			module,
@@ -152,7 +158,7 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.jobs_in += 1
 				if self.active_jobs < 0:
 					self.active_jobs = 0
-				self.log.info("Job response received. Jobs in-flight: %s", self.active_jobs)
+				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.active_jobs, self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
 				self.normal_out_queue.put(tmp)
 			else:
@@ -265,7 +271,7 @@ class JobAggregator(LogBase.LoggerMixin):
 				    web_pages.state = 'new'
 				RETURNING
 				    web_pages.id, web_pages.netloc, web_pages.url;
-			'''.format(in_flight=50)
+			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 50)))
 
 
 		start = time.time()
