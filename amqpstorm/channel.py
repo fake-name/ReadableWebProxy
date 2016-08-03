@@ -205,7 +205,7 @@ class Channel(BaseChannel):
         :param pamqp.Frame frame_in: Amqp frame.
         :return:
         """
-        print("on_frame: ", frame_in.name)
+        # print("on_frame: ", frame_in.name)
         if self.rpc.on_frame(frame_in):
             return
 

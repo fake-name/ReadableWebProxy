@@ -86,7 +86,8 @@ decompose: [
 
 	# Old (pre recent rework, probably can be deleted)
 	{"class" : "widget-wrapper"},
-	{"class" : "search"},
+	# {"class" : "search"},
+	{"class" : "secondary"},
 	{"class" : "subscribe"},
 	{"class" : "widget-title"},
 	{"class" : "header"},
@@ -110,8 +111,15 @@ decompose: [
 	{"class" : "breadcrumb"},
 	{"class" : "pagination"},
 	{"class" : "button"},
+	{"class" : "notifications"},
 	{"class" : "postbit_avatar"},
 	{"class" : "postbit_usertitle"},
+	{"class" : "top-bar-left"},
+	{"class" : "top-bar-right"},
+	{"class" : "user-menu"},
+	{"class" : "dropdown-menu"},
+	{"id" : "dropdown-menu"},
+	{"id" : "notification-dropdown"},
 
 	# I /think/ this is probably a source typo. Whoops?
 	{"class" : "none"},

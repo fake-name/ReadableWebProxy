@@ -290,10 +290,15 @@ class UpdateAggregator(object):
 			try:
 				for paramset in self.batched_links:
 
-					# Forward-data the next walk, time, rather then using now-value for the thresh.
-					raw_cur.execute(cmd, paramset)
-					if commit_each:
-						raw_cur.execute("COMMIT;")
+					if len(paramset['url']) > 2000:
+						self.log.error("URL Is too long to insert into the database!")
+						self.log.error("URL: '%s'", paramset['url'])
+
+					else:
+						# Forward-data the next walk, time, rather then using now-value for the thresh.
+						raw_cur.execute(cmd, paramset)
+						if commit_each:
+							raw_cur.execute("COMMIT;")
 
 				raw_cur.execute("COMMIT;")
 				break
@@ -503,14 +508,23 @@ class MultiJobManager(object):
 
 		return len(self.tasklist)
 
-	def join_jobs(self):
+	def join_jobs(self, flushqueues):
 
 		self.log.info("Run manager waiting on tasks to exit. Runstate = %s", runStatus.run_state.value)
 		while 1:
 			living = sum([task.is_alive() for task in self.tasklist])
 			for task in self.tasklist:
 				task.join(3.0/(living+1))
+
 			self.log.info("Living processes: '%s'", living)
+
+			for job_queue in flushqueues:
+					try:
+						while 1:
+							job_queue.get_nowait()
+					except queue.Empty:
+						pass
+
 			if living == 0:
 				break
 
@@ -606,9 +620,13 @@ class Crawler(object):
 			self.log.info("Crawler allowing ctrl+c to propagate.")
 			time.sleep(1)
 			runStatus.run_state.value = 0
+			time.sleep(1)
+
+			flushqueues = [new_job_queue, new_url_aggreator_queue]
+
 
 			for manager in managers:
-				manager.join_jobs()
+				manager.join_jobs(flushqueues)
 
 			self.log.info("All processes halted.")
 

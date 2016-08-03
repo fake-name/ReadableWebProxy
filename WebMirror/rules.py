@@ -10,8 +10,6 @@ import urllib.parse
 class ValidationError(Exception):
 	pass
 
-
-
 def getStartURLs(ruleset):
 	if not 'baseUrl' in ruleset:
 		raise ValidationError("No 'baseUrl' values in ruleset!")

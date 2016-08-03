@@ -317,6 +317,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Goooooo FUCK YOURSELF
 		contents = contents.replace("This translation is property of Infinite Novel Translations.", "")
 		contents = contents.replace("This translation is property of Infinite NovelTranslations.", "")
+		contents = contents.replace("If you read this anywhere but at Infinite Novel Translations, you are reading a stolen translation.", "")
 
 		return title, contents
 
