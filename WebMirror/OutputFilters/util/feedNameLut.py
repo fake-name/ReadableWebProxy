@@ -462,6 +462,7 @@ mapper = {
 	'royalroadweed.blogspot.co.il'                    : 'Royal Road Weed',
 	'skythewood.blogspot.com'                         : 'Skythewood translations',
 	'skythewood.blogspot.sg'                          : 'Skythewood translations',
+	'skythewoodtl.com'                                : 'Skythewood translations',
 	'sweetacollections.blogspot.com'                  : 'Sweet A Collections',
 	'swordandgame.blogspot.ca'                        : 'Sword and Game',
 	'swordandgame.blogspot.com'                       : 'Sword and Game',

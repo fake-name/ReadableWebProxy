@@ -410,11 +410,11 @@ if __name__ == '__main__':
 	import logSetup
 	logSetup.initLogging()
 
-	# intf = NuForwarder()
-	# intf.go()
+	intf = NuForwarder()
+	intf.go()
 	#print(load_lut())
-	intf = NuForwarder(connect=False)
-	intf.fix_names()
+	# intf = NuForwarder(connect=False)
+	# intf.fix_names()
 	# intf.consolidate_validated()
 	# try:
 	# 	intf.fix_names()
