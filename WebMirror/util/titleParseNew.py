@@ -33,6 +33,7 @@ SPLIT_ON = [
 		"]",
 
 		# Fucking quotes
+		':',
 		'"',
 		'/',
 		'\\',
@@ -44,6 +45,13 @@ class NumberConversionException(Exception):
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
+
+def intersperse(iterable, delimiter):
+	it = iter(iterable)
+	yield next(it)
+	for x in it:
+		yield delimiter
+		yield x
 
 class SplitterBase(object):
 	__metaclass__ = abc.ABCMeta
@@ -67,7 +75,7 @@ class SplitterBase(object):
 
 class SpaceSplitter(SplitterBase):
 	def split_component(self, instr):
-		return instr.split(" ")
+		return list(intersperse(instr.split(" "), " "))
 
 class CharSplitter(SplitterBase):
 	def split_component(self, instr):
@@ -83,7 +91,6 @@ class CharSplitter(SplitterBase):
 				agg += letter
 		if agg:
 			ret.append(agg)
-
 		return ret
 
 
@@ -92,25 +99,49 @@ class LetterNumberSplitter(SplitterBase):
 		ret = []
 		agg = ""
 		prev = None
+		# print("Splitting: '%s'" % instr)
 		for letter in instr:
 			if (prev and
 					(
-							prev in string.digits and letter not in string.digits and letter not in ['.-']
+							prev in string.digits and letter not in string.digits
 						or
-							letter in string.digits and prev not in string.digits and prev not in ['.-']
+							letter in string.digits and prev not in string.digits
 						)):
-				if agg:
-					ret.append(agg)
-					agg = ""
-				ret.append(letter)
-				prev = letter
+
+				if prev.lower() == "r":
+					# print("Not splitting (1):", letter, prev)
+					prev = letter
+					agg += letter
+
+				# Don't split on letter-decimal sequences
+				elif (
+						(prev.lower() in string.digits and letter.lower() == ".")
+						or
+						(letter.lower() in string.digits and prev.lower() == ".")
+						):
+					# print("Not splitting (2):", letter, prev)
+					prev = letter
+					agg += letter
+				else:
+					if agg:
+						ret.append(agg)
+						agg = ""
+					agg += letter
+					# ret.append(letter)
+					# print("Splitting, ", letter, prev)
+					prev = letter
 			else:
+				# print("Not splitting (3):", (letter, prev, agg))
 				prev = letter
 				agg += letter
+
+		# print("End: ", (ret, agg))
 		if agg:
 			ret.append(agg)
-
+		# print("Split: '%s'" % ret)
 		return ret
+
+#############################
 
 ################################################################################################################################
 ################################################################################################################################
@@ -121,6 +152,9 @@ class TokenBase(object):
 		self.prefix       = prefix
 		self.intermediate = intermediate
 		self.content      = content
+
+	def string(self):
+		return self.content
 
 	def __repr__(self):
 		# print("Token __repr__ call!")
@@ -179,7 +213,7 @@ class NumericToken(TokenBase):
 			# assert self.is_valid(), "getNumber() can only be called if the token value is entirely numeric!"
 
 
-		return False
+		raise NumberConversionException("Failed to convert '%s' to a number!" % (self.content, ))
 
 
 
@@ -267,6 +301,8 @@ class VolumeToken(NumericToken):
 	pass
 class ChapterToken(NumericToken):
 	pass
+class FreeChapterToken(NumericToken):
+	pass
 class FragmentTokenToken(NumericToken):
 	pass
 
@@ -295,9 +331,11 @@ class GlobBase(object):
 			else:
 				return prefix_arr[:idx], prefix_arr[idx], intermediate
 
-		return prefix_arr, None, intermediate
+		# print("get_preceeding_text", (prefix_arr, None, intermediate))
+		return [], None, intermediate
 
 	def process(self, inarr):
+		# print("Globber processing", inarr)
 		assert isinstance(inarr, (list, tuple))
 		negoff = 0
 		original_length = len(inarr)
@@ -305,7 +343,9 @@ class GlobBase(object):
 			locidx = idx - negoff
 			inarr = self.attach_token(inarr[:locidx], inarr[locidx], inarr[locidx+1:])
 			negoff = original_length - len(inarr)
+			# print("Globber step", inarr)
 
+		# print("Globber return", inarr)
 		return inarr
 
 	@abc.abstractmethod
@@ -355,7 +395,7 @@ class VolumeChapterFragGlobber(GlobBase):
 			'chapter',
 			'ch',
 			'c',
-			'episode'
+			# 'episode'
 		]
 
 	# Do NOT glob onto numeric values preceeded by "r",
@@ -373,25 +413,53 @@ class VolumeChapterFragGlobber(GlobBase):
 		# 	target = before[-1] + target
 		# 	before = before[:-1]
 
-		# print("Getting text preceding '%s'" % target)
-		before, prec, intervening = self.get_preceeding_text(before)
-		if prec and prec.lower() in self.VOLUME_KEYS:
-			target = VolumeToken(prec, intervening, target)
-		elif prec and prec.lower() in self.CHAPTER_KEYS:
-			target = ChapterToken(prec, intervening, target)
-		elif prec and prec.lower() in self.FRAGMENT_KEYS:
-			target = FragmentTokenToken(prec, intervening, target)
+		# print("Getting text preceding '%s' (%s)" % (target, type(target)))
 
-		else:
+		before, prec, intervening = self.get_preceeding_text(before)
+
+		if target == " ":
 			if prec:
 				before.append(prec)
 			if intervening:
 				before.append(intervening)
+		else:
+			if prec and prec.lower() in self.VOLUME_KEYS:
+				target = VolumeToken(prec, intervening, target)
+			elif prec and prec.lower() in self.CHAPTER_KEYS:
+				target = ChapterToken(prec, intervening, target)
+			elif prec and prec.lower() in self.FRAGMENT_KEYS:
+				target = FragmentTokenToken(prec, intervening, target)
+			else:
+				if prec:
+					before.append(prec)
+				if intervening:
+					before.append(intervening)
 
+		# print((before, prec, intervening, target, after))
 
 		ret = before
 		if target:
 			ret = ret + [target]
+		if len(after):
+			ret = ret + after
+
+		# print("Returning:   ", ret)
+		# print()
+		return ret
+
+class FreeNumericChapterGlobber(GlobBase):
+
+	def attach_token(self, before, target, after):
+		# print("Attach FreeNumericChapterGlobber: ", target)
+		if isinstance(target, str):
+			tmp = FreeChapterToken('', '', target)
+			if tmp.is_valid(parse_ascii=False):
+				# print("Interpreting as FreeChapterToken: ", target)
+				target = tmp
+
+		# print((before, prec, intervening, target, after))
+
+		ret = before + [target]
 		if len(after):
 			ret = ret + after
 		return ret
@@ -430,6 +498,7 @@ class TitleParser(object):
 
 	INTERPRETERS = [
 		VolumeChapterFragGlobber,
+		FreeNumericChapterGlobber,
 		FreeTextGlobber,
 	]
 
@@ -437,162 +506,91 @@ class TitleParser(object):
 		self.raw = title
 
 		self.chunks = []
-		indice = 0
-		data = ''
 
-		print()
-		print()
-		print()
-		print("Parsing title: '%s'" % title)
+		# print()
+		# print()
+		# print()
+		# print("Parsing title: '%s'" % title)
 
 		for splitter in self.SPLITTERS:
 			title = splitter().process(title)
+			# print("Splitter step: ", title)
 
 		for globber in self.INTERPRETERS:
 			title = globber().process(title)
-
+			# print("Globber step: ", title)
 
 		self.chunks = title
-		# # Consume the string.
-		# while indice < len(self.raw):
-		# 	delimiter = getDelimiter(self.raw[indice:], self.DELIMITERS)
-		# 	if delimiter:
-		# 		assert self.raw[indice:].startswith(delimiter)
-		# 		if data:
-		# 			self.appendDataChunk(data)
-		# 			data = ''
-		# 		self.appendDelimiterChunk(self.raw[indice:indice+len(delimiter)])
-		# 		indice = indice+len(delimiter)
-		# 	else:
-		# 		data += self.raw[indice]
-		# 		indice += 1
-
-		# # Finally, tack on any trailing data tokens (if they're present)
-		# if data:
-		# 	self.appendDataChunk(data)
 
 	def __getitem__(self, idx):
 		return self.chunks[idx]
 
-	def appendDelimiterChunk(self, rawdat):
-		tok  = DelimiterToken(
-			text     = rawdat,
-			position = len(self.chunks),
-			parent   = self)
-		self.chunks.append(tok)
+	def getTok(self, tok_cls, do_print=False):
 
-	def appendDataChunk(self, rawdat):
-
-		d_tok = DataToken(
-				text     = rawdat,
-				position = len(self.chunks),
-				parent   = self)
-		d_toks = d_tok.splitToken(DataToken)
-		for tok in d_toks:
-			tok = tok.specialize(self.SPECIALIZE, self.ASCII_SPECIALIZE)
-			self.chunks.append(tok)
-
-	def _preceeding(self, offset):
-		return [chunk for chunk in self.chunks[:offset] if not isinstance(chunk, (DelimiterToken, NullToken))]
-
-	def _following(self, offset):
-		return [chunk for chunk in self.chunks[offset+1:] if not isinstance(chunk, (DelimiterToken, NullToken))]
-
-	def _following_text(self, offset):
-		chunks = [chunk for chunk in self.chunks[offset+1:] if not any([isinstance(chunk, ttype) for ttype in self.SPECIALIZE])]
-		texts = [chunk.text for chunk in chunks]
-		return "".join(texts)
-
-	def _getTokenType(self, tok_type):
-		return [chunk for chunk in self.chunks if isinstance(chunk, tok_type)]
-
-
-	def getNumbers(self):
-		return [item for item in self.chunks if item.isNumeric()]
-
-	def getVolumeItem(self):
-		# have = self._getTokenType(VolumeToken)
-		# if have:
-		# 	return have[0]
+		for do_ascii in [False, True]:
+			for item in self.chunks:
+				# if do_print:
+				# 	print(item, tok_cls, isinstance(item, tok_cls))
+				if isinstance(item, tok_cls):
+					if item.is_valid(parse_ascii=do_ascii):
+						return item.to_number(parse_ascii=do_ascii)
 		return None
 
+
+
+
+
 	def getVolume(self):
-		# have = self.getVolumeItem()
-		# if not have:
-		# 	return None
-		# return have.getNumber()
+		return self.getTok(VolumeToken)
+
+	def getChapter(self):
+		types = [ChapterToken, FreeChapterToken]
+		for toktype in types:
+			norm = self.getTok(toktype)
+			# print("Tok:", toktype, norm)
+			if norm is not None:
+				# print("returning:", norm)
+				return norm
 		return None
 
 	def getFragment(self):
-		# have = self._getTokenType(FragmentToken)
-		# if have:
-		# 	return have[0].getNumber()
-		return None
+		return self.getTok(FragmentTokenToken)
 
 
 	def _splitPostfix(self, inStr):
-		# for key in POSTFIX_SPLITS:
-		# 	print(key, key in inStr)
-		# 	if key in inStr:
-		# 		return inStr.split(key, 1)[-1]
 
 
 		return inStr.strip()
 
 	def getPostfix(self):
 
-		# for idx in range(len(self.chunks)):
-		# 	s_tmp = self.chunks[idx].stringl()
-		# 	# Do not glob onto postfixes untill there are no
-		# 	# attached chapter/volume items remaining.
-		# 	# Specifically, we allow fragment or free chapter tokens,
-		# 	# because they can unintentionally attach to postfix numbering.
-		# 	if any([isinstance(chunk, (VolumeToken, ChapterToken)) for chunk in self._following(idx)]):
-		# 		continue
+		for idx in range(len(self.chunks)):
+			# Do not glob onto postfixes untill there are no
+			# attached chapter/volume items remaining.
+			# Specifically, we allow fragment or free chapter tokens,
+			# because they can unintentionally attach to postfix numbering.
+			if any([isinstance(chunk, (VolumeToken, ChapterToken, FragmentTokenToken)) for chunk in self.chunks[idx:]]):
+				continue
 
-		# 	for p_key in POSTFIX_KEYS:
-		# 		if len(p_key) == 1:
-		# 			if p_key[0] in s_tmp:
-		# 				ret = ''.join([chunk.string() for chunk in self.chunks[idx:]])
-		# 				return self._splitPostfix(ret)
-		# 		if len(p_key) == 2:
-		# 			if p_key[1] in s_tmp:
-		# 				if idx > 0:
-		# 					last = self._preceeding(idx)[-1]
-		# 				else:
-		# 					last = NullToken()
-		# 				if p_key[0] in last.stringl():
-		# 					ret = ''.join([chunk.string() for chunk in self.chunks[last.index():]])
-		# 					return self._splitPostfix(ret)
+			for p_key in POSTFIX_KEYS:
+				if len(p_key) == 1:
+					if p_key[0] in self.chunks[idx].string().lower():
+						ret = ''.join([chunk.string() for chunk in self.chunks[idx:]])
+						return self._splitPostfix(ret)
+				if len(p_key) == 2:
+					if (
+								p_key[0] in self.chunks[idx].string().lower()
+							and
+								len(self.chunks) > (idx + 1)
+							and
+								p_key[1] in self.chunks[idx+1].string().lower()
+						):
+						ret = ''.join([chunk.string() for chunk in self.chunks[idx:]])
+						return self._splitPostfix(ret)
 		return ''
 
-	def getChapterItem(self):
-		# Preferentially select proper chapter tokens, rather
-		# then free-floating tokens.
-		# That way, titles like: '100 Years of Martial Arts – Chapter 2 Finished (╯°□°）╯︵ ┻━┻)'
-		# don't unintentionally glob onto '100', when we want it to
-		# # select '2' first
-		# have = self._getTokenType(ChapterToken)
-		# # print("Have chapter:", have)
-		# if have:
-		# 	return have[0]
-		# have = self._getTokenType(FreeChapterToken)
-		# if have:
-		# 	return have[0]
-
-		return None
-
-	def getChapter(self):
-		# # print("GetChapter call")
-		# have = self.getChapterItem()
-		# # print("GetChapter return: '%s'" % have)
-		# if not have:
-		# 	return None
-		# return have.getNumber()
-		return None
-
 	def __repr__(self):
-		ret = "<Parsed title: '{}'\n".format(self.raw)
+		ret = "<Parsed title: '{}' v:{}, c:{}, f:{}\n".format(self.raw, self.getVolume(), self.getChapter(), self.getFragment())
 		for item in self.chunks:
 			ret += "	{}\n".format(item)
 		ret += ">"
