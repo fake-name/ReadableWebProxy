@@ -135,11 +135,12 @@ class LetterNumberSplitter(SplitterBase):
 	def split_component(self, instr):
 
 		splits = [
-			re.compile(r"([a-z]+)(\.)([0-9]+)", re.IGNORECASE),
-			re.compile(r"([0-9]+)(\.)([a-z]+)", re.IGNORECASE),
+			re.compile(r"([a-z]+)(\.?)([0-9]+)", re.IGNORECASE),
+			re.compile(r"([0-9]+)(\.?)([a-z]+)", re.IGNORECASE),
 		]
 		for split in splits:
 			match = split.fullmatch(instr)
+			# print((split, match, instr))
 			if match:
 				return list(match.groups())
 				# print("Match:", match, match.groups())
@@ -252,9 +253,12 @@ class NumericToken(TokenBase):
 	def __repr__(self):
 		# print("Token __repr__ call!")
 		ret = "<{:14} - contents: '{}' '{}' '{}' (numeric: {}, ascii: {}, parsed: {}>".format(self.__class__.__name__,
-			self.prefix, self.intermediate, self.content,
-			self.is_valid(parse_ascii=False), self.is_valid(parse_ascii=True) and not self.is_valid(parse_ascii=False),
-			self.to_number(tok_text=self.content, parse_ascii=True) if self.is_valid(parse_ascii=True) else 'No'
+			self.prefix,
+			self.intermediate,
+			self.content,
+			self.is_decimal(),
+			self.is_ascii(),
+			self.to_number(tok_text=self.content, parse_ascii=True) if self.is_ascii() else 'No'
 			)
 		return ret
 
@@ -309,6 +313,15 @@ class NumericToken(TokenBase):
 		except NumberConversionException:
 			return False
 
+	def is_decimal(self):
+		try:
+			self.to_number(tok_text=self.content, parse_ascii=False)
+			return True
+		except NumberConversionException:
+			return False
+
+	def is_ascii(self):
+		return self.ascii_numeric(self.content) is not False
 
 	def ascii_numeric(self, content):
 
@@ -539,18 +552,116 @@ class VolumeChapterFragGlobber(GlobBase):
 			if intervening:
 				before.append(intervening)
 		else:
+
+			clstype = None
 			if prec and prec.lower() in self.VOLUME_KEYS:
-				# print("Volume token!", (prec.lower() in self.VOLUME_KEYS, prec, intervening, target))
-				target = VolumeToken(prec, intervening, target)
+				clstype = VolumeToken
 			elif prec and prec.lower() in self.CHAPTER_KEYS:
-				target = ChapterToken(prec, intervening, target)
+				clstype = ChapterToken
 			elif prec and prec.lower() in self.FRAGMENT_KEYS:
-				target = FragmentToken(prec, intervening, target)
+				clstype = FragmentToken
+
+			if clstype:
+				tmp = clstype(prec, intervening, target)
+				if tmp.is_decimal():
+					target = tmp
+				else:
+					if prec:
+						before.append(prec)
+					if intervening:
+						before.append(intervening)
+
 			else:
 				if prec:
 					before.append(prec)
 				if intervening:
 					before.append(intervening)
+
+		return before, target, after
+
+
+class AsciiVolumeChapterFragGlobber(GlobBase):
+
+
+	VOLUME_KEYS   = VOLUME_KEYS_GLOBAL
+	FRAGMENT_KEYS = FRAGMENT_KEYS_GLOBAL
+	CHAPTER_KEYS  = CHAPTER_KEYS_GLOBAL
+
+	ALLOWABLE_INTERMEDIATE_CHARS = [
+		" ",
+		".",
+		":",
+	]
+
+	def attach_token(self, before, target, after):
+		# print("AttachToken: ", (before, target, after))
+		# if len(after) == 3:
+		# 	target = before[-1] + target
+		# 	before = before[:-1]
+
+		after = after
+		before, prec, intervening = self.get_preceeding_text(before)
+		# if target == '24':
+		# 	print("(attach_token) Getting text preceding '%s' (%s)" % (target, type(target)))
+		# 	print("(attach_token) Text '%s' '%s' '%s' " % (before, prec, intervening))
+
+		if target in self.ALLOWABLE_INTERMEDIATE_CHARS or not isinstance(target, str):
+			if prec:
+				before.append(prec)
+			if intervening:
+				before.append(intervening)
+		else:
+			if prec:
+
+				clstype = None
+				if prec.lower() in self.VOLUME_KEYS:
+					clstype = VolumeToken
+				elif prec.lower() in self.CHAPTER_KEYS:
+					clstype = ChapterToken
+				elif prec.lower() in self.FRAGMENT_KEYS:
+					clstype = FragmentToken
+
+				last = None
+				lasttok = None
+				if clstype:
+					tgtstr = target
+					for idx, value in enumerate(after):
+						if isinstance(value, str):
+							tgtstr += value
+							if value != ' ' and value.lower() != 'and':
+								tok = clstype(prec, intervening, tgtstr)
+								# print("Instantiating token: ", (tgtstr, clstype, tok, tok.content))
+								if tok.is_ascii():
+									num = tok.to_number(parse_ascii=True)
+									if num != last:
+										last = num
+										lasttok = tok
+									else:
+										print("At end of number:", (prec, intervening, target, after))
+										print("At end of number:")
+										print(lasttok)
+										print((before, tgtstr, after[idx-1:]))
+										return before, lasttok, after[idx-1:]
+						elif lasttok and lasttok.is_valid(parse_ascii=True):
+							# print("Found non-string token. Forcing consume to halt.")
+							return before, lasttok, after[idx-1:]
+					if lasttok and lasttok.is_ascii():
+						# print("Ending.")
+						return before, lasttok, after[idx-1:]
+										# break
+					# clstype =
+				# print("Value:", (prec, intervening, target, after))
+
+			# 	target = VolumeToken(prec, intervening, target)
+			# elif prec and prec.lower() in self.CHAPTER_KEYS:
+			# 	target = ChapterToken(prec, intervening, target)
+			# elif prec and prec.lower() in self.FRAGMENT_KEYS:
+			# 	target = FragmentToken(prec, intervening, target)
+			# else:
+			# 	if prec:
+			# 		before.append(prec)
+			# 	if intervening:
+			# 		before.append(intervening)
 
 		return before, target, after
 
@@ -758,6 +869,7 @@ class TitleParser(object):
 		VolumeChapterFragGlobber,
 		EpisodeGlobber,
 		VolumeSpotFixGlobber,
+		AsciiVolumeChapterFragGlobber,
 		FreeNumericChapterGlobber,
 		FreeTextGlobber,
 	]
@@ -773,8 +885,9 @@ class TitleParser(object):
 		# print("Parsing title: '%s'" % title)
 
 		for step in self.PROCESSING_STEPS:
+			print("Splitter step before: ", step, title)
 			title = step().process(title)
-			# print("Splitter step: ", step, title)
+			print("Splitter step after: ", step, title)
 
 		self.chunks = title
 
@@ -836,11 +949,14 @@ class TitleParser(object):
 
 	def getPostfix(self):
 		ret = []
-		for p_key in POSTFIX_KEYS:
-			idx = self.raw.lower().find(p_key)
-			if idx >= 0:
-				postfix = self.raw[idx:]
-				ret.append((len(postfix), postfix))
+		# print(re.split("([ ,])", self.raw))
+		for chunk in re.split("([ ,])", self.raw):
+			for p_key in POSTFIX_KEYS:
+				if p_key in chunk.lower():
+					idx = self.raw.find(chunk)
+					if idx >= 0:
+						postfix = self.raw[idx:]
+						ret.append((len(postfix), postfix))
 
 		# We want to select the longest found postfix.
 		ret.sort(reverse=True)
