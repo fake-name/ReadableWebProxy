@@ -68,20 +68,30 @@ def test():
 
 def extract_mismatch():
 	from tests.title_test_data import data as test_data
-	from tests.title_test_data_two import data as test_data_more
+	# from tests.title_test_data_two import data as test_data_more
 	count = 0
 	mismatch = 0
 
+	test_data_dict = {}
+	for key, value in test_data:
+		if not key in test_data_dict:
+			test_data_dict[key] = []
+		test_data_dict[key].append(value)
+
 	with open("tests/title_test_data_mismatch.py", 'w') as fp:
 		fp.write("data = [\n")
-		for key, value in test_data+test_data_more:
+		goodstr = []
+		badstr = []
+		for key, value in test_data_dict.items():
 
 			p = TPN(key)
 			vol, chp, frag, post = p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()
-
 			# print(p)
-			if len(value) == 4:
-				e_vol, e_chp, e_frag, e_post = value
+			badtmp = ''
+			goodtmp = ''
+			for valueset in value:
+				assert (len(valueset) == 4), "Wat: %s" % (valueset, )
+				e_vol, e_chp, e_frag, e_post = valueset
 
 				if e_chp == 0.0 and chp is None:
 					e_chp = None
@@ -105,9 +115,27 @@ def extract_mismatch():
 
 
 				if vol != e_vol or chp != e_chp or frag != e_frag or e_post != post:
-					fp.write(format_row(key, e_vol, e_chp, e_frag, e_post))
+					badtmp = format_row(key, e_vol, e_chp, e_frag, e_post)
+				else:
+					goodtmp = format_row(key, e_vol, e_chp, e_frag, e_post)
+
+			if goodtmp:
+				goodstr.append(goodtmp)
+			else:
+				badstr.append(badtmp)
 
 			count += 1
+		goodstr.sort()
+		badstr.sort()
+
+		fp.write("".join(goodstr))
+		fp.write("\n\n")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("\n\n")
+		fp.write("".join(badstr))
 
 		fp.write("]\n")
 
