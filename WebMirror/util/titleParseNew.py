@@ -144,10 +144,13 @@ class LetterNumberSplitter(SplitterBase):
 	def split_component(self, instr):
 
 		splits = [
-			re.compile(r"([a-z]+)(\.?)([0-9\.]+)", re.IGNORECASE),
-			re.compile(r"([0-9\.]+)(\.?)([a-z]+)", re.IGNORECASE),
-			re.compile(r"([a-z]+)(\-?)([0-9\.]+)", re.IGNORECASE),
-			re.compile(r"([0-9\.]+)(\-?)([a-z]+)", re.IGNORECASE),
+			re.compile(r"([a-z_]+)(\.?)([0-9\.]+)", re.IGNORECASE),
+			re.compile(r"([0-9\.]+)(\.?)([a-z_]+)", re.IGNORECASE),
+			re.compile(r"([a-z_]+)(\-?)([0-9\.]+)", re.IGNORECASE),
+			re.compile(r"([0-9\.]+)(\-?)([a-z_]+)", re.IGNORECASE),
+
+			re.compile(r"([a-z_\-]+)(\.)([0-9\.]+)", re.IGNORECASE),
+			re.compile(r"([0-9\.]+)(\.)([a-z_\-]+)", re.IGNORECASE),
 		]
 		for split in splits:
 			match = split.fullmatch(instr)
@@ -165,8 +168,14 @@ class MiscLetterSplitter(SplitterBase):
 			# Split <letter>.<letter> to ('<letter>', '.', '<letter>')
 			re.compile(r"(.*?[a-z]+)(\.)([a-z]+.*?)", re.IGNORECASE),
 
-			# Split <whitespace>-<letter> to ('<letter>', '.', '<letter>')
+			# Split <whitespace>-<letter> to ('<whitespace>', '.', '<letter>')
 			re.compile(r"((?:.*?[\W]|^))(\-)([a-z]+.*?)", re.IGNORECASE),
+
+			# Split <letter>-<whitespace> to ('<letter>', '.', '<whitespace>')
+			re.compile(r"([a-z]+.*?)(\-)((?:.*?[\W]|$))", re.IGNORECASE),
+
+			# Detach commas from everything.
+			re.compile(r"(.*?)(,)(.*?)", re.IGNORECASE),
 		]
 		for split in splits:
 			match = split.fullmatch(instr)
@@ -570,8 +579,13 @@ class GlobBase(object):
 			p1 = inarr[:locidx]
 			p2 = inarr[locidx]
 			p3 = inarr[locidx+1:]
-			before, target, after = self.attach_token(p1, p2, p3)
+
+			# print("%s Passed. " % self.__class__.__name__)
+			# print("Sizes: ", (len(inarr), negoff, original_length, locidx))
 			old = inarr
+			# print("Input:  ", (old, ))
+			# print("Input:  ", (p1, p2, p3))
+			before, target, after = self.attach_token(p1, p2, p3)
 
 			# if inarr[locidx] == '24':
 			# print("%s Return: " % self.__class__.__name__, (before, target, after))
@@ -581,11 +595,9 @@ class GlobBase(object):
 				inarr = inarr + [target]
 			if len(after):
 				inarr = inarr + after
-			print("%s Passed. " % self.__class__.__name__)
-			print("Sizes: ", (len(inarr), negoff, original_length, locidx))
-			print("Input:  ", (old, ))
-			print("Output: ", (inarr, ))
+			# print("Output: ", (inarr, ))
 
+			assert locidx >= 0
 
 			negoff = original_length - len(inarr)
 			# print("Globber step", inarr)
@@ -613,16 +625,8 @@ class VolumeChapterFragGlobber(GlobBase):
 
 	def attach_token(self, before, target, after):
 		# print("AttachToken: ", (before, target, after))
-		# if len(after) == 3:
-		# 	target = before[-1] + target
-		# 	before = before[:-1]
-
-
 		before, prec, intervening = self.get_preceeding_text(before)
 
-		# print("Call         ", (before, target, after))
-		# print("(attach_token) Getting text preceding '%s' (%s)" % (target, type(target)))
-		# print("(attach_token) Text '%s' '%s' '%s' " % (before, prec, intervening))
 
 		if target in self.ALLOWABLE_INTERMEDIATE_CHARS or not isinstance(target, str):
 			if prec:
@@ -640,47 +644,10 @@ class VolumeChapterFragGlobber(GlobBase):
 				elif prec.lower() in self.FRAGMENT_KEYS:
 					clstype = FragmentToken
 
-				last = None
-				lasttok = None
-				lastidx = None
 				if clstype:
-					tgtstr = target
-					# We pad after with a empty string, so the first evauluation is /just/ tgtstr.
-					for idx, value in enumerate([""]+after):
-						# print("IDX, val:", (tgtstr, idx, value))
-						if isinstance(value, str):
-							tgtstr += value
-							# print("Wut?")
-							if value not in self.ALLOWABLE_INTERMEDIATE_CHARS:
-
-								tok = clstype(prec, intervening, tgtstr)
-								# print("Instantiating token: ", (tgtstr, clstype, tok, tok.content))
-								if tok.is_decimal():
-									num = tok.to_number(parse_ascii=False)
-									if num != last:
-										# print("Num changed", (prec, intervening, target, after))
-										last = num
-										lasttok = tok
-										lastidx = idx
-									else:
-										# print("At end of number:", (prec, intervening, target, after))
-										# print("At end of number:")
-										# print(lasttok)
-										# print((idx, before, tgtstr, after[idx-1:]))
-										return before, lasttok, after[idx-1:]
-
-						elif lasttok and lasttok.is_valid(parse_ascii=False):
-							# print("Found non-string token. Forcing consume to halt.")
-							return before, lasttok, after[idx-1:]
-
-
-					if lasttok and lasttok.is_decimal():
-						idx = max(lastidx-1, 0)
-						# print("Ending.", (before, lasttok, after[idx:]))
-						return before, lasttok, after[idx:]
-										# break
-					# clstype =
-				# print("Value:", (prec, intervening, target, after))
+					tok = clstype(prec, intervening, target)
+					if tok and tok.is_decimal():
+						return before, tok, after
 
 			if prec:
 				before.append(prec)
@@ -776,7 +743,7 @@ class AsciiVolumeChapterFragGlobber(GlobBase):
 						idx = max(lastidx-1, 0)
 						# print("Ending.", (before, lasttok, after[idx:]))
 						return before, lasttok, after[idx:]
-										# break
+
 					# clstype =
 				# print("Value:", (prec, intervening, target, after))
 
@@ -897,8 +864,10 @@ class CompoundChapterGlobber(GlobBase):
 
 class EpisodeGlobber(GlobBase):
 	'''
-	If we have a chapter entry, treat the episode entry as a fragment value.
-	If we don't have a chapter entry, treat it as the chapter value.
+	If we have a chapter entry before the episode, treat the episode entry as a fragment value.
+	If we have a chapter entry /after/ the episode, treat it as a volume.
+	If there is no attached chapter at that point, it's either a chapter, or we can't
+	properly parse the chapter, so just assume it's a chapter.
 	'''
 
 	KEYS = [
@@ -915,7 +884,8 @@ class EpisodeGlobber(GlobBase):
 
 		# print("Getting text preceding '%s' (%s)" % (target, type(target)))
 
-		have_chapter = any([isinstance(itm, ChapterToken) for itm in before+[target]+after])
+		have_chapter_before = any([isinstance(itm, ChapterToken) for itm in before+[target]])
+		have_chapter_after  = any([isinstance(itm, ChapterToken) for itm in after])
 		before, prec, intervening = self.get_preceeding_text(before)
 
 		if target == " ":
@@ -925,10 +895,14 @@ class EpisodeGlobber(GlobBase):
 				before.append(intervening)
 		else:
 			if prec and prec.lower() in self.KEYS:
-				if not have_chapter:
-					target = ChapterToken(prec, intervening, target)
-				else:
+				if have_chapter_before:
 					target = FragmentToken(prec, intervening, target)
+				elif have_chapter_after:
+					target = VolumeToken(prec, intervening, target)
+				else:
+					target = ChapterToken(prec, intervening, target)
+
+
 
 			else:
 				if prec:
@@ -1133,4 +1107,42 @@ class TitleParser(object):
 		ret += ">"
 		ret = ret.strip()
 		return ret
+
+
+def test():
+	testarr =  [
+			'Female',
+			' ',
+			'Warrior',
+			' ',
+			'Prologue',
+			' ',
+			'V',
+			'1',
+			'C',
+			'6',
+			':',
+			' ',
+			'Light',
+			' ',
+			'and',
+			' ',
+			'Shadow',
+			' ',
+			FragmentToken('Part', ' ', '6')
+		]
+	p1 = ['Female', ' ', 'Warrior', ' ', 'Prologue', ' ', 'V']
+	p2 = '1'
+	p3 = ['C', '6', ':', ' ', 'Light', ' ', 'and', ' ', 'Shadow', ' ', FragmentToken('Part', ' ', '6')]
+
+
+	globber = VolumeChapterFragGlobber()
+	r1, r2, r3 = globber.attach_token(p1, p2, p3)
+
+	print(p1, p2, p3)
+	print(r1, r2, r3)
+
+if __name__ == '__main__':
+	test()
+
 
