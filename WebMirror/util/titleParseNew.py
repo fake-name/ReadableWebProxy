@@ -96,6 +96,7 @@ class SplitterBase(object):
 	__metaclass__ = abc.ABCMeta
 
 	def process(self, inarr):
+		# print("Splitting!", (self.__class__.__name__, inarr))
 		if isinstance(inarr, str):
 			tmp = self.split_component(inarr)
 			assert isinstance(tmp, (list, tuple))
@@ -109,6 +110,8 @@ class SplitterBase(object):
 					tmp = self.split_component(chunk)
 					assert isinstance(tmp, (list, tuple))
 					[ret.append(subcmp) for subcmp in tmp]
+
+			# print("Split:    ", (self.__class__.__name__, inarr))
 			return ret
 
 	@abc.abstractmethod
@@ -119,9 +122,16 @@ class SpaceSplitter(SplitterBase):
 	def split_component(self, instr):
 		return list(intersperse(instr.split(" "), " "))
 
-class CommaGlobber(SplitterBase):
+class CommaSplitter(SplitterBase):
 	def split_component(self, instr):
 		return list(intersperse(instr.split(","), ","))
+
+class AsciiDecimalSplitter(SplitterBase):
+	def split_component(self, instr):
+
+		if (not " " in instr and "." in instr and any([tmp in instr for tmp in string.ascii_letters])):
+			return list(intersperse(instr.split("."), "."))
+		return [instr]
 
 class CharSplitter(SplitterBase):
 	def split_component(self, instr):
@@ -569,7 +579,7 @@ class GlobBase(object):
 		return [], None, intermediate
 
 	def process(self, inarr):
-		# print("Globber processing", inarr)
+		# print("%s Globber processing" % self.__class__.__name__, inarr)
 		assert isinstance(inarr, (list, tuple))
 		negoff = 0
 		original_length = len(inarr)
@@ -584,7 +594,7 @@ class GlobBase(object):
 			# print("Sizes: ", (len(inarr), negoff, original_length, locidx))
 			old = inarr
 			# print("Input:  ", (old, ))
-			# print("Input:  ", (p1, p2, p3))
+			# print("Input:  ", (self.__class__.__name__, p1, p2, p3))
 			before, target, after = self.attach_token(p1, p2, p3)
 
 			# if inarr[locidx] == '24':
@@ -645,7 +655,9 @@ class VolumeChapterFragGlobber(GlobBase):
 					clstype = FragmentToken
 
 				if clstype:
+					# print("Attaching:", prec, clstype)
 					tok = clstype(prec, intervening, target)
+					# print(tok, tok.is_decimal(), tok.content)
 					if tok and tok.is_decimal():
 						return before, tok, after
 
@@ -956,14 +968,17 @@ class DateGlobber(GlobBase):
 
 class R18Globber(GlobBase):
 	'''
-	Attach to text that looks like a date string, so it doesn't get further processed later.
+	Attach to text that looks like a age notification string, so it doesn't get further processed later.
 	'''
 	def attach_token(self, before, target, after):
-		# print("Processing:", target)
-
-		if isinstance(target, str):
-			if re.search(r'\(?R18\)?', target, re.IGNORECASE):
-				target = IgnoreTextToken(target)
+		tags = [
+			re.compile(r"[ \(]R18[ \)]", re.IGNORECASE),
+			re.compile(r"(?: |\A)R21(?: |\Z)", re.IGNORECASE),
+		]
+		for glob in tags:
+			if isinstance(target, str):
+				if glob.search(target):
+					target = IgnoreTextToken(target)
 
 		return before, target, after
 
@@ -977,10 +992,14 @@ class TitleParser(object):
 
 	PROCESSING_STEPS = [
 		SpaceSplitter,
-		VolumeChapterFragGlobber,
-		CommaGlobber,
+		CommaSplitter,
 		DateGlobber,
 		R18Globber,
+		LetterNumberSplitter,
+		AsciiDecimalSplitter,
+		VolumeChapterFragGlobber,
+		CompoundChapterGlobber,
+		VolumeChapterFragGlobber,
 		CompoundChapterGlobber,
 		FractionGlobber,
 		CharSplitter,
@@ -1073,9 +1092,9 @@ class TitleParser(object):
 		return None
 
 
-	def _splitPostfix(self, inStr):
+	def _splitPostfix(self, instr):
 
-		return inStr.strip()
+		return instr.strip()
 
 	def getPostfix(self):
 		ret = []

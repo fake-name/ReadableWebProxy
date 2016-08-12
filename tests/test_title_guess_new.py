@@ -68,14 +68,18 @@ def test():
 
 def extract_mismatch():
 	from tests.title_test_data import data as test_data
-	# from tests.title_test_data_two import data as test_data_more
+	from tests.title_test_data_two import data as test_data_more
 	count = 0
 	mismatch = 0
 
 	test_data_dict = {}
-	for key, value in test_data:
+	for key, value in test_data_more:
 		if not key in test_data_dict:
 			test_data_dict[key] = []
+		test_data_dict[key].append(value)
+	for key, value in test_data:
+		test_data_dict[key] = []
+	for key, value in test_data:
 		test_data_dict[key].append(value)
 
 	with open("tests/title_test_data_mismatch.py", 'w') as fp:
