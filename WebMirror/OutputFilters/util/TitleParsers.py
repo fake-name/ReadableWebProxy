@@ -7,7 +7,7 @@ import json
 import logging
 from WebMirror.OutputFilters import AmqpInterface
 import settings
-from WebMirror.util.titleParse import TitleParser
+from WebMirror.util.titleParseNew import TitleParser
 
 
 from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage

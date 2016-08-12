@@ -86,47 +86,50 @@ def extract_mismatch():
 		fp.write("data = [\n")
 		goodstr = []
 		badstr = []
+		errored = []
 		for key, value in test_data_dict.items():
+			try:
+				p = TPN(key)
+				vol, chp, frag, post = p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()
+				# print(p)
+				badtmp = ''
+				goodtmp = ''
+				for valueset in value:
+					assert (len(valueset) == 4), "Wat: %s" % (valueset, )
+					e_vol, e_chp, e_frag, e_post = valueset
 
-			p = TPN(key)
-			vol, chp, frag, post = p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()
-			# print(p)
-			badtmp = ''
-			goodtmp = ''
-			for valueset in value:
-				assert (len(valueset) == 4), "Wat: %s" % (valueset, )
-				e_vol, e_chp, e_frag, e_post = valueset
+					if e_chp == 0.0 and chp is None:
+						e_chp = None
 
-				if e_chp == 0.0 and chp is None:
-					e_chp = None
+					bad = False
+					if vol != e_vol or chp != e_chp or frag != e_frag:
+						bad = True
+						print(p)
+						print("Parsed: v{}, c{}, f{}".format(vol, chp, frag))
+						print("Expect: v{}, c{}, f{}".format(e_vol, e_chp, e_frag))
+						print()
 
-				bad = False
-				if vol != e_vol or chp != e_chp or frag != e_frag:
-					bad = True
-					print(p)
-					print("Parsed: v{}, c{}, f{}".format(vol, chp, frag))
-					print("Expect: v{}, c{}, f{}".format(e_vol, e_chp, e_frag))
-					print()
+					if e_post != post:
+						bad = True
+						print(p)
+						print("Post mismatch - Parsed: {}".format(post))
+						print("Post mismatch - Expect: {}".format(e_post))
 
-				if e_post != post:
-					bad = True
-					print(p)
-					print("Post mismatch - Parsed: {}".format(post))
-					print("Post mismatch - Expect: {}".format(e_post))
-
-				if bad:
-					mismatch += 1
+					if bad:
+						mismatch += 1
 
 
-				if vol != e_vol or chp != e_chp or frag != e_frag or e_post != post:
-					badtmp = format_row(key, e_vol, e_chp, e_frag, e_post)
+					if vol != e_vol or chp != e_chp or frag != e_frag or e_post != post:
+						badtmp = format_row(key, e_vol, e_chp, e_frag, e_post)
+					else:
+						goodtmp = format_row(key, e_vol, e_chp, e_frag, e_post)
+
+				if goodtmp:
+					goodstr.append(goodtmp)
 				else:
-					goodtmp = format_row(key, e_vol, e_chp, e_frag, e_post)
-
-			if goodtmp:
-				goodstr.append(goodtmp)
-			else:
-				badstr.append(badtmp)
+					badstr.append(badtmp)
+			except AssertionError:
+				errored.append(format_row(key, None, None, None, ''))
 
 			count += 1
 		goodstr.sort()
@@ -140,12 +143,20 @@ def extract_mismatch():
 		fp.write("#################################################################################################################################################################################################################################")
 		fp.write("\n\n")
 		fp.write("".join(badstr))
+		fp.write("\n\n")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("#################################################################################################################################################################################################################################")
+		fp.write("\n\n")
+		fp.write("".join(errored))
 
 		fp.write("]\n")
 
 	# print("All matches passed!")
 	print("{} Items with parsed output".format(count))
 	print("{} Items mismatch in new parser".format(mismatch))
+	print("{} error encountered in parsing".format(len(errored)))
 	print("Total items: {}".format(len(test_data)))
 
 def test_mismatch():

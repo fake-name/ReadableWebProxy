@@ -130,7 +130,10 @@ class AsciiDecimalSplitter(SplitterBase):
 	def split_component(self, instr):
 
 		if (not " " in instr and "." in instr and any([tmp in instr for tmp in string.ascii_letters])):
-			return list(intersperse(instr.split("."), "."))
+			asciinum = [any([letter in tmp for letter in string.ascii_letters]) for tmp in instr.split(".")]
+			asciicnt = [tmp for tmp in asciinum if tmp]
+			if len(asciicnt) >= 2:
+				return list(intersperse(instr.split("."), "."))
 		return [instr]
 
 class CharSplitter(SplitterBase):
@@ -996,9 +999,9 @@ class TitleParser(object):
 		DateGlobber,
 		R18Globber,
 		LetterNumberSplitter,
-		AsciiDecimalSplitter,
 		VolumeChapterFragGlobber,
 		CompoundChapterGlobber,
+		AsciiDecimalSplitter,
 		VolumeChapterFragGlobber,
 		CompoundChapterGlobber,
 		FractionGlobber,
