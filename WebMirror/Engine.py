@@ -116,6 +116,9 @@ GLOBAL_BAD = [
 			"www.fashionmodeldirectory.com",
 			"www.watchingprivatepractice.com",
 			"Ebonyimages.jupiterimages.com",
+
+			# More garbage issues.
+			'"https',
 	]
 
 

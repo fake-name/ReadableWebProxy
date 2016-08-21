@@ -586,15 +586,30 @@ class GlobBase(object):
 		assert isinstance(inarr, (list, tuple))
 		negoff = 0
 		original_length = len(inarr)
+		# print("Call!")
 		for idx in range(original_length):
 			locidx = idx - negoff
+
+			# If a token attaches to too many items, we can wind up with the locidx going
+			# negative. If this happens, we just skip until it's a valid index
+			# ['Chapter', ' ', 'twenty', '-', 'one', ': ', 'thing', ' ', 'thing', ' ', 'thingy']
+			# Idx 2 triggers the chapter globber to consume the first /5/ items:
+			# [<ChapterToken   - contents: 'Chapter' ' ' 'twenty-one' (numeric: False, ascii: True, parsed: 21>, ': ', 'thing', ' ', 'thing', ' ', 'thingy']
+			# Idx 3 is then subtracted -4, so we get -1.
+			# As such, we spin until we're back at index 0
+			if locidx < 0:
+				# print("Skipping!", idx, negoff, locidx)
+				continue
+
+			# print("Output: ", (inarr, ))
+			# print("Sizes: ", (len(inarr), negoff, idx, original_length, locidx, inarr[locidx]))
+			assert locidx >= 0
 
 			p1 = inarr[:locidx]
 			p2 = inarr[locidx]
 			p3 = inarr[locidx+1:]
 
 			# print("%s Passed. " % self.__class__.__name__)
-			# print("Sizes: ", (len(inarr), negoff, original_length, locidx))
 			old = inarr
 			# print("Input:  ", (old, ))
 			# print("Input:  ", (self.__class__.__name__, p1, p2, p3))
@@ -608,9 +623,7 @@ class GlobBase(object):
 				inarr = inarr + [target]
 			if len(after):
 				inarr = inarr + after
-			# print("Output: ", (inarr, ))
 
-			assert locidx >= 0
 
 			negoff = original_length - len(inarr)
 			# print("Globber step", inarr)

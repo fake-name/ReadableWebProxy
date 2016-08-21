@@ -131,8 +131,9 @@ class JobAggregator(LogBase.LoggerMixin):
 			return
 
 		while self.active_jobs < MAX_IN_FLIGHT_JOBS and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
-			self.log.info("Need to add jobs to the job queue (%s active)!", self.active_jobs)
+			old = self.active_jobs
 			self._get_task_internal()
+			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
 
 			# We have to handle job responses here too, or the response queue can bloat horribly
 			# while we're waiting for the output job queue to fill.

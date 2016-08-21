@@ -87,6 +87,8 @@ badwords: [
 
 			'/stories/report_story.php?',
 
+			'/files/Utilities/',
+
 			'/css/css/s/',
 			"/forum/",
 			"/forums",
