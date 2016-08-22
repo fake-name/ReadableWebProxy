@@ -86,6 +86,8 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, 'Terror Infinity', vol, chp, frag=frag)
 	if 'Warlock of the Magus World' in item['tags']:
 		return buildReleaseMessage(item, 'Warlock of the Magus World', vol, chp, frag=frag)
+	if 'Spirit Realm' in item['tags']:
+		return buildReleaseMessage(item, 'Spirit Realm', vol, chp, frag=frag)
 
 	return False
 
@@ -789,6 +791,10 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, "Release that Witch", vol, chp, frag=frag, postfix=postfix)
 	if 'Sword Spirit' in item['tags']:
 		return buildReleaseMessage(item, "Sword Spirit", vol, chp, frag=frag, postfix=postfix)
+	if "Demon Wang's Favorite Fei" in item['tags']:
+		return buildReleaseMessage(item, "Demon Wang's Golden Favorite Fei", vol, chp, frag=frag, postfix=postfix)
+	if 'True Cultivators' in item['tags']:
+		return buildReleaseMessage(item, 'The Strong, The Few, True Cultivators on Campus', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

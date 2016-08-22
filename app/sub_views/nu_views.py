@@ -15,6 +15,7 @@ from calendar import timegm
 from sqlalchemy.sql import text
 from app import app
 
+from Misc.NuForwarder import NuForwarder
 
 import WebMirror.database as db
 
@@ -80,6 +81,11 @@ def aggregate_nu_items(in_rows):
 
 
 def get_nu_items(sess, selector):
+
+	intf = NuForwarder.NuForwarder(connect=False)
+	intf.fix_names()
+	intf.consolidate_validated()
+
 	new_items = sess.query(db.NuOutboundWrapperMap)
 	if selector == "unverified" or selector == None:
 		new_items = new_items.filter(db.NuOutboundWrapperMap.validated == False)
@@ -132,6 +138,7 @@ def nu_view():
 	session = g.session
 	session.expire_all()
 	session.commit()
+	session.expire_all()
 	new = get_nu_items(g.session, release_selector)
 	session.commit()
 	new.sort(key=lambda x: x[1][0].seriesname)

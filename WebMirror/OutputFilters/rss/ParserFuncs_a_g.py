@@ -1722,6 +1722,8 @@ def  extractBakaPervert(item):
 		return buildReleaseMessage(item, 'Ultimate Antihero', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith('hxh'):
 		return buildReleaseMessage(item, 'Hybrid x Heart Magis Academy Ataraxia', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('magika vol'):
+		return buildReleaseMessage(item, 'Magika No Kenshi To Shoukan Maou', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractAsd398(item):
@@ -2640,6 +2642,10 @@ def extractElementalCobalt(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].lower().startswith('arifureta chapter'):
+		return buildReleaseMessage(item, 'Arifureta Shokugyou de Sekai Saikyou', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('requiem to the stars'):
+		return buildReleaseMessage(item, 'Requiem to the Stars', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
 def extractExtantVisions(item):
@@ -2812,18 +2818,21 @@ def extractFantasyBooksLive(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
 	if 'Heavenward On Golden Wings' in item['tags']:
-		return buildReleaseMessage(item, 'Heavenward On Golden Wings', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Heavenward On Golden Wings', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'The Abandoned' in item['tags']:
-		return buildReleaseMessage(item, 'The Abandoned', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'The Abandoned', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Regarding The Life of A Certain Fallen Noble' in item['tags']:
-		return buildReleaseMessage(item, 'Regarding The Life of A Certain Fallen Noble', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Regarding The Life of A Certain Fallen Noble', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Orphans of a Dead Nation' in item['tags']:
-		return buildReleaseMessage(item, 'Orphans of a Dead Nation', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Orphans of a Dead Nation', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Life and Times of Mitch and Akki' in item['tags']:
-		return buildReleaseMessage(item, 'Life and Times of Mitch and Akki', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Life and Times of Mitch and Akki', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if "God's Island" in item['tags']:
-		return buildReleaseMessage(item, "God's Island", vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, "God's Island", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if'Black Titan' in item['tags']:
+		return buildReleaseMessage(item, 'Black Titan', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
+
 def extractForKalimdor(item):
 	"""
 	For Kalimdor

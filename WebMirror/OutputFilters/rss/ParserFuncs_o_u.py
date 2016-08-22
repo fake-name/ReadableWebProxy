@@ -283,6 +283,10 @@ def extractSkythewood(item):
 		return buildReleaseMessage(item, 'Genocide Reality', vol, chp, frag=frag)
 	if 'Youjo Senki' in item['tags']:
 		return buildReleaseMessage(item, 'Youjo Senki', vol, chp, frag=frag)
+	if 'Gifting' in item['tags']:
+		return buildReleaseMessage(item, 'Gifting the wonderful world with blessings!', vol, chp, frag=frag)
+	if 'Manu' in item['tags']:
+		return buildReleaseMessage(item, 'Manuscript Screening Boy and Manuscript Submitting Girl', vol, chp, frag=frag)
 	if 'Isekai Mahou' in item['tags']:
 		return buildReleaseMessage(item, 'Isekai Mahou wa Okureteru!', vol, chp, frag=frag)
 
@@ -709,6 +713,10 @@ def extractTranslationNations(item):
 		return buildReleaseMessage(item, 'Undefeated God of War', vol, chp, frag=frag, postfix=postfix)
 	if 'Path to Heaven' in item['tags']:
 		return buildReleaseMessage(item, 'Path to Heaven', vol, chp, frag=frag, postfix=postfix)
+	if 'The Ultimate Evolution' in item['tags']:
+		return buildReleaseMessage(item, 'The Ultimate Evolution', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith("the ultimate evolution volume") and "Chapter" in item['title']:
+		return buildReleaseMessage(item, 'The Ultimate Evolution', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 ####################################################################################################################################################
@@ -1213,6 +1221,8 @@ def extractTotallyInsaneTranslation(item):
 
 	if "PMG" in item['tags']:
 		return buildReleaseMessage(item, "Peerless Martial God", vol, chp, frag=frag, postfix=postfix)
+	if 'DtH' in item['tags']:
+		return buildReleaseMessage(item, "Devouring The Heavens", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3022,6 +3032,8 @@ def extractTwelveMonthsofMay(item):
 		return None
 	if 'My Mister Ostrich' in item['tags']:
 		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Ostrich Chapter"):
+		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractUkel2x(item):
@@ -3454,6 +3466,8 @@ def extractTandQ(item):
 		return None
 	if '#Les Interpretes' in item['tags']:
 		return buildReleaseMessage(item, 'Les Interpretes', vol, chp, frag=frag, postfix=postfix)
+	if '致我们终将逝去的青春' in item['tags']:
+		return buildReleaseMessage(item, 'To Our Youth That is Fading Away', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractTequilaMockingbard(item):
 	"""

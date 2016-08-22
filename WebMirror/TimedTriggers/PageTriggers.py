@@ -72,6 +72,6 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 	run = HourlyPageTrigger()
 	run._go()
-	# run = EveryOtherDayPageTrigger()
-	# run._go()
+	run2 = EveryOtherDayPageTrigger()
+	run2._go()
 
