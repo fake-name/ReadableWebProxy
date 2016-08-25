@@ -2069,7 +2069,7 @@ def  extractAdamantineDragonintheCrystalWorld(item):
 		return None
 
 	if 'Crystal World' in item['tags']:
-		return buildReleaseMessage(item, 'Adamantine Dragon in the Crystal World', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Adamantine Dragon in the Crystal World', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
 def  extractFakTranslations(item):

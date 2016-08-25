@@ -773,6 +773,7 @@ badwords: [
 	'https://docs.google.com/forms/d',
 
 
+	 'http:/mistycloudtranslations.com',
 	" http://gravitytales.com",
 	" http:/gravitytales.com",
 	"%20http%3A//gravitytales.com",

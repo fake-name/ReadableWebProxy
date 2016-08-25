@@ -165,26 +165,24 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 				chp_title = chp_title.get_text()
 
 				agg_title = " ".join((vol_str, chp_title))
-				# print("Chp title: '{}'".format(chp_title))
 				vol, chp, frag, post = extractTitle(agg_title)
+
 				raw_item = {}
 				raw_item['srcname']   = 'JapTem Fanfic'
 				raw_item['published'] = reldate
 				releaseurl = urllib.parse.urljoin(seriesPageUrl, release.a['href'])
 				raw_item['linkUrl']   = releaseurl
 
-				msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra)
-				msg = msgpackers.createReleasePacket(msg)
+				raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+				msg     = msgpackers.createReleasePacket(raw_msg)
 
 				retval.append(msg)
+
 		if not retval:
 			return []
 
-		retval.append(meta_pkt)
-		# return []
+		self.amqp_put_item(meta_pkt)
 		return retval
-
-
 
 
 	def sendReleases(self, releases):
@@ -207,7 +205,6 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 					self.sendReleases(releases)
 			except Exception:
 				traceback.print_exc()
-
 
 
 

@@ -1,6 +1,9 @@
 
 
 import pprint
+import unicodedata
+import sys
+import re
 import json
 import ftfy
 
@@ -27,6 +30,20 @@ def fixCase(inText):
 		inText = inText.title()
 	return inText
 
+WHITESPACE_CHARS = [
+		'\t', '\n', '\x0b', '\x0c', '\r', '\x1c', '\x1d', '\x1e', '\x1f', ' ',
+		'\x85', '\xa0', '\u1680', '\u2000', '\u2001', '\u2002', '\u2003',
+		'\u2004', '\u2005', '\u2006', '\u2007', '\u2008', '\u2009', '\u200a',
+		'\u2028', '\u2029', '\u202f', '\u205f', '\u3000'
+	]
+
+def fixUnicodeSpaces(val):
+	for badchar in WHITESPACE_CHARS:
+		val = val.replace(badchar, " ")
+	while "  " in val:
+		val = val.replace("  ", " ")
+	return val
+
 def fix_string(val):
 	if isinstance(val, list):
 		val = [fixCase(tmp) for tmp in val]
@@ -34,6 +51,7 @@ def fix_string(val):
 
 	if not val:
 		return val
+	val = fixUnicodeSpaces(val)
 	val = fixSmartQuotes(val)
 	val = fixCase(val)
 	val = ftfy.fix_text(val)

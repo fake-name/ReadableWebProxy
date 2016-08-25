@@ -379,7 +379,13 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Fukkit, just nuke them in general
 		for pre in soup.find_all("pre"):
 			pre.name = "div"
-			formatted = markdown.markdown(pre.encode_contents().decode("utf-8"), extensions=["linkify"])
+			contentstr = pre.encode_contents().decode("utf-8")
+
+			# Don't markdown huge documents.
+			if len(contentstr) > 1024 * 500:
+				continue
+
+			formatted = markdown.markdown(contentstr, extensions=["linkify"])
 			formatted = WebMirror.util.webFunctions.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()

@@ -130,7 +130,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['tl_type']     = 'oel'
 		seriesmeta['sourcesite']  = 'RoyalRoadL'
 
-		pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
+		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
 
 		extra = {}
 		extra['tags']     = tags
@@ -141,7 +141,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		chapters = soup.find("div", class_='chapters')
 		releases = chapters.find_all('li', class_='chapter')
 
-		retval = []
+		raw_retval = []
 		for release in releases:
 			chp_title, reldatestr = release.find_all("span")
 			rel = datetime.datetime.strptime(reldatestr.get_text(), '%d/%m/%y')
@@ -159,45 +159,43 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release.a['href']
 
-			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
-			retval.append(msg)
+			raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+
+			raw_retval.append(raw_msg)
 
 		missing_chap = 0
-		for item in retval:
+		for item in raw_retval:
 			if not (item['vol'] or item['chp']):
 				missing_chap += 1
 
-		if len(retval):
-			unnumbered = (missing_chap/len(retval)) * 100
-			if len(retval) >= 5 and unnumbered > 80:
+		if len(raw_retval):
+			unnumbered = (missing_chap/len(raw_retval)) * 100
+			if len(raw_retval) >= 5 and unnumbered > 80:
 				self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
 				chap = 1
-				for item in retval:
+				for item in raw_retval:
 					item['vol'] = None
 					item['chp'] = chap
 					chap += 1
 
 		# Do not add series without 3 chapters.
-		if len(retval) < 3:
+		if len(raw_retval) < 3:
 			self.log.info("Less then three chapters!")
 			return []
 
-
-
-		if not retval:
+		if not raw_retval:
 			self.log.info("Retval empty?!")
 			return []
-		self.amqp_put_item(pkt)
+
+		self.amqp_put_item(meta_pkt)
+		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval]
 		return retval
-
-
 
 
 	def sendReleases(self, releases):
 		self.log.info("Total releases found on page: %s. Emitting messages into AMQP local queue.", len(releases))
 		for release in releases:
-			pkt = msgpackers.createReleasePacket(release)
-			self.amqp_put_item(pkt)
+			self.amqp_put_item(release)
 
 
 
