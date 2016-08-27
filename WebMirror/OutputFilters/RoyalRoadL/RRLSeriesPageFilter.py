@@ -143,14 +143,13 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		raw_retval = []
 		for release in releases:
-			chp_title, reldatestr = release.find_all("span")
-			rel = datetime.datetime.strptime(reldatestr.get_text(), '%d/%m/%y')
+			rel = datetime.datetime.strptime(release.find_all("span")[-1].get_text(), '%d/%m/%y')
 			if rel.date() == datetime.date.today():
 				reldate = time.time()
 			else:
 				reldate = calendar.timegm(rel.timetuple())
 
-			chp_title = chp_title.get_text()
+			chp_title = release.a['title'].strip()
 			# print("Chp title: '{}'".format(chp_title))
 			vol, chp, frag, post = extractTitle(chp_title + " " + title)
 

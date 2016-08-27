@@ -427,16 +427,22 @@ def purge_invalid_urls(selected_netloc=None):
 			# due to the change tracking triggers.
 
 			count = 1
-
-			loc = and_(
+			ands = [
 					db.WebPages.netloc.in_(ruleset['netlocs']),
 					or_(*(db.WebPages.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
-				)
+				]
+
+			if selected_netloc:
+				ands.append((db.WebPages.netloc == selected_netloc))
+
+			loc = and_(*ands)
 			# print("Doing count on table ")
 			# count = sess.query(db.WebPages) \
 			# 	.filter(or_(*opts)) \
 			# 	.count()
 
+			if selected_netloc:
+				print(loc)
 
 			if count == 0:
 				print("{num} items match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=count))

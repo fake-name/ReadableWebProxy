@@ -802,6 +802,18 @@ badwords: [
 
 	# Siiigh.
 	'demo-to-prevent-copy-paste-on-blogger_files',
+
+
+	"Special:WhatLinksHere",
+	"Special:UserLogin",
+	"Special:RecentChangesLinked",
+	"Special:",
+	"action=edit",
+	"diff=",
+	"oldid=",
+	"diff%3D",
+	"oldid%3D",
+
 	]
 
 decompose: [

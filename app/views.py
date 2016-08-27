@@ -51,6 +51,7 @@ def before_request():
 
 @app.teardown_request
 def teardown_request(response):
+	g.session.commit()
 	database.release_session(g.session)
 
 
