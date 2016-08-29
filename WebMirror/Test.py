@@ -28,6 +28,8 @@ import WebMirror.SpecialCase
 
 from sqlalchemy_continuum.utils import version_table
 
+import Misc.HistoryAggregator.Flatten
+
 def print_html_response(archiver, new, ret):
 	print("Plain links:")
 	for link in ret['plainLinks']:
@@ -428,12 +430,14 @@ def purge_invalid_urls(selected_netloc=None):
 
 			count = 1
 			ands = [
-					db.WebPages.netloc.in_(ruleset['netlocs']),
 					or_(*(db.WebPages.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
 				]
 
 			if selected_netloc:
 				ands.append((db.WebPages.netloc == selected_netloc))
+			else:
+				ands.append(db.WebPages.netloc.in_(ruleset['netlocs']))
+
 
 			loc = and_(*ands)
 			# print("Doing count on table ")
@@ -728,26 +732,6 @@ def delete_feed(feed_name, do_delete, search_str):
 
 	sess.commit()
 
-def consolidate_history():
-
-	sess = db.get_db_session()
-	print("Doing select")
-	end = sess.execute("""
-			SELECT
-				count(*), url
-			FROM
-				web_pages_version
-			GROUP BY
-				url
-			HAVING
-				COUNT(*) > 1
-			LIMIT
-				40
-		""")
-	print("Wut?")
-	print(end)
-
-
 def decode(*args):
 	print("Args:", args)
 
@@ -781,7 +765,7 @@ def decode(*args):
 		elif op == "rss-db":
 			rss_db_sync()
 		elif op == "consolidate-history":
-			consolidate_history()
+			Misc.HistoryAggregator.Flatten.consolidate_history()
 		elif op == "rss-db-silent":
 			rss_db_sync(silent=True)
 		elif op == "sort-json":

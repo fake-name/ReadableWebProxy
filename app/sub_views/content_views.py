@@ -91,6 +91,7 @@ def view_history():
 		versions = []
 
 		rev = page.job.versions[0]
+		print("Versions: ", page.job.versions)
 		while rev:
 			versions.append(rev)
 			rev = rev.next

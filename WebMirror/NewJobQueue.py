@@ -132,14 +132,19 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		while self.active_jobs < MAX_IN_FLIGHT_JOBS and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
 			old = self.active_jobs
-			self._get_task_internal()
+			num_new = self._get_task_internal()
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
+
 
 			# We have to handle job responses here too, or the response queue can bloat horribly
 			# while we're waiting for the output job queue to fill.
 			self.process_responses()
 			if runStatus.run_state.value != 1:
 				return
+
+			# If there weren't any new items, stop looping because we're not going anywhere.
+			if num_new == 0:
+				break
 
 		# If we haven't had a received job in 10 minutes, reset the job counter because we might
 		# have leaked the jobs away somehow.
@@ -205,7 +210,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.process_responses()
 
 			msg_loop += 1
-			time.sleep(1)
+			time.sleep(2.5)
 			if msg_loop > 20:
 				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.job_run_state.value==1)
 				msg_loop = 0
@@ -291,16 +296,16 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.db_interface.rollback()
 
 		if runStatus.run_state.value != 1:
-			return
+			return 0
 
 		if not rids:
-			return
+			return 0
 
 		rids = list(rids)
 		# If we broke because a user-interrupt, we may not have a
 		# valid rids at this point.
 		if runStatus.run_state.value != 1:
-			return False
+			return 0
 
 		xqtim = time.time() - start
 
@@ -309,7 +314,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			for dummy_x in range(5):
 				if runStatus.run_state.value == 1:
 					time.sleep(1)
-			return
+			return 0
 
 		if xqtim > 0.5:
 			self.log.error("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
@@ -322,6 +327,8 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.put_outbound_job(rid, joburl)
 
 		cursor.close()
+
+		return len(rids)
 
 
 def test2():
