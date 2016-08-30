@@ -1,4 +1,4 @@
-"""AMQP-Storm Message."""
+"""AMQPStorm Message."""
 
 import json
 import uuid
@@ -17,10 +17,10 @@ class Message(BaseMessage):
 
     def __init__(self, channel, auto_decode=True, **message):
         """
-        :param Channel channel: amqp-storm Channel
+        :param Channel channel: AMQPStorm Channel
         :param bool auto_decode: Auto-decode strings when possible. Does not
                                  apply to to_dict, or to_tuple.
-        :param str|unicode body: Message body
+        :param bytes|str|unicode body: Message payload
         :param dict method: Message method
         :param dict properties: Message properties
         """
@@ -32,8 +32,8 @@ class Message(BaseMessage):
     def create(channel, body, properties=None):
         """Create a new Message.
 
-        :param Channel channel: AMQP-Storm Channel
-        :param bytes|str|unicode body: Message body
+        :param Channel channel: AMQPStorm Channel
+        :param bytes|str|unicode body: Message payload
         :param dict properties: Message properties
 
         :rtype: Message
@@ -107,8 +107,9 @@ class Message(BaseMessage):
         :return:
         """
         if not self._method:
-            raise AMQPMessageError('Message.ack only available on '
-                                   'incoming messages')
+            raise AMQPMessageError(
+                'Message.ack only available on incoming messages'
+            )
         self._channel.basic.ack(delivery_tag=self._method['delivery_tag'])
 
     def nack(self, requeue=True):
@@ -122,8 +123,9 @@ class Message(BaseMessage):
         :param bool requeue:
         """
         if not self._method:
-            raise AMQPMessageError('Message.nack only available on '
-                                   'incoming messages')
+            raise AMQPMessageError(
+                'Message.nack only available on incoming messages'
+            )
         self._channel.basic.nack(delivery_tag=self._method['delivery_tag'],
                                  requeue=requeue)
 
@@ -138,8 +140,9 @@ class Message(BaseMessage):
         :param bool requeue: Requeue the message
         """
         if not self._method:
-            raise AMQPMessageError('Message.reject only available on '
-                                   'incoming messages')
+            raise AMQPMessageError(
+                'Message.reject only available on incoming messages'
+            )
         self._channel.basic.reject(delivery_tag=self._method['delivery_tag'],
                                    requeue=requeue)
 
@@ -149,7 +152,6 @@ class Message(BaseMessage):
 
         :param str routing_key: Message routing key
         :param str exchange: The exchange to publish the message to
-        :param dict properties: Message properties
         :param bool mandatory: Requires the message is published
         :param bool immediate: Request immediate delivery
 

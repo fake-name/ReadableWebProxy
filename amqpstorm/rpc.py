@@ -1,4 +1,4 @@
-"""AMQP-Storm Rpc."""
+"""AMQPStorm Rpc."""
 
 import threading
 import time
@@ -141,6 +141,11 @@ class Rpc(object):
             if value == uuid:
                 requests.append(key)
         self.remove(uuid)
-        message = ('rpc requests %s (%s) took too long (timeout: %s)'
-                   % (uuid, ', '.join(requests), self._timeout))
+        message = (
+            'rpc requests %s (%s) took too long' %
+            (
+                uuid,
+                ', '.join(requests)
+            )
+        )
         raise AMQPChannelError(message)

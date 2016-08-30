@@ -1,4 +1,4 @@
-"""AMQP-Storm Connection.Heartbeat."""
+"""AMQPStorm Connection.Heartbeat."""
 
 import logging
 import threading
@@ -85,8 +85,12 @@ class Heartbeat(object):
                 self._threshold += 1
                 if self._threshold >= 2:
                     self._running.set()
-                    message = ('Connection dead, no heartbeat or data received'
-                               ' in >= %ds' % (self._interval * 2))
+                    message = (
+                        'Connection dead, no heartbeat or data received in >= '
+                        '%ds' % (
+                            self._interval * 2
+                        )
+                    )
                     why = AMQPConnectionError(message)
                     if self._exceptions is None:
                         raise why

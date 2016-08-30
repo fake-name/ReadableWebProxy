@@ -1,4 +1,4 @@
-"""AMQP-Storm Channel.Queue."""
+"""AMQPStorm Channel.Queue."""
 
 import logging
 
@@ -19,12 +19,12 @@ class Queue(Handler):
                 exclusive=False, auto_delete=False, arguments=None):
         """Declare a Queue.
 
-        :param str queue:
-        :param bool passive:
-        :param bool durable:
-        :param bool exclusive:
-        :param bool auto_delete:
-        :param dict arguments:
+        :param str queue: Queue name
+        :param bool passive: Do not create
+        :param bool durable: Durable queue
+        :param bool exclusive: Request exclusive access
+        :param bool auto_delete: Automatically delete when not in use
+        :param dict arguments: Queue key/value arguments
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -57,7 +57,7 @@ class Queue(Handler):
     def delete(self, queue='', if_unused=False, if_empty=False):
         """Delete a Queue.
 
-        :param str queue:
+        :param str queue: Queue name
         :param bool if_unused: Delete only if unused
         :param bool if_empty: Delete only if empty
 
@@ -79,10 +79,10 @@ class Queue(Handler):
                                           if_empty=if_empty)
         return self._channel.rpc_request(delete_frame)
 
-    def purge(self, queue=''):
+    def purge(self, queue):
         """Purge a Queue.
 
-        :param str queue:
+        :param str queue: Queue name
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -101,10 +101,10 @@ class Queue(Handler):
     def bind(self, queue='', exchange='', routing_key='', arguments=None):
         """Bind a Queue.
 
-        :param str queue:
-        :param str exchange:
-        :param str routing_key:
-        :param dict arguments:
+        :param str queue: Queue name
+        :param str exchange: Exchange name
+        :param str routing_key: The routing key to use
+        :param dict arguments: Bind key/value arguments
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -131,10 +131,10 @@ class Queue(Handler):
     def unbind(self, queue='', exchange='', routing_key='', arguments=None):
         """Unbind a Queue.
 
-        :param str queue:
-        :param str exchange:
-        :param str routing_key:
-        :param dict arguments:
+        :param str queue: Queue name
+        :param str exchange: Exchange name
+        :param str routing_key: The routing key used
+        :param dict arguments: Unbind key/value arguments
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.

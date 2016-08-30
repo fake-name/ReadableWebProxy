@@ -1,4 +1,4 @@
-"""AMQP-Storm Exception."""
+"""AMQPStorm Exception."""
 
 AMQP_ERROR_MAPPING = {
     311: ('CONTENT-TOO-LARGE',

@@ -1,4 +1,4 @@
-"""AMQP-Storm Uri wrapper for Connection."""
+"""AMQPStorm Uri wrapper for Connection."""
 
 import logging
 
@@ -27,7 +27,8 @@ class UriConnection(Connection):
         :raises TypeError: Raises on invalid uri.
         :raises ValueError: Raises on invalid uri.
         :raises AttributeError: Raises on invalid uri.
-        :raises AMQPConnectionError: Raises on Connection error.
+        :raises AMQPConnectionError: Raises if the connection
+                                     encountered an error.
         """
         uri = compatibility.patch_uri(uri)
         parsed_uri = urlparse.urlparse(uri)
@@ -58,8 +59,10 @@ class UriConnection(Connection):
         }
         if use_ssl:
             if not compatibility.SSL_SUPPORTED:
-                raise AMQPConnectionError('Python not compiled with support '
-                                          'for TLSv1 or higher')
+                raise AMQPConnectionError(
+                    'Python not compiled with support '
+                    'for TLSv1 or higher'
+                )
             options['ssl_options'] = self._parse_ssl_options(kwargs)
         return options
 

@@ -1,4 +1,4 @@
-"""AMQP-Storm Channel.Tx."""
+"""AMQPStorm Channel.Tx."""
 
 import logging
 
@@ -28,8 +28,10 @@ class Tx(Handler):
 
     def __exit__(self, exception_type, exception_value, _):
         if exception_type:
-            LOGGER.warning('Leaving Transaction on exception: %s',
-                           exception_value)
+            LOGGER.warning(
+                'Leaving Transaction on exception: %s',
+                exception_value
+            )
             if self._tx_active:
                 self.rollback()
             return

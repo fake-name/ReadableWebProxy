@@ -1,4 +1,4 @@
-"""AMQP-Storm Connection.Channel0."""
+"""AMQPStorm Connection.Channel0."""
 
 import logging
 import platform
@@ -26,9 +26,9 @@ class Channel0(object):
         super(Channel0, self).__init__()
         self.is_blocked = False
         self.server_properties = {}
-        self.parameters = connection.parameters
         self._connection = connection
-        self._heartbeat = self.parameters['heartbeat']
+        self._heartbeat = connection.parameters['heartbeat']
+        self._parameters = connection.parameters
 
     def on_frame(self, frame_in):
         """Handle frames sent to Channel0.
@@ -81,8 +81,9 @@ class Channel0(object):
         self._set_connection_state(Stateful.CLOSED)
         if frame_in.reply_code != 200:
             reply_text = try_utf8_decode(frame_in.reply_text)
-            message = ('Connection was closed by remote server: %s'
-                       % reply_text)
+            message = (
+                'Connection was closed by remote server: %s' % reply_text
+            )
             exception = AMQPConnectionError(message,
                                             reply_code=frame_in.reply_code)
             self._connection.exceptions.append(exception)
@@ -101,8 +102,10 @@ class Channel0(object):
         :return:
         """
         self.is_blocked = True
-        LOGGER.warning('Connection is blocked by remote server: %s',
-                       try_utf8_decode(frame_in.reason))
+        LOGGER.warning(
+            'Connection is blocked by remote server: %s',
+            try_utf8_decode(frame_in.reason)
+        )
 
     def _unblocked_connection(self):
         """Connection is Unblocked.
@@ -117,8 +120,8 @@ class Channel0(object):
 
         :rtype: str
         """
-        return '\0%s\0%s' % (self.parameters['username'],
-                             self.parameters['password'])
+        return '\0%s\0%s' % (self._parameters['username'],
+                             self._parameters['password'])
 
     def _send_start_ok_frame(self, frame_in):
         """Send Start OK frame.
@@ -127,8 +130,10 @@ class Channel0(object):
         :return:
         """
         if 'PLAIN' not in try_utf8_decode(frame_in.mechanisms):
-            exception = AMQPConnectionError('Unsupported Security Mechanism(s)'
-                                            ': %s' % frame_in.mechanisms)
+            exception = AMQPConnectionError(
+                'Unsupported Security Mechanism(s): %s' %
+                frame_in.mechanisms
+            )
             self._connection.exceptions.append(exception)
             return
         credentials = self._plain_credentials()
@@ -155,7 +160,7 @@ class Channel0(object):
         :return:
         """
         open_frame = pamqp_connection.Open(
-            virtual_host=self.parameters['virtual_host']
+            virtual_host=self._parameters['virtual_host']
         )
         self._write_frame(open_frame)
 
@@ -183,7 +188,7 @@ class Channel0(object):
         :rtype: dict
         """
         return {
-            'product': 'AMQP-Storm',
+            'product': 'AMQPStorm',
             'platform': 'Python %s (%s)' % (platform.python_version(),
                                             platform.python_implementation()),
             'capabilities': {

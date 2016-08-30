@@ -1,4 +1,4 @@
-"""AMQP-Storm Base."""
+"""AMQPStorm Base."""
 
 import locale
 import threading
@@ -75,19 +75,14 @@ class Stateful(object):
 
     @property
     def exceptions(self):
-        """Any exceptions thrown. This is useful for troubleshooting, and is
-        used internally to check the health of the connection.
+        """Stores all exceptions thrown by this instance.
+
+            This is useful for troubleshooting, and is used internally
+            to check the health of the connection.
 
         :rtype: list
         """
         return self._exceptions
-
-    def check_for_errors(self):
-        """Check for critical errors.
-
-        :return:
-        """
-        pass
 
 
 class BaseChannel(Stateful):
@@ -149,7 +144,7 @@ class BaseMessage(object):
 
     def __init__(self, channel, **message):
         """
-        :param Channel channel: amqp-storm Channel
+        :param Channel channel: AMQPStorm Channel
         :param str|unicode body: Message body
         :param dict method: Message method
         :param dict properties: Message properties

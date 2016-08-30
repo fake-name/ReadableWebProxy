@@ -13,6 +13,13 @@ of a site and reproducing it in a clean layout. It also modifies
 all links on the page to point to internal addresses, so following a
 link points to the proxied version of the file, rather then the original.
 
+---
+
+While the above was the original scope, the project has mutated heavily. At this 
+point, it has a complete web spider and archives entire websites to local storage.
+Additionally, multiple versions of each page are kept, with a overall rolling
+refresh of the entire database at configurable intervals (configurable on a
+per-domain, or global basis).
 
 ---
 
@@ -28,8 +35,6 @@ Quick installation overview:
  - Setup virtualhost by running `build-venv.sh`
  - Activate vhost: `source flask/bin/activate`
  - Bootstrap DB: `create_db.sh`
- - (Potentially) disable wattpad login system by editing the content of `INIT_CALLS` in 
-     `activePlugins.py`.
  - Run server: `python3 run.py`
  - (Optional): Scraper is started by `python runScrape.py`
  - (Optional): Scraper periodic scheduler is started by `python runScrape.py scheduler`

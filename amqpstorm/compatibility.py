@@ -12,6 +12,11 @@ try:
 except ImportError:
     import urllib.parse as urlparse
 
+try:
+    from urllib import quote
+except ImportError:
+    from urllib.parse import quote
+
 PYTHON3 = sys.version_info >= (3, 0, 0)
 
 if PYTHON3:

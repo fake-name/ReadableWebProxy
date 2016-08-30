@@ -23,6 +23,14 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 
 	def go(self):
+		print()
+		print()
+		print("FIX ME")
+		print()
+		print()
+		print()
+		return
+
 		rules = WebMirror.rules.load_rules()
 		self.log.info("Rolling re-trigger of starting URLs.")
 

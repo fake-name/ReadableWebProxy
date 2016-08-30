@@ -232,7 +232,7 @@ class DbFlattener(object):
 		for count, url in end:
 			self.truncate_url_history(url)
 
-	def go(self):
+	def _go(self):
 		self.consolidate_history()
 
 

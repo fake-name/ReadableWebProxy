@@ -1,4 +1,4 @@
-"""AMQP-Storm Channel.Exchange."""
+"""AMQPStorm Channel.Exchange."""
 
 import logging
 
@@ -19,12 +19,12 @@ class Exchange(Handler):
                 durable=False, auto_delete=False, arguments=None):
         """Declare an Exchange.
 
-        :param str exchange:
-        :param str exchange_type:
-        :param bool passive:
-        :param bool durable:
-        :param bool auto_delete:
-        :param dict arguments:
+        :param str exchange: Exchange name
+        :param str exchange_type: Exchange type
+        :param bool passive: Do not create
+        :param bool durable: Durable exchange
+        :param bool auto_delete: Automatically delete when not in use
+        :param dict arguments: Exchange key/value arguments
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -57,8 +57,8 @@ class Exchange(Handler):
     def delete(self, exchange='', if_unused=False):
         """Delete an Exchange.
 
-        :param str exchange:
-        :param bool if_unused:
+        :param str exchange: Exchange name
+        :param bool if_unused: Delete only if unused
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -78,10 +78,10 @@ class Exchange(Handler):
              arguments=None):
         """Bind an Exchange.
 
-        :param str destination:
-        :param str source:
-        :param str routing_key:
-        :param dict arguments:
+        :param str destination: Exchange name
+        :param str source: Exchange to bind to
+        :param str routing_key: The routing key to use
+        :param dict arguments: Bind key/value arguments
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -109,10 +109,10 @@ class Exchange(Handler):
                arguments=None):
         """Unbind an Exchange.
 
-        :param str destination:
-        :param str source:
-        :param str routing_key:
-        :param dict arguments:
+        :param str destination: Exchange name
+        :param str source: Exchange to unbind from
+        :param str routing_key: The routing key used
+        :param dict arguments: Unbind key/value arguments
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.

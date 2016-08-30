@@ -1,4 +1,4 @@
-"""AMQP-Storm Channel.Basic."""
+"""AMQPStorm Channel.Basic."""
 
 import logging
 import math
@@ -46,7 +46,7 @@ class Basic(Handler):
                                          global_=global_)
         return self._channel.rpc_request(qos_frame)
 
-    def get(self, queue='', no_ack=False, to_dict=True):
+    def get(self, queue='', no_ack=False, to_dict=False):
         """Fetch a single message.
 
         :param str queue: Queue name
@@ -106,7 +106,7 @@ class Basic(Handler):
         :param bool no_local: Do not deliver own messages
         :param bool no_ack: No acknowledgement needed
         :param bool exclusive: Request exclusive access
-        :param dict arguments: Arguments for declaration
+        :param dict arguments: Consume key/value arguments
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -157,7 +157,7 @@ class Basic(Handler):
                 mandatory=False, immediate=False):
         """Publish a Message.
 
-        :param str|unicode body: Message payload
+        :param bytes|str|unicode body: Message payload
         :param str routing_key: Message routing key
         :param str exchange: The exchange to publish the message to
         :param dict properties: Message properties
@@ -285,7 +285,7 @@ class Basic(Handler):
         :param bool no_local: Do not deliver own messages
         :param bool no_ack: No acknowledgement needed
         :param bool exclusive: Request exclusive access
-        :param dict arguments: Arguments for declaration
+        :param dict arguments: Consume key/value arguments
 
         :rtype: dict
         """
@@ -302,13 +302,14 @@ class Basic(Handler):
                                      properties, routing_key):
         """Validate Publish Parameters.
 
-        :param str|unicode body:
-        :param str routing_key:
-        :param str exchange:
-        :param dict properties:
-        :param bool mandatory:
-        :param bool immediate:
-        :raises  AMQPInvalidArgument: Invalid Parameters
+        :param bytes|str|unicode body: Message payload
+        :param str routing_key: Message routing key
+        :param str exchange: The exchange to publish the message to
+        :param dict properties: Message properties
+        :param bool mandatory: Requires the message is published
+        :param bool immediate: Request immediate delivery
+
+        :raises AMQPInvalidArgument: Invalid Parameters
 
         :return:
         """
@@ -329,8 +330,8 @@ class Basic(Handler):
     def _handle_utf8_payload(body, properties):
         """Update the Body and Properties to the appropriate encoding.
 
-        :param str|unicode body:
-        :param dict properties:
+        :param bytes|str|unicode body: Message payload
+        :param dict properties: Message properties
 
         :return:
         """
@@ -392,7 +393,7 @@ class Basic(Handler):
             This function is based on code from Rabbitpy.
             https://github.com/gmr/rabbitpy
 
-        :param str body:
+        :param bytes|str|unicode body: Message payload
 
         :rtype: collections.Iterable
         """
