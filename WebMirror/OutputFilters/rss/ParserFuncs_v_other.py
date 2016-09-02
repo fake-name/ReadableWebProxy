@@ -263,7 +263,8 @@ def extractYukkuri(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 
 	if '10 nen goshi no HikiNEET o Yamete Gaishutsushitara Jitaku goto Isekai ni Ten’ishiteta' in item['tags'] or \
-		 'When I was going out from my house to stop become a Hiki-NEET after 10 years I was transported to another world' in item['tags']:
+		 'When I was going out from my house to stop become a Hiki-NEET after 10 years I was transported to another world' in item['tags'] or \
+		 item['title'].startswith("10 nen goshi no HikiNEET o Yamete Gaishutsushitara Jitaku goto Isekai ni Ten’ishiteta"):
 		return buildReleaseMessage(item, '10 nen goshi no HikiNEET o Yamete Gaishutsushitara Jitaku goto Isekai ni Ten’ishiteta', vol, chp, frag=frag, postfix=postfix)
 	elif 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru' in item['tags'] or \
 		'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru.' in item['title']:
@@ -274,12 +275,20 @@ def extractYukkuri(item):
 		return buildReleaseMessage(item, 'Genjitsushugisha no Oukoku Kaizouki', vol, chp, frag=frag, postfix=postfix)
 	elif 'I Won 4 Billion in a Lottery But I Went to Another World' in item['tags']:
 		return buildReleaseMessage(item, 'Takarakuji de 40 Oku Atattanda kedo Isekai ni Ijuusuru', vol, chp, frag=frag, postfix=postfix)
+	elif 'Genjitsushugi Yuusha no Oukokusaikenki' in item['tags']:
+		return buildReleaseMessage(item, 'Genjitsushugi Yuusha no Oukokusaikenki', vol, chp, frag=frag, postfix=postfix)
+	elif 'Himekishi to Camping Car' in item['tags']:
+		return buildReleaseMessage(item, 'Himekishi to Camping Car', vol, chp, frag=frag, postfix=postfix)
+	elif 'Isekai de 『Kuro no Iyashite-tte』 Yobarete Imasu' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai de 『Kuro no Iyashite-tte』 Yobarete Imasu', vol, chp, frag=frag, postfix=postfix)
 	elif  'The Curious Girl and The Traveler' in item['tags']:
 		return buildReleaseMessage(item,  'The Curious Girl and The Traveler', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	elif  'Yukkuri Oniisan' in item['tags']:
 		return buildReleaseMessage(item,  'Yukkuri Oniisan', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	elif  'The Valtras Myth' in item['tags']:
 		return buildReleaseMessage(item,  'The Valtras Myth', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	elif item['title'].startswith("Our New World - Chapter"):
+		return buildReleaseMessage(item,  'Our New World', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 	return False
 

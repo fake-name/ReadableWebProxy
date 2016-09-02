@@ -125,8 +125,16 @@ def extractGravityTranslation(item):
 
 	if item['title'].lower().startswith('reincarnator'):
 		return buildReleaseMessage(item, 'Reincarnator', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith("king of gods – "):
+		return buildReleaseMessage(item, "King of Gods", vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith('iras'):
 		return buildReleaseMessage(item, 'I’m Really a Superstar', vol, chp, frag=frag, postfix=postfix)
+	if 'chaotic lightning cultivation' in ltags:
+		return buildReleaseMessage(item, 'Chaotic Lightning Cultivation', vol, chp, frag=frag, postfix=postfix)
+	if "the king's avatar" in ltags:
+		return buildReleaseMessage(item, "The King's Avatar", vol, chp, frag=frag, postfix=postfix)
+	if 'ze tian ji' in ltags or 'way of choices' in ltags:
+		return buildReleaseMessage(item, 'Ze Tian Ji', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -246,6 +254,12 @@ def extractClicky(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
+	if 'MEMORIZE' in item['tags']:
+		return buildReleaseMessage(item, 'MEMORIZE', vol, chp, frag=frag, postfix=postfix)
+	if 'R8CM' in item['tags']:
+		return buildReleaseMessage(item, 'Revolution of the 8th Class Mage', vol, chp, frag=frag, postfix=postfix)
+	if 'Dusk Howler' in item['tags']:
+		return buildReleaseMessage(item, 'Dusk Howler', vol, chp, frag=frag, postfix=postfix)
 	if 'Legendary Moonlight Sculptor' in item['tags'] and any(['Volume' in tag for tag in item['tags']]):
 		return buildReleaseMessage(item, 'Legendary Moonlight Sculptor', vol, chp, frag=frag, postfix=postfix)
 
@@ -913,6 +927,15 @@ def extractDreamsOfJianghu(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
+
+
+
+	bad = [
+			'pictures',
+		]
+
+	if any([tmp in item['tags'] for tmp in bad]):
+		return None
 
 	if 'TBVW' in item['tags']:
 		return buildReleaseMessage(item, 'To Be A Virtuous Wife', vol, chp, frag=frag, postfix=postfix)
@@ -2678,6 +2701,25 @@ def extractAnimeMangaTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	bad = [
+			'Read Online',
+			'Download',
+			'comic',
+			'Anime',
+			'Manga',
+			'Robotech',
+			'Alpen Rose',
+			'Watch Online',
+		]
+
+	if any([tmp in item['tags'] for tmp in bad]):
+		return None
+	if "[Chang Sheng] BABY" in item['title']:
+		return None
+	if "[RAW]" in item['title']:
+		return None
+
 	return False
 def extractAnkouTranslations(item):
 	"""

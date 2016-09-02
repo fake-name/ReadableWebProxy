@@ -429,8 +429,14 @@ def extractNeoTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if 'The Man Picked up by the Gods'.lower() in item['title'].lower() and (chp or vol):
+	if 'The Man Picked up by the Gods'.lower() in item['title'].lower():
 		return buildReleaseMessage(item, 'The Man Picked up by the Gods', vol, chp, frag=frag, postfix=postfix)
+	if 'I came back but the world is still a fantasy' in item['tags']:
+		return buildReleaseMessage(item, 'Kaettekite mo Fantasy!?', vol, chp, frag=frag, postfix=postfix)
+	if 'Ashes and Kingdoms' in item['tags']:
+		return buildReleaseMessage(item, 'Ashes and Kingdoms', vol, chp, frag=frag, postfix=postfix)
+	if 'Goblin Kingdom' in item['tags']:
+		return buildReleaseMessage(item, 'Goblin no Oukoku', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -773,6 +779,8 @@ def extractMoonBunnyCafe(item):
 		return buildReleaseMessage(item, 'It seems like I got reincarnated into the world of a Yandere Otome game.', vol, chp, frag=frag, postfix=postfix)
 	if 'Parallel World Pharmacy'.lower() in item['title'].lower():
 		return buildReleaseMessage(item, 'Parallel World Pharmacy', vol, chp, frag=frag, postfix=postfix)
+	if 'Boku wa Isekai de Fuyo Mahou to Shoukan Mahou wo Tenbin ni Kakeru Chapter'.lower() in item['title'].lower():
+		return buildReleaseMessage(item, 'Boku wa Isekai de Fuyo Mahou to Shoukan Mahou wo Tenbin ni Kakeru', vol, chp, frag=frag, postfix=postfix)
 	if 'no fatigue' in ltags:
 		return buildReleaseMessage(item, 'No Fatigue', vol, chp, frag=frag, postfix=postfix)
 	if 'i, am playing the role of the older brother in hearthrob love revolution' in ltags:
@@ -815,6 +823,27 @@ def extractMoonBunnyCafe(item):
 		return buildReleaseMessage(item, 'Island: End of Nightmare', vol, chp, frag=frag, postfix=postfix)
 	if 'The Bears Bear a Bare Kuma' in item['tags']:
 		return buildReleaseMessage(item, 'The Bears Bear a Bare Kuma', vol, chp, frag=frag, postfix=postfix)
+	if "Dragon's Bloodline" in item['tags']:
+		return buildReleaseMessage(item, "Dragon's Bloodline", vol, chp, frag=frag, postfix=postfix)
+	if 'Lazy Dungeon Master' in item['tags']:
+		return buildReleaseMessage(item, 'Lazy Dungeon Master', vol, chp, frag=frag, postfix=postfix)
+	if 'The Cry of the Phoenix Which Reached the Ninth Heaven' in item['tags']:
+		return buildReleaseMessage(item, 'The Cry of the Phoenix Which Reached the Ninth Heaven', vol, chp, frag=frag, postfix=postfix)
+	if 'I’ll Live My Second Life!' in item['tags']:
+		return buildReleaseMessage(item, 'I’ll Live My Second Life!', vol, chp, frag=frag, postfix=postfix)
+	if 'Accompanying the Phoenix' in item['tags'] or ("accompanying the phoenix" in item['title'].lower()
+			and "chapter" in item['title'].lower()):
+		return buildReleaseMessage(item, 'Accompanying the Phoenix', vol, chp, frag=frag, postfix=postfix)
+	if 'Legend' in item['tags']:
+		return buildReleaseMessage(item, 'Legend', vol, chp, frag=frag, postfix=postfix)
+	if "The Guild's Cheat Receptionist" in item['tags']:
+		return buildReleaseMessage(item, "The Guild's Cheat Receptionist", vol, chp, frag=frag, postfix=postfix)
+	if 'God of Thunder' in item['tags']:
+		return buildReleaseMessage(item, 'God of Thunder', vol, chp, frag=frag, postfix=postfix)
+	if 'Muimui-Tan' in item['tags']:
+		return buildReleaseMessage(item, 'Muimui-Tan', vol, chp, frag=frag, postfix=postfix)
+	if 'Invincible Saint ~Salaryman, the path I walk to survive in this other world~' in item['tags']:
+		return buildReleaseMessage(item, 'Invincible Saint ~Salaryman, the path I walk to survive in this other world~', vol, chp, frag=frag, postfix=postfix)
 	if 'Overseer' in item['tags']:
 		return buildReleaseMessage(item, 'Overseer', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
@@ -1706,6 +1735,10 @@ def  extractLuenTranslations(item):
 
 	if 'Journey to Seek Past Reincarnations' in item['tags'] or item['title'].startswith('JTSPR'):
 		return buildReleaseMessage(item, 'Journey to Seek Past Reincarnations', vol, chp, frag=frag, postfix=postfix)
+	if 'Little Phoenix Is Not An Immortal' in item['tags']:
+		return buildReleaseMessage(item, 'Little Phoenix Is Not An Immortal', vol, chp, frag=frag, postfix=postfix)
+	if 'Hard to Escape' in item['tags']:
+		return buildReleaseMessage(item, 'Hard to Escape', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3101,6 +3134,10 @@ def extractLightNovelsWorld(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'the nine godheads' in item['tags']:
+		return buildReleaseMessage(item, 'The Nine Godheads', vol, chp, frag=frag, postfix=postfix)
+	if 'World Seed' in item['tags']:
+		return buildReleaseMessage(item, 'World Seed', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractLoathsomeTranslations(item):
 	"""

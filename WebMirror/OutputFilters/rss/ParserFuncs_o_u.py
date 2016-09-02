@@ -1905,6 +1905,10 @@ def extractSnowyPublications(item):
 		return None
 	if 'New Release: ' in item['title']:
 		return buildReleaseMessage(item, 'Whisper of the Nightingale', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'WN' in item['tags']:
+		return buildReleaseMessage(item, 'Whisper of the Nightingale', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'DD' in item['tags']:
+		return buildReleaseMessage(item, 'Dimension’s Door', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
 def extractPandorasBook(item):
@@ -3188,10 +3192,18 @@ def extractPathOfTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if item['title'].startswith("Path of Discord Episode"):
+		return None
+
 	if "Emperor's Domination" in item['tags']:
 		return buildReleaseMessage(item, "Emperor's Domination", vol, chp, frag=frag, postfix=postfix)
 	if 'Big Life' in item['tags']:
 		return buildReleaseMessage(item, 'Big Life', vol, chp, frag=frag, postfix=postfix)
+	if 'Grasping Evil' in item['tags']:
+		return buildReleaseMessage(item, 'Grasping Evil', vol, chp, frag=frag, postfix=postfix)
+	if 'The Human Emperor' in item['tags']:
+		return buildReleaseMessage(item, 'The Human Emperor', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith('Game Market 1983'):
 		return buildReleaseMessage(item, 'Game Market 1983', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith('Spirit Vessel'):
@@ -3464,10 +3476,29 @@ def extractTandQ(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+
+	bad = [
+			'#K-drama',
+			'fashion',
+			'C-Drama',
+			'#Trending',
+			'Feature',
+			'#Trailer',
+			'#Eng Sub',
+			'Movies',
+			'Status Updates/Post Tallies',
+		]
+
+	if any([tmp in item['tags'] for tmp in bad]):
+		return None
+
 	if '#Les Interpretes' in item['tags']:
 		return buildReleaseMessage(item, 'Les Interpretes', vol, chp, frag=frag, postfix=postfix)
-	if '致我们终将逝去的青春' in item['tags']:
+	if '致我们终将逝去的青春' in item['tags'] or 'So Young | 致我们终将逝去的青春' in item['tags']:
 		return buildReleaseMessage(item, 'To Our Youth That is Fading Away', vol, chp, frag=frag, postfix=postfix)
+	if "Fleeting Midsummer (Beijing University's Weakest Student)" in item['tags']:
+		return buildReleaseMessage(item, "Fleeting Midsummer (Beijing University's Weakest Student)", vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractTequilaMockingbard(item):
 	"""
@@ -3513,4 +3544,6 @@ def extractUniqueBooks(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Allgemein' in item['tags']:
+		return buildReleaseMessage(item, 'Survival of a Healer', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
