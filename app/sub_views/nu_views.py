@@ -125,8 +125,38 @@ def release_validity_toggle(sess, data):
 	return {"error" : False,
 			'message' : "Changes applied!"}
 
+
+def delete_row(sess, del_id):
+
+	row = sess.query(db.NuOutboundWrapperMap)     \
+		.filter(db.NuOutboundWrapperMap.id == del_id) \
+		.scalar()
+	if not row:
+		print("Row missing!")
+	else:
+		print("Row: ", row)
+		sess.delete(row)
+	# 	assert(row.validated == oldv)
+	# 	assert(oldv != newv)
+	# 	row.validated = newv
+
+
+def release_delete(sess, data):
+	sess.expire_all()
+	for change in data:
+		delete_row(sess, change['del_id'])
+		print("Change:", change)
+
+	sess.commit()
+
+	sess.expire_all()
+
+	return {"error" : False,
+			'message' : "Changes applied!"}
+
 ops = {
 	'nu release validity update' : release_validity_toggle,
+	'nu release delete' : release_delete,
 	}
 
 

@@ -19,6 +19,7 @@
 			</h4>
 			<div class="clearfix"></div>
 			<button onclick="apply_changes()">Apply changes</button>
+			<button onclick="delete_changes()">Delete Checked</button>
 			<button onclick="check_multiple_hit_two()">Check rows with two sources</button>
 			<button onclick="check_multiple_hit_three()">Check rows with three sources</button>
 			<div>
@@ -55,6 +56,7 @@
 				</table>
 			</div>
 			<button onclick="apply_changes()">Apply changes</button>
+			<button onclick="delete_changes()">Delete Checked</button>
 		</div>
 	</div>
 
@@ -145,6 +147,43 @@
 				$.ajax({
 					url         : '/nu_api/',
 					data        : JSON.stringify({'op' : 'nu release validity update', 'data' : changes}),
+					success     : content_load_cb,
+					error       : content_load_fail,
+					method      : "POST",
+					dataType    : 'json',
+					contentType : "application/json;",
+
+				})
+			}
+
+		}
+		function delete_changes()
+		{
+			var rows = $(".row-checkbox");
+
+			var changes = [];
+			rows.each(function( index, value ) {
+				var itm = $(this);
+
+				if (itm.is(':checked'))
+				{
+					for (var idx in itm.data().rowId)
+					{
+						changes.push({
+							'del_id'  : itm.data().rowId[idx],
+						});
+					}
+				}
+			});
+			console.log("Changes:", changes.length, changes)
+
+
+			if (changes.length)
+			{
+				console.log("Making request")
+				$.ajax({
+					url         : '/nu_api/',
+					data        : JSON.stringify({'op' : 'nu release delete', 'data' : changes}),
 					success     : content_load_cb,
 					error       : content_load_fail,
 					method      : "POST",

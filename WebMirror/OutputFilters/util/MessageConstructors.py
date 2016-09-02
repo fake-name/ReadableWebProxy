@@ -79,7 +79,17 @@ def pack_message(type, data, is_beta=False):
 
 
 
-def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='', author=None, tl_type='translated', extraData={}, matchAuthor=False):
+def buildReleaseMessage(raw_item,
+						series,
+						vol,
+						chap=None,
+						frag=None,
+						postfix='',
+						author=None,
+						tl_type='translated',
+						extraData={},
+						matchAuthor=False,
+						looseMatch=False):
 	'''
 	Special case behaviour:
 		If vol or chapter is None, the
@@ -99,6 +109,7 @@ def buildReleaseMessage(raw_item, series, vol, chap=None, frag=None, postfix='',
 		'author'       : fix_string(author),
 		'tl_type'      : tl_type,
 		'match_author' : matchAuthor,
+		'loose_match'  : looseMatch,
 
 	}
 

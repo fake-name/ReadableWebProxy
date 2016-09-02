@@ -173,7 +173,21 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 				releaseurl = urllib.parse.urljoin(seriesPageUrl, release.a['href'])
 				raw_item['linkUrl']   = releaseurl
 
-				raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+
+				raw_msg = msgpackers.buildReleaseMessage(
+									raw_item    = raw_item,
+									series      = title,
+									vol         = vol,
+									chap        = chp,
+									frag        = frag,
+									author      = author,
+									postfix     = chp_title,
+									tl_type     = 'oel',
+									extraData   = extra,
+									matchAuthor = True,
+									looseMatch  = True
+								)
+
 				msg     = msgpackers.createReleasePacket(raw_msg)
 
 				retval.append(msg)
