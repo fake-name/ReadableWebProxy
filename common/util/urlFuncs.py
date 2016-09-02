@@ -1,7 +1,7 @@
 
 import re
 import urllib.parse
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 import unshortenit
 
 # All tags you need to look into to do link canonization

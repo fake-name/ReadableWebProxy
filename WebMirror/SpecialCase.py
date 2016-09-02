@@ -6,7 +6,7 @@ if __name__ == '__main__':
 import logging
 import datetime
 import random
-import WebMirror.database as db
+import common.database as db
 import multiprocessing
 import traceback
 import time

@@ -16,7 +16,7 @@ from sqlalchemy.orm import joinedload
 import traceback
 
 from app.utilities import paginate
-import WebMirror.database as db
+import common.database as db
 
 
 @app.route('/feeds/<page>')

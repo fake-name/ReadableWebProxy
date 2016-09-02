@@ -29,8 +29,8 @@ import runStatus
 import WebMirror.Engine
 import WebMirror.OutputFilters.AmqpInterface
 import WebMirror.rules
-import WebMirror.util.urlFuncs as urlFuncs
-import WebMirror.database as db
+import common.util.urlFuncs as urlFuncs
+import common.database as db
 import WebMirror.NewJobQueue as njq
 
 NO_PROCESSES = 24

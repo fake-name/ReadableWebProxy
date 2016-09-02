@@ -12,7 +12,7 @@ import calendar
 
 import sqlalchemy.exc
 
-import WebMirror.database as db
+import common.database as db
 from sqlalchemy_continuum.utils import version_table
 
 

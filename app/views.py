@@ -20,7 +20,7 @@ from app import app
 from app import lm
 from app import babel
 
-from WebMirror import database
+from common import database
 
 
 import WebMirror.API

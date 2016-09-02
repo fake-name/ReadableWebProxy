@@ -6,9 +6,9 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 
 import pickle
-from WebMirror import database
+from common import database
 import config
-import WebMirror.LogBase
+import common.LogBase
 import WebMirror.rules
 import WebMirror.OutputFilters.AmqpInterface
 from WebMirror.OutputFilters.util.MessageConstructors import pack_message

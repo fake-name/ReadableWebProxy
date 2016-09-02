@@ -5,7 +5,7 @@ import abc
 import datetime
 import urllib.parse
 import sqlalchemy.exc
-import WebMirror.database as db
+import common.database as db
 
 class TriggerBaseClass(metaclass=abc.ABCMeta):
 

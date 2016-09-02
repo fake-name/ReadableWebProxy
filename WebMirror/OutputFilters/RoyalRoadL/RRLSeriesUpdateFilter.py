@@ -6,7 +6,7 @@ runStatus.preloadDicts = False
 
 import WebMirror.OutputFilters.FilterBase
 
-import WebMirror.database as db
+import common.database as db
 
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
@@ -18,7 +18,7 @@ import traceback
 import datetime
 import time
 import json
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 
 MIN_RATING = 5
 
@@ -120,7 +120,7 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, url, content):
 		# print("processPage() call")
-		soup = WebMirror.util.webFunctions.as_soup(self.content)
+		soup = common.util.webFunctions.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.retrigger_pages(releases)

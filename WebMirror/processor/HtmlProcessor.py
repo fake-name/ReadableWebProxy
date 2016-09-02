@@ -5,9 +5,9 @@ import re
 import time
 import webcolors
 import urllib.parse
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 
-import WebMirror.util.urlFuncs as urlFuncs
+import common.util.urlFuncs as urlFuncs
 from . import ProcessorBase
 import markdown
 
@@ -386,7 +386,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				continue
 
 			formatted = markdown.markdown(contentstr, extensions=["linkify"])
-			formatted = WebMirror.util.webFunctions.as_soup(formatted)
+			formatted = common.util.webFunctions.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()
 				formatted.body.unwrap()
@@ -423,9 +423,9 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			self.content = self.content[len(badxmlprefix):]
 
 
-		soup = WebMirror.util.webFunctions.as_soup(self.content)
+		soup = common.util.webFunctions.as_soup(self.content)
 		# try:
-		# 	soup = WebMirror.util.webFunctions.as_soup(self.content)
+		# 	soup = common.util.webFunctions.as_soup(self.content)
 		# except AttributeError as e:
 		# 	with open("badpage %s.html" % time.time(), "w") as fp:
 		# 		fp.write(self.content)

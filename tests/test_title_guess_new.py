@@ -3,7 +3,7 @@
 from WebMirror.util.titleParseNew import TitleParser as TPN
 from WebMirror.util.titleParse import TitleParser as TP
 
-import WebMirror.database as db
+import common.database as db
 
 def test():
 	from tests.title_test_data import data as test_data

@@ -399,10 +399,8 @@ def load_rules():
 		# Might as well update both while we're here.
 		flags.RULE_CACHE = rules
 		flags.SPECIAL_CASE_CACHE = specials
-	else:
-		# print("Using cached rules")
-		rules = flags.RULE_CACHE
-	return rules
+
+	return flags.RULE_CACHE
 
 
 
@@ -415,10 +413,35 @@ def load_special_case_sites():
 		# Might as well update both while we're here.
 		flags.RULE_CACHE = rules
 		flags.SPECIAL_CASE_CACHE = specials
-	else:
-		# print("Using cached special-handling command set")
-		specials = flags.SPECIAL_CASE_CACHE
-	return specials
+
+	return flags.SPECIAL_CASE_CACHE
+
+
+
+def get_raw_mirror_confs():
+
+	cwd = os.path.split(__file__)[0]
+	rulepath = os.path.join(cwd, "raw_mirror_rules")
+
+	items = os.listdir(rulepath)
+	items.sort()
+	ret = []
+	specials = {}
+	for item in [os.path.join(rulepath, item) for item in items if item.endswith('.yaml')]:
+		print("Irem: ", item)
+
+
+	return ret
+
+
+def load_raw_mirror_sites():
+
+	if flags.RAW_MIRROR_CACHE == None or "debug" in sys.argv:
+		print("Need to load special-url handling ruleset (%s, %s)" % (flags.RAW_MIRROR_CACHE == None, "debug" in sys.argv))
+		flags.RAW_MIRROR_CACHE = get_raw_mirror_confs()
+
+
+	return flags.RAW_MIRROR_CACHE
 
 
 
@@ -434,12 +457,13 @@ def netloc_send_feed(netloc):
 def startup():
 	load_rules()
 	load_special_case_sites()
+	load_raw_mirror_sites()
 
 startup()
 
 
 if __name__ == "__main__":
-	print(load_special_case_sites())
+	print(load_raw_mirror_sites())
 
 	# for ruleset in load_rules():
 	# 	if ruleset['send_raw_feed'] == False:

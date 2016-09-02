@@ -1,7 +1,7 @@
 
 
-import WebMirror.util.webFunctions as webFunctions
-import WebMirror.LogBase as LogBase
+import common.util.webFunctions as webFunctions
+import common.LogBase as LogBase
 import WebMirror.rules
 import urllib.parse
 import urllib.error

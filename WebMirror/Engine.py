@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 import WebMirror.rules
 import WebMirror.SpecialCase
-import WebMirror.LogBase as LogBase
+import common.LogBase as LogBase
 import runStatus
 import queue
 import time
@@ -25,7 +25,7 @@ from sqlalchemy.sql import text
 from sqlalchemy import distinct
 from sqlalchemy.dialects import postgresql
 
-import WebMirror.util.urlFuncs
+import common.util.urlFuncs
 import urllib.parse
 import traceback
 import datetime
@@ -33,12 +33,12 @@ import psycopg2
 
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
-import WebMirror.util.webFunctions as webFunctions
+import common.util.webFunctions as webFunctions
 
 import hashlib
 from WebMirror.Exceptions import DownloadException
 import WebMirror.Fetch
-import WebMirror.database as db
+import common.database as db
 from config import C_RESOURCE_DIR
 
 

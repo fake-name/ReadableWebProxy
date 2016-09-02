@@ -20,7 +20,7 @@ import WebMirror.OutputFilters.FilterBase
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 import WebMirror.OutputFilters.AmqpInterface
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
-import WebMirror.database as db
+import common.database as db
 
 MIN_RATING = 2.5
 

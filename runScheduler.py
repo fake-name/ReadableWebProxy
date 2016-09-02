@@ -17,8 +17,8 @@ from apscheduler.executors.pool       import ThreadPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 import config
-import WebMirror.database as db
-import WebMirror.LogBase as LogBase
+import common.database as db
+import common.LogBase as LogBase
 
 if __name__ == "__main__":
 	import logSetup

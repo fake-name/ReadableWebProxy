@@ -16,7 +16,7 @@ import calendar
 import time
 from dateutil.parser import parse
 import urllib.parse
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 
 import WebMirror.API
 import pprint
@@ -74,7 +74,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		self.log.info("Processing LNDB Item")
 
-		self.wg = WebMirror.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
+		self.wg = common.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
 
 
 ##################################################################################################################################
@@ -159,12 +159,12 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				content = self.wg.getpage(url, addlHeaders={'Referer': referrer, 'X-Requested-With': 'XMLHttpRequest'})
 				# print("Wat wat?")
 				WebMirror.API.processFetchedContent(url, content, "text/html", self.job, db_session=self.db_sess)
-				soup = WebMirror.util.webFunctions.as_soup(content)
+				soup = common.util.webFunctions.as_soup(content)
 				break
 			except urllib.error.URLError:
 				time.sleep(4)
 				# Randomize the user agent again
-				self.wg = WebMirror.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
+				self.wg = common.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
 		if not soup:
 			raise ValueError("Could not retreive page!")
 
@@ -325,7 +325,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, url, content):
 
-		soup = WebMirror.util.webFunctions.as_soup(self.content)
+		soup = common.util.webFunctions.as_soup(self.content)
 
 		self.extractSeries(self.pageUrl, soup)
 

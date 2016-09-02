@@ -1,8 +1,8 @@
 
 
-import WebMirror.util.webFunctions as webFunctions
-import WebMirror.database as db
-import WebMirror.util.urlFuncs as urlFuncs
+import common.util.webFunctions as webFunctions
+import common.database as db
+import common.util.urlFuncs as urlFuncs
 import logging
 import os.path
 import settings

@@ -9,8 +9,8 @@ import settings
 import sqlalchemy.exc
 
 import config
-import WebMirror.database as db
-import WebMirror.LogBase as LogBase
+import common.database as db
+import common.LogBase as LogBase
 from nusync import AmqpInterface
 
 

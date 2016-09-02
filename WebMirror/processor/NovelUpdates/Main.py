@@ -4,9 +4,9 @@ import copy
 import re
 import webcolors
 import urllib.parse
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 
-import WebMirror.util.urlFuncs as urlFuncs
+import common.util.urlFuncs as urlFuncs
 from WebMirror.processor import ProcessorBase
 import markdown
 
@@ -380,7 +380,7 @@ class NovelUpdatesHtmlPageProcessor(ProcessorBase.PageProcessor):
 		for pre in soup.find_all("pre"):
 			pre.name = "div"
 			formatted = markdown.markdown(pre.encode_contents().decode("utf-8"), extensions=["linkify"])
-			formatted = WebMirror.util.webFunctions.as_soup(formatted)
+			formatted = common.util.webFunctions.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()
 				formatted.body.unwrap()
@@ -411,7 +411,7 @@ class NovelUpdatesHtmlPageProcessor(ProcessorBase.PageProcessor):
 		self.log.info("Processing '%s' as HTML (size: %s).", self.pageUrl, len(self.content))
 		assert self.content
 		# print(type(self.content))
-		soup = WebMirror.util.webFunctions.as_soup(self.content)
+		soup = common.util.webFunctions.as_soup(self.content)
 
 
 		# Allow child-class hooking

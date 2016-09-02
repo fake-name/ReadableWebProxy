@@ -5,13 +5,13 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 
 import WebMirror.rules
-import WebMirror.LogBase as LogBase
+import common.LogBase as LogBase
 
 import datetime
 
-import WebMirror.util.urlFuncs as url_util
+import common.util.urlFuncs as url_util
 import urllib.parse
-import WebMirror.util.webFunctions as webFunctions
+import common.util.webFunctions as webFunctions
 import bs4
 
 import WebMirror.processor.ProcessorBase

@@ -17,7 +17,7 @@ from app import app
 
 from Misc.NuForwarder import NuForwarder
 
-import WebMirror.database as db
+import common.database as db
 
 from app.utilities import paginate
 from sqlalchemy.dialects import postgresql

@@ -4,7 +4,7 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-import WebMirror.database as db
+import common.database as db
 import datetime
 from WebMirror.Engine import SiteArchiver
 from concurrent.futures import ThreadPoolExecutor

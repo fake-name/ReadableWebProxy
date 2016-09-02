@@ -8,7 +8,7 @@ import urllib.parse
 from app import app
 
 import traceback
-import WebMirror.database as db
+import common.database as db
 
 from app.utilities import paginate
 import sqlalchemy.exc

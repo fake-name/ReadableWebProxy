@@ -15,7 +15,7 @@ import markdown
 import time
 import datetime
 import calendar
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 
 from settings import WATTPAD_REQUIRED_TAGS
 from settings import WATTPAD_MASKED_TAGS
@@ -75,7 +75,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.log.info("Processing WattPad Item")
 		super().__init__()
 
-		self.wg = WebMirror.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
+		self.wg = common.util.webFunctions.WebGetRobust(logPath=self.loggerPath+".Web")
 
 
 ##################################################################################################################################
@@ -223,7 +223,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, url, content):
 
-		soup = WebMirror.util.webFunctions.as_soup(self.content)
+		soup = common.util.webFunctions.as_soup(self.content)
 		sid = self.getJsonMetadata(soup)
 
 		# The GET request url is somewhat ridiculous. Build

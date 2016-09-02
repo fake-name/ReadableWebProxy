@@ -8,9 +8,9 @@ runStatus.preloadDicts = False
 
 
 
-import WebMirror.util.urlFuncs as urlFuncs
+import common.util.urlFuncs as urlFuncs
 import urllib.parse
-import WebMirror.LogBase as LogBase
+import common.LogBase as LogBase
 import abc
 
 import config

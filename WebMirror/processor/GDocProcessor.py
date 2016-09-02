@@ -14,13 +14,13 @@ import hashlib
 import os.path
 
 import traceback
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 
 from WebMirror.processor.ProcessorBase import PageProcessor
 # import TextScrape.SiteArchiver
 
 
-import WebMirror.util.urlFuncs as urlFuncs
+import common.util.urlFuncs as urlFuncs
 import WebMirror.processor.ProcessorUtils.gDocParse as gdp
 
 # import TextScrape.RelinkLookup
@@ -231,7 +231,7 @@ class GdocPageProcessor(PageProcessor):
 
 	def processGdocPage(self, url, content):
 		dummy_fName, content = content
-		soup = WebMirror.util.webFunctions.as_soup(content)
+		soup = common.util.webFunctions.as_soup(content)
 		urlFuncs.canonizeUrls(soup, url)
 
 		pgTitle, soup = self.cleanGdocPage(soup, url)

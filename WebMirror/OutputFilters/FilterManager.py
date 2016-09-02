@@ -1,6 +1,6 @@
 
 
-import WebMirror.LogBase as LogBase
+import common.LogBase as LogBase
 import WebMirror.OutputFilters.AmqpInterface
 import config
 

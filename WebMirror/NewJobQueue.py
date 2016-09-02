@@ -15,8 +15,8 @@ import psycopg2
 import sys
 
 import settings
-# import WebMirror.database as db
-import WebMirror.LogBase as LogBase
+# import common.database as db
+import common.LogBase as LogBase
 import WebMirror.OutputFilters.AmqpInterface
 import runStatus
 

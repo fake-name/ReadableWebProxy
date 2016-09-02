@@ -4,7 +4,7 @@
 import runStatus
 runStatus.preloadDicts = False
 
-import WebMirror.LogBase as LogBase
+import common.LogBase as LogBase
 import abc
 
 

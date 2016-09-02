@@ -10,7 +10,7 @@ import settings
 import datetime
 import sqlalchemy.exc
 
-import WebMirror.database as dbm
+import common.database as dbm
 
 
 

@@ -13,7 +13,7 @@ from sqlalchemy.sql import text
 from app import app
 
 
-import WebMirror.database as db
+import common.database as db
 
 from app.utilities import paginate
 from sqlalchemy.dialects import postgresql

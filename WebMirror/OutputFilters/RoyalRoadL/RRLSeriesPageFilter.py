@@ -15,7 +15,7 @@ import calendar
 import datetime
 import time
 import json
-import WebMirror.util.webFunctions
+import common.util.webFunctions
 import bleach
 
 MIN_RATING = 5
@@ -201,7 +201,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, url, content):
 
-		soup = WebMirror.util.webFunctions.as_soup(self.content)
+		soup = common.util.webFunctions.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.sendReleases(releases)
