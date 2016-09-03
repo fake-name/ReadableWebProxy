@@ -29,7 +29,7 @@
 				{% for indice, version in versions %}
 					<li>
 						<span class='pull-right'><a href='/history?{{ {"url" : req_url, "version" : indice, "delete_id" : version.id, "delete" : True} | urlencode }}'>[delete]</a></span>
-						Version: <a href='/history?{{ {"url" : req_url, "version" : indice} | urlencode }}'>#{{indice}}, {{version.fetchtime}}</a>
+						Version: <a href='/history?{{ {"url" : req_url, "version" : indice} | urlencode }}'>#{{'%03d' % indice}}, {{fixed_width_ago(version.fetchtime)}}</a>
 					</li>
 				{% endfor %}
 			</ul>

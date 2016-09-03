@@ -4,6 +4,7 @@ import datetime
 import os.path
 import contextlib
 
+import common.database
 import WebMirror.Engine
 # import WebMirror.runtime_engines
 from WebMirror.Exceptions import DownloadException, getErrorDiv
@@ -116,7 +117,7 @@ class RemoteContentObject(object):
 
 		job.url       = self.url
 		job.starturl  = "http://www.example.org"
-		job.distaance = WebMirror.database.MAX_DISTANCE-2
+		job.distance  = common.database.MAX_DISTANCE-2
 		fetcher       = self.archiver.fetcher(self.archiver.ruleset, target_url=job.url, start_url=job.starturl, db_sess=self.archiver.db_sess, job=job, cookie_lock=False)
 		print(fetcher)
 		ret          = fetcher.dispatchContent(content, "None", "text/html")

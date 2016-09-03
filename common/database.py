@@ -5,7 +5,7 @@ import multiprocessing
 import threading
 
 from sqlalchemy_continuum import make_versioned
-make_versioned(user_cls=None)
+make_versioned(user_cls=None, options={'native_versioning': True})
 
 from settings import MAX_DB_SESSIONS
 

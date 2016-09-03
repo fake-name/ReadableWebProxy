@@ -11,8 +11,8 @@ sys.path.append(os.path.abspath(os.getcwd()))
 
 # this will overwrite the ini-file sqlalchemy.url path
 # with the path given in the config of the main code
-import WebMirror.database
-context.config.set_main_option('sqlalchemy.url', WebMirror.database.SQLALCHEMY_DATABASE_URI)
+import common.database
+context.config.set_main_option('sqlalchemy.url', common.database.SQLALCHEMY_DATABASE_URI)
 
 
 # this is the Alembic Config object, which provides
@@ -27,7 +27,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-base = WebMirror.database.Base
+base = common.database.Base
 target_metadata = base.metadata
 
 # other values from the config, defined by the needs of env.py,

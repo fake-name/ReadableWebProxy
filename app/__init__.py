@@ -93,6 +93,26 @@ def utility_processor():
 				break
 		return ', '.join(dhms[start:end+1])
 
+	def fixed_width_ago(then):
+		if then == None:
+			return "Never"
+		now = datetime.datetime.now()
+		delta = now - then
+
+		d = delta.days
+		h, s = divmod(delta.seconds, 3600)
+		m, s = divmod(s, 60)
+		labels = ['d', 'h', 'm', 's']
+		dhms = ['%s %s' % (str(i).zfill(3), lbl) for i, lbl in zip([d, h, m, s], labels)]
+		for start in range(len(dhms)):
+			if not dhms[start].startswith('0'):
+				break
+		for end in range(len(dhms)-1, -1, -1):
+			if not dhms[end].startswith('0'):
+				break
+		ret = ', '.join(dhms)
+		return ret
+
 
 
 
@@ -100,5 +120,6 @@ def utility_processor():
 			format_date        = format_date,
 			date_now           = date_now,
 			ago                = ago,
+			fixed_width_ago    = fixed_width_ago,
 			)
 

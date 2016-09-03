@@ -164,11 +164,15 @@ class DbFlattener(object):
 		self.log.info("Clearing history for URL: %s (items: %s)", url, orig_cnt)
 		attachments = {}
 		for item in items:
-			if item.content == None and item.file == None:
-				# self.log.info("Deleting item without a file and no content!")
+			if item.state != "complete":
+				deleted_1 += 1
+				self.log.info("Deleting incomplete item for url: %s!", url)
+				self.sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+			elif item.content == None and item.file == None:
+				self.log.info("Deleting item without a file and no content for url: %s!", url)
 				# print(type(item), item.mimetype, item.file, item.content)
 				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
-				# sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				self.sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 				deleted_1 += 1
 			elif item.content != None:
 				# print(type(item), item.keys(), item.addtime, item.fetchtime)
@@ -176,6 +180,8 @@ class DbFlattener(object):
 				if not closest in attachments:
 					attachments[closest] = []
 				attachments[closest].append(item)
+			else:
+				print("Wat?")
 
 
 		self.log.info("Found %s items missing both file reference and content", deleted_1)
@@ -192,9 +198,7 @@ class DbFlattener(object):
 				out.append(superset[0])
 				# print(superset[0].fetchtime, superset[0].id, superset[0].transaction_id)
 				for tmp in superset[1:]:
-				# 	# sess.execute(ctbl.delete(ctbl.c.id == tmp.id and ctbl.c.transaction_id == tmp.transaction_id))
-					# print("Deleting Intermediate item")
-					# sess.execute(ctbl.delete().where(ctbl.c.id == tmp.id).where(ctbl.c.transaction_id == tmp.transaction_id))
+					self.sess.execute(ctbl.delete().where(ctbl.c.id == tmp.id).where(ctbl.c.transaction_id == tmp.transaction_id))
 					deleted_2 += 1
 			elif len(superset) == 1:
 				out.append(superset[0])
@@ -205,6 +209,7 @@ class DbFlattener(object):
 		seq_dirty = self.relink_row_sequence(out)
 		if deleted > 0 or seq_dirty:
 			# Rewrite the tid links so the history renders properly
+			self.log.info("Committing because %s items were removed!", deleted)
 			self.sess.commit()
 		else:
 			self.sess.rollback()
@@ -230,7 +235,13 @@ class DbFlattener(object):
 		self.qlog.info("Found %s items with more then 10 history entries. Processing", len(end))
 
 		for count, url in end:
-			self.truncate_url_history(url)
+			while 1:
+				try:
+					self.truncate_url_history(url)
+					break
+				except sqlalchemy.exc.OperationalError:
+					self.sess.rollback()
+
 
 	def _go(self):
 		self.consolidate_history()
@@ -242,7 +253,7 @@ def test():
 	print("Wat")
 	# truncate_url_history('http://royalroadl.com/fiction/4293')
 	proc = DbFlattener()
-	proc.go()
+	proc._go()
 
 if __name__ == '__main__':
 	test()
