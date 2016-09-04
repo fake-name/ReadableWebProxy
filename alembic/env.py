@@ -11,8 +11,10 @@ sys.path.append(os.path.abspath(os.getcwd()))
 
 # this will overwrite the ini-file sqlalchemy.url path
 # with the path given in the config of the main code
-import common.database
-context.config.set_main_option('sqlalchemy.url', common.database.SQLALCHEMY_DATABASE_URI)
+
+import common.db_engine
+import common.db_base
+context.config.set_main_option('sqlalchemy.url', common.db_engine.SQLALCHEMY_DATABASE_URI)
 
 
 # this is the Alembic Config object, which provides
@@ -27,7 +29,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-base = common.database.Base
+base = common.db_base.Base
 target_metadata = base.metadata
 
 # other values from the config, defined by the needs of env.py,

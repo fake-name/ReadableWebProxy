@@ -36,6 +36,11 @@ from sqlalchemy_continuum.utils import version_table
 # 		.filter(or_(*loc2)) \
 # 		.delete(synchronize_session=False)
 
+def batch(iterable, n=1):
+	l = len(iterable)
+	for ndx in range(0, l, n):
+		yield iterable[ndx:min(ndx + n, l)]
+
 class DbFlattener(object):
 
 
@@ -243,8 +248,74 @@ class DbFlattener(object):
 					self.sess.rollback()
 
 
+	def tickle_rows(self, sess, urlset):
+		jobs = [sess.query(db.WebPages).filter(db.WebPages.url == url).one() for url in urlset]
+		while True:
+			try:
+
+				for job in jobs:
+					# self.log.info("Need to push content into history table for URL: %s.", job.url)
+
+					cachedtitle = job.title
+					cachedtime  = job.fetchtime
+
+					job.title           = (job.title + " ")    if job.title    else " "
+					job.fetchtime = datetime.datetime.now()
+					# print("Mutated", job, job.fetchtime)
+				sess.commit()
+				for job in jobs:
+
+					job.title     = cachedtitle
+					job.fetchtime = cachedtime
+					job.ignoreuntiltime = datetime.datetime.min
+					# print("Mutated", job, job.fetchtime)
+				sess.commit()
+
+				# self.log.info("Pushed!")
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.log.error("Failure during update (OperationalError)?")
+				sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.log.error("Failure during update (InvalidRequestError)?")
+				sess.rollback()
+
+
+	def fix_missing_history(self):
+
+		sess = db.get_db_session()
+		self.qlog.info("Querying for items without any history")
+		end = sess.execute("""
+			SELECT
+				t1.url
+			FROM
+				web_pages t1
+			LEFT JOIN
+				web_pages_version t2 ON t2.url = t1.url
+			WHERE
+				t2.url IS NULL
+			""")
+		end = [tmp[0] for tmp in end]
+
+		self.log.info("Found %s rows missing history content!", len(end))
+
+		remaining = len(end)
+		for urlset in batch(end, 50):
+			remaining = remaining - len(urlset)
+			self.tickle_rows(sess, urlset)
+			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
+
+
+
+	def wat(self):
+		sess = db.get_db_session()
+		urls = ['http://rancerqz.com/tag/chapter-release/']
+		self.tickle_rows(sess, urls)
+
+
 	def _go(self):
 		self.consolidate_history()
+		self.fix_missing_history()
 
 
 def test():
@@ -253,7 +324,9 @@ def test():
 	print("Wat")
 	# truncate_url_history('http://royalroadl.com/fiction/4293')
 	proc = DbFlattener()
-	proc._go()
+	# proc.wat()
+	proc.fix_missing_history()
+	# proc._go()
 
 if __name__ == '__main__':
 	test()

@@ -29,8 +29,7 @@ from settings import MAX_DB_SESSIONS
 
 import activePlugins
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=config.C_DATABASE_USER, passwd=config.C_DATABASE_PASS, host=config.C_DATABASE_IP, database=config.C_DATABASE_DB_NAME)
-
+from common.db_engine import SQLALCHEMY_DATABASE_URI
 
 CALLABLE_LUT = {}
 for item, dummy_interval in activePlugins.scrapePlugins.values():
