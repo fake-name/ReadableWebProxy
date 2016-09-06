@@ -13,7 +13,7 @@ from settings import RABBIT_ENABLED         as C_DO_RABBIT
 from settings import RABBIT_LOGIN           as C_RABBIT_LOGIN
 from settings import RABBIT_PASWD           as C_RABBIT_PASWD
 from settings import RABBIT_SRVER           as C_RABBIT_SRVER
-from settings import RABBIT_SRVER           as C_RABBIT_SRVER
+from settings import RABBIT_VHOST           as C_RABBIT_VHOST
 
 from settings import RAW_RESOURCE_DIR       as C_RAW_RESOURCE_DIR
 

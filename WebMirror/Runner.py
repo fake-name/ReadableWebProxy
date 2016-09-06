@@ -218,16 +218,15 @@ class UpdateAggregator(object):
 		self.queue = msg_queue
 		self.log = logging.getLogger("Main.Agg.Manager")
 
-		amqp_settings = {
-			"RABBIT_LOGIN"   : config.C_RABBIT_LOGIN,
-			"RABBIT_PASWD"   : config.C_RABBIT_PASWD,
-			"RABBIT_SRVER"   : config.C_RABBIT_SRVER,
-			"RABBIT_VHOST"   : config.C_RABBIT_VHOST,
-			'taskq_task'     : 'task.master.q',
-			'taskq_response' : 'response.master.q',
-		}
-
 		if config.C_DO_RABBIT:
+			amqp_settings = {
+				"RABBIT_LOGIN"   : config.C_RABBIT_LOGIN,
+				"RABBIT_PASWD"   : config.C_RABBIT_PASWD,
+				"RABBIT_SRVER"   : config.C_RABBIT_SRVER,
+				"RABBIT_VHOST"   : config.C_RABBIT_VHOST,
+				'taskq_task'     : 'task.master.q',
+				'taskq_response' : 'response.master.q',
+			}
 			self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
 		self.seen = {}
@@ -239,6 +238,8 @@ class UpdateAggregator(object):
 		self.batched_links = []
 
 		self.db_int = db_interface
+
+
 
 	def do_amqp(self, pkt):
 		self.amqpUpdateCount += 1
@@ -433,6 +434,7 @@ class UpdateAggregator(object):
 
 		while 1:
 			try:
+				print("Loopin!")
 				self.do_task()
 				self.deathCounter = 0
 			except queue.Empty:
@@ -462,11 +464,23 @@ class UpdateAggregator(object):
 
 	@classmethod
 	def launch_agg(cls, agg_queue):
-		install_pystuck()
-		agg_db = db.get_db_session()
-		instance = cls(agg_queue, agg_db)
-		instance.run()
-		instance.close()
+		try:
+			install_pystuck()
+			agg_db = db.get_db_session()
+			instance = cls(agg_queue, agg_db)
+			instance.run()
+			instance.close()
+		except Exception as e:
+			import traceback
+			print()
+			print()
+			print()
+			print()
+			print()
+			print()
+			print("Aggregator exception!")
+			traceback.print_exc()
+
 
 class MultiJobManager(object):
 	def __init__(self, max_tasks, target, target_args=None, target_kwargs=None):

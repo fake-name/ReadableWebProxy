@@ -521,7 +521,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		new_type     = job.type
 
 		raw_cur = self.db_sess.connection().connection.cursor()
-
+		full_printer = 100
 		if self.resp_q != None:
 			for link, istext in items:
 				start = urllib.parse.urlsplit(link).netloc
@@ -546,6 +546,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 				while self.resp_q.qsize() > 1000:
 					time.sleep(0.1)
+					full_printer -= 1
+					if full_printer <= 0:
+						self.log.error("NewLinkQueue seems to have too many URLs in it (%s). Sleeping until it drains.", self.resp_q.qsize())
+						full_printer = 25
 
 			self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
 		else:

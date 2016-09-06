@@ -41,6 +41,7 @@ largv = [tmp.lower() for tmp in sys.argv]
 if "twoprocess" in largv or "oneprocess" in largv:
 	MAX_IN_FLIGHT_JOBS = 10
 else:
+	# MAX_IN_FLIGHT_JOBS = 10
 	# MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 250
 	MAX_IN_FLIGHT_JOBS = 500
@@ -110,7 +111,7 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	def put_outbound_job(self, jobid, joburl):
 		self.active_jobs += 1
-		self.log.info("Dispatching new job (active jobs: %s)", self.active_jobs)
+		self.log.info("Dispatching new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
 		self.jobs_out += 1
 		raw_job = buildjob(
 			module         = 'WebRequest',

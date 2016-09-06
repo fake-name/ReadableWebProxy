@@ -31,6 +31,8 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 import common.db_base
 import common.db_types
 
+from common.db_engine import get_db_session
+from common.db_engine import delete_db_session
 
 class WebPages(common.db_base.Base):
 	__versioned__ = {}
