@@ -23,7 +23,7 @@ import flags
 import WebMirror.SiteSync.fetch
 from sqlalchemy import or_
 from sqlalchemy import and_
-import WebMirror.Exceptions
+import common.Exceptions
 import WebMirror.SpecialCase
 
 from sqlalchemy_continuum.utils import version_table
@@ -117,7 +117,7 @@ def test_all_rss():
 		for url in feeds:
 			try:
 				executor.submit(test_retrieve, url, debug=False)
-			except WebMirror.Exceptions.DownloadException:
+			except common.Exceptions.DownloadException:
 				print("failure downloading page!")
 			except urllib.error.URLError:
 				print("failure downloading page!")

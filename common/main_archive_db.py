@@ -29,9 +29,7 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 
 
 import common.db_base
-
-dlstate_enum   = ENUM('new', 'fetching', 'processing', 'complete', 'error', 'removed', 'disabled', 'specialty_deferred', 'specialty_ready', name='dlstate_enum')
-itemtype_enum  = ENUM('western', 'eastern', 'unknown',            name='itemtype_enum')
+import common.db_types
 
 
 class WebPages(common.db_base.Base):
@@ -41,7 +39,7 @@ class WebPages(common.db_base.Base):
 	name = 'web_pages'
 
 	id                = Column(Integer, primary_key = True, index = True)
-	state             = Column(dlstate_enum, default='new', index=True, nullable=False)
+	state             = Column(common.db_types.dlstate_enum, default='new', index=True, nullable=False)
 	errno             = Column(Integer, default='0')
 	url               = Column(Text, nullable = False, index = True, unique = True)
 	starturl          = Column(Text, nullable = False)
@@ -58,7 +56,7 @@ class WebPages(common.db_base.Base):
 
 	title             = Column(citext.CIText)
 	mimetype          = Column(Text)
-	type              = Column(itemtype_enum, default='unknown')
+	type              = Column(common.db_types.itemtype_enum, default='unknown')
 
 	# Disabled due to disk-space issues.
 	# raw_content       = Column(Text)
@@ -157,7 +155,7 @@ class FeedItems(common.db_base.Base):
 
 	id          = Column(Integer, primary_key=True)
 
-	type        = Column(itemtype_enum, default='unknown', index=True)
+	type        = Column(common.db_types.itemtype_enum, default='unknown', index=True)
 
 	srcname      = Column(Text, nullable=False, index=True)
 	feedurl      = Column(Text, nullable=False, index=True)

@@ -3,6 +3,7 @@ import re
 import urllib.parse
 import common.util.webFunctions
 import unshortenit
+from common.Exceptions import CannotAccessGDocException
 
 # All tags you need to look into to do link canonization
 # source: http://stackoverflow.com/q/2725156/414272
@@ -45,7 +46,6 @@ urlContainingTargets = [
 	(True,  'img',        'usemap'),
 ]
 
-from WebMirror.Exceptions import CannotAccessGDocException
 
 
 
@@ -191,6 +191,20 @@ def canonizeUrls(soup, pageUrl):
 				link[attr] = rebaseUrl(url, pageUrl)
 
 	return soup
+
+def extractUrls(soup, pageUrl):
+	# print("Canonizing for page: ", pageUrl)
+	urls = set()
+	for (dummy_isimg, tag, attr) in urlContainingTargets:
+		for link in soup.findAll(tag):
+			try:
+				url = link[attr]
+			except KeyError:
+				pass
+			else:
+				urls.add(rebaseUrl(url, pageUrl))
+
+	return urls
 
 
 def urlClean(url):

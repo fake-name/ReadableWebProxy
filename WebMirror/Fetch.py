@@ -20,7 +20,7 @@ from activePlugins import PREPROCESSORS
 from activePlugins import PLUGINS
 from activePlugins import FILTERS
 
-from WebMirror.Exceptions import DownloadException
+from common.Exceptions import DownloadException
 
 ########################################################################################################################
 #
