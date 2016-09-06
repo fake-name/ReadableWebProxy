@@ -105,7 +105,7 @@ def saveFile(filecont, url, filename, mimetype):
 ########################################################################################################################
 
 
-class SiteArchiver(LogBase.LoggerMixin):
+class RawSiteArchiver(LogBase.LoggerMixin):
 
 	loggerPath = "Main.RawArchiver"
 
@@ -115,7 +115,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	FETCH_DISTANCE = 1000 * 1000
 
 	def __init__(self, cookie_lock, db_interface, use_socks=False):
-		# print("SiteArchiver __init__()")
+		# print("RawSiteArchiver __init__()")
 		super().__init__()
 
 		self.cookie_lock = cookie_lock
@@ -405,7 +405,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 def test():
-	archiver = SiteArchiver(None)
+	archiver = RawSiteArchiver(None)
 
 	new = {
 		'url'       : 'http://www.royalroadl.com/fiction/1484',
