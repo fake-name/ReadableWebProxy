@@ -8,5 +8,5 @@ ACTIVE_MODULES = [
 
 
 for module in ACTIVE_MODULES:
-	assert(isinstance(module, RawArchiver.Modules.ModuleBase.RawScraperModuleBase))
+	assert(issubclass(module, RawArchiver.Modules.ModuleBase.RawScraperModuleBase))
 

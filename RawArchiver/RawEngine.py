@@ -7,6 +7,7 @@ if __name__ == "__main__":
 import common.LogBase as LogBase
 import runStatus
 import queue
+import mimetypes
 import time
 import os.path
 import os
@@ -47,7 +48,7 @@ def getHash(fCont):
 	return m.hexdigest()
 
 
-def saveFile(filecont, url, filename, mimetype):
+def saveFile(filecont, url, filename):
 	# use the first 3 chars of the hash for the folder name.
 	# Since it's hex-encoded, that gives us a max of 2^12 bits of
 	# directories, or 4096 dirs.
@@ -122,6 +123,49 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks)
 
+
+	def get_file_and_name(self, url):
+		pgctnt, hName, mime = self.wg.getFileNameMime(url)
+
+		parsed = urllib.parse.urlparse(url)
+		pathname = os.path.split(parsed.path)[-1]
+		if not hName and not mime and not pathname:
+			self.log.error("cannot figure out content type for url: %s", url)
+			return pgctnt, "unknown.unknown"
+
+		# empty path with mimetype of text/html generally means it's a directory index (or some horrible dynamic shit).
+		if not hName and not pathname and mime == "text/html":
+			self.log.info("No path and root location. Assuming index.html")
+			return pgctnt, "index.html"
+
+		ftype = mimetypes.guess_type(hName)[0]
+		if ftype:
+			return pgctnt, hName
+
+		ftype = mimetypes.guess_type(pathname)[0]
+		if ftype:
+			return pgctnt, pathname
+
+		chunks = [hName, pathname]
+		chunks = [chunk for chunk in chunks if chunk]
+
+		outname = " - ".join(chunks)
+		if mime and mimetypes.guess_extension(mime):
+			newext = mimetypes.guess_extension(mime)
+		else:
+			newext = ".unknown"
+
+		if not outname:
+			outname = "unknown"
+		return pgctnt, outname+newext
+
+
+	def do_job(self, job):
+		self.log.info("Fetching %s", job.url)
+
+		ctnt, fname = self.get_file_and_name(job.url)
+		saved_to = saveFile(ctnt, url, fname)
+		print("fname:", fname)
 
 
 	def checkHaveHistory(self, url):
@@ -216,6 +260,8 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 			ret.add(link)
 		return ret
+
+
 
 
 	def upsertResponseLinks(self, job, links):
@@ -376,8 +422,20 @@ def test():
 
 	import common.database
 	sess = common.database.get_db_session()
+
+	job = common.database.RawWebPages(
+		state    = 'new',
+		url      = 'http://ux.stackexchange.com/questions/98914/the-perfect-credit-card-number-field',
+		starturl = 'http://somethingpositive.net',
+		netloc   = 'somethingpositive.net',
+		priority = common.database.DB_LOW_PRIORITY,
+		distance = 0,
+		)
+
 	archiver = RawSiteArchiver(None, db_interface=sess, db=common.database)
 
+	print(job)
+	archiver.do_job(job)
 	print("doing")
 
 	pass

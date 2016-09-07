@@ -433,6 +433,29 @@ class WebGetRobust:
 
 		return pgctnt, hName
 
+	def getFileNameMime(self, *args, **kwargs):
+		if 'returnMultiple' in kwargs:
+			raise ValueError("getFileAndName cannot be called with 'returnMultiple'")
+
+		if 'soup' in kwargs and kwargs['soup']:
+			raise ValueError("getFileAndName contradicts the 'soup' directive!")
+
+		kwargs["returnMultiple"] = True
+
+		pgctnt, pghandle = self.getpage(*args, **kwargs)
+
+		info = pghandle.info()
+		if not 'Content-Disposition' in info:
+			hName = ''
+		elif not 'filename=' in info['Content-Disposition']:
+			hName = ''
+		else:
+			hName = info['Content-Disposition'].split('filename=')[1]
+
+		mime = info.get_content_type()
+
+		return pgctnt, hName, mime
+
 
 	def buildRequest(self, pgreq, postData, addlHeaders, binaryForm, req_class = urllib.request.Request):
 		# Encode Unicode URL's properly

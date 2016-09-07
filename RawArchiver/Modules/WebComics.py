@@ -11,11 +11,11 @@ class WebComicsRawModule(RawArchiver.Modules.ModuleBase.RawScraperModuleBase):
 		'http://www.girlgeniusonline.com',
 	]
 
-	target_tlds = [urllib.parse.urlsplit(tmp).tld for tmp in target_urls]
+	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
 
 	@staticmethod
 	def cares_about_url(cls, url):
-		return urllib.parse.urlsplit(url).tld in cls.target_tlds
+		return urllib.parse.urlparse(url).netloc in cls.target_tlds
 
 	@staticmethod
 	def get_start_urls(cls):

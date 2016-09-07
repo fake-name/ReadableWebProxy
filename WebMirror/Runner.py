@@ -434,7 +434,7 @@ class UpdateAggregator(object):
 
 		while 1:
 			try:
-				print("Loopin!")
+				# print("Loopin!")
 				self.do_task()
 				self.deathCounter = 0
 			except queue.Empty:

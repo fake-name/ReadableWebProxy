@@ -58,7 +58,7 @@ class RawWebPages(common.db_base.Base):
 
 	filename     = Column(Text)
 
-	fspath       = Column(Text, nullable=False)
+	fspath       = Column(Text)
 
 	fetchtime         = Column(DateTime, default=datetime.datetime.min)
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
