@@ -15,7 +15,6 @@ import psycopg2
 import sys
 
 import settings
-# import common.database as db
 import common.LogBase as LogBase
 import WebMirror.OutputFilters.AmqpInterface
 import runStatus
@@ -72,9 +71,9 @@ def buildjob(
 
 
 
-class JobAggregator(LogBase.LoggerMixin):
+class RawJobAggregator(LogBase.LoggerMixin):
 
-	loggerPath = "Main.JobAggregator"
+	loggerPath = "Main.RawJobAggregator"
 
 	def __init__(self):
 		# print("Job __init__()")
@@ -239,25 +238,25 @@ class JobAggregator(LogBase.LoggerMixin):
 		# the 10 ms query will suddenly take 10 seconds!
 		raw_query = '''
 				UPDATE
-				    web_pages
+				    raw_web_pages
 				SET
 				    state = 'fetching'
 				WHERE
-				    web_pages.id IN (
+				    raw_web_pages.id IN (
 				        SELECT
-				            web_pages.id
+				            raw_web_pages.id
 				        FROM
-				            web_pages
+				            raw_web_pages
 				        WHERE
-				            web_pages.state = 'new'
+				            raw_web_pages.state = 'new'
 				        AND
 				            normal_fetch_mode = true
 				        AND
-				            web_pages.priority = (
+				            raw_web_pages.priority = (
 				               SELECT
 				                    min(priority)
 				                FROM
-				                    web_pages
+				                    raw_web_pages
 				                WHERE
 				                    state = 'new'::dlstate_enum
 				                AND
@@ -265,18 +264,18 @@ class JobAggregator(LogBase.LoggerMixin):
 				                AND
 				                    normal_fetch_mode = true
 				                AND
-				                    web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+				                    raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 				            )
 				        AND
-				            web_pages.distance < 1000000
+				            raw_web_pages.distance < 1000000
 				        AND
-				            web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+				            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 				        LIMIT {in_flight}
 				    )
 				AND
-				    web_pages.state = 'new'
+				    raw_web_pages.state = 'new'
 				RETURNING
-				    web_pages.id, web_pages.netloc, web_pages.url;
+				    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 50)))
 
 
@@ -336,7 +335,7 @@ def test2():
 	import pprint
 	logSetup.initLogging()
 
-	agg = JobAggregator()
+	agg = RawJobAggregator()
 	outq = agg.get_queues()
 	for x in range(20):
 		print("Sleeping, ", x)

@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.getcwd()))
 # with the path given in the config of the main code
 
 import common.db_engine
-import common.db_base
+import common.database
 context.config.set_main_option('sqlalchemy.url', common.db_engine.SQLALCHEMY_DATABASE_URI)
 
 
@@ -29,7 +29,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-base = common.db_base.Base
+base = common.database.Base
 target_metadata = base.metadata
 
 # other values from the config, defined by the needs of env.py,

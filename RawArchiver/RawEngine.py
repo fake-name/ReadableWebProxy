@@ -31,13 +31,13 @@ from sqlalchemy.sql import func
 import common.util.webFunctions as webFunctions
 
 import hashlib
-import common.database as db
 from config import C_RAW_RESOURCE_DIR
 
 
 from sqlalchemy_continuum.utils import version_table
 
 import common.global_constants
+import RawArchiver.RawActiveModules
 
 
 def getHash(fCont):
@@ -45,8 +45,6 @@ def getHash(fCont):
 	m = hashlib.md5()
 	m.update(fCont)
 	return m.hexdigest()
-
-
 
 
 def saveFile(filecont, url, filename, mimetype):
@@ -114,7 +112,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, db_interface, use_socks=False):
+	def __init__(self, cookie_lock, db_interface, db, use_socks=False):
 		# print("RawSiteArchiver __init__()")
 		super().__init__()
 
@@ -127,26 +125,27 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 
 	def checkHaveHistory(self, url):
-		ctbl = version_table(db.RawWebPages)
+		ctbl = version_table(self.db.RawWebPages)
 
 		count = self.db_sess.query(ctbl) \
 			.filter(ctbl.c.url == url)   \
 			.count()
 		return count
 
+	def getModuleForUrl(self, url):
+
+		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+			if module.cares_about_url(url):
+				return module
+		raise RuntimeError("Unwanted URL: %s" % url)
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
 
-		start = urllib.parse.urlsplit(job.starturl).netloc
-		interval = settings.REWALK_INTERVAL_DAYS
-		if start in self.netloc_rewalk_times and self.netloc_rewalk_times[start]:
-			interval = self.netloc_rewalk_times[start]
+		interval = self.getModuleForUrl(job.url).rewalk_interval
 
 		assert interval > 7
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
-
-
 
 
 		while True:
@@ -178,11 +177,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 				job.ignoreuntiltime = ignoreuntiltime
 
 
-				if "text" in job.mimetype:
-					job.is_text  = True
-				else:
-					job.is_text  = False
-
 				job.state    = 'complete'
 
 				# Disabled for space-reasons.
@@ -199,17 +193,21 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			except sqlalchemy.exc.InvalidRequestError:
 				self.db_sess.rollback()
 
-	def generalLinkClean(self, link, badwords):
+	def generalLinkClean(self, link):
 		if link.startswith("data:"):
 			return None
 		linkl = link.lower()
-		if any([badword in linkl for badword in badwords]):
-			# print("Filtered:", link)
+		if any([badword in linkl for badword in common.global_constants.GLOBAL_BAD_URLS]):
 			return None
-		return link
+
+		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+			if module.cares_about_url(link):
+				return link
+
+		return None
 
 
-	def filterLinks(self, job, links):
+	def filterLinks(self, links):
 		ret = set()
 		for link in links:
 			link = self.generalLinkClean(link)
@@ -222,11 +220,9 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 	def upsertResponseLinks(self, job, links):
 		self.log.info("Updating database with response links")
-		links    = set(links)
-
-		orig = len(links)
-
-		links    = self.filterLinks(job,  links)
+		links       = set(links)
+		orig        = len(links)
+		links       = self.filterLinks(links)
 		post_filter = len(links)
 
 		self.log.info("Upserting %s links (%s filtered)" % (post_filter, orig-post_filter))
@@ -235,103 +231,75 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		new_starturl = job.starturl,
 		new_distance = job.distance+1
 		new_priority = job.priority
-		new_type     = job.type
 
 		raw_cur = self.db_sess.connection().connection.cursor()
 
-		if self.resp_q != None:
-			for link in links:
-				start = urllib.parse.urlsplit(link).netloc
+		#  Fucking huzzah for ON CONFLICT!
+		cmd = """
+				INSERT INTO
+					web_pages
+					(url, starturl, netloc, distance, priority, addtime, state)
+				VALUES
+					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(priority)s, %(addtime)s, %(state)s)
+				ON CONFLICT (url) DO
+					UPDATE
+						SET
+							state           = EXCLUDED.state,
+							starturl        = EXCLUDED.starturl,
+							netloc          = EXCLUDED.netloc,
+							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+						WHERE
+						(
+								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
+							AND
+								web_pages.url = EXCLUDED.url
+							AND
+								(web_pages.state = 'complete' OR web_pages.state = 'error')
+						)
+					;
+				""".replace("	", " ").replace("\n", " ")
 
-				assert link.startswith("http")
-				assert start
-				new = {
+		# Only commit per-URL if we're tried to do the update in batch, and failed.
+		commit_each = False
+		while 1:
+			try:
+				for link in links:
+					start = urllib.parse.urlsplit(link).netloc
+
+					assert link.startswith("http")
+					assert start
+
+
+					# Forward-data the next walk, time, rather then using now-value for the thresh.
+					data = {
 						'url'             : link,
 						'starturl'        : new_starturl,
 						'netloc'          : start,
 						'distance'        : new_distance,
 						'priority'        : new_priority,
-						'type'            : new_type,
 						'state'           : "new",
 						'addtime'         : datetime.datetime.now(),
 
 						# Don't retrigger unless the ignore time has elaped.
 						'ignoreuntiltime' : datetime.datetime.now(),
-					}
-				self.resp_q.put(("new_link", new))
+						}
+					raw_cur.execute(cmd, data)
+					if commit_each:
+						raw_cur.execute("COMMIT;")
+					break
+				raw_cur.execute("COMMIT;")
+			except psycopg2.Error:
+				if commit_each is False:
+					self.log.warn("psycopg2.Error - Retrying with commit each.")
+				else:
+					self.log.warn("psycopg2.Error - Retrying.")
+					traceback.print_exc()
 
-				while self.resp_q.qsize() > 1000:
-					time.sleep(0.1)
+				raw_cur.execute("ROLLBACK;")
+				commit_each = True
 
-			self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
-		else:
-			#  Fucking huzzah for ON CONFLICT!
-			cmd = """
-					INSERT INTO
-						web_pages
-						(url, starturl, netloc, distance, priority, type, addtime, state)
-					VALUES
-						(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
-					ON CONFLICT (url) DO
-						UPDATE
-							SET
-								state           = EXCLUDED.state,
-								starturl        = EXCLUDED.starturl,
-								netloc          = EXCLUDED.netloc,
-								distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-								priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
-								addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-							WHERE
-							(
-									web_pages.ignoreuntiltime < %(ignoreuntiltime)s
-								AND
-									web_pages.url = EXCLUDED.url
-								AND
-									(web_pages.state = 'complete' OR web_pages.state = 'error')
-							)
-						;
-					""".replace("	", " ").replace("\n", " ")
-
-			# Only commit per-URL if we're tried to do the update in batch, and failed.
-			commit_each = False
-			for link in links:
-				while 1:
-					try:
-						start = urllib.parse.urlsplit(link).netloc
-
-						assert link.startswith("http")
-						assert start
-
-
-						# Forward-data the next walk, time, rather then using now-value for the thresh.
-						data = {
-							'url'             : link,
-							'starturl'        : new_starturl,
-							'netloc'          : start,
-							'distance'        : new_distance,
-							'priority'        : new_priority,
-							'type'            : new_type,
-							'state'           : "new",
-							'addtime'         : datetime.datetime.now(),
-
-							# Don't retrigger unless the ignore time has elaped.
-							'ignoreuntiltime' : datetime.datetime.now(),
-							}
-						raw_cur.execute(cmd, data)
-						if commit_each:
-							raw_cur.execute("COMMIT;")
-						break
-					except psycopg2.Error:
-						if commit_each is False:
-							self.log.warn("psycopg2.Error - Retrying with commit each.")
-						else:
-							self.log.warn("psycopg2.Error - Retrying.")
-							traceback.print_exc()
-
-						raw_cur.execute("ROLLBACK;")
-						commit_each = True
-
-			raw_cur.execute("COMMIT;")
 
 
 
@@ -378,7 +346,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		self.db_sess.flush()
 
-
 		return job
 
 
@@ -390,6 +357,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		try:
 
 			while runStatus.run_state.value == 1:
+				self.new
 				rpcresp = self.getRpcResp()
 				if not rpcresp:
 					return False
@@ -405,36 +373,13 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 
 def test():
-	archiver = RawSiteArchiver(None)
 
-	new = {
-		'url'       : 'http://www.royalroadl.com/fiction/1484',
-		'starturl'  : 'http://www.royalroadl.com/',
-		'netloc'    : "www.royalroadl.com",
-		'distance'  : 50000,
-		'is_text'   : True,
-		'priority'  : 500000,
-		'type'      : 'unknown',
-		'fetchtime' : datetime.datetime.now(),
-		}
+	import common.database
+	sess = common.database.get_db_session()
+	archiver = RawSiteArchiver(None, db_interface=sess, db=common.database)
 
-	cmd = text("""
-			INSERT INTO
-				web_pages
-				(url, starturl, netloc, distance, is_text, priority, type, fetchtime)
-			VALUES
-				(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime)
-			ON CONFLICT DO NOTHING
-			""")
 	print("doing")
-	# ins = archiver.db.get_session().execute(cmd, params=new)
-	# print("Doneself. Ret:")
-	# print(ins)
-	# print(archiver.resetDlstate())
-	print(archiver.getRpcResp())
-	# print(archiver.getRpcResp())
-	# print(archiver.getRpcResp())
-	# print(archiver.taskProcess())
+
 	pass
 
 def test2():
@@ -444,6 +389,6 @@ def test2():
 
 
 if __name__ == "__main__":
-	test2()
+	test()
 
 
