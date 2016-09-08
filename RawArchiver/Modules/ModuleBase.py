@@ -43,12 +43,12 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 		pass
 
 	@classmethod
-	@abc.abstractproperty
+	@abc.abstractmethod
 	def cares_about_url(cls, url):
 		pass
 
 	@classmethod
-	@abc.abstractproperty
+	@abc.abstractmethod
 	def get_start_urls(cls):
 		pass
 

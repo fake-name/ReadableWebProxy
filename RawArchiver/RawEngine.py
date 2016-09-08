@@ -53,39 +53,49 @@ def saveFile(filecont, url, filename):
 	# Since it's hex-encoded, that gives us a max of 2^12 bits of
 	# directories, or 4096 dirs.
 
-	dirPath = os.path.join(C_RAW_RESOURCE_DIR, dirName)
+	split = urllib.parse.urlsplit(url)
+
+
+	urlpath, urlfname = os.path.split(split.path)
+	if not urlpath.startswith("/"):
+		urlpath = "/"+urlpath
+	urlpath = "./"+split.netloc+urlpath
+	print(urlpath)
+
+	dirPath = os.path.join(C_RAW_RESOURCE_DIR, urlpath)
+	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
+
+	# Pick the longer name that contains the other, or
+	# concatenate the two together.
+	if filename.lower() in urlfname.lower():
+		outname = urlfname
+	elif urlfname.lower() in filename.lower():
+		outname = filename
+	else:
+		outname = urlfname + " - " + filename
+
+	fqpath = os.path.join(dirPath, outname)
+	fqpath = os.path.abspath(fqpath)
+	dirPath = os.path.abspath(dirPath)
+	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
+	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
+
 	if not os.path.exists(dirPath):
 		os.makedirs(dirPath)
 
-	ext = os.path.splitext(filename)[-1]
-	ext   = ext.lower()
+	if os.path.exists(fqpath):
+		fname, ext = os.path.splitext(fqpath)
+		fhash = getHash(filecont)
+		# The "." is part of the ext.
+		fqpath = '{fname} - {fhash}{ext}'.format(fname=fname, fhash=fhash, ext=ext)
 
-	# The "." is part of the ext.
-	filename = '{filename}{ext}'.format(filename=fHash, ext=ext)
+	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
 
+	print("Saving file to path: '{fqpath}'!".format(fqpath=fqpath))
+	with open(fqpath, "wb") as fp:
+		fp.write(filecont)
 
-	# The "." is part of the ext.
-	filename = '{filename}{ext}'.format(filename=fHash, ext=ext)
-
-	# Flask config values have specious "/./" crap in them. Since that gets broken through
-	# the abspath canonization, we pre-canonize the config path so it compares
-	# properly.
-	confpath = os.path.abspath(C_RAW_RESOURCE_DIR)
-
-	fqpath = os.path.join(dirPath, filename)
-	fqpath = os.path.abspath(fqpath)
-
-	if not fqpath.startswith(confpath):
-		raise ValueError("Generating the file path to save a cover produced a path that did not include the storage directory?")
-
-	locpath = fqpath[len(confpath):]
-	if not os.path.exists(fqpath):
-		print("Saving file to path: '{fqpath}'!".format(fqpath=fqpath))
-		with open(fqpath, "wb") as fp:
-			fp.write(filecont)
-	else:
-		print("File '{fqpath}' already exists!".format(fqpath=fqpath))
-
+	locpath = fqpath[len(C_RAW_RESOURCE_DIR):]
 	if locpath.startswith("/"):
 		locpath = locpath[1:]
 	return locpath
@@ -124,27 +134,27 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks)
 
 
-	def get_file_and_name(self, url):
+	def get_file_name_mime(self, url):
 		pgctnt, hName, mime = self.wg.getFileNameMime(url)
 
 		parsed = urllib.parse.urlparse(url)
 		pathname = os.path.split(parsed.path)[-1]
 		if not hName and not mime and not pathname:
 			self.log.error("cannot figure out content type for url: %s", url)
-			return pgctnt, "unknown.unknown"
+			return pgctnt, "unknown.unknown", "application/octet-stream"
 
 		# empty path with mimetype of text/html generally means it's a directory index (or some horrible dynamic shit).
 		if not hName and not pathname and mime == "text/html":
 			self.log.info("No path and root location. Assuming index.html")
-			return pgctnt, "index.html"
+			return pgctnt, "index.html", "text/html"
 
-		ftype = mimetypes.guess_type(hName)[0]
+		ftype, guessed_mime = mimetypes.guess_type(hName)
 		if ftype:
-			return pgctnt, hName
+			return pgctnt, hName, guessed_mime if not mime else mime
 
-		ftype = mimetypes.guess_type(pathname)[0]
+		ftype, guessed_mime = mimetypes.guess_type(pathname)
 		if ftype:
-			return pgctnt, pathname
+			return pgctnt, pathname, guessed_mime if not mime else mime
 
 		chunks = [hName, pathname]
 		chunks = [chunk for chunk in chunks if chunk]
@@ -157,15 +167,9 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		if not outname:
 			outname = "unknown"
-		return pgctnt, outname+newext
+		return pgctnt, outname+newext, mime if mime else "application/octet-stream"
 
 
-	def do_job(self, job):
-		self.log.info("Fetching %s", job.url)
-
-		ctnt, fname = self.get_file_and_name(job.url)
-		saved_to = saveFile(ctnt, url, fname)
-		print("fname:", fname)
 
 
 	def checkHaveHistory(self, url):
@@ -179,12 +183,19 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	def getModuleForUrl(self, url):
 
 		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+			print("Module:", module, module.cares_about_url)
 			if module.cares_about_url(url):
 				return module
 		raise RuntimeError("Unwanted URL: %s" % url)
 
 	# Update the row with the item contents
-	def upsertReponseContent(self, job, response):
+	def do_job(self, job):
+		self.getModuleForUrl(job.url)
+		self.log.info("Fetching %s", job.url)
+		ctnt, fname, mimetype = self.get_file_name_mime(job.url)
+		if isinstance(ctnt, str):
+			ctnt = ctnt.encode("utf-8")
+		saved_to = saveFile(ctnt, job.url, fname)
 
 		interval = self.getModuleForUrl(job.url).rewalk_interval
 
@@ -202,6 +213,8 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 				job.content         = (job.content + " ")  if job.content  else " "
 				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
 
+
+
 				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
 
 				self.db_sess.commit()
@@ -214,20 +227,11 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		while 1:
 			try:
-
-				job.title           = response['title']
-				job.content         = response['contents']
-				job.mimetype        = response['mimeType']
+				job.state           = 'complete'
+				job.fetchtime       = datetime.datetime.now()
 				job.ignoreuntiltime = ignoreuntiltime
-
-
-				job.state    = 'complete'
-
-				# Disabled for space-reasons.
-				# if 'rawcontent' in response:
-				# 	job.raw_content = response['rawcontent']
-
-				job.fetchtime = datetime.datetime.now()
+				job.fspath          = saved_to
+				job.mimetype        = mimetype
 
 				self.db_sess.commit()
 				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)

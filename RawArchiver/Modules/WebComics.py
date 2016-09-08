@@ -13,10 +13,10 @@ class WebComicsRawModule(RawArchiver.Modules.ModuleBase.RawScraperModuleBase):
 
 	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
 
-	@staticmethod
+	@classmethod
 	def cares_about_url(cls, url):
 		return urllib.parse.urlparse(url).netloc in cls.target_tlds
 
-	@staticmethod
+	@classmethod
 	def get_start_urls(cls):
 		return [tmp for tmp in cls.target_urls]

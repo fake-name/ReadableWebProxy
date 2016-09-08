@@ -49,8 +49,6 @@ class RawWebPages(common.db_base.Base):
 	priority          = Column(Integer, default=1000000, index=True, nullable=False)
 	distance          = Column(Integer, index=True, nullable=False)
 
-	is_text           = Column(Boolean, default=False)
-
 	mimetype          = Column(Text)
 
 	# Disabled due to disk-space issues.
