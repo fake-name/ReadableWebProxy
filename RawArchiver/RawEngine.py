@@ -39,6 +39,7 @@ from sqlalchemy_continuum.utils import version_table
 
 import common.global_constants
 import RawArchiver.RawActiveModules
+import RawArchiver.RawNewJobQueue
 
 
 def getHash(fCont):
@@ -60,7 +61,6 @@ def saveFile(filecont, url, filename):
 	if not urlpath.startswith("/"):
 		urlpath = "/"+urlpath
 	urlpath = "./"+split.netloc+urlpath
-	print(urlpath)
 
 	dirPath = os.path.join(C_RAW_RESOURCE_DIR, urlpath)
 	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
@@ -123,9 +123,11 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, db_interface, db, use_socks=False):
+	def __init__(self, new_job_queue, cookie_lock, db_interface, db, use_socks=False):
 		# print("RawSiteArchiver __init__()")
 		super().__init__()
+
+		self.new_job_queue = new_job_queue
 
 		self.cookie_lock = cookie_lock
 		self.db_sess = db_interface
@@ -169,9 +171,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			outname = "unknown"
 		return pgctnt, outname+newext, mime if mime else "application/octet-stream"
 
-
-
-
 	def checkHaveHistory(self, url):
 		ctbl = version_table(self.db.RawWebPages)
 
@@ -193,6 +192,8 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		self.getModuleForUrl(job.url)
 		self.log.info("Fetching %s", job.url)
 		ctnt, fname, mimetype = self.get_file_name_mime(job.url)
+		links = self.extractLinks(ctnt, mimetype, job.url)
+
 		if isinstance(ctnt, str):
 			ctnt = ctnt.encode("utf-8")
 		saved_to = saveFile(ctnt, job.url, fname)
@@ -209,8 +210,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 				break
 			try:
 				self.log.info("Need to push content into history table (current length: %s).", history_size)
-				job.title           = (job.title + " ")    if job.title    else " "
-				job.content         = (job.content + " ")  if job.content  else " "
 				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
 
 
@@ -240,6 +239,29 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 				self.db_sess.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
 				self.db_sess.rollback()
+
+		if links:
+			self.upsertResponseLinks(job, links)
+
+	def extractLinks(self, ctnt, mimetype, url):
+
+		# No links in non-textual content.
+		if not isinstance(ctnt, str):
+			return
+		if mimetype == "text/html":
+			return self.extractHtml(ctnt, url)
+
+		# Other file types?
+		return []
+
+	def extractHtml(self, content, url):
+		soup = webFunctions.as_soup(content)
+		links = common.util.urlFuncs.extractUrls(soup, url, truncate_fragment=True)
+		clinks = self.filterLinks(links)
+
+		self.log.info("Found %s links, %s after filtering.", len(links), len(clinks))
+
+		return clinks
 
 	def generalLinkClean(self, link):
 		if link.startswith("data:"):
@@ -287,26 +309,26 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		#  Fucking huzzah for ON CONFLICT!
 		cmd = """
 				INSERT INTO
-					web_pages
-					(url, starturl, netloc, distance, priority, addtime, state)
+					raw_web_pages
+					(url, starturl, netloc, distance, priority, addtime, state, ignoreuntiltime)
 				VALUES
-					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(priority)s, %(addtime)s, %(state)s)
+					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(priority)s, %(addtime)s, %(state)s, now())
 				ON CONFLICT (url) DO
 					UPDATE
 						SET
 							state           = EXCLUDED.state,
 							starturl        = EXCLUDED.starturl,
 							netloc          = EXCLUDED.netloc,
-							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
-							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+							distance        = LEAST(EXCLUDED.distance, raw_web_pages.distance),
+							priority        = GREATEST(EXCLUDED.priority, raw_web_pages.priority),
+							addtime         = LEAST(EXCLUDED.addtime, raw_web_pages.addtime)
 						WHERE
 						(
-								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
+								raw_web_pages.ignoreuntiltime < now()
 							AND
-								web_pages.url = EXCLUDED.url
+								raw_web_pages.url = EXCLUDED.url
 							AND
-								(web_pages.state = 'complete' OR web_pages.state = 'error')
+								(raw_web_pages.state = 'complete' OR raw_web_pages.state = 'error')
 						)
 					;
 				""".replace("	", " ").replace("\n", " ")
@@ -316,6 +338,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		while 1:
 			try:
 				for link in links:
+					# print("Doing insert", commit_each, link)
 					start = urllib.parse.urlsplit(link).netloc
 
 					assert link.startswith("http")
@@ -338,8 +361,8 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 					raw_cur.execute(cmd, data)
 					if commit_each:
 						raw_cur.execute("COMMIT;")
-					break
 				raw_cur.execute("COMMIT;")
+				break
 			except psycopg2.Error:
 				if commit_each is False:
 					self.log.warn("psycopg2.Error - Retrying with commit each.")
@@ -407,15 +430,14 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		try:
 
 			while runStatus.run_state.value == 1:
-				self.new
-				rpcresp = self.getRpcResp()
-				if not rpcresp:
-					return False
-				self.process_rpc_response(rpcresp)
-
+				try:
+					jid = self.new_job_queue.get_nowait()
+					job = self.get_job_from_id(jid)
+					self.do_job(job)
+				except queue.Empty:
+					time.sleep(1)
 
 		except Exception:
-
 			for line in traceback.format_exc().split("\n"):
 				self.log.critical("%s", line.rstrip())
 		return True
@@ -429,14 +451,16 @@ def test():
 
 	job = common.database.RawWebPages(
 		state    = 'new',
-		url      = 'http://ux.stackexchange.com/questions/98914/the-perfect-credit-card-number-field',
+		url      = 'http://somethingpositive.net',
 		starturl = 'http://somethingpositive.net',
 		netloc   = 'somethingpositive.net',
 		priority = common.database.DB_LOW_PRIORITY,
 		distance = 0,
 		)
+	sess.add(job)
+	sess.commit()
 
-	archiver = RawSiteArchiver(None, db_interface=sess, db=common.database)
+	archiver = RawSiteArchiver(None, None, db_interface=sess, db=common.database)
 
 	print(job)
 	archiver.do_job(job)
@@ -444,13 +468,34 @@ def test():
 
 	pass
 
+
 def test2():
-	ruleset = WebMirror.rules.load_rules()
-	netloc_rewalk_times = build_rewalk_time_lut(ruleset)
-	print(netloc_rewalk_times)
+	fetcher = RawArchiver.RawNewJobQueue.RawJobFetcher()
+	import common.database
+	sess = common.database.get_db_session()
+
+	try:
+		job = common.database.RawWebPages(
+			state    = 'new',
+			url      = 'http://somethingpositive.net',
+			starturl = 'http://somethingpositive.net',
+			netloc   = 'somethingpositive.net',
+			priority = common.database.DB_LOW_PRIORITY,
+			distance = 0,
+			)
+		sess.add(job)
+		sess.commit()
+	except sqlalchemy.exc.IntegrityError:
+		sess.rollback()
+
+	archiver = RawSiteArchiver(fetcher.get_queue(), None, db_interface=sess, db=common.database)
+	archiver.taskProcess()
 
 
 if __name__ == "__main__":
-	test()
+	resetInProgress()
+	# test()
+	test2()
+
 
 

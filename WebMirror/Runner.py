@@ -40,33 +40,8 @@ NO_PROCESSES = 24
 # NO_PROCESSES = 2
 # NO_PROCESSES = 1
 
-# For synchronizing saving cookies to disk
-COOKIE_LOCK  = multiprocessing.Lock()
 
-
-def install_pystuck():
-	import pystuck
-	stuck_port = 6666
-	while 1:
-		try:
-			pystuck.run_server(port=stuck_port)
-			print("PyStuck installed to process, running on port %s" % stuck_port)
-			return
-		except OSError:
-			stuck_port += 1
-		if stuck_port > 7000:
-			raise RuntimeError("wat?")
-
-def halt_exc(x, y):
-	if runStatus.run_state.value == 0:
-		print("Raising Keyboard Interrupt")
-		raise KeyboardInterrupt
-
-def handler(signum, frame):
-	for th in threading.enumerate():
-		print("Dumping stack for thread: ", th)
-		traceback.print_stack(sys._current_frames()[th.ident])
-		print()
+import common.stuck
 
 class RunInstance(object):
 	def __init__(self, num, response_queue, new_job_queue, cookie_lock, nosig=True):
@@ -156,7 +131,7 @@ class RunInstance(object):
 	@classmethod
 	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
-		install_pystuck()
+		common.stuck.install_pystuck()
 
 		try:
 			run = cls(num, response_queue, new_job_queue, cookie_lock, nosig)
@@ -598,7 +573,7 @@ class Crawler(object):
 		kwargs = {
 			'response_queue' : new_url_aggreator_queue,
 			'new_job_queue'  : new_job_queue,
-			'cookie_lock'    : COOKIE_LOCK,
+			'cookie_lock'    : runStatus.cookie_lock,
 			}
 		mainManager    = MultiJobManager(max_tasks=self.thread_count, target=RunInstance.run, target_kwargs=kwargs)
 
@@ -615,9 +590,9 @@ class Crawler(object):
 
 					living = sum([manager.check_run_jobs() for manager in managers])
 
-					clok_locked = COOKIE_LOCK.acquire(block=False)
+					clok_locked = runStatus.cookie_lock.acquire(block=False)
 					if clok_locked:
-						COOKIE_LOCK.release()
+						runStatus.cookie_lock.release()
 
 					self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)",
 						living, not clok_locked, new_job_queue.qsize(), runStatus.run_state.value == 0)

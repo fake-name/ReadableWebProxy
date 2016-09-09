@@ -192,7 +192,7 @@ def canonizeUrls(soup, pageUrl):
 
 	return soup
 
-def extractUrls(soup, pageUrl):
+def extractUrls(soup, pageUrl, truncate_fragment=False):
 	# print("Canonizing for page: ", pageUrl)
 	urls = set()
 	for (dummy_isimg, tag, attr) in urlContainingTargets:
@@ -203,7 +203,17 @@ def extractUrls(soup, pageUrl):
 				pass
 			else:
 				urls.add(rebaseUrl(url, pageUrl))
-
+	if truncate_fragment:
+		ret = set()
+		for url in urls:
+			split = urllib.parse.urlsplit(url)
+			if split.fragment:
+				fixed = urllib.parse.urlunsplit(split[:4] + ("", ) + split[5:])
+				print("Fixed: ", fixed)
+				ret.add(fixed)
+			else:
+				ret.add(url)
+		return ret
 	return urls
 
 
