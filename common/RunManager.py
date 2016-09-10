@@ -64,7 +64,7 @@ class MultiJobManager(object):
 		dead = []
 
 		for x in range(self.max_tasks):
-			self.log.info("Checking runstate of %s", x)
+			self.log.info("Checking runstate of %s -> %s", x, self.tasklist[x] and self.tasklist[x].is_alive())
 			if not self.tasklist[x] or not self.tasklist[x].is_alive():
 				self.log.info("Thread %s appears to not be alive!", x)
 				self.log.warning("Insufficent living child threads! Creating another thread with number %s", self.procno)
@@ -103,11 +103,11 @@ class MultiJobManager(object):
 
 		self.log.info("Run manager waiting on tasks to exit. Runstate = %s", runStatus.run_state.value)
 		while 1:
-			living = sum([task.is_alive() for task in self.tasklist.items()])
-			for task in self.tasklist:
-				task.join(3.0/(living+1))
-
+			living = sum([task and task.is_alive() for task in self.tasklist.values()])
 			self.log.info("Living processes: '%s'", living)
+
+			for task in self.tasklist.values():
+				task.join(3.0/(living+1))
 
 			for job_queue in flushqueues:
 					try:

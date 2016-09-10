@@ -694,7 +694,6 @@ class WebGetRobust:
 
 		requestedUrl = iri2uri(requestedUrl)
 
-
 		if not self.testMode:
 			retryCount = 0
 			while 1:
@@ -759,12 +758,7 @@ class WebGetRobust:
 					self.log.critical("	postData:     '%s'", postData)
 					self.log.critical("	addlHeaders:  '%s'", addlHeaders)
 					self.log.critical("	binaryForm:   '%s'", binaryForm)
-
-
 					break
-
-
-
 
 
 				except Exception:
@@ -783,8 +777,6 @@ class WebGetRobust:
 						self.log.critical("And the URL could not be printed due to an encoding error")
 
 					time.sleep(self.retryDelay)
-
-
 					continue
 
 				if pghandle != None:
