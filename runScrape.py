@@ -9,10 +9,23 @@ if __name__ == "__main__":
 # import WebMirror.runtime_engines
 
 from settings import MAX_DB_SESSIONS
-from WebMirror.Runner import NO_PROCESSES
-import WebMirror.Runner
+import common.RunManager
 import WebMirror.rules
-import WebMirror.SpecialCase
+import WebMirror.Runner
+import RawArchiver.RawRunner
+
+
+
+NO_PROCESSES = 24
+# NO_PROCESSES = 12
+# NO_PROCESSES = 8
+# NO_PROCESSES = 4
+# NO_PROCESSES = 2
+# NO_PROCESSES = 1
+
+
+RAW_NO_PROCESSES = 2
+
 
 def go():
 
@@ -23,11 +36,14 @@ def go():
 	if not "noreset" in largv:
 		print("Resetting any in-progress downloads.")
 		WebMirror.Runner.resetInProgress()
+		RawArchiver.RawRunner.resetInProgress()
 	else:
 		print("Not resetting in-progress downloads.")
 
 	rules = WebMirror.rules.load_rules()
-	# WebMirror.Runner.initializeStartUrls(rules)
+	WebMirror.Runner.initializeStartUrls(rules)
+	RawArchiver.RawRunner.initializeRawStartUrls()
+
 
 	global NO_PROCESSES
 	global MAX_DB_SESSIONS
@@ -53,8 +69,9 @@ def go():
 		NO_PROCESSES = processes
 		MAX_DB_SESSIONS = NO_PROCESSES + 2
 
-	runner = WebMirror.Runner.Crawler(thread_count=NO_PROCESSES)
+	runner = common.RunManager.Crawler(main_thread_count=NO_PROCESSES, raw_thread_count=RAW_NO_PROCESSES)
 	runner.run()
+
 
 	# print("Thread halted. App exiting.")
 

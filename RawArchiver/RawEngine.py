@@ -10,6 +10,7 @@ import queue
 import mimetypes
 import time
 import os.path
+import xxhash
 import os
 import sys
 import sqlalchemy.exc
@@ -38,6 +39,7 @@ from config import C_RAW_RESOURCE_DIR
 from sqlalchemy_continuum.utils import version_table
 
 import common.global_constants
+import common.database
 import RawArchiver.RawActiveModules
 import RawArchiver.RawNewJobQueue
 
@@ -91,7 +93,7 @@ def saveFile(filecont, url, filename):
 
 	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
 
-	print("Saving file to path: '{fqpath}'!".format(fqpath=fqpath))
+	# print("Saving file to path: '{fqpath}'!".format(fqpath=fqpath))
 	with open(fqpath, "wb") as fp:
 		fp.write(filecont)
 
@@ -123,10 +125,13 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, new_job_queue, cookie_lock, db_interface, db, use_socks=False):
+	def __init__(self, total_worker_count, worker_num, new_job_queue, cookie_lock, db_interface, response_queue, db=common.database, use_socks=False):
 		# print("RawSiteArchiver __init__()")
 		super().__init__()
 
+
+		self.total_worker_count = total_worker_count
+		self.worker_num   = worker_num
 		self.new_job_queue = new_job_queue
 
 		self.cookie_lock = cookie_lock
@@ -189,14 +194,30 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 	# Update the row with the item contents
 	def do_job(self, job):
-		self.getModuleForUrl(job.url)
+
+		# Don't dump old jobs that have been accidentally reset.
+		if job.state == 'new':
+			job.state = 'fetching'
+			self.db_sess.commit()
+
+		if job.state != 'fetching':
+			self.db_sess.commit()
+			self.log.info("Job not in expected state (state: %s).", job.state)
+			return None
+
+
+		module = self.getModuleForUrl(job.url)
 		self.log.info("Fetching %s", job.url)
+		module.check_prefetch(job.url, self.wg)
 		ctnt, fname, mimetype = self.get_file_name_mime(job.url)
+		fname, ctnt, mimetype = module.check_postfetch(job.url, self.wg, fname, ctnt, mimetype)
 		links = self.extractLinks(ctnt, mimetype, job.url)
 
 		if isinstance(ctnt, str):
 			ctnt = ctnt.encode("utf-8")
 		saved_to = saveFile(ctnt, job.url, fname)
+
+		self.log.info("Saved file to path: %s", saved_to)
 
 		interval = self.getModuleForUrl(job.url).rewalk_interval
 
@@ -389,8 +410,21 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	#
 	########################################################################################################################
 
+	def thread_affinity(self, job):
+		'''
+		Ensure only one client ever works on each netloc.
+		This maintains better consistency of user-agents
+		'''
 
+		netloc = urllib.parse.urlsplit(job.url).netloc
 
+		m = xxhash.xxh32()
+		m.update(netloc.encode("utf-8"))
+
+		nlhash = m.intdigest()
+		thread_aff = nlhash % self.total_worker_count
+		# print("Thread affinity:", self.total_worker_count, self.worker_num, thread_aff, self.worker_num == thread_aff)
+		return self.worker_num == thread_aff
 
 	def get_job_from_id(self, jobid):
 
@@ -398,26 +432,11 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		job = self.db_sess.query(self.db.RawWebPages) \
 			.filter(self.db.RawWebPages.id == jobid)    \
 			.scalar()
-		self.db_sess.flush()
+		self.db_sess.commit()
 
 		if not job:
-			self.db_sess.commit()
 			return False
 
-		# Don't dump old jobs that have been accidentally reset.
-		if job.state == 'new':
-			job.state = 'fetching'
-			self.db_sess.commit()
-
-		if job.state != 'fetching':
-			self.db_sess.commit()
-			self.log.info("Job not in expected state (state: %s).", job.state)
-			return None
-
-		self.db_sess.commit()
-		self.log.info("Job for url: '%s' fetched. State: '%s'", job.url, job.state)
-
-		self.db_sess.flush()
 
 		return job
 
@@ -433,7 +452,11 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 				try:
 					jid = self.new_job_queue.get_nowait()
 					job = self.get_job_from_id(jid)
-					self.do_job(job)
+					if self.thread_affinity(job):
+						self.do_job(job)
+					else:
+						self.new_job_queue.put(jid)
+						time.sleep(0.01)
 				except queue.Empty:
 					time.sleep(1)
 
@@ -488,12 +511,12 @@ def test2():
 	except sqlalchemy.exc.IntegrityError:
 		sess.rollback()
 
-	archiver = RawSiteArchiver(fetcher.get_queue(), None, db_interface=sess, db=common.database)
+	archiver = RawSiteArchiver(1, 0, fetcher.get_queue(), None, response_queue=None, db_interface=sess, db=common.database)
 	archiver.taskProcess()
 
 
 if __name__ == "__main__":
-	resetInProgress()
+	# resetInProgress()
 	# test()
 	test2()
 

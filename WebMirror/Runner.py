@@ -33,13 +33,6 @@ import common.util.urlFuncs as urlFuncs
 import common.database as db
 import WebMirror.NewJobQueue as njq
 
-NO_PROCESSES = 24
-# NO_PROCESSES = 12
-# NO_PROCESSES = 8
-# NO_PROCESSES = 4
-# NO_PROCESSES = 2
-# NO_PROCESSES = 1
-
 
 import common.stuck
 
@@ -112,7 +105,7 @@ class RunInstance(object):
 
 
 	@classmethod
-	def run_prof(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
+	def run_prof(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 
 		pid = os.getpid()
 		try:
@@ -129,9 +122,11 @@ class RunInstance(object):
 			raise e
 
 	@classmethod
-	def run(cls, num, response_queue, new_job_queue, cookie_lock, nosig=True):
+	def run(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
 		common.stuck.install_pystuck()
+
+		# total_worker_count, worker_num are ignored at the moment.
 
 		try:
 			run = cls(num, response_queue, new_job_queue, cookie_lock, nosig)
@@ -293,67 +288,6 @@ class UpdateAggregator(object):
 		self.batched_links = []
 
 
-
-
-		# while 1:
-		# 	try:
-
-		# 		cmd = text("""
-		# 				INSERT INTO
-		# 					web_pages
-		# 					(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-		# 				VALUES
-		# 					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
-		# 				ON CONFLICT (url) DO
-		# 					UPDATE
-		# 						SET
-		# 							state           = EXCLUDED.state,
-		# 							starturl        = EXCLUDED.starturl,
-		# 							netloc          = EXCLUDED.netloc,
-		# 							is_text         = EXCLUDED.is_text,
-		# 							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-		# 							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
-		# 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-		# 						WHERE
-		# 						(
-		# 								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
-		# 							AND
-		# 								web_pages.url = EXCLUDED.url
-		# 							AND
-		# 								(web_pages.state = 'complete' OR web_pages.state = 'error')
-		# 						)
-		# 					;
-		# 				""".replace("	", " ").replace("\n", " "))
-
-
-		# 		# cmd = text("""
-		# 		# 		INSERT INTO
-		# 		# 			web_pages
-		# 		# 			(url, starturl, netloc, distance, is_text, priority, type, fetchtime, state)
-		# 		# 		VALUES
-		# 		# 			(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :fetchtime, :state)
-		# 		# 		ON CONFLICT DO NOTHING
-		# 		# 		""")
-
-		# 		for paramset in self.batched_links:
-		# 			self.db_int.execute(cmd, params=paramset)
-		# 		self.db_int.commit()
-		# 		self.batched_links = []
-		# 		break
-		# 	except KeyboardInterrupt:
-		# 		self.log.info("Keyboard Interrupt?")
-		# 		self.db_int.rollback()
-		# 	except sqlalchemy.exc.InternalError:
-		# 		self.log.info("Transaction error. Retrying.")
-		# 		traceback.print_exc()
-		# 		self.db_int.rollback()
-		# 	except sqlalchemy.exc.OperationalError:
-		# 		self.log.info("Transaction error. Retrying.")
-		# 		traceback.print_exc()
-		# 		self.db_int.rollback()
-		# self.db_int.close()
-
-
 	def do_link(self, linkdict):
 
 		assert 'url'             in linkdict
@@ -440,7 +374,7 @@ class UpdateAggregator(object):
 	@classmethod
 	def launch_agg(cls, agg_queue):
 		try:
-			install_pystuck()
+			common.stuck.install_pystuck()
 			agg_db = db.get_db_session()
 			instance = cls(agg_queue, agg_db)
 			instance.run()
@@ -455,180 +389,6 @@ class UpdateAggregator(object):
 			print()
 			print("Aggregator exception!")
 			traceback.print_exc()
-
-
-class MultiJobManager(object):
-	def __init__(self, max_tasks, target, target_args=None, target_kwargs=None):
-		self.max_tasks     = max_tasks
-		self.target        = target
-		self.target_args   = target_args
-		self.target_kwargs = target_kwargs
-
-		self.procno        = 0
-
-		self.log = logging.getLogger("Main.Job.Launcher")
-
-		self.tasklist = []
-
-	def check_run_jobs(self):
-
-		living = sum([task.is_alive() for task in self.tasklist])
-		for dummy_x in range(self.max_tasks - living):
-			self.log.warning("Insufficent living child threads! Creating another thread with number %s", self.procno)
-			with logSetup.stdout_lock:
-				args = (self.procno, )
-				if self.target_args:
-					args += self.target_args
-				proc = multiprocessing.Process(target=self.target, args=args, kwargs=self.target_kwargs)
-				# proc = threading.Thread(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
-				self.tasklist.append(proc)
-				proc.start()
-				self.procno += 1
-
-		cleaned = 0
-		for task in self.tasklist:
-			if not task.is_alive():
-				task.join()
-				cleaned += 1
-
-		if cleaned > 0:
-			self.tasklist = [task for task in self.tasklist if task.is_alive()]
-			self.log.warning("Run manager cleared out %s exited task instances.", cleaned)
-
-		return len(self.tasklist)
-
-	def join_jobs(self, flushqueues):
-
-		self.log.info("Run manager waiting on tasks to exit. Runstate = %s", runStatus.run_state.value)
-		while 1:
-			living = sum([task.is_alive() for task in self.tasklist])
-			for task in self.tasklist:
-				task.join(3.0/(living+1))
-
-			self.log.info("Living processes: '%s'", living)
-
-			for job_queue in flushqueues:
-					try:
-						while 1:
-							job_queue.get_nowait()
-					except queue.Empty:
-						pass
-
-			if living == 0:
-				break
-
-class Crawler(object):
-	def __init__(self, thread_count=NO_PROCESSES):
-
-		self.process_lookup = {}
-
-		self.log = logging.getLogger("Main.Text.Manager")
-		WebMirror.rules.load_rules()
-
-
-		self.log.info("Scraper executing with %s processes", thread_count)
-		self.thread_count = thread_count
-
-	def start_aggregator(self):
-		agg_queue = multiprocessing.Queue()
-		with logSetup.stdout_lock:
-			self.agg_proc = multiprocessing.Process(target=UpdateAggregator.launch_agg, args=(agg_queue, ))
-			self.agg_proc.start()
-		return agg_queue
-
-	def join_aggregator(self):
-
-		self.log.info("Asking Aggregator process to stop.")
-		runStatus.agg_run_state.value = 0
-		self.agg_proc.join(0)
-		self.log.info("Aggregator joined.")
-
-	def start_job_fetcher(self):
-		self.job_agg = njq.JobAggregator()
-
-
-		return self.job_agg.get_queues()
-
-	def join_job_fetcher(self):
-		self.log.info("Asking Job source task to halt.")
-
-		self.job_agg.join_proc()
-		self.log.info("Job source halted.")
-
-	def launchProcessesFromQueue(self, processes, job_in_queue):
-		pass
-
-
-	def run(self):
-
-		cnt = 10
-
-		new_url_aggreator_queue = self.start_aggregator()
-
-		new_job_queue = self.start_job_fetcher()
-
-		assert self.thread_count >= 1
-
-		# cls, num, response_queue, new_job_queue, cookie_lock
-		kwargs = {
-			'response_queue' : new_url_aggreator_queue,
-			'new_job_queue'  : new_job_queue,
-			'cookie_lock'    : runStatus.cookie_lock,
-			}
-		mainManager    = MultiJobManager(max_tasks=self.thread_count, target=RunInstance.run, target_kwargs=kwargs)
-
-		managers = [mainManager]
-
-
-		try:
-			while runStatus.run_state.value:
-				time.sleep(1)
-
-				cnt += 1
-				if cnt >= 10:
-					cnt = 0
-
-					living = sum([manager.check_run_jobs() for manager in managers])
-
-					clok_locked = runStatus.cookie_lock.acquire(block=False)
-					if clok_locked:
-						runStatus.cookie_lock.release()
-
-					self.log.info("Living processes: %s (Cookie lock acquired: %s, items in job queue: %s, exiting: %s)",
-						living, not clok_locked, new_job_queue.qsize(), runStatus.run_state.value == 0)
-
-
-		except KeyboardInterrupt:
-
-			# Stop the job fetcher, and then let the active jobs
-			# flush down.
-			self.join_job_fetcher()
-
-			runStatus.run_state.value = 0
-
-			self.log.info("Crawler allowing ctrl+c to propagate.")
-			time.sleep(1)
-			runStatus.run_state.value = 0
-			time.sleep(1)
-
-			flushqueues = [new_job_queue, new_url_aggreator_queue]
-
-
-			for manager in managers:
-				manager.join_jobs(flushqueues)
-
-			self.log.info("All processes halted.")
-
-		self.log.info("Flusing queues")
-
-		for job_queue in [new_job_queue, new_url_aggreator_queue]:
-			try:
-				while 1:
-					job_queue.get_nowait()
-			except queue.Empty:
-				pass
-
-		self.join_aggregator()
 
 
 
