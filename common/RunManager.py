@@ -94,7 +94,6 @@ class MultiJobManager(object):
 			cleaned += 1
 
 		if cleaned > 0:
-			self.tasklist = [task for task in self.tasklist if task.is_alive()]
 			self.log.warning("Run manager cleared out %s exited task instances.", cleaned)
 
 		return len(self.tasklist)
@@ -196,8 +195,8 @@ class Crawler(object):
 		# managers = [rawManager]
 
 
-		try:
-			while runStatus.run_state.value:
+		while runStatus.run_state.value:
+			try:
 				time.sleep(1)
 
 				cnt += 1
@@ -214,26 +213,36 @@ class Crawler(object):
 						living, not clok_locked, main_new_job_queue.qsize(), raw_new_job_queue.qsize(), runStatus.run_state.value == 0)
 
 
-		except KeyboardInterrupt:
+			except KeyboardInterrupt:
+				self.log.info("Control C caught. Stopping scraper.")
+				break
 
-			# Stop the job fetcher, and then let the active jobs
-			# flush down.
-			self.join_job_fetcher()
+			except Exception:
+				print("Wat?")
+				traceback.print_exc()
+				with open("error %s.txt" % time.time(), "w") as fp:
+					fp.write("Manager crashed?\n")
+					fp.write(traceback.format_exc())
+				break
 
-			runStatus.run_state.value = 0
+		# Stop the job fetcher, and then let the active jobs
+		# flush down.
+		self.join_job_fetcher()
 
-			self.log.info("Crawler allowing ctrl+c to propagate.")
-			time.sleep(1)
-			runStatus.run_state.value = 0
-			time.sleep(1)
+		runStatus.run_state.value = 0
 
-			flushqueues = [main_new_job_queue, new_url_aggreator_queue]
+		self.log.info("Crawler allowing ctrl+c to propagate.")
+		time.sleep(1)
+		runStatus.run_state.value = 0
+		time.sleep(1)
+
+		flushqueues = [main_new_job_queue, new_url_aggreator_queue]
 
 
-			for manager in managers:
-				manager.join_jobs(flushqueues)
+		for manager in managers:
+			manager.join_jobs(flushqueues)
 
-			self.log.info("All processes halted.")
+		self.log.info("All processes halted.")
 
 		self.log.info("Flusing queues")
 
