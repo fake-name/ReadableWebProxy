@@ -1,8 +1,8 @@
 
 import urllib.parse
-import RawArchiver.Modules.ModuleBase
+import RawArchiver.ModuleBase
 
-class WebComicsRawModule(RawArchiver.Modules.ModuleBase.RawScraperModuleBase):
+class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 	module_name = "WebComicsRawModule"
 
@@ -124,6 +124,10 @@ class WebComicsRawModule(RawArchiver.Modules.ModuleBase.RawScraperModuleBase):
 	@classmethod
 	def cares_about_url(cls, url):
 		if "&replytocom=" in url:
+			return False
+		if "/viewtopic.php" in url:
+			return False
+		if "www.smbc-comics.com/smbcforum/" in url:
 			return False
 		return urllib.parse.urlparse(url).netloc in cls.target_tlds
 

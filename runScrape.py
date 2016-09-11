@@ -13,7 +13,7 @@ import common.RunManager
 import WebMirror.rules
 import WebMirror.Runner
 import RawArchiver.RawRunner
-
+import common.stuck
 
 
 NO_PROCESSES = 24
@@ -29,7 +29,7 @@ RAW_NO_PROCESSES = 5
 
 def go():
 
-	import pystuck; pystuck.run_server()
+	common.stuck.install_pystuck()
 
 	largv = [tmp.lower() for tmp in sys.argv]
 
@@ -40,9 +40,6 @@ def go():
 	else:
 		print("Not resetting in-progress downloads.")
 
-	rules = WebMirror.rules.load_rules()
-	WebMirror.Runner.initializeStartUrls(rules)
-	RawArchiver.RawRunner.initializeRawStartUrls()
 
 
 	global NO_PROCESSES
@@ -70,7 +67,14 @@ def go():
 		MAX_DB_SESSIONS = NO_PROCESSES + 2
 
 	runner = common.RunManager.Crawler(main_thread_count=NO_PROCESSES, raw_thread_count=RAW_NO_PROCESSES)
-	runner.run()
+
+	rules = WebMirror.rules.load_rules()
+	if "raw" in largv:
+		RawArchiver.RawRunner.initializeRawStartUrls()
+		runner.run(main=False)
+	else:
+		WebMirror.Runner.initializeStartUrls(rules)
+		runner.run(main=True)
 
 
 	# print("Thread halted. App exiting.")

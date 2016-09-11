@@ -410,6 +410,23 @@ def update_feed_names():
 			db.get_db_session().commit()
 
 
+def purge_raw_invalid_urls():
+
+
+	sess = db.get_db_session()
+
+	bad = 0
+	for row in sess.query(db.RawWebPages).yield_per(1000).all():
+		if not any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
+			print("Unwanted: ", row.url)
+			sess.delete(row)
+			bad += 1
+		if bad > 5000:
+			print("Committing!")
+			bad = 0
+			sess.commit()
+	sess.commit()
+
 def purge_invalid_urls(selected_netloc=None):
 
 
@@ -751,6 +768,8 @@ def decode(*args):
 			update_feed_names()
 		elif op == "purge-from-rules":
 			purge_invalid_urls()
+		elif op == "purge-raw-from-rules":
+			purge_raw_invalid_urls()
 		elif op == "longest-rows":
 			longest_rows()
 		elif op == "disable-wattpad":

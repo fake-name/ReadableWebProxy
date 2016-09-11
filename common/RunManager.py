@@ -142,7 +142,8 @@ class Crawler(object):
 
 		self.log.info("Asking Aggregator process to stop.")
 		runStatus.agg_run_state.value = 0
-		self.main_job_agg.join(0)
+		if hasattr(self, 'main_job_agg'):
+			self.main_job_agg.join(0)
 		self.log.info("Aggregator joined.")
 
 	def start_main_job_fetcher(self):
@@ -155,44 +156,58 @@ class Crawler(object):
 
 	def join_job_fetcher(self):
 		self.log.info("Asking main job source task to halt.")
-		self.main_job_fetcher.join_proc()
+		if hasattr(self, 'main_job_fetcher'):
+			self.main_job_fetcher.join_proc()
 		self.log.info("Asking raw job source task to halt.")
-		self.raw_job_fetcher.join_proc()
+		if hasattr(self, 'raw_job_fetcher'):
+			self.raw_job_fetcher.join_proc()
 		self.log.info("Job source halted.")
 
 	def launchProcessesFromQueue(self, processes, job_in_queue):
 		pass
 
 
-	def run(self):
+	def run(self, main=True):
 
 		cnt = 10
-
-		new_url_aggreator_queue = self.start_aggregator()
-		main_new_job_queue      = self.start_main_job_fetcher()
-		raw_new_job_queue       = self.start_raw_job_fetcher()
-
 		assert self.main_thread_count >= 1
+		assert self.raw_thread_count >= 1
 
-		# # cls, num, response_queue, new_job_queue, cookie_lock
-		main_kwargs = {
-			'response_queue' : new_url_aggreator_queue,
-			'new_job_queue'  : main_new_job_queue,
-			'cookie_lock'    : runStatus.cookie_lock,
-			}
 
-		# main_new_job_queue = queue.Queue()
 
-		raw_kwargs = {
-			'response_queue' : new_url_aggreator_queue,
-			'new_job_queue'  : raw_new_job_queue,
-			'cookie_lock'    : runStatus.cookie_lock,
-			}
-		mainManager    = MultiJobManager(max_tasks=self.main_thread_count, target=WebMirror.Runner.RunInstance.run, target_kwargs=main_kwargs)
-		rawManager     = MultiJobManager(max_tasks=self.raw_thread_count, target=RawArchiver.RawRunner.RawRunInstance.run, target_kwargs=raw_kwargs)
+		managers = []
+		flushqueues = []
 
-		managers = [mainManager, rawManager]
-		# managers = [rawManager]
+
+		if main:
+			new_url_aggreator_queue = self.start_aggregator()
+			main_new_job_queue      = self.start_main_job_fetcher()
+			# # cls, num, response_queue, new_job_queue, cookie_lock
+			main_kwargs = {
+				'response_queue' : new_url_aggreator_queue,
+				'new_job_queue'  : main_new_job_queue,
+				'cookie_lock'    : runStatus.cookie_lock,
+				}
+			mainManager    = MultiJobManager(max_tasks=self.main_thread_count, target=WebMirror.Runner.RunInstance.run, target_kwargs=main_kwargs)
+			managers.append(mainManager)
+			flushqueues.append(main_new_job_queue)
+		else:
+
+			new_url_aggreator_queue = queue.Queue()
+			raw_new_job_queue       = self.start_raw_job_fetcher()
+			# main_new_job_queue = queue.Queue()
+
+			raw_kwargs = {
+				'response_queue' : new_url_aggreator_queue,
+				'new_job_queue'  : raw_new_job_queue,
+				'cookie_lock'    : runStatus.cookie_lock,
+				}
+			rawManager     = MultiJobManager(max_tasks=self.raw_thread_count, target=RawArchiver.RawRunner.RawRunInstance.run, target_kwargs=raw_kwargs)
+			managers.append(rawManager)
+			flushqueues.append(raw_new_job_queue)
+
+
+
 
 
 		while runStatus.run_state.value:
@@ -209,8 +224,8 @@ class Crawler(object):
 					if clok_locked:
 						runStatus.cookie_lock.release()
 
-					self.log.info("Living processes: %s (Cookie lock acquired: %s, items in main job queue: %s, raw job queue: %s, exiting: %s)",
-						living, not clok_locked, main_new_job_queue.qsize(), raw_new_job_queue.qsize(), runStatus.run_state.value == 0)
+					self.log.info("Living processes: %s (Cookie lock acquired: %s, queue sizes: %s, exiting: %s)",
+						living, not clok_locked, [q.qsize() for q in flushqueues], runStatus.run_state.value == 0)
 
 
 			except KeyboardInterrupt:
@@ -236,7 +251,6 @@ class Crawler(object):
 		runStatus.run_state.value = 0
 		time.sleep(1)
 
-		flushqueues = [main_new_job_queue, new_url_aggreator_queue]
 
 
 		for manager in managers:
