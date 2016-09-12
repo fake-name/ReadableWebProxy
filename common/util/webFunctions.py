@@ -930,13 +930,24 @@ class WebGetRobust:
 			self.syncCookiesFromFile()
 		# print "Have %d cookies after reloading cookiejar" % len(self.cj)
 
+	def getCookies(self):
+
+		locked = self.cookie_lock.acquire(timeout=5)
+		if not locked:
+			raise RuntimeError("Could not acquire lock on cookiejar")
+
+		try:
+			# self.log.info("Trying to save cookies!")
+			if self.cj is not None:							# If cookies were used
+				self.syncCookiesFromFile()
+		finally:
+			self.cookie_lock.release()
+
+		return self.cj
+
 	def __del__(self):
 		# print "WGH Destructor called!"
 		self.saveCookies(halting=True)
-
-
-
-
 
 	def stepThroughCloudFlare(self, url, titleContains='', titleNotContains=''):
 		'''

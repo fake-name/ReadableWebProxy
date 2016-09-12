@@ -25,6 +25,7 @@ from sqlalchemy import or_
 from sqlalchemy import and_
 import common.Exceptions
 import WebMirror.SpecialCase
+import RawArchiver.RawEngine
 import RawArchiver.RawActiveModules
 
 from sqlalchemy_continuum.utils import version_table
@@ -84,6 +85,51 @@ def test_retrieve(url, debug=True, rss_debug=False):
 	try:
 		archiver = SiteArchiver(None, db.get_db_session(), None)
 		job     = archiver.synchronousJobRequest(url, ignore_cache=True)
+	except Exception as e:
+		traceback.print_exc()
+	finally:
+		db.delete_db_session()
+
+def raw_test_retrieve(url):
+
+	# try:
+	# 	WebMirror.SpecialCase.startAmqpFetcher()
+	# except RuntimeError:  # Fetcher already started
+	# 	pass
+
+
+	parsed = urllib.parse.urlparse(url)
+	root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+
+
+	sess = db.get_db_session()
+
+	row = sess.query(db.RawWebPages).filter(db.RawWebPages.url == url).scalar()
+	if row:
+		row.state = 'new'
+	else:
+		row = db.RawWebPages(
+			url       = url,
+			starturl  = root,
+			netloc    = parsed.netloc,
+			distance  = 50000,
+			priority  = 500000,
+			state     = 'new',
+			fetchtime = datetime.datetime.now(),
+			)
+		sess.add(row)
+
+
+	try:
+		archiver = RawArchiver.RawEngine.RawSiteArchiver(
+			total_worker_count = 1,
+			worker_num         = 0,
+			new_job_queue      = None,
+			cookie_lock        = None,
+			db_interface       = sess,
+			response_queue     = None
+			)
+		job     = archiver.do_job(row)
 	except Exception as e:
 		traceback.print_exc()
 	finally:
@@ -810,6 +856,9 @@ def decode(*args):
 		if op == "fetch":
 			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
 			test_retrieve(tgt)
+		if op == "raw-fetch":
+			print("Raw Fetch command! Retreiving content from URL: '%s'" % tgt)
+			raw_test_retrieve(tgt)
 		elif op == "rss-db":
 			rss_db_sync(tgt)
 		elif op == "purge-from-rules":

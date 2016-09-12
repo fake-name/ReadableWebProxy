@@ -121,13 +121,18 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
 
+	badwords = [
+		'search.php',
+		"&replytocom=",
+		"/viewtopic.php",
+		'/viewforum.php',
+		"www.smbc-comics.com/smbcforum/",
+
+	]
+
 	@classmethod
 	def cares_about_url(cls, url):
-		if "&replytocom=" in url:
-			return False
-		if "/viewtopic.php" in url:
-			return False
-		if "www.smbc-comics.com/smbcforum/" in url:
+		if any([badword in url for badword in cls.badwords]):
 			return False
 		return urllib.parse.urlparse(url).netloc in cls.target_tlds
 

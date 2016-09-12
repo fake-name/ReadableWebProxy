@@ -192,10 +192,7 @@ class Crawler(object):
 			managers.append(mainManager)
 			flushqueues.append(main_new_job_queue)
 		else:
-
-			new_url_aggreator_queue = queue.Queue()
 			raw_new_job_queue       = self.start_raw_job_fetcher()
-			# main_new_job_queue = queue.Queue()
 
 			raw_kwargs = {
 				'response_queue' : new_url_aggreator_queue,
@@ -206,6 +203,9 @@ class Crawler(object):
 			managers.append(rawManager)
 			flushqueues.append(raw_new_job_queue)
 
+			# Dummy queues to shut up the teardown garbage
+			new_url_aggreator_queue = queue.Queue()
+			main_new_job_queue = queue.Queue()
 
 
 

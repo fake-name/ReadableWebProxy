@@ -187,7 +187,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	def getModuleForUrl(self, url):
 
 		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
-			print("Module:", module, module.cares_about_url)
+			# print("Module:", module, module.cares_about_url)
 			if module.cares_about_url(url):
 				return module
 		raise RuntimeError("Unwanted URL: %s" % url)
@@ -208,7 +208,11 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		module = self.getModuleForUrl(job.url)
 		self.log.info("Fetching %s", job.url)
-		module.check_prefetch(job.url, self.wg)
+		should_continue = module.check_prefetch(job.url, self.wg)
+		if not should_continue:
+			self.log.error("Prefetch check returned unable to continue!")
+			return None
+
 		ctnt, fname, mimetype = self.get_file_name_mime(job.url)
 		fname, ctnt, mimetype = module.check_postfetch(job.url, self.wg, fname, ctnt, mimetype)
 		links = self.extractLinks(ctnt, mimetype, job.url)
@@ -415,6 +419,10 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		Ensure only one client ever works on each netloc.
 		This maintains better consistency of user-agents
 		'''
+
+		# Only limit netlocs if we actually need to.
+		if not self.getModuleForUrl(job.url).single_thread_fetch(job.url):
+			return True
 
 		netloc = urllib.parse.urlsplit(job.url).netloc
 

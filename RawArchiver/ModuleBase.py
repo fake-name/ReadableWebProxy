@@ -57,5 +57,9 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 		return True
 
 	@classmethod
+	def single_thread_fetch(cls, url):
+		return False
+
+	@classmethod
 	def check_postfetch(cls, url, wg, fname, fcontent, fmimetype):
 		return fname, fcontent, fmimetype
