@@ -192,6 +192,10 @@ class Crawler(object):
 			managers.append(mainManager)
 			flushqueues.append(main_new_job_queue)
 		else:
+			# Dummy queues to shut up the teardown garbage
+			new_url_aggreator_queue = queue.Queue()
+			main_new_job_queue = queue.Queue()
+
 			raw_new_job_queue       = self.start_raw_job_fetcher()
 
 			raw_kwargs = {
@@ -202,13 +206,6 @@ class Crawler(object):
 			rawManager     = MultiJobManager(max_tasks=self.raw_thread_count, target=RawArchiver.RawRunner.RawRunInstance.run, target_kwargs=raw_kwargs)
 			managers.append(rawManager)
 			flushqueues.append(raw_new_job_queue)
-
-			# Dummy queues to shut up the teardown garbage
-			new_url_aggreator_queue = queue.Queue()
-			main_new_job_queue = queue.Queue()
-
-
-
 
 		while runStatus.run_state.value:
 			try:
