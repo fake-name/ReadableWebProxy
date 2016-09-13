@@ -15,16 +15,8 @@ import WebMirror.Runner
 import RawArchiver.RawRunner
 import common.stuck
 
-
-NO_PROCESSES = 24
-# NO_PROCESSES = 12
-# NO_PROCESSES = 8
-# NO_PROCESSES = 4
-# NO_PROCESSES = 2
-# NO_PROCESSES = 1
-
-
-RAW_NO_PROCESSES = 5
+from settings import NO_PROCESSES
+from settings import RAW_NO_PROCESSES
 
 
 def go():

@@ -18,7 +18,7 @@ from dateutil.parser import parse
 import urllib.parse
 import common.util.webFunctions
 
-import WebMirror.API
+# import WebMirror.API
 import pprint
 
 MIN_RATING = 5
@@ -158,7 +158,9 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				# You have to specify the 'X-Requested-With' param, or you'll get a 404
 				content = self.wg.getpage(url, addlHeaders={'Referer': referrer, 'X-Requested-With': 'XMLHttpRequest'})
 				# print("Wat wat?")
-				WebMirror.API.processFetchedContent(url, content, "text/html", self.job, db_session=self.db_sess)
+
+				print("FIXME DEPENDENCY ISSUE!")
+				# WebMirror.API.processFetchedContent(url, content, "text/html", self.job, db_session=self.db_sess)
 				soup = common.util.webFunctions.as_soup(content)
 				break
 			except urllib.error.URLError:

@@ -33,7 +33,6 @@ import common.util.urlFuncs as urlFuncs
 import common.database as db
 import WebMirror.NewJobQueue as njq
 
-
 import common.stuck
 
 class RunInstance(object):

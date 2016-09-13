@@ -272,11 +272,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 				break
 			try:
 				self.log.info("Need to push content into history table (current length: %s).", history_size)
-				job.title           = (job.title + " ")    if job.title    else " "
-				job.content         = (job.content + " ")  if job.content  else " "
-				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
-
-				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
+				job.state     = "complete"
+				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=1)
 
 				self.db_sess.commit()
 				self.log.info("Pushing old job content into history table!")

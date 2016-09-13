@@ -103,7 +103,7 @@ def utility_processor():
 		h, s = divmod(delta.seconds, 3600)
 		m, s = divmod(s, 60)
 		labels = ['d', 'h', 'm', 's']
-		dhms = ['%s %s' % (str(i).zfill(3), lbl) for i, lbl in zip([d, h, m, s], labels)]
+		dhms = ['%s %s' % (str(i).zfill(2), lbl) for i, lbl in zip([d, h, m, s], labels)]
 		for start in range(len(dhms)):
 			if not dhms[start].startswith('0'):
 				break

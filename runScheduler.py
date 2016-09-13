@@ -24,12 +24,12 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-from WebMirror.Runner import NO_PROCESSES
+
+from settings import NO_PROCESSES
 from settings import MAX_DB_SESSIONS
 
-import activePlugins
-
 from common.db_engine import SQLALCHEMY_DATABASE_URI
+import activePlugins
 
 CALLABLE_LUT = {}
 for item, dummy_interval in activePlugins.scrapePlugins.values():

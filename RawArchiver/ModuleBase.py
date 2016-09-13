@@ -1,5 +1,17 @@
 
 import abc
+import pathlib
+import urllib.parse
+
+def duplicate_path_fragments(url, dup_max=3):
+	path = urllib.parse.urlparse(url).path
+	parts = pathlib.Path(path).parts
+	segments = {}
+	for chunk in parts:
+		if not chunk in segments:
+			segments[chunk] = 0
+		segments[chunk] += 1
+	return any([tmp >= dup_max for tmp in segments.values()])
 
 class RawScraperModuleBase(metaclass=abc.ABCMeta):
 	'''

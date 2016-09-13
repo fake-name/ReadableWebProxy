@@ -6,8 +6,6 @@ from flask import request
 from flask import jsonify
 from flask import g
 
-import WebMirror.Engine
-
 from app import app
 import pprint
 

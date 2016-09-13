@@ -126,13 +126,31 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		"&replytocom=",
 		"/viewtopic.php",
 		'/viewforum.php',
+		'/forum/index.php',
 		"www.smbc-comics.com/smbcforum/",
+		'destination=node',
+		'rest_route=',
+		'ucp.php',
+		'mode=resend_act',
+		'/archive/comments',
+		'title=&field_comic_number_value',
+		'%2Flist%3Forder%3Dcreated%26sort%3Dasc%26page%3D2%26date_filter%5Bmax',
+		'title%3D%26field_comic_number_value%3D',
+		'%3Fpage%3D20%26permalink%',
+		'destination=taxonomy',
+		'wasted-talent-newsletter',
+		'/topic/misc',
+		'permalink',
+		'/shop/product/comic-print',
 
 	]
 
 	@classmethod
 	def cares_about_url(cls, url):
 		if any([badword in url for badword in cls.badwords]):
+			return False
+
+		if RawArchiver.ModuleBase.duplicate_path_fragments(url):
 			return False
 		return urllib.parse.urlparse(url).netloc in cls.target_tlds
 
