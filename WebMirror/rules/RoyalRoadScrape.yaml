@@ -42,7 +42,7 @@ preserveAttrs: [
 	["table", "class"],
 ]
 
-rewalk_interval_days : 30
+rewalk_interval_days : 14
 
 rewriteAttrs: [
 	{"name" : "table", "class" : ['tborder', 'tfixed'], "out_attr" : {"border" : 0}}

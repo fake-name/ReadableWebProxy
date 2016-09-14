@@ -8,7 +8,7 @@ import zlib
 import settings
 import datetime
 import sqlalchemy.exc
-
+from sqlalchemy import or_
 import common.database as dbm
 
 import WebMirror.rules
@@ -29,13 +29,18 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		sess = self.db.get_db_session()
 		while 1:
 			try:
-				q = sess.query(self.db.WebPages) \
-					.filter(self.db.WebPages.netloc == netloc)  \
-					.filter(self.db.WebPages.state == 'complete')   \
+				self.log.info("Updating for netloc %s.", netloc)
+				q = sess.query(self.db.WebPages)                     \
+					.filter(self.db.WebPages.netloc == netloc)       \
+					.filter(or_(
+						self.db.WebPages.state == 'complete',
+						self.db.WebPages.state == 'new',
+						))                                           \
+					.filter(self.db.WebPages.ignoreuntiltime > ago)  \
 					.filter(self.db.WebPages.fetchtime < ago)
-				affected_rows = q.update({"state" : "new"})
+				affected_rows = q.update({"state" : "new", "ignoreuntiltime" : datetime.datetime.min})
 				sess.commit()
-				self.log.info("Updated for netloc %s - %s rows", netloc, affected_rows)
+				self.log.info("Update modified %s rows for netloc %s.", affected_rows, netloc)
 				break
 			except sqlalchemy.exc.InternalError:
 				self.log.info("Transaction error. Retrying.")
@@ -55,6 +60,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		ago = datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS + 3)
 		while 1:
 			try:
+				self.log.info("Doing general unspecified netloc retrigger.")
 				q = sess.query(self.db.WebPages) \
 					.filter(self.db.WebPages.state == 'complete')   \
 					.filter(self.db.WebPages.fetchtime < ago)
@@ -95,7 +101,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 		starturls = set(starturls)
 		starturls = list(starturls)
-		starturls.sort()
+		starturls.sort(key=lambda x: (x[1], x[0]))
 
 		sess = self.db.get_db_session()
 

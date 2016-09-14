@@ -144,6 +144,8 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/shop/product/comic-print',
 		'replytocom=',
 		'wastedtalentca-website&q=forum/wastedtalentca-website&q=forum',
+		'site-upgrade.html/feed.xml',
+		'.html/feed',
 
 	]
 
