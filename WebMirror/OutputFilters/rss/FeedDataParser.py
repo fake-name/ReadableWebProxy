@@ -677,6 +677,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				"Xiaowen206's Blog"                                             : pfuncs_v_other.extractXiaowen206sBlog,
 				'Yi Yue Translation'                                            : pfuncs_v_other.extractYiYueTranslation,
 				'Yoraikun Translation'                                          : pfuncs_v_other.extractYoraikun,
+				'Yorasu Translations'                                           : pfuncs_v_other.extractYorasuTranslations,
 				'Youjinsite Translations'                                       : pfuncs_v_other.extractYoujinsite,
 				'Youko Advent'                                                  : pfuncs_v_other.extractYoukoAdvent,
 				'Youshoku Translations'                                         : pfuncs_v_other.extractYoushoku,

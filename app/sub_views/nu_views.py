@@ -10,6 +10,7 @@ import time
 import json
 import string
 import datetime
+import urllib.parse
 from calendar import timegm
 
 from sqlalchemy.sql import text
@@ -57,7 +58,14 @@ def add_highlight(from_name, from_chp, from_group, namestr):
 def aggregate_nu_items(in_rows):
 	agg = {}
 	for row in in_rows:
-		uniq = (row.seriesname, row.releaseinfo, row.actual_target)
+		tgt = row.actual_target
+		if "blogspot" in tgt:
+			tmp = urllib.parse.urlparse(tgt)
+			nl = tmp.netloc.split(".blogspot")[0]
+			nl = nl+".blogspot.com"
+			tgt = urllib.parse.urlunparse((tmp.scheme, nl, tmp.path, tmp.params, tmp.query, tmp.fragment))
+
+		uniq = (row.seriesname, row.releaseinfo, tgt)
 		if not uniq in agg:
 			agg[uniq] = []
 		agg[uniq].append(row)
@@ -68,7 +76,8 @@ def aggregate_nu_items(in_rows):
 			assert(all([rowset[0].outbound_wrapper == row.outbound_wrapper for row in rowset])), 'Wat: %s' % ([row.outbound_wrapper for row in rowset])
 			assert(all([rowset[0].groupinfo == row.groupinfo for row in rowset])),               'Wat: %s' % ([row.groupinfo        for row in rowset])
 			assert(all([rowset[0].releaseinfo == row.releaseinfo for row in rowset])),           'Wat: %s' % ([row.releaseinfo      for row in rowset])
-			assert(all([rowset[0].actual_target == row.actual_target for row in rowset])),       'Wat: %s' % ([row.actual_target    for row in rowset])
+			if not "blogspot" in rowset[0].actual_target:
+				assert(all([rowset[0].actual_target == row.actual_target for row in rowset])),       'Wat: %s' % ([row.actual_target    for row in rowset])
 		except AssertionError:
 			del agg[key]
 	ret = []

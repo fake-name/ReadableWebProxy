@@ -30,6 +30,21 @@ def extractYoraikun(item):
 
 	return False
 
+####################################################################################################################################################
+def extractYorasuTranslations(item):
+	'''
+	# Yoraikun
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if item['title'].startswith("DKFTOD"):
+		return buildReleaseMessage(item, 'Devil King From The Otherworldly Dimension', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
 
 
 ####################################################################################################################################################
