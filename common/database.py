@@ -11,6 +11,8 @@ from common.main_archive_db import NuOutboundWrapperMap
 
 from common.raw_archive_db import RawWebPages
 
+from common.cookie_db import WebCookieDb
+
 from common.db_engine import get_engine
 from common.db_engine import checkout_session
 from common.db_engine import release_session

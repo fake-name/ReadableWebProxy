@@ -31,6 +31,7 @@ import psycopg2
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
 import common.util.webFunctions as webFunctions
+import common.util.DbCookieJar as dbCj
 
 import hashlib
 from config import C_RAW_RESOURCE_DIR
@@ -138,7 +139,11 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		self.db_sess = db_interface
 		self.db      = db
 
-		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks)
+		alt_cj = dbCj.DatabaseCookieJar(db=db, session=common.database.get_db_session(postfix="_cookie_interface"))
+
+		print("Prelim Alt cookiejar = ", alt_cj)
+
+		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
 
 
 	def get_file_name_mime(self, url):
@@ -282,6 +287,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	def extractHtml(self, content, url):
 		soup = webFunctions.as_soup(content)
 		links = common.util.urlFuncs.extractUrls(soup, url, truncate_fragment=True)
+
 		# for link in links:
 			# print(link)
 		clinks = self.filterLinks(links)
@@ -291,6 +297,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 
 		self.log.info("Found %s links, %s after filtering.", len(links), len(clinks))
+
 
 		return clinks
 
@@ -372,7 +379,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 					# print("Doing insert", commit_each, link)
 					start = urllib.parse.urlsplit(link).netloc
 
-					assert link.startswith("http")
+					assert link.startswith("http"), "Link %s doesn't seem to be HTTP content?" % link
 					assert start
 
 

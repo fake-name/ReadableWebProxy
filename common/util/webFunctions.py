@@ -251,7 +251,7 @@ class WebGetRobust:
 	# if test=true, no resources are actually fetched (for testing)
 	# creds is a list of 3-tuples that gets inserted into the password manager.
 	# it is structured [(top_level_url1, username1, password1), (top_level_url2, username2, password2)]
-	def __init__(self, test=False, creds=None, logPath="Main.Web", cookie_lock=None, use_socks=False):
+	def __init__(self, test=False, creds=None, logPath="Main.Web", cookie_lock=None, use_socks=False, alt_cookiejar=None):
 
 		if cookie_lock:
 			self.cookie_lock = cookie_lock
@@ -290,11 +290,17 @@ class WebGetRobust:
 		else:
 			self.credHandler = None
 
+		self.alt_cookiejar = alt_cookiejar
 		self.loadCookies()
 
 	def loadCookies(self):
 
-		self.cj = http.cookiejar.LWPCookieJar()		# This is a subclass of FileCookieJar
+		if self.alt_cookiejar is not None:
+			print("Loading")
+			self.alt_cookiejar.init_agent(new_headers=self.browserHeaders)
+			self.cj = self.alt_cookiejar
+		else:
+			self.cj = http.cookiejar.LWPCookieJar()		# This is a subclass of FileCookieJar
 												# that has useful load and save methods
 		if self.cj is not None:
 			if os.path.isfile(self.COOKIEFILE):
@@ -401,6 +407,9 @@ class WebGetRobust:
 
 					# Scramble our current UA
 					self.browserHeaders = getUserAgent()
+					if self.alt_cookiejar:
+						self.cj.init_agent(new_headers=self.browserHeaders)
+
 					time.sleep(self.retryDelay)
 				else:
 					self.log.error("JSON Parsing issue, and retries exhausted!")

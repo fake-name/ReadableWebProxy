@@ -173,8 +173,7 @@ def rebaseUrl(url, base):
 	"""Rebase one url according to base"""
 
 	parsed = urllib.parse.urlparse(url)
-
-	if parsed.scheme == parsed.netloc == '':
+	if parsed.scheme == '' or parsed.netloc == '':
 		return urllib.parse.urljoin(base, url)
 	else:
 		return url
@@ -202,7 +201,9 @@ def extractUrls(soup, pageUrl, truncate_fragment=False):
 			except KeyError:
 				pass
 			else:
-				urls.add(rebaseUrl(url, pageUrl))
+				fixed = rebaseUrl(url, pageUrl)
+				assert fixed.startswith("http"), "Wat?: '%s', '%s', '%s'" % (url, pageUrl, fixed)
+				urls.add(fixed)
 	if truncate_fragment:
 		ret = set()
 		for url in urls:
