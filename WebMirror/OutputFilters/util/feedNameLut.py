@@ -490,6 +490,7 @@ mapper = {
 	'witchlifenovel.blogspot.com'                     : 'Witch Life Novel',
 	'xcrossj.blogspot.com'                            : 'XCrossJ',
 	'xcrossj.blogspot.com.au'                         : 'XCrossJ',
+	'yorasutranslations.blogspot.com'                 : 'Yorasu Translations',
 	'yukkuri-literature-service.blogspot.com'         : 'Yukkuri Free Time Literature Service',
 	'sparklingdawnlights.blogspot.sg'                 : 'Little Translations',
 	'tseirptranslations.blogspot.sg'                  : 'Tseirp Translations',

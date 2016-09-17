@@ -282,7 +282,13 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	def extractHtml(self, content, url):
 		soup = webFunctions.as_soup(content)
 		links = common.util.urlFuncs.extractUrls(soup, url, truncate_fragment=True)
+		# for link in links:
+			# print(link)
 		clinks = self.filterLinks(links)
+		# print("Filtered:")
+		# for link in clinks:
+			# print(link)
+
 
 		self.log.info("Found %s links, %s after filtering.", len(links), len(clinks))
 
@@ -460,8 +466,22 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 				try:
 					jid = self.new_job_queue.get_nowait()
 					job = self.get_job_from_id(jid)
-					if self.thread_affinity(job):
-						self.do_job(job)
+					if job and self.thread_affinity(job):
+						try:
+							self.do_job(job)
+						except Exception:
+							while True:
+								try:
+									job.state = 'error'
+									self.db_sess.commit()
+									self.log.info("Pushing old job content into history table!")
+									break
+								except sqlalchemy.exc.OperationalError:
+									self.db_sess.rollback()
+								except sqlalchemy.exc.InvalidRequestError:
+									self.db_sess.rollback()
+							raise
+
 					else:
 						self.new_job_queue.put(jid)
 						time.sleep(0.01)

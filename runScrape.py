@@ -25,12 +25,6 @@ def go():
 
 	largv = [tmp.lower() for tmp in sys.argv]
 
-	if not "noreset" in largv:
-		print("Resetting any in-progress downloads.")
-		WebMirror.Runner.resetInProgress()
-		RawArchiver.RawRunner.resetInProgress()
-	else:
-		print("Not resetting in-progress downloads.")
 
 
 
@@ -62,9 +56,22 @@ def go():
 
 	rules = WebMirror.rules.load_rules()
 	if "raw" in largv:
+
+		if not "noreset" in largv:
+			print("Resetting any in-progress downloads.")
+			RawArchiver.RawRunner.resetInProgress()
+		else:
+			print("Not resetting in-progress downloads.")
+
 		RawArchiver.RawRunner.initializeRawStartUrls()
 		runner.run(main=False)
 	else:
+
+		if not "noreset" in largv:
+			print("Resetting any in-progress downloads.")
+			WebMirror.Runner.resetInProgress()
+		else:
+			print("Not resetting in-progress downloads.")
 		WebMirror.Runner.initializeStartUrls(rules)
 		runner.run(main=True)
 
