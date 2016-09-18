@@ -113,7 +113,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'http://waywardsons.keenspot.com',
 		'http://wisdomofmoo.keenspot.com',
 		'http://yirmumah.keenspot.com',
-
+		'http://2dgoggles.com',
 
 		'http://kohtathesamurai.com',
 		'http://bangbangbakochan.com',

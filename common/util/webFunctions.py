@@ -296,7 +296,6 @@ class WebGetRobust:
 	def loadCookies(self):
 
 		if self.alt_cookiejar is not None:
-			print("Loading")
 			self.alt_cookiejar.init_agent(new_headers=self.browserHeaders)
 			self.cj = self.alt_cookiejar
 		else:

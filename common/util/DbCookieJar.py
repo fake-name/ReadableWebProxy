@@ -1,6 +1,11 @@
 
 import http.cookiejar
 import copy
+import logging
+import datetime
+import traceback
+import json
+import sqlalchemy.exc
 import common.database as db
 
 
@@ -10,16 +15,136 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 	def __init__(self, db, session, policy=None):
 		http.cookiejar.CookieJar.__init__(self, policy)
+
+		self.log = logging.getLogger("Main.DbCookieJar")
+
 		self.headers = None
 
+		self.db      = db
+		self.session = session
+
 	def init_agent(self, new_headers):
-		self.headers = new_headers
+		self.headers = dict(new_headers)
 		self.sync_cookies()
 
 
+	def __insert_update_cookie(self, cookie):
+		have = self.session.query(db.WebCookieDb)                                           \
+			.filter(db.WebCookieDb.ua_user_agent        == self.headers['User-Agent'])      \
+			.filter(db.WebCookieDb.ua_accept_language   == self.headers['Accept-Language']) \
+			.filter(db.WebCookieDb.ua_accept            == self.headers['Accept'])          \
+			.filter(db.WebCookieDb.ua_accept_encoding   == self.headers['Accept-Encoding']) \
+			.filter(db.WebCookieDb.c_version            == cookie.version)                  \
+			.filter(db.WebCookieDb.c_name               == cookie.name)                     \
+			.filter(db.WebCookieDb.c_value              == cookie.value)                    \
+			.filter(db.WebCookieDb.c_port               == cookie.port)                     \
+			.filter(db.WebCookieDb.c_port_specified     == cookie.port_specified)           \
+			.filter(db.WebCookieDb.c_domain             == cookie.domain)                   \
+			.filter(db.WebCookieDb.c_domain_specified   == cookie.domain_specified)         \
+			.filter(db.WebCookieDb.c_domain_initial_dot == cookie.domain_initial_dot)       \
+			.filter(db.WebCookieDb.c_path               == cookie.path)                     \
+			.filter(db.WebCookieDb.c_path_specified     == cookie.path_specified)           \
+			.filter(db.WebCookieDb.c_secure             == cookie.secure)                   \
+			.filter(db.WebCookieDb.c_expires            == cookie.expires)                  \
+			.filter(db.WebCookieDb.c_discard            == cookie.discard)                  \
+			.filter(db.WebCookieDb.c_comment            == cookie.comment)                  \
+			.filter(db.WebCookieDb.c_comment_url        == cookie.comment_url)              \
+			.filter(db.WebCookieDb.c_rfc2109            == cookie.rfc2109)                  \
+			.filter(db.WebCookieDb.c_rest               == json.dumps(cookie._rest))        \
+			.count()
+
+		if have:
+			# Already saved cookie, no need to do anything.
+			return
+
+
+		new = db.WebCookieDb(
+				age                  = datetime.datetime.now(),
+				ua_user_agent        = self.headers['User-Agent'],
+				ua_accept_language   = self.headers['Accept-Language'],
+				ua_accept            = self.headers['Accept'],
+				ua_accept_encoding   = self.headers['Accept-Encoding'],
+				c_version            = cookie.version,
+				c_name               = cookie.name,
+				c_value              = cookie.value,
+				c_port               = cookie.port,
+				c_port_specified     = cookie.port_specified,
+				c_domain             = cookie.domain,
+				c_domain_specified   = cookie.domain_specified,
+				c_domain_initial_dot = cookie.domain_initial_dot,
+				c_path               = cookie.path,
+				c_path_specified     = cookie.path_specified,
+				c_secure             = cookie.secure,
+				c_expires            = cookie.expires,
+				c_discard            = cookie.discard,
+				c_comment            = cookie.comment,
+				c_comment_url        = cookie.comment_url,
+				c_rfc2109            = cookie.rfc2109,
+				c_rest               = json.dumps(cookie._rest),
+			)
+		self.session.add(new)
+
+	def __save_cookies(self):
+
+		while 1:
+			try:
+				for cookie in self:
+					self.__insert_update_cookie(cookie)
+				self.session.commit()
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.session.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.session.rollback()
+
+			except Exception as e:
+
+				for line in traceback.format_exc().split("\n"):
+					self.log.error("%s", line.rstrip())
+				raise e
+
+
+
+
+	def __load_cookies(self):
+
+		have = self.session.query(db.WebCookieDb)                                           \
+			.filter(db.WebCookieDb.ua_user_agent        == self.headers['User-Agent'])      \
+			.filter(db.WebCookieDb.ua_accept_language   == self.headers['Accept-Language']) \
+			.filter(db.WebCookieDb.ua_accept            == self.headers['Accept'])          \
+			.filter(db.WebCookieDb.ua_accept_encoding   == self.headers['Accept-Encoding']) \
+			.all()
+
+		for cookie in have:
+			new_ck = http.cookiejar.Cookie(
+				version            = cookie.c_version,
+				name               = cookie.c_name,
+				value              = cookie.c_value,
+				port               = cookie.c_port,
+				port_specified     = cookie.c_port_specified,
+				domain             = cookie.c_domain,
+				domain_specified   = cookie.c_domain_specified,
+				domain_initial_dot = cookie.c_domain_initial_dot,
+				path               = cookie.c_path,
+				path_specified     = cookie.c_path_specified,
+				secure             = cookie.c_secure,
+				expires            = cookie.c_expires,
+				discard            = cookie.c_discard,
+				comment            = cookie.c_comment,
+				comment_url        = cookie.c_comment_url,
+				rest               = json.loads(cookie.c_rest),
+				rfc2109            = cookie.c_rfc2109,
+				)
+			self.set_cookie(new_ck)
+
+		self.session.commit()
+
 	def sync_cookies(self):
 		assert self.headers != None
-		print("Sync call!")
+
+		self.__load_cookies()
+		self.__save_cookies()
+
 
 	def save(self, filename=None, ignore_discard=False, ignore_expires=False):
 		self.sync_cookies()
@@ -29,152 +154,3 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 	def revert(self, filename=None, ignore_discard=False, ignore_expires=False):
 		self.sync_cookies()
-
-# def lwp_cookie_str(cookie):
-#     """Return string representation of Cookie in the LWP cookie file format.
-
-#     Actually, the format is extended a bit -- see module docstring.
-
-#     """
-#     h = [(cookie.name, cookie.value),
-#          ("path", cookie.path),
-#          ("domain", cookie.domain)]
-#     if cookie.port is not None: h.append(("port", cookie.port))
-#     if cookie.path_specified: h.append(("path_spec", None))
-#     if cookie.port_specified: h.append(("port_spec", None))
-#     if cookie.domain_initial_dot: h.append(("domain_dot", None))
-#     if cookie.secure: h.append(("secure", None))
-#     if cookie.expires: h.append(("expires",
-#                                time2isoz(float(cookie.expires))))
-#     if cookie.discard: h.append(("discard", None))
-#     if cookie.comment: h.append(("comment", cookie.comment))
-#     if cookie.comment_url: h.append(("commenturl", cookie.comment_url))
-
-#     keys = sorted(cookie._rest.keys())
-#     for k in keys:
-#         h.append((k, str(cookie._rest[k])))
-
-#     h.append(("version", str(cookie.version)))
-
-#     return join_header_words([h])
-
-# class LWPCookieJar(FileCookieJar):
-#     """
-#     The LWPCookieJar saves a sequence of "Set-Cookie3" lines.
-#     "Set-Cookie3" is the format used by the libwww-perl libary, not known
-#     to be compatible with any browser, but which is easy to read and
-#     doesn't lose information about RFC 2965 cookies.
-
-#     Additional methods
-
-#     as_lwp_str(ignore_discard=True, ignore_expired=True)
-
-#     """
-
-#     def as_lwp_str(self, ignore_discard=True, ignore_expires=True):
-#         """Return cookies as a string of "\\n"-separated "Set-Cookie3" headers.
-
-#         ignore_discard and ignore_expires: see docstring for FileCookieJar.save
-
-#         """
-#         now = time.time()
-#         r = []
-#         for cookie in self:
-#             if not ignore_discard and cookie.discard:
-#                 continue
-#             if not ignore_expires and cookie.is_expired(now):
-#                 continue
-#             r.append("Set-Cookie3: %s" % lwp_cookie_str(cookie))
-#         return "\n".join(r+[""])
-
-#     def save(self, filename=None, ignore_discard=False, ignore_expires=False):
-#         if filename is None:
-#             if self.filename is not None: filename = self.filename
-#             else: raise ValueError(MISSING_FILENAME_TEXT)
-
-#         with open(filename, "w") as f:
-#             # There really isn't an LWP Cookies 2.0 format, but this indicates
-#             # that there is extra information in here (domain_dot and
-#             # port_spec) while still being compatible with libwww-perl, I hope.
-#             f.write("#LWP-Cookies-2.0\n")
-#             f.write(self.as_lwp_str(ignore_discard, ignore_expires))
-
-#     def _really_load(self, f, filename, ignore_discard, ignore_expires):
-#         magic = f.readline()
-#         if not self.magic_re.search(magic):
-#             msg = ("%r does not look like a Set-Cookie3 (LWP) format "
-#                    "file" % filename)
-#             raise LoadError(msg)
-
-#         now = time.time()
-
-#         header = "Set-Cookie3:"
-#         boolean_attrs = ("port_spec", "path_spec", "domain_dot",
-#                          "secure", "discard")
-#         value_attrs = ("version",
-#                        "port", "path", "domain",
-#                        "expires",
-#                        "comment", "commenturl")
-
-#         try:
-#             while 1:
-#                 line = f.readline()
-#                 if line == "": break
-#                 if not line.startswith(header):
-#                     continue
-#                 line = line[len(header):].strip()
-
-#                 for data in split_header_words([line]):
-#                     name, value = data[0]
-#                     standard = {}
-#                     rest = {}
-#                     for k in boolean_attrs:
-#                         standard[k] = False
-#                     for k, v in data[1:]:
-#                         if k is not None:
-#                             lc = k.lower()
-#                         else:
-#                             lc = None
-#                         # don't lose case distinction for unknown fields
-#                         if (lc in value_attrs) or (lc in boolean_attrs):
-#                             k = lc
-#                         if k in boolean_attrs:
-#                             if v is None: v = True
-#                             standard[k] = v
-#                         elif k in value_attrs:
-#                             standard[k] = v
-#                         else:
-#                             rest[k] = v
-
-#                     h = standard.get
-#                     expires = h("expires")
-#                     discard = h("discard")
-#                     if expires is not None:
-#                         expires = iso2time(expires)
-#                     if expires is None:
-#                         discard = True
-#                     domain = h("domain")
-#                     domain_specified = domain.startswith(".")
-#                     c = Cookie(h("version"), name, value,
-#                                h("port"), h("port_spec"),
-#                                domain, domain_specified, h("domain_dot"),
-#                                h("path"), h("path_spec"),
-#                                h("secure"),
-#                                expires,
-#                                discard,
-#                                h("comment"),
-#                                h("commenturl"),
-#                                rest)
-#                     if not ignore_discard and c.discard:
-#                         continue
-#                     if not ignore_expires and c.is_expired(now):
-#                         continue
-#                     self.set_cookie(c)
-#         except OSError:
-#             raise
-#         except Exception:
-#             _warn_unhandled_exception()
-#             raise LoadError("invalid Set-Cookie3 format file %r: %r" %
-#                             (filename, line))
-
-

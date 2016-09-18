@@ -34,6 +34,7 @@ import psycopg2
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
 import common.util.webFunctions as webFunctions
+import common.util.DbCookieJar as dbCj
 
 import hashlib
 from common.Exceptions import DownloadException
@@ -158,7 +159,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.ruleset = WebMirror.rules.load_rules()
 		self.netloc_rewalk_times = build_rewalk_time_lut(self.ruleset)
 		self.fetcher = WebMirror.Fetch.ItemFetcher
-		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks)
+
+
+		alt_cj = dbCj.DatabaseCookieJar(db=db, session=common.database.get_db_session(postfix="_cookie_interface"))
+		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
 
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
