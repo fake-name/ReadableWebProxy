@@ -117,6 +117,9 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 		'http://kohtathesamurai.com',
 		'http://bangbangbakochan.com',
+
+		'http://oglaf.com/',
+		'http://media.oglaf.com/',
 	]
 
 	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]

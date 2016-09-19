@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 import sqlalchemy.exc
 import traceback
 import os
+import shutil
 import os.path
 import config
 import calendar
@@ -31,6 +32,7 @@ import RawArchiver.RawActiveModules
 from sqlalchemy_continuum.utils import version_table
 
 import Misc.HistoryAggregator.Flatten
+from config import C_RAW_RESOURCE_DIR
 
 def print_html_response(archiver, new, ret):
 	print("Plain links:")
@@ -796,6 +798,60 @@ def delete_feed(feed_name, do_delete, search_str):
 
 	sess.commit()
 
+def to_locpath(fqpath):
+	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
+
+	locpath = fqpath[len(C_RAW_RESOURCE_DIR):]
+	if locpath.startswith("/"):
+		locpath = locpath[1:]
+	return locpath
+
+def reset_raw_missing():
+
+
+	sess = db.get_db_session()
+
+	bad = 0
+	for row in sess.query(db.RawWebPages).yield_per(1000).all():
+		if row.fspath:
+
+
+			nl, rest = row.fspath.split("/", 1)
+			nl = nl.split(".")
+			nl.reverse()
+			nl = "/".join(nl)
+			newp = nl + "/" + rest
+
+			old = os.path.join(C_RAW_RESOURCE_DIR, "old", row.fspath)
+			new = os.path.join(C_RAW_RESOURCE_DIR, newp)
+
+			if os.path.exists(new):
+				print("Relinking: ", new)
+				row.fspath = to_locpath(new)
+				bad += 1
+			elif os.path.exists(old):
+				dirPath = os.path.split(new)[0]
+				if not os.path.exists(dirPath):
+					os.makedirs(dirPath)
+				shutil.move(old, new)
+
+				row.fspath = to_locpath(new)
+				bad += 1
+				print("Moving: ", old, new)
+			else:
+				row.state = "new"
+				bad += 1
+		else:
+			row.state = "new"
+			bad += 1
+
+		if bad > 5000:
+			print("Committing!")
+			bad = 0
+			sess.commit()
+	sess.commit()
+
+
 def decode(*args):
 	print("Args:", args)
 
@@ -846,6 +902,8 @@ def decode(*args):
 			rss_db_sync(days=45)
 		elif op == "clear-blocked":
 			clear_blocked()
+		elif op == "reset-raw-missing":
+			reset_raw_missing()
 		else:
 			print("ERROR: Unknown command!")
 
@@ -918,6 +976,7 @@ if __name__ == "__main__":
 		print('	rss')
 		print('	sort-txt')
 		print('	consolidate-history')
+		print('	reset-raw-missing')
 
 		print('	rss-db {feedname}')
 		print('	fetch {url}')

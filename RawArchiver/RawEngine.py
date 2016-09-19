@@ -63,7 +63,12 @@ def saveFile(filecont, url, filename):
 	urlpath, urlfname = os.path.split(split.path)
 	if not urlpath.startswith("/"):
 		urlpath = "/"+urlpath
-	urlpath = "./"+split.netloc+urlpath
+
+	nlpath = split.netloc.split(".")
+	nlpath.reverse()
+	nlpath = "/".join(nlpath)
+
+	urlpath = "./"+nlpath+urlpath
 
 	dirPath = os.path.join(C_RAW_RESOURCE_DIR, urlpath)
 	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
