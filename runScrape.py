@@ -8,7 +8,6 @@ if __name__ == "__main__":
 # This HAS to be included before the app, to prevent circular dependencies.
 # import WebMirror.runtime_engines
 
-from settings import MAX_DB_SESSIONS
 import common.RunManager
 import WebMirror.rules
 import WebMirror.Runner
@@ -17,6 +16,7 @@ import common.stuck
 
 from settings import NO_PROCESSES
 from settings import RAW_NO_PROCESSES
+from settings import MAX_DB_SESSIONS
 
 
 def go():
@@ -28,29 +28,29 @@ def go():
 
 
 
-	global NO_PROCESSES
-	global MAX_DB_SESSIONS
-	MAX_DB_SESSIONS = NO_PROCESSES + 5
+	# global NO_PROCESSES
+	# global MAX_DB_SESSIONS
+	# MAX_DB_SESSIONS = NO_PROCESSES + 5
 
-	processes = 16
-	NO_PROCESSES = processes
-	MAX_DB_SESSIONS = NO_PROCESSES + 5
-	if "maxprocesses" in largv:
-		processes = 24
-		NO_PROCESSES = processes
-		MAX_DB_SESSIONS = NO_PROCESSES + 5
-	elif "fewprocesses" in largv:
-		processes = 8
-		NO_PROCESSES = processes
-		MAX_DB_SESSIONS = NO_PROCESSES + 5
-	elif "twoprocess" in largv:
-		processes = 2
-		NO_PROCESSES = processes
-		MAX_DB_SESSIONS = NO_PROCESSES + 2
-	elif "oneprocess" in largv:
-		processes = 1
-		NO_PROCESSES = processes
-		MAX_DB_SESSIONS = NO_PROCESSES + 2
+	# processes = 16
+	# NO_PROCESSES = processes
+	# MAX_DB_SESSIONS = NO_PROCESSES + 5
+	# if "maxprocesses" in largv:
+	# 	processes = 24
+	# 	NO_PROCESSES = processes
+	# 	MAX_DB_SESSIONS = NO_PROCESSES + 5
+	# elif "fewprocesses" in largv:
+	# 	processes = 8
+	# 	NO_PROCESSES = processes
+	# 	MAX_DB_SESSIONS = NO_PROCESSES + 5
+	# elif "twoprocess" in largv:
+	# 	processes = 2
+	# 	NO_PROCESSES = processes
+	# 	MAX_DB_SESSIONS = NO_PROCESSES + 2
+	# elif "oneprocess" in largv:
+	# 	processes = 1
+	# 	NO_PROCESSES = processes
+	# 	MAX_DB_SESSIONS = NO_PROCESSES + 2
 
 	runner = common.RunManager.Crawler(main_thread_count=NO_PROCESSES, raw_thread_count=RAW_NO_PROCESSES)
 

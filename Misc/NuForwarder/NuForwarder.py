@@ -303,9 +303,12 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def emit_verified_releases(self):
-			have = self.db_sess.query(db.NuOutboundWrapperMap)     \
-				.filter(db.NuOutboundWrapperMap.validated == True) \
+			have = self.db_sess.query(db.NuOutboundWrapperMap)                                                       \
+				.filter(db.NuOutboundWrapperMap.released_on > datetime.datetime.now() - datetime.timedelta(days=14)) \
+				.filter(db.NuOutboundWrapperMap.validated == True)                                                   \
 				.all()
+
+			self.log.info("Forwarding %s releases...", len(have))
 			agg_releases = {}
 			for row in have:
 				try:
@@ -359,9 +362,8 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			for release in agg_releases.values():
 				if release:
 					self.do_release(release)
-			# print("Valid releases:")
-			# print(agg_releases)
 
+			self.log.info("Sent %s releases.", len(have))
 
 	def consolidate_validated(self):
 
@@ -411,7 +413,8 @@ if __name__ == '__main__':
 	logSetup.initLogging()
 
 	intf = NuForwarder()
-	intf.go()
+	intf.emit_verified_releases()
+	# intf.go()
 	#print(load_lut())
 	# intf = NuForwarder(connect=False)
 	# intf.fix_names()

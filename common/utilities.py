@@ -825,8 +825,11 @@ def reset_raw_missing():
 			old = os.path.join(C_RAW_RESOURCE_DIR, "old", row.fspath)
 			new = os.path.join(C_RAW_RESOURCE_DIR, newp)
 
-			if os.path.exists(new):
-				print("Relinking: ", new)
+			if os.path.exists(new) and row.fspath == newp:
+				#print("Nothing to do: ", row.fspath, new, newp)
+				pass
+			elif os.path.exists(new):
+				print("Relinking: ", newp, row.fspath)
 				row.fspath = to_locpath(new)
 				bad += 1
 			elif os.path.exists(old):
@@ -845,11 +848,14 @@ def reset_raw_missing():
 			row.state = "new"
 			bad += 1
 
-		if bad > 5000:
+		if bad > 25000:
 			print("Committing!")
 			bad = 0
 			sess.commit()
 	sess.commit()
+
+def nu_new():
+	pass
 
 
 def decode(*args):
@@ -886,6 +892,8 @@ def decode(*args):
 			clear_bad()
 		elif op == "rss-db":
 			rss_db_sync()
+		elif op == "nu-new":
+			nu_new()
 		elif op == "consolidate-history":
 			Misc.HistoryAggregator.Flatten.consolidate_history()
 		elif op == "rss-db-silent":

@@ -706,6 +706,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Alternative Projects'                              : pfuncs_a_g.extractAlternativeProjects,
 				'Apollo Translations'                               : pfuncs_a_g.extractApolloTranslations,
 				'Elemental Cobalt'                                  : pfuncs_a_g.extractElementalCobalt,
+				'Ellionora Translation'                             : pfuncs_a_g.extractEllionoraTranslation,
 				'Hiohbye Translations'                              : pfuncs_h_n.extractHiohbyeTranslations,
 				'levitytales.com'                                   : pfuncs_h_n.extractLevityTales,
 				'Levity Tales'                                      : pfuncs_h_n.extractLevityTales,

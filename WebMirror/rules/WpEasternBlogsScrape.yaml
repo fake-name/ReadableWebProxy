@@ -4,7 +4,7 @@ type: eastern
 
 send_raw_feed: True
 
-rewalk_interval_days: 30
+rewalk_interval_days: 15
 
 baseUrl: [
 
@@ -126,6 +126,7 @@ baseUrl: [
 	'https://dynamislightnovel.wordpress.com',
 	'https://elementalcobalt.wordpress.com',
 	'https://elephantno5.wordpress.com',
+	'https://ellionoratranslation.wordpress.com',
 	'https://emptyboundaries.wordpress.com',
 	'https://endkun.wordpress.com',
 	'https://ensjtrans.wordpress.com',
@@ -552,6 +553,59 @@ baseUrl: [
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
 
+	"https://50centtranslations.wordpress.com",
+	"https://absurdtl.wordpress.com",
+	"https://alchyr.wordpress.com",
+	"https://apurpleblob.wordpress.com",
+	"https://arsl31.wordpress.com",
+	"https://artegthebear.wordpress.com",
+	"https://asthmaticspider.wordpress.com",
+	"https://avaritiakuns.wordpress.com",
+	"https://bionicarktranslations.wordpress.com",
+	"https://boyslovetranslations.wordpress.com",
+	"https://cagedbramblings.wordpress.com",
+	"https://chaoticswordoftl.wordpress.com",
+	"https://chaotictranslations.wordpress.com",
+	"https://circatrans.wordpress.com",
+	"https://clesesia.wordpress.com",
+	"https://daikyuntl.wordpress.com",
+	"https://deathknightnovel.wordpress.com",
+	"https://dysrysummaries.wordpress.com",
+	"https://edltranslation.wordpress.com",
+	"https://egsmarttranslation.wordpress.com",
+	"https://egsnblog.wordpress.com",
+	"https://failtranslations.wordpress.com",
+	"https://fairlyaccuratetranslations.wordpress.com",
+	"https://feelsbadtranslations.wordpress.com",
+	"https://fuwafuwatales.wordpress.com",
+	"https://hellsingfederation.wordpress.com",
+	"https://jynkitl.wordpress.com",
+	"https://kurossite.wordpress.com",
+	"https://kusomtl.wordpress.com",
+	"https://lionmaskrpt.wordpress.com",
+	"https://mightynovels.wordpress.com",
+	"https://mofumofutranslation.wordpress.com",
+	"https://moonlighttranslations.wordpress.com",
+	"https://namelesstranslation.wordpress.com",
+	"https://paichuntranslations.wordpress.com",
+	"https://planttranslation.wordpress.com",
+	"https://professionalgamethrower.wordpress.com",
+	"https://scumbagtranslations.wordpress.com",
+	"https://segmeton.wordpress.com",
+	"https://sereneandtranquil.wordpress.com",
+	"https://sinistertranslations.wordpress.com",
+	"https://slothfulworks.wordpress.com",
+	"https://sodtranslations.wordpress.com",
+	"https://starvecleric.wordpress.com",
+	"https://tsubakitranslation.wordpress.com",
+	"https://twkisanotaku.wordpress.com",
+	"https://veetranslation.wordpress.com",
+	"https://vestigetranslations.wordpress.com",
+	"https://whatevertranslations.wordpress.com",
+	"https://wuxialover.wordpress.com",
+	"https://xytranslations.wordpress.com",
+	"https://yumeabyss.wordpress.com",
+
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	# This is WP, but it uses an custom theme I haven't tested against.
 	# New:
@@ -711,6 +765,22 @@ baseUrl: [
 	'http://www.steadytranslation.com',
 	'https://chillock.wordpress.com',
 	'http://sabishidesu.tk',
+	'http://www.scarletmadness.org',
+	'https://trytranslations.com',
+	'http://seonbinovels.com',
+	'http://selftaughtjapanese.com',
+	'http://scrya.org',
+	'https://saiakutranslationsblog.com',
+	'http://rebirth.online',
+	'https://noveltranslation.net',
+	'https://kobatochan.com',
+	'http://infinitenoveltranslations.net',
+	'http://hamster428.com',
+	'http://grandlation.com',
+
+
+
+	'https://ajrg.me',
 
 	 # Seriously bro, you can change your A record:
 	 # 'http://tototr.com'

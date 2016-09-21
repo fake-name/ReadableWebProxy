@@ -8,7 +8,7 @@ FOLLOW_GOOGLE_LINKS: True
 
 send_raw_feed: True
 
-rewalk_interval_days: 30
+rewalk_interval_days: 15
 
 baseUrl: [
 	'http://a0132.blogspot.ca',
@@ -113,7 +113,16 @@ baseUrl: [
 	'http://xcrossj.blogspot.com',
 	'http://xcrossj.blogspot.com.au',
 	'http://yukkuri-literature-service.blogspot.com',
-
+	"http://alatpengeras.blogspot.co.id",
+	"http://dreamygetaway.blogspot.com",
+	"http://exploreandtry.blogspot.ie",
+	"http://frozensama.blogspot.com",
+	"http://jolecole.blogspot.com",
+	"http://kuromin9.blogspot.com",
+	"http://novelstranslation.blogspot.com",
+	"http://sabishiidesu.blogspot.com",
+	"http://timebun.blogspot.com",
+	"http://usawdemon.blogspot.co.il",
 
 	# Dead:
 	# 'http://hereticlnt.blogspot.ca',

@@ -36,7 +36,6 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 						self.db.WebPages.state == 'complete',
 						self.db.WebPages.state == 'new',
 						))                                           \
-					.filter(self.db.WebPages.ignoreuntiltime > ago)  \
 					.filter(self.db.WebPages.fetchtime < ago)
 				affected_rows = q.update({"state" : "new", "ignoreuntiltime" : datetime.datetime.min})
 				sess.commit()
