@@ -1138,9 +1138,12 @@ mapper = {
 
 }
 
-def getNiceName(srcurl):
+def getNiceName(srcurl, netloc=None):
+	if netloc:
+		srcnetloc = netloc
+	else:
+		srcnetloc = urllib.parse.urlparse(srcurl).netloc
 
-	srcnetloc = urllib.parse.urlparse(srcurl).netloc
 
 	if srcnetloc in mapper:
 		return mapper[srcnetloc]

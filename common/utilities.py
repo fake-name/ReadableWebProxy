@@ -855,6 +855,25 @@ def reset_raw_missing():
 	sess.commit()
 
 def nu_new():
+
+	import WebMirror.OutputFilters.util.feedNameLut as fnl
+	sess = db.get_db_session()
+
+	nu_items = sess.query(db.NuOutboundWrapperMap)             \
+		.filter(db.NuOutboundWrapperMap.validated == True)     \
+		.filter(db.NuOutboundWrapperMap.actual_target != None) \
+		.all()
+
+	netlocs = [urllib.parse.urlsplit(row.actual_target).netloc for row in nu_items]
+	print("Nu outbound items: ", len(netlocs))
+	netlocs = set(netlocs)
+
+	for netloc in netlocs:
+		if not fnl.getNiceName(None, netloc):
+			print("Missing: ", netloc)
+	print("Nu outbound items: ", len(netlocs))
+
+	# for item in
 	pass
 
 
