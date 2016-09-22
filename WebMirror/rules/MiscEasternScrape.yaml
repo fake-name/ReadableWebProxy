@@ -1,0 +1,83 @@
+type: eastern
+
+
+rewalk_interval_days: 15
+
+send_raw_feed: True
+
+baseUrl: [
+		'http://www.xianxiaworld.net',
+		'https://www.lightnovelbastion.com',
+		'https://lightnovelbastion.com',
+		'http://www.ultimaguil.org',
+		'http://ultimaguil.org',
+		'http://chongmeitranslations.weebly.com',
+		'http://hakushakutoyousei.weebly.com',
+		'http://fleetingphoenix.weebly.com',
+
+		'http://transtranstrans.hatenablog.com',
+
+		'http://www.gundamwingtales.com',
+
+
+		# Dickish blocking garbage shit.
+		'http://www.nepustation.com',
+
+		# No rss, apparently. Sadface
+		'http://www.novelsreborn.com',
+		'http://novelsreborn.com',     # Redirects to the www netloc
+
+		# Wat?
+		'http://www.lannyland.com',
+	]
+
+feeds: [
+	'http://www.xianxiaworld.net/feed/',
+	'https://www.lightnovelbastion.com/rss.php',
+	'https://lightnovelbastion.com/rss.php',
+	'http://www.ultimaguil.org/base/novelupdates_rss.xml',
+	'http://www.ultimaguil.org/base/news_rss.xml',
+	'http://chongmeitranslations.weebly.com/1/feed',
+	'http://hakushakutoyousei.weebly.com/1/feed',
+	'http://fleetingphoenix.weebly.com/1/feed',
+
+	'http://transtranstrans.hatenablog.com/rss',
+
+]
+
+extraStartUrls: [
+	]
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			]
+
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+]
+
+decompose: [
+
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: [
+]
+
+
+

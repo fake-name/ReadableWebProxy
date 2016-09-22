@@ -552,6 +552,9 @@ baseUrl: [
 	'https://zetianjitranslation.wordpress.com',
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
+	'https://firegirlthetranslation.wordpress.com',
+	'https://grimgarthetranslation.wordpress.com',
+	'https://sakaro44.wordpress.com',
 
 	"https://50centtranslations.wordpress.com",
 	"https://absurdtl.wordpress.com",
@@ -605,6 +608,7 @@ baseUrl: [
 	"https://wuxialover.wordpress.com",
 	"https://xytranslations.wordpress.com",
 	"https://yumeabyss.wordpress.com",
+	"https://zeromahouthetranslation.wordpress.com",
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	# This is WP, but it uses an custom theme I haven't tested against.
@@ -682,6 +686,7 @@ baseUrl: [
 	'http://soaringtranslations.com',
 	'http://soratranslations.com',
 	'http://subudai11.com',
+	'http://www.subudai11.com',
 	'http://thundertranslations.com',
 	'http://thyaeriatranslations.com',
 	'http://tiffybook.com',
@@ -758,6 +763,7 @@ baseUrl: [
 	'http://zxzxzx.info',
 	'http://lightnovelcafe.com',
 	'http://www.endofdoom.com',
+	'http://endofdoom.com',
 	'http://www.kencephalontranslations.com',
 	'http://www.lesyt.xyz',
 	'http://www.pathoftranslation.com',
@@ -777,8 +783,19 @@ baseUrl: [
 	'http://infinitenoveltranslations.net',
 	'http://hamster428.com',
 	'http://grandlation.com',
-
-
+	'http://fakeftranslations.com',
+	'http://lesyt.xyz',
+	'https://mojotranslations.com',
+	'https://nakimushitl.com',
+	'https://novelsground.com',
+	'https://paichuntranslations.com',
+	'http://rainbowturtletranslation.com',
+	'https://readingattic.com',
+	'http://royalnovel.com',
+	'http://shinsori.com',
+	'https://slothtranslations.com',
+	'http://www.mtlhex.com',
+	'http://www.noodletowntranslated.com',
 
 	'https://ajrg.me',
 

@@ -870,6 +870,7 @@ def nu_new():
 
 	for netloc in netlocs:
 		if not fnl.getNiceName(None, netloc):
+			fnl.getNiceName(None, netloc, debug=True)
 			print("Missing: ", netloc)
 	print("Nu outbound items: ", len(netlocs))
 
