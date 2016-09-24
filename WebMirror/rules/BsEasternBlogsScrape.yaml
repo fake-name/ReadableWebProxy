@@ -178,7 +178,6 @@ badwords: [
 			'.googleusercontent.com',
 			'/?replytocom=',
 			'/comments/default',
-			'/feeds/',
 			'/search/',
 			'/search/label/',
 			'/search?',
@@ -209,7 +208,6 @@ badwords: [
 			# Who the fuck shares shit like this anyways?
 			"?share=",
 			'wp-login.php',
-			'/feeds/'
 
 
 			]

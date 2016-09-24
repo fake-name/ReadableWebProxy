@@ -34,6 +34,8 @@ from sqlalchemy_continuum.utils import version_table
 import Misc.HistoryAggregator.Flatten
 from config import C_RAW_RESOURCE_DIR
 
+import common.management.file_cleanup
+
 def print_html_response(archiver, new, ret):
 	print("Plain links:")
 	for link in ret['plainLinks']:
@@ -54,7 +56,6 @@ def print_html_response(archiver, new, ret):
 	print("Filtered resource links:")
 	for link in filteredr:
 		print("	'%s'" % link.replace("\n", ""))
-
 
 def test_retrieve(url, debug=True, rss_debug=False):
 
@@ -137,7 +138,6 @@ def raw_test_retrieve(url):
 	finally:
 		db.delete_db_session()
 
-
 def test_head(url, referrer):
 
 	try:
@@ -153,7 +153,6 @@ def test_head(url, referrer):
 		WebMirror.SpecialCase.stopAmqpFetcher()
 
 	print("test_head complete!")
-
 
 def test_all_rss():
 	print("fetching and debugging RSS feeds")
@@ -228,7 +227,6 @@ def longest_rows():
 			fp.write(size.encode("utf-8"))
 			fp.write("{}".format(row[3]).encode("utf-8"))
 
-
 def fix_null():
 	step = 50000
 
@@ -262,7 +260,6 @@ def fix_null():
 			print("done")
 			changed = 0
 	db.get_db_session().commit()
-
 
 def fix_tsv():
 	step = 1000
@@ -307,7 +304,6 @@ def fix_tsv():
 			traceback.print_exc()
 
 	db.get_db_session().commit()
-
 
 def disable_wattpad():
 	step = 50000
@@ -380,7 +376,6 @@ def disable_wattpad():
 
 	db.get_db_session().commit()
 
-
 def clear_bad():
 	from sqlalchemy.dialects import postgresql
 
@@ -410,8 +405,6 @@ def clear_bad():
 						.filter(db.WebPages.url.like("%{}%".format(badword))) \
 						.delete(synchronize_session=False)
 					db.get_db_session().commit()
-
-
 
 def delete_comment_feed_items():
 
@@ -443,8 +436,6 @@ def delete_comment_feed_items():
 	print("Done. Committing...")
 	sess.commit()
 
-
-
 def update_feed_names():
 	for key, value in feedNameLut.mapper.items():
 		feed_items = db.get_db_session().query(db.FeedItems) \
@@ -456,7 +447,6 @@ def update_feed_names():
 			print(len(feed_items))
 			print(key, value)
 			db.get_db_session().commit()
-
 
 def purge_raw_invalid_urls():
 
@@ -551,8 +541,6 @@ def purge_invalid_urls(selected_netloc=None):
 
 		# print(ruleset['netlocs'])
 		# print(ruleset['badwords'])
-
-
 
 
 # Re-order the missed file list by order of misses.
@@ -748,7 +736,6 @@ def clear_blocked():
 			# print(ruleset['netlocs'])
 			# print(ruleset['badwords'])
 
-
 def filter_links(path):
 	if not os.path.exists(path):
 		raise IOError("File at path '%s' doesn't exist!" % path)
@@ -932,6 +919,10 @@ def decode(*args):
 			clear_blocked()
 		elif op == "reset-raw-missing":
 			reset_raw_missing()
+		elif op == "delete-unattached-raw-files":
+			common.management.file_cleanup.sync_raw_with_filesystem()
+		elif op == "delete-unattached-filtered-files":
+			common.management.file_cleanup.sync_filtered_with_filesystem()
 		else:
 			print("ERROR: Unknown command!")
 
@@ -983,33 +974,39 @@ if __name__ == "__main__":
 		print("you must pass a operation to execute!")
 		print("Current actions:")
 
-		print('	clear-bad')
-		print('	clear-blocked')
-		print('	db-fiddle')
-		print('	disable-wattpad')
-		print('	fix-null')
-		print('	fix-tsv')
-		print('	longest-rows')
-		print('	missing-lut')
-		print('	purge-from-rules')
-		print('	rss-day')
-		print('	rss-db')
-		print('	rss-db-silent')
-		print('	rss-del-comments')
-		print('	rss-month')
-		print('	rss-name')
-		print('	rss-week')
-		print('	sort-json')
-		print('	sync')
-		print('	rss')
-		print('	sort-txt')
-		print('	consolidate-history')
-		print('	reset-raw-missing')
-
+		print("	rss")
+		print("	sync")
+		print("	rss-del-comments")
+		print("	db-fiddle")
+		print("	rss-name")
+		print("	purge-from-rules")
+		print("	purge-raw-from-rules")
+		print("	longest-rows")
+		print("	disable-wattpad")
+		print("	fix-null")
+		print("	missing-lut")
+		print("	fix-tsv")
+		print("	clear-bad")
+		print("	rss-db")
+		print("	nu-new")
+		print("	consolidate-history")
+		print("	rss-db-silent")
+		print("	sort-json")
+		print("	sort-txt")
+		print("	rss-day")
+		print("	rss-week")
+		print("	rss-month")
+		print("	clear-blocked")
+		print("	reset-raw-missing")
+		print("	delete-unattached-raw-files")
+		print("	delete-unattached-filtered-files")
+		print("	")
 		print('	rss-db {feedname}')
 		print('	fetch {url}')
+		print('	raw-fetch {url}')
 		print('	fetch-silent {url}')
 		print('	fetch-rss {url}')
+		print('	purge-from-rules {netloc}')
 		print('	filter-new-links {file-path}')
 		print('	delete-feed {feed name} {do delete (true/false)} {search term}')
 

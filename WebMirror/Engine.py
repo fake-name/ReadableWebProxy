@@ -430,6 +430,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# print("Filtered:", link)
 			return None
 		return link
+
 	def haveBadPathSegments(self, url):
 		parsed = urllib.parse.urlsplit(url)
 		netloc = parsed.netloc
@@ -445,11 +446,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if not disallowDupe:
 			return False
 
-		pathchunks = parsed.path.split("/")
-
-		if len(set(pathchunks)) == len(pathchunks):
-			return False
-		return True
+		return common.util.urlFuncs.hasDuplicatePathSegments(url)
 
 
 	# Todo: FIXME
@@ -459,8 +456,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			link = self.generalLinkClean(link, badwords)
 			if not link:
 				continue
-			# if self.haveBadPathSegments(link):
-			# 	continue
+			if self.haveBadPathSegments(link):
+				continue
 
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
@@ -474,8 +471,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			link = self.generalLinkClean(link, badwords)
 			if not link:
 				continue
-			# if self.haveBadPathSegments(link):
-			# 	continue
+			if self.haveBadPathSegments(link):
+				continue
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.rsc_filters:
 				# print("Valid resource link: ", link)
@@ -483,7 +480,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		return ret
 
 	def getBadWords(self, job):
-		badwords = common.global_constants.GLOBAL_BAD_URLS
+		badwords = [tmp for tmp in common.global_constants.GLOBAL_BAD_URLS]
 		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
 			badwords += item['badwords']
 

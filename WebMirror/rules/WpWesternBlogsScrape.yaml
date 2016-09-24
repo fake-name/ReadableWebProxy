@@ -135,10 +135,6 @@ badwords: [
 		 "giraffecorps.liamak.net/extras/",
 		 "wp-comments-post",
 		 "/page/page/",
-		 "/feed",
-		 "rejecthero.wordpress.com",
-		 "farmerbob1.wordpress.com",
-		 "pactwebserial.wordpress.com",
 		 "https://docs.google.com/forms/d",
 
 		# http://inmydaydreams.com appears to generate a RSS feed for EVERY PAGE.

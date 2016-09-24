@@ -218,6 +218,28 @@ def extractUrls(soup, pageUrl, truncate_fragment=False):
 	return urls
 
 
+def hasDuplicatePathSegments(url):
+
+		parsed = urllib.parse.urlsplit(url)
+		netloc = parsed.netloc
+		if not netloc:
+			print("Wat? No netloc for URL: %s" % url)
+			return True
+
+		pathchunks = parsed.path.split("/")
+
+		pathchunks = [chunk for chunk in pathchunks if chunk]
+
+
+		if len(set(pathchunks)) == len(pathchunks):
+			return False
+
+
+		print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+		return True
+
+
+
 def urlClean(url):
 	assert url != None
 	# Google docs can be accessed with or without the '/preview' postfix

@@ -15,6 +15,7 @@ import psycopg2
 import sys
 
 import settings
+import common.global_constants
 # import common.database as db
 import common.LogBase as LogBase
 import WebMirror.OutputFilters.AmqpInterface
@@ -102,6 +103,8 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		self.print_mod = 0
 
+		self.ruleset = WebMirror.rules.load_rules()
+
 	def get_queues(self):
 		return self.normal_out_queue
 
@@ -126,6 +129,45 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.amqp_int.put_job(raw_job)
 		# print("Raw job:", raw_job)
 		# print("Jobid, joburl: ", (jobid, joburl))
+
+
+	def generalLinkClean(self, link, badwords):
+		if link.startswith("data:"):
+			return None
+		linkl = link.lower()
+		if any([badword in linkl for badword in badwords]):
+
+			print("Filtered:", link, [badword for badword in badwords if badword in linkl ])
+			return None
+		return link
+
+	def getBadWords(self, netloc):
+		badwords = [tmp for tmp in common.global_constants.GLOBAL_BAD_URLS]
+		for item in [rules for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs']]:
+			badwords += item['badwords']
+
+		# A "None" can occationally crop up. Filter it.
+		badwords = [badword for badword in badwords if badword]
+		badwords = [badword.lower() for badword in badwords]
+		badwords = list(set(badwords))
+		return badwords
+
+	def outbound_job_wanted(self, netloc, joburl):
+		badwords = self.getBadWords(netloc)
+
+		ret = self.generalLinkClean(joburl, badwords)
+		if ret:
+			return True
+
+		self.log.warn("Unwanted URL: '%s' - %s", joburl, ret)
+
+		return False
+
+	def delete_job(self, rid, joburl):
+		self.log.warning("Deleting job for url: '%s'", joburl)
+		cursor = self.db_interface.cursor()
+		cursor.execute("""DELETE FROM web_pages WHERE web_pages.id = %s AND web_pages.url = %s;""", (rid, joburl))
+		self.db_interface.commit()
 
 	def fill_jobs(self):
 		if 'drain' in sys.argv:
@@ -325,7 +367,10 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		deleted = 0
 		for rid, netloc, joburl in rids:
-			self.put_outbound_job(rid, joburl)
+			if self.outbound_job_wanted(netloc, joburl):
+				self.put_outbound_job(rid, joburl)
+			else:
+				self.delete_job(rid, joburl)
 
 		cursor.close()
 

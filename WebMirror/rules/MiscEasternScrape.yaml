@@ -8,7 +8,7 @@ send_raw_feed: True
 baseUrl: [
 		'http://www.xianxiaworld.net',
 		'https://www.lightnovelbastion.com',
-		'https://lightnovelbastion.com',
+		#'https://lightnovelbastion.com',
 		'http://www.ultimaguil.org',
 		'http://ultimaguil.org',
 		'http://chongmeitranslations.weebly.com',
@@ -55,6 +55,23 @@ badwords: [
 			'&format=pdf',
 			'?format=pdf',
 			'?replytocom=',
+			'/assets/css/assets/',
+			'/js/assets/js/',
+			'/assets/js/assets/',
+			'/js/assets/js/images/',
+			'/js/images/assets/',
+			'cms/download.php?auth=',
+			'/<cms:show k_page_link',
+
+			'/images/images/',
+			'/css/images/assets/',
+			'/images/images/',
+			'/images/assets/css/images/',
+			'/assets/js/images/',
+
+			'/css/images/css/',
+			'/css/css/',
+			'/images/css/images/',
 			]
 
 

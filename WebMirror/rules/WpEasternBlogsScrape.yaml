@@ -850,7 +850,6 @@ badwords: [
 	"giraffecorps.liamak.net/extras/",
 	"wp-comments-post",
 	"/page/page/",
-	'/feed',
 
 	'rejecthero.wordpress.com',
 	'farmerbob1.wordpress.com',
@@ -881,7 +880,6 @@ badwords: [
 
 	# Who the fuck shares shit like this anyways?
 	 "?share=",
-	 "/feed/",
 
 	 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
 	 '&author=',
