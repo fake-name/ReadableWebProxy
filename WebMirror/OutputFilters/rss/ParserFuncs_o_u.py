@@ -781,7 +781,7 @@ def extractRebirthOnlineWorld(item):
 		or "Sefi chap".lower() in item['title'].lower() :
 		return buildReleaseMessage(item, 'Sefiria', vol, chp, frag=frag, postfix=postfix)
 	if 'Master of Dungeon'.lower() in item['title'].lower():
-		return buildReleaseMessage(item, 'TMaster of Dungeon', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+		return buildReleaseMessage(item, 'Master of Dungeon', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'TRTS(The Rude Time Stopper)'.lower() in item['title'].lower():
 		return buildReleaseMessage(item, 'The Rude Time Stopper', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Polymath Redux '.lower() in item['title'].lower():
@@ -806,6 +806,55 @@ def extractRebirthOnlineWorld(item):
 		return buildReleaseMessage(item, 'The Ability to make town!? ~Let’s make a Japanese Town in Different world~', vol, chp, frag=frag, postfix=postfix)
 	if 'Ex-hero' in item['tags']:
 		return buildReleaseMessage(item, 'Ex-Hero Candidate’s, who turned out to be a cheat from lv2, laid-back life in Another World', vol, chp, frag=frag, postfix=postfix)
+
+	# url based bits.
+	if "rebirth.online/novel/adventure-in-a-foreign-world" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Adventure In A Foreign World - Legacy of The Chosen One', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/earths-core" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Earth\'s Core', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/ex-hero" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Ex-Hero Candidate’s, who turned out to be a cheat from lv2, laid-back life in Another World', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/how-to-survive-a-summoning-101" in item['linkUrl']:
+		return buildReleaseMessage(item, 'How to Survive a Summoning 101', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/i-became-a-hero-in-a-pandemic" in item['linkUrl']:
+		return buildReleaseMessage(item, 'I became a hero in a pandemic', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/inma-no-hado" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Inma no Hado', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/isekai-shoukan-makikomu-ijousha" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Isekai shoukan makikomu ijousha', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/jikuu-mahou" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Jikuu Mahou de Isekai to Chikyuu wo Ittarikitari', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/loiterous" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Loiterous', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/love-parameter" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Love Parameter', vol, chp, frag=frag, postfix=postfix)
+	# if "rebirth.online/novel/magic-bullet-in-magic-land" in item['linkUrl']:
+	# 	return buildReleaseMessage(item, 'Magic Bullet in Magic Land', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/master-of-dungeon" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Master of Dungeon', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/monster-musume" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Monster Musume', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/my-annoying-aura" in item['linkUrl']:
+		return buildReleaseMessage(item, 'My Annoying Aura Follows Me Into Another World', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/sefiria" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Prodigy Sefiria’s Program to Overthrow the Higher Ranks', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/second-saga" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Second Saga', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/tales-of-the-wickedly" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Tales of the Wickedly Vicious Underground Empire', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/the-ability-to-make-town" in item['linkUrl']:
+		return buildReleaseMessage(item, 'The Ability to make town!? ~Let’s make a Japanese Town in Different world~', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "rebirth.online/novel/to-deprive-a-deprived-person" in item['linkUrl']:
+		return buildReleaseMessage(item, 'To Deprive a Deprived Person', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/undead-seeks-warmth" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Undead Seeks Warmth', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/loli-vampire" in item['linkUrl']:
+		return buildReleaseMessage(item, 'When I woke up in the morning I became a silver haired loli vampire', vol, chp, frag=frag, postfix=postfix)
+	if "rebirth.online/novel/world-traveler" in item['linkUrl']:
+		return buildReleaseMessage(item, 'World Traveler ', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "http://rebirth.online/novel/yuusha-isagi-no-maou-hanashi" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Yuusha Isagi no Maou Hanashi', vol, chp, frag=frag, postfix=postfix)
+
 
 	return False
 
@@ -1150,7 +1199,7 @@ def extractShinsori(item):
 		return buildReleaseMessage(item, 'Levelmaker -Raising Levels While Living in Another World-', vol, chp, frag=frag, postfix=postfix)
 	if 'Isekai Tensei Harem' in item['title']:
 		return buildReleaseMessage(item, 'Isekai Tensei Harem', vol, chp, frag=frag, postfix=postfix)
-	if 'Undead Seeks Warmth' in item['title']:
+	if 'Undead Seeks Warmth' in item['title'] or 'Undead Seeks Warmth' in item['tags']:
 		return buildReleaseMessage(item, 'Undead Seeks Warmth', vol, chp, frag=frag, postfix=postfix)
 	if 'Raising Slaves in Another World While on a Journey' in item['title']:
 		return buildReleaseMessage(item, 'Raising Slaves in Another World While on a Journey', vol, chp, frag=frag, postfix=postfix)
@@ -1161,6 +1210,22 @@ def extractShinsori(item):
 	if 'The Bears Bear a Bare Kuma' in item['title'] or 'Kuma Kuma Kuma Bear' in item['title']:
 		return buildReleaseMessage(item, 'Kuma Kuma Kuma Bear', vol, chp, frag=frag, postfix=postfix)
 
+	if '100 Cheat Skills' in item['tags']:
+		return buildReleaseMessage(item, '100 Cheat Skills', vol, chp, frag=frag, postfix=postfix)
+
+	if 'Hone no aru Yatsu' in item['tags'] or 'Bones' in item['tags']:
+		return buildReleaseMessage(item, 'Hone no aru Yatsu', vol, chp, frag=frag, postfix=postfix)
+	if 'Isekai Onsen e Youkoso!' in item['tags'] or 'Onsen' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Onsen e Youkoso!', vol, chp, frag=frag, postfix=postfix)
+	if 'Isekai Tensei Harem' in item['tags'] or 'Isekai Tensei' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Tensei Harem', vol, chp, frag=frag, postfix=postfix)
+	if 'Vampire' in item['tags'] or 'Tensei Shitara Kyuuketsuki-san Datta Ken' in item['tags']:
+		return buildReleaseMessage(item, 'Tensei Shitara Kyuuketsuki-san Datta Ken', vol, chp, frag=frag, postfix=postfix)
+	if 'Princess' in item['tags']:
+		return buildReleaseMessage(item, 'The Great Nation Remodeling of Reincarnated Princess ~Let’s Build an Unrivalled Country~', vol, chp, frag=frag, postfix=postfix)
+
+	if 'Kindred' in item['title']:
+		return buildReleaseMessage(item, 'Kindred', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Charmed?' in item['title']:
 		return buildReleaseMessage(item, 'Charmed?', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'Silver Death' in item['title']:
@@ -3214,6 +3279,8 @@ def extractPathOfTranslation(item):
 		return buildReleaseMessage(item, 'My Daoist Life', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith('Tales of the Reincarnated Lord'):
 		return buildReleaseMessage(item, 'Tales of the Reincarnated Lord', vol, chp, frag=frag, postfix=postfix)
+	if "Post-80's Cultivation Journal" in item['tags']:
+		return buildReleaseMessage(item, "Post-80's Cultivation Journal", vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractReincarnationTranslations(item):
 	'''
@@ -3547,3 +3614,241 @@ def extractUniqueBooks(item):
 	if 'Allgemein' in item['tags']:
 		return buildReleaseMessage(item, 'Survival of a Healer', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
+
+
+
+def extractOddSquadNovels(item):
+	'''
+	Odd Squad Novels
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractPaichunTranslations(item):
+	'''
+	Paichun Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	if 'Kenshi o Mezashite Nyūgaku Shitanoni Mahō Tekisei 9999 Nandesukedo! ?' in item['tags']:
+		return buildReleaseMessage(item, 'Kenshi o Mezashite Nyūgaku Shitanoni Mahō Tekisei 9999 Nandesukedo! ?', vol, chp, frag=frag, postfix=postfix)
+	if 'Lottery Grand Prize: Musou Harem Rights' in item['tags']:
+		return buildReleaseMessage(item, 'Lottery Grand Prize: Musou Harem Rights', vol, chp, frag=frag, postfix=postfix)
+	if 'Manga wo Yomeru Ore ga Sekai Saikyou ~Yometachi to Sugosu Ki mama na Seikatsu~' in item['tags']:
+		return buildReleaseMessage(item, 'Manga wo Yomeru Ore ga Sekai Saikyou ~Yometachi to Sugosu Ki mama na Seikatsu~', vol, chp, frag=frag, postfix=postfix)
+	if 'Ore Dake Kaereru Kurasu Teni' in item['tags']:
+		return buildReleaseMessage(item, 'Ore Dake Kaereru Kurasu Teni', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+def extractProfessionalGameThrowersTranslations(item):
+	'''
+	ProfessionalGameThrower\'s Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractReadingAttic(item):
+	'''
+	Reading Attic
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+
+	if 'A Tale of Two Phoenixes （凤囚凰）' in item['tags']:
+		return buildReleaseMessage(item, 'A Tale of Two Phoenixes', vol, chp, frag=frag, postfix=postfix)
+	if 'Ghost Invasion （有鬼来袭）' in item['tags']:
+		return buildReleaseMessage(item, 'Ghost Invasion', vol, chp, frag=frag, postfix=postfix)
+	if 'Stunning Edge （绝色锋芒）' in item['tags']:
+		return buildReleaseMessage(item, 'Stunning Edge', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+
+
+
+
+def extractRoyalNovel(item):
+	'''
+	Royal Novel
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractSabishiidesu(item):
+	'''
+	Sabishii desu!
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	if 'Sono-sha. Nochi ni. . .' in item['tags']:
+		return buildReleaseMessage(item, 'Sono-sha. Nochi ni. . .', vol, chp, frag=frag, postfix=postfix)
+	if 'VRMMO Summoner Hajimemashita' in item['tags']:
+		return buildReleaseMessage(item, 'VRMMO Summoner Hajimemashita', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+def extractSaiakuTranslationsblog(item):
+	'''
+	SaiakuTranslationsblog
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractScarletMadness(item):
+	'''
+	Scarlet Madness
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractScumBagTranslation(item):
+	'''
+	Scum Bag Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractSelfTaughtJapanese(item):
+	'''
+	Self Taught Japanese
+	'''
+
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractSereneandTranquil(item):
+	'''
+	Serene and Tranquil
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractShenYuanLangMTL(item):
+	'''
+	Shen Yuan Lang MTL
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractSinisterTranslations(item):
+	'''
+	Sinister Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractSlothTranslations(item):
+	'''
+	Sloth Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractSodTranslations(item):
+	'''
+	Sod Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractStarveCleric(item):
+	'''
+	StarveCleric
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractTheVikingStoryTeller(item):
+	'''
+	The Viking Story Teller
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractTimebunTranslations(item):
+	'''
+	Timebun Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractTryTranslationsTheBusyOne(item):
+	'''
+	TryTranslations/The Busy One
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractTsubakiTranslation(item):
+	'''
+	Tsubaki Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractTwkisanOtaku(item):
+	'''
+	Twki-san Otaku
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+

@@ -65,4 +65,37 @@ GLOBAL_BAD_URLS = [
 
 			# More garbage issues.
 			'"https',
+			'#comment-',
+			'/oembed/1.0/',
+			'&share=',
+			'replytocom=',
+			'?feed=rss2&page_id',
 	]
+
+
+
+RSS_SKIP_FILTER = [
+	"www.baka-tsuki.org",
+	"re-monster.wikia.com",
+	'inmydaydreams.com',
+	'www.fanfiction.net',
+	'www.booksie.com',
+	'www.booksiesilk.com',
+	'www.fictionpress.com',
+	'storiesonline.net',
+	'www.fictionmania.tv',
+	'pokegirls.org',
+	'www.asstr.org',
+	'www.mcstories.com',
+	'www.novelupdates.com',
+	'40pics.com',
+	'#comment-',
+
+]
+
+
+RSS_TITLE_FILTER = [
+	"by: ",
+	"comments on: ",
+	"comment on: ",
+]

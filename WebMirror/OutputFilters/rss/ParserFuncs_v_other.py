@@ -103,6 +103,8 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, 'Warlock of the Magus World', vol, chp, frag=frag)
 	if 'Spirit Realm' in item['tags']:
 		return buildReleaseMessage(item, 'Spirit Realm', vol, chp, frag=frag)
+	if 'Rebirth of the Thief' in item['tags']:
+		return buildReleaseMessage(item, 'Rebirth of the Thief', vol, chp, frag=frag)
 
 	return False
 
@@ -1147,4 +1149,129 @@ def extract閒人ONLINE(item):
 	if 'Great Tang Idyll' in item['tags']:
 		return buildReleaseMessage(item, 'Great Tang Idyll', vol, chp, frag=frag, postfix=postfix)
 	return False
+
+
+def extractVeeTranslation(item):
+	'''
+	Vee Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractVestigeTranslations(item):
+	'''
+	Vestige Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractWhateverTranslationsMTL(item):
+	'''
+	Whatever Translations MTL
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractWisteriaTranslations(item):
+	'''
+	Wisteria Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractWuxiaLovers(item):
+	'''
+	Wuxia Lovers
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	if item['title'].startswith("CGA Chapter"):
+		return buildReleaseMessage(item, 'Conquer God, Asura, and 1000 Beauties', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Etranger Chapter"):
+		return buildReleaseMessage(item, 'Etranger', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Q11 Chapter"):
+		return buildReleaseMessage(item, 'Queen of No.11 Agent 11', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("STS Chapter"):
+		return buildReleaseMessage(item, '', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+def extractXiakeluojiao侠客落脚(item):
+	'''
+	Xiakeluojiao 侠客落脚
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractXianXiaWorld(item):
+	'''
+	Xian Xia World
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	if 'www.xianxiaworld.net/A-Thought-Through-Eternity/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'A Thought Through Eternity', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/Beast-Piercing-The-Heavens/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Beast Piercing The Heavens', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/Dominating-Sword-Immortal/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Dominating Sword Immortal', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/Dragon-Marked-War-God/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Dragon-Marked War God', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/Emperor-of-The-Cosmos/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Emperor of The Cosmos', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/God-of-Slaughter/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'God of Slaughter', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/God-level-Bodyguard-in-The-City/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'God-level Bodyguard in The City', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/Realms-In-The-Firmament/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Realms In The Firmament', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/The-King-Of-Myriad-Domains/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'The King Of Myriad Domains', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/The-Magus-Era/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'The Magus Era', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/The-Portal-of-Wonderland/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'The Portal of Wonderland', vol, chp, frag=frag, postfix=postfix)
+	if 'www.xianxiaworld.net/World-Defying-Dan-God/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'World Defying Dan God', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+def extractXiaoyuusTranslations(item):
+	'''
+	Xiaoyuu\'s Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractYumeabyss(item):
+	'''
+	Yumeabyss
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
 

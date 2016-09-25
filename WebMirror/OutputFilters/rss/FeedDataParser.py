@@ -18,25 +18,7 @@ from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentP
 import WebMirror.OutputFilters.FilterBase
 import WebMirror.rules
 import flags
-
-skip_filter = [
-	"www.baka-tsuki.org",
-	"re-monster.wikia.com",
-	'inmydaydreams.com',
-	'www.fanfiction.net',
-	'www.booksie.com',
-	'www.booksiesilk.com',
-	'www.fictionpress.com',
-	'storiesonline.net',
-	'www.fictionmania.tv',
-	'pokegirls.org',
-	'www.asstr.org',
-	'www.mcstories.com',
-	'www.novelupdates.com',
-	'40pics.com',
-
-]
-
+import common.global_constants
 
 
 class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -320,7 +302,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Kurotsuki Novel'                                               : pfuncs_h_n.extractKurotsukiNovel,
 				'Kyakka'                                                        : pfuncs_h_n.extractKyakka,
 				'Kyakka Translations'                                           : pfuncs_h_n.extractKyakkaTranslations,
-				'kyoptionslibrary.blogspot.com'                                 : pfuncs_h_n.extractKyoptionslibrary,
+				'kyoptionslibrary.blogspot.com'                                 : pfuncs_h_n.extractKyOptionsLibrary,
 				'L2M'                                                           : pfuncs_h_n.extractL2M,
 				'Larvyde'                                                       : pfuncs_h_n.extractLarvyde,
 				'Lascivious Imouto'                                             : pfuncs_h_n.extractLasciviousImouto,
@@ -815,11 +797,85 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 
-
-
-
-
-
+				'A Purple Blob'                                 : pfuncs_a_g.extractAPurpleBlob,
+				'Absurd Translation'                            : pfuncs_a_g.extractAbsurdTranslation,
+				'AeRoSoL31'                                     : pfuncs_a_g.extractAeRoSoL31,
+				'Ainushi Translations 愛主の翻訳'                 : pfuncs_a_g.extractAinushiTranslations愛主の翻訳,
+				'AJRG'                                          : pfuncs_a_g.extractAJRG,
+				'Alchyr does things'                            : pfuncs_a_g.extractAlchyrdoesthings,
+				'Almighty Athlete'                              : pfuncs_a_g.extractAlmightyAthlete,
+				'Asthmatic Spider Translations'                 : pfuncs_a_g.extractAsthmaticSpiderTranslations,
+				'Asura Tales'                                   : pfuncs_a_g.extractAsuraTales,
+				'Avaritia-kun'                                  : pfuncs_a_g.extractAvaritiakun,
+				'Avert Translations~'                           : pfuncs_a_g.extractAvertTranslations,
+				'Bionicark Translations'                        : pfuncs_a_g.extractBionicarkTranslations,
+				'Caged Bramblings In A Pavilion'                : pfuncs_a_g.extractCagedBramblingsInAPavilion,
+				'Chaotic Sword Translations'                    : pfuncs_a_g.extractChaoticSwordTranslations,
+				'Chaotic Translations'                          : pfuncs_a_g.extractChaoticTranslations,
+				'Chimp\'s MTL Spot'                             : pfuncs_a_g.extractChimpsMTLSpot,
+				'Circa Translations'                            : pfuncs_a_g.extractCircaTranslations,
+				'Clesesia Blogspot~'                            : pfuncs_a_g.extractClesesiaBlogspot,
+				'Daikyun Translations'                          : pfuncs_a_g.extractDaikyunTranslations,
+				'Dysry Summaries'                               : pfuncs_a_g.extractDysrySummaries,
+				'EG-Smart-Translation'                          : pfuncs_a_g.extractEGSmartTranslation,
+				'EGSN Blog'                                     : pfuncs_a_g.extractEGSNBlog,
+				'End of Doom MTL'                               : pfuncs_a_g.extractEndofDoomMTL,
+				'Eternal Dreamland Translation'                 : pfuncs_a_g.extractEternalDreamlandTranslation,
+				'Explore'                                       : pfuncs_a_g.extractExplore,
+				'ExpNull'                                       : pfuncs_a_g.extractExpNull,
+				'FailTranslations'                              : pfuncs_a_g.extractFailTranslations,
+				'Fairly Accurate Translations'                  : pfuncs_a_g.extractFairlyAccurateTranslations,
+				'Fake Fruit Translation'                        : pfuncs_a_g.extractFakeFruitTranslation,
+				'Fantasy Novels'                                : pfuncs_a_g.extractFantasyNovels,
+				'Fantasy-Books'                                 : pfuncs_a_g.extractFantasyBooksLive,
+				'Feels Bad Translations'                        : pfuncs_a_g.extractFeelsBadTranslations,
+				'Frozen\'s Lazy Blog'                           : pfuncs_a_g.extractFrozensLazyBlog,
+				'Fuwa Fuwa Tales~'                              : pfuncs_a_g.extractFuwaFuwaTales,
+				'Grandlation'                                   : pfuncs_a_g.extractGrandlation,
+				'Guro\'s Library of Stories'                    : pfuncs_a_g.extractGurosLibraryofStories,
+				'Hasutsuki'                                     : pfuncs_h_n.extractHasutsuki,
+				'Japanese Novel Translation'                    : pfuncs_h_n.extractJapaneseNovelTranslation,
+				'Jynki\'s TLs'                                  : pfuncs_h_n.extractJynkisTLs,
+				'Kuromin'                                       : pfuncs_h_n.extractKuromin,
+				'Kuros TL'                                      : pfuncs_h_n.extractKurosTL,
+				'Kuso Machine Translation'                      : pfuncs_h_n.extractKusoMachineTranslation,
+				'KyOption\'s Library'                           : pfuncs_h_n.extractKyOptionsLibrary,
+				'LESYT'                                         : pfuncs_h_n.extractLESYT,
+				'Light Novels'                                  : pfuncs_h_n.extractLightNovels,
+				'Lion Mask\'s Really Professional Translations' : pfuncs_h_n.extractLionMasksReallyProfessionalTranslations,
+				'Mofumofu Translation'                          : pfuncs_h_n.extractMofumofuTranslation,
+				'Moonlight Translations'                        : pfuncs_h_n.extractMoonlightTranslations,
+				'Novels Translation'                            : pfuncs_h_n.extractNovelsTranslation,
+				'Odd Squad Novels'                              : pfuncs_o_u.extractOddSquadNovels,
+				'Paichun Translations'                          : pfuncs_o_u.extractPaichunTranslations,
+				'ProfessionalGameThrower\'s Translations'       : pfuncs_o_u.extractProfessionalGameThrowersTranslations,
+				'Reading Attic'                                 : pfuncs_o_u.extractReadingAttic,
+				'Royal Novel'                                   : pfuncs_o_u.extractRoyalNovel,
+				'Sabishii desu!!'                               : pfuncs_o_u.extractSabishiidesu,
+				'SaiakuTranslationsblog'                        : pfuncs_o_u.extractSaiakuTranslationsblog,
+				'Scarlet Madness'                               : pfuncs_o_u.extractScarletMadness,
+				'Scum Bag Translation'                          : pfuncs_o_u.extractScumBagTranslation,
+				'Self Taught Japanese '                         : pfuncs_o_u.extractSelfTaughtJapanese,
+				'Serene and Tranquil'                           : pfuncs_o_u.extractSereneandTranquil,
+				'Shen Yuan Lang MTL'                            : pfuncs_o_u.extractShenYuanLangMTL,
+				'Sinister Translations'                         : pfuncs_o_u.extractSinisterTranslations,
+				'Sloth Translations'                            : pfuncs_o_u.extractSlothTranslations,
+				'Sod Translations'                              : pfuncs_o_u.extractSodTranslations,
+				'StarveCleric'                                  : pfuncs_o_u.extractStarveCleric,
+				'The Viking Story Teller'                       : pfuncs_o_u.extractTheVikingStoryTeller,
+				'Timebun Translations'                          : pfuncs_o_u.extractTimebunTranslations,
+				'TryTranslations/The Busy One'                  : pfuncs_o_u.extractTryTranslationsTheBusyOne,
+				'Tsubaki Translation'                           : pfuncs_o_u.extractTsubakiTranslation,
+				'Twki-san Otaku'                                : pfuncs_o_u.extractTwkisanOtaku,
+				'Vee Translation'                               : pfuncs_v_other.extractVeeTranslation,
+				'Vestige Translations'                          : pfuncs_v_other.extractVestigeTranslations,
+				'Whatever Translations MTL'                     : pfuncs_v_other.extractWhateverTranslationsMTL,
+				'Wisteria Translations'                         : pfuncs_v_other.extractWisteriaTranslations,
+				'Wuxia Lovers'                                  : pfuncs_v_other.extractWuxiaLovers,
+				'Xiakeluojiao 侠客落脚'                          : pfuncs_v_other.extractXiakeluojiao侠客落脚,
+				'Xian Xia World'                                : pfuncs_v_other.extractXianXiaWorld,
+				'Xiaoyuu\'s Translations'                       : pfuncs_v_other.extractXiaoyuusTranslations,
+				'Yumeabyss'                                     : pfuncs_v_other.extractYumeabyss,
 
 
 				# Broken
@@ -879,9 +935,9 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		]
 
 		if (
-				(flags.RSS_DEBUG or self.dbg_print) and
-				self.write_debug                    and
-				ret is False                        and
+				(flags.RSS_DEBUG or self.dbg_print)   and
+				self.write_debug                      and
+				ret is False                          and
 				not "teaser" in item['title'].lower() and
 				not "Preview" in item['tags']
 			):
@@ -955,7 +1011,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def getProcessedReleaseInfo(self, feedDat):
 
-		if any([item in feedDat['linkUrl'] for item in skip_filter]):
+		if any([item in feedDat['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
 			print("Skipping!")
 			return
 
@@ -1003,8 +1059,18 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processFeedData(self, feedDat, tx_raw=True, tx_parse=True):
 
-		if any([item in feedDat['linkUrl'] for item in skip_filter]):
+		if any([item in feedDat['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
 			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			return
+
+		if any([feedDat['title'].lower().startswith(item) for item in common.global_constants.RSS_TITLE_FILTER]):
+			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			return
+
+
+		# print("Feed item title: ", feedDat['title'], feedDat)
+
+		if feedDat['title'].lower().startswith("by: "):
 			return
 
 

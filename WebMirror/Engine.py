@@ -319,6 +319,16 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	def insertRssItem(self, entry, feedurl):
 
+
+		if any([item in entry['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
+			self.log.warn("LinkURL '%s' contains a filtered string. Not inserting into db!" % entry['linkUrl'])
+			return
+
+		if any([entry['title'].lower().startswith(item) for item in common.global_constants.RSS_TITLE_FILTER]):
+			self.log.warn("LinkURL '%s' contains a filtered string. Not inserting into db!" % entry['linkUrl'])
+			return
+
+
 		have = self.db_sess.query(self.db.FeedItems) \
 			.filter(self.db.FeedItems.contentid == entry['guid'])   \
 			.limit(1)                                  \

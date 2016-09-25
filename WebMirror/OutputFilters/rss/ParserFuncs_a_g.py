@@ -94,7 +94,9 @@ def extractGravityTranslation(item):
 		return buildReleaseMessage(item, 'Conquest', vol, chp, frag=frag, postfix=postfix)
 	if 'shadow rogue' in ltags:
 		return buildReleaseMessage(item, 'Shadow Rogue', vol, chp, frag=frag, postfix=postfix)
-	if 'the divine elements' in ltags:
+	if 'terror paradise' in ltags:
+		return buildReleaseMessage(item, 'Terror Paradise', vol, chp, frag=frag, postfix=postfix)
+	if 'the divine elements' in ltags or 'the divine element' in ltags:
 		return buildReleaseMessage(item, 'The Divine Elements', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'cult of the sacred runes' in ltags or item['title'].startswith("Cult of the Sacred Runes"):
 		return buildReleaseMessage(item, 'Cult of the Sacred Runes', vol, chp, frag=frag, postfix=postfix)
@@ -102,27 +104,47 @@ def extractGravityTranslation(item):
 		return buildReleaseMessage(item, 'Blood Hourglass', vol, chp, frag=frag, postfix=postfix)
 	if "A Dragon's Curiosity" in item['tags']:
 		return buildReleaseMessage(item, "A Dragon's Curiosity", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'RMJI' in item['tags'] or (item['title'].startswith('RMJI') and 'Release' in item['title']):
+	if (
+			'RMJI' in item['tags'] or
+			(item['title'].startswith('RMJI') and 'Release' in item['title']) or
+			item['title'].lower().startswith("a record of a mortal’s journey to immortality – chapter")
+		):
 		return buildReleaseMessage(item, "A Record of A Mortal's Journey to Immortality", vol, chp, frag=frag, postfix=postfix)
-	if 'The Nine Cauldrons' in item['tags'] or item['title'].startswith('The Nine Cauldrons Chapter'):
+	if 'The Nine Cauldrons' in item['tags'] or item['title'].startswith('The Nine Cauldrons Chapter') or item['title'].startswith('The Nine Cauldrons book'):
 		return buildReleaseMessage(item, 'The Nine Cauldrons', vol, chp, frag=frag, postfix=postfix)
 	if 'The Trembling World' in item['tags']:
 		return buildReleaseMessage(item, 'The Trembling World', vol, chp, frag=frag, postfix=postfix)
-	if 'Ancient Strengthening Technique' in item['tags']:
+	if 'Ancient Strengthening Technique' in item['tags'] or item['title'].lower().startswith("ancient strengthening technique: chapter"):
 		return buildReleaseMessage(item, 'Ancient Strengthening Technique', vol, chp, frag=frag, postfix=postfix)
 	if 'Nine Heavenly Thunder Manual' in item['tags']:
 		return buildReleaseMessage(item, 'Nine Heavenly Thunder Manual', vol, chp, frag=frag, postfix=postfix)
-	if 'a record of a mortal\'s journey to immortality' in ltags:
+	if 'a record of a mortal\'s journey to immortality' in ltags or item['title'].startswith('RMJI '):
 		return buildReleaseMessage(item, 'A Record of a Mortal\'s Journey to Immortality', vol, chp, frag=frag, postfix=postfix)
-	if 'martial world' in ltags or item['title'].startswith('MW Chapter'):
+	if 'martial world' in ltags or item['title'].startswith('MW Chapter') or item['title'].startswith('Martial World Chapter'):
 		return buildReleaseMessage(item, 'Martial World', vol, chp, frag=frag, postfix=postfix)
 	if 'ancient godly monarch' in ltags:
 		return buildReleaseMessage(item, 'Ancient Godly Monarch', vol, chp, frag=frag, postfix=postfix)
-	if "i'm really a superstar" in ltags:
+	if "i'm really a superstar" in ltags or item['title'].lower().startswith("i’m really a superstar chapter"):
 		return buildReleaseMessage(item, "I'm Really a Superstar", vol, chp, frag=frag, postfix=postfix)
 	if "The Beginning After the End" in item['tags'] or item['title'].lower().startswith('the beginning after the end'):
 		return buildReleaseMessage(item, "The Beginning After the End", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
+	if item['title'].lower().startswith('chaotic lightning cultivation chapter'):
+		return buildReleaseMessage(item, 'Chaotic Lightning Cultivation', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('a dragon’s curiosity chapter'):
+		return buildReleaseMessage(item, 'A Dragon’s Curiosity', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('paradise of the demons and gods chapter'):
+		return buildReleaseMessage(item, 'Paradise of the Demons and Gods', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('lord xue ying chapters'):
+		return buildReleaseMessage(item, 'Lord Xue Ying', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('chaotic sword god chapter'):
+		return buildReleaseMessage(item, 'Chaotic Sword God', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('era of shamans chapter'):
+		return buildReleaseMessage(item, 'Era of Shamans', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('jiu shen chapter'):
+		return buildReleaseMessage(item, 'Jiu Shen', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith('true martial world chapter'):
+		return buildReleaseMessage(item, 'True Martial World', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith('reincarnator'):
 		return buildReleaseMessage(item, 'Reincarnator', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith("king of gods – "):
@@ -135,6 +157,28 @@ def extractGravityTranslation(item):
 		return buildReleaseMessage(item, "The King's Avatar", vol, chp, frag=frag, postfix=postfix)
 	if 'ze tian ji' in ltags or 'way of choices' in ltags:
 		return buildReleaseMessage(item, 'Ze Tian Ji', vol, chp, frag=frag, postfix=postfix)
+
+	if 'str' in ltags:
+		return buildReleaseMessage(item, 'Sovereign of the Three Realms', vol, chp, frag=frag, postfix=postfix)
+	if 'dimensional sovereign' in ltags:
+		return buildReleaseMessage(item, 'Dimensional Sovereign', vol, chp, frag=frag, postfix=postfix)
+	if 'dungeon hunter' in ltags:
+		return buildReleaseMessage(item, 'Dungeon Hunter', vol, chp, frag=frag, postfix=postfix)
+	if 'king of gods'  in ltags:
+		return buildReleaseMessage(item, 'King of Gods' , vol, chp, frag=frag, postfix=postfix)
+	if 'overthrowing fate' in ltags:
+		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)
+	if 'paradise of the demons and gods' in ltags or item['title'].lower().startswith("Paradise of the Demons and Gods "):
+		return buildReleaseMessage(item, 'Paradise of the Demons and Gods', vol, chp, frag=frag, postfix=postfix)
+	if 'reincarnator' in ltags:
+		return buildReleaseMessage(item, 'Reincarnator', vol, chp, frag=frag, postfix=postfix)
+	if 'the experimental log of the crazy lich' in ltags or item['title'].lower().startswith("the experimental log of the crazy lich chapter"):
+		return buildReleaseMessage(item, 'The Experimental Log of the Crazy Lich', vol, chp, frag=frag, postfix=postfix)
+	if 'king of gods' in ltags:
+		return buildReleaseMessage(item, 'King of Gods', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Blue Phoenix – Chapter"):
+		return buildReleaseMessage(item, 'Blue Phoenix', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
 
 	return False
 
@@ -2626,6 +2670,11 @@ def extractBluePhoenix(item):
 		return None
 	if item['title'].startswith("Chapter") and item['tags'] == ['Uncategorized']:
 		return buildReleaseMessage(item, 'Blue Phoenix', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if item['title'].startswith("Blue Phoenix Chapter ") and item['tags'] == ['Uncategorized']:
+		return buildReleaseMessage(item, 'Blue Phoenix', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if item['title'].startswith("Overthrowing Fate Chapter ") and item['tags'] == ['Uncategorized']:
+		return buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
 	return False
 def extractDemonTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -2859,20 +2908,24 @@ def extractFantasyBooksLive(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
-	if 'Heavenward On Golden Wings' in item['tags']:
-		return buildReleaseMessage(item, 'Heavenward On Golden Wings', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'The Abandoned' in item['tags']:
-		return buildReleaseMessage(item, 'The Abandoned', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'Regarding The Life of A Certain Fallen Noble' in item['tags']:
-		return buildReleaseMessage(item, 'Regarding The Life of A Certain Fallen Noble', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'Orphans of a Dead Nation' in item['tags']:
-		return buildReleaseMessage(item, 'Orphans of a Dead Nation', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'Life and Times of Mitch and Akki' in item['tags']:
-		return buildReleaseMessage(item, 'Life and Times of Mitch and Akki', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if "God's Island" in item['tags']:
-		return buildReleaseMessage(item, "God's Island", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if'Black Titan' in item['tags']:
-		return buildReleaseMessage(item, 'Black Titan', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+	snames = [
+		'Heavenward On Golden Wings',
+		'The Abandoned',
+		'Regarding The Life of A Certain Fallen Noble',
+		'Orphans of a Dead Nation',
+		'Life and Times of Mitch and Akki',
+		'God\'s Island',
+		'Black Titan',
+	]
+
+	tlut = {tmp.lower():tmp for tmp in snames}
+
+	ltags = [tmp.lower() for tmp in item['tags']]
+	for key, value in tlut.items():
+		if key in ltags:
+			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
 	return False
 
 def extractForKalimdor(item):
@@ -2916,3 +2969,360 @@ def extractEllionoraTranslation(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
 	return False
+
+
+
+def extractAPurpleBlob(item):
+	'''
+	A Purple Blob
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAbsurdTranslation(item):
+	'''
+	Absurd Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAeRoSoL31(item):
+	'''
+	AeRoSoL31
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAinushiTranslations愛主の翻訳(item):
+	'''
+	Ainushi Translations 愛主の翻訳
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAJRG(item):
+	'''
+	AJRG
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAlchyrdoesthings(item):
+	'''
+	Alchyr does things
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAlmightyAthlete(item):
+	'''
+	Almighty Athlete
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAsthmaticSpiderTranslations(item):
+	'''
+	Asthmatic Spider Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAsuraTales(item):
+	'''
+	Asura Tales
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAvaritiakun(item):
+	'''
+	Avaritia-kun
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractAvertTranslations(item):
+	'''
+	Avert Translations~
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractBionicarkTranslations(item):
+	'''
+	Bionicark Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractCagedBramblingsInAPavilion(item):
+	'''
+	Caged Bramblings In A Pavilion
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractChaoticSwordTranslations(item):
+	'''
+	Chaotic Sword Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractChaoticTranslations(item):
+	'''
+	Chaotic Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractChimpsMTLSpot(item):
+	'''
+	Chimp\'s MTL Spot
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractCircaTranslations(item):
+	'''
+	Circa Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractClesesiaBlogspot(item):
+	'''
+	Clesesia Blogspot~
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractDaikyunTranslations(item):
+	'''
+	Daikyun Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractDysrySummaries(item):
+	'''
+	Dysry Summaries
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractEGSmartTranslation(item):
+	'''
+	EG-Smart-Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractEGSNBlog(item):
+	'''
+	EGSN Blog
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractEndofDoomMTL(item):
+	'''
+	End of Doom MTL
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+
+	if 'Doom Lord' in item['tags']:
+		return buildReleaseMessage(item, 'Doom Lord', vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+def extractEternalDreamlandTranslation(item):
+	'''
+	Eternal Dreamland Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractExplore(item):
+	'''
+	Explore
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractExpNull(item):
+	'''
+	ExpNull
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractFailTranslations(item):
+	'''
+	FailTranslations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractFairlyAccurateTranslations(item):
+	'''
+	Fairly Accurate Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractFakeFruitTranslation(item):
+	'''
+	Fake Fruit Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractFantasyNovels(item):
+	'''
+	Fantasy Novels
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractFeelsBadTranslations(item):
+	'''
+	Feels Bad Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractFrozensLazyBlog(item):
+	'''
+	Frozen\'s Lazy Blog
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractFuwaFuwaTales(item):
+	'''
+	Fuwa Fuwa Tales
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractGrandlation(item):
+	'''
+	Grandlation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractGurosLibraryofStories(item):
+	'''
+	Guro\'s Library of Stories
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
