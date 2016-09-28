@@ -56,7 +56,7 @@ def go():
 
 	rules = WebMirror.rules.load_rules()
 	if "raw" in largv:
-
+		print("RAW Scrape!")
 		if not "noreset" in largv:
 			print("Resetting any in-progress downloads.")
 			RawArchiver.RawRunner.resetInProgress()

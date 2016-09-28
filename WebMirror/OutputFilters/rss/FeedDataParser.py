@@ -118,6 +118,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'C.E. Light Novel Translations'                                 : pfuncs_a_g.extractCeLn,
 				'Ceruleonice Translations'                                      : pfuncs_a_g.extractCeruleonice,
 				'Cheddar!'                                                      : pfuncs_a_g.extractCheddar,
+				'China Novel.net'                                               : pfuncs_a_g.extractChinaNovelNet,
 				'Chinese BL Translations'                                       : pfuncs_a_g.extractChineseBLTranslations,
 				'Chinese Weaboo Translations'                                   : pfuncs_a_g.extractChineseWeabooTranslations,
 				'Chrona Zero'                                                   : pfuncs_a_g.extractChronaZero,

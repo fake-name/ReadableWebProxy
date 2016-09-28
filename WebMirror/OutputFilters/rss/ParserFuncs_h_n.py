@@ -2901,6 +2901,12 @@ def extractMyoniyoniTranslations(item):
 		return buildReleaseMessage(item, 'The King of the Battlefield', vol, chp, frag=frag, postfix=postfix)
 	if 'Sovereign of Judgement' in item['tags']:
 		return buildReleaseMessage(item, 'Sovereign of Judgement', vol, chp, frag=frag, postfix=postfix)
+	if 'Taming Master' in item['tags']:
+		return buildReleaseMessage(item, 'Taming Master', vol, chp, frag=frag, postfix=postfix)
+	if "God's Song" in item['tags']:
+		return buildReleaseMessage(item, "God's Song", vol, chp, frag=frag, postfix=postfix)
+	if 'Life Mission' in item['tags']:
+		return buildReleaseMessage(item, 'Life Mission', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractNoNameTranslations(item):
 	'''
@@ -3420,4 +3426,6 @@ def extractNovelsTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Womanizing Mage' in item['tags']:
+		return buildReleaseMessage(item, 'Womanizing Mage', vol, chp, frag=frag, postfix=postfix)
 	return False

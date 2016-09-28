@@ -42,7 +42,15 @@ def extractYorasuTranslations(item):
 
 	if item['title'].startswith("DKFTOD"):
 		return buildReleaseMessage(item, 'Devil King From The Otherworldly Dimension', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("DKFTOD"):
+		return buildReleaseMessage(item, 'Devil King From The Otherworldly Dimension', vol, chp, frag=frag, postfix=postfix)
 
+	if 'Super Brain Telekinesis' in item['tags']:
+		return buildReleaseMessage(item, 'Super Brain Telekinesis', vol, chp, frag=frag, postfix=postfix)
+	if 'Super soldier' in item['tags']:
+		return buildReleaseMessage(item, 'Super soldier', vol, chp, frag=frag, postfix=postfix)
+	if 'The Different World Of Demon Lord' in item['tags']:
+		return buildReleaseMessage(item, 'The Different World Of Demon Lord', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -821,6 +829,8 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, "Demon Wang's Golden Favorite Fei", vol, chp, frag=frag, postfix=postfix)
 	if 'True Cultivators' in item['tags']:
 		return buildReleaseMessage(item, 'The Strong, The Few, True Cultivators on Campus', vol, chp, frag=frag, postfix=postfix)
+	if "Evil Emperor's Wild Consort" in item['tags']:
+		return buildReleaseMessage(item, "Evil Emperor's Wild Consort", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

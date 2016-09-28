@@ -3681,9 +3681,27 @@ def extractRoyalNovel(item):
 	Royal Novel
 	'''
 
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	ttmp = item['title']
+	ttmp = re.sub(r" BK(\d+)", r" book \1", ttmp, flags=re.IGNORECASE)
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(ttmp)
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'Hero Chronicles' in item['tags']:
+		return buildReleaseMessage(item, 'Hero Chronicles', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Philippine Lore' in item['tags']:
+		return buildReleaseMessage(item, 'Philippine Lore', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Re:Otaku Prince life in another world' in item['tags']:
+		return buildReleaseMessage(item, 'Re:Otaku Prince life in another world', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'disgraced consort' in item['tags']:
+		return buildReleaseMessage(item, 'Disgraced Consort', vol, chp, frag=frag, postfix=postfix)
+	if 'xiao hun palace' in item['tags']:
+		return buildReleaseMessage(item, 'Xiao Hun Palace', vol, chp, frag=frag, postfix=postfix)
+	if 'favored intelligent concubine' in item['tags']:
+		return buildReleaseMessage(item, 'Favored Intelligent Concubine', vol, chp, frag=frag, postfix=postfix)
+	if 'Abandoned Empress' in item['tags']:
+		return buildReleaseMessage(item, 'Phoenix Overlooking the World – Who Dares to Touch My Abandoned Empress', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def extractSabishiidesu(item):
@@ -3719,6 +3737,8 @@ def extractScarletMadness(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Blessing From the Goddess and Transfer to Another World! ~No Thanks, I Already Have a Special Power~' in item['tags']:
+		return buildReleaseMessage(item, 'Blessing From the Goddess and Transfer to Another World! ~No Thanks, I Already Have a Special Power~', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractScumBagTranslation(item):
@@ -3790,6 +3810,9 @@ def extractSodTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'Ore to Kawazu-san no Isekai Houriki' in item['tags']:
+		return buildReleaseMessage(item, 'Ore to Kawazu-san no Isekai Houriki', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractStarveCleric(item):

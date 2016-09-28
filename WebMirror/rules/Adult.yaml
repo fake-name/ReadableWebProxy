@@ -144,6 +144,7 @@ badwords: [
 			# they basically take over the scraper if left unchecked.
 			"/tags/",
 
+			'type=epubbrowse',
 
 			# Not sure why there's so much gay content on ASSTR. Not my thing.
 			"/nifty/gay/",

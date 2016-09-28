@@ -3050,6 +3050,10 @@ def extractAsthmaticSpiderTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Grimoire X Reverse' in item['tags']:
+		return buildReleaseMessage(item, 'Grimoire X Reverse', vol, chp, frag=frag, postfix=postfix)
+	if 'Sleep Learning' in item['tags']:
+		return buildReleaseMessage(item, 'Sleep Learning', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractAsuraTales(item):
@@ -3254,6 +3258,9 @@ def extractFairlyAccurateTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if item['title'].lower().startswith("Card Disciple – Chapter"):
+		return buildReleaseMessage(item, 'Card Disciple', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractFakeFruitTranslation(item):
@@ -3319,6 +3326,16 @@ def extractGrandlation(item):
 def extractGurosLibraryofStories(item):
 	'''
 	Guro\'s Library of Stories
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+def extractChinaNovelNet(item):
+	'''
+	China Novel.net
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
