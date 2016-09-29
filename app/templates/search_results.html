@@ -7,11 +7,15 @@
 {%- macro search_results(results) -%}
 	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
 	<colgroup>
+		<col style="width: 14%;" />
 		<col />
 		<col style="width: 40%;" />
 		<col style="width: 10%;" />
 	</colgroup>
 	<tr>
+		<th>
+			RID
+		</th>
 		<th>
 			Title
 		</th>
@@ -23,14 +27,17 @@
 		</th>
 	</tr>
 
-	{%- for entry, similarity in results: -%}
+	{%- for eid, url, similarity in results: -%}
 
 			<tr>
 			<td>
-				<a href='/view?url={{entry.url | urlencode}}'>{{entry.title}}</a>
+				<a href='/view?url={{url | urlencode}}'>{{eid}}</a>
 			</td>
 			<td>
-				{{entry.url}}
+				Title goes here
+			</td>
+			<td>
+				{{url}}
 			</td>
 			<td>
 				{{similarity}}
@@ -46,12 +53,9 @@
 	{% include '_block_flash.html' %}
 	<div class="well">
 		<h4>{{ header }}</h4>
-
-		{{ util_macros.render_pagination(sequence_item, "search") }}
 		<div>
-		{{ search_results(sequence_item.items) }}
+		{{ search_results(results) }}
 		</div>
-		{{ util_macros.render_pagination(sequence_item, "search") }}
 	</div>
 
 {% endblock %}

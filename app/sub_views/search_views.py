@@ -17,100 +17,76 @@ from sqlalchemy.dialects import postgresql
 
 import WebMirror.rules
 
-def build_tsquery(in_str):
-	args = in_str.split()
-	args = [arg for arg in args if len(arg) >= 2]
-	args = [arg.replace("!", " ").replace("?", " ").strip(",").strip() for arg in args]
-	ret = " & ".join(args)
-	return ret
+import pymysql
+import settings
 
-def fetch_content(query_text, column, text_column, page, sources=None):
-	session = g.session
-	tsq = build_tsquery(query_text)
-	search = None
-	if column == db.WebPages.title:
-		query = session                                                                                         \
-				.query(db.WebPages, func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq))) \
-				.filter(                                                                                        \
-					func.to_tsvector("english", column).match(tsq, postgresql_regconfig='english')              \
-					)                                                                                           \
-				.order_by(func.ts_rank_cd(func.to_tsvector("english", column), func.to_tsquery(tsq)).desc())
 
-	elif column == db.WebPages.tsv_content:
-		query = session                                                                                         \
-				.query(db.WebPages, func.ts_rank_cd(column, func.to_tsquery(tsq)))                              \
-				.filter( column.match(tsq) )
 
-		if "'" in query_text or '"' in query_text:
-			search = query_text.replace("!", " ").replace("?", " ").replace("'", " ").replace('"', " ").replace(',', " ").replace('.', " ").strip()
-			while "  " in search:
-				search = search.replace("  ", " ")
-			search = search.strip()
-			search = '%{}%'.format(search.lower())
-			query = query.filter( func.lower(text_column).like(search) )
 
-		query = query.order_by(func.ts_rank_cd(column, func.to_tsquery(tsq)).desc())
+def build_where_parameter(query_text, scope, sources):
 
-		if sources:
-			query = query.filter(db.WebPages.netloc.in_(sources))
+	conditions = []
+	params     = []
 
+	if sources:
+		tmp = []
+		for source in sources:
+			tmp.append("netloc = %s")
+			params.append(source)
+		conditions.append("(" + " or ".join(tmp) + ")")
+
+	if scope == 'content':
+		conditions.append("MATCH(%s)")
+		params.append("@content " + query_text)
 	else:
-		raise ValueError("Wat?")
-
-	print(str(query.statement.compile(dialect=postgresql.dialect())))
-	print("param: '%s', '%s', '%s'" % (tsq, sources, search))
-
-	try:
-		entries = paginate(query, page, per_page=50)
-
-	except sqlalchemy.exc.ProgrammingError:
-		traceback.print_exc()
-		print("ProgrammingError - Rolling back!")
-		g.session.rollback()
-		raise
-	except sqlalchemy.exc.InternalError:
-		traceback.print_exc()
-		print("InternalError - Rolling back!")
-		g.session.rollback()
-		raise
-	except sqlalchemy.exc.OperationalError:
-		traceback.print_exc()
-		print("InternalError - Rolling back!")
-		g.session.rollback()
-		raise
-
-	return entries
-
-def render_search(query_text, column, text_column, page, title):
-	print(request)
-	if 'source-site' in request.args:
-		try:
-			request_str = request.args['source-site']
-			request_str = urllib.parse.unquote(request_str)
-			sources = json.loads(request_str)
-		except ValueError:
-			sources = None
-	else:
-		sources = None
+		conditions.append("MATCH(%s)")
+		params.append("@title " + query_text)
 
 
+	conditional = " and ".join(conditions)
+
+
+	return conditional, params
+
+def fetch_content(query_text, scope, sources, page_no):
+	dbg = {"query_text" : query_text, "scope" : scope, "sources" : sources, "page_no" : page_no}
+	print("query text: ", dbg)
+
+	db = pymysql.connect(host   = settings.SPHINX_SERVER_IP,
+						port    = settings.SPHINX_SERVER_port,
+						user    = settings.SPHINX_SERVER_USER,
+						passwd  = settings.SPHINX_SERVER_PASS,
+						charset = 'utf8',
+						db      = "")
+	cur = db.cursor()
+
+
+	where, params = build_where_parameter(query_text, scope, sources)
+
+	print("Where: ", (where, params))
+
+	qry = 'SELECT id, url, weight() FROM {db} WHERE {where} LIMIT 0, 1000 OPTION ranker=BM25, max_matches=1000'.format(db=settings.SPHINX_SERVER_TABLE, where=where)
+	print("Query: ", qry)
+
+	cur.execute(qry, params)
+	rows = cur.fetchall()
+
+	cur.close()
+	db.close()
+
+	return rows
+
+def render_search(query_text, scope, sources, page_no):
+
+	scopes = "Content" if scope == 'content' else 'Title'
 	if isinstance(sources, str):
 		sources = [sources]
 
-	try:
-		entries = fetch_content(query_text, column, text_column, page, sources=sources)
-	except (sqlalchemy.exc.ProgrammingError,
-			sqlalchemy.exc.InternalError,
-			sqlalchemy.exc.OperationalError):
-
-		return render_template('error.html', title = 'Error!', message = "Error! Invalid search string!")
-
-
+	entries = fetch_content(query_text, scope, sources, page_no)
 
 	return render_template('search_results.html',
-						   header          = title,
-						   sequence_item   = entries,
-						   page            = page
+						   header    = "%s search for '%s' - %s results" % (scopes, query_text, len(entries)),
+						   results   = entries,
 						   )
 
 def render_search_page():
@@ -141,12 +117,15 @@ def search(page=1):
 	if not (scope and query):
 		return render_search_page()
 
-	if scope == "title":
-		return render_search(query, db.WebPages.title, db.WebPages.title, page, "Title search for '%s'" % query)
-	if scope == "content":
-		return render_search(query, db.WebPages.tsv_content, db.WebPages.content, page, "Content search for '%s'" % query)
-
+	if 'source-site' in request.args:
+		try:
+			request_str = request.args['source-site']
+			request_str = urllib.parse.unquote(request_str)
+			sources = json.loads(request_str)
+		except ValueError:
+			sources = None
 	else:
-		return render_template('error.html', title = 'Error!', message = "Error! Invalid search scope!")
+		sources = None
 
+	return render_search(query, scope, sources, page)
 
