@@ -924,6 +924,10 @@ def extractAzurro(item):
 		return buildReleaseMessage(item, 'Substitute Bride', vol, chp, frag=frag, postfix=postfix)
 	if 'Husband is Great Black Belly (老公是腹黑大人)' in item['tags']:
 		return buildReleaseMessage(item, 'Husband is Great Black Belly', vol, chp, frag=frag, postfix=postfix)
+	if "The CEO's Pregnant Wife (总裁的孕妻)" in item['tags']:
+		return buildReleaseMessage(item, "The CEO's Pregnant Wife", vol, chp, frag=frag, postfix=postfix)
+	if 'The Wolf Husband and The Green Plum Wife (狼竹马与青梅妻)' in item['tags']:
+		return buildReleaseMessage(item, 'The Wolf Husband and The Green Plum Wife', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1332,6 +1336,8 @@ def extractFeedProxy(item):
 		return buildReleaseMessage(item, 'I\'ve Became Able to Do Anything With My Growth Cheat, but I Can\'t Seem to Get Out of Being Jobless', vol, chp, frag=frag, postfix=postfix)
 	if 'Invincible Saint' in item['tags']:
 		return buildReleaseMessage(item, 'Invincible Saint ~Salaryman, the Path I Walk to Survive in This Other World~', vol, chp, frag=frag, postfix=postfix)
+	if 'I came back but the world is still a fantasy' in item['tags']:
+		return buildReleaseMessage(item, 'Kaettekite mo Fantasy!?', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1555,6 +1561,8 @@ def  extractEccentricTranslations(item):
 		return buildReleaseMessage(item, "Doctoring the World", vol, chp, frag=frag, postfix=postfix)
 	if 'TKDG' in item['tags']:
 		return buildReleaseMessage(item, 'The Kind Death God', vol, chp, frag=frag, postfix=postfix)
+	if 'SPO' in item['tags']:
+		return buildReleaseMessage(item, 'Single Player Only', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2939,6 +2947,8 @@ def extractForKalimdor(item):
 
 	if item['title'].startswith('Bringing The Farm To Live In Another World'):
 		return buildReleaseMessage(item, 'Bringing The Farm To Live In Another World', vol, chp, frag=frag, postfix=postfix)
+	if 'BTFTLIAW' in item['tags']:
+		return buildReleaseMessage(item, 'Bringing The Farm To Live In Another World', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractForthemoneyTranslations(item):
 	"""
@@ -2980,6 +2990,8 @@ def extractAPurpleBlob(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if re.match(r"^Nirvana in Fire Chapter \d+", item['title'], re.IGNORECASE):
+		return buildReleaseMessage(item, "Nirvana in Fire", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractAbsurdTranslation(item):
@@ -2990,6 +3002,13 @@ def extractAbsurdTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if re.match(r"^I Kinda Came to Another World \– \d+$", item['title'], re.IGNORECASE):
+		return buildReleaseMessage(item, "I Kinda Came to Another World, but Where’s the Way Home?", vol, chp, frag=frag, postfix=postfix)
+	if re.match(r"^Isekai ni Kanaderu Denset[su][su] \– \d+$", item['title'], re.IGNORECASE):
+		return buildReleaseMessage(item, "Isekai ni kanaderu densetsu ~Toki wo Tomeru Mono~", vol, chp, frag=frag, postfix=postfix)
+	if re.match(r"^Magi’s grandson – \d+$", item['title'], re.IGNORECASE):
+		return buildReleaseMessage(item, "Magi’s Grandson", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractAeRoSoL31(item):
@@ -3084,6 +3103,9 @@ def extractAvertTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if re.match(r"^Release:? fuyo shoukan mahou? vol ?\d+ chapter \d+", item['title'], re.IGNORECASE):
+		return buildReleaseMessage(item, "Boku wa Isekai de Fuyo Mahou to Shoukan Mahou wo Tenbin ni Kakeru", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractBionicarkTranslations(item):
@@ -3174,6 +3196,9 @@ def extractDysrySummaries(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Summary' in item['tags']:
+		return None
+
 	return False
 
 def extractEGSmartTranslation(item):
@@ -3218,6 +3243,14 @@ def extractEternalDreamlandTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Amorous Slave Girl' in item['tags']:
+		return buildReleaseMessage(item, 'Amorous Slave Girl', vol, chp, frag=frag, postfix=postfix)
+	if 'Dragon Blood Warrior' in item['tags']:
+		return buildReleaseMessage(item, 'Dragon Blood Warrior', vol, chp, frag=frag, postfix=postfix)
+	if 'Love Affair With Sister-In-Law' in item['tags']:
+		return buildReleaseMessage(item, 'Love Affair With Sister-In-Law', vol, chp, frag=frag, postfix=postfix)
+	if 'Peerless Demonic Lord' in item['tags']:
+		return buildReleaseMessage(item, 'Peerless Demonic Lord', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractExplore(item):
@@ -3271,6 +3304,8 @@ def extractFakeFruitTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Bringing the Supermarket to the Apocalypse' in item['tags']:
+		return buildReleaseMessage(item, 'Bringing the Supermarket to the Apocalypse', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractFantasyNovels(item):

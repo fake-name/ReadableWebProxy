@@ -39,6 +39,9 @@ def add_highlight(from_name, from_chp, from_group, namestr):
 
 	from_name  = from_name.replace("'", " ")  + " " + from_name.replace("'", "")
 	from_chp   = from_chp.replace("'", " ")   + " " + from_chp.replace("'", "")
+	from_chp   = from_chp + " " + "".join([letter if letter in "01234567890." else " " for letter in from_chp])
+
+
 	from_group = from_group.replace("'", " ") + " " + from_group.replace("'", "")
 	splitstr = from_name + " " + from_group + " " + from_chp + " " + "".join([char for char in from_chp if char in " 0123456789"]) + \
 		" " + "".join([char for char in from_chp if char in string.ascii_letters + " "]) + \

@@ -1310,6 +1310,8 @@ def extractNekoyashiki(item):
 		return buildReleaseMessage(item, 'Spear of Thunder – Etranger of the Sky', vol, chp, frag=frag, postfix=postfix)
 	if 'Yamato Nadeshiko' in item['tags']:
 		return buildReleaseMessage(item, 'Yamato Nadeshiko, Koibana no Gotoku', vol, chp, frag=frag, postfix=postfix)
+	if 'Youhei Monogatari' in item['tags']:
+		return buildReleaseMessage(item, 'Youhei Monogatari ~Junsuinaru Hangyakusha (Rebellion)~', vol, chp, frag=frag, postfix=postfix)
 
 
 	return False
@@ -3183,6 +3185,10 @@ def extractLightNovelsWorld(item):
 		return buildReleaseMessage(item,'The Throne Under the Starry Sky', vol, chp, frag=frag, postfix=postfix)
 	if 'Twin Sword' in item['tags']:
 		return buildReleaseMessage(item,'Twin Sword', vol, chp, frag=frag, postfix=postfix)
+	if 'Hakushaku Reijo ha Chito Tensei Mono' in item['tags']:
+		return buildReleaseMessage(item,'Hakushaku Reijo ha Chito Tensei Mono', vol, chp, frag=frag, postfix=postfix)
+	if 'Ore to Kawazu-san no Isekai Houriki' in item['tags']:
+		return buildReleaseMessage(item,'Ore to Kawazu-san no Isekai Houriki', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 def extractLoathsomeTranslations(item):
@@ -3307,6 +3313,8 @@ def extractHasutsuki(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Kinju Tsukai' in item['tags']:
+		return buildReleaseMessage(item, 'Seiju no Kuni no Kinju Tsukai', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractJapaneseNovelTranslation(item):
@@ -3337,6 +3345,8 @@ def extractKuromin(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].startswith('Potatoes are the only thing that’s needed in this world! Chapter'):
+		return buildReleaseMessage(item, 'Potatoes are the only thing that’s needed in this world!', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractKurosTL(item):
@@ -3396,6 +3406,8 @@ def extractLionMasksReallyProfessionalTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'slime-translation' in item['tags']:
+		return buildReleaseMessage(item, 'Tensei Shitara Slime Datta Ken', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractMofumofuTranslation(item):

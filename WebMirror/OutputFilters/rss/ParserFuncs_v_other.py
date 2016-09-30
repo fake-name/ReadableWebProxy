@@ -451,6 +451,10 @@ def extractXantAndMinions(item):
 		return buildReleaseMessage(item, "Queen's Knight Kael", vol, chp, frag=frag, postfix=postfix)
 	if "Legend of Xingfeng" in item['title']:
 		return buildReleaseMessage(item, "Legend of Xingfeng", vol, chp, frag=frag, postfix=postfix)
+	if "iseiza" in item['tags']:
+		return buildReleaseMessage(item, "Isekai Izakaya Nobu", vol, chp, frag=frag, postfix=postfix)
+	if "NPWC" in item['tags']:
+		return buildReleaseMessage(item, "New Theory – Nobusada’s Parallel World Chronicle", vol, chp, frag=frag, postfix=postfix)
 
 
 	return False
@@ -1050,6 +1054,9 @@ def extractYamiTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Tensei Shoujo no Rirekisho' in item['tags']:
+		return buildReleaseMessage(item, 'Tensei Shoujo no Rirekisho', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 def extractZeroTranslations(item):
 	'''
@@ -1282,6 +1289,14 @@ def extractYumeabyss(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if "Black Bellied Prince's Stunning Abandoned Consort" in item['tags']:
+		return buildReleaseMessage(item, "Black Bellied Prince's Stunning Abandoned Consort", vol, chp, frag=frag, postfix=postfix)
+	if 'The Cry of the Phoenix Which Reached the Ninth Heaven' in item['tags']:
+		return buildReleaseMessage(item, 'The Cry of the Phoenix Which Reached the Ninth Heaven', vol, chp, frag=frag, postfix=postfix)
+	if 'Island: End of Nightmare' in item['tags']:
+		return buildReleaseMessage(item, 'Island: End of Nightmare', vol, chp, frag=frag, postfix=postfix)
+	if 'Xiao Qi, Wait' in item['tags']:
+		return buildReleaseMessage(item, 'Xiao Qi, Wait', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 

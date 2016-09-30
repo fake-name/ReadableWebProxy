@@ -1061,11 +1061,11 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def processFeedData(self, feedDat, tx_raw=True, tx_parse=True):
 
 		if any([item in feedDat['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
-			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			# print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
 			return
 
 		if any([feedDat['title'].lower().startswith(item) for item in common.global_constants.RSS_TITLE_FILTER]):
-			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			# print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
 			return
 
 

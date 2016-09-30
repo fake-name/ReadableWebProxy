@@ -854,6 +854,8 @@ def extractRebirthOnlineWorld(item):
 		return buildReleaseMessage(item, 'World Traveler ', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if "http://rebirth.online/novel/yuusha-isagi-no-maou-hanashi" in item['linkUrl']:
 		return buildReleaseMessage(item, 'Yuusha Isagi no Maou Hanashi', vol, chp, frag=frag, postfix=postfix)
+	if "http://rebirth.online/novel/magic-bullet-in-magic-land" in item['linkUrl']:
+		return buildReleaseMessage(item, 'Magic Bullet in Magic Land', vol, chp, frag=frag, postfix=postfix)
 
 
 	return False
@@ -1066,6 +1068,8 @@ def extractRadiantTranslations(item):
 
 	if 'Heavenly Calamity' in item['tags']:
 		return buildReleaseMessage(item, 'Heavenly Calamity', vol, chp, frag=frag, postfix=postfix)
+	if 'Battle Frenzy' in item['tags']:
+		return buildReleaseMessage(item, 'Battle Frenzy', vol, chp, frag=frag, postfix=postfix)
 	if 'Magic Chef of Ice and Fire' in item['tags']:
 		return buildReleaseMessage(item, 'Magic Chef of Ice and Fire', vol, chp, frag=frag, postfix=postfix)
 	if 'The Legend of the Dragon King' in item['tags']:
@@ -1583,6 +1587,8 @@ def extractSubudai11(item):
 	if 'My Beautiful Teacher Chapter' in item['title'] :
 		return buildReleaseMessage(item, 'My Beautiful Teacher', vol, chp, frag=frag, postfix=postfix)
 	if 'Awakening – 仿如昨日' in item['title'] :
+		return buildReleaseMessage(item, 'Awakening – 仿如昨日', vol, chp, frag=frag, postfix=postfix)
+	if 'Awakening' in item['title'] :
 		return buildReleaseMessage(item, 'Awakening – 仿如昨日', vol, chp, frag=frag, postfix=postfix)
 	return False
 
@@ -3103,6 +3109,8 @@ def extractTwelveMonthsofMay(item):
 		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Ostrich Chapter"):
 		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('My Fault For Being Blind'):
+		return buildReleaseMessage(item, 'Zhi Guai Dang Chu Xia Le Yan', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractUkel2x(item):
@@ -3289,6 +3297,8 @@ def extractReincarnationTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if "Reincarnated as a Dragon's Egg" in item['tags']:
+		return buildReleaseMessage(item, "Reincarnated as a dragon's egg ～Lets aim to be the strongest～", vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractSakurane(item):
 	'''
@@ -3299,6 +3309,10 @@ def extractSakurane(item):
 		return None
 	if "Reincarnated as a Dragon's Egg" in item['tags']:
 		return buildReleaseMessage(item, "Reincarnated as a dragon's egg ～Lets aim to be the strongest～", vol, chp, frag=frag, postfix=postfix)
+	if 'novel:fate prototype sougin no fragments' in item['tags']:
+		return buildReleaseMessage(item, 'Fate Prototype Sougin no Fragments', vol, chp, frag=frag, postfix=postfix)
+	if 'novel:shimai maou no testament' in item['tags']:
+		return buildReleaseMessage(item, 'Shimai Maou no Testament', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractSoulPermutation(item):
 	'''
@@ -3643,6 +3657,8 @@ def extractPaichunTranslations(item):
 		return buildReleaseMessage(item, 'Manga wo Yomeru Ore ga Sekai Saikyou ~Yometachi to Sugosu Ki mama na Seikatsu~', vol, chp, frag=frag, postfix=postfix)
 	if 'Ore Dake Kaereru Kurasu Teni' in item['tags']:
 		return buildReleaseMessage(item, 'Ore Dake Kaereru Kurasu Teni', vol, chp, frag=frag, postfix=postfix)
+	if 'Itai no wa Iya nanode Bōgyo-Ryoku ni Kyokufuri Shitai to Omoimasu.' in item['tags']:
+		return buildReleaseMessage(item, 'Itai no wa Iya nanode Bōgyo-Ryoku ni Kyokufuri Shitai to Omoimasu.', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractProfessionalGameThrowersTranslations(item):
@@ -3653,6 +3669,8 @@ def extractProfessionalGameThrowersTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if re.match(r"^Chapters? [\d\- &]+$", item['title'], re.IGNORECASE):
+		return buildReleaseMessage(item, "My Ranch", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractReadingAttic(item):
