@@ -7,14 +7,13 @@ import time
 from pytz import reference
 import pytz
 
-
 import sqlalchemy.exc
 
-from apscheduler.schedulers.blocking  import BlockingScheduler
-from apscheduler.schedulers.background  import BackgroundScheduler
-from apscheduler.executors.pool       import ProcessPoolExecutor
-from apscheduler.executors.pool       import ThreadPoolExecutor
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.blocking   import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.executors.pool        import ProcessPoolExecutor
+from apscheduler.executors.pool        import ThreadPoolExecutor
+from apscheduler.jobstores.sqlalchemy  import SQLAlchemyJobStore
 
 import config
 import common.database as db
@@ -23,7 +22,6 @@ import common.LogBase as LogBase
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
-
 
 from settings import NO_PROCESSES
 from settings import MAX_DB_SESSIONS

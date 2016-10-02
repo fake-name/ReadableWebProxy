@@ -13,10 +13,20 @@ import FetchAgent.AmqpInterface
 
 from rpyc.utils.server import ThreadPoolServer
 
+import signal
 
 
-
-
+INTERRUPTS = 0
+def build_handler(server):
+	def handler(signum, frame):
+		global INTERRUPTS
+		INTERRUPTS += 1
+		print('Signal handler called with signal %s for the %s time' % (signum, INTERRUPTS))
+		if INTERRUPTS > 2:
+			print("Raising due to repeat interrupts")
+			raise KeyboardInterrupt
+		server.close()
+	return handler
 
 
 class FetchInterfaceServer(rpyc.Service):
@@ -40,15 +50,15 @@ class FetchInterfaceServer(rpyc.Service):
 				self.mdict['outq'][queuename] = multiprocessing.Queue()
 				self.mdict['inq'][queuename] = multiprocessing.Queue()
 
-		print("Putting item in queue!", queuename, job)
+		logging.getLogger("Main.RPC-Interface").info("Putting item in queue %s with size: %s!", queuename, len(job))
 		self.mdict['outq'][queuename].put(job)
 
 	def exposed_getJob(self, queuename, wait=1):
-		print("Get job call for '%s' -> %s" % (queuename, self.mdict['inq'][queuename].qsize()))
+		logging.getLogger("Main.RPC-Interface").info("Get job call for '%s' -> %s" % (queuename, self.mdict['inq'][queuename].qsize()))
 		return self.mdict['inq'][queuename].get(timeout=wait)
 
 	def exposed_getJobNoWait(self, queuename):
-		print("Get job call for '%s' -> %s" % (queuename, self.mdict['inq'][queuename].qsize()))
+		logging.getLogger("Main.RPC-Interface").info("Get job call for '%s' -> %s" % (queuename, self.mdict['inq'][queuename].qsize()))
 		return self.mdict['inq'][queuename].get_nowait()
 
 
@@ -64,7 +74,11 @@ def run_server():
 		logger=serverLog,
 		nbThreads=6,
 		protocol_config = rpyc.core.protocol.DEFAULT_CONFIG)
+
+	signal.signal(signal.SIGINT, build_handler(server))
+
 	server.start()
+
 
 
 
@@ -94,8 +108,10 @@ def run():
 
 	mtmp = initialize_manager()
 	FetchAgent.AmqpInterface.startup_interface(mtmp)
-
-	run_server()
+	try:
+		run_server()
+	except KeyboardInterrupt:
+		pass
 
 	FetchAgent.AmqpInterface.shutdown_interface(mtmp)
 
@@ -106,11 +122,13 @@ def main():
 	# server.tree.tree.reloadTree()
 	# print("Starting RPC server")
 
-	import server_reloader
+	run()
 
-	server_reloader.main(
-		run
-	)
+	# import server_reloader
+
+	# server_reloader.main(
+	# 	run
+	# )
 
 if __name__ == '__main__':
 	main()

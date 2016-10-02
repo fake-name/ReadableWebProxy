@@ -218,7 +218,7 @@ class RabbitQueueHandler(object):
 		while True:
 			new = self.get_job()
 			if not new:
-				print("No job item?", new)
+				# print("No job item?", new)
 				return
 
 			if not 'jobmeta' in new:
@@ -255,6 +255,9 @@ class RabbitQueueHandler(object):
 			self.dispatch_outgoing()
 			self.process_retreived()
 
+		self.log.info("Saw exit flag. Closing interface")
+		self.close()
+
 
 
 
@@ -287,6 +290,7 @@ def startup_interface(manager):
 
 
 def shutdown_interface(manager):
-	manager.amqp_runstate = False
+	print("Halting AMQP interface")
+	manager['amqp_runstate'] = False
 	STATE['thread'].join()
 
