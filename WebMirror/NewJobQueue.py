@@ -18,7 +18,9 @@ import settings
 import common.global_constants
 # import common.database as db
 import common.LogBase as LogBase
-import WebMirror.OutputFilters.AmqpInterface
+import WebMirror.rules
+# import WebMirror.OutputFilters.AmqpInterface
+import common.get_rpyc
 import runStatus
 
 ########################################################################################################################
@@ -126,7 +128,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			additionalData = {'mode' : 'fetch'},
 			postDelay      = 0
 		)
-		self.amqp_int.put_job(raw_job)
+		self.rpc_interface.put_job(raw_job)
 		# print("Raw job:", raw_job)
 		# print("Jobid, joburl: ", (jobid, joburl))
 
@@ -201,7 +203,7 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	def process_responses(self):
 		while 1:
-			tmp = self.amqp_int.get_job()
+			tmp = self.rpc_interface.get_job()
 			if tmp:
 				self.active_jobs -= 1
 				self.jobs_in += 1
@@ -215,29 +217,31 @@ class JobAggregator(LogBase.LoggerMixin):
 				if self.print_mod > 20:
 					self.log.info("No job responses available.")
 					self.print_mod = 0
+				time.sleep(1)
 				break
 
 	def queue_filler_proc(self):
 
-		amqp_settings = {
-			'RABBIT_LOGIN'    : settings.RPC_RABBIT_LOGIN,
-			'RABBIT_PASWD'    : settings.RPC_RABBIT_PASWD,
-			'RABBIT_SRVER'    : settings.RPC_RABBIT_SRVER,
-			'RABBIT_VHOST'    : settings.RPC_RABBIT_VHOST,
-			'master'          : True,
-			'prefetch'        : 250,
-			# 'prefetch'        : 50,
-			# 'prefetch'        : 5,
-			'queue_mode'      : 'direct',
-			'taskq_task'      : 'task.q',
-			'taskq_response'  : 'response.q',
+		# amqp_settings = {
+		# 	'RABBIT_LOGIN'    : settings.RPC_RABBIT_LOGIN,
+		# 	'RABBIT_PASWD'    : settings.RPC_RABBIT_PASWD,
+		# 	'RABBIT_SRVER'    : settings.RPC_RABBIT_SRVER,
+		# 	'RABBIT_VHOST'    : settings.RPC_RABBIT_VHOST,
+		# 	'master'          : True,
+		# 	'prefetch'        : 250,
+		# 	# 'prefetch'        : 50,
+		# 	# 'prefetch'        : 5,
+		# 	'queue_mode'      : 'direct',
+		# 	'taskq_task'      : 'task.q',
+		# 	'taskq_response'  : 'response.q',
 
-			"poll_rate"       : 1/100,
+		# 	"poll_rate"       : 1/100,
 
-		}
+		# }
 
 
-		self.amqp_int = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
+		# self.amqp_int = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
+		self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
 		try:
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -259,7 +263,7 @@ class JobAggregator(LogBase.LoggerMixin):
 				msg_loop = 0
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
-		self.amqp_int.close()
+		self.rpc_interface.close()
 
 		# Consume the remaining items in the output queue so it shuts down cleanly.
 		try:

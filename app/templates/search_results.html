@@ -27,14 +27,14 @@
 		</th>
 	</tr>
 
-	{%- for eid, url, similarity in results: -%}
+	{%- for eid, url, title, similarity in results: -%}
 
 			<tr>
 			<td>
 				<a href='/view?url={{url | urlencode}}'>{{eid}}</a>
 			</td>
 			<td>
-				Title goes here
+				{{title}}
 			</td>
 			<td>
 				{{url}}

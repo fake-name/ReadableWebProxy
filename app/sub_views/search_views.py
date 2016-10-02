@@ -65,7 +65,7 @@ def fetch_content(query_text, scope, sources, page_no):
 
 	print("Where: ", (where, params))
 
-	qry = 'SELECT id, url, weight() FROM {db} WHERE {where} LIMIT 0, 1000 OPTION ranker=BM25, max_matches=1000'.format(db=settings.SPHINX_SERVER_TABLE, where=where)
+	qry = 'SELECT id, url, title, weight() FROM {db} WHERE {where} LIMIT 0, 1000 OPTION ranker=BM25, max_matches=1000'.format(db=settings.SPHINX_SERVER_TABLE, where=where)
 	print("Query: ", qry)
 
 	cur.execute(qry, params)
