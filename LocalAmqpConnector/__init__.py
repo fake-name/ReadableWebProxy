@@ -219,7 +219,7 @@ class AmqpContainer(object):
 					raise Heartbeat_Timeout_Exception("Heartbeat timeout!")
 
 		with self.rx_timeout_lock:
-			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 5):
+			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 30):
 				with self.active_lock:
 					print()
 					print()
@@ -247,7 +247,7 @@ class AmqpContainer(object):
 			self.log.info("Interface timeout thread. Ages: heartbeat -> %0.2f, last message -> %0.2f.", last_hb, last_rx)
 
 class ConnectorManager:
-	def __init__(self, config, runstate, active, task_queue, response_queue):
+	def __init__(self, config, runstate, task_queue, response_queue):
 
 		assert 'host'                     in config
 		assert 'userid'                   in config
@@ -276,7 +276,6 @@ class ConnectorManager:
 		self.runstate           = runstate
 		self.config             = config
 		self.task_queue         = task_queue
-		self.active_connections = active
 		self.response_queue     = response_queue
 
 		self.connected          = multiprocessing.Value("i", 0)
@@ -472,7 +471,7 @@ class ConnectorManager:
 				if self.interface and (integrator % hb_time) == 0:
 					self.interface.poke_keepalive()
 				if self.interface and (integrator % print_time) == 0:
-					self.log.info("AMQP Interface process. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
+					self.log.info("Timeout watcher loop. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
 			except Heartbeat_Timeout_Exception:
 				self.had_exception.value = 1
 			except Message_Publish_Exception:
@@ -540,9 +539,6 @@ class ConnectorManager:
 
 		'''
 
-		# Active instances tracker
-		active = multiprocessing.Value("i", 0)
-
 		log = logging.getLogger("Main.Connector.Manager(%s)" % config['virtual_host'])
 
 		log.info("Worker thread starting up.")
@@ -552,7 +548,7 @@ class ConnectorManager:
 			print("Connecting %s" % config['virtual_host'])
 			print()
 			print()
-			connection_manager = cls(config, runstate, active, tx_q, rx_q)
+			connection_manager = cls(config, runstate, tx_q, rx_q)
 			print()
 			print()
 			print("Entering monitor-loop %s" % config['virtual_host'])

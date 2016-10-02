@@ -748,6 +748,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 		except queue.Empty:
 			# self.log.info("No jobs in queue? (qsize =  %s)", self.new_job_queue.qsize())
 			return False
+		except Exception:
+			traceback.print_exc()
+			for line in traceback.format_exc().split("\n"):
+				self.log.critical("%s", line.rstrip())
+			return False
 		if not job_item:
 			return False
 

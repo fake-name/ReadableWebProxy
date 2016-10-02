@@ -16,7 +16,8 @@ import sys
 
 import settings
 import common.LogBase as LogBase
-import WebMirror.OutputFilters.AmqpInterface
+# import WebMirror.OutputFilters.AmqpInterface
+import common.get_rpyc
 import runStatus
 
 ########################################################################################################################

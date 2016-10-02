@@ -203,7 +203,15 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	def process_responses(self):
 		while 1:
-			tmp = self.rpc_interface.get_job()
+
+			# Something in the RPC stuff is resulting in a typeerror I don't quite
+			# understand the source of. anyways, if that happens, just reset the RPC interface.
+			try:
+				tmp = self.rpc_interface.get_job()
+			except TypeError:
+				self.open_rpc_interface()
+				return
+
 			if tmp:
 				self.active_jobs -= 1
 				self.jobs_in += 1
@@ -219,6 +227,13 @@ class JobAggregator(LogBase.LoggerMixin):
 					self.print_mod = 0
 				time.sleep(1)
 				break
+
+	def open_rpc_interface(self):
+		try:
+			self.rpc_interface.close()
+		except Exception:
+			pass
+		self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
 	def queue_filler_proc(self):
 
@@ -241,7 +256,7 @@ class JobAggregator(LogBase.LoggerMixin):
 
 
 		# self.amqp_int = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
-		self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+		self.open_rpc_interface()
 
 		try:
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
