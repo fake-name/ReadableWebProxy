@@ -118,8 +118,20 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'http://kohtathesamurai.com',
 		'http://bangbangbakochan.com',
 
-		'http://oglaf.com/',
-		'http://media.oglaf.com/',
+		# Ehhhh, fukkit.
+		'http://oglaf.com',
+		'http://media.oglaf.com',
+		'http://www.teahousecomic.com',
+		'http://www.sexylosers.com',
+		'http://www.curateipsum.com',
+		'http://badmile.com',
+		'http://orgymania.net',
+		'http://www.c.urvy.org',
+		'http://jessfink.com',
+		'http://www.ma3comic.com',
+		'http://www.platinumgrit.com',
+		'http://www.moonoverjune.com',
+
 	]
 
 	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
