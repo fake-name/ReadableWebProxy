@@ -3,7 +3,6 @@
 from sqlalchemy import Table
 
 from sqlalchemy import Column
-from sqlalchemy import Integer
 from sqlalchemy import BigInteger
 from sqlalchemy import Text
 from sqlalchemy import Float
@@ -39,15 +38,15 @@ class RawWebPages(common.db_base.Base):
 	__tablename__     = 'raw_web_pages'
 	name              = 'raw_web_pages'
 
-	id                = Column(Integer, primary_key = True, index = True)
+	id                = Column(BigInteger, primary_key = True, index = True)
 	state             = Column(common.db_types.dlstate_enum, default='new', index=True, nullable=False)
-	errno             = Column(Integer, default='0')
+	errno             = Column(BigInteger, default='0')
 	url               = Column(Text, nullable = False, index = True, unique = True)
 	starturl          = Column(Text, nullable = False)
 	netloc            = Column(Text, nullable = False, index = True)
 
-	priority          = Column(Integer, default=1000000, index=True, nullable=False)
-	distance          = Column(Integer, index=True, nullable=False)
+	priority          = Column(BigInteger, default=1000000, index=True, nullable=False)
+	distance          = Column(BigInteger, index=True, nullable=False)
 
 	mimetype          = Column(Text)
 

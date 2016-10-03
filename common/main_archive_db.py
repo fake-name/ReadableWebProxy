@@ -3,10 +3,8 @@
 from sqlalchemy import Table
 
 from sqlalchemy import Column
-from sqlalchemy import Integer
 from sqlalchemy import BigInteger
 from sqlalchemy import Text
-from sqlalchemy import Float
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
@@ -15,17 +13,13 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 # from  sqlalchemy.sql.expression import func
 # from citext import CIText
 
-from sqlalchemy_utils.types import TSVectorType
-
 import citext
 import datetime
 from sqlalchemy.dialects.postgresql import ENUM
-from sqlalchemy.dialects.postgresql import TSVECTOR
 
 
 import common.db_base
@@ -40,18 +34,18 @@ class WebPages(common.db_base.Base):
 	__tablename__ = 'web_pages'
 	name = 'web_pages'
 
-	id                = Column(Integer, primary_key = True, index = True)
+	id                = Column(BigInteger, primary_key = True, index = True)
 	state             = Column(common.db_types.dlstate_enum, default='new', index=True, nullable=False)
-	errno             = Column(Integer, default='0')
+	errno             = Column(BigInteger, default='0')
 	url               = Column(Text, nullable = False, index = True, unique = True)
 	starturl          = Column(Text, nullable = False)
 	netloc            = Column(Text, nullable = False, index = True)
 
 	# Foreign key to the files table if needed.
-	file              = Column(Integer, ForeignKey('web_files.id'))
+	file              = Column(BigInteger, ForeignKey('web_files.id'))
 
-	priority          = Column(Integer, default=1000000, index=True, nullable=False)
-	distance          = Column(Integer, index=True, nullable=False)
+	priority          = Column(BigInteger, default=1000000, index=True, nullable=False)
+	distance          = Column(BigInteger, index=True, nullable=False)
 
 	is_text           = Column(Boolean, default=False)
 	limit_netloc      = Column(Boolean, default=True)
@@ -75,7 +69,6 @@ class WebPages(common.db_base.Base):
 	# fetch scheduling to operate within the same database.
 	normal_fetch_mode = Column(Boolean, default=True)
 
-	tsv_content       = Column(TSVectorType('content'))
 
 	file_item         = relationship("WebFiles")
 
@@ -83,7 +76,7 @@ class WebPages(common.db_base.Base):
 # WebPages table entirely.
 class WebFiles(common.db_base.Base):
 	__tablename__ = 'web_files'
-	id           = Column(Integer, primary_key = True)
+	id           = Column(BigInteger, primary_key = True)
 	filename     = Column(Text)
 
 	# File hash, used for deduplicating
@@ -100,22 +93,22 @@ class WebFiles(common.db_base.Base):
 
 feed_tags_link = Table(
 		'feed_tags_link', common.db_base.Base.metadata,
-		Column('releases_id', Integer, ForeignKey('feed_pages.id'), nullable=False),
-		Column('tags_id',     Integer, ForeignKey('feed_tags.id'),     nullable=False),
+		Column('releases_id', BigInteger, ForeignKey('feed_pages.id'), nullable=False),
+		Column('tags_id',     BigInteger, ForeignKey('feed_tags.id'),     nullable=False),
 		PrimaryKeyConstraint('releases_id', 'tags_id')
 	)
 
 feed_author_link = Table(
 		'feed_authors_link', common.db_base.Base.metadata,
-		Column('releases_id', Integer, ForeignKey('feed_pages.id'), nullable=False),
-		Column('author_id',   Integer, ForeignKey('feed_author.id'),     nullable=False),
+		Column('releases_id', BigInteger, ForeignKey('feed_pages.id'), nullable=False),
+		Column('author_id',   BigInteger, ForeignKey('feed_author.id'),     nullable=False),
 		PrimaryKeyConstraint('releases_id', 'author_id')
 	)
 
 
 class Tags(common.db_base.Base):
 	__tablename__ = 'feed_tags'
-	id          = Column(Integer, primary_key=True)
+	id          = Column(BigInteger, primary_key=True)
 	tag         = Column(citext.CIText(), nullable=False, index=True)
 
 	__table_args__ = (
@@ -125,7 +118,7 @@ class Tags(common.db_base.Base):
 
 class Author(common.db_base.Base):
 	__tablename__ = 'feed_author'
-	id          = Column(Integer, primary_key=True)
+	id          = Column(BigInteger, primary_key=True)
 	author      = Column(citext.CIText(), nullable=False, index=True)
 
 	__table_args__ = (
@@ -155,7 +148,7 @@ def author_creator(author):
 class FeedItems(common.db_base.Base):
 	__tablename__ = 'feed_pages'
 
-	id          = Column(Integer, primary_key=True)
+	id          = Column(BigInteger, primary_key=True)
 
 	type        = Column(common.db_types.itemtype_enum, default='unknown', index=True)
 
@@ -175,7 +168,6 @@ class FeedItems(common.db_base.Base):
 	tag_rel       = relationship('Tags',       secondary=feed_tags_link,   backref='feed_pages')
 	author_rel    = relationship('Author',     secondary=feed_author_link, backref='feed_pages')
 
-
 	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
 	author        = association_proxy('author_rel',   'author',    creator=author_creator)
 
@@ -183,7 +175,7 @@ class FeedItems(common.db_base.Base):
 # Tools for tracking plugins
 class PluginStatus(common.db_base.Base):
 	__tablename__ = 'plugin_status'
-	id             = Column(Integer, primary_key = True)
+	id             = Column(BigInteger, primary_key = True)
 
 	plugin_name    = Column(Text)
 
@@ -210,7 +202,7 @@ class PluginStatus(common.db_base.Base):
 # Tools for tracking plugins
 class NuOutboundWrapperMap(common.db_base.Base):
 	__tablename__ = 'nu_outbound_wrappers'
-	id               = Column(Integer, primary_key = True)
+	id               = Column(BigInteger, primary_key = True)
 
 	client_id        = Column(Text, index=True)
 	client_key       = Column(Text, index=True)
