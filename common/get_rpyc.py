@@ -29,6 +29,9 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 			if 'queue.Empty' in rpyc.core.vinegar._generic_exceptions_cache:
 				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['queue.Empty']):
 					return None
+			if 'KeyError' in rpyc.core.vinegar._generic_exceptions_cache:
+				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['KeyError']):
+					raise KeyError
 			else:
 				raise e
 
@@ -42,6 +45,9 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 			if 'queue.Empty' in rpyc.core.vinegar._generic_exceptions_cache:
 				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['queue.Empty']):
 					return None
+			if 'KeyError' in rpyc.core.vinegar._generic_exceptions_cache:
+				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['KeyError']):
+					raise KeyError
 			else:
 				raise e
 

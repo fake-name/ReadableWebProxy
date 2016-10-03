@@ -128,7 +128,18 @@ class JobAggregator(LogBase.LoggerMixin):
 			additionalData = {'mode' : 'fetch'},
 			postDelay      = 0
 		)
-		self.rpc_interface.put_job(raw_job)
+
+		# Recycle the rpc interface if it ded
+		while 1:
+			try:
+				self.rpc_interface.put_job(raw_job)
+				return
+			except TypeError:
+				self.open_rpc_interface()
+			except KeyError:
+				self.open_rpc_interface()
+
+
 		# print("Raw job:", raw_job)
 		# print("Jobid, joburl: ", (jobid, joburl))
 
@@ -209,6 +220,9 @@ class JobAggregator(LogBase.LoggerMixin):
 			try:
 				tmp = self.rpc_interface.get_job()
 			except TypeError:
+				self.open_rpc_interface()
+				return
+			except KeyError:
 				self.open_rpc_interface()
 				return
 
