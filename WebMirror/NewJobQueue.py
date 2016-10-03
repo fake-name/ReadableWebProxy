@@ -21,6 +21,7 @@ import common.LogBase as LogBase
 import WebMirror.rules
 # import WebMirror.OutputFilters.AmqpInterface
 import common.get_rpyc
+import zerorpc
 import runStatus
 
 ########################################################################################################################
@@ -134,6 +135,9 @@ class JobAggregator(LogBase.LoggerMixin):
 			try:
 				self.rpc_interface.put_job(raw_job)
 				return
+			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
+				self.log.error("Failure when putting job? Is the remote running?")
+				self.open_rpc_interface()
 			except TypeError:
 				self.open_rpc_interface()
 			except KeyError:
@@ -219,6 +223,13 @@ class JobAggregator(LogBase.LoggerMixin):
 			# understand the source of. anyways, if that happens, just reset the RPC interface.
 			try:
 				tmp = self.rpc_interface.get_job()
+			except queue.Empty:
+				return
+			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
+				self.open_rpc_interface()
+				self.log.warning("Error in RPC interface?")
+				return
+
 			except TypeError:
 				self.open_rpc_interface()
 				return
