@@ -11,12 +11,14 @@ import signal
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
 
+import zerorpc
 import psycopg2
 import sys
 
 import settings
 import common.LogBase as LogBase
 # import WebMirror.OutputFilters.AmqpInterface
+import RawArchiver.misc
 import common.get_rpyc
 import runStatus
 
@@ -108,6 +110,36 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		runStatus.raw_job_run_state.value = 0
 		self.j_fetch_proc.join(0)
 
+
+	def put_outbound_job(self, jobid, joburl):
+		self.active_jobs += 1
+		self.log.info("Dispatching new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
+		self.jobs_out += 1
+		raw_job = buildjob(
+			module         = 'WebRequest',
+			call           = 'getItem',
+			dispatchKey    = "fetcher",
+			jobid          = jobid,
+			args           = [joburl],
+			kwargs         = {},
+			additionalData = {'mode' : 'fetch'},
+			postDelay      = 0
+		)
+
+		# Recycle the rpc interface if it ded
+		while 1:
+			try:
+				self.rpc_interface.put_job(raw_job)
+				return
+			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
+				self.log.error("Failure when putting job? Is the remote running?")
+				self.open_rpc_interface()
+			except TypeError:
+				self.open_rpc_interface()
+			except KeyError:
+				self.open_rpc_interface()
+
+
 	def fill_jobs(self):
 
 		while self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
@@ -122,8 +154,56 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			if num_new == 0:
 				break
 
+	def open_rpc_interface(self):
+		try:
+			self.rpc_interface.close()
+		except Exception:
+			pass
+		self.rpc_interface = common.get_rpyc.RemoteJobInterface("RawMirror")
+
+
+
+
+	def process_responses(self):
+		while 1:
+
+			# Something in the RPC stuff is resulting in a typeerror I don't quite
+			# understand the source of. anyways, if that happens, just reset the RPC interface.
+			try:
+				tmp = self.rpc_interface.get_job()
+			except queue.Empty:
+				return
+			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
+				self.open_rpc_interface()
+				self.log.warning("Error in RPC interface?")
+				return
+
+			except TypeError:
+				self.open_rpc_interface()
+				return
+			except KeyError:
+				self.open_rpc_interface()
+				return
+
+			if tmp:
+				self.active_jobs -= 1
+				self.jobs_in += 1
+				if self.active_jobs < 0:
+					self.active_jobs = 0
+				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.active_jobs, self.normal_out_queue.qsize())
+				self.last_rx = datetime.datetime.now()
+				self.normal_out_queue.put(("processed", tmp))
+			else:
+				self.print_mod += 1
+				if self.print_mod > 20:
+					self.log.info("No job responses available.")
+					self.print_mod = 0
+				time.sleep(1)
+				break
 
 	def queue_filler_proc(self):
+
+		self.open_rpc_interface()
 
 		try:
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -135,6 +215,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		msg_loop = 0
 		while runStatus.raw_job_run_state.value == 1:
 			self.fill_jobs()
+			self.process_responses()
 
 			msg_loop += 1
 			time.sleep(2.5)
@@ -143,9 +224,18 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				msg_loop = 0
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
-		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.active_jobs, runStatus.raw_job_run_state.value==1)
-		self.log.info("Job queue fetcher halted.")
+		self.rpc_interface.close()
 
+		# Consume the remaining items in the output queue so it shuts down cleanly.
+		try:
+			while 1:
+				self.normal_out_queue.get_nowait()
+		except queue.Empty:
+			pass
+
+		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.active_jobs, runStatus.job_run_state.value==1)
+
+		self.log.info("Job queue fetcher halted.")
 
 	def _get_task_internal(self):
 
@@ -237,7 +327,14 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
 		for rid, netloc, joburl in rids:
-			self.normal_out_queue.put(rid)
+			threadn = RawArchiver.misc.thread_affinity(joburl, 1)
+
+			# If we don't have a thread affinity, do distributed fetch.
+			# If we /do/ have a thread affinity, fetch locally.
+			if threadn is True:
+				self.put_outbound_job(rid, joburl)
+			else:
+				self.normal_out_queue.put(("unfetched", rid))
 
 		cursor.close()
 

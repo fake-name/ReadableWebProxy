@@ -101,24 +101,33 @@ class FetchInterfaceServer(object):
 		self.log.info("Connection")
 
 
-	def putJob(self, queuename, job):
-
+	def _check_have_queue(self, queuename):
 		if not queuename in self.mdict['outq']:
 			# self.log.info(self.mdict)
 			with self.mdict['qlock']:
 				self.mdict['outq'][queuename] = multiprocessing.Queue()
 				self.mdict['inq'][queuename] = multiprocessing.Queue()
 
+	def putJob(self, queuename, job):
+		self._check_have_queue(queuename)
 		self.log.info("Putting item in queue %s with size: %s!", queuename, len(job))
 		self.mdict['outq'][queuename].put(job)
 
 	def getJob(self, queuename, wait=1):
+		self._check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
-		return self.mdict['inq'][queuename].get(timeout=wait)
+		try:
+			return self.mdict['inq'][queuename].get(timeout=wait)
+		except queue.Empty:
+			return None
 
 	def getJobNoWait(self, queuename):
+		self._check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
-		return self.mdict['inq'][queuename].get_nowait()
+		try:
+			return self.mdict['inq'][queuename].get_nowait()
+		except queue.Empty:
+			return None
 
 
 

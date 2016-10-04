@@ -261,26 +261,6 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
 	def queue_filler_proc(self):
-
-		# amqp_settings = {
-		# 	'RABBIT_LOGIN'    : settings.RPC_RABBIT_LOGIN,
-		# 	'RABBIT_PASWD'    : settings.RPC_RABBIT_PASWD,
-		# 	'RABBIT_SRVER'    : settings.RPC_RABBIT_SRVER,
-		# 	'RABBIT_VHOST'    : settings.RPC_RABBIT_VHOST,
-		# 	'master'          : True,
-		# 	'prefetch'        : 250,
-		# 	# 'prefetch'        : 50,
-		# 	# 'prefetch'        : 5,
-		# 	'queue_mode'      : 'direct',
-		# 	'taskq_task'      : 'task.q',
-		# 	'taskq_response'  : 'response.q',
-
-		# 	"poll_rate"       : 1/100,
-
-		# }
-
-
-		# self.amqp_int = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 		self.open_rpc_interface()
 
 		try:

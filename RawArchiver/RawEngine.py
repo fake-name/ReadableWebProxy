@@ -10,7 +10,6 @@ import queue
 import mimetypes
 import time
 import os.path
-import xxhash
 import os
 import sys
 import sqlalchemy.exc
@@ -43,6 +42,7 @@ import common.global_constants
 import common.database
 import RawArchiver.RawActiveModules
 import RawArchiver.RawNewJobQueue
+import RawArchiver.misc
 
 
 def getHash(fCont):
@@ -194,90 +194,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			.count()
 		return count
 
-	def getModuleForUrl(self, url):
-
-		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
-			# print("Module:", module, module.cares_about_url)
-			if module.cares_about_url(url):
-				return module
-		raise RuntimeError("Unwanted URL: %s" % url)
-
-	# Update the row with the item contents
-	def do_job(self, job):
-
-		# Don't dump old jobs that have been accidentally reset.
-		if job.state == 'new':
-			job.state = 'fetching'
-			self.db_sess.commit()
-
-		if job.state != 'fetching':
-			self.db_sess.commit()
-			self.log.info("Job not in expected state (state: %s).", job.state)
-			return None
-
-
-		module = self.getModuleForUrl(job.url)
-		self.log.info("Fetching %s", job.url)
-		should_continue = module.check_prefetch(job.url, self.wg)
-		if not should_continue:
-			self.log.error("Prefetch check returned unable to continue!")
-			return None
-
-		ctnt, fname, mimetype = self.get_file_name_mime(job.url)
-		fname, ctnt, mimetype = module.check_postfetch(job.url, self.wg, fname, ctnt, mimetype)
-		links = self.extractLinks(ctnt, mimetype, job.url)
-
-		if isinstance(ctnt, str):
-			ctnt = ctnt.encode("utf-8")
-		saved_to = saveFile(ctnt, job.url, fname)
-
-		self.log.info("Saved file to path: %s", saved_to)
-
-		interval = self.getModuleForUrl(job.url).rewalk_interval
-
-		assert interval > 7
-		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
-
-
-		while True:
-			history_size = self.checkHaveHistory(job.url)
-			if history_size > 0:
-				break
-			try:
-				self.log.info("Need to push content into history table (current length: %s).", history_size)
-				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
-
-
-
-				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
-
-				self.db_sess.commit()
-				self.log.info("Pushing old job content into history table!")
-				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
-
-		while 1:
-			try:
-				job.state           = 'complete'
-				job.fetchtime       = datetime.datetime.now()
-				job.ignoreuntiltime = ignoreuntiltime
-				job.fspath          = saved_to
-				job.mimetype        = mimetype
-
-				self.db_sess.commit()
-				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
-				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
-
-		if links:
-			self.upsertResponseLinks(job, links)
-
 	def extractLinks(self, ctnt, mimetype, url):
 
 		# No links in non-textual content.
@@ -319,7 +235,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		return None
 
-
 	def filterLinks(self, links):
 		ret = set()
 		for link in links:
@@ -329,9 +244,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 			ret.add(link)
 		return ret
-
-
-
 
 	def upsertResponseLinks(self, job, links):
 		self.log.info("Updating database with response links")
@@ -418,7 +330,124 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 
 
+	def fetch_job(self, job):
 
+		# Don't dump old jobs that have been accidentally reset.
+		if job.state == 'new':
+			job.state = 'fetching'
+			self.db_sess.commit()
+
+		if job.state != 'fetching':
+			self.db_sess.commit()
+			self.log.info("Job not in expected state (state: %s).", job.state)
+			return None
+
+
+		module = RawArchiver.misc.getModuleForUrl(job.url)
+		self.log.info("Fetching %s", job.url)
+		should_continue = module.check_prefetch(job.url, self.wg)
+		if not should_continue:
+			self.log.error("Prefetch check returned unable to continue!")
+			return None
+
+		ctnt, fname, mimetype = self.get_file_name_mime(job.url)
+		return ctnt, fname, mimetype
+
+	def process_job(self, job, ctnt, fname, mimetype):
+
+		module = RawArchiver.misc.getModuleForUrl(job.url)
+		fname, ctnt, mimetype = module.check_postfetch(job.url, self.wg, fname, ctnt, mimetype)
+		links = self.extractLinks(ctnt, mimetype, job.url)
+
+		if isinstance(ctnt, str):
+			ctnt = ctnt.encode("utf-8")
+		saved_to = saveFile(ctnt, job.url, fname)
+
+		self.log.info("Saved file to path: %s", saved_to)
+
+		interval = RawArchiver.misc.getModuleForUrl(job.url).rewalk_interval
+
+		assert interval > 7
+		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
+
+
+		while True:
+			history_size = self.checkHaveHistory(job.url)
+			if history_size > 0:
+				break
+			try:
+				self.log.info("Need to push content into history table (current length: %s).", history_size)
+				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
+
+
+
+				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
+
+				self.db_sess.commit()
+				self.log.info("Pushing old job content into history table!")
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
+
+		while 1:
+			try:
+				job.state           = 'complete'
+				job.fetchtime       = datetime.datetime.now()
+				job.ignoreuntiltime = ignoreuntiltime
+				job.fspath          = saved_to
+				job.mimetype        = mimetype
+
+				self.db_sess.commit()
+				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
+
+		if links:
+			self.upsertResponseLinks(job, links)
+
+	# Update the row with the item contents
+	def do_local_job(self, job):
+		ctnt, fname, mimetype = self.fetch_job(job)
+		self.process_job(job, ctnt, fname, mimetype)
+
+	def do_remote_job(self, response):
+		jid = response['jobid']
+		job = self.get_job_from_id(jid)
+		if not job:
+			self.log.error("Missing job for jobid!")
+			self.log.error("Job data: '%s'", response)
+			self.log.info("Missing jobid: '%s'", jid)
+			return
+
+		assert response['module'] == 'WebRequest'
+		assert response['call'] == 'getItem'
+
+		if response['success'] == True:
+			content, fileN, mType = response['ret']
+			self.process_job(job, content, fileN, mType)
+
+
+		# {
+		#     'jobmeta': {
+		#         'sort_key': 'c236292689e611e6b17900163ef6fe07'
+		#     },
+		#     'extradat': {
+		#         'mode': 'fetch'
+		#     },
+		#     'ret': ['<html>', '', 'text/html'],
+		#     'dispatch_key': 'fetcher',
+		#     'jobid': 16632,
+		#     'cancontinue': True,
+		#     'user': 'scrape-worker-2',
+		#     'success': True,
+		#     'module': 'WebRequest',
+		#     'call': 'getItem'
+		# }
 
 	########################################################################################################################
 	#
@@ -432,26 +461,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	#
 	########################################################################################################################
 
-	def thread_affinity(self, job):
-		'''
-		Ensure only one client ever works on each netloc.
-		This maintains better consistency of user-agents
-		'''
-
-		# Only limit netlocs if we actually need to.
-		if not self.getModuleForUrl(job.url).single_thread_fetch(job.url):
-			return True
-
-		netloc = urllib.parse.urlsplit(job.url).netloc
-
-		m = xxhash.xxh32()
-		m.update(netloc.encode("utf-8"))
-
-		nlhash = m.intdigest()
-		thread_aff = nlhash % self.total_worker_count
-		# print("Thread affinity:", self.total_worker_count, self.worker_num, thread_aff, self.worker_num == thread_aff)
-		return self.worker_num == thread_aff
-
 	def get_job_from_id(self, jobid):
 
 		self.db_sess.flush()
@@ -462,7 +471,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		if not job:
 			return False
-
 
 		return job
 
@@ -476,27 +484,32 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 			while runStatus.run_state.value == 1:
 				try:
-					jid = self.new_job_queue.get_nowait()
-					job = self.get_job_from_id(jid)
-					if job and self.thread_affinity(job):
-						try:
-							self.do_job(job)
-						except Exception:
-							while True:
-								try:
-									job.state = 'error'
-									self.db_sess.commit()
-									self.log.info("Pushing old job content into history table!")
-									break
-								except sqlalchemy.exc.OperationalError:
-									self.db_sess.rollback()
-								except sqlalchemy.exc.InvalidRequestError:
-									self.db_sess.rollback()
-							raise
+					mode, data = self.new_job_queue.get_nowait()
 
-					else:
-						self.new_job_queue.put(jid)
-						time.sleep(0.01)
+					if mode == 'processed':
+						self.do_remote_job(data)
+					elif mode == 'unfetched':
+						jobid = data
+						job = self.get_job_from_id(jobid)
+						if job and RawArchiver.misc.thread_affinity(job.url, self.total_worker_count) == self.worker_num:
+							try:
+								self.do_local_job(job)
+							except Exception:
+								while True:
+									try:
+										job.state = 'error'
+										self.db_sess.commit()
+										self.log.info("Pushing old job content into history table!")
+										break
+									except sqlalchemy.exc.OperationalError:
+										self.db_sess.rollback()
+									except sqlalchemy.exc.InvalidRequestError:
+										self.db_sess.rollback()
+								raise
+
+						else:
+							self.new_job_queue.put(jobid)
+							time.sleep(0.01)
 				except queue.Empty:
 					time.sleep(1)
 
@@ -512,21 +525,37 @@ def test():
 	import common.database
 	sess = common.database.get_db_session()
 
-	job = common.database.RawWebPages(
-		state    = 'new',
-		url      = 'http://somethingpositive.net',
-		starturl = 'http://somethingpositive.net',
-		netloc   = 'somethingpositive.net',
-		priority = common.database.DB_LOW_PRIORITY,
-		distance = 0,
-		)
-	sess.add(job)
-	sess.commit()
 
-	archiver = RawSiteArchiver(None, None, db_interface=sess, db=common.database)
+	try:
+
+		job = common.database.RawWebPages(
+			state    = 'new',
+			url      = 'http://somethingpositive.net',
+			starturl = 'http://somethingpositive.net',
+			netloc   = 'somethingpositive.net',
+			priority = common.database.DB_LOW_PRIORITY,
+			distance = 0,
+			)
+		sess.add(job)
+		sess.commit()
+
+	except sqlalchemy.exc.IntegrityError:
+		sess.rollback()
+		r = sess.query(common.database.RawWebPages) \
+			.filter(common.database.RawWebPages.url == 'http://somethingpositive.net') \
+			.update({'state' : 'new', 'ignoreuntiltime' : datetime.datetime.min })
+		sess.commit()
+		print("Did update?")
+		print(r)
+
+		job = sess.query(common.database.RawWebPages) \
+			.filter(common.database.RawWebPages.url == 'http://somethingpositive.net').one()
+
+
+	archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=None, cookie_lock=None, response_queue=None, db_interface=sess, db=common.database)
 
 	print(job)
-	archiver.do_job(job)
+	archiver.do_local_job(job)
 	print("doing")
 
 	pass
@@ -538,6 +567,7 @@ def test2():
 	sess = common.database.get_db_session()
 
 	try:
+
 		job = common.database.RawWebPages(
 			state    = 'new',
 			url      = 'http://somethingpositive.net',
@@ -548,10 +578,18 @@ def test2():
 			)
 		sess.add(job)
 		sess.commit()
+
 	except sqlalchemy.exc.IntegrityError:
 		sess.rollback()
+		r = sess.query(common.database.RawWebPages) \
+			.filter(common.database.RawWebPages.url == 'http://somethingpositive.net') \
+			.update({'state' : 'new', 'ignoreuntiltime' : datetime.datetime.min })
+		sess.commit()
+		print("Did update?")
+		print(r)
 
-	archiver = RawSiteArchiver(1, 0, fetcher.get_queue(), None, response_queue=None, db_interface=sess, db=common.database)
+
+	archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=fetcher.get_queue(), cookie_lock=None, response_queue=None, db_interface=sess, db=common.database)
 	archiver.taskProcess()
 
 

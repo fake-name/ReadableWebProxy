@@ -197,6 +197,8 @@ def nu_view():
 	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
 	response.headers["Pragma"] = "no-cache"
 	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+
+	session.commit()
 	return response
 
 @app.route('/nu_api/', methods=['GET', 'POST'])
@@ -237,7 +239,7 @@ def nu_api():
 
 	response.status_code = 200
 	response.mimetype="application/json"
-
+	g.session.commit()
 	return response
 
 
