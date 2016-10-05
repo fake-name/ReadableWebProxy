@@ -132,6 +132,35 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'http://www.platinumgrit.com',
 		'http://www.moonoverjune.com',
 
+		'http://katbox.net',
+		"http://laslindas.katbox.net/",
+		"http://theeye.katbox.net/",
+		"http://tinaofthesouth.katbox.net/",
+		"http://anthronauts.katbox.net/",
+		"http://dmfa.katbox.net/",
+		"http://yosh.katbox.net",
+		"http://ai.katbox.net/",
+		"http://rascals.katbox.net",
+		"http://knuckleup.katbox.net",
+		"http://projectzero.katbox.net",
+		"http://cblue.katbox.net",
+		"http://imew.katbox.net",
+		"http://forums.katbox.net",
+		"http://paprika.katbox.net",
+		"http://pmp.katbox.net",
+		"http://draconia.katbox.net/",
+		"http://uberquest.katbox.net",
+		"http://mousechievous.katbox.net",
+		"http://ourworld.katbox.net",
+		"http://addictivescience.katbox.net",
+		"http://peterandcompany.katbox.net",
+		"http://peterandwhitney.katbox.net",
+		"http://iba.katbox.net",
+		"http://desertfox.katbox.net",
+		"http://falsestart.katbox.net",
+		"http://anaria.katbox.net",
+
+
 	]
 
 	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]

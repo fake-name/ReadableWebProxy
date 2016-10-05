@@ -1898,6 +1898,9 @@ def  extractNanoDesuLightNovelTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'Ore to Kawazu-san no Isekai Hourouki' in item['tags']:
+		return buildReleaseMessage(item, 'Ore to Kawazu-san no Isekai Hourouki', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractKNTranslation(item):
@@ -3185,11 +3188,16 @@ def extractLightNovelsWorld(item):
 		return buildReleaseMessage(item,'The Throne Under the Starry Sky', vol, chp, frag=frag, postfix=postfix)
 	if 'Twin Sword' in item['tags']:
 		return buildReleaseMessage(item,'Twin Sword', vol, chp, frag=frag, postfix=postfix)
+	if 'Sayonara Ryuusei Konnichiwa Jinsei' in item['tags']:
+		return buildReleaseMessage(item,'Sayonara Ryuusei Konnichiwa Jinsei', vol, chp, frag=frag, postfix=postfix)
+	if 'Online Game: Evil Dragon Against The Heaven' in item['tags']:
+		return buildReleaseMessage(item,'Online Game: Evil Dragon Against The Heaven', vol, chp, frag=frag, postfix=postfix)
 	if 'Hakushaku Reijo ha Chito Tensei Mono' in item['tags']:
 		return buildReleaseMessage(item,'Hakushaku Reijo ha Chito Tensei Mono', vol, chp, frag=frag, postfix=postfix)
-	if 'Ore to Kawazu-san no Isekai Houriki' in item['tags']:
-		return buildReleaseMessage(item,'Ore to Kawazu-san no Isekai Houriki', vol, chp, frag=frag, postfix=postfix)
+	if 'Ore to Kawazu-san no Isekai Houriki' in item['tags'] or 'Ore to Kawazu-san no Isekai Hourouki' in item['tags']:
+		return buildReleaseMessage(item, 'Ore to Kawazu-san no Isekai Houriki', vol, chp, frag=frag, postfix=postfix)
 
+	print("wat?", 'Ore to Kawazu-san no Isekai Hourouki' in item['tags'])
 	return False
 def extractLoathsomeTranslations(item):
 	"""

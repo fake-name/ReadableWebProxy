@@ -464,6 +464,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	def get_job_from_id(self, jobid):
 
 		self.db_sess.flush()
+		self.db_sess.commit()
 		job = self.db_sess.query(self.db.RawWebPages) \
 			.filter(self.db.RawWebPages.id == jobid)    \
 			.scalar()

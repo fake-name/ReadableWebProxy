@@ -4,6 +4,7 @@ from sqlalchemy import Table
 
 from sqlalchemy import Column
 from sqlalchemy import BigInteger
+from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
@@ -36,7 +37,7 @@ class WebPages(common.db_base.Base):
 
 	id                = Column(BigInteger, primary_key = True, index = True)
 	state             = Column(common.db_types.dlstate_enum, default='new', index=True, nullable=False)
-	errno             = Column(BigInteger, default='0')
+	errno             = Column(Integer, default='0')
 	url               = Column(Text, nullable = False, index = True, unique = True)
 	starturl          = Column(Text, nullable = False)
 	netloc            = Column(Text, nullable = False, index = True)
@@ -44,8 +45,8 @@ class WebPages(common.db_base.Base):
 	# Foreign key to the files table if needed.
 	file              = Column(BigInteger, ForeignKey('web_files.id'))
 
-	priority          = Column(BigInteger, default=1000000, index=True, nullable=False)
-	distance          = Column(BigInteger, index=True, nullable=False)
+	priority          = Column(Integer, default=1000000, index=True, nullable=False)
+	distance          = Column(Integer, index=True, nullable=False)
 
 	is_text           = Column(Boolean, default=False)
 	limit_netloc      = Column(Boolean, default=True)
@@ -59,7 +60,7 @@ class WebPages(common.db_base.Base):
 
 	content           = Column(Text)
 
-	fetchtime         = Column(DateTime, default=datetime.datetime.min)
+	fetchtime         = Column(DateTime, default=datetime.datetime.min, index=True)
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
 
 	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min, nullable=False)

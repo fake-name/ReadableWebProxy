@@ -235,6 +235,8 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.emit_verified_releases()
 		finally:
 			self.close()
+			self.db_sess.commit()
+			self.log.info("NU Update execution completed.")
 
 	def fix_names(self):
 		for old, new in self.name_lut.items():
@@ -413,7 +415,8 @@ if __name__ == '__main__':
 	logSetup.initLogging()
 
 	intf = NuForwarder()
-	intf.emit_verified_releases()
+	intf.go()
+	# intf.emit_verified_releases()
 	# intf.go()
 	#print(load_lut())
 	# intf = NuForwarder(connect=False)

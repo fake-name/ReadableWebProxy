@@ -835,6 +835,8 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, 'The Strong, The Few, True Cultivators on Campus', vol, chp, frag=frag, postfix=postfix)
 	if "Evil Emperor's Wild Consort" in item['tags']:
 		return buildReleaseMessage(item, "Evil Emperor's Wild Consort", vol, chp, frag=frag, postfix=postfix)
+	if 'Star Rank Hunter' in item['tags']:
+		return buildReleaseMessage(item, 'Star Rank Hunter', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

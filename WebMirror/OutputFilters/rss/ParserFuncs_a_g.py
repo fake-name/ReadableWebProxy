@@ -3186,6 +3186,8 @@ def extractDaikyunTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].lower().startswith("the evil organization’s recruitment ad: "):
+		return buildReleaseMessage(item, 'The Evil Organization’s Recruitment Ad', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractDysrySummaries(item):

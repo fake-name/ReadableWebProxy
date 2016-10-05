@@ -3829,8 +3829,6 @@ def extractSodTranslations(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
 
-	if 'Ore to Kawazu-san no Isekai Houriki' in item['tags']:
-		return buildReleaseMessage(item, 'Ore to Kawazu-san no Isekai Houriki', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractStarveCleric(item):
