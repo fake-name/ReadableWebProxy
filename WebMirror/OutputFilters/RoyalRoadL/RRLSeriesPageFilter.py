@@ -75,50 +75,63 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
-		titletg  = soup.find("h1", class_='fiction-title')
-		authortg = soup.find("span", class_='author')
-		ratingtg = soup.find("span", class_='overall')
+		header   = soup.find("div", class_='fic-title')
+		titletg  = header.find("h2")
+		authortg = header.find("h4")
+		authortg.find("span").decompose()
+		ratingtg = soup.find("div", class_='rating')
 
 		if not ratingtg:
-			self.log.info("Could not find rating tag!")
+			self.log.error("Could not find rating tag!")
 			return []
 
+		startg = ratingtg.find("span", class_='star')
+		ratingcls = [tmp for tmp in startg['class'] if re.match(r"star\-\d+", tmp)]
+		print(startg['class'])
+		if not ratingcls:
+			return []
 
-		rating = float(ratingtg['score'])
+		rating = ratingcls[0].split("-")[-1]
+
+		rating = float(rating) / 10
+		rating = rating * 2  # Normalize to 1-10 scale
 		if not rating >= MIN_RATING and rating != 0.0:
-			self.log.info("Item rating below upload threshold: %s", rating)
+			self.log.error("Item rating below upload threshold: %s", rating)
 			return []
 
 		if not titletg:
-			self.log.info("Could not find title tag!")
+			self.log.error("Could not find title tag!")
 			return []
 		if not authortg:
-			self.log.info("Could not find author tag!")
+			self.log.error("Could not find author tag!")
 			return []
 
 
-		title  = titletg.get_text()
-		author = authortg.get_text()
-		assert author.startswith("by ")
-		author = author[2:].strip()
+		title  = titletg.get_text().strip()
+		author = authortg.get_text().strip()
+
 
 
 		title = bleach.clean(title, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
 		author = bleach.clean(author, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
 
 		descDiv = soup.find('div', class_='description')
-		paras = descDiv.find_all("p")
-		tags = []
+		if not descDiv or not descDiv.div:
+			self.log.error("Incomplete or broken description?")
+			return []
 
 		desc = []
-		for para, text in [(para, para.get_text()) for para in paras]:
-			if text.lower().startswith('categories:'):
-				tagstr = text.split(":", 1)[-1]
-				items = tagstr.split(",")
-				[tags.append(item.strip()) for item in items if item.strip()]
+		for segment in descDiv.div:
+			if isinstance(segment, bs4.NavigableString):
+				desc.append(str(segment).strip())
 			else:
-				desc.append(para)
+				if segment.get_text().strip():
+					desc.append(segment.get_text().strip())
 
+		tags = []
+		tagdiv = soup.find('div', class_='tags')
+		for tag in tagdiv.find_all('span', class_='label'):
+			tags.append(tag.get_text().strip())
 
 		seriesmeta = {}
 
@@ -126,37 +139,38 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['author']      = author
 		seriesmeta['tags']        = tags
 		seriesmeta['homepage']    = seriesPageUrl
-		seriesmeta['desc']        = " ".join([str(para) for para in desc])
+		seriesmeta['desc']        = "\r\n\r\n".join(desc)
 		seriesmeta['tl_type']     = 'oel'
 		seriesmeta['sourcesite']  = 'RoyalRoadL'
 
 		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
-
 		extra = {}
 		extra['tags']     = tags
 		extra['homepage'] = seriesPageUrl
 		extra['sourcesite']  = 'RoyalRoadL'
 
 
-		chapters = soup.find("div", class_='chapters')
-		releases = chapters.find_all('li', class_='chapter')
+		chapters = soup.find_all("tr", attrs={"data-url" : True})
 
 		raw_retval = []
-		for release in releases:
-			rel = datetime.datetime.strptime(release.find_all("span")[-1].get_text(), '%d/%m/%y')
-			if rel.date() == datetime.date.today():
-				reldate = time.time()
-			else:
-				reldate = calendar.timegm(rel.timetuple())
+		for chapter in chapters:
+			if len(chapter.find_all("td")) != 2:
+				self.log.warning("Row with invalid number of entries?")
+				continue
+			cname, cdate = chapter.find_all("td")
 
-			chp_title = release.a['title'].strip()
+			reldate = cdate.time['unixtime']
+			relurl = common.util.urlFuncs.rebaseUrl(cname.a['href'], seriesPageUrl)
+
+
+			chp_title = cname.get_text().strip()
 			# print("Chp title: '{}'".format(chp_title))
 			vol, chp, frag, post = extractTitle(chp_title + " " + title)
 
 			raw_item = {}
 			raw_item['srcname']   = "RoyalRoadL"
-			raw_item['published'] = reldate
-			raw_item['linkUrl']   = release.a['href']
+			raw_item['published'] = float(reldate)
+			raw_item['linkUrl']   = relurl
 
 			raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 

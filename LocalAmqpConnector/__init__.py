@@ -291,6 +291,7 @@ class ConnectorManager:
 		self.recv_messages = 0
 
 		self.delivered = 0
+		self.die_timeout = time.time()
 
 		self.connect_lock = threading.Lock()
 		self.__connect()
@@ -398,7 +399,18 @@ class ConnectorManager:
 				pass
 
 	def __should_die(self):
-		ret = self.runstate.value != 1 or self.threads_live.value != 1 or self.had_exception.value != 0
+		# ret = self.runstate.value != 1 or self.threads_live.value != 1 or self.had_exception.value != 0
+
+		if self.runstate.value == 1:
+			self.die_timeout = time.time()
+		elif self.response_queue.qsize() > 0:
+			pass
+		else:
+			self.die_timeout -= 500
+
+
+
+		ret = self.threads_live.value != 1 or self.had_exception.value != 0 or (time.time() - self.die_timeout > 20)
 		if ret:
 
 			self.log.warning("Should die flag! Runstate: %s, threads live: %s, had exception: %s.",
@@ -420,6 +432,8 @@ class ConnectorManager:
 				if self.__should_die():
 					self.log.info("Transmit loop saw exit flag. Breaking!")
 					return
+				else:
+					self.log.info("Transmit looping!")
 
 				try:
 					put = self.response_queue.get_nowait()
@@ -507,7 +521,7 @@ class ConnectorManager:
 	def monitor_loop(self):
 
 		self.had_exception.value = 0
-		while self.runstate.value:
+		while self.runstate.value == 1:
 			if self.had_exception.value == 1:
 				print("Disconnecting!")
 				try:
@@ -526,9 +540,20 @@ class ConnectorManager:
 						self.log.error(line)
 					self.had_exception.value = 1
 			time.sleep(1)
+			print("Monitor loop!", self.runstate.value)
+
+		self.shutdown()
 
 	def shutdown(self):
 		self.log.info("ConnectorManager shutdown called!")
+		for dummy_x in range(30):
+			qs = self.response_queue.qsize()
+			if qs == 0:
+				break
+			else:
+				self.log.warning("Outgoing queue draining. Items: %s", qs)
+				self._tx_poll()
+				time.sleep(1)
 		self.threads_live.value = 0
 		self.disconnect()
 

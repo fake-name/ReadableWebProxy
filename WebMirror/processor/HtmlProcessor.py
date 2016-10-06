@@ -318,6 +318,11 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		contents = contents.replace("This translation is property of Infinite Novel Translations.", "")
 		contents = contents.replace("This translation is property of Infinite NovelTranslations.", "")
 		contents = contents.replace("If you read this anywhere but at Infinite Novel Translations, you are reading a stolen translation.", "")
+		contents = contents.replace("&lt;Blank&gt;", "")
+		contents = contents.replace("&lt;space&gt;", "")
+		contents = contents.replace("<Blank>", "")
+		contents = contents.replace("&lt;StarveCleric&gt;", "")
+
 
 		return title, contents
 

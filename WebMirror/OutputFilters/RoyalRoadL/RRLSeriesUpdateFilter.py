@@ -19,7 +19,7 @@ import datetime
 import time
 import json
 import common.util.webFunctions
-
+import common.util.urlFuncs
 MIN_RATING = 5
 
 ########################################################################################################################
@@ -56,19 +56,19 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'http://www.royalroadl.com/fictions/latest-updates/',
 			'http://www.royalroadl.com/fictions/active-top-50/',
 			'http://www.royalroadl.com/fictions/weekly-views-top-50/',
-			'http://www.royalroadl.com/fictions/newest/',
+			'http://www.royalroadl.com/fictions/new-releases/',
 			'http://royalroadl.com/fictions/best-rated/',
 			'http://royalroadl.com/fictions/latest-updates/',
 			'http://royalroadl.com/fictions/active-top-50/',
 			'http://royalroadl.com/fictions/weekly-views-top-50/',
-			'http://royalroadl.com/fictions/newest/',
+			'http://royalroadl.com/fictions/new-releases/',
 		]
 
 		if url in want:
 
 			print("RRLSeriesUpdateFilter Wants url: '%s'" % url)
 			return True
-		# print("RRLSeriesUpdateFilter doesn't want url: '%s'" % url)
+		print("RRLSeriesUpdateFilter doesn't want url: '%s'" % url)
 		return False
 
 	def __init__(self, **kwargs):
@@ -93,15 +93,18 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
-		container = soup.find('div', class_='fiction-list-wrapper')
-		# print("container: ", container)
-		if not container:
+		containers = soup.find_all('div', class_='fiction-list-item')
+		# print(soup)
+		# print("container: ", containers)
+		if not containers:
 			return []
 		urls = []
-		for item in container.find_all("li", class_='fiction'):
-			a = item.find('a', text='Fiction Page')
+		for item in containers:
+			div = item.find('h2', class_='fiction-title')
+			a = div.find("a")
 			if a:
-				urls.append(a['href'])
+				url = common.util.urlFuncs.rebaseUrl(a['href'], seriesPageUrl)
+				urls.append(url)
 			else:
 				self.log.error("No series in container: %s", item)
 
@@ -119,7 +122,7 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def processPage(self, url, content):
-		# print("processPage() call")
+		print("processPage() call")
 		soup = common.util.webFunctions.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:

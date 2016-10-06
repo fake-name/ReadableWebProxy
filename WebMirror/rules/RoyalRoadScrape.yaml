@@ -28,6 +28,8 @@ badwords: [
 			"/scripts/scripts/",
 			"/assets/scripts/",
 			"/scripts/assets/",
+			'/tinymce/',
+			'royalroadl.com/Scripts/',
 			]
 
 # Content Stripping needs to be determined.
@@ -73,7 +75,29 @@ decompose: [
 	{"class" : "bgmodalhead"},
 	{"class" : "tgbackgrounds"},
 	{"class" : "ccgtheadpostoptions"},
+	{"class" : "btn-group"},
+	{"class" : "review-side"},
+	{"class" : "portlet-footer"},
+	{"class" : "fb-like"},
+	{"class" : "twitter-share-butto"},
+	{"class" : "profile"},
+	{"class" : "new-comment"},
+	{"class" : "nav"},
+	{"class" : "navbar-nav"},
+	{"class" : "actions"},
+	{"class" : "page-header"},
+	{"class" : "review-new"},
+	{"class" : "profile-sidebar-portlet"},
+	{"class" : "page-logo"},
+	{"class" : "page-header-top"},
+	{"class" : "img-responsive"},
+	{"class" : "page-footer"},
+	{"class" : "page-prefooter"},
+	{"class" : "profile-sidebar"},
+	{"class" : "search-form"},
+	{"class" : "page-header-menu"},
 
+	{"method" : "post"},
 	# Fuck your shitty signature
 	{"class" : "signature"},
 
