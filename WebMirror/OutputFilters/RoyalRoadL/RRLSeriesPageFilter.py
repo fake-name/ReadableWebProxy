@@ -79,22 +79,38 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		titletg  = header.find("h2")
 		authortg = header.find("h4")
 		authortg.find("span").decompose()
-		ratingtg = soup.find("div", class_='rating')
 
-		if not ratingtg:
+		ratingtg_type_1 = soup.find("div", class_='rating')
+		ratingtg_type_2 = soup.find("li", text=re.compile('Overall Score'))
+
+
+		if ratingtg_type_1:
+			startg = ratingtg_type_1.find("span", class_='star')
+		elif ratingtg_type_2:
+			print(ratingtg_type_2)
+			starcontainer = ratingtg_type_2.find_next_sibling("li")
+			if not starcontainer:
+				self.log.error("Could not find rating tag (starcontainer)!")
+				return []
+			startg = starcontainer.find("span", class_='star')
+			if not startg:
+				self.log.error("Could not find rating tag (startg)!")
+				return []
+
+
+		else:
 			self.log.error("Could not find rating tag!")
 			return []
 
-		startg = ratingtg.find("span", class_='star')
 		ratingcls = [tmp for tmp in startg['class'] if re.match(r"star\-\d+", tmp)]
-		print(startg['class'])
-		if not ratingcls:
-			return []
-
 		rating = ratingcls[0].split("-")[-1]
 
 		rating = float(rating) / 10
 		rating = rating * 2  # Normalize to 1-10 scale
+		print(startg['class'])
+		if not ratingcls:
+			return []
+
 		if not rating >= MIN_RATING and rating != 0.0:
 			self.log.error("Item rating below upload threshold: %s", rating)
 			return []
