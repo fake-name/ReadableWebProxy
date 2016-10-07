@@ -663,6 +663,7 @@ mapper = {
 	'www.wuxiaworld.com'                              : 'Wuxiaworld',
 	'www.youjinsite.com'                              : 'Youjinsite Translations',
 	'www.zeonic-republic.net'                         : 'Zeonic',
+	'www.novitranslation.com'                         : 'Novitranslation',
 	'yellawtwl.com'                                   : 'Wuxiaworld',
 	'youjinsite.com'                                  : 'Youjinsite Translations',
 	'yuujinchou.livejournal.com'                      : 'Yuujinchou',

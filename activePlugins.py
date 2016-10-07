@@ -42,6 +42,7 @@ import WebMirror.processor.MarkdownProcessor
 import WebMirror.processor.BinaryProcessor
 import WebMirror.processor.RssProcessor
 import WebMirror.processor.WattPadJsonProcessor
+import WebMirror.processor.RoyalRoadLProcessor
 
 
 PLUGINS = [
@@ -52,6 +53,7 @@ PLUGINS = [
 	WebMirror.processor.BinaryProcessor.BinaryResourceProcessor,
 	WebMirror.processor.RssProcessor.RssProcessor,
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
+	WebMirror.processor.RoyalRoadLProcessor.RoyalRoadLProcessor,
 ]
 
 

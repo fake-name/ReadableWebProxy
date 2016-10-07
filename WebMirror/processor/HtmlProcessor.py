@@ -234,7 +234,23 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		hexr = re.compile('(#(?:[a-fA-F0-9]{6})|#(?:[a-fA-F0-9]{3}))')
 
-		ascii_color = re.compile('color\W*?:\W*?\w+;?')
+		# Match the CSS ASCII color classes
+		ascii_color = re.compile('color\W*?:\W*?(white|gray|silver|black|maroon|red|purple|fuchsia|green|lime|olive|yellow|navy|blue' +
+								'|teal|aqua|orange|indianred|lightcoral|salmon|darksalmon|lightsalmon|crimson|red|firebrick|darkred' +
+								'|pink|lightpink|hotpink|deeppink|mediumvioletred|palevioletred|lightsalmon|coral|tomato|orangered' +
+								'|darkorange|orange|gold|yellow|lightyellow|lemonchiffon|lightgoldenrodyellow|papayawhip|moccasin' +
+								'|peachpuff|palegoldenrod|khaki|darkkhaki|lavender|thistle|plum|violet|orchid|fuchsia|magenta' +
+								'|mediumorchid|mediumpurple|blueviolet|darkviolet|darkorchid|darkmagenta|purple|indigo|slateblue' +
+								'|darkslateblue|mediumslateblue|greenyellow|chartreuse|lawngreen|lime|limegreen|palegreen|lightgreen' +
+								'|mediumspringgreen|springgreen|mediumseagreen|seagreen|forestgreen|green|darkgreen|yellowgreen' +
+								'|olivedrab|olive|darkolivegreen|mediumaquamarine|darkseagreen|lightseagreen|darkcyan|teal|aqua|cyan' +
+								'|lightcyan|paleturquoise|aquamarine|turquoise|mediumturquoise|darkturquoise|cadetblue|steelblue' +
+								'|lightsteelblue|powderblue|lightblue|skyblue|lightskyblue|deepskyblue|dodgerblue|cornflowerblue' +
+								'|mediumslateblue|royalblue|blue|mediumblue|darkblue|navy|midnightblue|cornsilk|blanchedalmond|bisque' +
+								'|navajowhite|wheat|burlywood|tan|rosybrown|sandybrown|goldenrod|darkgoldenrod|peru|chocolate|saddlebrown' +
+								'|sienna|brown|maroon|white|snow|honeydew|mintcream|azure|aliceblue|ghostwhite|whitesmoke|seashell|beige' +
+								'|oldlace|floralwhite|ivory|antiquewhite|linen|lavenderblush|mistyrose|gainsboro|lightgrey|silver' +
+								'|darkgray|gray|dimgray|lightslategray|slategray|darkslategray|black);?')
 
 		for item in hascss:
 			if item['style']:
@@ -343,7 +359,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			'type',
 			'value',
 		]
-		print("RemoveClasses call!")
+		print("<HtmlPageProcessor> RemoveClasses call!")
+		print("Self:", self)
 
 		for item in [item for item in soup.find_all(True) if item]:
 			tmp_valid = validattrs[:]

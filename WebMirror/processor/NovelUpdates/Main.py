@@ -338,7 +338,7 @@ class NovelUpdatesHtmlPageProcessor(ProcessorBase.PageProcessor):
 			'type',
 			'value',
 		]
-		print("RemoveClasses call!")
+		print("NovelUpdatesHtmlPageProcessor - RemoveClasses call!")
 
 		for item in [item for item in soup.find_all(True) if item]:
 			tmp_valid = validattrs[:]
