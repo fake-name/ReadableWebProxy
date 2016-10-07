@@ -190,6 +190,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'wastedtalentca-website&q=forum/wastedtalentca-website&q=forum',
 		'site-upgrade.html/feed.xml',
 		'.html/feed',
+		'&_debug=',
 
 	]
 

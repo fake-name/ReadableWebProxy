@@ -4,13 +4,16 @@ import RawArchiver.RawActiveModules
 import xxhash
 import urllib.parse
 
+class UnwantedUrlError(RuntimeError):
+	pass
+
 def getModuleForUrl(url):
 
 	for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
 		# print("Module:", module, module.cares_about_url)
 		if module.cares_about_url(url):
 			return module
-	raise RuntimeError("Unwanted URL: %s" % url)
+	raise UnwantedUrlError("Unwanted URL: %s" % url)
 
 
 def thread_affinity(url, total_worker_count):

@@ -327,14 +327,21 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
 		for rid, netloc, joburl in rids:
-			threadn = RawArchiver.misc.thread_affinity(joburl, 1)
+			try:
+				threadn = RawArchiver.misc.thread_affinity(joburl, 1)
 
-			# If we don't have a thread affinity, do distributed fetch.
-			# If we /do/ have a thread affinity, fetch locally.
-			if threadn is True:
-				self.put_outbound_job(rid, joburl)
-			else:
-				self.normal_out_queue.put(("unfetched", rid))
+				# If we don't have a thread affinity, do distributed fetch.
+				# If we /do/ have a thread affinity, fetch locally.
+				if threadn is True:
+					self.put_outbound_job(rid, joburl)
+				else:
+					self.normal_out_queue.put(("unfetched", rid))
+			except RawArchiver.misc.UnwantedUrlError:
+				self.log.warning("Unwanted url in database? Url: '%s'", joburl)
+				self.log.warning("Deleting entry.")
+				cursor.execute("""DELETE FROM raw_web_pages WHERE url = %s AND id = %s;""", (joburl, rid))
+				self.db_interface.commit()
+
 
 		cursor.close()
 
