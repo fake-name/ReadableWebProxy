@@ -13,32 +13,16 @@ send_raw_feed: False
 trigger: False
 
 badwords: [
-			"/about/",
-			"/join-us/",
-			"/chat/",
-			'&format=pdf',
-			'?format=pdf',
-			'?replytocom=',
-			"/forum/",
-			"/forum",
-			"/forums/",
-			"#comment",
-			"/forums",
 
-			"/post.php?",
-			"/author.php?",
 			'/more-reviews/',
 			'/readlist/',
 			'/extnu/',
 
-			'/wp-content/themes/',
-			'/login/?redirect_to',
-			'/wp-content/uploads/',
 
 
 			# Don't actually spider the site, just let the update triggers
 			# do their thing.
-			'www.novelupdates.com',
+			# 'www.novelupdates.com',
 			]
 
 # Content Stripping needs to be determined.
@@ -62,9 +46,9 @@ preserveAttrs : [
 special_case_filters : {
 
 	# Apparently they don't like bots. Well, too bad.
-	"www.novelupdates.com" : ["remote_fetch", "NUWebRequest", "getItemPhantomJS"],
-	"novelupdates.com"     : ["remote_fetch", "NUWebRequest", "getItemPhantomJS"],
+	"www.novelupdates.com" : ["rate_limit", 20],
+	"novelupdates.com"     : ["rate_limit", 20],
 
 	# So I can test against someone less bot-sensitive
-	"www.google.com" : ["remote_fetch", "NUWebRequest", "getItemPhantomJS"],
+	"www.google.com" : ["rate_limit", 20],
 }

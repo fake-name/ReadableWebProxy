@@ -23,6 +23,7 @@ import WebMirror.rules
 import common.get_rpyc
 import zerorpc
 import runStatus
+import WebMirror.SpecialCase
 
 ########################################################################################################################
 #
@@ -107,6 +108,7 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.print_mod = 0
 
 		self.ruleset = WebMirror.rules.load_rules()
+		self.specialcase = WebMirror.rules.load_special_case_sites()
 
 	def get_queues(self):
 		return self.normal_out_queue
@@ -192,8 +194,10 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		while self.active_jobs < MAX_IN_FLIGHT_JOBS and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
 			old = self.active_jobs
-			num_new = self._get_task_internal()
+			num_new  = self._get_task_internal()
+			num_new += self._get_deferred_internal()
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
+
 
 
 			# We have to handle job responses here too, or the response queue can bloat horribly
@@ -296,6 +300,15 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		self.log.info("Job queue fetcher halted.")
 
+	def _get_deferred_internal(self):
+		rid, joburl, netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
+		newcnt = 0
+		while rid:
+			self.put_outbound_job(rid, joburl)
+			newcnt += 1
+			rid, joburl, netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
+
+		return newcnt
 
 	def _get_task_internal(self):
 
@@ -391,10 +404,12 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		deleted = 0
 		for rid, netloc, joburl in rids:
-			if self.outbound_job_wanted(netloc, joburl):
-				self.put_outbound_job(rid, joburl)
-			else:
+			if not self.outbound_job_wanted(netloc, joburl):
 				self.delete_job(rid, joburl)
+			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
+				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc)
+			else:
+				self.put_outbound_job(rid, joburl)
 
 		cursor.close()
 
@@ -406,23 +421,22 @@ def test2():
 	import pprint
 	logSetup.initLogging()
 
-	agg = JobAggregator()
-	outq = agg.get_queues()
-	for x in range(20):
+	specialcase = WebMirror.rules.load_special_case_sites()
+	WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/1", "www.novelupdates.com")
+	WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/2", "www.novelupdates.com")
+
+
+
+	for x in range(30):
 		print("Sleeping, ", x)
 		time.sleep(1)
-		try:
-			j = outq.get_nowait()
-			print("Received job! %s", len(j))
-			with open("jobs.txt", "a") as fp:
-				fp.write("\n\n\n")
-				fp.write(pprint.pformat(j))
-			print(j)
-		except queue.Empty:
-			pass
-	print("Joining on the aggregator")
-	agg.join_proc()
-	print("Joined.")
+		ret = WebMirror.SpecialCase.getSpecialCase(specialcase)
+		print("Return: ", ret)
+		if x == 15:
+			WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/3", "www.novelupdates.com")
+			WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/4", "www.novelupdates.com")
+
+	print("Done!")
 
 if __name__ == "__main__":
 	test2()

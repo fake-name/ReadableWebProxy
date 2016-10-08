@@ -611,6 +611,7 @@ baseUrl: [
 	"https://zeromahouthetranslation.wordpress.com",
 	"https://saurimania.wordpress.com",
 	"https://arsl31.wordpress.com",
+	"https://jawzpublications.wordpress.com",
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	# This is WP, but it uses an custom theme I haven't tested against.

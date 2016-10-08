@@ -10,6 +10,7 @@ import common.database as db
 import multiprocessing
 import traceback
 import time
+import queue
 
 random.seed()
 
@@ -17,60 +18,84 @@ ACTIVE_FETCHES = {
 	# Populated at runtime
 }
 
-FETCH_LOCK = multiprocessing.Lock()
+FETCH_LOCK       = multiprocessing.Lock()
+RATE_LIMIT_ITEMS = {}
+
 
 log = logging.getLogger("Main.Web.SpecialCaseHandler")
 
 
 
-def handleRateLimiting(params, job, engine, db_sess):
-	allowable = params[0]
+def handleRateLimiting(params, rid, joburl, netloc):
+	log.info("Special case handler pushing item for url %s into delay queue!", joburl)
 	with FETCH_LOCK:
-		if not job.netloc in ACTIVE_FETCHES:
-			ACTIVE_FETCHES[job.netloc] = 0
-
-	log.info("Active fetchers for domain %s - %s", job.netloc, ACTIVE_FETCHES[job.netloc])
-	if ACTIVE_FETCHES[job.netloc] > allowable:
-		log.info("Too many instances of fetchers for domain %s active. Forcing requests to sleep for a while", job.netloc)
-		job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(seconds=60*5 + random.randrange(0, 60*5))
-		db_sess.commit()
-		return
-	else:
-		with FETCH_LOCK:
-			ACTIVE_FETCHES[job.netloc] += 1
-		engine.do_job(job)
-		time.sleep(5)
-		with FETCH_LOCK:
-			ACTIVE_FETCHES[job.netloc] -= 1
+		if not netloc in RATE_LIMIT_ITEMS:
+			q = multiprocessing.Queue()
+			q.put((rid, joburl, netloc))
+			item = {
+				'ntime' : time.time(),
+				"queue" : q
+			}
+			RATE_LIMIT_ITEMS[netloc] = item
+		else:
+			if RATE_LIMIT_ITEMS[netloc]['ntime'] == -1:
+				RATE_LIMIT_ITEMS[netloc]['ntime'] = time.time()
+			RATE_LIMIT_ITEMS[netloc]['queue'].put((rid, joburl, netloc))
 
 
 
 dispatchers = {
-	# 'so_remote_fetch' : handleSoRemoteFetch,
-	# 'remote_fetch'    : handleRemoteFetch,
-	# 'remote_fetch'    : handleSoRemoteFetch,
 	'rate_limit'      : handleRateLimiting,
-
 }
 
 
-def doSpecialCase():
+def getSpecialCase(specialcase):
+	# log.info("Special case handler checking for deferred fetches.")
+	with FETCH_LOCK:
+		print("RATE_LIMIT_ITEMS", RATE_LIMIT_ITEMS)
+		for key in RATE_LIMIT_ITEMS.keys():
+			if RATE_LIMIT_ITEMS[key]['ntime'] < time.time():
+				try:
+					rid, joburl, netloc = RATE_LIMIT_ITEMS[key]['queue'].get_nowait()
+
+					rate = specialcase[netloc][1]
+
+					RATE_LIMIT_ITEMS[key]['ntime'] += rate
+					log.info("Deferred special case item for url '%s' ready. Returning.", joburl)
+					return rid, joburl, netloc
+				except queue.Empty:
+					RATE_LIMIT_ITEMS[key]['ntime'] = -1
+			# else:
+			# 	log.info("Not yet ready to fetch for '%s' (%s < %s)", key, RATE_LIMIT_ITEMS[key]['ntime'], time.time())
+
+	return None, None, None
+
+
+def pushSpecialCase(specialcase, rid, joburl, netloc):
 	'''
 	Handle processing AMQP queue responses here.
 	Return true if there was a queue responseto handle, false if there was not.
 	'''
-	had_job = False
 
-	return had_job
+	assert netloc in specialcase
 
-def handleSpecialCase(job, engine, rules, db_sess):
-	commands = rules[job.netloc]
+	commands = specialcase[netloc]
 	op, params = commands[0], commands[1:]
+
 	if op in dispatchers:
-		return dispatchers[op](params, job, engine, db_sess)
+		return dispatchers[op](params, rid, joburl, netloc)
 	else:
 		log.error("Error! Unknown special-case filter!")
-		print("Filter name: '%s', parameters: '%s', job URL: '%s'", op, params, job.url)
+		print("Filter name: '%s', parameters: '%s', job conf: '%s'", op, params, (rid, joburl, netloc))
+
+
+
+def haveSpecialCase(specialcase, joburl, netloc):
+	if netloc in specialcase:
+		# No special case for netloc
+		return True
+
+	return False
 
 def test():
 	pass

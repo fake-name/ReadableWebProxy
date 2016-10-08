@@ -43,6 +43,7 @@ import WebMirror.processor.BinaryProcessor
 import WebMirror.processor.RssProcessor
 import WebMirror.processor.WattPadJsonProcessor
 import WebMirror.processor.RoyalRoadLProcessor
+import WebMirror.processor.NuProcessor
 
 
 PLUGINS = [
@@ -54,6 +55,7 @@ PLUGINS = [
 	WebMirror.processor.RssProcessor.RssProcessor,
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
 	WebMirror.processor.RoyalRoadLProcessor.RoyalRoadLProcessor,
+	WebMirror.processor.NuProcessor.NuProcessor,
 ]
 
 

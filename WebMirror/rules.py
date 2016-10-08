@@ -463,7 +463,8 @@ startup()
 
 
 if __name__ == "__main__":
-	print(load_raw_mirror_sites())
+	# print(load_raw_mirror_sites())
+	print(load_special_case_sites())
 
 	# for ruleset in load_rules():
 	# 	if ruleset['send_raw_feed'] == False:
