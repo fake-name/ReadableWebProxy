@@ -19,6 +19,12 @@ badwords: [
 			'/extnu/',
 
 
+			# Apparently it's built on top of wordpress?
+			# Wat?
+			'/wp-includes/',
+			'/fdrev/',
+			'/login/',
+
 
 			# Don't actually spider the site, just let the update triggers
 			# do their thing.
