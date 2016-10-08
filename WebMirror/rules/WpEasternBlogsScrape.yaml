@@ -609,6 +609,8 @@ baseUrl: [
 	"https://xytranslations.wordpress.com",
 	"https://yumeabyss.wordpress.com",
 	"https://zeromahouthetranslation.wordpress.com",
+	"https://saurimania.wordpress.com",
+	"https://arsl31.wordpress.com",
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	# This is WP, but it uses an custom theme I haven't tested against.
@@ -798,6 +800,7 @@ baseUrl: [
 	'http://www.noodletowntranslated.com',
 	'http://nanodesutranslations.org',
 	'http://www.novitranslation.com',
+	'http://re-library.com',
 
 	'https://ajrg.me',
 

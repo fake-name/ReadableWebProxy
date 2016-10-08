@@ -136,6 +136,7 @@ decompose: [
 	{"class" : "bam_announcements"},
 	{"class" : "breadcrumb"},
 	{"class" : "pagination"},
+	{"class" : "search-bar"},
 	{"class" : "button"},
 	{"class" : "notifications"},
 	{"class" : "postbit_avatar"},
