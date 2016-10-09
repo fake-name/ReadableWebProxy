@@ -10,6 +10,7 @@ from . import ProcessorBase
 import feedparser
 import bs4
 import json
+import time
 import calendar
 import traceback
 import WebMirror.OutputFilters.rss.FeedDataParser
@@ -177,17 +178,18 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 
-			if 'updated_parsed' in entry:
+			if 'updated_parsed' in entry and entry['updated_parsed']:
 				item['updated']   = calendar.timegm(entry['updated_parsed'])
 
-			if 'published_parsed' in entry:
+			if 'published_parsed' in entry and entry['published_parsed']:
 				item['published'] = calendar.timegm(entry['published_parsed'])
 
-			if not 'published' in item or ('updated' in item and item['published'] > item['updated']):
-				item['published'] = item['updated']
 
-			if not 'updated' in item:
-				item['updated']   = 0
+			if 'updated' not in item:
+				item['updated']   = time.time()
+
+			if 'published' not in item or ('updated' in item and item['published'] > item['updated']):
+				item['published'] = item['updated']
 
 			item['tags']    = []
 			if 'tags' in entry:

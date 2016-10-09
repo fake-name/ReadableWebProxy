@@ -351,7 +351,8 @@ class ConnectorManager:
 	def disconnect(self):
 		with self.connect_lock:
 			self.threads_live.value = 0
-			self.interface.close()
+			if hasattr(self, "interface"):
+				self.interface.close()
 			failed_to_die = 0
 			threads = [self.rx_thread, self.tx_thread, self.hb_thread]
 			while any([thread.is_alive() for thread in threads]):
@@ -367,11 +368,12 @@ class ConnectorManager:
 					failed_to_die,
 					)
 				failed_to_die += 1
-				if failed_to_die > 15:
-					self.log.warning("Attempting to kill interface!")
-					self.interface.kill()
 				try:
-					self.interface.close()
+					if failed_to_die > 15:
+						self.log.warning("Attempting to kill interface!")
+						self.interface.kill()
+					else:
+						self.interface.close()
 				except Exception:
 					self.log.error("Closing interface failed!")
 
