@@ -677,6 +677,12 @@ mapper = {
 	'dadishero.wordpress.com'                         : 'DadIsHero Fan Translations',
 	'ezanifiction.wordpress.com'                      : 'E. Zani Fiction',
 
+	're-library.com'                                  : 'Re:Library',
+
+
+	'jawzpublications.wordpress.com'                  : 'Jawz Publications',
+	'nanodesutranslations.org'                        : 'Nanodesu',
+
 
 	'chronazero.blogspot.com'                         : 'Chrona Zero',
 	'tlsyosetsu.blogspot.com'                          : 'TL Syosetsu',

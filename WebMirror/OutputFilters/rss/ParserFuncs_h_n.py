@@ -2946,7 +2946,7 @@ def extractNovelsChill(item):
 		return buildReleaseMessage(item, 'The Skill Maker', vol, chp, frag=frag, postfix=postfix)
 	if 'Aoa' in item['tags']:
 		return buildReleaseMessage(item, 'Ace of Ace', vol, chp, frag=frag, postfix=postfix)
-	if 'EER' in item['tags']:
+	if 'EER' in item['tags'] or 'Everyone Else is a Returnee' in item['tags']:
 		return buildReleaseMessage(item, 'Everyone Else is a Returnee', vol, chp, frag=frag, postfix=postfix)
 	if 'TMoS' in item['tags']:
 		return buildReleaseMessage(item, 'The Master of Strength', vol, chp, frag=frag, postfix=postfix)
@@ -3448,4 +3448,17 @@ def extractNovelsTranslation(item):
 		return None
 	if 'Womanizing Mage' in item['tags']:
 		return buildReleaseMessage(item, 'Womanizing Mage', vol, chp, frag=frag, postfix=postfix)
+	return False
+
+
+def extractNovitranslation(item):
+	'''
+	Novels Translation
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	if 'The Evil Prince and his Precious Wife: The Sly Lady' in item['tags']:
+		return buildReleaseMessage(item, 'The Evil Prince and his Precious Wife: The Sly Lady', vol, chp, frag=frag, postfix=postfix)
 	return False

@@ -109,6 +109,8 @@ def render_search_page():
 			netlocs = netlocs)
 
 
+
+
 @app.route('/search/', methods=['GET'])
 @app.route('/search/<int:page>', methods=['GET'])
 def search(page=1):

@@ -1096,6 +1096,10 @@ def extractRadiantTranslations(item):
 		if 'beseech the devil' in item['title'].lower():
 			return buildReleaseMessage(item, 'Beseech the Devil', vol, chp, frag=frag, postfix=postfix)
 
+	if ('enchantress amongst alchemist: ghost king’s concubine chapter' in item['title'].lower() or
+		'enchantress amongst alchemists: ghost king’s concubine' in item['title'].lower()):
+		return buildReleaseMessage(item, 'Enchantress Amongst Alchemists: Ghost King’s Concubine', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 ####################################################################################################################################################
@@ -1227,6 +1231,8 @@ def extractShinsori(item):
 		return buildReleaseMessage(item, 'Tensei Shitara Kyuuketsuki-san Datta Ken', vol, chp, frag=frag, postfix=postfix)
 	if 'Princess' in item['tags']:
 		return buildReleaseMessage(item, 'The Great Nation Remodeling of Reincarnated Princess ~Let’s Build an Unrivalled Country~', vol, chp, frag=frag, postfix=postfix)
+	if 'Isekai Yururi Kikou' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Yururi Kikou', vol, chp, frag=frag, postfix=postfix)
 
 	if 'Kindred' in item['title']:
 		return buildReleaseMessage(item, 'Kindred', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
@@ -3889,5 +3895,20 @@ def extractTwkisanOtaku(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	return False
+
+
+def extractReLibrary(item):
+	'''
+	'Re:Library'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	if 'Very Pure & Ambiguous - The Prequel' in item['tags']:
+		return buildReleaseMessage(item, 'Very Pure & Ambiguous - The Prequel', vol, chp, frag=frag, postfix=postfix)
+	if 'World of Immortals' in item['tags']:
+		return buildReleaseMessage(item, 'World of Immortals', vol, chp, frag=frag, postfix=postfix)
 	return False
 
