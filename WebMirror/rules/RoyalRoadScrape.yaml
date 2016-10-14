@@ -30,6 +30,10 @@ badwords: [
 			"/scripts/assets/",
 			'/tinymce/',
 			'royalroadl.com/Scripts/',
+			'/setbookmark/',
+			'?comment=',
+			'/gp/help/customer/display.html',
+			'/skin?skin=',
 			]
 
 # Content Stripping needs to be determined.
