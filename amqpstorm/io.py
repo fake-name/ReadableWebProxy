@@ -100,8 +100,8 @@ class IO(object):
         print("IO interface for vhost : %s closed." % self.name)
 
     def kill(self):
-        if self._inbound_thread.is_alive():
-            self._die.value = 1
+        self._die.value = 1
+        if self._inbound_thread and self._inbound_thread.is_alive():
             while self._inbound_thread.is_alive():
                 self._inbound_thread.join(1)
                 print("Worker thread still alive!")

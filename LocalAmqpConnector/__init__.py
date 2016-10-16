@@ -272,6 +272,8 @@ class ConnectorManager:
 		assert 'hearbeat_packet_timeout'  in config
 		assert 'ack_rx'                   in config
 
+
+
 		self.log = logging.getLogger("Main.Connector.Internal(%s)" % config['virtual_host'])
 		self.runstate           = runstate
 		self.config             = config
