@@ -342,10 +342,10 @@ class ConnectorManager:
 			self.tx_thread.start()
 			self.hb_thread.start()
 
-			# print("Living threads:")
-			# print("rx_thread", self.rx_thread.is_alive())
-			# print("tx_thread", self.tx_thread.is_alive())
-			# print("hb_thread", self.hb_thread.is_alive())
+			print("Living threads:")
+			print("rx_thread", self.rx_thread.is_alive())
+			print("tx_thread", self.tx_thread.is_alive())
+			print("hb_thread", self.hb_thread.is_alive())
 
 			self.interface.start_consume(rabbit_params)
 
@@ -356,7 +356,8 @@ class ConnectorManager:
 			if hasattr(self, "interface"):
 				self.interface.close()
 			failed_to_die = 0
-			threads = [self.rx_thread, self.tx_thread, self.hb_thread]
+			threads = [self.tx_thread, self.hb_thread, self.rx_thread]
+			threads = [threadp for threadp in threads if threadp is not None]
 			while any([thread.is_alive() for thread in threads]):
 				for thread in [thread for thread in threads if thread.is_alive()]:
 					thread.join(1)
@@ -371,7 +372,8 @@ class ConnectorManager:
 					)
 				failed_to_die += 1
 				try:
-					if failed_to_die > 15:
+					# Bob back and forth killing and closing the interface.
+					if failed_to_die > 15 and (failed_to_die % 2) == 0:
 						self.log.warning("Attempting to kill interface!")
 						self.interface.kill()
 					else:
@@ -386,14 +388,17 @@ class ConnectorManager:
 
 			try:
 				del self.rx_thread
+				self.rx_thread = None
 			except Exception:
 				pass
 			try:
 				del self.tx_thread
+				self.tx_thread = None
 			except Exception:
 				pass
 			try:
 				del self.hb_thread
+				self.hb_thread = None
 			except Exception:
 				pass
 
@@ -544,7 +549,8 @@ class ConnectorManager:
 						self.log.error(line)
 					self.had_exception.value = 1
 			time.sleep(1)
-			print("Monitor loop!", self.runstate.value)
+			if not self.runstate.value:
+				print("Monitor loop!", self.runstate.value)
 
 		self.shutdown()
 
@@ -589,13 +595,7 @@ class ConnectorManager:
 			log.error("Exception in connector! Terminating connection...")
 			for line in traceback.format_exc().split('\n'):
 				log.error(line)
-			try:
-				connection_manager.disconnect()
-			except Exception:
-				log.info("")
-				log.error("Failed pre-emptive closing before reconnection. May not be a problem?")
-				for line in traceback.format_exc().split('\n'):
-					log.error(line)
+
 			try:
 				connection_manager.shutdown()
 				del connection_manager
@@ -609,6 +609,7 @@ class ConnectorManager:
 
 		if connection_manager:
 			connection_manager.shutdown()
+
 		log.info("")
 		log.info("Worker thread has terminated.")
 		log.info("")

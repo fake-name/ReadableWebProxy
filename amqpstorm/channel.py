@@ -127,7 +127,7 @@ class Channel(BaseChannel):
                 continue
             yield message
 
-    
+
     def kill(self):
         self._die.value = 1
         self.set_state(self.CLOSED)
@@ -298,11 +298,13 @@ class Channel(BaseChannel):
         """
         while self.consumer_tags:
             if self.is_closed:
+                print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
                 break
             if self._die.value != 0:
+                print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
                 break
             self.process_data_events(to_tuple=to_tuple)
-            # print("start_consuming looping (state: %s)" % (self._state, ))
+            # print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
     def stop_consuming(self):
         """Stop consuming messages.
 

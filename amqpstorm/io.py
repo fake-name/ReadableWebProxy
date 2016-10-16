@@ -101,7 +101,11 @@ class IO(object):
 
     def kill(self):
         self._die.value = 1
-        if self._inbound_thread and self._inbound_thread.is_alive():
+
+        # Killing the contained thread when
+        assert self._inbound_thread is not None
+
+        if self._inbound_thread.is_alive():
             while self._inbound_thread.is_alive():
                 self._inbound_thread.join(1)
                 print("Worker thread still alive!")

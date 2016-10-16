@@ -171,7 +171,7 @@ class Connection(Stateful):
         for channel in self._channels.values():
             channel.remove_consumer_tag()
 
-        print("Joining on IO thread!")
+        print("Killing on IO thread!")
         self._io.kill()
 
 
