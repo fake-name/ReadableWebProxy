@@ -112,9 +112,12 @@ class Channel(BaseChannel):
         """
         self.check_for_errors()
         while not self.is_closed:
-            # print("build_inbound_messages looping!")
+            print("build_inbound_messages looping!", self._die.value, self.is_closed)
             if self._die.value != 0:
                 return
+            if self.is_closed:
+                return
+
             message = self._build_message()
             if not message:
                 if break_on_empty:
@@ -300,9 +303,11 @@ class Channel(BaseChannel):
             if self.is_closed:
                 print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
                 break
-            if self._die.value != 0:
+            elif self._die.value != 0:
                 print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
                 break
+            else:
+                print("Looping?", self._die.value, self.is_closed)
             self.process_data_events(to_tuple=to_tuple)
             # print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
     def stop_consuming(self):

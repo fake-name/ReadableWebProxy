@@ -148,8 +148,20 @@ class AmqpContainer(object):
 
 	def kill(self):
 		self.log.info("Killing connection")
-		self.storm_connection.kill()
-		self.storm_channel.kill()
+		killfuncs = {
+				"connection" : self.storm_connection.kill,
+				"channel" : self.storm_channel.kill
+			}
+
+		for name, kf in killfuncs.items():
+			try:
+				kf()
+			except AssertionError:
+				self.log.error("Exception when calling kill on %s!", name)
+
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+
 
 	def enter_blocking_rx_loop(self):
 		self.storm_channel.start_consuming(to_tuple=False)
@@ -219,7 +231,7 @@ class AmqpContainer(object):
 					raise Heartbeat_Timeout_Exception("Heartbeat timeout!")
 
 		with self.rx_timeout_lock:
-			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 30):
+			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 2):
 				with self.active_lock:
 					print()
 					print()
@@ -517,6 +529,7 @@ class ConnectorManager:
 		self.log.info("RX Poll process starting. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
 		try:
 			while not self.__should_die():
+				self.log.info("Entering RX loop!")
 				self.interface.enter_blocking_rx_loop()
 		except amqpstorm.AMQPError as e:
 			self.log.error("Error while in rx runloop!")
@@ -638,15 +651,15 @@ class Connector:
 			'master'                   : kwargs.get('master',                   False),
 			'synchronous'              : kwargs.get('synchronous',              True),
 			'flush_queues'             : kwargs.get('flush_queues',             False),
-			'heartbeat'                : kwargs.get('heartbeat',                 60),
+			'heartbeat'                : kwargs.get('heartbeat',                 15),
 			'sslopts'                  : kwargs.get('ssl',                      None),
 			'poll_rate'                : kwargs.get('poll_rate',                  0.25),
 			'prefetch'                 : kwargs.get('prefetch',                   1),
 			'session_fetch_limit'      : kwargs.get('session_fetch_limit',      None),
 			'durable'                  : kwargs.get('durable',                  False),
-			'socket_timeout'           : kwargs.get('socket_timeout',            30),
+			'socket_timeout'           : kwargs.get('socket_timeout',            15),
 
-			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  60),
+			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  30),
 			'ack_rx'                   : kwargs.get('ack_rx',                   True),
 		}
 

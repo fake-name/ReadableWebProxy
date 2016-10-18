@@ -83,7 +83,6 @@ class IO(object):
                         self._running.is_set(),
                         self._inbound_thread.is_alive() if self._inbound_thread else "None",
                         self._inbound_thread.ident if self._inbound_thread else "None"
-
                     )
                 )
             self._running.clear()

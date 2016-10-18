@@ -48,6 +48,8 @@ def add_highlight(from_name, from_chp, from_group, namestr):
 		" " + t1 + " " + t2
 	highlights = [val for val in splitstr.lower().split(" ") if val and (len(val) > 1 or any([char for char in val if char in "0123456789"]))]
 
+	highlights.sort(key=lambda x: len(x), reverse=True)
+
 	namestr = namestr.lower()
 
 	for highlight in highlights:
