@@ -102,6 +102,9 @@ class IO(object):
         self._die.value = 1
 
         # Killing the contained thread when
+        if self._inbound_thread is None:
+            print("Inbound thread is none! Wat?")
+            return
         assert self._inbound_thread is not None
 
         if self._inbound_thread.is_alive():

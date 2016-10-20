@@ -230,6 +230,9 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def processPage(self, url, content):
+		# Ignore 404 chapters
+		if "<title>Not Found | RoyalRoadL</title>" in content:
+			return
 
 		soup = common.util.webFunctions.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)

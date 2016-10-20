@@ -385,6 +385,8 @@ class ConnectorManager:
 				failed_to_die += 1
 				try:
 					# Bob back and forth killing and closing the interface.
+					if failed_to_die > 30:
+						self.runstate.value = 0
 					if failed_to_die > 15 and (failed_to_die % 2) == 0:
 						self.log.warning("Attempting to kill interface!")
 						self.interface.kill()

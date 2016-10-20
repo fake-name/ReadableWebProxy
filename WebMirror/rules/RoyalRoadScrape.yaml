@@ -34,6 +34,9 @@ badwords: [
 			'?comment=',
 			'/gp/help/customer/display.html',
 			'/skin?skin=',
+			'/login?',
+			'/report/',
+			'?ReturnUrl=',
 			]
 
 # Content Stripping needs to be determined.
