@@ -430,6 +430,9 @@ class Channel(BaseChannel):
             if self._die.value == 1:
                 raise RuntimeError("Exiting due to exit flag!")
             if not self._inbound:
+                if self.is_closed:
+                    self.check_for_errors()
+                    break
                 sleep(IDLE_WAIT)
                 continue
             body_piece = self._inbound.pop(0)
