@@ -31,29 +31,12 @@ from sqlalchemy_continuum.utils import version_table
 
 import Misc.HistoryAggregator.Flatten
 
-def print_html_response(archiver, new, ret):
-	print("Plain links:")
-	for link in ret['plainLinks']:
-		print("	'%s'" % link.replace("\n", ""))
-	print("Resource links:")
-	for link in ret['rsrcLinks']:
-		print("	'%s'" % link.replace("\n", ""))
-
-	print()
-	print("Filtering")
-	badwords = archiver.getBadWords(new)
-	filtered = archiver.filterContentLinks(new, ret['plainLinks'], badwords)
-	filteredr = archiver.filterContentLinks(new, ret['rsrcLinks'], badwords)
-
-	print("Filtered plain links:")
-	for link in filtered:
-		print("	'%s'" % link.replace("\n", ""))
-	print("Filtered resource links:")
-	for link in filteredr:
-		print("	'%s'" % link.replace("\n", ""))
 
 
-def test_retrieve(url, debug=True, rss_debug=False):
+def exposed_test_retrieve(url, debug=True, rss_debug=False):
+	'''
+	Do a synchronous fetch of content from url `url`.
+	'''
 
 	# try:
 	# 	WebMirror.SpecialCase.startAmqpFetcher()
@@ -89,8 +72,23 @@ def test_retrieve(url, debug=True, rss_debug=False):
 	finally:
 		db.delete_db_session()
 
+def exposed_fetch_silent(tgt):
+	'''
+	Identical to `test_retrieve`, except debug printing is supressed.
+	'''
+	exposed_test_retrieve(tgt, debug=False)
 
-def test_head(url, referrer):
+def exposed_fetch_rss(tgt):
+	'''
+	Identical to `test_retrieve`, except debug printing is supressed and RSS debugging is enabled.
+	'''
+	exposed_test_retrieve(tgt, debug=False, rss_debug=True)
+
+
+def exposed_test_head(url, referrer):
+	'''
+	Do a HTTP HEAD for url `url`, passing the referrer `referrer`.
+	'''
 
 	try:
 		WebMirror.SpecialCase.startAmqpFetcher()
@@ -104,10 +102,9 @@ def test_head(url, referrer):
 	finally:
 		WebMirror.SpecialCase.stopAmqpFetcher()
 
-	print("test_head complete!")
+	print("exposed_test_head complete!")
 
-
-def test_all_rss():
+def exposed_test_all_rss():
 	print("fetching and debugging RSS feeds")
 	rules = WebMirror.rules.load_rules()
 	feeds = [item['feedurls'] for item in rules]
@@ -117,13 +114,13 @@ def test_all_rss():
 	with ThreadPoolExecutor(max_workers=8) as executor:
 		for url in feeds:
 			try:
-				executor.submit(test_retrieve, url, debug=False)
+				executor.submit(exposed_test_retrieve, url, debug=False)
 			except common.Exceptions.DownloadException:
 				print("failure downloading page!")
 			except urllib.error.URLError:
 				print("failure downloading page!")
 
-def db_fiddle():
+def exposed_db_fiddle():
 	print("Fixing DB things.")
 	print("Getting IDs")
 	have = db.get_db_session().execute("""
@@ -150,7 +147,7 @@ def db_fiddle():
 			print(count, item)
 			db.get_db_session().commit()
 
-def longest_rows():
+def exposed_longest_rows():
 	print("Getting longest rows from database")
 	have = db.get_db_session().execute("""
 		SELECT
@@ -180,8 +177,7 @@ def longest_rows():
 			fp.write(size.encode("utf-8"))
 			fp.write("{}".format(row[3]).encode("utf-8"))
 
-
-def fix_null():
+def exposed_fix_null():
 	step = 50000
 
 
@@ -215,8 +211,7 @@ def fix_null():
 			changed = 0
 	db.get_db_session().commit()
 
-
-def fix_tsv():
+def exposed_fix_tsv():
 	step = 1000
 
 
@@ -260,8 +255,7 @@ def fix_tsv():
 
 	db.get_db_session().commit()
 
-
-def disable_wattpad():
+def exposed_disable_wattpad():
 	step = 50000
 
 
@@ -332,8 +326,12 @@ def disable_wattpad():
 
 	db.get_db_session().commit()
 
-
-def clear_bad():
+def exposed_clear_bad():
+	'''
+	Iterate over all blocked strings from the various YAML rules,
+	deleting any occurances of each from the database.
+	SLOW
+	'''
 	from sqlalchemy.dialects import postgresql
 
 	rules = WebMirror.rules.load_rules()
@@ -363,9 +361,7 @@ def clear_bad():
 						.delete(synchronize_session=False)
 					db.get_db_session().commit()
 
-
-
-def delete_comment_feed_items():
+def exposed_delete_comment_feed_items():
 
 	sess = db.get_db_session()
 	bad = sess.query(db.FeedItems) \
@@ -395,9 +391,7 @@ def delete_comment_feed_items():
 	print("Done. Committing...")
 	sess.commit()
 
-
-
-def update_feed_names():
+def exposed_update_feed_names():
 	for key, value in feedNameLut.mapper.items():
 		feed_items = db.get_db_session().query(db.FeedItems) \
 				.filter(db.FeedItems.srcname == key)    \
@@ -409,8 +403,7 @@ def update_feed_names():
 			print(key, value)
 			db.get_db_session().commit()
 
-
-def purge_invalid_urls(selected_netloc=None):
+def exposed_purge_invalid_urls(selected_netloc=None):
 
 
 	sess = db.get_db_session()
@@ -487,11 +480,8 @@ def purge_invalid_urls(selected_netloc=None):
 		# print(ruleset['netlocs'])
 		# print(ruleset['badwords'])
 
-
-
-
 # Re-order the missed file list by order of misses.
-def sort_json(json_name):
+def exposed_sort_json(json_name):
 	with open(json_name) as fp:
 		cont = fp.readlines()
 	print("Json file has %s lines." % len(cont))
@@ -540,7 +530,7 @@ def sort_json(json_name):
 				fp.write("\n")
 
 # Re-order the missed file list by order of misses.
-def sort_thing(json_name):
+def exposed_sort_thing(json_name):
 	with open(json_name) as fp:
 		cont = fp.readlines()
 	print("Json file has %s lines." % len(cont))
@@ -584,7 +574,7 @@ def sort_thing(json_name):
 					fp.write("%s, " % ((key, value['nu_release'][key]), ))
 				fp.write("\n")
 
-def rss_db_sync(target = None, days=False, silent=False):
+def exposed_rss_db_sync(target = None, days=False, silent=False):
 
 	json_file = 'rss_filter_misses-1.json'
 
@@ -656,9 +646,23 @@ def rss_db_sync(target = None, days=False, silent=False):
 			pass
 		# print(ctnt)
 	if target == None:
-		sort_json(json_file)
+		exposed_sort_json(json_file)
 
-def clear_blocked():
+
+def exposed_rss_db_silent():
+	exposed_rss_db_sync(silent=True)
+
+def exposed_rss_day():
+	exposed_rss_db_sync(days=1)
+
+def exposed_rss_week():
+	exposed_rss_db_sync(days=7)
+
+def exposed_rss_month():
+	exposed_rss_db_sync(days=45)
+
+
+def exposed_clear_blocked():
 	for ruleset in WebMirror.rules.load_rules():
 		if ruleset['netlocs'] and ruleset['badwords']:
 			# mask = [db.WebPages.url.like("%{}%".format(tmp)) for tmp in ruleset['badwords'] if not "%" in tmp]
@@ -683,8 +687,7 @@ def clear_blocked():
 			# print(ruleset['netlocs'])
 			# print(ruleset['badwords'])
 
-
-def filter_links(path):
+def exposed_filter_links(path):
 	if not os.path.exists(path):
 		raise IOError("File at path '%s' doesn't exist!" % path)
 
@@ -703,7 +706,7 @@ def filter_links(path):
 		if item not in havestarts:
 			print(item)
 
-def missing_lut():
+def exposed_missing_lut():
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
 	rules = WebMirror.rules.load_rules()
 	feeds = [item['feedurls'] for item in rules]
@@ -713,7 +716,7 @@ def missing_lut():
 		if not fnl.getNiceName(feed):
 			print("Missing: ", urllib.parse.urlsplit(feed).netloc)
 
-def delete_feed(feed_name, do_delete, search_str):
+def exposed_delete_feed(feed_name, do_delete, search_str):
 
 	sess = db.get_db_session()
 	items = sess.query(db.FeedItems)               \
@@ -733,135 +736,5 @@ def delete_feed(feed_name, do_delete, search_str):
 
 	sess.commit()
 
-def decode(*args):
-	print("Args:", args)
-
-	if len(args) == 1:
-		op = args[0]
-		print("Single arg op: '%s'" % op )
-		if op == "rss":
-			test_all_rss()
-		elif op == "sync":
-			WebMirror.SiteSync.fetch.fetch_other_sites()
-		elif op == "rss-del-comments":
-			delete_comment_feed_items()
-		elif op == "db-fiddle":
-			db_fiddle()
-		elif op == "rss-name":
-			update_feed_names()
-		elif op == "purge-from-rules":
-			purge_invalid_urls()
-		elif op == "longest-rows":
-			longest_rows()
-		elif op == "disable-wattpad":
-			disable_wattpad()
-		elif op == "fix-null":
-			fix_null()
-		elif op == "missing-lut":
-			missing_lut()
-		elif op == "fix-tsv":
-			fix_tsv()
-		elif op == "clear-bad":
-			clear_bad()
-		elif op == "rss-db":
-			rss_db_sync()
-		elif op == "consolidate-history":
-			Misc.HistoryAggregator.Flatten.consolidate_history()
-		elif op == "rss-db-silent":
-			rss_db_sync(silent=True)
-		elif op == "sort-json":
-			sort_json('rss_filter_misses-1.json')
-		elif op == "sort-txt":
-			sort_thing('nu_missing_releases.txt')
-		elif op == "rss-day":
-			rss_db_sync(days=1)
-		elif op == "rss-week":
-			rss_db_sync(days=7)
-		elif op == "rss-month":
-			rss_db_sync(days=45)
-		elif op == "clear-blocked":
-			clear_blocked()
-		else:
-			print("ERROR: Unknown command!")
-
-	if len(args) == 2:
-		op  = args[0]
-		tgt = args[1]
-
-		if op == "fetch":
-			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
-			test_retrieve(tgt)
-		elif op == "rss-db":
-			rss_db_sync(tgt)
-		elif op == "purge-from-rules":
-			purge_invalid_urls(tgt)
-		elif op == "fetch-silent":
-			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
-			test_retrieve(tgt, debug=False)
-		elif op == "fetch-rss":
-			print("Fetch command! Retreiving content from URL: '%s'" % tgt)
-			test_retrieve(tgt, debug=False, rss_debug=True)
-
-		elif op == "filter-new-links":
-			print("Filtering new links from file: '%s'" % tgt)
-			filter_links(tgt)
-
-		else:
-			print("ERROR: Unknown command!")
-
-	if len(args) == 3:
-		op  = args[0]
-		param1 = args[1]
-		param2 = args[2]
-		if op == "head":
-			print("Test HEAD command! Retreiving actual path from URL: '%s'" % param1)
-			test_head(param1, param2)
-
-	if len(args) == 4:
-		if args[0] == "delete-feed":
-			delete_feed(args[1], args[2], args[3])
-
-
-if __name__ == "__main__":
-	import sys
-	if len(sys.argv) < 2:
-
-		print("you must pass a operation to execute!")
-		print("Current actions:")
-
-		print('	clear-bad')
-		print('	clear-blocked')
-		print('	db-fiddle')
-		print('	disable-wattpad')
-		print('	fix-null')
-		print('	fix-tsv')
-		print('	longest-rows')
-		print('	missing-lut')
-		print('	purge-from-rules')
-		print('	rss-day')
-		print('	rss-db')
-		print('	rss-db-silent')
-		print('	rss-del-comments')
-		print('	rss-month')
-		print('	rss-name')
-		print('	rss-week')
-		print('	sort-json')
-		print('	sync')
-		print('	rss')
-		print('	sort-txt')
-		print('	consolidate-history')
-
-		print('	rss-db {feedname}')
-		print('	fetch {url}')
-		print('	fetch-silent {url}')
-		print('	fetch-rss {url}')
-		print('	filter-new-links {file-path}')
-		print('	delete-feed {feed name} {do delete (true/false)} {search term}')
-
-		sys.exit(1)
-
-	decode(*sys.argv[1:])
-	# test_retrieve("http://www.royalroadl.com/fiction/1484")
-
-
-
+def exposed_consolidate_history():
+	Misc.HistoryAggregator.Flatten.consolidate_history()

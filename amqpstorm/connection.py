@@ -251,8 +251,9 @@ class Connection(Stateful):
         :rtype: bytes
         """
         while data_in:
-            data_in, channel_id, frame_in = \
-                self._handle_amqp_frame(data_in)
+            if self._io._die.value == 1:
+                return
+            data_in, channel_id, frame_in =  self._handle_amqp_frame(data_in)
 
             if frame_in is None:
                 break

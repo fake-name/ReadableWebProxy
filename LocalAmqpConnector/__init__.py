@@ -163,8 +163,8 @@ class AmqpContainer(object):
 					self.log.error(line)
 
 
-	def enter_blocking_rx_loop(self):
-		self.storm_channel.start_consuming(to_tuple=False)
+	def process_rx_events(self):
+		self.storm_channel.process_data_events(to_tuple=False)
 
 
 	def handle_keepalive_rx(self, message):
@@ -231,7 +231,7 @@ class AmqpContainer(object):
 					raise Heartbeat_Timeout_Exception("Heartbeat timeout!")
 
 		with self.rx_timeout_lock:
-			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 2):
+			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 50):
 				with self.active_lock:
 					print()
 					print()
@@ -455,8 +455,8 @@ class ConnectorManager:
 				if self.__should_die():
 					self.log.info("Transmit loop saw exit flag. Breaking!")
 					return
-				else:
-					self.log.info("Transmit looping!")
+				# else:
+				# 	self.log.info("Transmit looping!")
 
 				try:
 					put = self.response_queue.get_nowait()
@@ -530,9 +530,10 @@ class ConnectorManager:
 
 		self.log.info("RX Poll process starting. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
 		try:
+			self.log.info("Entering RX loop!")
 			while not self.__should_die():
-				self.log.info("Entering RX loop!")
-				self.interface.enter_blocking_rx_loop()
+				# self.log.info("RX Looping!")
+				self.interface.process_rx_events()
 		except amqpstorm.AMQPError as e:
 			self.log.error("Error while in rx runloop!")
 			self.log.error("	%s", e)

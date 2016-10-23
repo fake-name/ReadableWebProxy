@@ -29,6 +29,8 @@ class Poller(object):
         self._exceptions = exceptions
         self.timeout = timeout
 
+        assert self.timeout is not None and self.timeout > 1
+
     @property
     def fileno(self):
         """Socket Fileno.
@@ -100,6 +102,7 @@ class IO(object):
 
     def kill(self):
         self._die.value = 1
+        self._running.clear()
 
         # Killing the contained thread when
         if self._inbound_thread is None:
@@ -251,6 +254,7 @@ class IO(object):
             if self.poller.is_ready:
                 self.data_in += self._receive()
                 self.data_in = self._on_read(self.data_in)
+
             sleep(IDLE_WAIT)
             # print("_process_incoming_data() looping. _running(): %s, threadid: %s, name: %s" % (
             #         self._running.is_set(),
@@ -259,7 +263,7 @@ class IO(object):
             #         ))
             if self._die.value == 1:
                 print('_process_incoming_data saw die flag. Exiting')
-                break
+                return
         print("_process_incoming_data() Thread named %s, ID: %s exiting. _running state: %s" % (
                         self.name,
                         threading.get_ident(),

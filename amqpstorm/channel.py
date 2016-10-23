@@ -306,8 +306,8 @@ class Channel(BaseChannel):
             elif self._die.value != 0:
                 print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
                 break
-            # else:
-            #     print("Looping?", self._die.value, self.is_closed)
+            else:
+                print("Looping?", self._die.value, self.is_closed)
             self.process_data_events(to_tuple=to_tuple)
             # print("start_consuming looping (is_closed: %s, state: %s, should-die: %s)" % (self.is_closed, self._state, self._die.value))
     def stop_consuming(self):
@@ -427,6 +427,8 @@ class Channel(BaseChannel):
         """
         body = bytes()
         while len(body) < body_size:
+            if self._die.value == 1:
+                raise RuntimeError("Exiting due to exit flag!")
             if not self._inbound:
                 sleep(IDLE_WAIT)
                 continue
