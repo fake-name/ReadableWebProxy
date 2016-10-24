@@ -50,9 +50,13 @@ dispatchers = {
 
 
 def getSpecialCase(specialcase):
-	# log.info("Special case handler checking for deferred fetches.")
+	log.info("Special case handler checking for deferred fetches.")
 	with FETCH_LOCK:
+		print()
+		print()
 		print("RATE_LIMIT_ITEMS", RATE_LIMIT_ITEMS)
+		print()
+		print()
 		for key in RATE_LIMIT_ITEMS.keys():
 			if RATE_LIMIT_ITEMS[key]['ntime'] < time.time():
 				try:
@@ -65,8 +69,8 @@ def getSpecialCase(specialcase):
 					return rid, joburl, netloc
 				except queue.Empty:
 					RATE_LIMIT_ITEMS[key]['ntime'] = -1
-			# else:
-			# 	log.info("Not yet ready to fetch for '%s' (%s < %s)", key, RATE_LIMIT_ITEMS[key]['ntime'], time.time())
+			else:
+				log.info("Not yet ready to fetch for '%s' (%s < %s)", key, RATE_LIMIT_ITEMS[key]['ntime'], time.time())
 
 	return None, None, None
 

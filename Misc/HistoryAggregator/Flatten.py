@@ -317,6 +317,9 @@ class DbFlattener(object):
 		self.consolidate_history()
 		self.fix_missing_history()
 
+def consolidate_history():
+	proc = DbFlattener()
+	proc._go()
 
 def test():
 	import logSetup

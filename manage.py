@@ -1,7 +1,9 @@
 
 import inspect
 import sys
-import WebMirror.Manage
+import common.management.WebMirrorManage
+import common.management.RawMirrorManage
+import WebMirror.OfflineFilters.offline_filters
 
 if __name__ == "__main__":
 	import logSetup
@@ -9,34 +11,44 @@ if __name__ == "__main__":
 
 func_prefix = "exposed_"
 
+SCANNED_MODULES = [
+	common.management.WebMirrorManage,
+	common.management.RawMirrorManage,
+	WebMirror.OfflineFilters.offline_filters,
+]
+
 def load_functions():
 	ret = {}
-	for name, member in inspect.getmembers(WebMirror.Manage):
-		if inspect.isfunction(member) and name.startswith(func_prefix):
-			name = name[len(func_prefix):]
-			assert name not in ret
-			ret[name] = member
+	for module in SCANNED_MODULES:
+		for name, member in inspect.getmembers(module):
+			if inspect.isfunction(member) and name.startswith(func_prefix):
+				sname = name[len(func_prefix):]
+				assert sname not in ret, "Duplicate management functions named: '%s'" % name
+				ret[sname] = member
 	return ret
 
 
 def print_func(name, func):
 
 	doc = inspect.getdoc(func)
+	sig = inspect.signature(func)
 
 	if not doc:
 		print("    {} -> {}".format(name.ljust(25), "UNDOCUMENTED"))
+		if not sig.parameters:
+			print("        No arguments")
+		else:
+			print("        Args: {}".format(sig))
+
 	else:
-		doclines = doc.splitlines()
 		print("    {}".format(name))
+		if not sig.parameters:
+			print("        No arguments")
+		else:
+			print("        Args: {}".format(sig))
+		doclines = doc.splitlines()
 		for line in doclines:
 			print("            -> {}".format(line))
-
-	sig = inspect.signature(func)
-	if not sig.parameters:
-		print("        No arguments")
-	else:
-
-		print("        {}".format(sig))
 	print()
 
 def print_help():

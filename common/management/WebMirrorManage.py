@@ -1,37 +1,42 @@
 
+import calendar
+import datetime
+import json
+import os
+import os.path
+import shutil
+import traceback
+from concurrent.futures import ThreadPoolExecutor
+
+import urllib.error
+import urllib.parse
+
+from sqlalchemy import and_
+from sqlalchemy import or_
+from sqlalchemy_continuum.utils import version_table
 
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-import common.database as db
-import datetime
 from WebMirror.Engine import SiteArchiver
-from concurrent.futures import ThreadPoolExecutor
-import sqlalchemy.exc
-import traceback
-import os
-import os.path
-import config
-import calendar
-import json
 import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
-import urllib.parse
-import urllib.error
 import WebMirror.rules
-import flags
 import WebMirror.SiteSync.fetch
-from sqlalchemy import or_
-from sqlalchemy import and_
-import common.Exceptions
 import WebMirror.SpecialCase
-import RawArchiver.RawActiveModules
 
-from sqlalchemy_continuum.utils import version_table
+import RawArchiver.RawActiveModules
+import RawArchiver.RawEngine
+
+import common.database as db
+import common.Exceptions
+import common.management.file_cleanup
 
 import Misc.HistoryAggregator.Flatten
 
-
+import flags
+import config
+from config import C_RAW_RESOURCE_DIR
 
 def exposed_test_retrieve(url, debug=True, rss_debug=False):
 	'''
@@ -84,6 +89,53 @@ def exposed_fetch_rss(tgt):
 	'''
 	exposed_test_retrieve(tgt, debug=False, rss_debug=True)
 
+def exposed_raw_test_retrieve(url):
+	'''
+	Lower level fetch test, otherwise similar to `test_retreive`
+	'''
+
+	# try:
+	# 	WebMirror.SpecialCase.startAmqpFetcher()
+	# except RuntimeError:  # Fetcher already started
+	# 	pass
+
+
+	parsed = urllib.parse.urlparse(url)
+	root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+
+
+	sess = db.get_db_session()
+
+	row = sess.query(db.RawWebPages).filter(db.RawWebPages.url == url).scalar()
+	if row:
+		row.state = 'new'
+	else:
+		row = db.RawWebPages(
+			url       = url,
+			starturl  = root,
+			netloc    = parsed.netloc,
+			distance  = 50000,
+			priority  = 500000,
+			state     = 'new',
+			fetchtime = datetime.datetime.now(),
+			)
+		sess.add(row)
+
+
+	try:
+		archiver = RawArchiver.RawEngine.RawSiteArchiver(
+			total_worker_count = 1,
+			worker_num         = 0,
+			new_job_queue      = None,
+			cookie_lock        = None,
+			db_interface       = sess,
+			response_queue     = None
+			)
+		job     = archiver.do_job(row)
+	except Exception as e:
+		traceback.print_exc()
+	finally:
+		db.delete_db_session()
 
 def exposed_test_head(url, referrer):
 	'''
@@ -105,6 +157,9 @@ def exposed_test_head(url, referrer):
 	print("exposed_test_head complete!")
 
 def exposed_test_all_rss():
+	'''
+	Fetch all RSS feeds and process each. Done with 8 parallel workers.
+	'''
 	print("fetching and debugging RSS feeds")
 	rules = WebMirror.rules.load_rules()
 	feeds = [item['feedurls'] for item in rules]
@@ -120,34 +175,12 @@ def exposed_test_all_rss():
 			except urllib.error.URLError:
 				print("failure downloading page!")
 
-def exposed_db_fiddle():
-	print("Fixing DB things.")
-	print("Getting IDs")
-	have = db.get_db_session().execute("""
-		SELECT id FROM web_pages WHERE url LIKE 'https://www.wattpad.com/story%' AND state != 'new';
-		""")
-	print("Query executed. Fetching results")
-	have = list(have)
-	print(len(have))
-	count = 0
-
-	chunk = []
-	for item, in have:
-		chunk.append(item)
-
-		count += 1
-		if count % 1000 == 0:
-			statement = db.get_db_session().query(db.WebPages) \
-				.filter(db.WebPages.state != 'new')        \
-				.filter(db.WebPages.id.in_(chunk))
-
-			# statement = db.get_db_session().update(db.WebPages)
-			statement.update({db.WebPages.state : 'new'}, synchronize_session=False)
-			chunk = []
-			print(count, item)
-			db.get_db_session().commit()
-
 def exposed_longest_rows():
+	'''
+	Fetch the rows from the database where the `content` field is longest.
+	Return is limited to the biggest 50 rows.
+	VERY SLOW (has to scan the entire table)
+	'''
 	print("Getting longest rows from database")
 	have = db.get_db_session().execute("""
 		SELECT
@@ -178,6 +211,10 @@ def exposed_longest_rows():
 			fp.write("{}".format(row[3]).encode("utf-8"))
 
 def exposed_fix_null():
+	'''
+	Reset any rows in the table where the `ignoreuntiltime` column
+	is null. Updates in 50K row increments.11
+	'''
 	step = 50000
 
 
@@ -211,120 +248,53 @@ def exposed_fix_null():
 			changed = 0
 	db.get_db_session().commit()
 
-def exposed_fix_tsv():
-	step = 1000
+def exposed_delete_comment_feed_items():
+	'''
+	Iterate over all retreived feed article entries, and delete any that look
+	like they're comment feed articles.
+	'''
+	sess = db.get_db_session()
+	bad = sess.query(db.FeedItems) \
+			.filter(or_(
+				db.FeedItems.contenturl.like("%#comment-%"),
+				db.FeedItems.contenturl.like("%CommentsForInMyDaydreams%"),
+				db.FeedItems.contenturl.like("%www.fanfiction.net%"),
+				db.FeedItems.contenturl.like("%www.fictionpress.com%"),
+				db.FeedItems.contenturl.like("%www.booksie.com%")))    \
+			.order_by(db.FeedItems.contenturl) \
+			.all()
 
+	count = 0
+	for bad in bad:
+		print(bad.contenturl)
 
-	print("Determining extents that need to be changed.")
-	start = db.get_db_session().execute("""SELECT MIN(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL AND id != 60903982;""")
-	start = list(start)[0][0]
+		while bad.author:
+			bad.author.pop()
+		while bad.tags:
+			bad.tags.pop()
+		sess.delete(bad)
+		count += 1
+		if count % 1000 == 0:
+			print("Committing at %s" % count)
+			sess.commit()
 
-	end = db.get_db_session().execute("""SELECT MAX(id) FROM web_pages WHERE tsv_content IS NULL AND content IS NOT NULL;""")
-	end = list(end)[0][0]
+	print("Done. Committing...")
+	sess.commit()
 
-	changed = 0
-	print("Start: ", start)
-	print("End: ", end)
-
-
-	if not start:
-		print("No null rows to fix!")
-		return
-
-	start = start - (start % step)
-
-	for x in range(start, end, step):
-		try:
-			# SQL String munging! I'm a bad person!
-			# Only done because I can't easily find how to make sqlalchemy
-			# bind parameters ignore the postgres specific cast
-			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-			have = db.get_db_session().execute("""UPDATE web_pages SET tsv_content = to_tsvector(coalesce(content)) WHERE tsv_content IS NULL AND content IS NOT NULL AND id < %s AND id >= %s;""" % (x, x-step))
-			# print()
-			print('%10i, %10i, %7.4f, %6i' % (x, end, (x-start)/(end-start) * 100, have.rowcount))
-			changed += have.rowcount
-			if changed > step:
-				print("Committing (%s changed rows)...." % changed, end=' ')
-				db.get_db_session().commit()
-				print("done")
-				changed = 0
-		except sqlalchemy.exc.OperationalError:
-			db.get_db_session().rollback()
-			print("Error!")
-			traceback.print_exc()
-
-	db.get_db_session().commit()
-
-def exposed_disable_wattpad():
-	step = 50000
-
-
-	print("Determining extents that need to be changed.")
-	start = db.get_db_session().execute("""
-		SELECT
-			MIN(id)
-		FROM
-			web_pages
-		WHERE
-			(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
-		;""")
-
-	start = list(start)[0][0]
-	print("Start: ", start)
-
-	end = db.get_db_session().execute("""
-		SELECT
-			MAX(id)
-		FROM
-			web_pages
-		WHERE
-			(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
-		;""")
-	end = list(end)[0][0]
-
-	changed = 0
-	print("End: ", end)
-
-
-	if not start:
-		print("No null rows to fix!")
-		return
-
-	start = start - (start % step)
-
-	for x in range(start, end, step):
-		try:
-			# SQL String munging! I'm a bad person!
-			# Only done because I can't easily find how to make sqlalchemy
-			# bind parameters ignore the postgres specific cast
-			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-			have = db.get_db_session().execute("""
-				UPDATE
-					web_pages
-				SET
-					state = 'disabled'
-				WHERE
-						(netloc = 'www.wattpad.com' OR netloc = 'a.wattpad.com')
-					AND
-						(state = 'new' OR state = 'fetching' OR state = 'processing')
-					AND
-						id < %s
-					AND
-						id >= %s;""" % (x, x-step))
-			# print()
-			print('%10i, %10i, %10i, %7.4f, %6i' % (start, x, end, (x-start)/(end-start) * 100, have.rowcount))
-			changed += have.rowcount
-			if changed > step / 2:
-				print("Committing (%s changed rows)...." % changed, end=' ')
-				db.get_db_session().commit()
-				print("done")
-				changed = 0
-		except sqlalchemy.exc.OperationalError:
-			db.get_db_session().rollback()
-			print("Error!")
-			traceback.print_exc()
-
-	db.get_db_session().commit()
+def exposed_update_feed_names():
+	'''
+	Apply any new feednamelut names to existing fetched RSS posts.
+	'''
+	for key, value in feedNameLut.mapper.items():
+		feed_items = db.get_db_session().query(db.FeedItems) \
+				.filter(db.FeedItems.srcname == key)    \
+				.all()
+		if feed_items:
+			for item in feed_items:
+				item.srcname = value
+			print(len(feed_items))
+			print(key, value)
+			db.get_db_session().commit()
 
 def exposed_clear_bad():
 	'''
@@ -361,50 +331,16 @@ def exposed_clear_bad():
 						.delete(synchronize_session=False)
 					db.get_db_session().commit()
 
-def exposed_delete_comment_feed_items():
-
-	sess = db.get_db_session()
-	bad = sess.query(db.FeedItems) \
-			.filter(or_(
-				db.FeedItems.contenturl.like("%#comment-%"),
-				db.FeedItems.contenturl.like("%CommentsForInMyDaydreams%"),
-				db.FeedItems.contenturl.like("%www.fanfiction.net%"),
-				db.FeedItems.contenturl.like("%www.fictionpress.com%"),
-				db.FeedItems.contenturl.like("%www.booksie.com%")))    \
-			.order_by(db.FeedItems.contenturl) \
-			.all()
-
-	count = 0
-	for bad in bad:
-		print(bad.contenturl)
-
-		while bad.author:
-			bad.author.pop()
-		while bad.tags:
-			bad.tags.pop()
-		sess.delete(bad)
-		count += 1
-		if count % 1000 == 0:
-			print("Committing at %s" % count)
-			sess.commit()
-
-	print("Done. Committing...")
-	sess.commit()
-
-def exposed_update_feed_names():
-	for key, value in feedNameLut.mapper.items():
-		feed_items = db.get_db_session().query(db.FeedItems) \
-				.filter(db.FeedItems.srcname == key)    \
-				.all()
-		if feed_items:
-			for item in feed_items:
-				item.srcname = value
-			print(len(feed_items))
-			print(key, value)
-			db.get_db_session().commit()
-
 def exposed_purge_invalid_urls(selected_netloc=None):
+	'''
+	Iterate over each ruleset in the rules directory, and generate a compound query that will
+	delete any matching rows.
+	For rulesets with a large number of rows, or many badwords, this
+	can be VERY slow.
 
+	Similar in functionality to `clear_bad`, except it results in many fewer queryies,
+	and is therefore likely much more performant.
+	'''
 
 	sess = db.get_db_session()
 	for ruleset in WebMirror.rules.load_rules():
@@ -480,8 +416,13 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 		# print(ruleset['netlocs'])
 		# print(ruleset['badwords'])
 
-# Re-order the missed file list by order of misses.
 def exposed_sort_json(json_name):
+	'''
+	Load a file of feed missed json entries, and sort it into
+	a much nicer to read output format.
+
+	Used internally by the rss_db/rss_day/week/month functionality.
+	'''
 	with open(json_name) as fp:
 		cont = fp.readlines()
 	print("Json file has %s lines." % len(cont))
@@ -529,52 +470,17 @@ def exposed_sort_json(json_name):
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")
 
-# Re-order the missed file list by order of misses.
-def exposed_sort_thing(json_name):
-	with open(json_name) as fp:
-		cont = fp.readlines()
-	print("Json file has %s lines." % len(cont))
-
-	data = {}
-	for line in cont:
-		val = json.loads(line.replace("'", '"'))
-		name = val['nu_release']['groupinfo']
-		if not name in data:
-			data[name] = []
-
-		data[name].append(val)
-	out = []
-	for key in data:
-		out.append((len(data[key]), data[key]))
-
-	out.sort(key=lambda x: (x[0], x[1]*-1))
-	out.sort(key=lambda x: (x[1]*-1))
-
-	key_order = [
-		'groupinfo',
-		'seriesname',
-		'releaseinfo',
-		'actual_target',
-		'addtime',
-		'outbound_wrapper',
-		'referrer',
-	]
-
-	outf = json_name+".pyout"
-	try:
-		os.unlink(outf)
-	except FileNotFoundError:
-		pass
-
-	with open(outf, "w") as fp:
-		for item in out:
-			# print(item[1])
-			for value in item[1]:
-				for key in key_order:
-					fp.write("%s, " % ((key, value['nu_release'][key]), ))
-				fp.write("\n")
-
 def exposed_rss_db_sync(target = None, days=False, silent=False):
+	'''
+	Feed RSS feed history through the feedparsing system, generating a log
+	file of the feed articles that were not captured by the feed parsing system.
+
+	Target is an optional netloc. If not none, only feeds with that netloc are
+		processed.
+	Days is the number of days into the past to process. None results in all
+		available history being read.
+	Silent suppresses some debug printing to the console.
+	'''
 
 	json_file = 'rss_filter_misses-1.json'
 
@@ -648,46 +554,42 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 	if target == None:
 		exposed_sort_json(json_file)
 
-
 def exposed_rss_db_silent():
+	'''
+	Eqivalent to rss_db_sync(None, False, True)
+	'''
 	exposed_rss_db_sync(silent=True)
 
 def exposed_rss_day():
+	'''
+	Eqivalent to rss_db_sync(1)
+
+	Effectively just processes the last day of feed entries.
+	'''
 	exposed_rss_db_sync(days=1)
 
 def exposed_rss_week():
+	'''
+	Eqivalent to rss_db_sync(7)
+
+	Effectively just processes the last week of feed entries.
+	'''
 	exposed_rss_db_sync(days=7)
 
 def exposed_rss_month():
+	'''
+	Eqivalent to rss_db_sync(45)
+
+	Effectively just processes the last 45 days of feed entries.
+	'''
 	exposed_rss_db_sync(days=45)
 
-
-def exposed_clear_blocked():
-	for ruleset in WebMirror.rules.load_rules():
-		if ruleset['netlocs'] and ruleset['badwords']:
-			# mask = [db.WebPages.url.like("%{}%".format(tmp)) for tmp in ruleset['badwords'] if not "%" in tmp]
-
-			for badword in ruleset['badwords']:
-				feed_items = db.get_db_session().query(db.WebPages)          \
-					.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
-					.filter(db.WebPages.url.like("%{}%".format(badword))) \
-					.count()
-
-				if feed_items:
-					print("Have:  ", feed_items, badword)
-					feed_items = db.get_db_session().query(db.WebPages)          \
-						.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
-						.filter(db.WebPages.url.like("%{}%".format(badword))) \
-						.delete(synchronize_session=False)
-					db.get_db_session().expire_all()
-
-				else:
-					print("Empty: ", feed_items, badword)
-			# print(mask)
-			# print(ruleset['netlocs'])
-			# print(ruleset['badwords'])
-
 def exposed_filter_links(path):
+	"""
+	Filter a file of urls at `path`. If a url in the file
+	is not already a start url in the mirror system, it
+	is printed to the console.
+	"""
 	if not os.path.exists(path):
 		raise IOError("File at path '%s' doesn't exist!" % path)
 
@@ -707,6 +609,11 @@ def exposed_filter_links(path):
 			print(item)
 
 def exposed_missing_lut():
+	'''
+	Iterate over distinct RSS feed sources in database,
+	and print any for which there is not an entry in
+	feedDataLut.py to the console.
+	'''
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
 	rules = WebMirror.rules.load_rules()
 	feeds = [item['feedurls'] for item in rules]
@@ -736,5 +643,53 @@ def exposed_delete_feed(feed_name, do_delete, search_str):
 
 	sess.commit()
 
-def exposed_consolidate_history():
+
+def exposed_nu_new():
+	'''
+	Parse outbound netlocs from NovelUpdates releases, extracting
+	any sites that are not known in the feednamelut.
+	'''
+
+	import WebMirror.OutputFilters.util.feedNameLut as fnl
+	sess = db.get_db_session()
+
+	nu_items = sess.query(db.NuOutboundWrapperMap)             \
+		.filter(db.NuOutboundWrapperMap.validated == True)     \
+		.filter(db.NuOutboundWrapperMap.actual_target != None) \
+		.all()
+
+	netlocs = [urllib.parse.urlsplit(row.actual_target).netloc for row in nu_items]
+	print("Nu outbound items: ", len(netlocs))
+	netlocs = set(netlocs)
+
+	for netloc in netlocs:
+		if not fnl.getNiceName(None, netloc):
+			fnl.getNiceName(None, netloc, debug=True)
+			print("Missing: ", netloc)
+	print("Nu outbound items: ", len(netlocs))
+
+
+def exposed_fetch_other_feed_sources():
+	'''
+	Walk the listed pages for both AhoUpdates and NovelUpdates,
+	retreiving a list of the translators from each.
+	'''
+	WebMirror.SiteSync.fetch.fetch_other_sites()
+
+def exposed_fetch_new_sites():
+	'''
+	calls fetch_other_feed_sources and nu_new
+	in sequence. Should probably be tee'd into a file.
+	'''
+	WebMirror.SiteSync.fetch.fetch_other_sites()
+
+def exposed_flatten_history():
+	'''
+	Flatten the page change history.
+	This limits the retained page versions to one-per-hour for the
+	last 48 hours, once per day for the last 32 days, and once per
+	week after that.
+	'''
 	Misc.HistoryAggregator.Flatten.consolidate_history()
+
+
