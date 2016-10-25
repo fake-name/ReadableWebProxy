@@ -57,8 +57,8 @@ preserveAttrs : [
 special_case_filters : {
 
 	# Apparently they don't like bots. Well, too bad.
-	"www.novelupdates.com" : ["rate_limit", 10],
-	"novelupdates.com"     : ["rate_limit", 10],
+	"www.novelupdates.com" : ["rate_limit", 20],
+	"novelupdates.com"     : ["rate_limit", 20],
 
 	# So I can test against someone less bot-sensitive
 	"www.google.com" : ["rate_limit", 20],

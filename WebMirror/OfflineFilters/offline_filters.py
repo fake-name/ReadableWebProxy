@@ -1,5 +1,6 @@
 
 import queue
+import traceback
 import runStatus
 import common.database as db
 import common.RunManager
@@ -28,20 +29,28 @@ def exposed_process_nu_pages(transmit=True):
 	for row in sess.query(db.WebPages) \
 		.filter(db.WebPages.netloc == "www.novelupdates.com") \
 		.yield_per(1000).all():
-		print(row, row.url, row.state)
-		if row.content and NuSeriesPageFilter.NUSeriesPageProcessor.wantsUrl(row.url):
-			print(row)
-			proc = NuSeriesPageFilter.NUSeriesPageProcessor(
-					pageUrl   = row.url,
-					pgContent = row.content,
-					type      = row.mimetype,
-					wg        = wg,
-					db_sess   = sess,
-					message_q = message_q,
-				)
-			proc.extractContent()
-			print(proc)
-
+		try:
+			# print(row, row.url, row.state)
+			if row.content and NuSeriesPageFilter.NUSeriesPageProcessor.wantsUrl(row.url):
+				print(row)
+				proc = NuSeriesPageFilter.NUSeriesPageProcessor(
+						pageUrl   = row.url,
+						pgContent = row.content,
+						type      = row.mimetype,
+						wg        = wg,
+						db_sess   = sess,
+						message_q = message_q,
+					)
+				proc.extractContent()
+				print(proc)
+		except Exception:
+			print("")
+			print("ERROR!")
+			for line in traceback.format_exc().split("\n"):
+				print(line.rstrip())
+			print("")
+		except KeyboardInterrupt:
+			break
 
 	runStatus.run_state.value = 0
 

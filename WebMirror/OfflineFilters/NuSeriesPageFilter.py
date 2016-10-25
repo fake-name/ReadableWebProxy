@@ -126,7 +126,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		if data_sets['yeartg'] and data_sets['yeartg'][0]:
-			print("Non-null data_sets['yeartg']:", data_sets['yeartg'])
+			# print("Non-null data_sets['yeartg']:", data_sets['yeartg'])
 			tmp_d = datetime.datetime(year=int(data_sets['yeartg'].pop()), month=1, day=1)
 			data_sets['yeartg'] = calendar.timegm(tmp_d.timetuple())
 		else:
@@ -191,8 +191,9 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		extra['sourcesite']  = 'Unknown'
 
 
-		chapter_tbl = soup.find("table", class_='tablesorter')
+		chapter_tbl = soup.find("table", id='myTable')
 		if not chapter_tbl:
+			self.log.error("No chapter table!")
 			return []
 		releases = chapter_tbl.find_all("tr")
 
