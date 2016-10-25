@@ -15,6 +15,7 @@ trigger: False
 badwords: [
 
 			'/more-reviews/',
+			'/comment-page-',
 			'/readlist/',
 			'/extnu/',
 
@@ -24,6 +25,10 @@ badwords: [
 			'/wp-includes/',
 			'/fdrev/',
 			'/login/',
+
+			'/lostpassword/',
+			'/rank-graph/',
+			'/feed/',
 
 
 			# Don't actually spider the site, just let the update triggers
@@ -52,8 +57,8 @@ preserveAttrs : [
 special_case_filters : {
 
 	# Apparently they don't like bots. Well, too bad.
-	"www.novelupdates.com" : ["rate_limit", 20],
-	"novelupdates.com"     : ["rate_limit", 20],
+	"www.novelupdates.com" : ["rate_limit", 10],
+	"novelupdates.com"     : ["rate_limit", 10],
 
 	# So I can test against someone less bot-sensitive
 	"www.google.com" : ["rate_limit", 20],

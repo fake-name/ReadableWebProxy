@@ -39,8 +39,9 @@ import WebMirror.SpecialCase
 
 
 
-NO_JOB_TIMEOUT_MINUTES = 5
+NO_JOB_TIMEOUT_MINUTES = 60
 
+JOB_QUERY_CHUNK_SIZE = 250
 
 largv = [tmp.lower() for tmp in sys.argv]
 if "twoprocess" in largv or "oneprocess" in largv:
@@ -357,7 +358,7 @@ class JobAggregator(LogBase.LoggerMixin):
 				    web_pages.state = 'new'
 				RETURNING
 				    web_pages.id, web_pages.netloc, web_pages.url;
-			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 50)))
+			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 
 		start = time.time()

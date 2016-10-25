@@ -192,6 +192,8 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		chapter_tbl = soup.find("table", class_='tablesorter')
+		if not chapter_tbl:
+			return []
 		releases = chapter_tbl.find_all("tr")
 
 		retval = []
@@ -248,13 +250,13 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 					item['chp'] = chap
 					chap += 1
 
-		# # Do not add series without 3 chapters.
-		# if len(retval) < 3:
-		# 	self.log.info("Less then three chapters!")
-		# 	return []
+		# Do not add series without 3 chapters.
+		if len(retval) < 3:
+			self.log.warning("Less then three chapters!")
+			return []
 
 		if not retval:
-			self.log.info("Retval empty?!")
+			self.log.error("Retval empty?!")
 			return []
 
 
