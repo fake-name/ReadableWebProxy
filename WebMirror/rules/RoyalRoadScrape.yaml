@@ -37,6 +37,8 @@ badwords: [
 			'/login?',
 			'/report/',
 			'?ReturnUrl=',
+			'/ratereview/',
+			'?review=',
 			]
 
 # Content Stripping needs to be determined.
