@@ -38,7 +38,7 @@ import flags
 import config
 from config import C_RAW_RESOURCE_DIR
 
-def exposed_test_retrieve(url, debug=True, rss_debug=False):
+def exposed_fetch(url, debug=True, rss_debug=False):
 	'''
 	Do a synchronous fetch of content from url `url`.
 	'''
@@ -81,13 +81,13 @@ def exposed_fetch_silent(tgt):
 	'''
 	Identical to `test_retrieve`, except debug printing is supressed.
 	'''
-	exposed_test_retrieve(tgt, debug=False)
+	exposed_fetch(tgt, debug=False)
 
 def exposed_fetch_rss(tgt):
 	'''
 	Identical to `test_retrieve`, except debug printing is supressed and RSS debugging is enabled.
 	'''
-	exposed_test_retrieve(tgt, debug=False, rss_debug=True)
+	exposed_fetch(tgt, debug=False, rss_debug=True)
 
 def exposed_raw_test_retrieve(url):
 	'''
@@ -169,7 +169,7 @@ def exposed_test_all_rss():
 	with ThreadPoolExecutor(max_workers=8) as executor:
 		for url in feeds:
 			try:
-				executor.submit(exposed_test_retrieve, url, debug=False)
+				executor.submit(exposed_fetch, url, debug=False)
 			except common.Exceptions.DownloadException:
 				print("failure downloading page!")
 			except urllib.error.URLError:

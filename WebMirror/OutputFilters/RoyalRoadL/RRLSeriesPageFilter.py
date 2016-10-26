@@ -139,10 +139,15 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		desc = []
 		for segment in descDiv.div:
 			if isinstance(segment, bs4.NavigableString):
+				print(("NavigableString", str(segment).strip(), ))
 				desc.append(str(segment).strip())
 			else:
 				if segment.get_text().strip():
+					print(("get_text", segment.get_text().strip(), ))
 					desc.append(segment.get_text().strip())
+
+		desc = ['<p>{}</p>'.format(line) for line in desc if line.strip()]
+		print(desc)
 
 		tags = []
 		tagdiv = soup.find('div', class_='tags')
@@ -155,7 +160,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['author']      = author
 		seriesmeta['tags']        = tags
 		seriesmeta['homepage']    = seriesPageUrl
-		seriesmeta['desc']        = "\r\n\r\n".join(desc)
+		seriesmeta['desc']        = "\r\n".join(desc)
 		seriesmeta['tl_type']     = 'oel'
 		seriesmeta['sourcesite']  = 'RoyalRoadL'
 
