@@ -81,23 +81,24 @@ class RoyalRoadLSeriesPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			ad.parent.decompose()
 
 		chapters = soup.find("table", id='chapters')
-		chp_container = chapters.parent
+		if chapters:
+			chp_container = chapters.parent
+			chapters.extract()
 
+			newlist = soup.new_tag("ul")
+			for row in chapters.find_all("tr"):
+				tds = row.find_all("td")
+				if len(tds) == 2:
+					linktd, datetd = tds
+					newlink = soup.new_tag("a", href=linktd.a['href'])
+					newlink.string = linktd.a.get_text()
+					li = soup.new_tag("li")
+					li.append(newlink)
+					li.append(" ")
+					li.append(datetd.get_text().strip())
 
-		newlist = soup.new_tag("ul")
-		for row in chapters.find_all("tr"):
-			tds = row.find_all("td")
-			if len(tds) == 2:
-				linktd, datetd = tds
-				newlink = soup.new_tag("a", href=linktd.a['href'])
-				newlink.string = linktd.a.get_text()
-				li = soup.new_tag("li")
-				li.append(newlink)
-				li.append(" ")
-				li.append(datetd.get_text().strip())
+					newlist.append(li)
 
-				newlist.append(li)
-
-		chp_container.append(newlist)
+			chp_container.append(newlist)
 
 		return soup
