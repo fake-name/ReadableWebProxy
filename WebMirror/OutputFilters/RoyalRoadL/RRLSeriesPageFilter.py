@@ -42,7 +42,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 							'text/html',
 						]
-	want_priority    = 50
+	want_priority    = 55
 
 	loggerPath = "Main.Filter.RoyalRoad.Page"
 
@@ -87,7 +87,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if ratingtg_type_1:
 			startg = ratingtg_type_1.find("span", class_='star')
 		elif ratingtg_type_2:
-			print(ratingtg_type_2)
+			# print(ratingtg_type_2)
 			starcontainer = ratingtg_type_2.find_next_sibling("li")
 			if not starcontainer:
 				self.log.error("Could not find rating tag (starcontainer)!")
@@ -107,7 +107,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		rating = float(rating) / 10
 		rating = rating * 2  # Normalize to 1-10 scale
-		print(startg['class'])
+		# print(startg['class'])
 		if not ratingcls:
 			return []
 
@@ -139,15 +139,15 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		desc = []
 		for segment in descDiv.div:
 			if isinstance(segment, bs4.NavigableString):
-				print(("NavigableString", str(segment).strip(), ))
+				# print(("NavigableString", str(segment).strip(), ))
 				desc.append(str(segment).strip())
 			else:
 				if segment.get_text().strip():
-					print(("get_text", segment.get_text().strip(), ))
+					# print(("get_text", segment.get_text().strip(), ))
 					desc.append(segment.get_text().strip())
 
 		desc = ['<p>{}</p>'.format(line) for line in desc if line.strip()]
-		print(desc)
+		# print(desc)
 
 		tags = []
 		tagdiv = soup.find('div', class_='tags')

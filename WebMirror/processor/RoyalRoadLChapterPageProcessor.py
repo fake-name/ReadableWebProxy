@@ -27,7 +27,7 @@ import markdown
 
 
 
-class RoyalRoadLProcessor(HtmlProcessor.HtmlPageProcessor):
+class RoyalRoadLChapterPageProcessor(HtmlProcessor.HtmlPageProcessor):
 
 
 	wanted_mimetypes = ['text/html']
