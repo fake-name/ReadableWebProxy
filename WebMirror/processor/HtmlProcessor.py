@@ -8,6 +8,7 @@ import urllib.parse
 import markdown
 import tinycss2
 import common.util.webFunctions
+import common.global_constants
 
 import common.util.urlFuncs as urlFuncs
 from . import ProcessorBase
@@ -62,8 +63,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# `decompose` and `decomposeBefore` on plugin initialization
 
 
-		self._decompose       = copy.copy(ProcessorBase.GLOBAL_DECOMPOSE_AFTER)
-		self._decomposeBefore = copy.copy(ProcessorBase.GLOBAL_DECOMPOSE_BEFORE)
+		self._decompose       = copy.copy(common.global_constants.GLOBAL_DECOMPOSE_AFTER)
+		self._decomposeBefore = copy.copy(common.global_constants.GLOBAL_DECOMPOSE_BEFORE)
 		self.stripTitle       = copy.copy(kwargs['stripTitle'])
 		self.destyle          = copy.copy(kwargs['destyle'])
 		self.preserveAttrs    = copy.copy(kwargs['preserveAttrs'])

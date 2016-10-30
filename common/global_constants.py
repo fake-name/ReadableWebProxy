@@ -1,44 +1,44 @@
 
 GLOBAL_BAD_URLS = [
+			'//mail.google.com',
+			'/comments/feed/',
+			'/embed?',
+			'/osd.xml',
+			'/page/page/',
+			'/wp-json/',
+			'/wp-login.php',
 			'/xmlrpc.php',
-			'gprofiles.js',
-			'netvibes.com',
+			'?openidserver=1',
+			'a.wikia-beacon.com',
 			'accounts.google.com',
-			'edit.yahoo.com',
 			'add.my.yahoo.com',
+			'addtoany.com',
+			'b.scorecardresearch.com',
+			'delicious.com',
+			'digg.com',
+			'edit.yahoo.com',
+			'facebook.com',
+			'fbcdn-',
+			'feeds.wordpress.com',
+			'gprofiles.js',
+			'javascript:void',
+			'netvibes.com',
+			'newsgator.com',
+			'paypal.com',
+			'pixel.wp.com',
 			'public-api.wordpress.com',
 			'r-login.wordpress.com',
+			'reddit.com',
+			'stumbleupon.com',
+			'technorati.com',
+			'topwebfiction.com',
 			'twitter.com',
-			'facebook.com',
-			'public-api.wordpress.com',
+			'twitter.com/intent/',
 			'wretch.cc',
 			'ws-na.amazon-adsystem.com',
-			'delicious.com',
-			'paypal.com',
-			'digg.com',
-			'topwebfiction.com',
-			'/page/page/',
-			'addtoany.com',
-			'stumbleupon.com',
-			'delicious.com',
-			'/comments/feed/',
-			'fbcdn-',
-			'/wp-json/',
-			'reddit.com',
-			'/osd.xml',
-			'/wp-login.php',
-			'?openidserver=1',
-			'newsgator.com',
-			'technorati.com',
-			'pixel.wp.com',
-			'a.wikia-beacon.com',
-			'b.scorecardresearch.com',
-			'//mail.google.com',
-			'javascript:void',
-			'twitter.com/intent/',
+			'www.addtoany.com'
 			'www.pinterest.com/pin/',
 			'www.wattpad.com/login?',
-			'/embed?',
 
 			# Tumblr can seriously go fuck itself with a rusty stake
 			'tumblr.com/widgets/',
@@ -70,8 +70,20 @@ GLOBAL_BAD_URLS = [
 			'&share=',
 			'replytocom=',
 			'?feed=rss2&page_id',
+			'?share=tumblr',
 	]
 
+
+GLOBAL_DECOMPOSE_BEFORE = [
+			{'name'     : 'likes-master'},  # Bullshit sharing widgets
+			{'id'       : 'jp-post-flair'},
+			{'class'    : 'post-share-buttons'},
+			{'class'    : 'commentlist'},  # Scrub out the comments so we don't try to fetch links from them
+			{'class'    : 'comments'},
+			{'id'       : 'comments'},
+		]
+
+GLOBAL_DECOMPOSE_AFTER = []
 
 
 RSS_SKIP_FILTER = [

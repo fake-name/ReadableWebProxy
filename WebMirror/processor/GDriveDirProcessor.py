@@ -42,32 +42,6 @@ import common.util.urlFuncs as urlFuncs
 
 
 
-GLOBAL_BAD = [
-			'gprofiles.js',
-			'netvibes.com',
-			'accounts.google.com',
-			'edit.yahoo.com',
-			'add.my.yahoo.com',
-			'public-api.wordpress.com',
-			'r-login.wordpress.com',
-			'twitter.com',
-			'facebook.com',
-			'public-api.wordpress.com',
-			'wretch.cc',
-			'ws-na.amazon-adsystem.com',
-			'delicious.com',
-			'paypal.com',
-			'digg.com',
-			'topwebfiction.com',
-			'/page/page/',
-			'addtoany.com',
-			'stumbleupon.com',
-			'delicious.com',
-			'reddit.com',
-			'newsgator.com',
-			'technorati.com',
-	]
-
 class GDriveDirProcessor(ProcessorBase.PageProcessor):
 
 
