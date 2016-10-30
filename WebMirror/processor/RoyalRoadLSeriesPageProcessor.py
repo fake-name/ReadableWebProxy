@@ -50,9 +50,9 @@ class RoyalRoadLSeriesPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			header_div.parent.decompose()
 
 		authdivs = soup.find_all("span", class_='caption-subject', text=re.compile("Achievements", flags=re.IGNORECASE))
-		for authd in authdivs:
-			authd.parent.parent.next_sibling.next_sibling.decompose()
-			authd.decompose()
+		#for authd in authdivs:
+		#	authd.parent.parent.next_sibling.next_sibling.decompose()
+		#	authd.decompose()
 		# for sidebar_pane in soup.find_all('div', class_='profile-sidebar'):
 		# 	for trophy_chunk in sidebar_pane.find_all('i', class_='fa-trophy'):
 		# 		print(trophy_chunk)
@@ -61,18 +61,18 @@ class RoyalRoadLSeriesPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			'fa-book',
 			'fa-trophy',
 		]
-		for decomp in parentdecomps:
-			for header_div in soup.find_all("div", class_=decomp):
-				header_div.parent.parent.decompose()
+		#for decomp in parentdecomps:
+		#	for header_div in soup.find_all("div", class_=decomp):
+		#		header_div.parent.parent.decompose()
 
 		decompose_checkboxes = [
 			'showMore',
 			'showTags',
 			'showStats',
 		]
-		for bad_input_id in decompose_checkboxes:
-			for badcb in soup.find_all("input", id=bad_input_id):
-				badcb.parent.decompose()
+		#for bad_input_id in decompose_checkboxes:
+		#	for badcb in soup.find_all("input", id=bad_input_id):
+		#		badcb.parent.decompose()
 
 		for bad in soup.find_all('i', class_='fa-list-alt'):
 			bad.parent.decompose()

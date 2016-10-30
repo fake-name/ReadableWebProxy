@@ -180,6 +180,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'licensed'      : data_sets['licensedtg'],
 			'transcomplete' : data_sets['transcompletetg'],
 
+			'create_tags'   : True,
 		}
 		# pprint.pprint(series_message)
 		pkt = msgpackers.createSeriesInfoPacket(series_message, matchAuthor=True, beta=self.is_beta)

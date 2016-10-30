@@ -125,7 +125,26 @@ def buildReleaseMessage(raw_item,
 def createSeriesInfoPacket(data, beta=False, matchAuthor=False):
 
 	expect = ['title', 'author', 'tags', 'desc', 'tl_type', 'sourcesite']
-	allowed = ['alt_titles', 'author', 'desc', 'homepage', 'illust', 'pubdate', 'pubnames', 'sourcesite', 'tags', 'title', 'tl_type', 'update_only', 'coostate', 'type', 'genres', 'licensed', 'transcomplete']
+	allowed = [
+		'alt_titles',
+		'author',
+		'desc',
+		'homepage',
+		'illust',
+		'pubdate',
+		'pubnames',
+		'sourcesite',
+		'tags',
+		'title',
+		'tl_type',
+		'update_only',
+		'coostate',
+		'type',
+		'genres',
+		'licensed',
+		'transcomplete',
+		'create_tags',
+	]
 
 
 

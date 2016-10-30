@@ -5,11 +5,12 @@ import re
 import time
 import webcolors
 import urllib.parse
+import markdown
+import tinycss2
 import common.util.webFunctions
 
 import common.util.urlFuncs as urlFuncs
 from . import ProcessorBase
-import markdown
 
 
 ########################################################################################################################
@@ -227,82 +228,91 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		Therefore, we look at all the inline CSS, and just patch where needed.
 		'''
 
+
+		# Match the CSS ASCII color classes
+		hexr = re.compile('((?:[a-fA-F0-9]{6})|(?:[a-fA-F0-9]{3}))')
+
+		def clamp_hash_token(intok, high):
+			old = hexr.findall(intok.value)
+			for match in old:
+				color = webcolors.hex_to_rgb("#"+match)
+				mean = sum(color)/len(color)
+
+				if high:
+					if mean > 150:
+						color = tuple((max(255-cval, 0) for cval in color))
+						new = webcolors.rgb_to_hex(color)
+						intok.value = intok.value.replace(match, new)
+				else:
+					if mean < 100:
+						color = tuple((min(cval, 100) for cval in color))
+						new = webcolors.rgb_to_hex(color).replace("#", "")
+						intok.value = intok.value.replace(match, new)
+			return intok
+
+		def clamp_css_color(toks, high=True):
+			toks = [tok for tok in toks if tok.type != 'whitespace']
+
+			for tok in toks:
+				if tok.type == 'hash':
+					clamp_hash_token(tok, high)
+				if tok.type == 'string':
+					tok.value = ""
+
+			return toks
+
 		hascss = soup.find_all(True, attrs={"style" : True})
 
 
-		# parser = tinycss.make_parser('page3')
+		initial_keys = [
+				'font',
+				'font-family'
+		]
 
-		hexr = re.compile('(#(?:[a-fA-F0-9]{6})|#(?:[a-fA-F0-9]{3}))')
+		empty_keys = [
+				'width',
+				'height',
+				'display',
+				'max-width',
+				'max-height',
+				'background-image',
+		]
 
-		# Match the CSS ASCII color classes
-		ascii_color = re.compile('color\W*?:\W*?(white|gray|silver|black|maroon|red|purple|fuchsia|green|lime|olive|yellow|navy|blue' +
-								'|teal|aqua|orange|indianred|lightcoral|salmon|darksalmon|lightsalmon|crimson|red|firebrick|darkred' +
-								'|pink|lightpink|hotpink|deeppink|mediumvioletred|palevioletred|lightsalmon|coral|tomato|orangered' +
-								'|darkorange|orange|gold|yellow|lightyellow|lemonchiffon|lightgoldenrodyellow|papayawhip|moccasin' +
-								'|peachpuff|palegoldenrod|khaki|darkkhaki|lavender|thistle|plum|violet|orchid|fuchsia|magenta' +
-								'|mediumorchid|mediumpurple|blueviolet|darkviolet|darkorchid|darkmagenta|purple|indigo|slateblue' +
-								'|darkslateblue|mediumslateblue|greenyellow|chartreuse|lawngreen|lime|limegreen|palegreen|lightgreen' +
-								'|mediumspringgreen|springgreen|mediumseagreen|seagreen|forestgreen|green|darkgreen|yellowgreen' +
-								'|olivedrab|olive|darkolivegreen|mediumaquamarine|darkseagreen|lightseagreen|darkcyan|teal|aqua|cyan' +
-								'|lightcyan|paleturquoise|aquamarine|turquoise|mediumturquoise|darkturquoise|cadetblue|steelblue' +
-								'|lightsteelblue|powderblue|lightblue|skyblue|lightskyblue|deepskyblue|dodgerblue|cornflowerblue' +
-								'|mediumslateblue|royalblue|blue|mediumblue|darkblue|navy|midnightblue|cornsilk|blanchedalmond|bisque' +
-								'|navajowhite|wheat|burlywood|tan|rosybrown|sandybrown|goldenrod|darkgoldenrod|peru|chocolate|saddlebrown' +
-								'|sienna|brown|maroon|white|snow|honeydew|mintcream|azure|aliceblue|ghostwhite|whitesmoke|seashell|beige' +
-								'|oldlace|floralwhite|ivory|antiquewhite|linen|lavenderblush|mistyrose|gainsboro|lightgrey|silver' +
-								'|darkgray|gray|dimgray|lightslategray|slategray|darkslategray|black);?')
+		foreground_color_keys = [
+			'color',
+		]
+		background_color_keys = [
+			'background',
+			'background-color',
+		]
 
 		for item in hascss:
 			if item['style']:
-				ststr = item['style']
 
-				# Prevent inline fonts.
-				if 'font:' in ststr.lower() or 'font :' in ststr.lower() :
-					item['style'] = ''
-				if 'font-family:' in ststr.lower() or 'font-family :' in ststr.lower() :
-					item['style'] = ''
-				# Disable all explicit width settings.
-				if 'width' in ststr.lower():
-					item['style'] = ''
-				if 'max-width' in ststr.lower():
-					item['style'] = ''
+				parsed_style = tinycss2.parse_declaration_list(item['style'])
 
-				if 'background-image:' in ststr.lower():
-					item['style'] = ''
+				for style_chunk in parsed_style:
+					if style_chunk.type == 'declaration':
 
+						if any([dec_str == style_chunk.name for dec_str in initial_keys]):
+							style_chunk.value = [tinycss2.ast.IdentToken(1, 1, "Sans-Serif")]
+						if any([dec_str == style_chunk.name for dec_str in empty_keys]):
+							style_chunk.value = []
 
+						if any([dec_str == style_chunk.name for dec_str in foreground_color_keys]):
+							style_chunk.value = clamp_css_color(style_chunk.value)
+						if any([dec_str == style_chunk.name for dec_str in background_color_keys]):
+							style_chunk.value = clamp_css_color(style_chunk.value, high=False)
 
-				old = hexr.findall(ststr)
-				for match in old:
-					color = webcolors.hex_to_rgb(match)
-					mean = sum(color)/len(color)
-
-					if mean > 150:
-						above = mean - 150
-						color = tuple((max(255-cval, 0) for cval in color))
-						new = webcolors.rgb_to_hex(color)
-						item['style'] = item['style'].replace(match, new)
-						#item['style'] = ''
-
-				if ascii_color.findall(ststr):
-					item['style'] = ''
-
-				# I really /want/ to use a real CSS parser, but I can't find any
-				# that properly let me /generate/ CSS. TinyCSS /parses/, but I can't
-				# then convert the parse tree back to css (as far as I can tell, anyways)
+						# Force overflow to be visible
+						if style_chunk.name == "overflow":
+							style_chunk.value = [tinycss2.ast.IdentToken(1, 1, "visible")]
 
 
-				# attr, errors = parser.parse_style_attr(item['style'])
+				parsed_style = [chunk for chunk in parsed_style if chunk.value]
 
-				# new = []
-				# for decl in attr:
-				# 	if decl.name == "color" and decl.value[0].type == "HASH":
-				# 		print(decl)
-				# 		print(decl.name)
-				# 		print(decl.value)
 
-				# 	print(decl.as_css())
-
+				item['style'] = tinycss2.serialize(parsed_style)
 		return soup
 
 	def cleanHtmlPage(self, soup, url=None):

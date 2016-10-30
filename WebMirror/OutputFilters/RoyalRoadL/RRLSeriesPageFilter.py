@@ -163,6 +163,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['desc']        = "\r\n".join(desc)
 		seriesmeta['tl_type']     = 'oel'
 		seriesmeta['sourcesite']  = 'RoyalRoadL'
+		seriesmeta['create_tags'] = True
+
 
 		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
 		extra = {}
