@@ -7,6 +7,8 @@ from common.main_archive_db import Tags
 from common.main_archive_db import Author
 from common.main_archive_db import FeedItems
 from common.main_archive_db import PluginStatus
+from common.main_archive_db import NuReleaseItem
+from common.main_archive_db import NuResolvedOutbound
 from common.main_archive_db import NuOutboundWrapperMap
 
 from common.raw_archive_db import RawWebPages

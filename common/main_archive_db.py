@@ -73,6 +73,7 @@ class WebPages(common.db_base.Base):
 
 	file_item         = relationship("WebFiles")
 
+
 # File table doesn't know anything about URLs, since they're kept in the
 # WebPages table entirely.
 class WebFiles(common.db_base.Base):
@@ -191,49 +192,46 @@ class PluginStatus(common.db_base.Base):
 
 ##################################################
 
-# class NuReleaseItem(common.db_base.Base):
-# 	__tablename__ = 'nu_release_item'
-# 	id               = Column(BigInteger, primary_key=True)
+class NuReleaseItem(common.db_base.Base):
+	__tablename__ = 'nu_release_item'
+	id               = Column(BigInteger, primary_key=True)
 
-# 	validated        = Column(Boolean, default=False, nullable=False)
-# 	actual_target    = Column(Text)
+	validated        = Column(Boolean, default=False, nullable=False)
+	actual_target    = Column(Text)
 
-# 	seriesname       = Column(Text, nullable=False, index=True)
-# 	releaseinfo      = Column(Text)
-# 	groupinfo        = Column(Text, nullable=False, index=True)
-# 	referrer         = Column(Text, nullable=False)
-# 	outbound_wrapper = Column(Text, nullable=False)
+	seriesname       = Column(Text, nullable=False, index=True)
+	releaseinfo      = Column(Text)
+	groupinfo        = Column(Text, nullable=False, index=True)
+	referrer         = Column(Text, nullable=False)
+	outbound_wrapper = Column(Text, nullable=False, unique=True)
 
-# 	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
-# 	resolved         = relationship("NuResolvedOutbound")
+	resolved         = relationship("NuResolvedOutbound")
 
-# 	__table_args__ = (
-# 		UniqueConstraint('seriesname', 'releaseinfo', 'groupinfo', 'outbound_wrapper', 'actual_target'),
-# 		)
+	__table_args__ = (
+		UniqueConstraint('seriesname', 'releaseinfo', 'groupinfo', 'outbound_wrapper'),
+		)
 
-# class NuResolvedOutbound(common.db_base.Base):
-# 	__tablename__ = 'nu_resolved_outbound'
-# 	id               = Column(BigInteger, primary_key=True)
+class NuResolvedOutbound(common.db_base.Base):
+	__tablename__ = 'nu_resolved_outbound'
+	id               = Column(BigInteger, primary_key=True)
 
-# 	# Foreign key to the files table if needed.
-# 	parent              = Column(BigInteger, ForeignKey('nu_release_item.id'), index=True, nullable=False)
+	# Foreign key to the files table if needed.
+	parent              = Column(BigInteger, ForeignKey('nu_release_item.id'), index=True, nullable=False)
 
-# 	client_id        = Column(Text, nullable=False, index=True)
-# 	client_key       = Column(Text, nullable=False, index=True)
+	client_id        = Column(Text, nullable=False, index=True)
+	client_key       = Column(Text, nullable=False, index=True)
 
-# 	actual_target    = Column(Text, nullable=False)
+	actual_target    = Column(Text, nullable=False)
 
-# 	fetched_on       = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-
-
-
-# 	__table_args__ = (
-# 		UniqueConstraint('client_id', 'client_key', 'actual_target'),
-# 		)
+	fetched_on       = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 
 
 
+	__table_args__ = (
+		UniqueConstraint('client_id', 'client_key', 'actual_target'),
+		)
 
 
 # 'seriesname'       : series.get_text().strip(),

@@ -1,6 +1,6 @@
 
 
-
+from sqlalchemy import func
 
 import WebMirror.OutputFilters.FilterBase
 
@@ -19,10 +19,15 @@ import pprint
 import common.util.webFunctions
 import bleach
 import multiprocessing
-import unshortenit
+import common.database as db
 
 MIN_RATING = 5
 
+
+def get_count(q):
+	count_q = q.statement.with_only_columns([func.count()]).order_by(None)
+	count = q.session.execute(count_q).scalar()
+	return count
 
 class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
@@ -63,13 +68,49 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 ##################################################################################################################################
 
 
+	def upsertNuItem(self, itemparams):
+		required_args = [
+			'seriesname',
+			'releaseinfo',
+			'groupinfo',
+			'referrer',
+			'outbound_wrapper',
+			'first_seen',
+			]
+
+		assert all([key in itemparams for key in required_args])
+
+		seriesname       = itemparams['seriesname']
+		releaseinfo      = itemparams['releaseinfo']
+		groupinfo        = itemparams['groupinfo']
+		referrer         = itemparams['referrer']
+		outbound_wrapper = itemparams['outbound_wrapper']
+		first_seen       = itemparams['first_seen']
+
+		have = self.db_sess.query(db.NuReleaseItem)                                   \
+				.filter(db.NuReleaseItem.outbound_wrapper == outbound_wrapper) \
+				.count()
+
+		if have:
+			print("Skipping: ", (seriesname, releaseinfo, first_seen))
+		else:
+			item = db.NuReleaseItem(
+
+				seriesname       = seriesname,
+				releaseinfo      = releaseinfo,
+				groupinfo        = groupinfo,
+				referrer         = referrer,
+				outbound_wrapper = outbound_wrapper,
+				first_seen       = first_seen,
+				)
+			print("Need to add:", (seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen))
+			self.db_sess.add(item)
+
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
 		titletg  = soup.find("h4", class_='seriestitle')
 		altnametg  = soup.find("div", id='editassociated')
 		descrtg  = soup.find("div", id='editdescription')
-
-
 
 		link_sets = {
 			'authortg'        : soup.find("div", id='showauthors'),
@@ -132,25 +173,24 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		else:
 			data_sets['yeartg'] = None
 
-		{
-			# 'coostatustg': ['3 Volumes (Ongoing)', '5 Web Volumes (Ongoing)'],
-			# 'orig_pub_tg': ['Media Factory'],
-			# 'eng_pub_tg': [],
-			# 'typetg': ['Web Novel'],
-			# 'genretg': ['Action', 'Adventure', 'Comedy', 'Ecchi', 'Fantasy', 'Romance', 'Seinen'],
-			# 'licensedtg': ['No'],
-			# 'altnames': ['Sendai Yuusha wa Inkyoshitai', 'The Previous Hero wants to Retire', '先代勇者は隠居したい'],
-			# 'authortg': ['Iida K'],
-			# 'artisttg': ['Shimotsuki Eito'],
-			# 'title': 'Sendai Yuusha wa Inkyou Shitai',
-			# 'description': '<p>\n  Three years ago, in the land of Reinbulk, a Legendary Hero was summoned in the Kindom of Leezalion and he succeeded in repelling the Demon King. Now, five students are summoned back into Reinbulk by the Kingdom of Luxeria to fight against the Demon King and the demon army. Unlike the other heroes, Yashiro Yuu has no magical affinity and the Luxeria Kingdom has no intention on acknowledging his existence or returning him to his world.\n </p>\n <p>\n  However, Yuu is actually the previous Hero that had fought the Demon King. Moreover, he is perplexed at the situation since he knows the Demon King has not returned since he sealed him. If the seal was ever broken then he would be automatically summoned instead of normal summoned. Since he already saved the world once and the Demon King hasn’t been unsealed, Yuu decides to leave the demons to the new heroes and retire from the Hero business. So he decides to become an adventurer.\n </p>',
-			# 'tagstg': ['Elves', 'Heroes', 'Magic', 'Monsters', 'Multiple Narrators', 'Protagonist Strong from the Start', 'Strong Male Lead', 'Sword and Sorcery', 'Transported to Another World'],
-			# 'langtg': ['Japanese'],
-			# 'yeartg': ['2013']
+		# {
+		# 	'coostatustg': ['3 Volumes (Ongoing)', '5 Web Volumes (Ongoing)'],
+		# 	'orig_pub_tg': ['Media Factory'],
+		# 	'eng_pub_tg': [],
+		# 	'typetg': ['Web Novel'],
+		# 	'genretg': ['Action', 'Adventure', 'Comedy', 'Ecchi', 'Fantasy', 'Romance', 'Seinen'],
+		# 	'licensedtg': ['No'],
+		# 	'altnames': ['Sendai Yuusha wa Inkyoshitai', 'The Previous Hero wants to Retire', '先代勇者は隠居したい'],
+		# 	'authortg': ['Iida K'],
+		# 	'artisttg': ['Shimotsuki Eito'],
+		# 	'title': 'Sendai Yuusha wa Inkyou Shitai',
+		# 	'description': '<p>\n  Three years ago, in the land of Reinbulk, a Legendary Hero was summoned in the Kindom of Leezalion and he succeeded in repelling the Demon King. Now, five students are summoned back into Reinbulk by the Kingdom of Luxeria to fight against the Demon King and the demon army. Unlike the other heroes, Yashiro Yuu has no magical affinity and the Luxeria Kingdom has no intention on acknowledging his existence or returning him to his world.\n </p>\n <p>\n  However, Yuu is actually the previous Hero that had fought the Demon King. Moreover, he is perplexed at the situation since he knows the Demon King has not returned since he sealed him. If the seal was ever broken then he would be automatically summoned instead of normal summoned. Since he already saved the world once and the Demon King hasn’t been unsealed, Yuu decides to leave the demons to the new heroes and retire from the Hero business. So he decides to become an adventurer.\n </p>',
+		# 	'tagstg': ['Elves', 'Heroes', 'Magic', 'Monsters', 'Multiple Narrators', 'Protagonist Strong from the Start', 'Strong Male Lead', 'Sword and Sorcery', 'Transported to Another World'],
+		# 	'langtg': ['Japanese'],
+		# 	'yeartg': ['2013']
 
-
-			'transcompletetg': ['No'],
-		}
+		# 	'transcompletetg': ['No'],
+		# }
 
 		data_sets['description'] = bleach.clean(descrtg.prettify(), tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'p'], strip=True).strip()
 
@@ -183,8 +223,8 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'create_tags'   : True,
 		}
 		# pprint.pprint(series_message)
-		pkt = msgpackers.createSeriesInfoPacket(series_message, matchAuthor=True, beta=self.is_beta)
-		# print(pkt)
+		series_info_packet = msgpackers.createSeriesInfoPacket(series_message, matchAuthor=True, beta=self.is_beta)
+		# print(series_info_packet)
 
 		extra = {}
 		extra['tags']     = data_sets['tagstg']
@@ -195,93 +235,59 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		chapter_tbl = soup.find("table", id='myTable')
 		if not chapter_tbl:
 			self.log.error("No chapter table!")
-			return []
+			return
+
 		releases = chapter_tbl.find_all("tr")
 
-		retval = []
+		valid_releases = 0
 		for release in releases:
 
 			items = release.find_all("td")
-			if len(items) == 0:
+			if len(items) != 3:
 				continue
 
 			date_tg, group_tg, chp_tg = items
 
 			rel = datetime.datetime.strptime(date_tg.get_text().strip(), '%m/%d/%y')
 			if rel.date() == datetime.date.today():
-				reldate = time.time()
+				reldate = datetime.datetime.now()
 			else:
-				reldate = calendar.timegm(rel.timetuple())
+				reldate = datetime.datetime.fromtimestamp(calendar.timegm(rel.timetuple()))
 
-			chp_title  = chp_tg.get_text().strip()
+			release_info  = chp_tg.get_text().strip()
 			group_name = group_tg.get_text().strip()
-			vol, chp, frag, post = extractTitle(chp_title)
+			group_name = msgpackers.fixSmartQuotes(group_name)
 
-			# Clean up empty chapter numbers that are duplicated in the actual chapter data.
-			if re.match(r'^(V\d+)?(C\d+)?( part\d+)?$', chp_title, re.IGNORECASE):
-				chp_title = ""
 
-			raw_item = {}
-			raw_item['srcname']   = msgpackers.fixSmartQuotes(group_name)
-			raw_item['published'] = reldate
+			self.upsertNuItem({
+					'seriesname'       : title,
+					'releaseinfo'      : release_info,
+					'groupinfo'        : group_name,
+					'referrer'         : seriesPageUrl,
+					'outbound_wrapper' : chp_tg.a['href'],
+					'first_seen'       : reldate,
+				})
 
-			# TODO: This has to move into a preprocessor!
 
-			# raw_item['linkUrl'] = WebMirror.SpecialCase.blockingRemoteHead(chp_tg.a['href'], referrer=seriesPageUrl)
-			# raw_item['linkUrl'] = self.wg.getHead(chp_tg.a['href'], addlHeaders={"Referer" : seriesPageUrl})
+			valid_releases += 1
 
-			# assert isinstance(raw_item['linkUrl'], str), "novelupdates link not a string?"
-			# assert not "www.novelupdates.com/extnu/" in raw_item['linkUrl'], "NovelUpdates creepy outbound link thing"
 
-			# msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=data_sets['authortg'], postfix=chp_title, tl_type='translated', extraData=extra, matchAuthor=True)
-			# retval.append(msg)
-			retval.append({"item" : "wat", "vol" : 1, "chp" : 1})
-
-		missing_chap = 0
-		for item in retval:
-			if not (item['vol'] or item['chp']):
-				missing_chap += 1
-
-		if len(retval):
-			unnumbered = (missing_chap/len(retval)) * 100
-			if len(retval) >= 5 and unnumbered > 80:
-				self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
-				chap = 1
-				for item in retval:
-					item['vol'] = None
-					item['chp'] = chap
-					chap += 1
-
+		self.log.info("Committing!")
+		self.db_sess.commit()
+		self.log.info("Committed!")
 		# Do not add series without 3 chapters.
-		if len(retval) < 3:
+		if valid_releases < 3:
 			self.log.warning("Less then three chapters!")
-			return []
+			return
 
-		if not retval:
-			self.log.error("Retval empty?!")
-			return []
-
-
-		self.amqp_put_item(pkt)
-		return []
-		# return retval
-
-
-	def sendReleases(self, releases):
-		self.log.info("Total releases found on page: %s. Emitting messages into AMQP local queue.", len(releases))
-		for release in releases:
-			pkt = msgpackers.createReleasePacket(release, beta=self.is_beta)
-			self.amqp_put_item(pkt)
-
-
+		self.amqp_put_item(series_info_packet)
+		return
 
 
 	def processPage(self, url, content):
 
 		soup = common.util.webFunctions.as_soup(self.content)
-		releases = self.extractSeriesReleases(self.pageUrl, soup)
-		if releases:
-			self.sendReleases(releases)
+		self.extractSeriesReleases(self.pageUrl, soup)
 
 
 
