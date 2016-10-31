@@ -3450,6 +3450,18 @@ def extractNovelsTranslation(item):
 		return buildReleaseMessage(item, 'Womanizing Mage', vol, chp, frag=frag, postfix=postfix)
 	return False
 
+def extractMoonRabbitTranslations(item):
+	'''
+	Moon Rabbit Translations
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	if 'Womanizing Mage' in item['tags']:
+		return buildReleaseMessage(item, 'Womanizing Mage', vol, chp, frag=frag, postfix=postfix)
+	return False
+
 
 def extractNovitranslation(item):
 	'''

@@ -189,6 +189,52 @@ class PluginStatus(common.db_base.Base):
 	last_error_msg = Column(Text)
 
 
+##################################################
+
+# class NuReleaseItem(common.db_base.Base):
+# 	__tablename__ = 'nu_release_item'
+# 	id               = Column(BigInteger, primary_key=True)
+
+# 	validated        = Column(Boolean, default=False, nullable=False)
+# 	actual_target    = Column(Text)
+
+# 	seriesname       = Column(Text, nullable=False, index=True)
+# 	releaseinfo      = Column(Text)
+# 	groupinfo        = Column(Text, nullable=False, index=True)
+# 	referrer         = Column(Text, nullable=False)
+# 	outbound_wrapper = Column(Text, nullable=False)
+
+# 	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+
+# 	resolved         = relationship("NuResolvedOutbound")
+
+# 	__table_args__ = (
+# 		UniqueConstraint('seriesname', 'releaseinfo', 'groupinfo', 'outbound_wrapper', 'actual_target'),
+# 		)
+
+# class NuResolvedOutbound(common.db_base.Base):
+# 	__tablename__ = 'nu_resolved_outbound'
+# 	id               = Column(BigInteger, primary_key=True)
+
+# 	# Foreign key to the files table if needed.
+# 	parent              = Column(BigInteger, ForeignKey('nu_release_item.id'), index=True, nullable=False)
+
+# 	client_id        = Column(Text, nullable=False, index=True)
+# 	client_key       = Column(Text, nullable=False, index=True)
+
+# 	actual_target    = Column(Text, nullable=False)
+
+# 	fetched_on       = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+
+
+# 	__table_args__ = (
+# 		UniqueConstraint('client_id', 'client_key', 'actual_target'),
+# 		)
+
+
+
+
 
 # 'seriesname'       : series.get_text().strip(),
 # 'releaseinfo'      : release.get_text().strip(),
@@ -215,7 +261,7 @@ class NuOutboundWrapperMap(common.db_base.Base):
 	outbound_wrapper = Column(Text)
 	actual_target    = Column(Text)
 
-	released_on      = Column(DateTime, default=datetime.datetime.utcnow)
+	released_on      = Column(DateTime, default=datetime.datetime.utcnow, index=True)
 
 	validated        = Column(Boolean, default=False)
 
@@ -227,135 +273,4 @@ class NuOutboundWrapperMap(common.db_base.Base):
 
 # common.db_base.Base.metadata.create_all(bind=get_engine(), checkfirst=True)
 
-
-
-# More indexes:
-#
-# CREATE INDEX idx_web_pages_title ON web_pages USING gin(to_tsvector('english', title));
-# CREATE INDEX idx_web_pages_content ON web_pages USING gin(to_tsvector('english', content));
-#
-# Essential for fast task get queries
-# CREATE INDEX ix_web_pages_distance_filtered ON web_pages (priority ASC NULLS LAST) WHERE web_pages.state = 'new'::dlstate_enum AND web_pages.distance < 1000000;
-# CREATE INDEX ix_web_pages_distance_filtered_2 ON web_pages (priority ASC NULLS LAST, distance, normal_fetch_mode, ignoreuntiltime) WHERE web_pages.state = 'new'::dlstate_enum AND web_pages.distance < 1000000;
-#
-
-
-# SELECT relname AS "relation", pg_size_pretty(pg_relation_size(C.oid)) AS "size"
-#   FROM pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
-#   WHERE nspname NOT IN ('pg_catalog', 'information_schema')
-#   ORDER BY pg_relation_size(C.oid) DESC;
-
-# SELECT relname AS "relation",
-#     pg_size_pretty(pg_total_relation_size(C.oid)) AS "total_size"
-#   FROM pg_class C
-#   LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
-#   WHERE nspname NOT IN ('pg_catalog', 'information_schema')
-#     AND C.relkind <> 'i'
-#     AND nspname !~ '^pg_toast'
-#   ORDER BY pg_total_relation_size(C.oid) DESC;
-
-
-# CREATE INDEX
-#     ix_web_pages_distance_filtered_nowp
-# ON
-#     web_pages(priority)
-# WHERE
-#     state = 'new'::dlstate_enum
-# AND
-#     distance < 1000000
-# AND
-#     normal_fetch_mode = true
-# AND NOT
-#     (
-#             web_pages.netloc = 'a.wattpad.com'
-#         OR
-#             web_pages.netloc = 'www.wattpad.com'
-#     );
-
-# CREATE INDEX
-#     ix_web_pages_distance_filtered_wp
-# ON
-#     web_pages(priority)
-# WHERE
-#     state = 'new'::dlstate_enum
-# AND
-#     distance < 1000000
-# AND
-#     normal_fetch_mode = true
-# AND  (
-#             web_pages.netloc = 'a.wattpad.com'
-#         OR
-#             web_pages.netloc = 'www.wattpad.com'
-#     );
-
-
-# EXPLAIN ANALYZE UPDATE web_pages SET fetchtime='now'::timestamp WHERE id=428615139;
-# EXPLAIN ANALYZE UPDATE web_pages SET tsv_content = NULL WHERE id=428615139;
-
-# SELECT  tsv_content FROM web_pages WHERE id=428615139;
-
-'''
-CREATE OR REPLACE FUNCTION web_pages_content_update_func() RETURNS TRIGGER AS $_$
-BEGIN
-    --
-    -- Create a row in {name}changes to reflect the operation performed on emp,
-    -- make use of the special variable TG_OP to work out the operation.
-    --
-    IF TG_OP = 'INSERT' THEN
-        IF NEW.content IS NOT NULL THEN
-            NEW.tsv_content = to_tsvector(coalesce(NEW.content));
-        END IF;
-    ELSEIF TG_OP = 'UPDATE' THEN
-        IF NEW.content != OLD.content THEN
-            NEW.tsv_content = to_tsvector(coalesce(NEW.content));
-        END IF;
-    END IF;
-    RETURN NEW;
-END $_$ LANGUAGE 'plpgsql';
-
-
-CREATE TRIGGER
-    update_row_count_trigger
-BEFORE INSERT OR UPDATE ON
-    web_pages
-FOR EACH ROW EXECUTE PROCEDURE
-    web_pages_content_update_func();
-
-
-
-
-DELETE FROM
-    web_pages_version
-WHERE
-    url
-IN
-(
-    SELECT
-        url
-    FROM
-        web_pages_version
-    GROUP BY
-        url HAVING COUNT(url) > 1000
-)
-
-
-EXPLAIN
-SELECT
-    count(*), url
-FROM
-    web_pages_version
-GROUP BY
-    url
-HAVING
-    COUNT(*) > 1
-ORDER BY
-    COUNT(*) DESC
-;
-
-SELECT pg_terminate_backend(pid)
-  FROM pg_stat_activity
- WHERE  usename='webarchuser';
-
-
-'''
 

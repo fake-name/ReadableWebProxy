@@ -356,6 +356,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				"Monkoto's Translations"                                        : pfuncs_h_n.extractMonkotosTranslations,
 				'Monk Translation'                                              : pfuncs_h_n.extractMonkTranslation,
 				'Moon Bunny Cafe'                                               : pfuncs_h_n.extractMoonBunnyCafe,
+				'Moon Rabbit Translations'                                      : pfuncs_h_n.extractMoonRabbitTranslations,
 				'Morrighan Sucks'                                               : pfuncs_h_n.extractMorrighanSucks,
 				'Mousou Haven'                                                  : pfuncs_h_n.extractMousouHaven,
 				'mousou-haven.com'                                              : pfuncs_h_n.extractMousouhaven,

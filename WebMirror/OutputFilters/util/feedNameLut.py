@@ -393,6 +393,7 @@ mapper = {
 	'tbatenovel.com'                                  : 'The Beginning After The End Novel',
 	'thebeginningaftertheendblog.wordpress.com'       : 'The Beginning After The End Novel',
 	'theundyingblog.wordpress.com'                    : 'The Undying Cultivator',
+	'moonrabbittr.wordpress.com'                      : 'Moon Rabbit Translations',
 
 	# Blogspot
 	'trungnguyenwriter.blogspot.com'                  : 'Trung Nguyen',
