@@ -63,6 +63,9 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		super().__init__(**kwargs)
 
 
+		self.raw_cur = self.db_sess.connection().connection.cursor()
+
+
 ##################################################################################################################################
 ##################################################################################################################################
 ##################################################################################################################################
@@ -80,31 +83,30 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		assert all([key in itemparams for key in required_args])
 
-		seriesname       = itemparams['seriesname']
-		releaseinfo      = itemparams['releaseinfo']
-		groupinfo        = itemparams['groupinfo']
-		referrer         = itemparams['referrer']
-		outbound_wrapper = itemparams['outbound_wrapper']
-		first_seen       = itemparams['first_seen']
+		#  Fucking huzzah for ON CONFLICT!
+		cmd = """
+				INSERT INTO
+					nu_release_item
+					(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, validated)
+				VALUES
+					(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(validated)s)
+				ON CONFLICT (seriesname, releaseinfo, groupinfo, outbound_wrapper) DO NOTHING
+					;
+				""".replace("	", " ").replace("\n", " ")
 
-		have = self.db_sess.query(db.NuReleaseItem)                                   \
-				.filter(db.NuReleaseItem.outbound_wrapper == outbound_wrapper) \
-				.count()
+		# Forward-data the next walk, time, rather then using now-value for the thresh.
+		data = {
+				'seriesname'       : itemparams['seriesname'],
+				'releaseinfo'      : itemparams['releaseinfo'],
+				'groupinfo'        : itemparams['groupinfo'],
+				'referrer'         : itemparams['referrer'],
+				'outbound_wrapper' : itemparams['outbound_wrapper'],
+				'first_seen'       : itemparams['first_seen'],
+				'validated'        : False,
+			}
 
-		if have:
-			print("Skipping: ", (seriesname, releaseinfo, first_seen))
-		else:
-			item = db.NuReleaseItem(
+		self.raw_cur.execute(cmd, data)
 
-				seriesname       = seriesname,
-				releaseinfo      = releaseinfo,
-				groupinfo        = groupinfo,
-				referrer         = referrer,
-				outbound_wrapper = outbound_wrapper,
-				first_seen       = first_seen,
-				)
-			print("Need to add:", (seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen))
-			self.db_sess.add(item)
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
@@ -273,7 +275,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		self.log.info("Committing!")
-		self.db_sess.commit()
+		self.raw_cur.execute("COMMIT;")
 		self.log.info("Committed!")
 		# Do not add series without 3 chapters.
 		if valid_releases < 3:

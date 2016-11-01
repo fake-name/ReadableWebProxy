@@ -26,23 +26,30 @@ def exposed_process_nu_pages(transmit=True):
 	else:
 		message_q = queue.Queue()
 
+	pages = []
 	for row in sess.query(db.WebPages) \
 		.filter(db.WebPages.netloc == "www.novelupdates.com") \
-		.yield_per(1000).all():
+		.yield_per(50).all():
+
+		rowtmp = {
+			"pageUrl"   : row.url,
+			"pgContent" : row.content,
+			"type"      : row.mimetype,
+			"wg"        : wg,
+			"message_q" : message_q,
+		}
+		pages.append(rowtmp)
+
+		if len(pages) == 100:
+			print("Loaded %s pages..." % len(pages))
+	sess.flush()
+	sess.commit()
+	for row in pages:
 		try:
 			# print(row, row.url, row.state)
-			if row.content and NuSeriesPageFilter.NUSeriesPageProcessor.wantsUrl(row.url):
-				print(row)
-				proc = NuSeriesPageFilter.NUSeriesPageProcessor(
-						pageUrl   = row.url,
-						pgContent = row.content,
-						type      = row.mimetype,
-						wg        = wg,
-						db_sess   = sess,
-						message_q = message_q,
-					)
+			if row['pgContent'] and NuSeriesPageFilter.NUSeriesPageProcessor.wantsUrl(row['pageUrl']):
+				proc = NuSeriesPageFilter.NUSeriesPageProcessor(db_sess=sess, **row)
 				proc.extractContent()
-				print(proc)
 		except Exception:
 			print("")
 			print("ERROR!")
