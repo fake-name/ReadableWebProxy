@@ -2,6 +2,9 @@
 import queue
 import pprint
 import traceback
+
+from sqlalchemy.orm import joinedload
+
 import runStatus
 import common.database as db
 import common.RunManager
@@ -63,21 +66,20 @@ def exposed_cross_sync_nu_feeds():
 
 	# client_id
 	# client_key
-	#
-	#
-	#
-	#
-	#
-	#
-	#
-	#
 
 	sess = db.get_db_session()
-
+	print("Loading extant rows...")
 	old_nu_items = sess.query(db.NuOutboundWrapperMap).all()
+	print("Loaded. Processing")
+	have_count = 0
+	new_count  = 0
+	loops = 0
 
 	for old_nu in old_nu_items:
-		have = sess.query(db.NuReleaseItem).filter(db.NuReleaseItem.outbound_wrapper==old_nu.outbound_wrapper).scalar()
+		have = sess.query(db.NuReleaseItem)                                     \
+			.options(joinedload('resolved'))                                    \
+			.filter(db.NuReleaseItem.outbound_wrapper==old_nu.outbound_wrapper) \
+			.scalar()
 		if not have:
 			have = db.NuReleaseItem(
 					validated        = old_nu.validated,
@@ -90,8 +92,33 @@ def exposed_cross_sync_nu_feeds():
 					actual_target    = old_nu.actual_target,
 				)
 			sess.add(have)
+			loops += 1
+			new_count += 1
+
+
+		old_key = (old_nu.client_id, old_nu.client_key, old_nu.actual_target)
+		resolved = set([(itm.client_id, itm.client_key, itm.actual_target) for itm in have.resolved])
+		if not old_key in resolved:
+			new = db.NuResolvedOutbound(
+					client_id      = old_nu.client_id,
+					client_key     = old_nu.client_key,
+					actual_target  = old_nu.actual_target,
+					fetched_on     = old_nu.released_on,
+				)
+			have.resolved.append(new)
+			loops += 1
+			new_count += 1
+			print("New release!")
+		else:
+			have_count += 1
+
+		if loops == 100:
+			print("Commit! Have {}, new {}".format(have_count, new_count))
 			sess.commit()
-			print("Commit!")
+			loops = 0
+
+		# for chunk in have.resolved:
+		# 	print(chunk)
 
 def exposed_process_nu_pages(transmit=True):
 	'''
