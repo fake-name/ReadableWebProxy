@@ -62,7 +62,9 @@ def buildjob(
 			args           = [],
 			kwargs         = {},
 			additionalData = None,
-			postDelay      = 0
+			postDelay      = 0,
+			extra_keys     = {},
+			unique_id      = None,
 		):
 
 	job = {
@@ -75,6 +77,8 @@ def buildjob(
 			'dispatch_key' : dispatchKey,
 			'postDelay'    : postDelay,
 		}
+	if unique_id is not None:
+		job['unique_id'] = unique_id
 	return job
 
 

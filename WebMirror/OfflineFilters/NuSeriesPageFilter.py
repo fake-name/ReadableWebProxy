@@ -29,6 +29,46 @@ def get_count(q):
 	count = q.session.execute(count_q).scalar()
 	return count
 
+
+
+
+def upsertNuItem(raw_cur, itemparams):
+	required_args = [
+		'seriesname',
+		'releaseinfo',
+		'groupinfo',
+		'referrer',
+		'outbound_wrapper',
+		'first_seen',
+		]
+
+	assert all([key in itemparams for key in required_args])
+
+	#  Fucking huzzah for ON CONFLICT!
+	cmd = """
+			INSERT INTO
+				nu_release_item
+				(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, validated)
+			VALUES
+				(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(validated)s)
+			ON CONFLICT (seriesname, releaseinfo, groupinfo, outbound_wrapper) DO NOTHING
+				;
+			""".replace("	", " ").replace("\n", " ")
+
+	# Forward-data the next walk, time, rather then using now-value for the thresh.
+	data = {
+			'seriesname'       : itemparams['seriesname'],
+			'releaseinfo'      : itemparams['releaseinfo'],
+			'groupinfo'        : itemparams['groupinfo'],
+			'referrer'         : itemparams['referrer'],
+			'outbound_wrapper' : itemparams['outbound_wrapper'],
+			'first_seen'       : itemparams['first_seen'],
+			'validated'        : False,
+		}
+
+	raw_cur.execute(cmd, data)
+
+
 class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
@@ -69,43 +109,6 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 ##################################################################################################################################
 ##################################################################################################################################
 ##################################################################################################################################
-
-
-	def upsertNuItem(self, itemparams):
-		required_args = [
-			'seriesname',
-			'releaseinfo',
-			'groupinfo',
-			'referrer',
-			'outbound_wrapper',
-			'first_seen',
-			]
-
-		assert all([key in itemparams for key in required_args])
-
-		#  Fucking huzzah for ON CONFLICT!
-		cmd = """
-				INSERT INTO
-					nu_release_item
-					(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, validated)
-				VALUES
-					(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(validated)s)
-				ON CONFLICT (seriesname, releaseinfo, groupinfo, outbound_wrapper) DO NOTHING
-					;
-				""".replace("	", " ").replace("\n", " ")
-
-		# Forward-data the next walk, time, rather then using now-value for the thresh.
-		data = {
-				'seriesname'       : itemparams['seriesname'],
-				'releaseinfo'      : itemparams['releaseinfo'],
-				'groupinfo'        : itemparams['groupinfo'],
-				'referrer'         : itemparams['referrer'],
-				'outbound_wrapper' : itemparams['outbound_wrapper'],
-				'first_seen'       : itemparams['first_seen'],
-				'validated'        : False,
-			}
-
-		self.raw_cur.execute(cmd, data)
 
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
@@ -261,7 +264,8 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			group_name = msgpackers.fixSmartQuotes(group_name)
 
 
-			self.upsertNuItem({
+			upsertNuItem(self.raw_cur,
+				{
 					'seriesname'       : title,
 					'releaseinfo'      : release_info,
 					'groupinfo'        : group_name,

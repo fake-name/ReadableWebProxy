@@ -82,7 +82,6 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 			if e.name == "Empty":
 				raise queue.Empty
 		except Exception as e:
-
 			raise e
 
 	def get_job_nowait(self):
