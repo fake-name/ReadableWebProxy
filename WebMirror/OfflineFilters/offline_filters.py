@@ -4,6 +4,7 @@ import pprint
 import traceback
 
 from sqlalchemy.orm import joinedload
+from sqlalchemy import desc
 
 import runStatus
 import common.database as db
@@ -12,6 +13,8 @@ import common.get_rpyc
 import common.util.webFunctions
 from WebMirror.NewJobQueue import buildjob
 from . import NuSeriesPageFilter
+
+import Misc.NuForwarder.NuHeader
 
 def get_message_queue():
 	pass
@@ -58,6 +61,32 @@ def exposed_head(url, ref):
 		except queue.Empty:
 			print("No response yet?")
 
+def exposed_do_nu_head():
+	'''
+	'''
+	header = Misc.NuForwarder.NuHeader.NuHeader()
+	print(header)
+
+	header.put_job()
+
+	while True:
+		header.process_avail()
+
+
+def exposed_confirm_from_heads():
+	sess = db.get_db_session()
+	print("Loading extant rows...")
+	have = sess.query(db.NuReleaseItem)                                     \
+		.options(joinedload('resolved'))                                    \
+		.all()
+	print("Loaded. Processing")
+
+	for row in have:
+		res = list(row.resolved)
+		if res:
+			print(len(res))
+
+
 def exposed_cross_sync_nu_feeds():
 	'''
 	Re-synchronize the NU feed items from the old system (NuOutboundWrapperMap)
@@ -69,11 +98,12 @@ def exposed_cross_sync_nu_feeds():
 
 	sess = db.get_db_session()
 	print("Loading extant rows...")
-	old_nu_items = sess.query(db.NuOutboundWrapperMap).all()
+	old_nu_items = sess.query(db.NuOutboundWrapperMap).order_by(desc(db.NuOutboundWrapperMap.id)).all()
 	print("Loaded. Processing")
 	have_count = 0
 	new_count  = 0
 	loops = 0
+	nc_loops = 0
 
 	for old_nu in old_nu_items:
 		have = sess.query(db.NuReleaseItem)                                     \
@@ -108,17 +138,21 @@ def exposed_cross_sync_nu_feeds():
 			have.resolved.append(new)
 			loops += 1
 			new_count += 1
-			print("New release!")
 		else:
 			have_count += 1
+			nc_loops += 1
 
-		if loops == 100:
-			print("Commit! Have {}, new {}".format(have_count, new_count))
+		if loops > 100:
+			print("Commit! Have {}, new {} ({}, {})".format(have_count, new_count, loops, nc_loops))
 			sess.commit()
 			loops = 0
 
-		# for chunk in have.resolved:
-		# 	print(chunk)
+		if nc_loops > 100:
+			print("Have {}, new {} ({}, {})".format(have_count, new_count, loops, nc_loops))
+			nc_loops = 0
+
+
+	sess.commit()
 
 def exposed_process_nu_pages(transmit=True):
 	'''

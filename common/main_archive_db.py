@@ -230,7 +230,7 @@ class NuResolvedOutbound(common.db_base.Base):
 
 
 	__table_args__ = (
-		UniqueConstraint('client_id', 'client_key', 'actual_target'),
+		UniqueConstraint('parent', 'client_id', 'client_key', 'actual_target'),
 		)
 
 
