@@ -191,6 +191,8 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'site-upgrade.html/feed.xml',
 		'.html/feed',
 		'&_debug=',
+		'/help/styles/default/xenforo/',
+		r'\'!>\n',
 
 	]
 

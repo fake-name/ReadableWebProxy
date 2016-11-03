@@ -74,9 +74,9 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		self.remote = zerorpc.Client()
 		self.remote.connect("tcp://127.0.0.1:4242")
 
-	def get_job(self, wait=1):
+	def get_job(self):
 		try:
-			j = self.remote.getJob(self.interfacename, wait=wait)
+			j = self.remote.getJob(self.interfacename)
 			return j
 		except zerorpc.RemoteError as e:
 			if e.name == "Empty":

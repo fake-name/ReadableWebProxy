@@ -121,6 +121,8 @@ def do_call(job_name):
 			traceback.print_exc()
 			print("Call error!")
 
+
+
 def scheduleJobs(sched, timeToStart):
 
 	jobs = []
@@ -131,6 +133,11 @@ def scheduleJobs(sched, timeToStart):
 		offset += 1
 
 	activeJobs = []
+
+
+	for callable_f in activePlugins.autoscheduler_plugins:
+		callable_f(sched)
+
 
 	print("JobCaller: ", JobCaller)
 	print("JobCaller.callMod: ", JobCaller.callMod)
@@ -197,12 +204,19 @@ def go_sched():
 				'type': 'sqlalchemy',
 				'url': SQLALCHEMY_DATABASE_URI
 			},
+			'apscheduler.jobstores.memory': {
+				'type': 'memory'
+			},
 			'apscheduler.executors.default': {
 				'class': 'apscheduler.executors.pool:ProcessPoolExecutor',
 				'max_workers': '10'
 			},
+			'apscheduler.executors.on_the_fly': {
+				'class': 'apscheduler.executors.pool:ThreadPoolExecutor',
+				'max_workers': '10'
+			},
 			'apscheduler.job_defaults.coalesce': 'true',
-			'apscheduler.job_defaults.max_instances': '5',
+			'apscheduler.job_defaults.max_instances': '2',
 		})
 
 	# Apparently the scheduler pull the jobs from the backend until you start it,

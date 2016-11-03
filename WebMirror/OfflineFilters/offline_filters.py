@@ -1,6 +1,7 @@
 
 import queue
 import pprint
+import time
 import traceback
 
 from sqlalchemy.orm import joinedload
@@ -57,6 +58,8 @@ def exposed_head(url, ref):
 		try:
 			resp = rpc_interface.get_job()
 			print_response(resp)
+			if not resp:
+				time.sleep(1)
 
 		except queue.Empty:
 			print("No response yet?")
@@ -71,6 +74,7 @@ def exposed_do_nu_head():
 
 	while True:
 		header.process_avail()
+		time.sleep(1)
 
 
 def exposed_confirm_from_heads():

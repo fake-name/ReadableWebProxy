@@ -19,7 +19,7 @@ import common.database as db
 
 import common.get_rpyc
 import common.LogBase as LogBase
-import settings
+import random
 from WebMirror.NewJobQueue import buildjob
 
 
@@ -77,7 +77,6 @@ class NuHeader(LogBase.LoggerMixin):
 		if len(list(have.resolved)) >= 3:
 			raise RuntimeError("Overresolved item that's not valid.")
 
-
 		self.log.info("Putting job for url '%s'", have.outbound_wrapper)
 		self.log.info("Referring page '%s'", have.referrer)
 		raw_job = buildjob(
@@ -119,7 +118,7 @@ class NuHeader(LogBase.LoggerMixin):
 
 		'''
 		new = self.rpc.get_job()
-		print(new)
+
 		expected_keys = ['call', 'cancontinue', 'dispatch_key', 'extradat', 'jobid',
 					'jobmeta', 'module', 'ret', 'success', 'user', 'user_uuid']
 		if new is None:
@@ -127,7 +126,7 @@ class NuHeader(LogBase.LoggerMixin):
 			return
 
 		try:
-			self.log.info("Processing remote head response: %s")
+			self.log.info("Processing remote head response: %s", new)
 			assert all([key in new for key in expected_keys])
 			assert new['call'] == 'getHeadPhantomJS'
 
@@ -158,4 +157,49 @@ class NuHeader(LogBase.LoggerMixin):
 
 			for line in pprint.pformat(new).split("\n"):
 				self.log.error(line)
+
+
+def fetch_and_flush():
+	hd = NuHeader()
+	hd.put_job()
+	for x in range(30):
+		hd.process_avail()
+		time.sleep(1)
+
+def schedule_next_exec(scheduler, at_time):
+	# NU Sync system has to run with a memory jobstore, and a process pool executor,
+	# because otherwise it'll try to serialize the job, and you can't serialize the
+	# scheduler itself.
+	scheduler.add_job(do_nu_sync,
+		args               = (scheduler, ),
+		trigger            = 'date',
+		run_date            = at_time,
+		jobstore           = 'memory',
+		executor           = 'on_the_fly',
+		replace_existing   = True,
+		max_instances      = 1,
+		coalesce           = True,
+		misfire_grace_time = 2**30)
+
+
+def do_nu_sync(scheduler):
+	print("do_nu_sync!", scheduler)
+	fetch_and_flush()
+
+	sleeptime = int(random.triangular(15, 10*60, 7*60))
+	next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
+	schedule_next_exec(scheduler, next_exec)
+
+	print("NU Sync executed. Next exec at ", next_exec)
+
+
+
+def do_schedule(scheduler):
+	print("Autoscheduler!")
+
+	exec_at = datetime.datetime.now() + datetime.timedelta(seconds=5)
+	schedule_next_exec(scheduler, exec_at)
+
+
+	pass
 

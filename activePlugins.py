@@ -34,6 +34,13 @@ scrapePlugins = {
 
 }
 
+import Misc.NuForwarder.NuHeader
+
+autoscheduler_plugins = {
+	Misc.NuForwarder.NuHeader.do_schedule,
+
+}
+
 
 # The processing pipeline has three stages.
 # Preprocessors have access to the page content before it's fed through the filters
@@ -67,6 +74,7 @@ import WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter
 import WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter
 import WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter
 import WebMirror.OutputFilters.Twitter.TwitterFilter
+
 
 # Filters are executed against fetched content first.
 FILTERS = [
