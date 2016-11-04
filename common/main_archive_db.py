@@ -206,6 +206,7 @@ class NuReleaseItem(common.db_base.Base):
 	outbound_wrapper = Column(Text, nullable=False, unique=True)
 
 	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+	validated_on     = Column(DateTime)
 
 	resolved         = relationship("NuResolvedOutbound")
 

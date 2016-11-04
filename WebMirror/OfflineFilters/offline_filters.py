@@ -68,9 +68,7 @@ def exposed_head(url, ref):
 def exposed_do_nu_head():
 	'''
 	'''
-	header = Misc.NuForwarder.NuHeader.NuHeader()
-	print(header)
-	header.validate_from_new()
+	Misc.NuForwarder.NuHeader.fetch_and_flush()
 
 	# header.put_job()
 

@@ -68,7 +68,7 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 			print("RRLSeriesUpdateFilter Wants url: '%s'" % url)
 			return True
-		print("RRLSeriesUpdateFilter doesn't want url: '%s'" % url)
+		# print("RRLSeriesUpdateFilter doesn't want url: '%s'" % url)
 		return False
 
 	def __init__(self, **kwargs):

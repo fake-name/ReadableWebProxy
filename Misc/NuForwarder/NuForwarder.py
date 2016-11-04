@@ -231,7 +231,6 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		try:
 			self.process_inbound_messages()
 			self.fix_names()
-			self.consolidate_validated()
 			self.emit_verified_releases()
 		finally:
 			self.close()
@@ -305,84 +304,26 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def emit_verified_releases(self):
-			have = self.db_sess.query(db.NuOutboundWrapperMap)                                                       \
-				.filter(db.NuOutboundWrapperMap.released_on > datetime.datetime.now() - datetime.timedelta(days=14)) \
-				.filter(db.NuOutboundWrapperMap.validated == True)                                                   \
-				.all()
 
-			self.log.info("Forwarding %s releases...", len(have))
-			agg_releases = {}
-			for row in have:
-				try:
-					key = (row.seriesname, row.releaseinfo, row.groupinfo)
-					if not key in agg_releases:
+		valid_recent = self.db_sess.query(db.NuReleaseItem)                                                \
+			.filter(db.NuReleaseItem.validated == True)                                                    \
+			.filter(db.NuReleaseItem.validated_on != None)                                                 \
+			.filter(db.NuReleaseItem.validated_on > datetime.datetime.now() - datetime.timedelta(days=14)) \
+			.all()
 
-						agg_releases[key] = {
-							'releaseinfo'   : row.releaseinfo,
-							'groupinfo'     : row.groupinfo,
-							'seriesname'    : row.seriesname,
-							'addtime'       : row.released_on,
-							'actual_target' : row.actual_target,
-						}
-					else:
-						assert str(row.releaseinfo)   == agg_releases[key]['releaseinfo'],   "Wat? (%s) %s -> %s" % (
-							row.releaseinfo   == agg_releases[key]['releaseinfo'], row.releaseinfo,     agg_releases[key]['releaseinfo'])
-						assert str(row.groupinfo)     == agg_releases[key]['groupinfo'],     "Wat? (%s) %s -> %s" % (
-							row.groupinfo     == agg_releases[key]['groupinfo'], row.groupinfo,         agg_releases[key]['groupinfo'])
-						assert str(row.seriesname)    == agg_releases[key]['seriesname'],    "Wat? (%s) %s -> %s" % (
-							row.seriesname    == agg_releases[key]['seriesname'], row.seriesname,       agg_releases[key]['seriesname'])
+		for row in valid_recent:
+			release = {
+						'releaseinfo'   : row.releaseinfo,
+						'groupinfo'     : row.groupinfo,
+						'seriesname'    : row.seriesname,
+						'addtime'       : row.first_seen,
+						'actual_target' : row.actual_target,
+					}
+			if release and not row.seriesname.endswith("..."):
+				# print(release)
+				self.do_release(release)
 
-						if 'blogspot' in row.actual_target:
-							# Blogspot is ANNOYING, and has a bajillion possible TLDs that all resolve the same place.
-							# Therefore, ignore the TLD from the netloc
-							url1 = urllib.parse.urlsplit(row.actual_target)
-							url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
-							nl1 = url1.netloc.split(".")
-							nl2 = url2.netloc.split(".")
-							l = max(min(len(nl1), len(nl2))-1, 1)
-							print("l", l)
-
-							url1 = (url1.scheme, nl1[0:l], url1.path, url1.query, url1.fragment)
-							url2 = (url2.scheme, nl2[0:l], url2.path, url2.query, url2.fragment)
-							assert url1 == url2, "wat? %s -> %s" % (url1, url2)
-						elif 'docs.google.com' in row.actual_target:
-							# We don't care about the query or fragment for google doc entries.
-							url1 = urllib.parse.urlsplit(row.actual_target)
-							url2 = urllib.parse.urlsplit(agg_releases[key]['actual_target'])
-							url1 = (url1.scheme, url1.netloc, url1.path)
-							url2 = (url2.scheme, url2.netloc, url2.path)
-							assert url1 == url2, "wat? %s -> %s" % (url1, url2)
-
-						else:
-							assert str(row.actual_target) == agg_releases[key]['actual_target'], "Wat? (%s) %s -> %s" % (row.actual_target == agg_releases[key]['actual_target'], row.actual_target, agg_releases[key]['actual_target'])
-				except AssertionError:
-					agg_releases[key] = None
-				except TypeError:
-					agg_releases[key] = None
-
-
-			for release in agg_releases.values():
-				if release:
-					self.do_release(release)
-
-			self.log.info("Sent %s releases.", len(have))
-
-	def consolidate_validated(self):
-
-		rows = self.db_sess.query(db.NuOutboundWrapperMap).all()
-		rowlut = {}
-		for row in rows:
-			key = row.seriesname, row.releaseinfo, row.groupinfo, row.actual_target
-			if not key in rowlut:
-				rowlut[key] = []
-			rowlut[key].append(row)
-
-		for valueset in [tmp for tmp in rowlut.values() if len(tmp) > 1]:
-			if not all(x.validated == valueset[0].validated for x in valueset):
-				if any(x.validated == True for x in valueset):
-					for val in valueset:
-						val.validated = True
-		self.db_sess.commit()
+		self.log.info("Sent %s releases.", len(list(valid_recent)))
 
 	def close(self):
 		print("Closing")
@@ -415,8 +356,12 @@ if __name__ == '__main__':
 	logSetup.initLogging()
 
 	intf = NuForwarder()
-	intf.go()
-	# intf.emit_verified_releases()
+	# intf.go()
+
+	intf.emit_verified_releases()
+	intf.close()
+	intf.db_sess.commit()
+
 	# intf.go()
 	#print(load_lut())
 	# intf = NuForwarder(connect=False)

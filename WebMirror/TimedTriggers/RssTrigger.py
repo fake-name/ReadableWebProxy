@@ -17,9 +17,8 @@ class RssTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 	def retriggerRssFeeds(self, feedurls):
 		sess = self.db.get_db_session()
-		for url in feedurls:
-			# print(url)
-			self.retriggerUrl(url)
+
+		self.retriggerUrlList(feedurls)
 
 
 	def go(self):

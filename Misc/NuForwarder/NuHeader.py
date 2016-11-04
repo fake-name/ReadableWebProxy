@@ -9,6 +9,7 @@ import traceback
 import os.path
 import json
 import calendar
+import urllib.parse
 
 import sqlalchemy.exc
 from sqlalchemy.orm import joinedload
@@ -23,6 +24,16 @@ import random
 from WebMirror.NewJobQueue import buildjob
 
 
+# Remove blogspot garbage subdomains from the TLD (if present)
+def urls_the_same(url_list):
+	fixed_urls = []
+	for url in url_list:
+		p = urllib.parse.urlparse(url)
+		f = (p[0], p[1].split(".blogspot.")[0], p[2], p[3], p[4])
+		fixed = urllib.parse.urlunsplit(f)
+		fixed_urls.append(fixed)
+
+	return all([fixed_urls[0] == tmp for tmp in fixed_urls])
 
 
 class NuHeader(LogBase.LoggerMixin):
@@ -60,12 +71,12 @@ class NuHeader(LogBase.LoggerMixin):
 
 	def put_job(self):
 		self.log.info("Loading a row to fetch...")
-		have = self.db_sess.query(db.NuReleaseItem)      \
-			.join(db.NuResolvedOutbound)                 \
-			.filter(db.NuReleaseItem.validated == False) \
-			.having(func.count(db.NuResolvedOutbound.parent) < 3)  \
-			.order_by(func.random())                     \
-			.group_by(db.NuReleaseItem.id)               \
+		have = self.db_sess.query(db.NuReleaseItem)                   \
+			.outerjoin(db.NuResolvedOutbound)                         \
+			.filter(db.NuReleaseItem.validated == False)              \
+			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
+			.order_by(desc(db.NuReleaseItem.first_seen)) \
+			.group_by(db.NuReleaseItem.id)                            \
 			.limit(1)
 
 		have = have.scalar()
@@ -122,7 +133,7 @@ class NuHeader(LogBase.LoggerMixin):
 		expected_keys = ['call', 'cancontinue', 'dispatch_key', 'extradat', 'jobid',
 					'jobmeta', 'module', 'ret', 'success', 'user', 'user_uuid']
 		if new is None:
-			self.log.info("No NU Head requests!")
+			self.log.info("No NU Head responses!")
 			return
 
 		try:
@@ -158,6 +169,46 @@ class NuHeader(LogBase.LoggerMixin):
 			for line in pprint.pformat(new).split("\n"):
 				self.log.error(line)
 
+	def validate_from_new(self):
+		have = self.db_sess.query(db.NuReleaseItem)                \
+			.outerjoin(db.NuResolvedOutbound)                      \
+			.filter(db.NuReleaseItem.validated == False)           \
+			.having(func.count(db.NuResolvedOutbound.parent) >= 3) \
+			.group_by(db.NuReleaseItem.id)
+
+		print(have.count())
+
+		for valid in have.all():
+			if valid.validated is False:
+				assert len(list(valid.resolved)) >= 3
+				matches = urls_the_same([tmp.actual_target for tmp in valid.resolved])
+				if matches:
+					# Since all the URLs match, just use one of them.
+					valid.actual_target = valid.resolved[0].actual_target
+
+					if not valid.seriesname.endswith("..."):
+						valid.validated = True
+
+				else:
+					self.log.error("Invalid or not-matching URL set for wrapper!")
+
+					for lookup in valid.resolved:
+						self.log.error("	Resolved URL: %s", lookup.actual_target)
+
+		self.db_sess.commit()
+
+	def timestamp_validated(self):
+		self.log.info("Applying a timestamp to all newly validated rows!")
+		unstamped = self.db_sess.query(db.NuReleaseItem)      \
+			.filter(db.NuReleaseItem.validated == True) \
+			.filter(db.NuReleaseItem.validated_on == None) \
+			.all()
+
+		for item in unstamped:
+			item.validated_on = datetime.datetime.now()
+
+		self.db_sess.commit()
+
 
 def fetch_and_flush():
 	hd = NuHeader()
@@ -165,6 +216,9 @@ def fetch_and_flush():
 	for x in range(30):
 		hd.process_avail()
 		time.sleep(1)
+
+	hd.validate_from_new()
+	hd.timestamp_validated()
 
 def schedule_next_exec(scheduler, at_time):
 	# NU Sync system has to run with a memory jobstore, and a process pool executor,
@@ -186,7 +240,9 @@ def do_nu_sync(scheduler):
 	print("do_nu_sync!", scheduler)
 	fetch_and_flush()
 
-	sleeptime = int(random.triangular(15, 10*60, 7*60))
+	CLIENT_NUM = 3
+
+	sleeptime = int(random.triangular(15, (10*60 / CLIENT_NUM), (5*60 / CLIENT_NUM)))
 	next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
 	schedule_next_exec(scheduler, next_exec)
 

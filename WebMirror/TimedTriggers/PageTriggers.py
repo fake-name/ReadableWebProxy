@@ -54,6 +54,9 @@ class HourlyPageTrigger(PageTriggerBase):
 		# Twitter feeds for annoying sites without better release mechanisms.
 		'https://twitter.com/Baka_Tsuki',
 		'https://twitter.com/Nano_Desu_Yo',
+
+		# Fetch the new NovelUpdates stuff.
+		'http://www.novelupdates.com/',
 	]
 
 class EverySixHoursPageTrigger(PageTriggerBase):
