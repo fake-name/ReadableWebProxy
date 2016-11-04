@@ -3,6 +3,8 @@
 import logging
 import abc
 import datetime
+import psycopg2
+import traceback
 import urllib.parse
 import sqlalchemy.exc
 import common.database as db
@@ -20,6 +22,10 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 	def loggerPath(self):
 		return None
 
+	@abc.abstractmethod
+	def go(self):
+		return None
+
 
 	def __init__(self):
 
@@ -35,64 +41,111 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 		self.go()
 		self.log.info("Update check for %s finished.", self.pluginName)
 
+
+	def __raw_retrigger_with_cursor(self, url, cursor):
+
+		self.log.info("Retriggering fetch for URL: %s", url)
+
+		#  Fucking huzzah for ON CONFLICT!
+		cmd = """
+
+				INSERT INTO
+					web_pages
+					(url, starturl, netloc, distance, is_text, priority, addtime, state)
+				VALUES
+					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(addtime)s, %(state)s)
+				ON CONFLICT (url) DO
+					UPDATE
+						SET
+							state           = 'new',
+							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
+							ignoreuntiltime = LEAST(EXCLUDED.addtime, web_pages.addtime, %(ignoreuntiltime)s)
+						WHERE
+						(
+								web_pages.state = 'complete'
+							AND
+								web_pages.url = %(url)s
+						)
+				RETURNING
+					web_pages.state, web_pages.url
+					;
+
+			""".replace("	", " ").replace("\n", " ")
+
+		url_netloc = urllib.parse.urlsplit(url).netloc
+
+		assert url.startswith("http")
+		assert url_netloc
+
+
+		# Forward-data the next walk, time, rather then using now-value for the thresh.
+		data = {
+			'url'             : url,
+			'starturl'        : url,
+			'netloc'          : url_netloc,
+			'distance'        : 0,
+			'is_text'         : True,
+			'priority'        : db.DB_MED_PRIORITY,
+			'state'           : "new",
+			'addtime'         : datetime.datetime.now(),
+
+			# Don't retrigger unless the ignore time has elaped.
+			'ignoreuntiltime' : datetime.datetime.now() - datetime.timedelta(days=1),
+			}
+
+		cursor.execute(cmd, data)
+		ret = cursor.fetchall()
+		if not ret:
+			self.log.warning("Row appears to already be in the new state: %s", url)
+		return ret
+
+	def retriggerUrlList(self, urlList):
+
+		sess = self.db.get_db_session()
+
+		raw_cur = sess.connection().connection.cursor()
+		commit_each = False
+
+		while 1:
+			loopcnt = 0
+			try:
+				for url in urlList:
+					loopcnt += 1
+					self.__raw_retrigger_with_cursor(url, raw_cur)
+					if commit_each or (loopcnt % 250) == 0:
+						self.log.info("Committing!")
+						raw_cur.execute("COMMIT;")
+				raw_cur.execute("COMMIT;")
+				break
+
+			except psycopg2.Error:
+				if commit_each is False:
+					self.log.warning("psycopg2.Error - Retrying with commit each.")
+				else:
+					self.log.warning("psycopg2.Error - Retrying.")
+					traceback.print_exc()
+
+				raw_cur.execute("ROLLBACK;")
+				commit_each = True
+
+
 	def retriggerUrl(self, url, conditional=None):
 
 		sess = self.db.get_db_session()
+
+		raw_cur = sess.connection().connection.cursor()
 		while 1:
 			try:
-				have = sess.query(self.db.WebPages) \
-					.filter(self.db.WebPages.url == url)  \
-					.scalar()
-				if have and have.state in ['disabled', 'specialty_deferred', 'specialty_ready', 'removed']:
-					self.log.warning("Page disabled or being processed by specialty handler: (%s, %s)?", have.url, have.state)
-				elif conditional and not conditional(have):
-					sess.commit()
-				elif (
-						have
-						and have.state in ['new', 'fetching', 'processing', 'removed']
-						and have.priority <= self.db.DB_HIGH_PRIORITY
-						and have.distance > 1
-						and have.ignoreuntiltime > datetime.datetime.now() - datetime.timedelta(hours=1)
-					):
-					self.log.info("Skipping: '%s' (%s, %s)", url, have.state, have.priority)
-				elif have and have.state not in ['new', 'disabled', 'specialty_deferred', 'specialty_ready']:
-					self.log.info("Retriggering feed URL: %s", url)
-					have.state    = "new"
-					have.priority = self.db.DB_HIGH_PRIORITY
-					have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
-					sess.commit()
-				elif have:
-					self.log.warning("URL already in 'new' state: %s", url)
-					have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
-					have.priority = self.db.DB_HIGH_PRIORITY
-					have.distance = 0
-					sess.commit()
-				else:
-					self.log.info("New URL: %s", url)
-					new = self.db.WebPages(
-							url      = url,
-							starturl = url,
-							netloc   = urllib.parse.urlsplit(url).netloc,
-							priority = self.db.DB_HIGH_PRIORITY,
-							distance = 0
-						)
-					sess.add(new)
-					sess.commit()
-
+				self.__raw_retrigger_with_cursor(url, raw_cur)
+				raw_cur.execute("COMMIT;")
 				break
 
-			except sqlalchemy.exc.InternalError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
-			except sqlalchemy.exc.OperationalError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
-			except sqlalchemy.exc.IntegrityError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
+			except psycopg2.Error:
+				self.log.warning("psycopg2.Error - Retrying.")
+				traceback.print_exc()
+				raw_cur.execute("ROLLBACK;")
 
 
 if __name__ == "__main__":

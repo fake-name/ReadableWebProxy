@@ -6,6 +6,7 @@ import traceback
 
 from sqlalchemy.orm import joinedload
 from sqlalchemy import desc
+import sqlalchemy.exc
 
 import runStatus
 import common.database as db
@@ -69,12 +70,13 @@ def exposed_do_nu_head():
 	'''
 	header = Misc.NuForwarder.NuHeader.NuHeader()
 	print(header)
+	header.validate_from_new()
 
-	header.put_job()
+	# header.put_job()
 
-	while True:
-		header.process_avail()
-		time.sleep(1)
+	# while True:
+	# 	header.process_avail()
+	# 	time.sleep(1)
 
 
 def exposed_confirm_from_heads():
@@ -91,14 +93,7 @@ def exposed_confirm_from_heads():
 			print(len(res))
 
 
-def exposed_cross_sync_nu_feeds():
-	'''
-	Re-synchronize the NU feed items from the old system (NuOutboundWrapperMap)
-	to the new NuReleaseItem/NuResolvedOutbound pair mechanism.
-	'''
-
-	# client_id
-	# client_key
+def cross_sync(increment):
 
 	sess = db.get_db_session()
 	print("Loading extant rows...")
@@ -108,55 +103,74 @@ def exposed_cross_sync_nu_feeds():
 	new_count  = 0
 	loops = 0
 	nc_loops = 0
+	try:
 
-	for old_nu in old_nu_items:
-		have = sess.query(db.NuReleaseItem)                                     \
-			.options(joinedload('resolved'))                                    \
-			.filter(db.NuReleaseItem.outbound_wrapper==old_nu.outbound_wrapper) \
-			.scalar()
-		if not have:
-			have = db.NuReleaseItem(
-					validated        = old_nu.validated,
-					seriesname       = old_nu.seriesname,
-					releaseinfo      = old_nu.releaseinfo,
-					groupinfo        = old_nu.groupinfo,
-					referrer         = old_nu.referrer,
-					outbound_wrapper = old_nu.outbound_wrapper,
-					first_seen       = old_nu.released_on,
-					actual_target    = old_nu.actual_target,
-				)
-			sess.add(have)
-			loops += 1
-			new_count += 1
-
-
-		old_key = (old_nu.client_id, old_nu.client_key, old_nu.actual_target)
-		resolved = set([(itm.client_id, itm.client_key, itm.actual_target) for itm in have.resolved])
-		if not old_key in resolved:
-			new = db.NuResolvedOutbound(
-					client_id      = old_nu.client_id,
-					client_key     = old_nu.client_key,
-					actual_target  = old_nu.actual_target,
-					fetched_on     = old_nu.released_on,
-				)
-			have.resolved.append(new)
-			loops += 1
-			new_count += 1
-		else:
-			have_count += 1
-			nc_loops += 1
-
-		if loops > 100:
-			print("Commit! Have {}, new {} ({}, {})".format(have_count, new_count, loops, nc_loops))
-			sess.commit()
-			loops = 0
-
-		if nc_loops > 100:
-			print("Have {}, new {} ({}, {})".format(have_count, new_count, loops, nc_loops))
-			nc_loops = 0
+		for old_nu in old_nu_items:
+			have = sess.query(db.NuReleaseItem)                                     \
+				.options(joinedload('resolved'))                                    \
+				.filter(db.NuReleaseItem.outbound_wrapper==old_nu.outbound_wrapper) \
+				.scalar()
+			if not have:
+				have = db.NuReleaseItem(
+						validated        = old_nu.validated,
+						seriesname       = old_nu.seriesname,
+						releaseinfo      = old_nu.releaseinfo,
+						groupinfo        = old_nu.groupinfo,
+						referrer         = old_nu.referrer,
+						outbound_wrapper = old_nu.outbound_wrapper,
+						first_seen       = old_nu.released_on,
+						actual_target    = old_nu.actual_target,
+					)
+				sess.add(have)
+				loops += 1
+				new_count += 1
 
 
-	sess.commit()
+			old_key = (old_nu.client_id, old_nu.client_key, old_nu.actual_target)
+			resolved = set([(itm.client_id, itm.client_key, itm.actual_target) for itm in have.resolved])
+			if not old_key in resolved:
+				new = db.NuResolvedOutbound(
+						client_id      = old_nu.client_id,
+						client_key     = old_nu.client_key,
+						actual_target  = old_nu.actual_target,
+						fetched_on     = old_nu.released_on,
+					)
+				have.resolved.append(new)
+				loops += 1
+				new_count += 1
+			else:
+				have_count += 1
+				nc_loops += 1
+
+			if loops > increment:
+				print("Commit! Have {}, new {} ({}, {})".format(have_count, new_count, loops, nc_loops))
+				sess.commit()
+				loops = 0
+
+			if nc_loops > 100:
+				print("Have {}, new {} ({}, {})".format(have_count, new_count, loops, nc_loops))
+				nc_loops = 0
+		sess.commit()
+	except Exception:
+		sess.rollback()
+		raise
+
+def exposed_cross_sync_nu_feeds():
+	'''
+	Re-synchronize the NU feed items from the old system (NuOutboundWrapperMap)
+	to the new NuReleaseItem/NuResolvedOutbound pair mechanism.
+	'''
+
+	# client_id
+	# client_key
+	increment = 51
+	while 1:
+		try:
+			cross_sync(increment=increment)
+			return
+		except sqlalchemy.exc.IntegrityError:
+			increment = max(1, increment-25)
+
 
 def exposed_process_nu_pages(transmit=True):
 	'''
