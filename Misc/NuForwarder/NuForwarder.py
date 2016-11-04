@@ -61,7 +61,7 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 			        "groupinfo": "Shiroyukineko Translations",
 			        "releaseinfo": "c63",
 			        "addtime": "2016-05-30T04:16:41.351430",
-			        "referrer": "https://www.novelupdates.com"
+			        "referrer": "http://www.novelupdates.com"
 			    }
 			}
 	'''

@@ -187,7 +187,7 @@ def nu_view():
 	session.commit()
 	new.sort(key=lambda x: x[1][0].seriesname)
 	new.sort(key=lambda x: '...' in x[1][0].seriesname)
-	new.sort(key=lambda x: 'https://www.novelupdates.com' in x[1][0].actual_target)
+	new.sort(key=lambda x: 'http://www.novelupdates.com' in x[1][0].actual_target)
 
 	response = make_response(render_template('nu_releases.html',
 						   new          = new,
