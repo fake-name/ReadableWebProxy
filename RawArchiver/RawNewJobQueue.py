@@ -103,6 +103,19 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		self.print_mod = 0
 
+	def outbound_job_wanted(self, netloc, joburl):
+
+		if joburl.startswith("data:"):
+			self.log.warn("Data URL: '%s' - %s", joburl, netloc)
+			return None
+		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+			if module.cares_about_url(joburl):
+				return True
+
+		self.log.warn("Unwanted URL: '%s' - %s", joburl, netloc)
+
+		return False
+
 	def get_queue(self):
 		return self.normal_out_queue
 
@@ -332,7 +345,9 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 				# If we don't have a thread affinity, do distributed fetch.
 				# If we /do/ have a thread affinity, fetch locally.
-				if threadn is True:
+				if not self.outbound_job_wanted(netloc, joburl):
+					self.delete_job(rid, joburl)
+				elif threadn is True:
 					self.put_outbound_job(rid, joburl)
 				else:
 					self.normal_out_queue.put(("unfetched", rid))
@@ -346,6 +361,12 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		cursor.close()
 
 		return len(rids)
+
+	def delete_job(self, rid, joburl):
+		self.log.warning("Deleting job for url: '%s'", joburl)
+		cursor = self.db_interface.cursor()
+		cursor.execute("""DELETE FROM web_pages WHERE web_pages.id = %s AND web_pages.url = %s;""", (rid, joburl))
+		self.db_interface.commit()
 
 
 def test2():
