@@ -65,16 +65,42 @@ def exposed_head(url, ref):
 		except queue.Empty:
 			print("No response yet?")
 
+def exposed_update_nu_responses():
+
+	hd = Misc.NuForwarder.NuHeader.NuHeader()
+	hd.validate_from_new()
+	hd.timestamp_validated()
+
+def exposed_drain_nu_responses():
+
+	hd = Misc.NuForwarder.NuHeader.NuHeader()
+	while 1:
+		hd.process_avail()
+		time.sleep(1)
+
+
 def exposed_do_nu_head():
 	'''
 	'''
-	Misc.NuForwarder.NuHeader.fetch_and_flush()
+	# Misc.NuForwarder.NuHeader.fetch_and_flush()
 
-	# header.put_job()
+	while 1:
+		hd = Misc.NuForwarder.NuHeader.NuHeader()
 
-	# while True:
-	# 	header.process_avail()
-	# 	time.sleep(1)
+		jobcnt = 50
+		print("Putting %s jobs!" % jobcnt)
+		hd.put_job(put=jobcnt)
+
+		sleep_for = 120
+		try:
+			for x in range(sleep_for):
+				hd.process_avail()
+				time.sleep(1)
+				print("Sleeping %s of %s" % (x, sleep_for))
+		except KeyboardInterrupt:
+			print("Interrupted!")
+			return
+		exposed_update_nu_responses()
 
 
 def exposed_confirm_from_heads():

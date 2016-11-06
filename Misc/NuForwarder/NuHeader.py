@@ -69,44 +69,52 @@ class NuHeader(LogBase.LoggerMixin):
 		self.db_sess = db.get_db_session(postfix='nu_header')
 		self.rpc = common.get_rpyc.RemoteJobInterface("NuHeader")
 
-	def put_job(self):
+	def put_job(self, put=3):
 		self.log.info("Loading a row to fetch...")
-		have = self.db_sess.query(db.NuReleaseItem)                   \
+		haveq = self.db_sess.query(db.NuReleaseItem)                   \
 			.outerjoin(db.NuResolvedOutbound)                         \
 			.filter(db.NuReleaseItem.validated == False)              \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen)) \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(1)
+			.limit(max(10, put))
 
-		have = have.scalar()
+		haveset = haveq.all()
 
-		if not have:
+		if not haveset:
 			self.log.info("No jobs to remote HEAD.")
 			return
 
-		if len(list(have.resolved)) >= 3:
-			raise RuntimeError("Overresolved item that's not valid.")
+		# We pick a large number of items, and randomly choose one of them.
+		# This lets us weight the fetch preferentially to the recent items, but still
+		# have some variability.
+		random.shuffle(haveset)
 
-		self.log.info("Putting job for url '%s'", have.outbound_wrapper)
-		self.log.info("Referring page '%s'", have.referrer)
-		raw_job = buildjob(
-			module         = 'NUWebRequest',
-			call           = 'getHeadPhantomJS',
-			dispatchKey    = "fetcher",
-			jobid          = -1,
-			args           = [have.outbound_wrapper, have.referrer],
-			kwargs         = {},
-			additionalData = {
-				'mode'        : 'fetch',
-				'wrapper_url' : have.outbound_wrapper,
-				'referrer'    : have.referrer
-				},
-			postDelay      = 0,
-			unique_id      = have.outbound_wrapper
-		)
+		haveset = haveset[:put]
 
-		self.rpc.put_job(raw_job)
+		for have in haveset:
+			if len(list(have.resolved)) >= 3:
+				raise RuntimeError("Overresolved item that's not valid.")
+
+			self.log.info("Putting job for url '%s'", have.outbound_wrapper)
+			self.log.info("Referring page '%s'", have.referrer)
+			raw_job = buildjob(
+				module         = 'NUWebRequest',
+				call           = 'getHeadPhantomJS',
+				dispatchKey    = "fetcher",
+				jobid          = -1,
+				args           = [have.outbound_wrapper, have.referrer],
+				kwargs         = {},
+				additionalData = {
+					'mode'        : 'fetch',
+					'wrapper_url' : have.outbound_wrapper,
+					'referrer'    : have.referrer
+					},
+				postDelay      = 0,
+				unique_id      = have.outbound_wrapper
+			)
+
+			self.rpc.put_job(raw_job)
 
 
 	def process_avail(self):
@@ -144,6 +152,13 @@ class NuHeader(LogBase.LoggerMixin):
 			assert 'referrer'    in new['extradat']
 			assert 'wrapper_url' in new['extradat']
 
+			# Handle the 301/2 not resolving properly.
+			netloc = urllib.parse.urlsplit(new['ret']).netloc
+			if "novelupdates" in netloc:
+				self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
+				return
+
+
 			have = self.db_sess.query(db.NuReleaseItem)                                    \
 				.options(joinedload('resolved'))                                           \
 				.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
@@ -176,7 +191,7 @@ class NuHeader(LogBase.LoggerMixin):
 			.having(func.count(db.NuResolvedOutbound.parent) >= 3) \
 			.group_by(db.NuReleaseItem.id)
 
-		print(have.count())
+		new_items = []
 
 		for valid in have.all():
 			if valid.validated is False:
@@ -187,6 +202,7 @@ class NuHeader(LogBase.LoggerMixin):
 					valid.actual_target = valid.resolved[0].actual_target
 
 					if not valid.seriesname.endswith("..."):
+						new_items.append((valid.seriesname, valid.actual_target))
 						valid.validated = True
 
 				else:
@@ -196,6 +212,9 @@ class NuHeader(LogBase.LoggerMixin):
 						self.log.error("	Resolved URL: %s", lookup.actual_target)
 
 		self.db_sess.commit()
+		self.log.info("Added validated series: %s", len(new_items))
+		for new in new_items:
+			self.log.info("	Series: %s", new)
 
 	def timestamp_validated(self):
 		self.log.info("Applying a timestamp to all newly validated rows!")
@@ -212,8 +231,11 @@ class NuHeader(LogBase.LoggerMixin):
 
 def fetch_and_flush():
 	hd = NuHeader()
-	hd.put_job()
-	for x in range(30):
+	hd.process_avail()
+	hd.validate_from_new()
+	hd.timestamp_validated()
+	hd.put_job(put=15)
+	for x in range(120):
 		hd.process_avail()
 		time.sleep(1)
 
@@ -238,15 +260,16 @@ def schedule_next_exec(scheduler, at_time):
 
 def do_nu_sync(scheduler):
 	print("do_nu_sync!", scheduler)
-	fetch_and_flush()
+	try:
+		fetch_and_flush()
+	finally:
+		CLIENT_NUM = 3
 
-	CLIENT_NUM = 3
+		sleeptime = int(random.triangular(120, (10*60 / CLIENT_NUM), (6*60 / CLIENT_NUM)))
+		next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
+		schedule_next_exec(scheduler, next_exec)
 
-	sleeptime = int(random.triangular(15, (10*60 / CLIENT_NUM), (5*60 / CLIENT_NUM)))
-	next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
-	schedule_next_exec(scheduler, next_exec)
-
-	print("NU Sync executed. Next exec at ", next_exec)
+		print("NU Sync executed. Next exec at ", next_exec)
 
 
 
