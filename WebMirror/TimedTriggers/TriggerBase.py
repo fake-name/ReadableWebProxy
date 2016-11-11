@@ -57,14 +57,14 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 				ON CONFLICT (url) DO
 					UPDATE
 						SET
-							state           = 'new',
+							state           = %(state)s,
 							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
 							priority        = LEAST(EXCLUDED.priority, web_pages.priority),
 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
 							ignoreuntiltime = LEAST(EXCLUDED.addtime, web_pages.addtime, %(ignoreuntiltime)s)
 						WHERE
 						(
-								(web_pages.state = 'complete' OR web_pages.state = 'new')
+								(web_pages.state = 'complete' OR web_pages.state = 'new' OR web_pages.state = 'error')
 							AND
 								web_pages.url = %(url)s
 						)
@@ -87,12 +87,12 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 			'netloc'          : url_netloc,
 			'distance'        : 0,
 			'is_text'         : True,
-			'priority'        : db.DB_MED_PRIORITY,
+			'priority'        : db.DB_HIGH_PRIORITY,
 			'state'           : "new",
 			'addtime'         : datetime.datetime.now(),
 
 			# Don't retrigger unless the ignore time has elaped.
-			'ignoreuntiltime' : datetime.datetime.now() - datetime.timedelta(days=1),
+			'ignoreuntiltime' : datetime.datetime.min,
 			}
 
 		cursor.execute(cmd, data)
@@ -129,6 +129,7 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 
 				raw_cur.execute("ROLLBACK;")
 				commit_each = True
+
 
 
 	def retriggerUrl(self, url, conditional=None):
