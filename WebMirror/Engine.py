@@ -563,6 +563,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		else:
 
 			#  Fucking huzzah for ON CONFLICT!
+			#  Priority is smaller = higher, so go with the smallest priority in most cases
 			cmd = """
 					INSERT INTO
 						web_pages

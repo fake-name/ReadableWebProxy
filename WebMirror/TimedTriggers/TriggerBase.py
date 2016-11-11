@@ -59,12 +59,12 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 						SET
 							state           = 'new',
 							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+							priority        = LEAST(EXCLUDED.priority, web_pages.priority),
 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
 							ignoreuntiltime = LEAST(EXCLUDED.addtime, web_pages.addtime, %(ignoreuntiltime)s)
 						WHERE
 						(
-								web_pages.state = 'complete'
+								(web_pages.state = 'complete' OR web_pages.state = 'new')
 							AND
 								web_pages.url = %(url)s
 						)

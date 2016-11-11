@@ -75,10 +75,11 @@ class NuHeader(LogBase.LoggerMixin):
 			.outerjoin(db.NuResolvedOutbound)                         \
 			.filter(db.NuReleaseItem.validated == False)              \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
-			.order_by(desc(db.NuReleaseItem.first_seen)) \
+			.order_by(func.random())                                  \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(10, put))
+			.limit(max(1000, put))
 
+		# .order_by(desc(db.NuReleaseItem.first_seen))              \
 		haveset = haveq.all()
 
 		if not haveset:
@@ -234,10 +235,10 @@ def fetch_and_flush():
 	hd.process_avail()
 	hd.validate_from_new()
 	hd.timestamp_validated()
-	hd.put_job(put=15)
-	for x in range(120):
+	hd.put_job(put=100)
+	for x in range(10):
 		hd.process_avail()
-		time.sleep(1)
+		time.sleep(60)
 
 	hd.validate_from_new()
 	hd.timestamp_validated()
@@ -265,7 +266,7 @@ def do_nu_sync(scheduler):
 	finally:
 		CLIENT_NUM = 3
 
-		sleeptime = int(random.triangular(120, (10*60 / CLIENT_NUM), (6*60 / CLIENT_NUM)))
+		sleeptime = int(random.triangular(15*60, (60*60), (30*60 / CLIENT_NUM)))
 		next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
 		schedule_next_exec(scheduler, next_exec)
 
