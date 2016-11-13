@@ -117,8 +117,13 @@ class NuHeader(LogBase.LoggerMixin):
 
 			self.rpc.put_job(raw_job)
 
-
 	def process_avail(self):
+
+		while self.process_single_avail():
+			self.log.info("Processing response!")
+
+
+	def process_single_avail(self):
 		'''
 		Example response:
 
@@ -143,7 +148,7 @@ class NuHeader(LogBase.LoggerMixin):
 					'jobmeta', 'module', 'ret', 'success', 'user', 'user_uuid']
 		if new is None:
 			self.log.info("No NU Head responses!")
-			return
+			return False
 
 		try:
 			self.log.info("Processing remote head response: %s", new)
@@ -157,7 +162,7 @@ class NuHeader(LogBase.LoggerMixin):
 			netloc = urllib.parse.urlsplit(new['ret']).netloc
 			if "novelupdates" in netloc:
 				self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
-				return
+				return True
 
 
 			have = self.db_sess.query(db.NuReleaseItem)                                    \
@@ -175,6 +180,8 @@ class NuHeader(LogBase.LoggerMixin):
 
 			have.resolved.append(new)
 			self.db_sess.commit()
+			return True
+
 		except Exception:
 			self.log.error("Error when processing job response!")
 			for line in traceback.format_exc().split("\n"):
@@ -184,6 +191,9 @@ class NuHeader(LogBase.LoggerMixin):
 
 			for line in pprint.pformat(new).split("\n"):
 				self.log.error(line)
+			return True
+		return False
+
 
 	def validate_from_new(self):
 		have = self.db_sess.query(db.NuReleaseItem)                \

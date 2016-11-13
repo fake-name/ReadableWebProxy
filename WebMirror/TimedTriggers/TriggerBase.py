@@ -64,7 +64,7 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 							ignoreuntiltime = LEAST(EXCLUDED.addtime, web_pages.addtime, %(ignoreuntiltime)s)
 						WHERE
 						(
-								(web_pages.state = 'complete' OR web_pages.state = 'new' OR web_pages.state = 'error')
+								(web_pages.state = 'complete' OR web_pages.state = 'new' OR web_pages.state = 'fetching' OR web_pages.state = 'error')
 							AND
 								web_pages.url = %(url)s
 						)

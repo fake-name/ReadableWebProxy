@@ -57,6 +57,9 @@ class AmqpContainer(object):
 		# Initial QoS is tiny, throttle it up after everything is actually running.
 		self.storm_channel.basic.qos(1, global_=True)
 
+		# Re-enqueue any not-acked packets.
+		self.storm_channel.basic.recover(requeue=True)
+
 		self.last_hearbeat_received = time.time()
 		self.last_message_received = time.time()
 
