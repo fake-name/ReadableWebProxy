@@ -264,7 +264,7 @@ def do_nu_sync(scheduler):
 	try:
 		fetch_and_flush()
 	finally:
-		CLIENT_NUM = 3
+		CLIENT_NUM = 2
 
 		sleeptime = int(random.triangular(15*60, (60*60), (30*60 / CLIENT_NUM)))
 		next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)

@@ -231,7 +231,7 @@ class AmqpContainer(object):
 					raise Heartbeat_Timeout_Exception("Heartbeat timeout!")
 
 		with self.rx_timeout_lock:
-			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 50):
+			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 5):
 				with self.active_lock:
 					print()
 					print()
