@@ -16,6 +16,7 @@ import datetime
 import time
 import json
 import common.util.webFunctions
+import os.path
 import bleach
 
 MIN_RATING = 5
@@ -33,6 +34,12 @@ MIN_RATING = 5
 ########################################################################################################################
 
 
+def load_lut():
+	outf = os.path.join(os.path.split(__file__)[0], 'royal_roadl_overrides.json')
+	jctnt = open(outf).read()
+	lut = json.loads(jctnt)
+	return lut
+
 
 
 class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -46,10 +53,11 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	loggerPath = "Main.Filter.RoyalRoad.Page"
 
+	match_re = re.compile(r"^http://(?:www\.)?royalroadl\.com/fiction/(\d+)/?$", flags=re.IGNORECASE)
 
-	@staticmethod
-	def wantsUrl(url):
-		if re.search(r"^http://(?:www\.)?royalroadl\.com/fiction/\d+/?$", url):
+	@classmethod
+	def wantsUrl(cls, url):
+		if cls.match_re.search(url):
 			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
 			return True
 		return False
@@ -74,6 +82,21 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
+
+		match = self.match_re.search(seriesPageUrl)
+		series_id = match.group(1)
+		conf = load_lut()
+
+		assert 'force_sequential_numbering' in conf
+
+		must_renumber = series_id in conf['force_sequential_numbering']
+
+
+		print("")
+		print("Match: ", match, match.groups(), series_id)
+		print("series_id", series_id)
+		print("Renumber:", must_renumber)
+
 
 		header   = soup.find("div", class_='fic-title')
 		titletg  = header.find("h2")
@@ -206,8 +229,11 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if len(raw_retval):
 			unnumbered = (missing_chap/len(raw_retval)) * 100
-			if len(raw_retval) >= 5 and unnumbered > 80:
-				self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
+			if (len(raw_retval) >= 5 and unnumbered > 80) or must_renumber:
+				if must_renumber:
+					self.log.warning("Item numbering force-overridden! Adding simple sequential chapter numbers.")
+				else:
+					self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
 				chap = 1
 				for item in raw_retval:
 					item['vol'] = None
