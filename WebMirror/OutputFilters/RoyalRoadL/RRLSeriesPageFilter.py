@@ -162,11 +162,9 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		desc = []
 		for segment in descDiv.div:
 			if isinstance(segment, bs4.NavigableString):
-				# print(("NavigableString", str(segment).strip(), ))
 				desc.append(str(segment).strip())
 			else:
 				if segment.get_text().strip():
-					# print(("get_text", segment.get_text().strip(), ))
 					desc.append(segment.get_text().strip())
 
 		desc = ['<p>{}</p>'.format(line) for line in desc if line.strip()]
@@ -175,7 +173,22 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		tags = []
 		tagdiv = soup.find('div', class_='tags')
 		for tag in tagdiv.find_all('span', class_='label'):
-			tags.append(tag.get_text().strip())
+			tagtxt = tag.get_text().strip().lower().replace(" ", "-")
+			print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
+			if tagtxt in conf['tag_rename']:
+				tagtxt = conf['tag_rename'][tagtxt]
+			tags.append(tagtxt)
+
+		info_div = soup.find("div", class_='fiction-info')
+		warning_div = info_div.find("div", class_='font-red-sunglo')
+		if warning_div:
+			for warning_tag in warning_div.find_all('li'):
+				tagtxt = warning_tag.get_text().strip().lower().replace(" ", "-")
+				print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
+				if tagtxt in conf['tag_rename']:
+					tagtxt = conf['tag_rename'][tagtxt]
+				tags.append(tagtxt)
+
 
 		seriesmeta = {}
 

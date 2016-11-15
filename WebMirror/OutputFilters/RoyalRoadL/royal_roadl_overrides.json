@@ -4,7 +4,14 @@
 	"force_sequential_numbering" : [
 		"8894",
 		"8175"
-	]
+	],
+
+	"tag_rename" : {
+		"female lead" : "female-protagonist",
+		"male lead"   : "male-protagonist",
+		"female-lead" : "female-protagonist",
+		"male-lead"   : "male-protagonist"
+	}
 
 
 
