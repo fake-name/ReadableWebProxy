@@ -1,4 +1,8 @@
 
+# # Make ZeroRPC happy.
+# from gevent import monkey
+# monkey.patch_all()
+
 import inspect
 import sys
 import common.management.WebMirrorManage

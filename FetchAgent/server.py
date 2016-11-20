@@ -48,7 +48,7 @@ class FetchInterfaceServer(object):
 		self.log.info("Connection")
 
 
-	def _check_have_queue(self, queuename):
+	def __check_have_queue(self, queuename):
 		if not queuename in self.mdict['outq']:
 			# self.log.info(self.mdict)
 			with self.mdict['qlock']:
@@ -56,28 +56,26 @@ class FetchInterfaceServer(object):
 				self.mdict['inq'][queuename] = multiprocessing.Queue()
 
 	def putJob(self, queuename, job):
-		self._check_have_queue(queuename)
+		self.__check_have_queue(queuename)
 		self.log.info("Putting item in queue %s with size: %s!", queuename, len(job))
 		self.mdict['outq'][queuename].put(job)
 
 	def getJob(self, queuename):
-		self._check_have_queue(queuename)
+		self.__check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
 		try:
 			return self.mdict['inq'][queuename].get_nowait()
 		except queue.Empty:
 			return None
-
 
 
 	def getJobNoWait(self, queuename):
-		self._check_have_queue(queuename)
+		self.__check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
 		try:
 			return self.mdict['inq'][queuename].get_nowait()
 		except queue.Empty:
 			return None
-
 
 	def putRss(self, message):
 		self.log.info("Putting rss item with size: %s!", len(message))
@@ -90,13 +88,15 @@ class FetchInterfaceServer(object):
 		except queue.Empty:
 			return None
 
+	def checkOk(self):
+		return True
 
 
 
 def run_server():
 	print("Started.")
 	serverLog = logging.getLogger("Main.RPyCServer")
-	server = zerorpc.Server(FetchInterfaceServer())
+	server = zerorpc.Server(FetchInterfaceServer(), heartbeat=30)
 	server.bind("tcp://127.0.0.1:4242")
 
 	gevent.signal(signal.SIGINT, build_handler(server))

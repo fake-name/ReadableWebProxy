@@ -74,6 +74,9 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		self.remote = zerorpc.Client()
 		self.remote.connect("tcp://127.0.0.1:4242")
 
+
+		self.check_ok()
+
 	def get_job(self):
 		try:
 			j = self.remote.getJob(self.interfacename)
@@ -96,11 +99,17 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 			raise e
 
 	def put_feed_job(self, message):
+		assert isinstance(message, (str, bytes, bytearray))
+
 		self.remote.putRss(message)
 
 	def put_job(self, job):
 		self.remote.putJob(self.interfacename, job)
 
+
+	def check_ok(self):
+		ret = self.remote.checkOk()
+		assert ret is True
 
 	def close(self):
 		self.remote.close()

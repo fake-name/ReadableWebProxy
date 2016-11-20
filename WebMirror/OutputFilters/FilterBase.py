@@ -22,6 +22,9 @@ class FilterBase(PageProcessor):
 
 		self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
 
+		self.rpc_interface.check_ok()
+
+
 		self._no_ret = True
 
 		self.kwargs = kwargs
