@@ -185,6 +185,7 @@ class AmqpContainer(object):
 		message.ack()
 
 		self.log.info("Message packet received! %s", len(message.body))
+
 	def handle_rx(self, message):
 		# self.log.info("Received message!")
 		# self.log.info("Message channel: %s", message.channel)
