@@ -7,62 +7,15 @@ import sys
 import time
 import common.LogBase as LogBase
 
-# import rpyc
-# rpyc.core.protocol.DEFAULT_CONFIG['allow_pickle'] = True
-# import rpyc.core.vinegar
+# import zerorpc
 
 
-# class RemoteJobInterface(LogBase.LoggerMixin):
+import socket
+from bsonrpc import BatchBuilder, BSONRpc
+from bsonrpc import request, notification, service_class
 
-# 	loggerPath = "Main.RemoteJobInterface"
+from common.fixed_bsonrpc import Fixed_BSONRpc
 
-# 	def __init__(self, interfacename):
-# 		self.interfacename = interfacename
-# 		self.remote = rpyc.connect("localhost", 12345, config = rpyc.core.protocol.DEFAULT_CONFIG)
-
-# 	def get_job(self, wait=1):
-# 		try:
-# 			j = self.remote.root.getJob(self.interfacename, wait=wait)
-# 			return j
-# 		except rpyc.core.vinegar.GenericException as e:
-# 			# this is horrible, but there seems to be no other way to determine non-new-style
-# 			# exception types correctly.
-# 			if 'queue.Empty' in rpyc.core.vinegar._generic_exceptions_cache:
-# 				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['queue.Empty']):
-# 					return None
-# 			if 'KeyError' in rpyc.core.vinegar._generic_exceptions_cache:
-# 				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['KeyError']):
-# 					raise KeyError
-# 			else:
-# 				raise e
-
-# 	def get_job_nowait(self):
-# 		try:
-# 			j = self.remote.root.getJobNoWait(self.interfacename)
-# 			return j
-# 		except rpyc.core.vinegar.GenericException as e:
-# 			# this is horrible, but there seems to be no other way to determine non-new-style
-# 			# exception types correctly.
-# 			if 'queue.Empty' in rpyc.core.vinegar._generic_exceptions_cache:
-# 				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['queue.Empty']):
-# 					return None
-# 			if 'KeyError' in rpyc.core.vinegar._generic_exceptions_cache:
-# 				if isinstance(e, rpyc.core.vinegar._generic_exceptions_cache['KeyError']):
-# 					raise KeyError
-# 			else:
-# 				raise e
-
-
-
-# 	def put_job(self, job):
-# 		self.remote.root.putJob(self.interfacename, job)
-
-
-# 	def close(self):
-# 		self.remote.close()
-
-
-import zerorpc
 
 class RemoteJobInterface(LogBase.LoggerMixin):
 
@@ -71,48 +24,49 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 	def __init__(self, interfacename):
 		self.interfacename = interfacename
 
-		self.remote = zerorpc.Client()
-		self.remote.connect("tcp://127.0.0.1:4242")
 
+		# Cut-the-corners TCP Client:
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect(('localhost', 6000))
+
+		self.rpc = Fixed_BSONRpc(s)
+		self.rpc_client = self.rpc.get_peer_proxy()
+		# Execute in self.rpc_client:
 
 		self.check_ok()
 
+	def __del__(self):
+		self.rpc.close() # Closes the socket 's' also
+
 	def get_job(self):
 		try:
-			j = self.remote.getJob(self.interfacename)
+			j = self.rpc_client.getJob(self.interfacename)
 			return j
-		except zerorpc.RemoteError as e:
-			if e.name == "Empty":
-				raise queue.Empty
 		except Exception as e:
 			raise e
 
 	def get_job_nowait(self):
 		try:
-			j = self.remote.getJobNoWait(self.interfacename)
+			j = self.rpc_client.getJobNoWait(self.interfacename)
 			return j
-
-		except zerorpc.RemoteError as e:
-			if e.name == "Empty":
-				raise queue.Empty
 		except Exception as e:
 			raise e
 
 	def put_feed_job(self, message):
 		assert isinstance(message, (str, bytes, bytearray))
 
-		self.remote.putRss(message)
+		self.rpc_client.putRss(message)
 
 	def put_job(self, job):
-		self.remote.putJob(self.interfacename, job)
+		self.rpc_client.putJob(self.interfacename, job)
 
 
 	def check_ok(self):
-		ret = self.remote.checkOk()
+		ret, bstr = self.rpc_client.checkOk()
 		assert ret is True
 
 	def close(self):
-		self.remote.close()
+		self.rpc_client.close()
 
 
 
@@ -133,26 +87,23 @@ def main():
 	)
 
 	rint = RemoteJobInterface("wat")
-	# print(rint.put_job(raw_job))
+	print(rint.put_job(raw_job))
 	print(rint)
 	while 1:
 		try:
 			j = rint.get_job()
-			print("Got job!")
+			if j:
+				print("Got job!", j)
 		except queue.Empty:
 			time.sleep(1)
 			print("No message")
-		# except Exception as e:
-		except zerorpc.RemoteError as e:
+		except Exception as e:
+		# except pyjsonrpc.JsonRpcError as err:
 			print("type", type(e))
 			print("instance", issubclass(type(e), queue.Empty))
 
 			import inspect
 			print(inspect.getmro(type(e)))
-			print("name: ", e.name)
-			print("name: ", e.name == "Empty")
-			print("human_msg: ", e.msg )
-			print("traceback : ", e.traceback )
 
 			raise e
 

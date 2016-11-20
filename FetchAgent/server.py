@@ -32,12 +32,14 @@ def build_handler(server):
 	return handler
 
 
+import gevent.socket as gsocket
+from bsonrpc import BSONRpc, ThreadingModel
+from bsonrpc import rpc_request, request, service_class
+from common.fixed_bsonrpc import Fixed_BSONRpc
 
-import zerorpc
-import gevent.monkey
-import gevent
 
-class FetchInterfaceServer(object):
+@service_class
+class FetchInterfaceClass(object):
 
 
 	def __init__(self):
@@ -55,11 +57,13 @@ class FetchInterfaceServer(object):
 				self.mdict['outq'][queuename] = multiprocessing.Queue()
 				self.mdict['inq'][queuename] = multiprocessing.Queue()
 
+	@request
 	def putJob(self, queuename, job):
 		self.__check_have_queue(queuename)
 		self.log.info("Putting item in queue %s with size: %s!", queuename, len(job))
 		self.mdict['outq'][queuename].put(job)
 
+	@request
 	def getJob(self, queuename):
 		self.__check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
@@ -69,6 +73,7 @@ class FetchInterfaceServer(object):
 			return None
 
 
+	@request
 	def getJobNoWait(self, queuename):
 		self.__check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
@@ -77,10 +82,12 @@ class FetchInterfaceServer(object):
 		except queue.Empty:
 			return None
 
+	@request
 	def putRss(self, message):
 		self.log.info("Putting rss item with size: %s!", len(message))
 		self.mdict['feed_outq'].put(message)
 
+	@request
 	def getRss(self):
 		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'].qsize())
 		try:
@@ -88,23 +95,29 @@ class FetchInterfaceServer(object):
 		except queue.Empty:
 			return None
 
+	@request
 	def checkOk(self):
-		return True
+		return (True, b'wattt\0')
 
 
 
 def run_server():
 	print("Started.")
-	serverLog = logging.getLogger("Main.RPyCServer")
-	server = zerorpc.Server(FetchInterfaceServer(), heartbeat=30)
-	server.bind("tcp://127.0.0.1:4242")
-
-	gevent.signal(signal.SIGINT, build_handler(server))
-
-	server.run()
 
 
 
+	# Quick-and-dirty TCP Server:
+	ss = gsocket.socket(gsocket.AF_INET, gsocket.SOCK_STREAM)
+	ss.bind(('localhost', 6000))
+	ss.listen(10)
+
+	while True:
+		s, addr = ss.accept()
+		Fixed_BSONRpc(s,
+		        FetchInterfaceClass(),
+		        client_info=addr,
+		        threading_model=ThreadingModel.GEVENT,
+		        concurrent_request_handling=ThreadingModel.GEVENT)
 
 def before_exit():
 	print("Caught exit! Exiting")
@@ -113,7 +126,6 @@ def before_exit():
 
 def initialize_manager():
 	import FetchAgent.manager
-	# mgr = multiprocessing.Manager()
 	FetchAgent.manager.manager = {}
 
 
