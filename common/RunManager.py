@@ -31,7 +31,6 @@ import config
 import runStatus
 
 import WebMirror.Engine
-import WebMirror.OutputFilters.AmqpInterface
 import WebMirror.rules
 import common.util.urlFuncs as urlFuncs
 import common.database as db

@@ -181,6 +181,7 @@ class AmqpContainer(object):
 			print()
 			self.log.info("Recovering messages!")
 			self.storm_channel.basic.recover(requeue=True)
+			self.storm_channel._inbound.clear()
 			self.keepalive_exec = 0
 
 

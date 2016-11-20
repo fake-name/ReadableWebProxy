@@ -10,9 +10,11 @@ from common import database
 import config
 import common.LogBase
 import WebMirror.rules
-import WebMirror.OutputFilters.AmqpInterface
 from WebMirror.OutputFilters.util.MessageConstructors import pack_message
 import WebMirror.TimedTriggers.TriggerBase
+
+import common.get_rpyc
+# import WebMirror.OutputFilters.AmqpInterface
 
 
 class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
@@ -24,22 +26,26 @@ class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 	def __init__(self):
 		super().__init__()
 		# print()
-		if config.C_DO_RABBIT:
-			print("No message queue! Doing independent RabbitMQ connection!")
-			# traceback.print_stack()
-			# print("Wat?")
-			# print()
-			self.msg_q = False
-			amqp_settings = {
-				"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
-				"RABBIT_PASWD" : config.C_RABBIT_PASWD,
-				"RABBIT_SRVER" : config.C_RABBIT_SRVER,
-				"RABBIT_VHOST" : config.C_RABBIT_VHOST,
-				'taskq_task'     : 'task.master.q',
-				'taskq_response' : 'response.master.q',
-			}
 
-			self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
+
+		self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
+
+		# if config.C_DO_RABBIT:
+		# 	print("No message queue! Doing independent RabbitMQ connection!")
+		# 	# traceback.print_stack()
+		# 	# print("Wat?")
+		# 	# print()
+		# 	self.msg_q = False
+		# 	amqp_settings = {
+		# 		"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
+		# 		"RABBIT_PASWD" : config.C_RABBIT_PASWD,
+		# 		"RABBIT_SRVER" : config.C_RABBIT_SRVER,
+		# 		"RABBIT_VHOST" : config.C_RABBIT_VHOST,
+		# 		'taskq_task'     : 'task.master.q',
+		# 		'taskq_response' : 'response.master.q',
+		# 	}
+
+		# 	self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
 	def get_feed_count_message(self):
 		feeds = set()
@@ -74,8 +80,11 @@ class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 	def go(self):
 		feeds = self.get_feed_count_message()
 		times = self.get_times()
-		self._amqpint.put_item(feeds)
-		self._amqpint.put_item(times)
+
+		self.rpc_interface.put_feed_job(feeds)
+		self.rpc_interface.put_feed_job(times)
+		# self._amqpint.put_item(feeds)
+		# self._amqpint.put_item(times)
 
 
 

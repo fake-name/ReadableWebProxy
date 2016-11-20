@@ -95,7 +95,8 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		except Exception as e:
 			raise e
 
-
+	def put_feed_job(self, message):
+		self.remote.putRss(message)
 
 	def put_job(self, job):
 		self.remote.putJob(self.interfacename, job)

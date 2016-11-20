@@ -94,6 +94,7 @@ class ConnectorManager:
 
 		# Re-enqueue any not-acked packets.
 		self.storm_channel.basic.recover(requeue=True)
+		self.storm_channel._inbound.clear()
 
 
 	def __open_connection(self):
@@ -320,8 +321,9 @@ class ConnectorManager:
 
 		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 5) < now:
 			# Attempt recover if we've been idle for a while.
+			# self.log.info("Attempting to recover!")
 			self.storm_channel.basic.recover(requeue=True)
-
+			self.storm_channel._inbound.clear()
 
 		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 10) < now:
 			self.log.error("No messages in 10x heartbeat interval?")
@@ -359,6 +361,9 @@ class ConnectorManager:
 		self.threads_live.value = 0
 		self.disconnect()
 
+	def __del__(self):
+		self.shutdown()
+
 	@classmethod
 	def run_fetcher(cls, config, runstate, tx_q, rx_q):
 		'''
@@ -371,26 +376,25 @@ class ConnectorManager:
 		log.info("Worker thread starting up.")
 		try:
 			print("Connecting %s" % config['virtual_host'])
-			connection_manager = cls(config, runstate, tx_q, rx_q)
+			interface = cls(config, runstate, tx_q, rx_q)
 			print("Entering monitor-loop %s, runstate: %s" % (config['virtual_host'], runstate.value))
-			connection_manager.run()
+			interface.run()
 
 		except Exception:
 			log.error("Exception in connector! Terminating connection...")
 			for line in traceback.format_exc().split('\n'):
 				log.error(line)
 
-			try:
-				connection_manager.shutdown()
-				del connection_manager
-			except Exception:
-				log.info("")
-				log.error("Failed pre-emptive closing before reconnection. May not be a problem?")
-				for line in traceback.format_exc().split('\n'):
-					log.error(line)
 			if runstate.value != 0:
 				log.error("Triggering reconnection...")
 
+		try:
+			interface.shutdown()
+		except Exception:
+			log.info("")
+			log.error("Failed pre-emptive closing before reconnection. May not be a problem?")
+			for line in traceback.format_exc().split('\n'):
+				log.error(line)
 
 		log.info("")
 		log.info("Worker thread has terminated.")

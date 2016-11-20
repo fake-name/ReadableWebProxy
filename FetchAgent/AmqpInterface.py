@@ -201,10 +201,8 @@ class RabbitQueueHandler(object):
 		self.close()
 
 	def close(self):
-		if hasattr(self, "connector") and self.connector:
-			print("Closing connector wrapper: ", self.logPath, self.vhost)
-			self.connector.stop()
-			self.connector = None
+		self.log.info("Closing connector wrapper: %s -> %s", self.logPath, self.vhost)
+		self.connector.stop()
 
 
 	def dispatch_outgoing(self):
@@ -346,17 +344,15 @@ class PlainRabbitQueueHandler(object):
 
 	def put_job(self, new_job):
 
-		packed_job = msgpack.packb(new_job, use_bin_type=True)
-		self.connector.putMessage(packed_job, synchronous=1000)
+		# packed_job = msgpack.packb(new_job, use_bin_type=True)
+		self.connector.putMessage(new_job, synchronous=1000)
 
 	def __del__(self):
 		self.close()
 
 	def close(self):
-		if hasattr(self, "connector") and self.connector:
-			print("Closing connector wrapper: ", self.logPath, self.vhost)
-			self.connector.stop()
-			self.connector = None
+		self.log.info("Closing connector wrapper: %s -> %s", self.logPath, self.vhost)
+		self.connector.stop()
 
 
 	def dispatch_outgoing(self):
@@ -370,6 +366,11 @@ class PlainRabbitQueueHandler(object):
 	def process_retreived(self):
 		while True:
 			new = self.get_item()
+
+			if not new:
+				# print("No job item?", new)
+				return
+
 			self.mdict[self.settings['respq_name']].put(new)
 
 

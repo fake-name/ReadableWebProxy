@@ -5,7 +5,6 @@ import urllib.parse
 import re
 import json
 import logging
-from WebMirror.OutputFilters import AmqpInterface
 import settings
 from WebMirror.util.titleParseNew import TitleParser
 

@@ -245,29 +245,29 @@ class NuResolvedOutbound(common.db_base.Base):
 # 'client_id'        : self.settings['clientid'],
 # 'client_key'       : self.settings['client_key'],
 
-# Tools for tracking plugins
-class NuOutboundWrapperMap(common.db_base.Base):
-	__tablename__ = 'nu_outbound_wrappers'
-	id               = Column(BigInteger, primary_key = True)
+# # Tools for tracking plugins
+# class NuOutboundWrapperMap(common.db_base.Base):
+# 	__tablename__ = 'nu_outbound_wrappers'
+# 	id               = Column(BigInteger, primary_key = True)
 
-	client_id        = Column(Text, index=True)
-	client_key       = Column(Text, index=True)
+# 	client_id        = Column(Text, index=True)
+# 	client_key       = Column(Text, index=True)
 
-	seriesname       = Column(Text, index=True)
-	releaseinfo      = Column(Text)
-	groupinfo        = Column(Text, index=True)
-	referrer         = Column(Text)
-	outbound_wrapper = Column(Text)
-	actual_target    = Column(Text)
+# 	seriesname       = Column(Text, index=True)
+# 	releaseinfo      = Column(Text)
+# 	groupinfo        = Column(Text, index=True)
+# 	referrer         = Column(Text)
+# 	outbound_wrapper = Column(Text)
+# 	actual_target    = Column(Text)
 
-	released_on      = Column(DateTime, default=datetime.datetime.utcnow, index=True)
+# 	released_on      = Column(DateTime, default=datetime.datetime.utcnow, index=True)
 
-	validated        = Column(Boolean, default=False)
+# 	validated        = Column(Boolean, default=False)
 
 
-	__table_args__ = (
-		UniqueConstraint('client_id', 'client_key', 'seriesname', 'releaseinfo', 'groupinfo', 'actual_target'),
-		)
+# 	__table_args__ = (
+# 		UniqueConstraint('client_id', 'client_key', 'seriesname', 'releaseinfo', 'groupinfo', 'actual_target'),
+# 		)
 
 
 # common.db_base.Base.metadata.create_all(bind=get_engine(), checkfirst=True)
