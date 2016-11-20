@@ -35,7 +35,7 @@ import WebMirror.NewJobQueue as njq
 import common.stuck
 
 import common.get_rpyc
-# import WebMirror.OutputFilters.AmqpInterface
+import WebMirror.OutputFilters.AmqpInterface
 
 class RunInstance(object):
 	def __init__(self, num, response_queue, new_job_queue, cookie_lock, nosig=True):
@@ -191,16 +191,17 @@ class UpdateAggregator(object):
 
 		if config.C_DO_RABBIT:
 
-			self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
-			# amqp_settings = {
-			# 	"RABBIT_LOGIN"   : config.C_RABBIT_LOGIN,
-			# 	"RABBIT_PASWD"   : config.C_RABBIT_PASWD,
-			# 	"RABBIT_SRVER"   : config.C_RABBIT_SRVER,
-			# 	"RABBIT_VHOST"   : config.C_RABBIT_VHOST,
-			# 	'taskq_task'     : 'task.master.q',
-			# 	'taskq_response' : 'response.master.q',
-			# }
-			# self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
+			# self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
+
+			amqp_settings = {
+				"RABBIT_LOGIN"   : config.C_RABBIT_LOGIN,
+				"RABBIT_PASWD"   : config.C_RABBIT_PASWD,
+				"RABBIT_SRVER"   : config.C_RABBIT_SRVER,
+				"RABBIT_VHOST"   : config.C_RABBIT_VHOST,
+				'taskq_task'     : 'task.master.q',
+				'taskq_response' : 'response.master.q',
+			}
+			self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
 
 		self.seen = {}
 
@@ -219,8 +220,8 @@ class UpdateAggregator(object):
 
 		if self.amqpUpdateCount % 50 == 0:
 			self.log.info("Transmitted AMQP messages: %s", self.amqpUpdateCount)
-		# self._amqpint.put_item(pkt)
-		self.rpc_interface.put_feed_job(pkt)
+		self._amqpint.put_item(pkt)
+		# self.rpc_interface.put_feed_job(pkt)
 
 
 	def do_link_batch_update(self):
@@ -373,7 +374,7 @@ class UpdateAggregator(object):
 	def close(self):
 		if config.C_DO_RABBIT:
 			self.log.info("Aggregator thread closing interface.")
-			# self._amqpint.close()
+			self._amqpint.close()
 
 	@classmethod
 	def launch_agg(cls, agg_queue):
