@@ -318,6 +318,11 @@ class ConnectorManager:
 			self.had_exception.value = 1
 
 
+		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 5) < now:
+			# Attempt recover if we've been idle for a while.
+			self.storm_channel.basic.recover(requeue=True)
+
+
 		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 10) < now:
 			self.log.error("No messages in 10x heartbeat interval?")
 			self.had_exception.value = 1

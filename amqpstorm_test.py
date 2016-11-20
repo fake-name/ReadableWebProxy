@@ -39,6 +39,9 @@ def getSslOpts():
 class AmqpContainer(object):
 	def __init__(self):
 
+		self.ack_skip = 0
+		self.keepalive_exec = 0
+
 		self.log = logging.getLogger("Main.Connector")
 
 		self.log.info("Initializing AMQP connection.")
@@ -149,8 +152,13 @@ class AmqpContainer(object):
 	def process_rx(self, message):
 		print("received message!", message)
 		print("message body:", message.body)
-		message.ack()
 
+
+		self.ack_skip += 1
+		if self.ack_skip % 3 != 0:
+			message.ack()
+		else:
+			print("Not acking!")
 
 
 		if self.prefetch_extended is False:
@@ -165,6 +173,15 @@ class AmqpContainer(object):
 			properties={
 				'correlation_id' : "keepalive"
 			})
+
+		self.keepalive_exec += 1
+		if self.keepalive_exec > 5:
+			print()
+			print()
+			print()
+			self.log.info("Recovering messages!")
+			self.storm_channel.basic.recover(requeue=True)
+			self.keepalive_exec = 0
 
 
 	def fill_queue_1(self):

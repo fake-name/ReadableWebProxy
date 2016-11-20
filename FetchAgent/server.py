@@ -68,11 +68,25 @@ class FetchInterfaceServer(object):
 		except queue.Empty:
 			return None
 
+
+
 	def getJobNoWait(self, queuename):
 		self._check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
 		try:
 			return self.mdict['inq'][queuename].get_nowait()
+		except queue.Empty:
+			return None
+
+
+	def putRss(self, message):
+		self.log.info("Putting rss item with size: %s!", len(message))
+		self.mdict['feed_outq'].put(message)
+
+	def getRss(self):
+		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'].qsize())
+		try:
+			return self.mdict['inq'].get_nowait()
 		except queue.Empty:
 			return None
 
@@ -109,6 +123,9 @@ def initialize_manager():
 	print("Manager lock: ", FetchAgent.manager.manager['qlock'])
 	FetchAgent.manager.manager['outq'] = {}
 	FetchAgent.manager.manager['inq'] = {}
+
+	FetchAgent.manager.manager['feed_outq'] = multiprocessing.Queue()
+	FetchAgent.manager.manager['feed_inq'] = multiprocessing.Queue()
 
 	return FetchAgent.manager.manager
 

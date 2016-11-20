@@ -36,6 +36,10 @@ class RabbitQueueHandler(object):
 		assert "taskq_task"         in settings
 		assert "taskq_response"     in settings
 
+		assert 'taskq_name' in settings
+		assert 'respq_name' in settings
+		self.settings = settings
+
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
 		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
@@ -204,7 +208,7 @@ class RabbitQueueHandler(object):
 
 
 	def dispatch_outgoing(self):
-		for qname, q in self.mdict['outq'].items():
+		for qname, q in self.mdict[self.settings['taskq_name']].items():
 			while not q.empty():
 				try:
 					job = q.get_nowait()
@@ -239,13 +243,135 @@ class RabbitQueueHandler(object):
 				continue
 
 			qname = self.dispatch_map[jkey]
-			if not qname in self.mdict['inq']:
+			if not qname in self.mdict[self.settings['respq_name']]:
 				self.log.error("Job response queue missing?")
 				self.log.error("Queue name: '%s'", qname)
 				continue
 
 			self.log.info("Demultiplexed job for '%s'", qname)
-			self.mdict['inq'][qname].put(new)
+			self.mdict[self.settings['respq_name']][qname].put(new)
+
+
+	def runner(self):
+		self.mdict['amqp_runstate'] = True
+
+		while self.mdict['amqp_runstate']:
+			time.sleep(1)
+			self.dispatch_outgoing()
+			self.process_retreived()
+
+		self.log.info("Saw exit flag. Closing interface")
+		self.close()
+
+
+class PlainRabbitQueueHandler(object):
+	die = False
+
+	def __init__(self, settings, mdict):
+
+		self.logPath = 'Main.Feeds.RPC'
+
+		self.log = logging.getLogger(self.logPath)
+		self.log.info("RPC Management class instantiated.")
+		self.mdict = mdict
+
+		self.dispatch_map = {}
+
+		# Require clientID in settings
+		assert "RABBIT_LOGIN"       in settings
+		assert "RABBIT_PASWD"       in settings
+		assert "RABBIT_SRVER"       in settings
+		assert "RABBIT_VHOST"       in settings
+
+		assert "taskq_task"         in settings
+		assert "taskq_response"     in settings
+
+		assert 'taskq_name' in settings
+		assert 'respq_name' in settings
+		self.settings = settings
+
+		sslopts = self.getSslOpts()
+		self.vhost = settings["RABBIT_VHOST"]
+		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
+												password           = settings["RABBIT_PASWD"],
+												host               = settings["RABBIT_SRVER"],
+												virtual_host       = settings["RABBIT_VHOST"],
+												ssl                = sslopts,
+												master             = settings.get('master', True),
+												synchronous        = settings.get('synchronous', False),
+												flush_queues       = False,
+												prefetch           = settings.get('prefetch', 25),
+												durable            = True,
+												heartbeat          = 60,
+												task_exchange_type = settings.get('queue_mode', 'fanout'),
+												poll_rate          = settings.get('poll_rate', 1.0/100),
+												task_queue         = settings["taskq_task"],
+												response_queue     = settings["taskq_response"],
+												)
+
+
+		self.log.info("Connected AMQP Interface: %s", self.connector)
+		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
+
+	def getSslOpts(self):
+		'''
+		Verify the SSL cert exists in the proper place.
+		'''
+		certpath = './rabbit_pub_cert/'
+
+		caCert = os.path.abspath(os.path.join(certpath, './cacert.pem'))
+		cert = os.path.abspath(os.path.join(certpath, './cert1.pem'))
+		keyf = os.path.abspath(os.path.join(certpath, './key1.pem'))
+
+		assert os.path.exists(caCert), "No certificates found on path '%s'" % caCert
+		assert os.path.exists(cert), "No certificates found on path '%s'" % cert
+		assert os.path.exists(keyf), "No certificates found on path '%s'" % keyf
+
+		ret = {"cert_reqs" : ssl.CERT_REQUIRED,
+				"ca_certs" : caCert,
+				"keyfile"  : keyf,
+				"certfile"  : cert,
+			}
+		print("Certificate config: ", ret)
+
+		return ret
+
+
+	def get_item(self):
+		ret = self.connector.getMessage()
+		if ret:
+			self.log.info("Received data size: %s bytes.", len(ret))
+		return ret
+
+
+	def put_job(self, new_job):
+
+		packed_job = msgpack.packb(new_job, use_bin_type=True)
+		self.connector.putMessage(packed_job, synchronous=1000)
+
+	def __del__(self):
+		self.close()
+
+	def close(self):
+		if hasattr(self, "connector") and self.connector:
+			print("Closing connector wrapper: ", self.logPath, self.vhost)
+			self.connector.stop()
+			self.connector = None
+
+
+	def dispatch_outgoing(self):
+		while not self.mdict[self.settings['taskq_name']].empty():
+			try:
+				job = self.mdict[self.settings['taskq_name']].get_nowait()
+				self.put_job(job)
+			except queue.Empty:
+				break
+
+	def process_retreived(self):
+		while True:
+			new = self.get_item()
+			self.mdict[self.settings['respq_name']].put(new)
+
 
 
 	def runner(self):
@@ -264,10 +390,11 @@ class RabbitQueueHandler(object):
 
 
 
+
 STATE = {}
 
 def startup_interface(manager):
-	amqp_settings = {
+	rpc_amqp_settings = {
 		'RABBIT_LOGIN'    : settings.RPC_RABBIT_LOGIN,
 		'RABBIT_PASWD'    : settings.RPC_RABBIT_PASWD,
 		'RABBIT_SRVER'    : settings.RPC_RABBIT_SRVER,
@@ -282,16 +409,43 @@ def startup_interface(manager):
 
 		"poll_rate"       : 1/100,
 
+		'taskq_name' : 'outq',
+		'respq_name' : 'inq',
+
 	}
 
-	STATE['instance'] = RabbitQueueHandler(amqp_settings, manager)
-	STATE['thread'] = threading.Thread(target=STATE['instance'].runner)
-	STATE['thread'].start()
+	feed_amqp_settings = {
+		'RABBIT_LOGIN'    : settings.RABBIT_LOGIN,
+		'RABBIT_PASWD'    : settings.RABBIT_PASWD,
+		'RABBIT_SRVER'    : settings.RABBIT_SRVER,
+		'RABBIT_VHOST'    : settings.RABBIT_VHOST,
+		'master'          : True,
+		'prefetch'        : 25,
+		# 'prefetch'        : 50,
+		# 'prefetch'        : 5,
+		'queue_mode'      : 'fanout',
+		'taskq_task'     : 'task.master.q',
+		'taskq_response' : 'response.master.q',
+
+		"poll_rate"       : 1/100,
+
+		'taskq_name' : 'feed_outq',
+		'respq_name' : 'feed_inq',
+	}
+
+	STATE['rpc_instance'] = RabbitQueueHandler(rpc_amqp_settings, manager)
+	STATE['rpc_thread'] = threading.Thread(target=STATE['rpc_instance'].runner)
+	STATE['rpc_thread'].start()
+
+	STATE['feed_instance'] = PlainRabbitQueueHandler(feed_amqp_settings, manager)
+	STATE['feed_thread'] = threading.Thread(target=STATE['feed_instance'].runner)
+	STATE['feed_thread'].start()
 
 
 
 def shutdown_interface(manager):
 	print("Halting AMQP interface")
 	manager['amqp_runstate'] = False
-	STATE['thread'].join()
+	STATE['rpc_thread'].join()
+	STATE['feed_thread'].join()
 
