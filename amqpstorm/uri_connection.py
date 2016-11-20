@@ -15,7 +15,9 @@ class UriConnection(Connection):
     """Create a new Connection instance using an AMQP Uri string.
 
         Usage:
+
             UriConnect('amqp://guest:guest@localhost:5672/%2F?heartbeat=60')
+
             UriConnect('amqps://guest:guest@localhost:5671/%2F?heartbeat=60')
     """
     __slots__ = []

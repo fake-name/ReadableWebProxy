@@ -10,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Tx(Handler):
-    """AMQP Channel.tx
+    """RabbitMQ Transactions.
 
         Server local transactions, in which the server will buffer published
         messages until the client commits (or rollback) the messages.
@@ -39,9 +39,7 @@ class Tx(Handler):
             self.commit()
 
     def select(self):
-        """Select standard transaction mode.
-
-            Enable Server Local Transactions.
+        """Enable standard transaction mode.
 
             This will enable transaction mode on the channel. Meaning that
             messages will be kept in the remote server buffer until such a

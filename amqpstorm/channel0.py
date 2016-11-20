@@ -5,7 +5,6 @@ import platform
 
 from pamqp import specification as pamqp_spec
 from pamqp.heartbeat import Heartbeat
-from pamqp.specification import Connection as pamqp_connection
 
 from amqpstorm import __version__
 from amqpstorm.base import AUTH_MECHANISM
@@ -20,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Channel0(object):
-    """AMQP Connection.Channel0"""
+    """Internal Channel0 handler."""
 
     def __init__(self, connection):
         super(Channel0, self).__init__()
@@ -51,14 +50,14 @@ class Channel0(object):
             self._set_connection_state(Stateful.OPEN)
         elif frame_in.name == 'Connection.Start':
             self.server_properties = frame_in.server_properties
-            self._send_start_ok_frame(frame_in)
+            self._send_start_ok(frame_in)
         elif frame_in.name == 'Connection.Tune':
-            self._send_tune_ok_frame()
+            self._send_tune_ok()
             self._send_open_connection()
         else:
             LOGGER.error('[Channel0] Unhandled Frame: %s', frame_in.name)
 
-    def send_close_connection_frame(self):
+    def send_close_connection(self):
         """Send Connection Close frame.
 
         :return:
@@ -123,10 +122,10 @@ class Channel0(object):
         return '\0%s\0%s' % (self._parameters['username'],
                              self._parameters['password'])
 
-    def _send_start_ok_frame(self, frame_in):
+    def _send_start_ok(self, frame_in):
         """Send Start OK frame.
 
-        :param pamqp_spec.Connection.StartOk frame_in: Amqp frame.
+        :param pamqp_spec.Connection.Start frame_in: Amqp frame.
         :return:
         """
         if 'PLAIN' not in try_utf8_decode(frame_in.mechanisms):
@@ -137,21 +136,21 @@ class Channel0(object):
             self._connection.exceptions.append(exception)
             return
         credentials = self._plain_credentials()
-        start_ok_frame = pamqp_connection.StartOk(
+        start_ok_frame = pamqp_spec.Connection.StartOk(
             mechanism=AUTH_MECHANISM,
             client_properties=self._client_properties(),
             response=credentials,
             locale=LOCALE)
         self._write_frame(start_ok_frame)
 
-    def _send_tune_ok_frame(self):
+    def _send_tune_ok(self):
         """Send Tune OK frame.
 
         :return:
         """
-        tune_ok_frame = pamqp_connection.TuneOk(channel_max=MAX_CHANNELS,
-                                                frame_max=FRAME_MAX,
-                                                heartbeat=self._heartbeat)
+        tune_ok_frame = pamqp_spec.Connection.TuneOk(channel_max=MAX_CHANNELS,
+                                                     frame_max=FRAME_MAX,
+                                                     heartbeat=self._heartbeat)
         self._write_frame(tune_ok_frame)
 
     def _send_open_connection(self):
@@ -159,7 +158,7 @@ class Channel0(object):
 
         :return:
         """
-        open_frame = pamqp_connection.Open(
+        open_frame = pamqp_spec.Connection.Open(
             virtual_host=self._parameters['virtual_host']
         )
         self._write_frame(open_frame)

@@ -10,7 +10,7 @@ from amqpstorm.exception import AMQPMessageError
 
 
 class Message(BaseMessage):
-    """AMQP Message"""
+    """RabbitMQ Message object."""
     __slots__ = [
         '_auto_decode', '_decode_cache'
     ]
@@ -120,7 +120,7 @@ class Message(BaseMessage):
         :raises AMQPConnectionError: Raises if the connection
                                      encountered an error.
 
-        :param bool requeue:
+        :param bool requeue: Re-queue the message
         """
         if not self._method:
             raise AMQPMessageError(
@@ -137,7 +137,7 @@ class Message(BaseMessage):
         :raises AMQPConnectionError: Raises if the connection
                                      encountered an error.
 
-        :param bool requeue: Requeue the message
+        :param bool requeue: Re-queue the message
         """
         if not self._method:
             raise AMQPMessageError(

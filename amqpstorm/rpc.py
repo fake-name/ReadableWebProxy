@@ -9,7 +9,7 @@ from amqpstorm.exception import AMQPChannelError
 
 
 class Rpc(object):
-    """AMQP Channel.rpc"""
+    """Internal RPC handler."""
 
     def __init__(self, adapter, timeout=360):
         """

@@ -3,6 +3,9 @@
 import locale
 import threading
 
+from amqpstorm.compatibility import is_string
+from amqpstorm.exception import AMQPChannelError
+
 AUTH_MECHANISM = 'PLAIN'
 IDLE_WAIT = 0.01
 FRAME_MAX = 131072
@@ -11,10 +14,7 @@ LOCALE = locale.getdefaultlocale()[0] or 'en_US'
 
 
 class Stateful(object):
-    """Stateful"""
-    __slots__ = [
-        '_exceptions', '_lock', '_state'
-    ]
+    """Stateful implementation."""
     CLOSED = 0
     CLOSING = 1
     OPENING = 2
@@ -40,6 +40,14 @@ class Stateful(object):
         :return:
         """
         self._state = state
+
+    @property
+    def current_state(self):
+        """Get the State.
+
+        :rtype: int
+        """
+        return self._state
 
     @property
     def is_closed(self):
@@ -86,7 +94,7 @@ class Stateful(object):
 
 
 class BaseChannel(Stateful):
-    """AMQP BaseChannel"""
+    """Channel base class."""
     __slots__ = [
         '_channel_id', '_consumer_tags'
     ]
@@ -118,6 +126,8 @@ class BaseChannel(Stateful):
         :param str tag: Consumer tag.
         :return:
         """
+        if not is_string(tag):
+            raise AMQPChannelError('consumer tag needs to be a string')
         if tag not in self._consumer_tags:
             self._consumer_tags.append(tag)
 
@@ -126,10 +136,10 @@ class BaseChannel(Stateful):
 
             If no tag is specified, all all tags will be removed.
 
-        :param str tag: Consumer tag.
+        :param str|None tag: Consumer tag.
         :return:
         """
-        if tag:
+        if tag is not None:
             if tag in self._consumer_tags:
                 self._consumer_tags.remove(tag)
         else:
@@ -137,7 +147,7 @@ class BaseChannel(Stateful):
 
 
 class BaseMessage(object):
-    """AMQP BaseMessage"""
+    """Message base class."""
     __slots__ = [
         '_body', '_channel', '_method', '_properties'
     ]

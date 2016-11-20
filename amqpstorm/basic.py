@@ -18,7 +18,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Basic(Handler):
-    """AMQP Channel.basic"""
+    """RabbitMQ Basic Operations."""
     __slots__ = []
 
     def qos(self, prefetch_count=0, prefetch_size=0, global_=False):
@@ -46,13 +46,14 @@ class Basic(Handler):
                                          global_=global_)
         return self._channel.rpc_request(qos_frame)
 
-    def get(self, queue='', no_ack=False, to_dict=False):
+    def get(self, queue='', no_ack=False, to_dict=False, auto_decode=False):
         """Fetch a single message.
 
         :param str queue: Queue name
         :param bool no_ack: No acknowledgement needed
         :param bool to_dict: Should incoming messages be converted to a
                     dictionary before delivery.
+        :param bool auto_decode: Auto-decode strings when possible.
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -74,7 +75,7 @@ class Basic(Handler):
         get_frame = pamqp_spec.Basic.Get(queue=queue,
                                          no_ack=no_ack)
         with self._channel.lock and self._channel.rpc.lock:
-            message = self._get_message(get_frame)
+            message = self._get_message(get_frame, auto_decode=auto_decode)
             if message and to_dict:
                 return message.to_dict()
             return message
@@ -82,7 +83,7 @@ class Basic(Handler):
     def recover(self, requeue=False):
         """Redeliver unacknowledged messages.
 
-        :param bool requeue: Requeue the messages
+        :param bool requeue: Re-queue the messages
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -220,7 +221,7 @@ class Basic(Handler):
 
         :param int/long delivery_tag: Server-assigned delivery tag
         :param bool multiple: Negative acknowledge multiple messages
-        :param bool requeue: Requeue message
+        :param bool requeue: Re-queue the message
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -246,7 +247,7 @@ class Basic(Handler):
         """Reject Message.
 
         :param int/long delivery_tag: Server-assigned delivery tag
-        :param bool requeue: Requeue the message
+        :param bool requeue: Re-queue the message
 
         :raises AMQPInvalidArgument: Invalid Parameters
         :raises AMQPChannelError: Raises if the channel encountered an error.
@@ -344,10 +345,11 @@ class Basic(Handler):
             body = bytes(body, encoding=encoding)
         return body
 
-    def _get_message(self, get_frame):
+    def _get_message(self, get_frame, auto_decode):
         """Get and return a message using a Basic.Get frame.
 
         :param Basic.Get get_frame:
+        :param bool auto_decode: Auto-decode strings when possible.
 
         :rtype: Message
         """
@@ -368,7 +370,8 @@ class Basic(Handler):
         return Message(channel=self._channel,
                        body=body,
                        method=dict(get_frame),
-                       properties=dict(content_header.properties))
+                       properties=dict(content_header.properties),
+                       auto_decode=auto_decode)
 
     def _publish_confirm(self, frames_out):
         """Confirm that message was published successfully.

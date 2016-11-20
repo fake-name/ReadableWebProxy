@@ -1,8 +1,6 @@
 """AMQPStorm Connection.IO."""
 
 import logging
-import traceback
-import multiprocessing
 import select
 import socket
 import threading
@@ -22,14 +20,12 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Poller(object):
-    """Socket Read/Write Poller."""
+    """Socket Read Poller."""
 
-    def __init__(self, fileno, exceptions, timeout=30):
+    def __init__(self, fileno, exceptions, timeout=5):
         self._fileno = fileno
         self._exceptions = exceptions
         self.timeout = timeout
-
-        assert self.timeout is not None and self.timeout > 1
 
     @property
     def fileno(self):
@@ -56,22 +52,19 @@ class Poller(object):
 
 
 class IO(object):
-    """AMQP Connection.io"""
+    """Internal Input/Output handler."""
 
-    def __init__(self, parameters, exceptions=None, on_read=None, name=None):
+    def __init__(self, parameters, exceptions=None, on_read=None):
         self._exceptions = exceptions
         self._lock = threading.Lock()
         self._inbound_thread = None
         self._on_read = on_read
-        self._running = multiprocessing.Event()
-        self._die = multiprocessing.Value('b', 0)
+        self._running = threading.Event()
         self._parameters = parameters
         self.data_in = EMPTY_BUFFER
-        self.name = name
         self.poller = None
         self.socket = None
         self.use_ssl = self._parameters['ssl']
-        # print("IO Object timeout: ", self._parameters)
 
     def close(self):
         """Close Socket.
@@ -80,42 +73,22 @@ class IO(object):
         """
         self._lock.acquire()
         try:
-            print("Running state: %s, thread alive: %s, thread id:%s" %
-                    (
-                        self._running.is_set(),
-                        self._inbound_thread.is_alive() if self._inbound_thread else "None",
-                        self._inbound_thread.ident if self._inbound_thread else "None"
-                    )
-                )
             self._running.clear()
-            if self._inbound_thread:
-                print("Joining _inbound_thread. Runstate: %s", self._running.is_set())
-                self._inbound_thread.join()
-            self._inbound_thread = None
-            self.poller = None
             if self.socket:
                 self.socket.close()
+            if self._inbound_thread:
+                self._inbound_thread.join(timeout=self._parameters['timeout'])
+            self._inbound_thread = None
+            self.poller = None
             self.socket = None
         finally:
             self._lock.release()
-        print("IO interface for vhost : %s closed." % self.name)
 
     def kill(self):
-        self._die.value = 1
-        self._running.clear()
-
-        # Killing the contained thread when
-        if self._inbound_thread is None:
-            print("Inbound thread is none! Wat?")
-            return
-        assert self._inbound_thread is not None
-
         if self._inbound_thread.is_alive():
+            self._die.value = 1
             while self._inbound_thread.is_alive():
                 self._inbound_thread.join(1)
-                print("Worker thread still alive!")
-
-            print("Socket thread has halted")
 
     def open(self):
         """Open Socket and establish a connection.
@@ -211,8 +184,6 @@ class IO(object):
         :rtype: socket.socket
         """
         sock = socket.socket(socket_family, socket.SOCK_STREAM, 0)
-        if hasattr(socket, 'SOL_TCP'):
-            sock.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
         sock.settimeout(self._parameters['timeout'] or None)
         if self.use_ssl:
             if not compatibility.SSL_SUPPORTED:
@@ -225,7 +196,7 @@ class IO(object):
     def _ssl_wrap_socket(self, sock):
         """Wrap SSLSocket around the Socket.
 
-        :param socket sock:
+        :param socket.socket sock:
         :rtype: SSLSocket
         """
         if 'ssl_version' not in self._parameters['ssl_options']:
@@ -254,21 +225,7 @@ class IO(object):
             if self.poller.is_ready:
                 self.data_in += self._receive()
                 self.data_in = self._on_read(self.data_in)
-
             sleep(IDLE_WAIT)
-            # print("_process_incoming_data() looping. _running(): %s, threadid: %s, name: %s" % (
-            #         self._running.is_set(),
-            #         threading.get_ident(),
-            #         self.name
-            #         ))
-            if self._die.value == 1:
-                print('_process_incoming_data saw die flag. Exiting')
-                return
-        print("_process_incoming_data() Thread named %s, ID: %s exiting. _running state: %s" % (
-                        self.name,
-                        threading.get_ident(),
-                        self._running.is_set()
-                    ))
 
     def _receive(self):
         """Receive any incoming socket data.
@@ -280,15 +237,15 @@ class IO(object):
         """
         data_in = EMPTY_BUFFER
         try:
+            if not self.socket:
+                raise socket.error('connection/socket error')
             data_in = self._read_from_socket()
         except socket.timeout:
             pass
         except (IOError, OSError) as why:
             if why.args[0] not in (EWOULDBLOCK, EAGAIN):
                 self._exceptions.append(AMQPConnectionError(why))
-            traceback.print_exc()
-            print("[_receive (exception)] Clearing self._running")
-            self._running.clear()
+                self._running.clear()
         return data_in
 
     def _read_from_socket(self):

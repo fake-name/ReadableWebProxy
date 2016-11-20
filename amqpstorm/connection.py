@@ -24,7 +24,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Connection(Stateful):
-    """AMQP Connection"""
+    """RabbitMQ Connection."""
     __slots__ = [
         'heartbeat', 'parameters', '_channel0', '_channels', '_io'
     ]
@@ -55,7 +55,7 @@ class Connection(Stateful):
             'port': port,
             'virtual_host': kwargs.get('virtual_host', '/'),
             'heartbeat': kwargs.get('heartbeat', 60),
-            'timeout': kwargs.get('timeout', 30),
+            'timeout': kwargs.get('timeout', 10),
             'ssl': kwargs.get('ssl', False),
             'ssl_options': kwargs.get('ssl_options', {})
         }
@@ -155,23 +155,32 @@ class Connection(Stateful):
         raise self.exceptions[0]
 
     def close(self):
-        """Close connection."""
+        """Close connection.
+
+        :raises AMQPConnectionError: Raises if the connection
+                                     encountered an error.
+        :return:
+        """
         LOGGER.debug('Connection Closing')
-        self.heartbeat.stop()
-        if not self.is_closed and self._io.socket:
-            self._close_channels()
+        if not self.is_closed:
             self.set_state(self.CLOSING)
-            self._channel0.send_close_connection_frame()
-        self._io.close()
-        self.set_state(self.CLOSED)
+        self.heartbeat.stop()
+        try:
+            self._close_remaining_channels()
+            if not self.is_closed and self.socket:
+                self._channel0.send_close_connection()
+                self._wait_for_connection_state(state=Stateful.CLOSED)
+        except AMQPConnectionError:
+            pass
+        finally:
+            self._io.close()
+            self.set_state(self.CLOSED)
         LOGGER.debug('Connection Closed')
 
     def kill(self):
-        print("Destroying all consumer tags")
-        for channel in self._channels.values():
+        for channel in self._channels.items():
             channel.remove_consumer_tag()
 
-        print("Killing on IO thread. Runstate: %s" % (self._io._die.value, ))
         self._io.kill()
 
 
@@ -184,9 +193,10 @@ class Connection(Stateful):
         LOGGER.debug('Connection Opening')
         self.set_state(self.OPENING)
         self._exceptions = []
+        self._channels = {}
         self._io.open()
         self._send_handshake()
-        self._wait_for_connection_to_open()
+        self._wait_for_connection_state(state=Stateful.OPEN)
         self.heartbeat.start(self._exceptions)
         LOGGER.debug('Connection Opened')
 
@@ -195,6 +205,7 @@ class Connection(Stateful):
 
         :param int channel_id: Channel ID.
         :param pamqp_spec.Frame frame_out: Amqp frame.
+
         :return:
         """
         frame_data = pamqp_frame.marshal(frame_out, channel_id)
@@ -206,6 +217,7 @@ class Connection(Stateful):
 
         :param int channel_id: Channel ID/
         :param list frames_out: Amqp frames.
+
         :return:
         """
         data_out = EMPTY_BUFFER
@@ -214,7 +226,7 @@ class Connection(Stateful):
         self.heartbeat.register_write()
         self._io.write_to_socket(data_out)
 
-    def _close_channels(self):
+    def _close_remaining_channels(self):
         """Close any open channels.
 
         :return:
@@ -222,6 +234,7 @@ class Connection(Stateful):
         for channel_id in self._channels:
             if not self._channels[channel_id].is_open:
                 continue
+            self._channels[channel_id].set_state(Channel.CLOSED)
             self._channels[channel_id].close()
 
     def _handle_amqp_frame(self, data_in):
@@ -251,9 +264,8 @@ class Connection(Stateful):
         :rtype: bytes
         """
         while data_in:
-            if self._io._die.value == 1:
-                return
-            data_in, channel_id, frame_in =  self._handle_amqp_frame(data_in)
+            data_in, channel_id, frame_in = \
+                self._handle_amqp_frame(data_in)
 
             if frame_in is None:
                 break
@@ -293,14 +305,18 @@ class Connection(Stateful):
         elif not compatibility.is_integer(self.parameters['heartbeat']):
             raise AMQPInvalidArgument('heartbeat should be an integer')
 
-    def _wait_for_connection_to_open(self):
-        """Wait for the Connection to fully open.
+    def _wait_for_connection_state(self, state=Stateful.OPEN):
+        """Wait for a Connection state.
+
+        :param int state: State that we expect
+
+        :raises AMQPConnectionError: Raises if we reach the connection timeout.
 
         :return:
         """
         start_time = time.time()
-        timeout = (self.parameters['timeout'] or 10) + 0.25
-        while not self.is_open:
+        timeout = (self.parameters['timeout'] or 10) * 3
+        while self.current_state != state:
             self.check_for_errors()
             if time.time() - start_time > timeout:
                 raise AMQPConnectionError('Connection timed out')

@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Exchange(Handler):
-    """AMQP Channel.exchange"""
+    """RabbitMQ Exchange Operations."""
     __slots__ = []
 
     def declare(self, exchange='', exchange_type='direct', passive=False,

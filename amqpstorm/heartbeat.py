@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Heartbeat(object):
-    """AMQP Internal Heartbeat Checker"""
+    """Internal Heartbeat handler."""
 
     def __init__(self, interval, send_heartbeat):
         self.send_heartbeat = send_heartbeat

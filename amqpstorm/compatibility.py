@@ -8,14 +8,14 @@ except ImportError:
     ssl = None
 
 try:
-    import urlparse
+    import urlparse  # noqa
 except ImportError:
-    import urllib.parse as urlparse
+    import urllib.parse as urlparse  # noqa
 
 try:
-    from urllib import quote
+    from urllib import quote  # noqa
 except ImportError:
-    from urllib.parse import quote
+    from urllib.parse import quote  # noqa
 
 PYTHON3 = sys.version_info >= (3, 0, 0)
 
@@ -58,8 +58,7 @@ if SSL_SUPPORTED:
         SSL_VERSIONS['protocol_tlsv1_2'] = ssl.PROTOCOL_TLSv1_2
     if hasattr(ssl, 'PROTOCOL_TLSv1_1'):
         SSL_VERSIONS['protocol_tlsv1_1'] = ssl.PROTOCOL_TLSv1_1
-    if hasattr(ssl, 'PROTOCOL_TLSv1'):
-        SSL_VERSIONS['protocol_tlsv1'] = ssl.PROTOCOL_TLSv1
+    SSL_VERSIONS['protocol_tlsv1'] = ssl.PROTOCOL_TLSv1
 
     SSL_CERT_MAP = {
         'cert_none': ssl.CERT_NONE,

@@ -175,20 +175,6 @@ class ConnectorManager:
 		self.log.info("Configured.")
 
 
-	def handle_rx(self, message):
-		# self.log.info("Received message!")
-		# self.log.info("Message channel: %s", message.channel)
-		# self.log.info("Message properties: %s", message.properties)
-		if message.properties['correlation_id'].startswith('keepalive'):
-			self.__handle_keepalive_rx(message)
-		else:
-			self.__handle_normal_rx(message)
-
-		if self.prefetch_extended is False:
-			self.prefetch_extended = True
-			self.storm_channel.basic.qos(250, global_=True)
-			self.log.info("Prefetch updated")
-
 	def __poke_keepalive(self):
 		mbody = "keepalive %s, random: %s" % (self.keepalive_num, random.random())
 		self.storm_channel.basic.publish(body=mbody, exchange=self.keepalive_exchange_name, routing_key='nak',
@@ -203,15 +189,33 @@ class ConnectorManager:
 	def __do_rx(self):
 		self.storm_channel.process_data_events(to_tuple=False)
 
+	def handle_rx(self, message):
+		# self.log.info("Received message!")
+		# self.log.info("Message channel: %s", message.channel)
+		# self.log.info("Message properties: %s", message.properties)
+		corr_id = message.properties['correlation_id']
+		if isinstance(corr_id, (bytes, bytearray)):
+			corr_id = corr_id.decode('ascii')
+		if corr_id.startswith('keepalive'):
+			self.__handle_keepalive_rx(corr_id, message)
+		else:
+			self.__handle_normal_rx(corr_id, message)
 
-	def __handle_keepalive_rx(self, message):
+		if self.prefetch_extended is False:
+			self.prefetch_extended = True
+			self.storm_channel.basic.qos(250, global_=True)
+			self.log.info("Prefetch updated")
+
+
+
+	def __handle_keepalive_rx(self, corr_id, message):
 
 		with self.heartbeat_timeout_lock:
 			self.last_hearbeat_received = time.time()
 		message.ack()
-		self.log.info("Heartbeat packet received! %s -> %s", message.body, message.properties['correlation_id'])
+		self.log.info("Heartbeat packet received! %s -> %s", message.body.decode("ascii"), corr_id)
 
-	def __handle_normal_rx(self, message):
+	def __handle_normal_rx(self, corr_id, message):
 
 		with self.rx_timeout_lock:
 			self.last_message_received = time.time()
@@ -382,8 +386,6 @@ class ConnectorManager:
 			if runstate.value != 0:
 				log.error("Triggering reconnection...")
 
-		if connection_manager:
-			connection_manager.shutdown()
 
 		log.info("")
 		log.info("Worker thread has terminated.")

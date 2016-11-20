@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Queue(Handler):
-    """AMQP Channel.queue"""
+    """RabbitMQ Queue Operations."""
     __slots__ = []
 
     def declare(self, queue='', passive=False, durable=False,
