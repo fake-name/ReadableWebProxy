@@ -2,6 +2,7 @@
 import amqpstorm
 import urllib.parse
 import socket
+import random
 import traceback
 import logging
 import threading
@@ -16,133 +17,6 @@ class Heartbeat_Timeout_Exception(Exception):
 
 class Message_Publish_Exception(Exception):
 	pass
-
-# class AmqpContainer(object):
-# 	def __init__(self, conn_params, rx_queue, **config):
-
-# 		self.log = logging.getLogger("Main.Connector.Container(%s)" % conn_params['virtual_host'])
-
-# 	def start_consume(self, config):
-# 		self.log.info("Bound. Triggering consume")
-# 		self.storm_channel.basic.consume(self.handle_rx, queue=config['response_queue_name'],         no_ack=False)
-# 		self.storm_channel.basic.consume(self.handle_rx, queue=self.keepalive_exchange_name+'.nak.q', no_ack=False)
-# 		self.log.info("Consume triggered.")
-
-
-
-
-# 	def close(self):
-# 		# Stop the flow of new items
-
-# 		# if self.channel:
-# 		# 	try:
-# 		# 		self.channel.prefetch_count(0)
-# 		# 	except rabbitpy.exceptions.RabbitpyException as e:
-# 		# 		self.log.error("Error on interface teardown!")
-# 		# 		self.log.error("	%s", e)
-
-# 		# Apparently you can close the underlying connection, and have it's thread die, and
-# 		# somehow not have the channel consumer stop. Anyways, stop that first so it shouldn't
-# 		# get wedged in the future.
-# 		self.log.info("Closing channel")
-# 		self.storm_channel.close()
-
-# 		# Close the connection
-# 		self.log.info("Closing connection")
-# 		self.storm_connection.close()
-
-# 	def kill(self):
-# 		self.log.info("Killing connection")
-# 		killfuncs = {
-# 				"connection" : self.storm_connection.kill,
-# 				"channel" : self.storm_channel.kill
-# 			}
-
-# 		for name, kf in killfuncs.items():
-# 			try:
-# 				kf()
-# 			except AssertionError:
-# 				self.log.error("Exception when calling kill on %s!", name)
-
-# 				for line in traceback.format_exc().split("\n"):
-# 					self.log.error(line)
-
-
-# 	def process_rx_events(self):
-# 		self.storm_channel.process_data_events(to_tuple=False)
-
-
-# 	def handle_keepalive_rx(self, message):
-
-# 		with self.heartbeat_timeout_lock:
-# 			self.last_hearbeat_received = time.time()
-# 		message.ack()
-# 		self.log.info("Heartbeat packet received! %s", message.body)
-
-# 	def handle_normal_rx(self, message):
-
-# 		with self.rx_timeout_lock:
-# 			self.last_message_received = time.time()
-# 		self.rx_queue.put(message.body)
-# 		message.ack()
-
-# 		self.log.info("Message packet received! %s", len(message.body))
-
-
-# 	def put_tx(self, message):
-# 		out_key   = self.task_queue_name.split(".")[0]
-
-# 		msg_prop = {}
-# 		if self.durable:
-# 			msg_prop["delivery_mode"] = 2
-
-# 		if not self.storm_channel:
-# 			raise Message_Publish_Exception("Failed to publish message!")
-
-# 		self.storm_channel.basic.publish(body=message, exchange=self.task_exchange, routing_key=out_key, properties=msg_prop)
-
-# 	def checkTimeouts(self):
-# 		with self.heartbeat_timeout_lock:
-# 			if (time.time() - self.last_hearbeat_received) > self.hearbeat_packet_timeout:
-# 				with self.active_lock:
-# 					print()
-# 					print()
-# 					print()
-# 					print()
-# 					self.log.error("Heartbeat Timeout!")
-# 					print()
-# 					print()
-# 					print()
-# 					print()
-# 					raise Heartbeat_Timeout_Exception("Heartbeat timeout!")
-
-# 		with self.rx_timeout_lock:
-# 			if (time.time() - self.last_message_received) > (self.hearbeat_packet_timeout * 5):
-# 				with self.active_lock:
-# 					print()
-# 					print()
-# 					print()
-# 					print()
-# 					self.log.error("RX Message Timeout!")
-# 					print()
-# 					print()
-# 					print()
-# 					print()
-# 					raise Heartbeat_Timeout_Exception("RX Heartbeat timeout!")
-
-# 		self.heartbeat_loops += 1
-# 		if self.heartbeat_loops > 10:
-# 			self.heartbeat_loops = 1
-# 			with self.heartbeat_timeout_lock:
-# 				last_hb = time.time() - self.last_hearbeat_received
-# 			with self.rx_timeout_lock:
-# 				last_rx = time.time() - self.last_message_received
-
-# 			# self.consumer_cycle += 1
-# 			# if self.consumer_cycle > 30:
-# 			# 	# We periodically cycle the consuming state of the input queue, to stop it from being wedged.
-# 			# 	self.storm_channel.close()
-# 			self.log.info("Interface timeout thread. Ages: heartbeat -> %0.2f, last message -> %0.2f.", last_hb, last_rx)
 
 class ConnectorManager:
 	def __init__(self, config, runstate, task_queue, response_queue):
@@ -181,16 +55,17 @@ class ConnectorManager:
 		self.connected          = multiprocessing.Value("i", 0)
 
 		self.had_exception      = multiprocessing.Value("i", 0)
-		self.threads_live       = multiprocessing.Value("i", 0)
+		self.threads_live       = multiprocessing.Value("i", 1)
 
 
 
+		self.info_printerval        = time.time()
+		self.last_hearbeat_sent     = time.time()
 		self.last_hearbeat_received = time.time()
-		self.last_message_received = time.time()
+		self.last_message_received  = time.time()
 
 		self.rx_timeout_lock        = threading.Lock()
 		self.heartbeat_timeout_lock = threading.Lock()
-		self.active_lock            = threading.Lock()
 
 
 		self.session_fetched        = 0
@@ -199,7 +74,7 @@ class ConnectorManager:
 		self.sent_messages = 0
 		self.recv_messages = 0
 
-		self.keepalive_num = 0
+		self.keepalive_num     = 0
 		self.prefetch_extended = False
 
 		self.delivered = 0
@@ -216,6 +91,10 @@ class ConnectorManager:
 
 		self.__open_connection()
 		self.__configure_keepalive_channel()
+
+		# Re-enqueue any not-acked packets.
+		self.storm_channel.basic.recover(requeue=True)
+
 
 	def __open_connection(self):
 		self.log.info("Initializing AMQP connection.")
@@ -242,9 +121,6 @@ class ConnectorManager:
 
 		# Initial QoS is tiny, throttle it up after everything is actually running.
 		self.storm_channel.basic.qos(1, global_=True)
-
-		# Re-enqueue any not-acked packets.
-		self.storm_channel.basic.recover(requeue=True)
 
 	def __configure_keepalive_channel(self):
 
@@ -304,216 +180,101 @@ class ConnectorManager:
 		# self.log.info("Message channel: %s", message.channel)
 		# self.log.info("Message properties: %s", message.properties)
 		if message.properties['correlation_id'].startswith('keepalive'):
-			self.handle_keepalive_rx(message)
+			self.__handle_keepalive_rx(message)
 		else:
-			self.handle_normal_rx(message)
+			self.__handle_normal_rx(message)
 
 		if self.prefetch_extended is False:
 			self.prefetch_extended = True
-			self.storm_channel.basic.qos(self.prefetch_count, global_=True)
+			self.storm_channel.basic.qos(250, global_=True)
 			self.log.info("Prefetch updated")
 
-	def poke_keepalive(self):
-		self.storm_channel.basic.publish(body='wat', exchange=self.keepalive_exchange_name, routing_key='nak',
+	def __poke_keepalive(self):
+		mbody = "keepalive %s, random: %s" % (self.keepalive_num, random.random())
+		self.storm_channel.basic.publish(body=mbody, exchange=self.keepalive_exchange_name, routing_key='nak',
 			properties={
 				'correlation_id' : "keepalive_{}".format(self.keepalive_num)
 			})
 		self.keepalive_num += 1
+		self.last_hearbeat_sent = time.time()
 
 
 
-	def process_rx_events(self):
+	def __do_rx(self):
 		self.storm_channel.process_data_events(to_tuple=False)
 
 
-	def handle_keepalive_rx(self, message):
+	def __handle_keepalive_rx(self, message):
 
 		with self.heartbeat_timeout_lock:
 			self.last_hearbeat_received = time.time()
 		message.ack()
-		self.log.info("Heartbeat packet received! %s", message.body)
+		self.log.info("Heartbeat packet received! %s -> %s", message.body, message.properties['correlation_id'])
 
-	def handle_normal_rx(self, message):
+	def __handle_normal_rx(self, message):
 
 		with self.rx_timeout_lock:
 			self.last_message_received = time.time()
-		self.rx_queue.put(message.body)
+		self.response_queue.put(message.body)
 		message.ack()
 
 		self.log.info("Message packet received! %s", len(message.body))
 
 
-	def start_consume(self, config):
+	def __start_consume(self):
 		self.log.info("Bound. Triggering consume")
-		self.storm_channel.basic.consume(self.handle_rx, queue=config['response_queue_name'],         no_ack=False)
+		self.storm_channel.basic.consume(self.handle_rx, queue=self.config['response_queue_name'],         no_ack=False)
 		self.storm_channel.basic.consume(self.handle_rx, queue=self.keepalive_exchange_name+'.nak.q', no_ack=False)
 		self.log.info("Consume triggered.")
 
 
-
 	def __do_tx(self):
 
-		while not self.__should_die():
-			for dummy_x in range(250):
+		for dummy_x in range(10):
 
-				if self.__should_die():
-					self.log.info("Transmit loop saw exit flag. Breaking!")
-					return
-				# else:
-				# 	self.log.info("Transmit looping!")
+			if self.__should_die():
+				self.log.info("Transmit loop saw exit flag. Breaking!")
+				return
 
-				try:
-					put = self.response_queue.get_nowait()
-				except queue.Empty:
-					break
-					# self.log.info("Publishing message of len '%0.3f'K to exchange '%s'", len(put)/1024, out_queue)
-					# message = amqp.basic_message.Message(body=put)
+			try:
+				put = self.task_queue.get_nowait()
+			except queue.Empty:
+				return
 
-				try:
+			try:
 
-					out_key   = self.task_queue_name.split(".")[0]
+				out_key   = self.config['task_queue_name'].split(".")[0]
 
-					msg_prop = {}
-					if self.durable:
-						msg_prop["delivery_mode"] = 2
+				msg_prop = {}
+				if self.config['task_queue_name']:
+					msg_prop["delivery_mode"] = 2
 
-					if not self.storm_channel:
-						raise Message_Publish_Exception("Failed to publish message!")
+				if not self.storm_channel:
+					raise Message_Publish_Exception("Failed to publish message!")
 
-					self.storm_channel.basic.publish(body=message, exchange=self.task_exchange, routing_key=out_key, properties=msg_prop)
+				self.storm_channel.basic.publish(body=put, exchange=self.config['task_exchange'], routing_key=out_key, properties=msg_prop)
 
-					self.sent_messages += 1
-					self.active -= 1
+				self.sent_messages += 1
+				self.active -= 1
 
-				except amqpstorm.AMQPError as e:
-					self.log.error("Error while tx_polling interface!")
-					self.log.error("	%s", e)
-					for line in traceback.format_exc().split("\n"):
-						self.log.error(line)
-					self.had_exception.value = 1
-					break
-				except Message_Publish_Exception as e:
-					self.log.error("Error while publishing message!")
-					self.response_queue.put(put)
-					self.log.error("	%s", e)
-					for line in traceback.format_exc().split("\n"):
-						self.log.error(line)
-					self.had_exception.value = 1
-					break
-			time.sleep(1)
+			except amqpstorm.AMQPError as e:
+				self.log.error("Error while tx_polling interface!")
+				self.task_queue.put(put)
+				self.log.error("	%s", e)
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+				self.had_exception.value = 1
+				return
+			except Message_Publish_Exception as e:
+				self.log.error("Error while publishing message!")
+				self.task_queue.put(put)
+				self.log.error("	%s", e)
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+				self.had_exception.value = 1
+				return
 
 
-
-
-	# def configure_rpc_vhost(self, rpc_conf):
-
-
-	# 	assert 'task_queue_name'          in config
-	# 	assert 'response_queue_name'      in config
-	# 	assert 'task_exchange'            in config
-	# 	assert 'task_exchange_type'       in config
-	# 	assert 'response_exchange'        in config
-	# 	assert 'response_exchange_type'   in config
-	# 	assert 'durable'                  in config
-	# 	assert 'prefetch'                 in config
-	# 	assert 'flush_queues'             in config
-	# 	assert 'hearbeat_packet_timeout'  in config
-
-	# 	self.log.info("Connection configuration:")
-	# 	for key, value in conn_params.items():
-	# 		self.log.info("	%s -> %s", key, value)
-
-	# 	self.log.info("Config params:")
-	# 	for key, value in config.items():
-	# 		self.log.info("	%s -> %s", key, value)
-
-
-	# 	self.heartbeat_loops = 0
-	# 	self.consumer_cycle = 0
-
-	# 	self.prefetch_extended = False
-	# 	self.prefetch_count = config['prefetch']
-
-
-	# 	with self.connect_lock:
-	# 		self.threads_live.value  = 1
-	# 		self.had_exception.value = 0
-
-	# 		self.interface = AmqpContainer(conn_params, self.task_queue, **rabbit_params)
-
-	# 		self.rx_thread = threading.Thread(target=self._rx_poll,         daemon=False)
-	# 		self.tx_thread = threading.Thread(target=self._tx_poll,         daemon=False)
-	# 		self.hb_thread = threading.Thread(target=self._timeout_watcher, daemon=False)
-	# 		self.rx_thread.start()
-	# 		self.tx_thread.start()
-	# 		self.hb_thread.start()
-
-	# 		print("Living threads:")
-	# 		print("rx_thread", self.rx_thread.is_alive())
-	# 		print("tx_thread", self.tx_thread.is_alive())
-	# 		print("hb_thread", self.hb_thread.is_alive())
-
-	# 		self.interface.start_consume(rabbit_params)
-
-
-	# def disconnect(self):
-	# 	with self.connect_lock:
-	# 		self.threads_live.value = 0
-	# 		if hasattr(self, "interface"):
-	# 			self.interface.close()
-	# 		failed_to_die = 0
-	# 		threads = [self.tx_thread, self.hb_thread, self.rx_thread]
-	# 		threads = [threadp for threadp in threads if threadp is not None]
-	# 		while any([thread.is_alive() for thread in threads]):
-	# 			for thread in [thread for thread in threads if thread.is_alive()]:
-	# 				thread.join(1)
-	# 			self.log.warning("Waiting on threads to join (tx: %s, rx: %s, hb: %s),  Threads_live: %s, had exception %s, resp queue size: %s, die: %s!",
-	# 				self.tx_thread.is_alive(),
-	# 				self.rx_thread.is_alive(),
-	# 				self.hb_thread.is_alive(),
-	# 				self.threads_live.value,
-	# 				self.had_exception.value,
-	# 				self.response_queue.qsize(),
-	# 				failed_to_die,
-	# 				)
-	# 			failed_to_die += 1
-	# 			try:
-	# 				# Bob back and forth killing and closing the interface.
-	# 				if failed_to_die > 30:
-	# 					self.runstate.value = 0
-	# 				if failed_to_die > 15 and (failed_to_die % 2) == 0:
-	# 					self.log.warning("Attempting to kill interface!")
-	# 					self.interface.kill()
-	# 				else:
-	# 					self.interface.close()
-	# 			except Exception:
-	# 				self.log.error("Closing interface failed!")
-
-	# 				for line in traceback.format_exc().split("\n"):
-	# 					self.log.error(line)
-
-	# 		self.log.info("Interface threads joined")
-
-	# 		try:
-	# 			del self.rx_thread
-	# 			self.rx_thread = None
-	# 		except Exception:
-	# 			pass
-	# 		try:
-	# 			del self.tx_thread
-	# 			self.tx_thread = None
-	# 		except Exception:
-	# 			pass
-	# 		try:
-	# 			del self.hb_thread
-	# 			self.hb_thread = None
-	# 		except Exception:
-	# 			pass
-
-	# 		try:
-	# 			del self.interface
-	# 		except Exception:
-	# 			pass
 
 	def __should_die(self):
 		# ret = self.runstate.value != 1 or self.threads_live.value != 1 or self.had_exception.value != 0
@@ -525,8 +286,6 @@ class ConnectorManager:
 		else:
 			self.die_timeout -= 500
 
-
-
 		ret = self.threads_live.value != 1 or self.had_exception.value != 0 or (time.time() - self.die_timeout > 20)
 		if ret:
 
@@ -537,132 +296,46 @@ class ConnectorManager:
 				)
 		return ret
 
-	# def _tx_poll(self):
-	# 	time.sleep(1)
-	# 	self.log.info("TX Poll process starting. Threads_live: %s, resp queue size: %s, had exception %s", self.threads_live.value, self.response_queue.qsize(), self.had_exception.value)
 
-	# 	# When run is false, don't halt until
-	# 	# we've flushed the outgoing items out the queue
-	# 	while not self.__should_die():
-	# 		for dummy_x in range(250):
+	def __check_timeouts(self):
+		now = time.time()
 
-	# 			if self.__should_die():
-	# 				self.log.info("Transmit loop saw exit flag. Breaking!")
-	# 				return
-	# 			# else:
-	# 			# 	self.log.info("Transmit looping!")
+		if self.info_printerval + 10 < now:
+			self.log.info("Interface timeout thread. Ages: heartbeat -> %0.2f, last message -> %0.2f.", now - self.last_hearbeat_received, now-self.last_message_received)
+			self.info_printerval += 10
 
-	# 			try:
-	# 				put = self.response_queue.get_nowait()
-	# 			except queue.Empty:
-	# 				break
-	# 				# self.log.info("Publishing message of len '%0.3f'K to exchange '%s'", len(put)/1024, out_queue)
-	# 				# message = amqp.basic_message.Message(body=put)
+		# Send heartbeats every 5 seconds.
+		if self.last_hearbeat_sent + 5 < now:
+			self.__poke_keepalive()
 
-	# 			try:
-
-	# 				self.interface.put_tx(put)
-	# 				self.sent_messages += 1
-	# 				self.active -= 1
-
-	# 			except amqpstorm.AMQPError as e:
-	# 				self.log.error("Error while tx_polling interface!")
-	# 				self.log.error("	%s", e)
-	# 				for line in traceback.format_exc().split("\n"):
-	# 					self.log.error(line)
-	# 				self.had_exception.value = 1
-	# 				break
-	# 			except Message_Publish_Exception as e:
-	# 				self.log.error("Error while publishing message!")
-	# 				self.response_queue.put(put)
-	# 				self.log.error("	%s", e)
-	# 				for line in traceback.format_exc().split("\n"):
-	# 					self.log.error(line)
-	# 				self.had_exception.value = 1
-	# 				break
-	# 		time.sleep(1)
-
-	# 	self.log.info("TX Poll process dying (should die: %s). Threads_live: %s, runstate: %s, resp queue size: %s, had exception %s.",
-	# 		self.__should_die(), self.threads_live.value, self.runstate.value, self.response_queue.qsize(), self.had_exception.value)
-
-	# def _timeout_watcher(self):
-	# 	time.sleep(1)
-	# 	print_time = 30              # Print a status message every n seconds
-	# 	hb_time    =  5              # Print a status message every n seconds
-	# 	integrator =  0              # Time since last status message emitted.
-
-	# 	while not self.__should_die():
-	# 		try:
-
-	# 			self.interface.checkTimeouts()
-	# 			time.sleep(1)
-
-	# 			integrator += 1
-	# 			# Reset the print integrator.
-	# 			if self.interface and (integrator % hb_time) == 0:
-	# 				self.interface.poke_keepalive()
-	# 			if self.interface and (integrator % print_time) == 0:
-	# 				self.log.info("Timeout watcher loop. Current message counts: %s (out: %s, in: %s)", self.active, self.sent_messages, self.recv_messages)
-	# 		except Heartbeat_Timeout_Exception:
-	# 			self.had_exception.value = 1
-	# 		except Message_Publish_Exception:
-	# 			self.had_exception.value = 1
-	# 		except amqpstorm.AMQPError as e:
-	# 			self.log.error("RabbitPy Exception in worker.")
-	# 			for line in traceback.format_exc().split("\n"):
-	# 				self.log.error(line)
-	# 			self.had_exception.value = 1
-	# 		except Exception:
-	# 			self.log.error("Generic exception in timeout watcher thread.")
-	# 			for line in traceback.format_exc().split("\n"):
-	# 				self.log.error(line)
-	# 			self.had_exception.value = 1
+		if self.last_hearbeat_received + self.config['hearbeat_packet_timeout'] < now:
+			self.log.error("Heartbeat receive timeout!")
+			self.log.error("Triggering reconnect due to missed timeout.")
+			self.had_exception.value = 1
 
 
-	# def _rx_poll(self):
-	# 	time.sleep(1)
+		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 10) < now:
+			self.log.error("No messages in 10x heartbeat interval?")
+			self.had_exception.value = 1
 
-	# 	self.log.info("RX Poll process starting. Threads_live: %s, had exception %s", self.threads_live.value, self.had_exception.value)
-	# 	try:
-	# 		self.log.info("Entering RX loop!")
-	# 		while not self.__should_die():
-	# 			# self.log.info("RX Looping!")
-	# 			self.interface.process_rx_events()
-	# 	except amqpstorm.AMQPError as e:
-	# 		self.log.error("Error while in rx runloop!")
-	# 		self.log.error("	%s", e)
-	# 		for line in traceback.format_exc().split("\n"):
-	# 			self.log.error(line)
-	# 		self.had_exception.value = 1
 
-	# 	self.log.info("RX Poll process dying. Threads_live: %s, had exception %s, should_die %s", self.threads_live.value, self.had_exception.value, self.__should_die())
+	def run(self):
 
-	# def monitor_loop(self):
+		self.__start_consume()
+		while not self.__should_die():
+			# self.log.info("RX Looping!")
+			self.__do_tx()
+			self.__do_rx()
+			self.__check_timeouts()
 
-	# 	self.had_exception.value = 0
-	# 	while self.runstate.value == 1:
-	# 		if self.had_exception.value == 1:
-	# 			print("Disconnecting!")
-	# 			try:
-	# 				self.disconnect()
-	# 			except Exception:
-	# 				for line in traceback.format_exc().split("\n"):
-	# 					self.log.error(line)
-	# 				self.had_exception.value = 1
-	# 			print("Reconnecting")
-	# 			time.sleep(5)
-	# 			try:
-	# 				self.__connect()
-	# 				self.had_exception.value = 0
-	# 			except Exception:
-	# 				for line in traceback.format_exc().split("\n"):
-	# 					self.log.error(line)
-	# 				self.had_exception.value = 1
-	# 		time.sleep(1)
-	# 		if not self.runstate.value:
-	# 			print("Monitor loop!", self.runstate.value)
 
-	# 	self.shutdown()
+
+	def disconnect(self):
+		with self.connect_lock:
+			self.threads_live.value = 0
+			self.storm_channel.close()
+			self.storm_connection.close()
+
 
 	def shutdown(self):
 		self.log.info("ConnectorManager shutdown called!")
@@ -672,7 +345,7 @@ class ConnectorManager:
 				break
 			else:
 				self.log.warning("Outgoing queue draining. Items: %s", qs)
-				self._tx_poll()
+				self.__do_tx()
 				time.sleep(1)
 		self.threads_live.value = 0
 		self.disconnect()
@@ -688,18 +361,10 @@ class ConnectorManager:
 
 		log.info("Worker thread starting up.")
 		try:
-			print()
-			print()
 			print("Connecting %s" % config['virtual_host'])
-			print()
-			print()
 			connection_manager = cls(config, runstate, tx_q, rx_q)
-			print()
-			print()
-			print("Entering monitor-loop %s" % config['virtual_host'])
-			print()
-			print()
-			connection_manager.monitor_loop()
+			print("Entering monitor-loop %s, runstate: %s" % (config['virtual_host'], runstate.value))
+			connection_manager.run()
 
 		except Exception:
 			log.error("Exception in connector! Terminating connection...")
@@ -847,7 +512,7 @@ class Connector:
 			raise ValueError("Out of fetchable items!")
 
 		try:
-			put = self.taskQueue.get_nowait()
+			put = self.responseQueue.get_nowait()
 			self.queue_fetched += 1
 			self.forwarded += 1
 			if self.forwarded >= 25:
@@ -866,10 +531,10 @@ class Connector:
 		'''
 		self.checkLaunchThread()
 		if synchronous:
-			while self.responseQueue.qsize() > synchronous:
+			while self.taskQueue.qsize() > synchronous:
 				time.sleep(0.1)
 		self.queue_put += 1
-		self.responseQueue.put(message)
+		self.taskQueue.put(message)
 
 
 
@@ -881,9 +546,9 @@ class Connector:
 		self.log.info("Stopping AMQP interface thread.")
 		self.runstate.value = 0
 		if self.is_master:
-			resp_q = self.taskQueue
-		else:
 			resp_q = self.responseQueue
+		else:
+			resp_q = self.taskQueue
 
 		block = 0
 		blocklen = 25

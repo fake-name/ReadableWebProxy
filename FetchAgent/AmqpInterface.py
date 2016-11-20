@@ -4,6 +4,7 @@ import multiprocessing
 import settings
 import datetime
 import queue
+from . import AmqpConnector
 import LocalAmqpConnector
 import logging
 import threading
@@ -37,7 +38,7 @@ class RabbitQueueHandler(object):
 
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = LocalAmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
+		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
 												password           = settings["RABBIT_PASWD"],
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
