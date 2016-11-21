@@ -90,6 +90,7 @@ class RpcBase(DefaultOptionsMixin):
             self.dispatcher.unregister(msg_id)
             raise ResponseTimeout(u'Waiting response expired.')
         if isinstance(result, Exception):
+            print("Failing method name: '{}'".format(method_name))
             raise result
         return result
 

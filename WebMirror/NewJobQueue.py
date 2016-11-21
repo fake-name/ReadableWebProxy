@@ -12,6 +12,7 @@ import signal
 # from sqlalchemy.sql import text
 
 import psycopg2
+import bsonrpc.exceptions
 import sys
 
 import settings
@@ -138,17 +139,24 @@ class JobAggregator(LogBase.LoggerMixin):
 		)
 
 		# Recycle the rpc interface if it ded
+		errors = 0
 		while 1:
 			try:
 				self.rpc_interface.put_job(raw_job)
 				return
-			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
-				self.log.error("Failure when putting job? Is the remote running?")
-				self.open_rpc_interface()
 			except TypeError:
 				self.open_rpc_interface()
 			except KeyError:
 				self.open_rpc_interface()
+			except bsonrpc.exceptions.BsonRpcError as e:
+				errors += 1
+				self.open_rpc_interface()
+				if errors > 3:
+					raise e
+				else:
+					self.log.warning("Exception in RPC request:")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
 
 
 		# print("Raw job:", raw_job)
@@ -241,12 +249,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			except KeyError:
 				self.open_rpc_interface()
 				return
-			except Exception as e:
-				with open("error - {}.txt".format(time.time()), "w") as fp:
-					fp.write("Wat? Exception!\n\n")
-					fp.write(traceback.format_exc())
 
-				self.open_rpc_interface()
 
 
 			if tmp:
@@ -272,13 +275,14 @@ class JobAggregator(LogBase.LoggerMixin):
 			pass
 		self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
-	def queue_filler_proc(self):
-		self.open_rpc_interface()
-
+	def __queue_fillter_internal(self):
 		try:
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
 		except ValueError:
 			self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
+
+
+		self.open_rpc_interface()
 
 		self.log.info("Job queue fetcher starting.")
 
@@ -296,6 +300,21 @@ class JobAggregator(LogBase.LoggerMixin):
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
+
+
+	def queue_filler_proc(self):
+
+
+		while runStatus.job_run_state.value == 1:
+			try:
+
+				self.__queue_fillter_internal()
+			except Exception as e:
+				with open("error - {}.txt".format(time.time()), "w") as fp:
+					fp.write("Wat? Exception!\n\n")
+					fp.write(traceback.format_exc())
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
 
 		# Consume the remaining items in the output queue so it shuts down cleanly.
 		try:
