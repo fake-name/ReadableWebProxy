@@ -287,16 +287,12 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.log.info("Job queue fetcher starting.")
 
 
-		msg_loop = 0
 		while runStatus.job_run_state.value == 1:
 			self.fill_jobs()
 			self.process_responses()
 
-			msg_loop += 1
 			time.sleep(2.5)
-			if msg_loop > 20:
-				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.job_run_state.value==1)
-				msg_loop = 0
+			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.job_run_state.value==1)
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()

@@ -30,7 +30,7 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		s.connect(('localhost', 6000))
 
 		self.rpc = Fixed_BSONRpc(s)
-		self.rpc_client = self.rpc.get_peer_proxy()
+		self.rpc_client = self.rpc.get_peer_proxy(timeout=10)
 		# Execute in self.rpc_client:
 
 		self.check_ok()

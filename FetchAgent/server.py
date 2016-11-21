@@ -33,6 +33,7 @@ def build_handler(server):
 
 
 import gevent.socket as gsocket
+import socket
 from bsonrpc import BSONRpc, ThreadingModel
 from bsonrpc import rpc_request, request, service_class
 from common.fixed_bsonrpc import Fixed_BSONRpc
@@ -113,17 +114,18 @@ def run_server():
 
 
 	# Quick-and-dirty TCP Server:
-	ss = gsocket.socket(gsocket.AF_INET, gsocket.SOCK_STREAM)
+	# ss = gsocket.socket(gsocket.AF_INET, gsocket.SOCK_STREAM)
+	ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	ss.bind(('localhost', 6000))
-	ss.listen(10)
+	ss.listen(100)
 
 	while True:
 		s, addr = ss.accept()
 		Fixed_BSONRpc(s,
 		        FetchInterfaceClass(),
-		        client_info=addr,
-		        threading_model=ThreadingModel.GEVENT,
-		        concurrent_request_handling=ThreadingModel.GEVENT)
+		        client_info                 = addr,
+		        threading_model             = ThreadingModel.THREADS,
+		        concurrent_request_handling = ThreadingModel.THREADS)
 
 def before_exit():
 	print("Caught exit! Exiting")

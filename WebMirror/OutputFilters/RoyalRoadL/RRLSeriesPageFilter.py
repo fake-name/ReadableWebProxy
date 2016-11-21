@@ -92,10 +92,10 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		must_renumber = series_id in conf['force_sequential_numbering']
 
 
-		print("")
-		print("Match: ", match, match.groups(), series_id)
-		print("series_id", series_id)
-		print("Renumber:", must_renumber)
+		# print("")
+		# print("Match: ", match, match.groups(), series_id)
+		# print("series_id", series_id)
+		# print("Renumber:", must_renumber)
 
 
 		header   = soup.find("div", class_='fic-title')
@@ -174,7 +174,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		tagdiv = soup.find('div', class_='tags')
 		for tag in tagdiv.find_all('span', class_='label'):
 			tagtxt = tag.get_text().strip().lower().replace(" ", "-")
-			print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
+			# print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
 			if tagtxt in conf['tag_rename']:
 				tagtxt = conf['tag_rename'][tagtxt]
 			tags.append(tagtxt)
@@ -184,7 +184,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if warning_div:
 			for warning_tag in warning_div.find_all('li'):
 				tagtxt = warning_tag.get_text().strip().lower().replace(" ", "-")
-				print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
+				# print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
 				if tagtxt in conf['tag_rename']:
 					tagtxt = conf['tag_rename'][tagtxt]
 				tags.append(tagtxt)
