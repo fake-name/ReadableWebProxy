@@ -581,12 +581,3 @@ class Connector:
 			self.stop()
 
 
-# import LocalAmqpConnector
-# self.connector = LocalAmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
-# self.log.info("Connected AMQP Interface: %s", self.connector)
-# self.connector.putMessage(data, synchronous=1000)
-# ret = self.connector.getMessage()
-# if hasattr(self, "connector") and self.connector:
-# print("Closing connector wrapper: ", self.logPath, self.vhost)
-# self.connector.stop()
-# self.connector = None

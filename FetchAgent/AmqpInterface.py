@@ -5,7 +5,6 @@ import settings
 import datetime
 import queue
 from . import AmqpConnector
-import LocalAmqpConnector
 import logging
 import threading
 import os.path
