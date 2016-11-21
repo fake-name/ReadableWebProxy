@@ -88,6 +88,12 @@ class FetchInterfaceClass(object):
 		self.mdict['feed_outq'].put(message)
 
 	@request
+	def putManyRss(self, messages):
+		for message in messages:
+			self.log.info("Putting rss item with size: %s!", len(message))
+			self.mdict['feed_outq'].put(message)
+
+	@request
 	def getRss(self):
 		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'].qsize())
 		try:

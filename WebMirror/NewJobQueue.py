@@ -234,10 +234,6 @@ class JobAggregator(LogBase.LoggerMixin):
 				tmp = self.rpc_interface.get_job()
 			except queue.Empty:
 				return
-			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
-				self.open_rpc_interface()
-				self.log.warning("Error in RPC interface?")
-				return
 
 			except TypeError:
 				self.open_rpc_interface()
@@ -245,6 +241,13 @@ class JobAggregator(LogBase.LoggerMixin):
 			except KeyError:
 				self.open_rpc_interface()
 				return
+			except Exception as e:
+				with open("error - {}.txt".format(time.time()), "w") as fp:
+					fp.write("Wat? Exception!\n\n")
+					fp.write(traceback.format_exc())
+
+				self.open_rpc_interface()
+
 
 			if tmp:
 				self.active_jobs -= 1

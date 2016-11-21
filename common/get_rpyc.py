@@ -54,8 +54,11 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 
 	def put_feed_job(self, message):
 		assert isinstance(message, (str, bytes, bytearray))
-
 		self.rpc_client.putRss(message)
+
+	def put_many_feed_job(self, messages):
+		assert isinstance(messages, (list, set))
+		self.rpc_client.putManyRss(messages)
 
 	def put_job(self, job):
 		self.rpc_client.putJob(self.interfacename, job)
