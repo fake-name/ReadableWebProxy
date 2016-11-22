@@ -38,7 +38,6 @@ class ConnectorManager:
 		assert 'sslopts'                  in config
 		assert 'poll_rate'                in config
 		assert 'prefetch'                 in config
-		assert 'session_fetch_limit'      in config
 		assert 'durable'                  in config
 		assert 'socket_timeout'           in config
 		assert 'hearbeat_packet_timeout'  in config
@@ -90,11 +89,7 @@ class ConnectorManager:
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
 
 		self.__open_connection()
-		self.__configure_keepalive_channel()
-
-		# Re-enqueue any not-acked packets.
-		self.storm_channel.basic.recover(requeue=True)
-		self.storm_channel._inbound.clear()
+		self.__reset_channel()
 
 
 	def __open_connection(self):
@@ -116,6 +111,33 @@ class ConnectorManager:
 
 			)
 
+
+	def __reset_channel(self):
+
+		if hasattr(self, 'storm_channel'):
+			close_funcs = [
+				self.storm_channel.stop_consuming,
+				self.storm_channel.close,
+			]
+			for cfunc in close_funcs:
+				try:
+					cfunc()
+				except Exception as e:
+					self.log.warning("Warning when tearing down connection!")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
+
+		self.__configure_channel()
+		self.__configure_rpc_exchanges()
+		self.__configure_keepalive_channel()
+
+		# Re-enqueue any not-acked packets.
+		self.storm_channel.basic.recover(requeue=True)
+		self.storm_channel._inbound.clear()
+
+		self.__start_consume()
+
+	def __configure_channel(self):
 
 		self.log.info("Connection established. Setting up consumer.")
 		self.storm_channel = self.storm_connection.channel(rpc_timeout=self.config['socket_timeout'])
@@ -147,7 +169,7 @@ class ConnectorManager:
 
 		self.log.info("Configuring keepalive channel complete")
 
-	def __configure_rpc_channel(self):
+	def __configure_rpc_exchanges(self):
 
 		self.log.info("Configuring RPC channel.")
 
@@ -228,25 +250,28 @@ class ConnectorManager:
 
 	def __start_consume(self):
 		self.log.info("Bound. Triggering consume")
-		self.storm_channel.basic.consume(self.handle_rx, queue=self.config['response_queue_name'],         no_ack=False)
+		self.storm_channel.basic.consume(self.handle_rx, queue=self.config['response_queue_name'],    no_ack=False)
 		self.storm_channel.basic.consume(self.handle_rx, queue=self.keepalive_exchange_name+'.nak.q', no_ack=False)
 		self.log.info("Consume triggered.")
 
 
 	def __do_tx(self):
 
-		for dummy_x in range(10):
+		for dummy_x in range(500):
 
 			if self.__should_die():
 				self.log.info("Transmit loop saw exit flag. Breaking!")
 				return
-
+			# self.log.info("Items in outgoing TX queue: %s", self.task_queue.qsize())
+			print("/", end="", flush=True)
 			try:
 				put = self.task_queue.get_nowait()
 			except queue.Empty:
 				return
 
 			try:
+
+				# print("Putting item: ", put, self.config['task_exchange'], self.config)
 
 				out_key   = self.config['task_queue_name'].split(".")[0]
 
@@ -316,28 +341,42 @@ class ConnectorManager:
 		if self.last_hearbeat_received + self.config['hearbeat_packet_timeout'] < now:
 			self.log.error("Heartbeat receive timeout!")
 			self.log.error("Triggering reconnect due to missed timeout.")
-			self.had_exception.value = 1
+			try:
+				self.__reset_channel()
+			except:
+				self.had_exception.value = 1
 
 
-		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 5) < now:
+		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 8) < now:
 			# Attempt recover if we've been idle for a while.
-			# self.log.info("Attempting to recover!")
-			self.storm_channel.basic.recover(requeue=True)
-			self.storm_channel._inbound.clear()
+			self.log.info("Long duration since last message. Cycling consumer!")
 
-		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 10) < now:
-			self.log.error("No messages in 10x heartbeat interval?")
-			self.had_exception.value = 1
+			try:
+				self.__reset_channel()
+			except:
+				self.had_exception.value = 1
+			self.last_message_received = now
 
 
 	def run(self):
 
 		self.__start_consume()
 		while not self.__should_die():
-			# self.log.info("RX Looping!")
-			self.__do_tx()
-			self.__do_rx()
-			self.__check_timeouts()
+			try:
+				print("\\", end="", flush=True)
+				self.__do_tx()
+				self.__do_rx()
+				self.__check_timeouts()
+				time.sleep(0.1)
+			except Exception as e:
+				with open("mq error %s.txt" % time.time(), 'w') as fp:
+					fp.write("Error!\n\n")
+					fp.write(traceback.format_exc())
+				self.log.error("Error!")
+				self.log.error("%s", e)
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+				raise e
 
 
 
@@ -351,7 +390,7 @@ class ConnectorManager:
 	def shutdown(self):
 		self.log.info("ConnectorManager shutdown called!")
 		for dummy_x in range(30):
-			qs = self.response_queue.qsize()
+			qs = self.task_queue.qsize()
 			if qs == 0:
 				break
 			else:
@@ -411,14 +450,14 @@ class Connector:
 		self.log.info("Setting up AqmpConnector!")
 
 		config = {
-			'host'                     : kwargs.get('host',                     None),
-			'userid'                   : kwargs.get('userid',                   'guest'),
-			'password'                 : kwargs.get('password',                 'guest'),
-			'virtual_host'             : kwargs.get('virtual_host',             '/'),
-			'task_queue_name'          : kwargs.get('task_queue',               'task.q'),
-			'response_queue_name'      : kwargs.get('response_queue',           'response.q'),
+			'host'                     : kwargs['host'],
+			'userid'                   : kwargs['userid'],
+			'password'                 : kwargs['password'],
+			'virtual_host'             : kwargs['virtual_host'],
+			'task_queue_name'          : kwargs['task_queue'],
+			'response_queue_name'      : kwargs['response_queue'],
+			'task_exchange_type'       : kwargs['task_exchange_type'],
 			'task_exchange'            : kwargs.get('task_exchange',            'tasks.e'),
-			'task_exchange_type'       : kwargs.get('task_exchange_type',       'direct'),
 			'response_exchange'        : kwargs.get('response_exchange',        'resps.e'),
 			'response_exchange_type'   : kwargs.get('response_exchange_type',   'direct'),
 			'master'                   : kwargs.get('master',                   False),
@@ -428,7 +467,6 @@ class Connector:
 			'sslopts'                  : kwargs.get('ssl',                      None),
 			'poll_rate'                : kwargs.get('poll_rate',                  0.25),
 			'prefetch'                 : kwargs.get('prefetch',                   1),
-			'session_fetch_limit'      : kwargs.get('session_fetch_limit',      None),
 			'durable'                  : kwargs.get('durable',                  False),
 			'socket_timeout'           : kwargs.get('socket_timeout',            15),
 
@@ -440,7 +478,6 @@ class Connector:
 			"Heartbeat time must be greater then socket timeout! Heartbeat interval: %s. Socket timeout: %s" % \
 			(config['hearbeat_packet_timeout'], config['socket_timeout'])
 
-		self.log.info("Fetch limit: '%s'", config['session_fetch_limit'])
 		self.log.info("Comsuming from queue '%s', emitting responses on '%s'.", config['task_queue_name'], config['response_queue_name'])
 
 		# Validity-Check args
@@ -463,7 +500,6 @@ class Connector:
 
 		self.is_master = config['master']
 
-		self.session_fetch_limit = config['session_fetch_limit']
 		self.queue_fetched       = 0
 		self.queue_put           = 0
 
@@ -497,19 +533,14 @@ class Connector:
 			self.log.error("")
 			self.log.error("")
 
-		self.thread = threading.Thread(target=ConnectorManager.run_fetcher, args=(self.__config, self.runstate, self.taskQueue, self.responseQueue), daemon=True)
+		self.thread = threading.Thread(
+			target=ConnectorManager.run_fetcher,
+			args=(self.__config, self.runstate, self.taskQueue, self.responseQueue),
+			daemon=True,
+			name="RabbitMQ Worker for vhost: {}".format(self.__config['virtual_host']))
 		self.thread.start()
 
-	def atQueueLimit(self):
-		'''
-		Track the fetch-limit for the active session. Used to allow an instance to connect,
-		fetch one (and only one) item, and then do things with the fetched item without
-		having the background thread fetch and queue a bunch more items while it's working.
-		'''
-		if not self.session_fetch_limit:
-			return False
 
-		return self.queue_fetched >= self.session_fetch_limit
 
 
 	def getMessage(self):
@@ -519,8 +550,6 @@ class Connector:
 		Non-Blocking.
 		'''
 		self.checkLaunchThread()
-		if self.atQueueLimit():
-			raise ValueError("Out of fetchable items!")
 
 		try:
 			put = self.responseQueue.get_nowait()

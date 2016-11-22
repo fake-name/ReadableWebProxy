@@ -6,6 +6,7 @@ import traceback
 
 from sqlalchemy.orm import joinedload
 from sqlalchemy import desc
+from sqlalchemy import not_
 import sqlalchemy.exc
 
 import runStatus
@@ -194,6 +195,19 @@ def exposed_cross_sync_nu_feeds():
 			return
 		except sqlalchemy.exc.IntegrityError:
 			increment = max(1, increment-25)
+
+
+def exposed_delete_old_nu_root_outbound():
+	sess = db.get_db_session()
+
+	for row in sess.query(db.NuReleaseItem) \
+		.filter(not_(db.NuReleaseItem.referrer.like("%novelupdates.com/series%"))) \
+		.yield_per(50).all():
+		if not len(list(row.resolved)):
+			print(row.id, row.referrer)
+			sess.delete(row)
+			sess.commit()
+
 
 
 def exposed_process_nu_pages(transmit=True):

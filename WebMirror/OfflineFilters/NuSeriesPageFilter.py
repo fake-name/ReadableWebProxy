@@ -43,6 +43,8 @@ def upsertNuItem(raw_cur, itemparams):
 		]
 
 	assert all([key in itemparams for key in required_args])
+	assert itemparams['referrer'] != 'http://www.novelupdates.com/'
+	assert itemparams['referrer'] != 'http://www.novelupdates.com'
 
 	#  Fucking huzzah for ON CONFLICT!
 	cmd = """
@@ -51,7 +53,7 @@ def upsertNuItem(raw_cur, itemparams):
 				(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, validated)
 			VALUES
 				(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(validated)s)
-			ON CONFLICT (seriesname, releaseinfo, groupinfo, outbound_wrapper) DO NOTHING
+			ON CONFLICT (outbound_wrapper) DO NOTHING
 				;
 			""".replace("	", " ").replace("\n", " ")
 
@@ -114,6 +116,8 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
 		titletg  = soup.find("h4", class_='seriestitle')
+		if not titletg:
+			titletg  = soup.find("div", class_='seriestitlenu')
 		altnametg  = soup.find("div", id='editassociated')
 		descrtg  = soup.find("div", id='editdescription')
 
@@ -137,6 +141,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if not titletg:
 			self.log.warn("Could not find item title!")
+			print(soup)
 			return []
 		if not altnametg:
 			self.log.warn("Could not find alt-name container tag!")

@@ -69,7 +69,7 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		assert ret is True
 
 	def close(self):
-		self.rpc_client.close()
+		self.rpc.close()
 
 
 

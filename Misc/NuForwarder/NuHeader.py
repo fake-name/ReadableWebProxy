@@ -77,10 +77,24 @@ class NuHeader(LogBase.LoggerMixin):
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(func.random())                                  \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(1000, put))
+			.limit(max(500, put))
 
 		# .order_by(desc(db.NuReleaseItem.first_seen))              \
 		haveset = haveq.all()
+
+
+		self.log.info("Loading a row to fetch...")
+		haveq = self.db_sess.query(db.NuReleaseItem)                   \
+			.outerjoin(db.NuResolvedOutbound)                         \
+			.filter(db.NuReleaseItem.validated == False)              \
+			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
+			.order_by(desc(db.NuReleaseItem.first_seen))         \
+			.group_by(db.NuReleaseItem.id)                            \
+			.limit(max(100, put))
+
+		moar = haveq.all()
+
+		haveset += moar
 
 		if not haveset:
 			self.log.info("No jobs to remote HEAD.")
@@ -89,9 +103,8 @@ class NuHeader(LogBase.LoggerMixin):
 		# We pick a large number of items, and randomly choose one of them.
 		# This lets us weight the fetch preferentially to the recent items, but still
 		# have some variability.
-		random.shuffle(haveset)
 
-		haveset = haveset[:put]
+		haveset = random.sample(haveset, put)
 
 		for have in haveset:
 			if len(list(have.resolved)) >= 3:
@@ -149,49 +162,56 @@ class NuHeader(LogBase.LoggerMixin):
 		if new is None:
 			self.log.info("No NU Head responses!")
 			return False
+		while True:
+			try:
+				self.log.info("Processing remote head response: %s", new)
+				assert all([key in new for key in expected_keys])
+				assert new['call'] == 'getHeadPhantomJS'
 
-		try:
-			self.log.info("Processing remote head response: %s", new)
-			assert all([key in new for key in expected_keys])
-			assert new['call'] == 'getHeadPhantomJS'
+				assert 'referrer'    in new['extradat']
+				assert 'wrapper_url' in new['extradat']
 
-			assert 'referrer'    in new['extradat']
-			assert 'wrapper_url' in new['extradat']
+				# Handle the 301/2 not resolving properly.
+				netloc = urllib.parse.urlsplit(new['ret']).netloc
+				if "novelupdates" in netloc:
+					self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
+					return True
 
-			# Handle the 301/2 not resolving properly.
-			netloc = urllib.parse.urlsplit(new['ret']).netloc
-			if "novelupdates" in netloc:
-				self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
+
+				have = self.db_sess.query(db.NuReleaseItem)                                    \
+					.options(joinedload('resolved'))                                           \
+					.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
+					.filter(db.NuReleaseItem.referrer==new['extradat']['referrer'])            \
+					.one()
+
+				new = db.NuResolvedOutbound(
+						client_id      = new['user'],
+						client_key     = new['user_uuid'],
+						actual_target  = new['ret'],
+						fetched_on     = datetime.datetime.now(),
+					)
+
+				have.resolved.append(new)
+				self.db_sess.commit()
 				return True
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.IntegrityError:
+				self.db_sess.rollback()
 
 
-			have = self.db_sess.query(db.NuReleaseItem)                                    \
-				.options(joinedload('resolved'))                                           \
-				.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
-				.filter(db.NuReleaseItem.referrer==new['extradat']['referrer'])            \
-				.one()
+			except Exception:
+				self.log.error("Error when processing job response!")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
 
-			new = db.NuResolvedOutbound(
-					client_id      = new['user'],
-					client_key     = new['user_uuid'],
-					actual_target  = new['ret'],
-					fetched_on     = datetime.datetime.now(),
-				)
+				self.log.error("Contents of head response:")
 
-			have.resolved.append(new)
-			self.db_sess.commit()
-			return True
-
-		except Exception:
-			self.log.error("Error when processing job response!")
-			for line in traceback.format_exc().split("\n"):
-				self.log.error(line)
-
-			self.log.error("Contents of head response:")
-
-			for line in pprint.pformat(new).split("\n"):
-				self.log.error(line)
-			return True
+				for line in pprint.pformat(new).split("\n"):
+					self.log.error(line)
+				return True
 		return False
 
 

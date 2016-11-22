@@ -393,6 +393,14 @@ class PlainRabbitQueueHandler(object):
 
 STATE = {}
 
+def monitor(manager):
+	while manager['amqp_runstate']:
+		STATE['rpc_instance'].connector.checkLaunchThread()
+		STATE['feed_instance'].connector.checkLaunchThread()
+		time.sleep(1)
+		print("Monitor looping!")
+
+
 def startup_interface(manager):
 	rpc_amqp_settings = {
 		'RABBIT_LOGIN'    : settings.RPC_RABBIT_LOGIN,
@@ -423,14 +431,18 @@ def startup_interface(manager):
 		'prefetch'        : 25,
 		# 'prefetch'        : 50,
 		# 'prefetch'        : 5,
-		'queue_mode'      : 'fanout',
-		'taskq_task'     : 'task.master.q',
-		'taskq_response' : 'response.master.q',
+		'queue_mode'              : 'fanout',
+		'taskq_task'              : 'task.q',
+		'taskq_response'          : 'response.q',
 
-		"poll_rate"       : 1/100,
+		'task_exchange_type'      : 'fanout',
+		'response_exchange_type'  : 'direct',
 
-		'taskq_name' : 'feed_outq',
-		'respq_name' : 'feed_inq',
+
+		"poll_rate"               : 1/100,
+
+		'taskq_name'              : 'feed_outq',
+		'respq_name'              : 'feed_inq',
 	}
 
 	STATE['rpc_instance'] = RabbitQueueHandler(rpc_amqp_settings, manager)
@@ -441,6 +453,8 @@ def startup_interface(manager):
 	STATE['feed_thread'] = threading.Thread(target=STATE['feed_instance'].runner)
 	STATE['feed_thread'].start()
 
+	STATE['monitor_thread'] = threading.Thread(target=monitor, args=[manager])
+	STATE['monitor_thread'].start()
 
 
 def shutdown_interface(manager):
@@ -448,4 +462,5 @@ def shutdown_interface(manager):
 	manager['amqp_runstate'] = False
 	STATE['rpc_thread'].join()
 	STATE['feed_thread'].join()
+	STATE['monitor_thread'].join()
 

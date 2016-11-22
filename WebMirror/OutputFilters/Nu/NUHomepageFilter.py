@@ -119,7 +119,7 @@ class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 								seriesname       = item['seriesname'],
 								releaseinfo      = item['releaseinfo'],
 								groupinfo        = item['groupinfo'],
-								referrer         = self.pageUrl,
+								referrer         = item['referrer'],
 								outbound_wrapper = item['outbound_wrapper'],
 								first_seen       = datetime.datetime.now(),
 							)
@@ -165,15 +165,17 @@ class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				tds = item.find_all('td')
 				if len(tds) == 3:
 					series, release, group = tds
+					referrer = series.a['href']
 					linkas = release.find_all('a', class_='chp-release')
 					sname = series.get_text().strip()
 					gname = group.get_text().strip()
+					self.log.info("Using %s for referrer for %s -> %s", referrer, sname, gname)
 					for link in linkas:
 						release = {
 							'seriesname'       : sname,
 							'releaseinfo'      : link.get_text().strip(),
 							'groupinfo'        : gname,
-							'referrer'         : currentUrl,
+							'referrer'         : referrer,
 							'outbound_wrapper' : link['href'],
 							'actual_target'    : None,
 						}

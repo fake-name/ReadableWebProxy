@@ -61,7 +61,7 @@ class FetchInterfaceClass(object):
 	@request
 	def putJob(self, queuename, job):
 		self.__check_have_queue(queuename)
-		self.log.info("Putting item in queue %s with size: %s!", queuename, len(job))
+		self.log.info("Putting item in queue %s with size: %s (Queue size: %s)!", queuename, len(job), self.mdict['outq'][queuename].qsize())
 		self.mdict['outq'][queuename].put(job)
 
 	@request
@@ -85,7 +85,7 @@ class FetchInterfaceClass(object):
 
 	@request
 	def putRss(self, message):
-		self.log.info("Putting rss item with size: %s!", len(message))
+		self.log.info("Putting rss item with size: %s (qsize: %s)!", len(message), self.mdict['feed_outq'].qsize())
 		self.mdict['feed_outq'].put(message)
 
 	@request
@@ -98,7 +98,7 @@ class FetchInterfaceClass(object):
 	def getRss(self):
 		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'].qsize())
 		try:
-			return self.mdict['inq'].get_nowait()
+			return self.mdict['feed_inq'].get_nowait()
 		except queue.Empty:
 			return None
 
