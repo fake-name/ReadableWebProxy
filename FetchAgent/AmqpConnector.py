@@ -144,6 +144,7 @@ class ConnectorManager:
 
 		# Initial QoS is tiny, throttle it up after everything is actually running.
 		self.storm_channel.basic.qos(1, global_=True)
+		self.prefetch_extended = False
 
 	def __configure_keepalive_channel(self):
 
@@ -226,7 +227,7 @@ class ConnectorManager:
 
 		if self.prefetch_extended is False:
 			self.prefetch_extended = True
-			self.storm_channel.basic.qos(250, global_=True)
+			self.storm_channel.basic.qos(50, global_=True)
 			self.log.info("Prefetch updated")
 
 
@@ -339,23 +340,20 @@ class ConnectorManager:
 			self.__poke_keepalive()
 
 		if self.last_hearbeat_received + self.config['hearbeat_packet_timeout'] < now:
-			self.log.error("Heartbeat receive timeout!")
-			self.log.error("Triggering reconnect due to missed timeout.")
+			self.log.error("Heartbeat receive timeout! Triggering reconnect due to missed heartbeat.")
+			self.last_hearbeat_received = now
 			try:
 				self.__reset_channel()
 			except:
 				self.had_exception.value = 1
 
 
-		if self.last_message_received + (self.config['hearbeat_packet_timeout'] * 8) < now:
+		if (self.last_message_received + (self.config['hearbeat_packet_timeout'] * 8) < now or
+			self.last_hearbeat_received + (self.config['hearbeat_packet_timeout'] * 8) < now):
 			# Attempt recover if we've been idle for a while.
-			self.log.info("Long duration since last message. Cycling consumer!")
+			self.log.info("Reconnect retrigger seems to have not fixed the issue?")
 
-			try:
-				self.__reset_channel()
-			except:
-				self.had_exception.value = 1
-			self.last_message_received = now
+			self.had_exception.value = 1
 
 
 	def run(self):
@@ -382,6 +380,7 @@ class ConnectorManager:
 
 	def disconnect(self):
 		with self.connect_lock:
+			self.prefetch_extended = False
 			self.threads_live.value = 0
 			self.storm_channel.close()
 			self.storm_connection.close()

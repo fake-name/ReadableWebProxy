@@ -114,8 +114,8 @@ def run_server():
 
 
 	# Quick-and-dirty TCP Server:
-	# ss = gsocket.socket(gsocket.AF_INET, gsocket.SOCK_STREAM)
-	ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	ss = gsocket.socket(gsocket.AF_INET, gsocket.SOCK_STREAM)
+	# ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	ss.bind(('localhost', 6000))
 	ss.listen(100)
 
@@ -124,8 +124,8 @@ def run_server():
 		Fixed_BSONRpc(s,
 		        FetchInterfaceClass(),
 		        client_info                 = addr,
-		        threading_model             = ThreadingModel.THREADS,
-		        concurrent_request_handling = ThreadingModel.THREADS)
+		        threading_model             = ThreadingModel.GEVENT,
+		        concurrent_request_handling = ThreadingModel.GEVENT)
 
 def before_exit():
 	print("Caught exit! Exiting")
