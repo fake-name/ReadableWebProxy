@@ -250,6 +250,9 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.open_rpc_interface()
 				return
 
+			except bsonrpc.exceptions.ResponseTimeout:
+				self.open_rpc_interface()
+				return
 
 
 			if tmp:
