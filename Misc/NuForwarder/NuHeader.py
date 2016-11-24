@@ -15,12 +15,14 @@ import sqlalchemy.exc
 from sqlalchemy.orm import joinedload
 from sqlalchemy import desc
 from sqlalchemy import func
+from sqlalchemy.sql.expression import nullslast
 
 import common.database as db
 
 import common.get_rpyc
 import common.LogBase as LogBase
 import random
+import bsonrpc.exceptions
 from WebMirror.NewJobQueue import buildjob
 
 from WebMirror.OutputFilters.util.MessageConstructors import fix_string
@@ -90,9 +92,9 @@ class NuHeader(LogBase.LoggerMixin):
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(func.random())                                  \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(500, put))
+			.limit(max(100, put))
 
-		# .order_by(desc(db.NuReleaseItem.first_seen))              \
+		# .order_by(desc(db.NuReleaseItem.first_seen))                \
 		haveset = haveq.all()
 
 
@@ -101,7 +103,7 @@ class NuHeader(LogBase.LoggerMixin):
 			.outerjoin(db.NuResolvedOutbound)                         \
 			.filter(db.NuReleaseItem.validated == False)              \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
-			.order_by(desc(db.NuReleaseItem.first_seen))         \
+			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
 			.limit(max(100, put))
 
@@ -149,6 +151,18 @@ class NuHeader(LogBase.LoggerMixin):
 			self.log.info("Processing response!")
 
 
+	def check_open_rpc_interface(self):
+		try:
+			if self.rpc_interface.check_ok():
+				return
+
+		except Exception:
+			try:
+				self.rpc_interface.close()
+			except Exception:
+				pass
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+
 	def process_single_avail(self):
 		'''
 		Example response:
@@ -168,7 +182,29 @@ class NuHeader(LogBase.LoggerMixin):
 		 }
 
 		'''
-		new = self.rpc.get_job()
+		self.check_open_rpc_interface()
+
+
+		errors = 0
+		while 1:
+			try:
+				new = self.rpc.get_job()
+				break
+			except TypeError:
+				self.check_open_rpc_interface()
+			except KeyError:
+				self.check_open_rpc_interface()
+			except bsonrpc.exceptions.BsonRpcError as e:
+				errors += 1
+				self.check_open_rpc_interface()
+				if errors > 3:
+					raise e
+				else:
+					self.log.warning("Exception in RPC request:")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
+
+
 
 		expected_keys = ['call', 'cancontinue', 'dispatch_key', 'extradat', 'jobid',
 					'jobmeta', 'module', 'ret', 'success', 'user', 'user_uuid']
@@ -310,14 +346,15 @@ class NuHeader(LogBase.LoggerMixin):
 
 		release = createReleasePacket(ret, beta=False)
 		# print("Packed release:", release)
-		# self.rpc.put_feed_job(release)
+		self.rpc.put_feed_job(release)
 
 	def transmit_since(self, earliest=None):
 		if not earliest:
 			earliest = datetime.datetime.min
 
 		validated = self.db_sess.query(db.NuReleaseItem)      \
-			.filter(db.NuReleaseItem.validated == True) \
+			.filter(db.NuReleaseItem.reviewed == True)        \
+			.filter(db.NuReleaseItem.validated == True)       \
 			.filter(db.NuReleaseItem.validated_on > earliest) \
 			.all()
 
@@ -371,14 +408,21 @@ def fetch_and_flush():
 	hd.process_avail()
 	hd.validate_from_new()
 	hd.timestamp_validated()
-	hd.put_job(put=100)
-	for x in range(10):
+	hd.put_job(put=50)
+	mins = 10
+	for x in range(mins):
 		hd.process_avail()
-		time.sleep(60)
+		for y in range(60):
+			time.sleep(1)
+			print("\r`fetch_and_flush` sleeping for {}\r".format(str((mins * 60) - (x * 60 + y)).rjust(4)), end='')
 
 	hd.validate_from_new()
 	hd.timestamp_validated()
 	hd.fix_names()
+
+	ago = datetime.datetime.now() - datetime.timedelta(days=3)
+	hd.transmit_since(ago)
+
 
 def schedule_next_exec(scheduler, at_time):
 	# NU Sync system has to run with a memory jobstore, and a process pool executor,
