@@ -18,10 +18,13 @@
 				Releases: {{release_selector}} ({{new | length}})
 			</h4>
 			<div class="clearfix"></div>
+			<div class="pull-right">
+				<button onclick="delete_changes()">Delete Checked</button>
+			</div>
 			<button onclick="apply_changes()">Apply changes</button>
-			<button onclick="delete_changes()">Delete Checked</button>
-			<button onclick="check_multiple_hit_two()">Check rows with two sources</button>
-			<button onclick="check_multiple_hit_three()">Check rows with three sources</button>
+			<button onclick="check_rows()">Check rows</button>
+			<div class="clearfix"></div>
+
 			<div>
 				<table class='table-striped' style='width:100%'>
 					<colgroup>
@@ -42,21 +45,28 @@
 						<th>Target URL</th>
 
 					</tr>
-					{%- for markedup_name, rowlist in new -%}
+					{%- for markedup_name, row_item in new -%}
 						<tr>
-							<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{rowlist[0].seriesname}}' data-row-id="[{% for row in rowlist %}{{row.id}}{% if not loop.last %},{% endif %}{% endfor %}]" data-original-value="{{'true' if rowlist[0].validated else 'false'}}" {{'checked="true"' if rowlist[0].validated else ''}}></center></td>
-							<td>{% for row in rowlist %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
-							<td>{{rowlist[0].groupinfo}}</td>
-							<td>{{rowlist[0].seriesname}}</td>
-							<td>{{rowlist[0].releaseinfo}}</td>
-							<td><a href='{{rowlist[0].actual_target}}'>{{markedup_name | safe}}</a></td>
+							<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{row_item.seriesname}}' data-row-id="[{{row_item.id}}]" data-original-value="{{'true' if row_item.reviewed else 'false'}}" {{'checked="true"' if row_item.reviewed else ''}}></center></td>
+							<td>{% for row in row_item.resolved %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
+							<td>{{row_item.groupinfo}}</td>
+							<td>{{row_item.seriesname}}</td>
+							<td>{{row_item.releaseinfo}}</td>
+							<td>
+								<a href='{{row_item.actual_target}}'>{{markedup_name | safe}}</a>
+							</td>
 
 						</tr>
 					{%- endfor -%}
 				</table>
 			</div>
+			<div class="pull-right">
+				<button onclick="delete_changes()">Delete Checked</button>
+			</div>
 			<button onclick="apply_changes()">Apply changes</button>
-			<button onclick="delete_changes()">Delete Checked</button>
+			<button onclick="check_rows()">Check rows</button>
+			<div class="clearfix"></div>
+
 		</div>
 	</div>
 
@@ -195,27 +205,16 @@
 
 		}
 
-		function check_multiple_hit_two()
-		{
-			check_multiple_hit(2);
-		}
-		function check_multiple_hit_three()
-		{
-			check_multiple_hit(3);
-		}
-		function check_multiple_hit(num)
+		function check_rows()
 		{
 			console.log("Wat?")
 			var rows = $(".row-checkbox");
 			rows.each(function( index, value ) {
 				var itm = $(this);
 
-				if (itm.data().rowId.length >= num)
-				{
-					console.log( itm.data(), itm.is(':checked'), itm.data().rowId.length, itm.data().seriesName );
-					if (!itm.data().seriesName.endsWith('...'))
-						itm.prop( "checked", true );
-				}
+				console.log( itm.data(), itm.is(':checked'), itm.data().rowId.length, itm.data().seriesName );
+				if (!itm.data().seriesName.endsWith('...'))
+					itm.prop( "checked", true );
 			});
 		}
 

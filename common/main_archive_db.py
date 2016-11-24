@@ -196,7 +196,9 @@ class NuReleaseItem(common.db_base.Base):
 	__tablename__ = 'nu_release_item'
 	id               = Column(BigInteger, primary_key=True)
 
-	validated        = Column(Boolean, default=False, nullable=False)
+	validated        = Column(Boolean, default=False, nullable=False, index=True)
+	reviewed         = Column(Boolean, default=False, nullable=False, index=True)
+
 	actual_target    = Column(Text)
 
 	seriesname       = Column(Text, nullable=False, index=True)
@@ -206,7 +208,7 @@ class NuReleaseItem(common.db_base.Base):
 	outbound_wrapper = Column(Text, nullable=False, unique=True)
 
 	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-	validated_on     = Column(DateTime)
+	validated_on     = Column(DateTime, index=True)
 
 	resolved         = relationship("NuResolvedOutbound")
 
@@ -225,6 +227,7 @@ class NuResolvedOutbound(common.db_base.Base):
 	client_key       = Column(Text, nullable=False, index=True)
 
 	actual_target    = Column(Text, nullable=False)
+	resolved_title   = Column(Text)
 
 	fetched_on       = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 

@@ -25,15 +25,20 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		self.interfacename = interfacename
 
 
-		# Cut-the-corners TCP Client:
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect(('localhost', 6000))
-
-		self.rpc = Fixed_BSONRpc(s)
-		self.rpc_client = self.rpc.get_peer_proxy(timeout=10)
 		# Execute in self.rpc_client:
+		for x in range(99999):
+			try:
+				# Cut-the-corners TCP Client:
+				s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+				s.connect(('localhost', 6000))
 
-		self.check_ok()
+				self.rpc = Fixed_BSONRpc(s)
+				self.rpc_client = self.rpc.get_peer_proxy(timeout=10)
+				self.check_ok()
+				return
+			except Exception as e:
+				if x > 3:
+					raise e
 
 	def __del__(self):
 		self.rpc.close() # Closes the socket 's' also

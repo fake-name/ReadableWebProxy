@@ -23,6 +23,11 @@ import common.LogBase as LogBase
 import random
 from WebMirror.NewJobQueue import buildjob
 
+from WebMirror.OutputFilters.util.MessageConstructors import fix_string
+from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
+from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
+
+
 
 # Remove blogspot garbage subdomains from the TLD (if present)
 def urls_the_same(url_list):
@@ -35,6 +40,11 @@ def urls_the_same(url_list):
 
 	return all([fixed_urls[0] == tmp for tmp in fixed_urls])
 
+def load_lut():
+	outf = os.path.join(os.path.split(__file__)[0], 'name_fix_lut.json')
+	jctnt = open(outf).read()
+	lut = json.loads(jctnt)
+	return lut
 
 class NuHeader(LogBase.LoggerMixin):
 	'''
@@ -63,11 +73,14 @@ class NuHeader(LogBase.LoggerMixin):
 	loggerPath = "Main.Neader.Nu"
 
 
-	def __init__(self):
+	def __init__(self, connect=True):
 		super().__init__()
 
+		self.name_lut, self.group_lut = load_lut()
 		self.db_sess = db.get_db_session(postfix='nu_header')
-		self.rpc = common.get_rpyc.RemoteJobInterface("NuHeader")
+
+		if connect:
+			self.rpc = common.get_rpyc.RemoteJobInterface("NuHeader")
 
 	def put_job(self, put=3):
 		self.log.info("Loading a row to fetch...")
@@ -257,7 +270,100 @@ class NuHeader(LogBase.LoggerMixin):
 		for item in unstamped:
 			item.validated_on = datetime.datetime.now()
 
+
 		self.db_sess.commit()
+
+
+
+	def do_release(self, row):
+
+		if row.seriesname.endswith("..."):
+			return
+
+		if not row.releaseinfo:
+			return
+		if not row.actual_target:
+			return
+
+		self.log.info("Release for series: %s -> %s -> %s", row.seriesname, row.releaseinfo, row.actual_target)
+
+
+		vol, chap, frag, postfix = extractVolChapterFragmentPostfix(row.releaseinfo)
+
+
+		ret = {
+			'srcname'      : fix_string(row.groupinfo),
+			'series'       : fix_string(row.seriesname),
+			'vol'          : vol,
+			'chp'          : chap,
+			'frag'         : frag,
+			'published'    : calendar.timegm(row.first_seen.timetuple()),
+			'itemurl'      : row.actual_target,
+			'postfix'      : fix_string(postfix),
+			'author'       : None,
+			'tl_type'      : 'translated',
+			'match_author' : False,
+
+			'nu_release'   : True
+
+		}
+
+		release = createReleasePacket(ret, beta=False)
+		# print("Packed release:", release)
+		# self.rpc.put_feed_job(release)
+
+	def transmit_since(self, earliest=None):
+		if not earliest:
+			earliest = datetime.datetime.min
+
+		validated = self.db_sess.query(db.NuReleaseItem)      \
+			.filter(db.NuReleaseItem.validated == True) \
+			.filter(db.NuReleaseItem.validated_on > earliest) \
+			.all()
+
+		# print("validated:")
+		# print(len(list(validated)))
+
+		for row in validated:
+			self.do_release(row)
+
+
+	def fix_names(self):
+		for old, new in self.name_lut.items():
+			have = self.db_sess.query(db.NuReleaseItem)         \
+				.filter(db.NuReleaseItem.seriesname     == old) \
+				.all()
+			for row in have:
+				try:
+					assert row.seriesname == old
+					row.seriesname = new
+					self.log.info("Fixing name row: %s -> %s", old, row.seriesname)
+
+					self.db_sess.commit()
+				except sqlalchemy.exc.IntegrityError:
+					self.log.error("Failure")
+					traceback.print_exc()
+					self.db_sess.rollback()
+					self.db_sess.delete(row)
+					self.db_sess.commit()
+
+		for old, new in self.group_lut.items():
+			have = self.db_sess.query(db.NuReleaseItem)         \
+				.filter(db.NuReleaseItem.groupinfo     == old) \
+				.all()
+			for row in have:
+				try:
+					assert row.groupinfo == old
+					row.groupinfo = new
+					self.log.info("Fixing group row: %s -> %s", old, row.groupinfo)
+
+					self.db_sess.commit()
+				except sqlalchemy.exc.IntegrityError:
+					self.log.error("Failure")
+					traceback.print_exc()
+					self.db_sess.rollback()
+					self.db_sess.delete(row)
+					self.db_sess.commit()
 
 
 def fetch_and_flush():
@@ -272,6 +378,7 @@ def fetch_and_flush():
 
 	hd.validate_from_new()
 	hd.timestamp_validated()
+	hd.fix_names()
 
 def schedule_next_exec(scheduler, at_time):
 	# NU Sync system has to run with a memory jobstore, and a process pool executor,

@@ -1,4 +1,5 @@
 
+
 from flask import g
 from flask import render_template
 from flask import make_response
@@ -16,7 +17,7 @@ from calendar import timegm
 from sqlalchemy.sql import text
 from app import app
 
-# from Misc.NuForwarder import NuForwarder
+from Misc.NuForwarder import NuHeader
 
 import common.database as db
 
@@ -25,6 +26,8 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import func
 from tzlocal import get_localzone
 import WebMirror.API
+from sqlalchemy import desc
+from sqlalchemy.sql.expression import nullslast
 
 def abbreviate(instr):
 	instr = "".join([char for char in instr if char in string.ascii_letters + " "])
@@ -60,71 +63,45 @@ def add_highlight(from_name, from_chp, from_group, namestr):
 
 	return namestr
 
-def aggregate_nu_items(in_rows):
-	agg = {}
-	for row in in_rows:
-		tgt = row.actual_target
-		if "blogspot" in tgt:
-			tmp = urllib.parse.urlparse(tgt)
-			nl = tmp.netloc.split(".blogspot")[0]
-			nl = nl+".blogspot.com"
-			tgt = urllib.parse.urlunparse((tmp.scheme, nl, tmp.path, tmp.params, tmp.query, tmp.fragment))
-
-		uniq = (row.seriesname, row.releaseinfo, tgt)
-		if not uniq in agg:
-			agg[uniq] = []
-		agg[uniq].append(row)
-
-	for key, rowset in list(agg.items()):
-		try:
-			assert(all([rowset[0].seriesname == row.seriesname for row in rowset])),             'Wat: %s' % ([row.seriesname       for row in rowset])
-			assert(all([rowset[0].outbound_wrapper == row.outbound_wrapper for row in rowset])), 'Wat: %s' % ([row.outbound_wrapper for row in rowset])
-			assert(all([rowset[0].groupinfo == row.groupinfo for row in rowset])),               'Wat: %s' % ([row.groupinfo        for row in rowset])
-			assert(all([rowset[0].releaseinfo == row.releaseinfo for row in rowset])),           'Wat: %s' % ([row.releaseinfo      for row in rowset])
-			if not "blogspot" in rowset[0].actual_target:
-				assert(all([rowset[0].actual_target == row.actual_target for row in rowset])),       'Wat: %s' % ([row.actual_target    for row in rowset])
-		except AssertionError:
-			del agg[key]
-	ret = []
-	for item in agg.values():
-		if item:
-			namestr = add_highlight(item[0].seriesname, item[0].releaseinfo, item[0].groupinfo, item[0].actual_target)
-			ret.append((namestr, item))
-
-	return ret
-
 
 def get_nu_items(sess, selector):
 
-	intf = NuForwarder.NuForwarder(connect=False)
+	intf = NuHeader.NuHeader()
 	intf.fix_names()
-	intf.consolidate_validated()
 
-	new_items = sess.query(db.NuOutboundWrapperMap)
-	if selector == "unverified" or selector == None:
-		new_items = new_items.filter(db.NuOutboundWrapperMap.validated == False)
-	elif selector == "verified":
-		new_items = new_items.filter(db.NuOutboundWrapperMap.validated == True)
+
+	new_items = sess.query(db.NuReleaseItem)
+	new_items = new_items.filter(db.NuReleaseItem.validated == True)
+
+	if selector == "verified":
+		new_items = new_items.filter(db.NuReleaseItem.reviewed == True)
+		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 	elif selector == "all":
-		pass
+		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
+	elif selector == "unverified" or selector == None:
+		new_items = new_items.filter(db.NuReleaseItem.reviewed == False)
+		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 
-	new_items = new_items.all()
+	new_items = new_items.order_by(nullslast(desc(db.NuReleaseItem.validated_on)))
+	new_items = new_items.limit(200).all()
 
-	new_items = aggregate_nu_items(new_items)
 
 	return new_items
 
 def toggle_row(sess, rid, oldv, newv):
 
-	row = sess.query(db.NuOutboundWrapperMap)     \
-		.filter(db.NuOutboundWrapperMap.id == rid) \
+	row = sess.query(db.NuReleaseItem)     \
+		.filter(db.NuReleaseItem.id == rid) \
 		.scalar()
+
 	if not row:
 		print("Row missing!")
 	else:
-		assert(row.validated == oldv)
+		assert(row.reviewed == oldv)
 		assert(oldv != newv)
-		row.validated = newv
+		print("Row: ", rid, oldv, newv, row.seriesname, row.releaseinfo)
+		row.reviewed = newv
+
 
 def release_validity_toggle(sess, data):
 	sess.expire_all()
@@ -142,17 +119,18 @@ def release_validity_toggle(sess, data):
 
 def delete_row(sess, del_id):
 
-	row = sess.query(db.NuOutboundWrapperMap)     \
-		.filter(db.NuOutboundWrapperMap.id == del_id) \
+	row = sess.query(db.NuReleaseItem)     \
+		.filter(db.NuReleaseItem.id == del_id) \
 		.scalar()
 	if not row:
 		print("Row missing!")
 	else:
 		print("Row: ", row)
-		sess.delete(row)
-	# 	assert(row.validated == oldv)
-	# 	assert(oldv != newv)
-	# 	row.validated = newv
+		for subitem in row.resolved:
+			sess.delete(subitem)
+		row.validated_on = None
+		row.validated = False
+		row.actual_target = None
 
 
 def release_delete(sess, data):
@@ -185,12 +163,17 @@ def nu_view():
 	session.expire_all()
 	new = get_nu_items(g.session, release_selector)
 	session.commit()
-	new.sort(key=lambda x: x[1][0].seriesname)
-	new.sort(key=lambda x: '...' in x[1][0].seriesname)
-	new.sort(key=lambda x: 'http://www.novelupdates.com' in x[1][0].actual_target)
+	new.sort(key=lambda x: x.seriesname)
+	new.sort(key=lambda x: '...' in x.seriesname)
+	new.sort(key=lambda x: ('http://www.novelupdates.com' in x.actual_target if x.actual_target else False))
+
+	new_with_markup = []
+	for row in new:
+		highlight = add_highlight(row.seriesname, row.releaseinfo, row.groupinfo, row.actual_target)
+		new_with_markup.append((highlight, row))
 
 	response = make_response(render_template('nu_releases.html',
-						   new          = new,
+						   new              = new_with_markup,
 						   release_selector = release_selector,
 						   ))
 	session.expire_all()

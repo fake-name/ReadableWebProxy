@@ -1,0 +1,50 @@
+
+
+
+type: "unknown"
+
+baseUrl: None
+
+baseUrl: [
+	"https://drive.google.com/drive/u/0/folders/0BwUphuy8AsxEVDJfaXJrcHdMVU0"
+	]
+
+
+send_raw_feed: False
+
+# Any url containing any of the words in the `badwords` list will be ignored.
+badwords: [
+
+	]
+
+decompose: [
+
+	]
+
+
+decomposeBefore: [
+
+	]
+
+stripTitle: [
+
+
+	]
+
+titleTweakLut:  [
+	{
+		'contain' : ['yuusha party no kawaii ko ga ita no de, kokuhaku shite mita',
+					 '告白してみた'],
+		'badUrl'  : ['1ljoXDy-ti5N7ZYPbzDsj5kvYFl3lEWaJ1l3Lzv1cuuM'],
+		'url'     : 'docs.google.com',
+		'add'    : 'Yuusha Party no Kawaii Ko ga ita no de, Kokuhaku Shite Mita',
+	},
+	{
+		'contain' : ['tang san'],
+		'badUrl'  : [],
+		'url'     : 'docs.google.com',
+		'add'    : 'Douluo Dalu',
+	}
+	]
+
+

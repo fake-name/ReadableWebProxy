@@ -145,12 +145,12 @@ class JobAggregator(LogBase.LoggerMixin):
 				self.rpc_interface.put_job(raw_job)
 				return
 			except TypeError:
-				self.open_rpc_interface()
+				self.check_open_rpc_interface()
 			except KeyError:
-				self.open_rpc_interface()
+				self.check_open_rpc_interface()
 			except bsonrpc.exceptions.BsonRpcError as e:
 				errors += 1
-				self.open_rpc_interface()
+				self.check_open_rpc_interface()
 				if errors > 3:
 					raise e
 				else:
@@ -244,14 +244,14 @@ class JobAggregator(LogBase.LoggerMixin):
 				return
 
 			except TypeError:
-				self.open_rpc_interface()
+				self.check_open_rpc_interface()
 				return
 			except KeyError:
-				self.open_rpc_interface()
+				self.check_open_rpc_interface()
 				return
 
 			except bsonrpc.exceptions.ResponseTimeout:
-				self.open_rpc_interface()
+				self.check_open_rpc_interface()
 				return
 
 
@@ -271,12 +271,17 @@ class JobAggregator(LogBase.LoggerMixin):
 				time.sleep(1)
 				break
 
-	def open_rpc_interface(self):
+	def check_open_rpc_interface(self):
 		try:
-			self.rpc_interface.close()
+			if self.rpc_interface.check_ok():
+				return
+
 		except Exception:
-			pass
-		self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+			try:
+				self.rpc_interface.close()
+			except Exception:
+				pass
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
 	def __queue_fillter_internal(self):
 		try:
@@ -285,7 +290,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
 
 
-		self.open_rpc_interface()
+		self.check_open_rpc_interface()
 
 		self.log.info("Job queue fetcher starting.")
 

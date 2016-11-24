@@ -2,6 +2,7 @@
 import queue
 import pprint
 import time
+import datetime
 import traceback
 
 from sqlalchemy.orm import joinedload
@@ -264,3 +265,18 @@ def exposed_process_nu_pages(transmit=True):
 		rm.join_aggregator()
 
 	print(sess)
+
+
+def exposed_retransmit_nu_releases(all_releases=False):
+	'''
+	'''
+
+	header = Misc.NuForwarder.NuHeader.NuHeader()
+	print(header)
+
+	if all_releases is False:
+		ago = datetime.datetime.now() - datetime.timedelta(days=1)
+		header.transmit_since(earliest=ago)
+	else:
+		header.transmit_since()
+
