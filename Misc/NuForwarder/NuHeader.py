@@ -82,7 +82,7 @@ class NuHeader(LogBase.LoggerMixin):
 		self.db_sess = db.get_db_session(postfix='nu_header')
 
 		if connect:
-			self.rpc = common.get_rpyc.RemoteJobInterface("NuHeader")
+			self.check_open_rpc_interface()
 
 	def put_job(self, put=3):
 		self.log.info("Loading a row to fetch...")
@@ -153,15 +153,15 @@ class NuHeader(LogBase.LoggerMixin):
 
 	def check_open_rpc_interface(self):
 		try:
-			if self.rpc_interface.check_ok():
+			if self.rpc.check_ok():
 				return
 
 		except Exception:
 			try:
-				self.rpc_interface.close()
+				self.rpc.close()
 			except Exception:
 				pass
-			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+			self.rpc = common.get_rpyc.RemoteJobInterface("NuHeader")
 
 	def process_single_avail(self):
 		'''
