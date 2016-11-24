@@ -402,6 +402,7 @@ class NuHeader(LogBase.LoggerMixin):
 					self.db_sess.delete(row)
 					self.db_sess.commit()
 
+		self.db_sess.commit()
 
 def fetch_and_flush():
 	hd = NuHeader()

@@ -29,6 +29,8 @@ import WebMirror.API
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
 
+
+
 def abbreviate(instr):
 	instr = "".join([char for char in instr if char in string.ascii_letters + " "])
 	segs = instr.split(" ")
@@ -110,7 +112,6 @@ def release_validity_toggle(sess, data):
 		print("Change:", change)
 
 	sess.commit()
-
 	sess.expire_all()
 
 	return {"error" : False,
@@ -184,6 +185,7 @@ def nu_view():
 	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
 
 	session.commit()
+	session.expire_all()
 	return response
 
 @app.route('/nu_api/', methods=['GET', 'POST'])
