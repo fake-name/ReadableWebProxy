@@ -7,6 +7,7 @@ baseUrl: None
 
 baseUrl: [
 	"https://drive.google.com/drive/u/0/folders/0BwUphuy8AsxEVDJfaXJrcHdMVU0"
+	'https://docs.google.com/document/d/1ljoXDy-ti5N7ZYPbzDsj5kvYFl3lEWaJ1l3Lzv1cuuM/pub',
 	]
 
 

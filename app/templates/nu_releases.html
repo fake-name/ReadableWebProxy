@@ -1,100 +1,142 @@
 <!-- extend base layout -->
-{% extends "__base.html" %}
 
-{% block content %}
-	{% include '_block_flash.html' %}
-	<div class="well">
+<!DOCTYPE html>
+<html>
+	<head>
+		{%- if title -%}
+			<title>ReadProxy - {{ title }}</title>
+		{%- else -%}
+			<title>ReadProxy</title>
+		{%- endif -%}
+
+		<!-- Base template header -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<!-- Sub template header -->
+
+		<style>
+			#segment_container
+			{
+				max-width: none !important;
+			}
+			body
+			{
+				max-width: none !important;
+			}
+			table, th, td {
+			    border: 1px solid black !important;
+			}
+			th, td
+			{
+				padding : 2px !important;
+			}
+		</style>
+		<!-- template header end -->
+	</head>
+	<body>
+		<div id='segment_container'>
+			<div id='segment_body'>
+				<div class="container-fluid">
+					<div class="row" style='display: flex;'>
+						<div  style='width:180px !important'>
+							{%- include '_block_nav.html' -%}
+						</div>
+						<div style='flex-grow: 1;'>
+
+							{% include '_block_flash.html' %}
+							<div class="well">
 
 
-		<h2>NU Items</h2>
+								<h2>NU Items</h2>
 
-		<div class="well">
-			<div class="pull-right">
-				<a href='/nu_releases/?view=all'>All</a>
-				<a href='/nu_releases/?view=unverified'>Unverified</a>
-				<a href='/nu_releases/?view=verified'>Verified</a>
+								<div class="well">
+									<div class="pull-right">
+										<a href='/nu_releases/?view=all'>All</a>
+										<a href='/nu_releases/?view=unverified'>Unverified</a>
+										<a href='/nu_releases/?view=verified'>Verified</a>
+										<a href='/nu_releases/?view=raw'>Raw</a>
+									</div>
+									<h4 class="pull-left">
+										Releases: {{release_selector}} ({{new | length}})
+									</h4>
+									<div class="clearfix"></div>
+									<div class="pull-right">
+										<button onclick="delete_changes()">Delete Checked</button>
+									</div>
+									<button onclick="apply_changes()">Apply changes</button>
+									<button onclick="check_rows()">Check rows</button>
+									<div class="clearfix"></div>
+
+									<div>
+										<table class='table-striped' style='width:100%'>
+											<colgroup>
+												<col>
+												<col style='width: 115px;'>
+												<col style='width: 75px;'>
+												<col>
+												<col>
+												<col>
+												<col>
+												<col>
+											</colgroup>
+											<tr>
+												<th>Valid</th>
+												<th>Worker</th>
+												<th>Ago</th>
+												<th>TL Group</th>
+												<th>Series</th>
+												<th>Chapter</th>
+												<th>Target URL</th>
+
+											</tr>
+											{%- for markedup_name, row_item in new -%}
+												<tr>
+													<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{row_item.seriesname}}' data-row-id="[{{row_item.id}}]" data-original-value="{{'true' if row_item.reviewed else 'false'}}" {{'checked="true"' if row_item.reviewed else ''}}></center></td>
+													<td>{% for row in row_item.resolved %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
+													<td>{{terse_ago(row_item.first_seen)}}</td>
+													<td>{{row_item.groupinfo}}</td>
+													<td>{{row_item.seriesname}}</td>
+													<td>{{row_item.releaseinfo}}</td>
+													<td>
+														<a href='{{row_item.actual_target}}'>{{markedup_name | safe}}</a>
+													</td>
+
+												</tr>
+											{%- endfor -%}
+										</table>
+									</div>
+									<div class="pull-right">
+										<button onclick="delete_changes()">Delete Checked</button>
+									</div>
+									<button onclick="apply_changes()">Apply changes</button>
+									<button onclick="check_rows()">Check rows</button>
+									<div class="clearfix"></div>
+
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
 			</div>
-			<h4 class="pull-left">
-				Releases: {{release_selector}} ({{new | length}})
-			</h4>
-			<div class="clearfix"></div>
-			<div class="pull-right">
-				<button onclick="delete_changes()">Delete Checked</button>
-			</div>
-			<button onclick="apply_changes()">Apply changes</button>
-			<button onclick="check_rows()">Check rows</button>
-			<div class="clearfix"></div>
-
-			<div>
-				<table class='table-striped' style='width:100%'>
-					<colgroup>
-						<col>
-						<col style='width: 110px;'>
-						<col>
-						<col>
-						<col>
-						<col>
-						<col>
-					</colgroup>
-					<tr>
-						<th>Valid</th>
-						<th>Worker</th>
-						<th>TL Group</th>
-						<th>Series</th>
-						<th>Chapter</th>
-						<th>Target URL</th>
-
-					</tr>
-					{%- for markedup_name, row_item in new -%}
-						<tr>
-							<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{row_item.seriesname}}' data-row-id="[{{row_item.id}}]" data-original-value="{{'true' if row_item.reviewed else 'false'}}" {{'checked="true"' if row_item.reviewed else ''}}></center></td>
-							<td>{% for row in row_item.resolved %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
-							<td>{{row_item.groupinfo}}</td>
-							<td>{{row_item.seriesname}}</td>
-							<td>{{row_item.releaseinfo}}</td>
-							<td>
-								<a href='{{row_item.actual_target}}'>{{markedup_name | safe}}</a>
-							</td>
-
-						</tr>
-					{%- endfor -%}
-				</table>
-			</div>
-			<div class="pull-right">
-				<button onclick="delete_changes()">Delete Checked</button>
-			</div>
-			<button onclick="apply_changes()">Apply changes</button>
-			<button onclick="check_rows()">Check rows</button>
-			<div class="clearfix"></div>
-
 		</div>
-	</div>
-
-{% endblock %}
 
 
-{% block header %}
-	<style>
-		#segment_container
-		{
-			max-width: none !important;
-		}
-		body
-		{
-			max-width: none !important;
-		}
-		table, th, td {
-		    border: 1px solid black !important;
-		}
-		th, td
-		{
-			padding : 2px !important;
-		}
-	</style>
-{% endblock %}
 
+	</body>
 
-{% block footer %}
+	<!-- Base template footer -->
+	<link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/static/css/custom.css" rel="stylesheet" media="screen">
+	<script src="/static/js/jquery-latest.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<!-- Admin template-footer -->
+	{%- if g.user.is_mod() -%}
+		{%- include '_block_admin_scripts.html' -%}
+	{%- endif -%}
+	<!-- Sub template-footer -->
+
 	{% if g.user.is_mod() %}
 		{% include '_block_admin_scripts.html' %}
 	{% endif %}
@@ -221,5 +263,7 @@
 
 
 	</script>
-{% endblock %}
+	<!-- Template footer end -->
+</html>
+
 

@@ -18,6 +18,7 @@ import traceback
 import datetime
 import time
 import json
+import cssutils
 import common.util.webFunctions
 import common.util.urlFuncs
 
@@ -155,9 +156,23 @@ class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		assert container is not None
 
-		release_tables = container.find_all('table', class_='tablesorter')
 
-		# print("Release tables:", release_tables)
+		masked_classes = []
+
+		mask_style = soup.find_all("style", text=re.compile(r"\.chp-release\..*?display:none"))
+		for style in mask_style:
+			parsed_style = cssutils.parseString(style.get_text())
+			for rule in parsed_style:
+				if rule.type == rule.STYLE_RULE:
+					disp = rule.style.getProperty('display')
+					if disp and disp.cssValue.cssText.lower() == "none":
+						for selector in rule.selectorList:
+							if len(selector.seq) == 2:
+								root, key = selector.seq
+								if root.value == ".chp-release" and root.type == 'class':
+									masked_classes.append(key.value[1:])
+
+		release_tables = container.find_all('table', class_='tablesorter')
 
 		releases = []
 		for table_div in release_tables:
@@ -169,22 +184,22 @@ class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 					linkas = release.find_all('a', class_='chp-release')
 					sname = series.get_text().strip()
 					gname = group.get_text().strip()
-					self.log.info("Using %s for referrer for %s -> %s", referrer, sname, gname)
 					for link in linkas:
-						release = {
-							'seriesname'       : sname,
-							'releaseinfo'      : link.get_text().strip(),
-							'groupinfo'        : gname,
-							'referrer'         : referrer,
-							'outbound_wrapper' : link['href'],
-							'actual_target'    : None,
-						}
-						# print("Link: ", link['href'])
-						releases.append(release)
+						bad = any([tmp in masked_classes for tmp in link['class']])
+						self.log.info("Using %s for referrer for %s -> %s -> %s, %s, %s", referrer, sname, gname, link.get_text().strip(), link['class'], bad)
+						if not bad:
+							release = {
+								'seriesname'       : sname,
+								'releaseinfo'      : link.get_text().strip(),
+								'groupinfo'        : gname,
+								'referrer'         : referrer,
+								'outbound_wrapper' : link['href'],
+								'actual_target'    : None,
+							}
+							# print("Link: ", link['href'])
+							releases.append(release)
 
 		return releases
-
-
 
 
 	def processPage(self, url, content):

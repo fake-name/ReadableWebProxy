@@ -24,6 +24,7 @@ import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 import WebMirror.rules
 import WebMirror.SiteSync.fetch
 import WebMirror.SpecialCase
+import WebMirror.NewJobQueue
 
 import RawArchiver.RawActiveModules
 import RawArchiver.RawEngine
@@ -37,6 +38,47 @@ import Misc.HistoryAggregator.Flatten
 import flags
 import config
 from config import C_RAW_RESOURCE_DIR
+
+def get_create_job(sess, url):
+
+	have = sess.query(db.WebPages).filter(db.WebPages.url == url).scalar()
+	if have:
+		return have
+	else:
+
+		parsed = urllib.parse.urlparse(url)
+		root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+
+		new = db.WebPages(
+			url       = url,
+			starturl  = root,
+			netloc    = parsed.netloc,
+			distance  = 50000,
+			is_text   = True,
+			priority  = 500000,
+			type      = 'unknown',
+			fetchtime = datetime.datetime.now(),
+			)
+		sess.add(new)
+		sess.commit()
+		return new
+
+
+def exposed_remote_fetch_enqueue(url, debug=True, rss_debug=False):
+	'''
+	Place a normal fetch request for url `url` into the remote fetch queue.
+
+	Requires the FetchAgent service to be running.
+	'''
+	print("Enqueueing ")
+	instance = WebMirror.NewJobQueue.JobAggregator(start_worker=False)
+	sess = db.get_db_session()
+	job = get_create_job(sess, url)
+	print("Job: ", job, job.state)
+
+	instance.check_open_rpc_interface()
+
+	instance.put_outbound_job(job.id, job.url)
 
 def exposed_fetch(url, debug=True, rss_debug=False):
 	'''

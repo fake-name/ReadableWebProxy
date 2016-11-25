@@ -188,20 +188,6 @@ class UpdateAggregator(object):
 		self.queue = msg_queue
 		self.log = logging.getLogger("Main.Agg.Manager")
 
-		if config.C_DO_RABBIT:
-
-			self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
-
-			# amqp_settings = {
-			# 	"RABBIT_LOGIN"   : config.C_RABBIT_LOGIN,
-			# 	"RABBIT_PASWD"   : config.C_RABBIT_PASWD,
-			# 	"RABBIT_SRVER"   : config.C_RABBIT_SRVER,
-			# 	"RABBIT_VHOST"   : config.C_RABBIT_VHOST,
-			# 	'taskq_task'     : 'task.master.q',
-			# 	'taskq_response' : 'response.master.q',
-			# }
-			# self._amqpint = WebMirror.OutputFilters.AmqpInterface.RabbitQueueHandler(amqp_settings)
-
 		self.seen = {}
 
 		self.links = 0
@@ -213,14 +199,29 @@ class UpdateAggregator(object):
 		self.db_int = db_interface
 
 
+	def check_open_rpc_interface(self):
+		try:
+			if self.rpc_interface.check_ok():
+				return
+
+
+		except Exception:
+			try:
+				self.rpc_interface.close()
+			except Exception:
+				pass
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
+
 
 	def do_amqp(self, pkt):
 		self.amqpUpdateCount += 1
 
 		if self.amqpUpdateCount % 50 == 0:
 			self.log.info("Transmitted AMQP messages: %s", self.amqpUpdateCount)
-		# self._amqpint.put_item(pkt)
-		self.rpc_interface.put_feed_job(pkt)
+
+		if config.C_DO_RABBIT:
+			self.check_open_rpc_interface()
+			self.rpc_interface.put_feed_job(pkt)
 
 
 	def do_link_batch_update(self):

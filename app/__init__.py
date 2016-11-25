@@ -114,6 +114,30 @@ def utility_processor():
 		return ret
 
 
+	def terse_ago(then):
+		if then == None:
+			return "Never"
+		now = datetime.datetime.now()
+		delta = now - then
+
+		d = delta.days
+		h, s = divmod(delta.seconds, 3600)
+		m, s = divmod(s, 60)
+		labels = ['d', 'h', 'm', 's']
+		dhms = ['%s %s' % (i, lbl) for i, lbl in zip([d, h, m, s], labels)]
+		for start in range(len(dhms)):
+			if not dhms[start].startswith('0'):
+				break
+		# for end in range(len(dhms)-1, -1, -1):
+		# 	if not dhms[end].startswith('0'):
+		# 		break
+		if d > 0:
+			dhms = dhms[:2]
+		elif h > 0:
+			dhms = dhms[1:3]
+		else:
+			dhms = dhms[2:]
+		return ', '.join(dhms)
 
 
 	return dict(
@@ -121,5 +145,6 @@ def utility_processor():
 			date_now           = date_now,
 			ago                = ago,
 			fixed_width_ago    = fixed_width_ago,
+			terse_ago          = terse_ago,
 			)
 

@@ -86,16 +86,16 @@ class NuHeader(LogBase.LoggerMixin):
 
 	def put_job(self, put=3):
 		self.log.info("Loading a row to fetch...")
-		haveq = self.db_sess.query(db.NuReleaseItem)                   \
-			.outerjoin(db.NuResolvedOutbound)                         \
-			.filter(db.NuReleaseItem.validated == False)              \
-			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
-			.order_by(func.random())                                  \
-			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put))
+		# haveq = self.db_sess.query(db.NuReleaseItem)                   \
+		# 	.outerjoin(db.NuResolvedOutbound)                         \
+		# 	.filter(db.NuReleaseItem.validated == False)              \
+		# 	.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
+		# 	.order_by(func.random())                                  \
+		# 	.group_by(db.NuReleaseItem.id)                            \
+		# 	.limit(max(100, put*3))
 
-		# .order_by(desc(db.NuReleaseItem.first_seen))                \
-		haveset = haveq.all()
+		# # .order_by(desc(db.NuReleaseItem.first_seen))                \
+		# moar = haveq.all()
 
 
 		self.log.info("Loading a row to fetch...")
@@ -105,11 +105,11 @@ class NuHeader(LogBase.LoggerMixin):
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put))
+			.limit(max(100, put*3))
 
-		moar = haveq.all()
+		haveset = haveq.all()
 
-		haveset += moar
+		# haveset += moar
 
 		if not haveset:
 			self.log.info("No jobs to remote HEAD.")
@@ -409,7 +409,7 @@ def fetch_and_flush():
 	hd.process_avail()
 	hd.validate_from_new()
 	hd.timestamp_validated()
-	hd.put_job(put=50)
+	hd.put_job(put=100)
 	mins = 10
 	for x in range(mins):
 		hd.process_avail()
@@ -463,5 +463,4 @@ def do_schedule(scheduler):
 	schedule_next_exec(scheduler, exec_at)
 
 
-	pass
 

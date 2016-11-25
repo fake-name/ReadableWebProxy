@@ -209,6 +209,22 @@ def exposed_delete_old_nu_root_outbound():
 			sess.delete(row)
 			sess.commit()
 
+def exposed_delete_nu_unresolved():
+	sess = db.get_db_session()
+
+	count = 0
+
+	for row in sess.query(db.NuReleaseItem) \
+		.yield_per(50).all():
+		if not len(list(row.resolved)):
+			print(row.id, row.referrer)
+			sess.delete(row)
+			count += 1
+			if count % 1000 == 0:
+				print("Committing!")
+				sess.commit()
+	sess.commit()
+
 
 
 def exposed_process_nu_pages(transmit=True):

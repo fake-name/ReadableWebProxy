@@ -73,18 +73,22 @@ def get_nu_items(sess, selector):
 
 
 	new_items = sess.query(db.NuReleaseItem)
-	new_items = new_items.filter(db.NuReleaseItem.validated == True)
 
 	if selector == "verified":
+		new_items = new_items.filter(db.NuReleaseItem.validated == True)
 		new_items = new_items.filter(db.NuReleaseItem.reviewed == True)
 		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 	elif selector == "all":
+		new_items = new_items.filter(db.NuReleaseItem.validated == True)
 		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
+	elif selector == "raw":
+		new_items = new_items.filter(db.NuReleaseItem.actual_target == None)
 	elif selector == "unverified" or selector == None:
+		new_items = new_items.filter(db.NuReleaseItem.validated == True)
 		new_items = new_items.filter(db.NuReleaseItem.reviewed == False)
 		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 
-	new_items = new_items.order_by(nullslast(desc(db.NuReleaseItem.validated_on)))
+	new_items = new_items.order_by(desc(db.NuReleaseItem.first_seen))
 	new_items = new_items.limit(200).all()
 
 
@@ -164,14 +168,17 @@ def nu_view():
 	session.expire_all()
 	new = get_nu_items(g.session, release_selector)
 	session.commit()
-	new.sort(key=lambda x: x.seriesname)
+	new.sort(key=lambda x: x.first_seen, reverse=True)
 	new.sort(key=lambda x: '...' in x.seriesname)
 	new.sort(key=lambda x: ('http://www.novelupdates.com' in x.actual_target if x.actual_target else False))
 
 	new_with_markup = []
 	for row in new:
-		highlight = add_highlight(row.seriesname, row.releaseinfo, row.groupinfo, row.actual_target)
-		new_with_markup.append((highlight, row))
+		if row.actual_target:
+			highlight = add_highlight(row.seriesname, row.releaseinfo, row.groupinfo, row.actual_target)
+			new_with_markup.append((highlight, row))
+		else:
+			new_with_markup.append(('No Url', row))
 
 	response = make_response(render_template('nu_releases.html',
 						   new              = new_with_markup,

@@ -88,7 +88,7 @@ class JobAggregator(LogBase.LoggerMixin):
 
 	loggerPath = "Main.JobAggregator"
 
-	def __init__(self):
+	def __init__(self, start_worker=True):
 		# print("Job __init__()")
 		super().__init__()
 
@@ -96,6 +96,7 @@ class JobAggregator(LogBase.LoggerMixin):
 		self.active_jobs = 0
 		self.jobs_out = 0
 		self.jobs_in = 0
+
 
 
 		self.db_interface = psycopg2.connect(
@@ -108,19 +109,22 @@ class JobAggregator(LogBase.LoggerMixin):
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
 		self.normal_out_queue  = multiprocessing.Queue()
 
-		self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
-		self.j_fetch_proc.start()
+		if start_worker:
+			self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
+			self.j_fetch_proc.start()
 
-		self.print_mod = 0
+			self.print_mod = 0
 
-		self.ruleset = WebMirror.rules.load_rules()
-		self.specialcase = WebMirror.rules.load_special_case_sites()
+			self.ruleset = WebMirror.rules.load_rules()
+			self.specialcase = WebMirror.rules.load_special_case_sites()
 
 	def get_queues(self):
 		return self.normal_out_queue
 
 	def join_proc(self):
+		self.log.info("Setting exit flag on processor.")
 		runStatus.job_run_state.value = 0
+		self.log.info("Joining on worker thread.")
 		self.j_fetch_proc.join(0)
 
 	def put_outbound_job(self, jobid, joburl):
@@ -276,6 +280,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			if self.rpc_interface.check_ok():
 				return
 
+
 		except Exception:
 			try:
 				self.rpc_interface.close()
@@ -284,11 +289,12 @@ class JobAggregator(LogBase.LoggerMixin):
 			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
 	def __queue_fillter_internal(self):
-		try:
-			signal.signal(signal.SIGINT, signal.SIG_IGN)
-		except ValueError:
-			self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
-
+		# try:
+		# 	signal.signal(signal.SIGINT, signal.SIG_IGN)
+		# except ValueError:
+		# 	self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
+		# 	for line in traceback.format_exc().split("\n"):
+		# 		self.log.warning(line)
 
 		self.check_open_rpc_interface()
 
@@ -313,6 +319,9 @@ class JobAggregator(LogBase.LoggerMixin):
 			try:
 
 				self.__queue_fillter_internal()
+			except ConnectionRefusedError:
+				self.log.warning("RPC Remote appears to not be listening!")
+				time.sleep(1)
 			except Exception as e:
 				with open("error - {}.txt".format(time.time()), "w") as fp:
 					fp.write("Wat? Exception!\n\n")

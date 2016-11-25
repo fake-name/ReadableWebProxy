@@ -136,14 +136,18 @@ class ColourHandler(UnlockedHandler):
 		record.padding = ""
 		msg = self.format(record)
 		msg = str(msg).encode("utf-8", "replace").decode("utf-8")
-		with stdout_lock:
-			try:
-				print(msg)
+		locked = False
+		try:
+			locked = stdout_lock.acquire(timeout=1)
+			print(msg)
 
 			# Apparently the answer to "can I break stdout" is yes.
 			# /that happened/
-			except RuntimeError:
-				print("Failure to print!")
+		except RuntimeError:
+			print("Failure to print!")
+		finally:
+			if locked:
+				stdout_lock.release()
 
 ansi_escape = re.compile(r'\x1b[^m]*m')
 
