@@ -14,28 +14,28 @@ Overall data-flow:
 | Database +-->+                      +-->+                   |    |
 +----^-----+   |   Retreive task.     |   |  Retreive remote  |    |
      |         |   Filter by          |   |  resource         |    |
-     |         |    * Priority        |   |                   |    |
-     |         |    * Task source     |   +--------+----------+    |
-     |         |    * Predicted       |            |               |
-     |         |       content-Type   |            |               |
-     |         |                      |            v               |
-     |         +----------------------+   +--------+----------+    |
-     |         +----------------------+   |                   |    |
-     |         |                      |   |  Process          |    |
-     |         |  Generate update     |   |  retrieved        |    |
-     +--(-)----+  based on processed  +<--+  content using    |    |
-         |     |  content.            |   |  plugin LUT       |    |
-         |     |                      |   |                   |    |
-         |     +----------------------+   +---------+---------+    |
-         |                                          ^              |
-         |                                          |              |
-    +----+----+                             +-------+------+       |   
-    | Update  |                             |              |       |   
-    | Filter  |                             |   Build      |       |   
-    | System  |                             |   Plugin     +-------^   
-    +----+----+                             |    LUT       |           
-         |                                  |              |           
-         |                                  +------+-------+           
+     |         |    * Priority        |   |                   |    |    
+     |         |    * Task source     |   +--------+----------+    |    +----------------------+
+     |         |    * Predicted       |            |               |    | Raw filter           |
+     |         |       content-Type   |            +---------------|--->+ plugins & parasitic  |
+     |         |                      |            v               |    | export feeds         |
+     |         +----------------------+   +--------+----------+    |    +----+-----------------+
+     |         +----------------------+   |                   |    |         V
+     |         |                      |   |  Process          |    |    +----+-------------+
+     |         |  Generate update     |   |  retrieved        |    |    |  WLNUpdates      |
+     +--(-)----+  based on processed  +<--+  content using    |    |    | Release parsing  |
+         |     |  content.            |   |  plugin LUT       |    |    +----+-------------+
+         |     |                      |   |                   |    |         |
+         |     +----------------------+   +---------+---------+    |         |     
+         |                                          ^              |         v     
+         |                                          |              |     (  AMQP ) 
+    +----+----+                             +-------+------+       |     ( Stuff ) 
+    | Update  |                             |              |       |
+    | Filter  |                             |   Build      |       |
+    | System  |                             |   Plugin     +-------^
+    +----+----+                             |    LUT       |        
+         |                                  |              |        
+         |                                  +------+-------+        
          v                                         ^           
      (  AMQP )                                     |           
      ( Stuff )                                     |           
