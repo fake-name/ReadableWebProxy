@@ -348,6 +348,8 @@ def extractOtterspaceTranslation(item):
 		return buildReleaseMessage(item, 'Legend of Legend', vol, chp, frag=frag)
 	if "Seoul Station's Necromancer" in item['title'] or "Seoul Station's Necromancer" in item['tags']:
 		return buildReleaseMessage(item, "Seoul Station's Necromancer", vol, chp, frag=frag)
+	if 'Dark Mage' in item['tags']:
+		return buildReleaseMessage(item, 'Dark Mage', vol, chp, frag=frag)
 
 	return False
 
@@ -1080,24 +1082,24 @@ def extractRadiantTranslations(item):
 		return buildReleaseMessage(item, 'Radiant Era', vol, chp, frag=frag, postfix=postfix)
 	if 'Lord Xue Ying' in item['tags']:
 		return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
-	if 'Chapter Release' in item['tags']:
-		if 'Child of Light' in item['tags'] or 'Guang Zhi Zi' in item['tags']:
-			return buildReleaseMessage(item, 'Guang Zhi Zi', vol, chp, frag=frag, postfix=postfix)
-		if 'Bing Huo Mo Chu' in item['tags'] or 'Magic Chef of Ice and Fire' in item['tags']:
-			return buildReleaseMessage(item, 'Bing Huo Mo Chu', vol, chp, frag=frag, postfix=postfix)
-		if 'The Legend of the Dragon King' in item['tags']:
-			return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
-		if 'Tempest of the Stellar War' in item['tags']:
-			return buildReleaseMessage(item, 'Tempest of the Stellar War', vol, chp, frag=frag, postfix=postfix)
-		if ('dragon marked war god' in item['title'].lower().replace("-", " ") or
-				'dmwg' in item['title'].lower() or
-				'Dragon Marked War God' in item['tags']):
-			return buildReleaseMessage(item, 'Dragon-Marked War God', vol, chp, frag=frag, postfix=postfix)
-		if 'beseech the devil' in item['title'].lower():
-			return buildReleaseMessage(item, 'Beseech the Devil', vol, chp, frag=frag, postfix=postfix)
+	if 'Child of Light' in item['tags'] or 'Guang Zhi Zi' in item['tags']:
+		return buildReleaseMessage(item, 'Guang Zhi Zi', vol, chp, frag=frag, postfix=postfix)
+	if 'Bing Huo Mo Chu' in item['tags'] or 'Magic Chef of Ice and Fire' in item['tags']:
+		return buildReleaseMessage(item, 'Bing Huo Mo Chu', vol, chp, frag=frag, postfix=postfix)
+	if 'The Legend of the Dragon King' in item['tags']:
+		return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
+	if 'Tempest of the Stellar War' in item['tags']:
+		return buildReleaseMessage(item, 'Tempest of the Stellar War', vol, chp, frag=frag, postfix=postfix)
+	if ('dragon marked war god' in item['title'].lower().replace("-", " ") or
+			'dmwg' in item['title'].lower() or
+			'Dragon Marked War God' in item['tags']):
+		return buildReleaseMessage(item, 'Dragon-Marked War God', vol, chp, frag=frag, postfix=postfix)
+	if 'beseech the devil' in item['title'].lower():
+		return buildReleaseMessage(item, 'Beseech the Devil', vol, chp, frag=frag, postfix=postfix)
 
 	if ('enchantress amongst alchemist: ghost king’s concubine chapter' in item['title'].lower() or
-		'enchantress amongst alchemists: ghost king’s concubine' in item['title'].lower()):
+		'enchantress amongst alchemists: ghost king’s concubine' in item['title'].lower() or
+		'Enchantress Among Alchemists' in item['tags']):
 		return buildReleaseMessage(item, 'Enchantress Amongst Alchemists: Ghost King’s Concubine', vol, chp, frag=frag, postfix=postfix)
 
 	return False
@@ -1201,7 +1203,7 @@ def extractShinsori(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if 'Doll Dungeon' in item['title']:
+	if 'Doll Dungeon' in item['title'] or 'Doll Dungeon' in item['tags']:
 		return buildReleaseMessage(item, 'Doll Dungeon', vol, chp, frag=frag, postfix=postfix)
 	if 'Levelmaker –' in item['title']:
 		return buildReleaseMessage(item, 'Levelmaker -Raising Levels While Living in Another World-', vol, chp, frag=frag, postfix=postfix)
@@ -1220,6 +1222,14 @@ def extractShinsori(item):
 
 	if '100 Cheat Skills' in item['tags']:
 		return buildReleaseMessage(item, '100 Cheat Skills', vol, chp, frag=frag, postfix=postfix)
+	if 'Wagamama Onna' in item['tags']:
+		return buildReleaseMessage(item, 'Wagamama Onna ni Tensei Shita yo', vol, chp, frag=frag, postfix=postfix)
+	if 'Tensei Reijou' in item['tags']:
+		return buildReleaseMessage(item, 'Tensei Reijou wa Yancha Suru', vol, chp, frag=frag, postfix=postfix)
+	if 'Yuusha ga Onna' in item['tags']:
+		return buildReleaseMessage(item, 'Yuusha Ga Onna Da to Dame Desu Ka?', vol, chp, frag=frag, postfix=postfix)
+	if 'Raising Slaves' in item['tags']:
+		return buildReleaseMessage(item, 'Raising Slaves in Another World While on a Journey', vol, chp, frag=frag, postfix=postfix)
 
 	if 'Hone no aru Yatsu' in item['tags'] or 'Bones' in item['tags']:
 		return buildReleaseMessage(item, 'Hone no aru Yatsu', vol, chp, frag=frag, postfix=postfix)
@@ -1233,12 +1243,14 @@ def extractShinsori(item):
 		return buildReleaseMessage(item, 'The Great Nation Remodeling of Reincarnated Princess ~Let’s Build an Unrivalled Country~', vol, chp, frag=frag, postfix=postfix)
 	if 'Isekai Yururi Kikou' in item['tags']:
 		return buildReleaseMessage(item, 'Isekai Yururi Kikou', vol, chp, frag=frag, postfix=postfix)
+	if 'Chiisana Maou-sama' in item['tags']:
+		return buildReleaseMessage(item, 'Boku wa Chiisana Maou-sama', vol, chp, frag=frag, postfix=postfix)
 
-	if 'Kindred' in item['title']:
+	if 'Kindred' in item['title'] or 'Kindred' in item['tags']:
 		return buildReleaseMessage(item, 'Kindred', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'Charmed?' in item['title']:
+	if 'Charmed?' in item['title'] or 'Charmed?' in item['tags']:
 		return buildReleaseMessage(item, 'Charmed?', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
-	if 'Silver Death' in item['title']:
+	if 'Silver Death' in item['title'] or 'Silver Death' in item['tags']:
 		return buildReleaseMessage(item, 'Silver Death', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 	return False
@@ -3665,6 +3677,25 @@ def extractPaichunTranslations(item):
 		return buildReleaseMessage(item, 'Ore Dake Kaereru Kurasu Teni', vol, chp, frag=frag, postfix=postfix)
 	if 'Itai no wa Iya nanode Bōgyo-Ryoku ni Kyokufuri Shitai to Omoimasu.' in item['tags']:
 		return buildReleaseMessage(item, 'Itai no wa Iya nanode Bōgyo-Ryoku ni Kyokufuri Shitai to Omoimasu.', vol, chp, frag=frag, postfix=postfix)
+	if 'Itai no wa Iya nanode Bōgyo-Ryoku ni Kyokufuri Shitai to Omoimasu.' in item['tags']:
+		return buildReleaseMessage(item, 'Itai no wa Iya nanode Bōgyo-Ryoku ni Kyokufuri Shitai to Omoimasu.', vol, chp, frag=frag, postfix=postfix)
+	if 'Kujibiki Tokushou: Musou Hāremu ken' in item['tags']:
+		return buildReleaseMessage(item, 'Kujibiki Tokushou: Musou Hāremu ken', vol, chp, frag=frag, postfix=postfix)
+	if 'Buta Kōshaku ni Tensei Shitakara, Kondo wa Kimi ni Suki to Iitai' in item['tags']:
+		return buildReleaseMessage(item, 'Buta Kōshaku ni Tensei Shitakara, Kondo wa Kimi ni Suki to Iitai', vol, chp, frag=frag, postfix=postfix)
+	if 'Hon Issatsu de Kototariru Isekai Rurō Monogatari' in item['tags']:
+		return buildReleaseMessage(item, 'Hon Issatsu de Kototariru Isekai Rurō Monogatari', vol, chp, frag=frag, postfix=postfix)
+	if 'Isekai Yakkyoku' in item['tags']:
+		return buildReleaseMessage(item, 'Parallel World Pharmacy', vol, chp, frag=frag, postfix=postfix)
+	if 'Kyou Kara Ore wa Loli no Himo!' in item['tags']:
+		return buildReleaseMessage(item, 'Kyou Kara Ore wa Loli no Himo!', vol, chp, frag=frag, postfix=postfix)
+	if 'The Dungeon Seeker' in item['tags']:
+		return buildReleaseMessage(item, 'The Dungeon Seeker', vol, chp, frag=frag, postfix=postfix)
+	if 'Tales of Leo Attiel' in item['tags']:
+		return buildReleaseMessage(item, 'Tales of Leo Attiel ~Depiction of the Headless Prince~', vol, chp, frag=frag, postfix=postfix)
+	if 'The Duke’s Daughter is the Knight Captain’s (62) Young Wife' in item['tags']:
+		return buildReleaseMessage(item, 'The Duke’s Daughter is the Knight Captain’s (62) Young Wife', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def extractProfessionalGameThrowersTranslations(item):
@@ -3736,10 +3767,13 @@ def extractSabishiidesu(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
-	if 'Sono-sha. Nochi ni. . .' in item['tags']:
+
+	if 'Sono-sha. Nochi ni. . .' in item['tags'] or 'Sonomono. Nochi ni.....' in item['tags']:
 		return buildReleaseMessage(item, 'Sono-sha. Nochi ni. . .', vol, chp, frag=frag, postfix=postfix)
 	if 'VRMMO Summoner Hajimemashita' in item['tags']:
 		return buildReleaseMessage(item, 'VRMMO Summoner Hajimemashita', vol, chp, frag=frag, postfix=postfix)
+	if "My Room Has Become A Dungeon's Rest Area" in item['tags']:
+		return buildReleaseMessage(item, "My Room Has Become A Dungeon's Rest Area", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3910,5 +3944,27 @@ def extractReLibrary(item):
 		return buildReleaseMessage(item, 'Very Pure & Ambiguous - The Prequel', vol, chp, frag=frag, postfix=postfix)
 	if 'World of Immortals' in item['tags']:
 		return buildReleaseMessage(item, 'World of Immortals', vol, chp, frag=frag, postfix=postfix)
+
+	if 'High Comprehension Low Strength' in item['tags']:
+		return buildReleaseMessage(item, 'High Comprehension Low Strength', vol, chp, frag=frag, postfix=postfix)
+	if 'Arifureta' in item['tags']:
+		return buildReleaseMessage(item, 'Arifureta Shokugyou de Sekai Saikyou (WN)', vol, chp, frag=frag, postfix=postfix)
+
+	if 'God of Chaos' in item['tags']:
+		return buildReleaseMessage(item, 'God of Chaos', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Soft Spoken Brutality' in item['tags']:
+		return buildReleaseMessage(item, 'Soft Spoken Brutality', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Martial Void King' in item['tags']:
+		return buildReleaseMessage(item, 'Martial Void King', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Aurora God' in item['tags']:
+		return buildReleaseMessage(item, 'Aurora God', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if "Silva's Diary" in item['tags']:
+		return buildReleaseMessage(item, "Silva's Diary", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Stained Red' in item['tags']:
+		return buildReleaseMessage(item, 'Stained Red', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+
+
+
 	return False
 

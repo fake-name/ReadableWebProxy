@@ -717,6 +717,10 @@ def extractMoonBunnyCafe(item):
 	if 'manhua' in ltags or "manga" in ltags:
 		return None
 
+	if 'xiao qi, wait' in ltags:
+		return buildReleaseMessage(item, 'Xiao Qi, Wait', vol, chp, frag=frag)
+	if 'inside the cave of obscenity' in ltags:
+		return buildReleaseMessage(item, 'Inside the Cave of Obscenity', vol, chp, frag=frag)
 	if 'my disciple died yet again' in ltags:
 		return buildReleaseMessage(item, 'My Disciple Died Yet Again', vol, chp, frag=frag)
 	if 'monogatari no naka no hito' in ltags:
@@ -1156,6 +1160,23 @@ def extractKobatoChanDaiSukiScan(item):
 		return buildReleaseMessage(item, 'God of Music', vol, chp, frag=frag, postfix=postfix)
 	if 'I am the monarch' in item['tags']:
 		return buildReleaseMessage(item, 'I am the Monarch', vol, chp, frag=frag, postfix=postfix)
+
+	if 'God-level Bodyguard in the City' in item['tags']:
+		return buildReleaseMessage(item, 'God-level Bodyguard in the City', vol, chp, frag=frag, postfix=postfix)
+	if 'Everyone Else is a Returnee' in item['tags']:
+		return buildReleaseMessage(item, 'Everyone Else is a Returnee', vol, chp, frag=frag, postfix=postfix)
+	if 'One Man Army' in item['tags']:
+		return buildReleaseMessage(item, 'One Man Army', vol, chp, frag=frag, postfix=postfix)
+	if 'Miracle Drawing!' in item['tags']:
+		return buildReleaseMessage(item, 'Miracle Drawing!', vol, chp, frag=frag, postfix=postfix)
+	if 'Ten Thousand Heaven Controlling Sword' in item['tags']:
+		return buildReleaseMessage(item, 'Ten Thousand Heaven Controlling Sword', vol, chp, frag=frag, postfix=postfix)
+	if 'Cheat Skill: Sleep Learning' in item['tags']:
+		return buildReleaseMessage(item, 'Cheat Skill: Sleep Learning', vol, chp, frag=frag, postfix=postfix)
+	if 'A Bird That Drinks Tears' in item['tags']:
+		return buildReleaseMessage(item, 'A Bird That Drinks Tears', vol, chp, frag=frag, postfix=postfix)
+	if 'Wagahai no Kare wa Baka de aru' in item['tags']:
+		return buildReleaseMessage(item, 'Wagahai no Kare wa Baka de aru', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2954,12 +2975,18 @@ def extractNovelsChill(item):
 		return buildReleaseMessage(item, 'Chaotic Emperor', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'EoSP' in item['tags']:
 		return buildReleaseMessage(item, 'Emperor of Solo Play', vol, chp, frag=frag, postfix=postfix)
-	if 'ILBP' in item['tags']:
+	if 'ILBP' in item['tags'] or 'I Leveled From Being a Parasite' in item['tags']:
 		return buildReleaseMessage(item, 'I Leveled up from Being a Parasite, But I May Have Grown Too Much', vol, chp, frag=frag, postfix=postfix)
-	if 'R8CM' in item['tags']:
+	if 'R8CM' in item['tags'] or 'Revolution of the 8th Class Mage' in item['tags'] :
 		return buildReleaseMessage(item, 'Revolution of the 8th Class Mage', vol, chp, frag=frag, postfix=postfix)
 	if 'TWoA' in item['tags']:
 		return buildReleaseMessage(item, 'The Wizard of Arecenia', vol, chp, frag=frag, postfix=postfix)
+
+	# Hahahaha, typo
+	if 'The Mightiest Manager' in item['tags'] or 'TMM' in item['tags'] or 'TTM' in item['tags']:
+		return buildReleaseMessage(item, 'The Mightiest Manager', vol, chp, frag=frag, postfix=postfix)
+	if 'Have A Meal Before You Go' in item['tags']:
+		return buildReleaseMessage(item, 'Have A Meal Before You Go', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -3197,7 +3224,25 @@ def extractLightNovelsWorld(item):
 	if 'Ore to Kawazu-san no Isekai Houriki' in item['tags'] or 'Ore to Kawazu-san no Isekai Hourouki' in item['tags']:
 		return buildReleaseMessage(item, 'Ore to Kawazu-san no Isekai Houriki', vol, chp, frag=frag, postfix=postfix)
 
-	print("wat?", 'Ore to Kawazu-san no Isekai Hourouki' in item['tags'])
+
+	if 'Dragon Blood Warrior' in item['tags']:
+		return buildReleaseMessage(item, 'Dragon Blood Warrior', vol, chp, frag=frag, postfix=postfix)
+	if 'Evil-like Duke Household' in item['tags']:
+		return buildReleaseMessage(item, 'Evil-like Duke Household', vol, chp, frag=frag, postfix=postfix)
+	if 'Great Dao Commander' in item['tags']:
+		return buildReleaseMessage(item, 'Great Dao Commander', vol, chp, frag=frag, postfix=postfix)
+	if 'It’s Impossible that My Evil Overlord is So Cute' in item['tags']:
+		return buildReleaseMessage(item, 'It’s Impossible that My Evil Overlord is So Cute', vol, chp, frag=frag, postfix=postfix)
+	if 'I’m OP, but I Began an Inn' in item['tags']:
+		return buildReleaseMessage(item, 'I’m OP, but I Began an Inn', vol, chp, frag=frag, postfix=postfix)
+	if 'The Lame Daoist Priest' in item['tags']:
+		return buildReleaseMessage(item, 'The Lame Daoist Priest', vol, chp, frag=frag, postfix=postfix)
+	if 'The Last Apostle' in item['tags']:
+		return buildReleaseMessage(item, 'The Last Apostle', vol, chp, frag=frag, postfix=postfix)
+	if 'Isekai Teni Jobumasuta e no Michi' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Teni Jobumasuta e no Michi', vol, chp, frag=frag, postfix=postfix)
+
+
 	return False
 def extractLoathsomeTranslations(item):
 	"""
@@ -3473,4 +3518,14 @@ def extractNovitranslation(item):
 		return None
 	if 'The Evil Prince and his Precious Wife: The Sly Lady' in item['tags']:
 		return buildReleaseMessage(item, 'The Evil Prince and his Precious Wife: The Sly Lady', vol, chp, frag=frag, postfix=postfix)
+	if 'Soaring Towards the Heavens' in item['tags']:
+		return buildReleaseMessage(item, 'Soaring Towards the Heavens', vol, chp, frag=frag, postfix=postfix)
+	if 'One Child Two Treasures: The Billionaire Chief’s Good Wife' in item['tags']:
+		return buildReleaseMessage(item, 'One Child Two Treasures: The Billionaire Chief’s Good Wife', vol, chp, frag=frag, postfix=postfix)
+	if 'The Demon God Pesters: The Ninth Lady of the Doctor' in item['tags']:
+		return buildReleaseMessage(item, 'The Demon God Pesters: The Ninth Lady of the Doctor', vol, chp, frag=frag, postfix=postfix)
+	if 'The Mighty Female Immortal' in item['tags']:
+		return buildReleaseMessage(item, 'The Mighty Female Immortal', vol, chp, frag=frag, postfix=postfix)
+	if 'The pygmalion is planting seeds' in item['tags']:
+		return buildReleaseMessage(item, 'The pygmalion is planting seeds', vol, chp, frag=frag, postfix=postfix)
 	return False

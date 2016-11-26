@@ -113,6 +113,10 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, 'Spirit Realm', vol, chp, frag=frag)
 	if 'Rebirth of the Thief' in item['tags']:
 		return buildReleaseMessage(item, 'Rebirth of the Thief', vol, chp, frag=frag)
+	if "Emperor's Domination" in item['tags']:
+		return buildReleaseMessage(item, "Emperor's Domination", vol, chp, frag=frag)
+	if 'Upgrade Specialist' in item['tags']:
+		return buildReleaseMessage(item, 'Upgrade Specialist', vol, chp, frag=frag)
 
 	return False
 

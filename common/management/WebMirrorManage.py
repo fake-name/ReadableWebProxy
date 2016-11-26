@@ -507,7 +507,11 @@ def exposed_sort_json(json_name):
 	with open(outf, "w") as fp:
 		for item in out:
 			# print(item[1])
-			for value in item[2]:
+			items = item[2]
+			[tmp['Tags'].sort() for tmp in items]
+			items.sort(key=lambda x: (x['Tags'], x['Title']))
+
+			for value in items:
 				for key in key_order:
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")

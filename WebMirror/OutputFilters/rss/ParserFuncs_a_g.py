@@ -2925,6 +2925,14 @@ def extractFantasyBooksLive(item):
 		'Life and Times of Mitch and Akki',
 		'God\'s Island',
 		'Black Titan',
+		'Aeterna Saga',
+		'Fighting God',
+		'Antagonist Rewind',
+		'Black Watch Asylum',
+		'Three Lifetimes',
+		'Magical Tournament',
+		'Villainess',
+		'Walking With Giants',
 	]
 
 	tlut = {tmp.lower():tmp for tmp in snames}
