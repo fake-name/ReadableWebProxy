@@ -8,6 +8,7 @@ import sys
 import common.management.WebMirrorManage
 import common.management.RawMirrorManage
 import WebMirror.OfflineFilters.offline_filters
+import WebMirror.TimedTriggers.TriggerManage
 
 if __name__ == "__main__":
 	import logSetup
@@ -19,6 +20,7 @@ SCANNED_MODULES = [
 	common.management.WebMirrorManage,
 	common.management.RawMirrorManage,
 	WebMirror.OfflineFilters.offline_filters,
+	WebMirror.TimedTriggers.TriggerManage,
 ]
 
 def load_functions():
