@@ -74,6 +74,8 @@ def exposed_remote_fetch_enqueue(url, debug=True, rss_debug=False):
 	instance = WebMirror.NewJobQueue.JobAggregator(start_worker=False)
 	sess = db.get_db_session()
 	job = get_create_job(sess, url)
+	job.state = 'fetching'
+	sess.commit()
 	print("Job: ", job, job.state)
 
 	instance.check_open_rpc_interface()
@@ -670,6 +672,19 @@ def exposed_missing_lut():
 			print("Missing: ", urllib.parse.urlsplit(feed).netloc)
 
 def exposed_delete_feed(feed_name, do_delete, search_str):
+	'''
+	Feed name is the readable name of the feed, from feedNameLut.py.
+	do delete is a boolean that determines if the deletion is actually done, or the actions are
+		just previewed. Unless do_delete.lower() == "true", no action will actually be
+		taken.
+	search_str is the string of items to search for. Searches are case sensitive, and the only
+		component of the feed that are searched within is the title.
+		search_str is split on the literal character "|", for requiring multiple substrings
+		be in the searched title.
+
+	Delete the rss entries for a feed, using a search key.
+
+	'''
 
 	sess = db.get_db_session()
 	items = sess.query(db.FeedItems)               \

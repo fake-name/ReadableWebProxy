@@ -181,13 +181,19 @@ class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				if len(tds) == 3:
 					series, release, group = tds
 					referrer = series.a['href']
+
+					assert not (referrer == "http://www.novelupdates.com" or
+						referrer == "https://www.novelupdates.com" or
+						referrer == "https://www.novelupdates.com/" or
+						referrer == "http://www.novelupdates.com/")
+
 					linkas = release.find_all('a', class_='chp-release')
 					sname = series.get_text().strip()
 					gname = group.get_text().strip()
 					for link in linkas:
 						bad = any([tmp in masked_classes for tmp in link['class']])
-						self.log.info("Using %s for referrer for %s -> %s -> %s, %s, %s", referrer, sname, gname, link.get_text().strip(), link['class'], bad)
 						if not bad:
+							self.log.info("Using %s for referrer for %s -> %s -> %s, %s, %s", referrer, sname, gname, link.get_text().strip(), link['class'], bad)
 							release = {
 								'seriesname'       : sname,
 								'releaseinfo'      : link.get_text().strip(),

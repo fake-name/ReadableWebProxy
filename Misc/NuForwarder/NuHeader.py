@@ -109,6 +109,9 @@ class NuHeader(LogBase.LoggerMixin):
 
 		haveset = haveq.all()
 
+
+
+
 		# haveset += moar
 
 		if not haveset:
@@ -119,17 +122,26 @@ class NuHeader(LogBase.LoggerMixin):
 		# This lets us weight the fetch preferentially to the recent items, but still
 		# have some variability.
 
-		haveset = random.sample(haveset, put)
+		haveset = random.sample(haveset, min(put, len(haveset)))
 
 		for have in haveset:
 			if len(list(have.resolved)) >= 3:
 				raise RuntimeError("Overresolved item that's not valid.")
 
+			if (have.referrer == "http://www.novelupdates.com" or
+				have.referrer == "https://www.novelupdates.com" or
+				have.referrer == "https://www.novelupdates.com/" or
+				have.referrer == "http://www.novelupdates.com/"):
+				self.log.error("Wat?")
+				self.log.error("Bad Referrer URL got into the input queue!")
+				self.log.error("Id: %s", have.id)
+				continue
+
 			self.log.info("Putting job for url '%s'", have.outbound_wrapper)
 			self.log.info("Referring page '%s'", have.referrer)
 			raw_job = buildjob(
 				module         = 'NUWebRequest',
-				call           = 'getHeadPhantomJS',
+				call           = 'getHeadTitlePhantomJS',
 				dispatchKey    = "fetcher",
 				jobid          = -1,
 				args           = [have.outbound_wrapper, have.referrer],
@@ -213,15 +225,24 @@ class NuHeader(LogBase.LoggerMixin):
 			return False
 		while True:
 			try:
-				self.log.info("Processing remote head response: %s", new)
 				assert all([key in new for key in expected_keys])
-				assert new['call'] == 'getHeadPhantomJS'
 
 				assert 'referrer'    in new['extradat']
 				assert 'wrapper_url' in new['extradat']
 
+				if new['call'] == 'getHeadPhantomJS':
+					respurl, title = new['ret'], ""
+				elif new['call'] == 'getHeadTitlePhantomJS':
+					respurl, title = new['ret']
+				else:
+					raise RuntimeError("Response to unknown call: %s!" % new)
+
+				self.log.info("Processing remote head response: %s", new)
+				self.log.info("Resolved job to URL: %s", respurl)
+				self.log.info("Page title: %s", title)
+
 				# Handle the 301/2 not resolving properly.
-				netloc = urllib.parse.urlsplit(new['ret']).netloc
+				netloc = urllib.parse.urlsplit(respurl).netloc
 				if "novelupdates" in netloc:
 					self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
 					return True
@@ -231,12 +252,16 @@ class NuHeader(LogBase.LoggerMixin):
 					.options(joinedload('resolved'))                                           \
 					.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
 					.filter(db.NuReleaseItem.referrer==new['extradat']['referrer'])            \
-					.one()
+					.scalar()
+				if not have:
+					self.log.error("Base row deleted from resolve?")
+					return
 
 				new = db.NuResolvedOutbound(
 						client_id      = new['user'],
 						client_key     = new['user_uuid'],
-						actual_target  = new['ret'],
+						actual_target  = respurl,
+						resolved_title = title,
 						fetched_on     = datetime.datetime.now(),
 					)
 
@@ -409,7 +434,7 @@ def fetch_and_flush():
 	hd.process_avail()
 	hd.validate_from_new()
 	hd.timestamp_validated()
-	hd.put_job(put=100)
+	hd.put_job(put=30)
 	mins = 10
 	for x in range(mins):
 		hd.process_avail()
@@ -446,9 +471,8 @@ def do_nu_sync(scheduler):
 	try:
 		fetch_and_flush()
 	finally:
-		CLIENT_NUM = 2
 
-		sleeptime = int(random.triangular(15*60, (60*60), (30*60 / CLIENT_NUM)))
+		sleeptime = int(random.triangular(7*60, (30*60), (15*60)))
 		next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
 		schedule_next_exec(scheduler, next_exec)
 

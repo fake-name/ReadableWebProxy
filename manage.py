@@ -39,7 +39,7 @@ def print_func(name, func):
 	doc = inspect.getdoc(func)
 	sig = inspect.signature(func)
 
-	if not doc:
+	if not doc or (doc and not doc.strip()):
 		print("    {} -> {}".format(name.ljust(25), "UNDOCUMENTED"))
 		if not sig.parameters:
 			print("        No arguments")

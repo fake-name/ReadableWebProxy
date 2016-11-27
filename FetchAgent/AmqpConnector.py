@@ -332,7 +332,12 @@ class ConnectorManager:
 		now = time.time()
 
 		if self.info_printerval + 10 < now:
-			self.log.info("Interface timeout thread. Ages: heartbeat -> %0.2f, last message -> %0.2f.", now - self.last_hearbeat_received, now-self.last_message_received)
+			self.log.info("Interface timeout thread. Ages: heartbeat -> %0.2f, last message -> %0.2f, TX, RX q: (%s, %s).",
+					now - self.last_hearbeat_received,
+					now-self.last_message_received,
+					self.task_queue.qsize(),
+					self.response_queue.qsize(),
+					)
 			self.info_printerval += 10
 
 		# Send heartbeats every 5 seconds.
@@ -536,7 +541,7 @@ class Connector:
 			target=ConnectorManager.run_fetcher,
 			args=(self.__config, self.runstate, self.taskQueue, self.responseQueue),
 			daemon=True,
-			name="RabbitMQ Worker for vhost: {}".format(self.__config['virtual_host']))
+			name="RMQ: {}".format(self.__config['virtual_host']))
 		self.thread.start()
 
 

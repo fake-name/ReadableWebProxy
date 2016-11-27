@@ -115,8 +115,10 @@ def utility_processor():
 
 
 	def terse_ago(then):
-		if then == None:
+		if then is None or then is False:
 			return "Never"
+
+		print("Then: ", then)
 		now = datetime.datetime.now()
 		delta = now - then
 
@@ -138,7 +140,6 @@ def utility_processor():
 		else:
 			dhms = dhms[2:]
 		return ', '.join(dhms)
-
 
 	return dict(
 			format_date        = format_date,

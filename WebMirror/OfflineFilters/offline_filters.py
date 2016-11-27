@@ -68,12 +68,20 @@ def exposed_head(url, ref):
 			print("No response yet?")
 
 def exposed_update_nu_responses():
+	'''
+	Process received NU head values, and if a row has three or more
+	received head responses that match, mark them as validated and
+	timestamp them.
+	'''
 
 	hd = Misc.NuForwarder.NuHeader.NuHeader()
 	hd.validate_from_new()
 	hd.timestamp_validated()
 
 def exposed_drain_nu_responses():
+	'''
+	Block indefinitely while waiting for NU head responses in the amqp queue system.
+	'''
 
 	hd = Misc.NuForwarder.NuHeader.NuHeader()
 	while 1:
@@ -83,8 +91,10 @@ def exposed_drain_nu_responses():
 
 def exposed_do_nu_head():
 	'''
+	Execute the NU header system with 50 available urls, and
+	then wait 2 minutes for the responses to come back.
+
 	'''
-	# Misc.NuForwarder.NuHeader.fetch_and_flush()
 
 	while 1:
 		hd = Misc.NuForwarder.NuHeader.NuHeader()
@@ -103,20 +113,6 @@ def exposed_do_nu_head():
 			print("Interrupted!")
 			return
 		exposed_update_nu_responses()
-
-
-def exposed_confirm_from_heads():
-	sess = db.get_db_session()
-	print("Loading extant rows...")
-	have = sess.query(db.NuReleaseItem)                                     \
-		.options(joinedload('resolved'))                                    \
-		.all()
-	print("Loaded. Processing")
-
-	for row in have:
-		res = list(row.resolved)
-		if res:
-			print(len(res))
 
 
 def cross_sync(increment):
@@ -199,6 +195,17 @@ def exposed_cross_sync_nu_feeds():
 
 
 def exposed_delete_old_nu_root_outbound():
+	'''
+	Delete NU outbound links that use the homepage as their referrer.
+
+	Apparently NU was validating the referrer to see if the referring page actually had
+	the referring link on it, or /something/.
+
+	Anyways, it's easier to generate a permanent referrer by just pointing it at
+	the series page.
+	'''
+
+
 	sess = db.get_db_session()
 
 	for row in sess.query(db.NuReleaseItem) \
@@ -210,19 +217,31 @@ def exposed_delete_old_nu_root_outbound():
 			sess.commit()
 
 def exposed_delete_nu_unresolved():
+	'''
+	Delete all nu head system rows that have not been reviewed.
+
+	This is needed for historical purges, particularly if
+	nu changes their extnu ids.
+	'''
 	sess = db.get_db_session()
 
 	count = 0
 
 	for row in sess.query(db.NuReleaseItem) \
 		.yield_per(50).all():
-		if not len(list(row.resolved)):
-			print(row.id, row.referrer)
+
+		if len(list(row.resolved)) != 3 and row.reviewed == False:
+
+			print(row.id, len(list(row.resolved)), row.referrer)
+			for bad in row.resolved:
+				sess.delete(bad)
 			sess.delete(row)
 			count += 1
-			if count % 1000 == 0:
-				print("Committing!")
-				sess.commit()
+			# if count % 500 == 0:
+			# 	print("Committing!")
+			# 	sess.commit()
+
+	print("Committing!")
 	sess.commit()
 
 
@@ -285,6 +304,9 @@ def exposed_process_nu_pages(transmit=True):
 
 def exposed_retransmit_nu_releases(all_releases=False):
 	'''
+	If all_releases is not specified, the last one day of releases are sent.
+	If all_releases is present, all releases ever received are sent.
+	Transmit all validated NU items through the RabbitMQ update feed system.
 	'''
 
 	header = Misc.NuForwarder.NuHeader.NuHeader()

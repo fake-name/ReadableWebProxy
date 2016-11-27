@@ -71,7 +71,6 @@
 										<table class='table-striped' style='width:100%'>
 											<colgroup>
 												<col>
-												<col style='width: 115px;'>
 												<col style='width: 75px;'>
 												<col>
 												<col>
@@ -81,7 +80,6 @@
 											</colgroup>
 											<tr>
 												<th>Valid</th>
-												<th>Worker</th>
 												<th>Ago</th>
 												<th>TL Group</th>
 												<th>Series</th>
@@ -89,16 +87,19 @@
 												<th>Target URL</th>
 
 											</tr>
-											{%- for markedup_name, row_item in new -%}
+											{%- for markedup_titles, markedup_name, row_item in new -%}
 												<tr>
 													<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{row_item.seriesname}}' data-row-id="[{{row_item.id}}]" data-original-value="{{'true' if row_item.reviewed else 'false'}}" {{'checked="true"' if row_item.reviewed else ''}}></center></td>
-													<td>{% for row in row_item.resolved %}{{row.client_id}}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
-													<td>{{terse_ago(row_item.first_seen)}}</td>
+													<td>{{terse_ago(row_item.first_seen)}}<br>{{terse_ago(row_item.validated_on)}}</td>
 													<td>{{row_item.groupinfo}}</td>
 													<td>{{row_item.seriesname}}</td>
 													<td>{{row_item.releaseinfo}}</td>
 													<td>
 														<a href='{{row_item.actual_target}}'>{{markedup_name | safe}}</a>
+														{% if markedup_titles %}
+															<br>
+															{% for markedup_title in markedup_titles %}Title: {{markedup_title | safe}}{% if not loop.last %}<br>{% endif %}{% endfor %}
+														{%- endif -%}
 													</td>
 
 												</tr>
