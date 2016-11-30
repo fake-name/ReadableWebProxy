@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import msgpack
-import multiprocessing
 import settings
 import datetime
 import queue
@@ -88,7 +87,7 @@ class RabbitQueueHandler(object):
 
 	def put_item(self, data):
 		# self.log.info("Putting data: %s", data)
-		self.connector.putMessage(data, synchronous=1000)
+		return self.connector.putMessage(data)
 		# self.log.info("Outgoing data size: %s bytes.", len(data))
 
 
@@ -205,6 +204,7 @@ class RabbitQueueHandler(object):
 
 
 	def dispatch_outgoing(self):
+
 		for qname, q in self.mdict[self.settings['taskq_name']].items():
 			while not q.empty():
 				try:

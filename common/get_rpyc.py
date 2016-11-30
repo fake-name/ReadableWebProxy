@@ -1,11 +1,12 @@
 
-import runStatus
 import threading
 import traceback
+import os.path
 import queue
 import sys
 import time
 import common.LogBase as LogBase
+import runStatus
 
 # import zerorpc
 
@@ -24,13 +25,16 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 	def __init__(self, interfacename):
 		self.interfacename = interfacename
 
+		sock_path = '/tmp/rwp-fetchagent-sock'
 
+		if not os.path.exists(sock_path):
+			raise RuntimeError("Socket '%s' does not exist. Is the RPC service running?", sock_path)
 		# Execute in self.rpc_client:
 		for x in range(99999):
 			try:
 				# Cut-the-corners TCP Client:
-				s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-				s.connect(('localhost', 6000))
+				s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+				s.connect(sock_path)
 
 				self.rpc = Fixed_BSONRpc(s)
 				self.rpc_client = self.rpc.get_peer_proxy(timeout=10)

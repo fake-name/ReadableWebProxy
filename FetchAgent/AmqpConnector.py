@@ -525,8 +525,22 @@ class Connector:
 		self.checkLaunchThread()
 
 	def checkLaunchThread(self):
-		if self.thread and self.thread.isAlive():
+		queue_overfull = self.taskQueue.qsize() > 10000
+
+		if self.thread and self.thread.isAlive() and not queue_overfull:
 			return
+		if queue_overfull:
+			self.runstate.value = 0
+			for dummy_x in range(30):
+				if self.thread.isAlive():
+					time.sleep(1)
+				else:
+					self.thread.join()
+					self.thread = None
+					break
+
+
+
 		if self.thread and not self.thread.isAlive():
 			self.thread.join()
 			self.log.error("")
@@ -580,6 +594,7 @@ class Connector:
 		self.queue_put += 1
 		self.taskQueue.put(message)
 
+		return self.taskQueue.qsize()
 
 
 	def stop(self):

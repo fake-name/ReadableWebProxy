@@ -74,7 +74,7 @@ class RunInstance(object):
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
-		for dummy_x in range(100):
+		for dummy_x in range(50):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
@@ -321,7 +321,7 @@ class UpdateAggregator(object):
 
 
 		# The seen dict was eating all my free memory (I think).
-		if len(self.seen) > 1000000:
+		if len(self.seen) > 100000:
 			self.seen = {}
 
 		# else:

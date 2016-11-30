@@ -1,13 +1,16 @@
 
 
 import logging
-import logSetup
-import multiprocessing
+import threading
+import queue
 import threading
 import pickle
 import sys
 import queue
+import os
+import signal
 import FetchAgent.AmqpInterface
+import logSetup
 
 # import rpyc
 # rpyc.core.protocol.DEFAULT_CONFIG['allow_pickle'] = True
@@ -15,7 +18,6 @@ import FetchAgent.AmqpInterface
 
 
 
-import signal
 
 
 INTERRUPTS = 0
@@ -43,20 +45,18 @@ from common.fixed_bsonrpc import Fixed_BSONRpc
 class FetchInterfaceClass(object):
 
 
-	def __init__(self):
+	def __init__(self, interface_dict):
 		self.log = logging.getLogger("Main.RPC-Interface")
 
-		import FetchAgent.manager
-		self.mdict = FetchAgent.manager.manager
+		self.mdict = interface_dict
 		self.log.info("Connection")
 
 
 	def __check_have_queue(self, queuename):
 		if not queuename in self.mdict['outq']:
-			# self.log.info(self.mdict)
 			with self.mdict['qlock']:
-				self.mdict['outq'][queuename] = multiprocessing.Queue()
-				self.mdict['inq'][queuename] = multiprocessing.Queue()
+				self.mdict['outq'][queuename] = queue.Queue()
+				self.mdict['inq'][queuename] = queue.Queue()
 
 	@request
 	def putJob(self, queuename, job):
@@ -107,60 +107,69 @@ class FetchInterfaceClass(object):
 		return (True, b'wattt\0')
 
 
+sock_path = '/tmp/rwp-fetchagent-sock'
 
-def run_server():
+def run_server(interface_dict):
 	print("Started.")
 
 
 
 	# Quick-and-dirty TCP Server:
-	ss = gsocket.socket(gsocket.AF_INET, gsocket.SOCK_STREAM)
+	ss = gsocket.socket(gsocket.AF_UNIX, gsocket.SOCK_STREAM)
 	# ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	ss.bind(('localhost', 6000))
+	ss.bind(sock_path)
 	ss.listen(100)
 
 	while True:
 		s, addr = ss.accept()
 		Fixed_BSONRpc(s,
-		        FetchInterfaceClass(),
-		        client_info                 = addr,
-		        threading_model             = ThreadingModel.GEVENT,
-		        concurrent_request_handling = ThreadingModel.GEVENT)
+				FetchInterfaceClass(interface_dict),
+				client_info                 = addr,
+				threading_model             = ThreadingModel.GEVENT,
+				concurrent_request_handling = ThreadingModel.GEVENT)
+
 
 def before_exit():
 	print("Caught exit! Exiting")
 
 
 
-def initialize_manager():
-	import FetchAgent.manager
-	FetchAgent.manager.manager = {}
+def initialize_manager(interface_dict):
 
+	# interface_dict.qlock = pickle.dumps(mgr.Lock())
+	interface_dict['qlock'] = threading.Lock()
 
-	# FetchAgent.manager.manager.qlock = pickle.dumps(mgr.Lock())
-	FetchAgent.manager.manager['qlock'] = multiprocessing.Lock()
+	print("Manager lock: ", interface_dict['qlock'])
+	interface_dict['outq'] = {}
+	interface_dict['inq'] = {}
 
-	print("Manager lock: ", FetchAgent.manager.manager['qlock'])
-	FetchAgent.manager.manager['outq'] = {}
-	FetchAgent.manager.manager['inq'] = {}
+	interface_dict['feed_outq'] = queue.Queue()
+	interface_dict['feed_inq'] = queue.Queue()
 
-	FetchAgent.manager.manager['feed_outq'] = multiprocessing.Queue()
-	FetchAgent.manager.manager['feed_inq'] = multiprocessing.Queue()
-
-	return FetchAgent.manager.manager
 
 def run():
+
+	interface_dict = {}
+
 	logSetup.initLogging()
 
-
-	mtmp = initialize_manager()
-	FetchAgent.AmqpInterface.startup_interface(mtmp)
+	# Make sure the socket does not already exist
 	try:
-		run_server()
+		os.unlink(sock_path)
+	except OSError:
+		if os.path.exists(sock_path):
+			raise
+
+	initialize_manager(interface_dict)
+	FetchAgent.AmqpInterface.startup_interface(interface_dict)
+	try:
+		run_server(interface_dict)
 	except KeyboardInterrupt:
 		pass
 
-	FetchAgent.AmqpInterface.shutdown_interface(mtmp)
+	FetchAgent.AmqpInterface.shutdown_interface(interface_dict)
+
+	os.unlink(sock_path)
 
 def main():
 	print("Preloading cache directories")

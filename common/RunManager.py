@@ -146,7 +146,8 @@ class Crawler(object):
 		self.log.info("Aggregator joined.")
 
 	def start_main_job_fetcher(self):
-		self.main_job_fetcher = WebMirror.NewJobQueue.JobAggregator()
+
+		self.main_job_fetcher = WebMirror.NewJobQueue.AggregatorWrapper()
 		return self.main_job_fetcher.get_queues()
 
 	def start_raw_job_fetcher(self):

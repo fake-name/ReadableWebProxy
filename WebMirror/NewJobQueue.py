@@ -84,11 +84,11 @@ def buildjob(
 
 
 
-class JobAggregator(LogBase.LoggerMixin):
+class JobAggregatorInternal(LogBase.LoggerMixin):
 
 	loggerPath = "Main.JobAggregator"
 
-	def __init__(self, start_worker=True):
+	def __init__(self, job_queue, run_flag):
 		# print("Job __init__()")
 		super().__init__()
 
@@ -106,17 +106,19 @@ class JobAggregator(LogBase.LoggerMixin):
 				host     = settings.DATABASE_IP,
 			)
 
-		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
-		self.normal_out_queue  = multiprocessing.Queue()
+		self.normal_out_queue = job_queue
+		self.run_flag = run_flag
 
-		if start_worker:
-			self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
-			self.j_fetch_proc.start()
 
-			self.print_mod = 0
 
-			self.ruleset = WebMirror.rules.load_rules()
-			self.specialcase = WebMirror.rules.load_special_case_sites()
+	def run(self):
+
+
+		self.print_mod = 0
+
+		self.ruleset = WebMirror.rules.load_rules()
+		self.specialcase = WebMirror.rules.load_special_case_sites()
+		self.queue_filler_proc()
 
 	def get_queues(self):
 		return self.normal_out_queue
@@ -213,7 +215,7 @@ class JobAggregator(LogBase.LoggerMixin):
 			old = self.active_jobs
 			num_new  = self._get_task_internal()
 			num_new += self._get_deferred_internal()
-			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
+			self.log.info("Need to add jobs to the job queue (%s active, %s added, queue: %s)!", self.active_jobs, self.active_jobs-old, self.normal_out_queue.qsize())
 
 
 
@@ -315,7 +317,7 @@ class JobAggregator(LogBase.LoggerMixin):
 	def queue_filler_proc(self):
 
 
-		while runStatus.job_run_state.value == 1:
+		while self.run_flag.value == 1:
 			try:
 
 				self.__queue_fillter_internal()
@@ -454,6 +456,33 @@ class JobAggregator(LogBase.LoggerMixin):
 		cursor.close()
 
 		return len(rids)
+
+def run_shim(job_queue, run_flag):
+	instance = JobAggregatorInternal(job_queue, run_flag)
+	instance.run()
+
+
+class AggregatorWrapper():
+	def __init__(self, start_worker=True):
+		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
+		self.normal_out_queue  = multiprocessing.Queue()
+		self.run_flag = multiprocessing.Value("b", 1)
+		if start_worker:
+			self.main_job_agg = multiprocessing.Process(target=run_shim, args=(self.normal_out_queue, self.run_flag))
+			self.main_job_agg.start()
+		else:
+			self.main_job_agg = None
+
+
+	def get_queues(self):
+		return self.normal_out_queue
+
+	def join_proc(self):
+		self.run_flag.value = 0
+
+		if self.main_job_agg:
+			self.main_job_agg.join()
+
 
 
 def test2():
