@@ -1,6 +1,6 @@
 import sys
 import multiprocessing
-import threading
+import gc
 import time
 import traceback
 import queue
@@ -14,6 +14,7 @@ import signal
 import psycopg2
 import bsonrpc.exceptions
 import sys
+import os
 
 import settings
 import common.global_constants
@@ -25,6 +26,9 @@ import common.get_rpyc
 import zerorpc
 import runStatus
 import WebMirror.SpecialCase
+
+import mem_top
+from pympler.tracker import SummaryTracker
 
 ########################################################################################################################
 #
@@ -118,6 +122,8 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 		self.ruleset = WebMirror.rules.load_rules()
 		self.specialcase = WebMirror.rules.load_special_case_sites()
+		self.tracker = SummaryTracker()
+		self.tracker.diff()
 		self.queue_filler_proc()
 
 	def get_queues(self):
@@ -164,9 +170,6 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 					for line in traceback.format_exc().split("\n"):
 						self.log.warning(line)
 
-
-		# print("Raw job:", raw_job)
-		# print("Jobid, joburl: ", (jobid, joburl))
 
 
 	def generalLinkClean(self, link, badwords):
@@ -239,6 +242,15 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				self.active_jobs = 0
 				self.last_rx = datetime.datetime.now()
 
+	def __blocking_put(self, item):
+		while runStatus.job_run_state.value == 1:
+			try:
+				self.normal_out_queue.put_nowait(item)
+				return
+			except queue.Full:
+				self.log.warning("Response queue full ({} items). Sleeping", self.normal_out_queue.qsize())
+				time.sleep(1)
+
 	def process_responses(self):
 		while 1:
 
@@ -268,7 +280,8 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 					self.active_jobs = 0
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.active_jobs, self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
-				self.normal_out_queue.put(tmp)
+
+				self.__blocking_put(tmp)
 			else:
 				self.print_mod += 1
 				if self.print_mod > 20:
@@ -278,16 +291,24 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				break
 
 	def check_open_rpc_interface(self):
+		if not hasattr(self, "rpc_interface"):
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 		try:
 			if self.rpc_interface.check_ok():
 				return
 
 
 		except Exception:
+			self.log.error("Failure when probing RPC interface")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
 			try:
 				self.rpc_interface.close()
+				self.log.info("Closed interface due to connection exception.")
 			except Exception:
-				pass
+				self.log.error("Failure when closing errored RPC interface")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
 			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
 	def __queue_fillter_internal(self):
@@ -302,13 +323,29 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 		self.log.info("Job queue fetcher starting.")
 
-
-		while runStatus.job_run_state.value == 1:
+		for x in range(2500):
+			if not runStatus.job_run_state.value == 1:
+				break
 			self.fill_jobs()
 			self.process_responses()
 
 			time.sleep(2.5)
 			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.job_run_state.value==1)
+
+			self.log.info("Object diff:")
+			with open("growth.txt", "a") as fp:
+				fp.write("\n")
+				fp.write("Growth at {}\n".format(time.time()))
+				fp.write("Queue size: {}\n".format(self.normal_out_queue.qsize()))
+
+				# diff = self.tracker.format_diff()
+				# if not diff:
+				# 	diff.append("	No changes")
+				# for line in diff:
+				# 	fp.write("{}\n".format(line))
+				# 	self.log.info(line)
+				# self.log.info("")
+			gc.collect()
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
@@ -408,14 +445,14 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 			try:
 				cursor.execute(raw_query)
 				rids = cursor.fetchall()
-				self.db_interface.commit()
+				cursor.execute("COMMIT;")
 				break
 			except psycopg2.Error:
 				delay = random.random() / 3
 				# traceback.print_exc()
 				self.log.warn("Error getting job (psycopg2.Error)! Delaying %s.", delay)
 				time.sleep(delay)
-				self.db_interface.rollback()
+				cursor.execute("ROLLBACK;")
 
 		if runStatus.run_state.value != 1:
 			return 0
@@ -449,7 +486,8 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 			if not self.outbound_job_wanted(netloc, joburl):
 				self.delete_job(rid, joburl)
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
-				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc)
+				pass
+				# WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc)
 			else:
 				self.put_outbound_job(rid, joburl)
 
@@ -465,7 +503,7 @@ def run_shim(job_queue, run_flag):
 class AggregatorWrapper():
 	def __init__(self, start_worker=True):
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
-		self.normal_out_queue  = multiprocessing.Queue()
+		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS)
 		self.run_flag = multiprocessing.Value("b", 1)
 		if start_worker:
 			self.main_job_agg = multiprocessing.Process(target=run_shim, args=(self.normal_out_queue, self.run_flag))

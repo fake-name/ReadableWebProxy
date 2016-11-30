@@ -5,6 +5,7 @@ import multiprocessing
 import colorama as clr
 import threading
 import os.path
+import os
 import sys
 import re
 import time
@@ -118,7 +119,7 @@ class ColourHandler(UnlockedHandler):
 			nameList.append(name)
 
 
-		record.name = ".".join(nameList)
+		record.name = ".".join(nameList) + " PID: {} ".format(os.getpid())
 
 		if record.levelname == "DEBUG":
 			record.style = clr.Style.DIM

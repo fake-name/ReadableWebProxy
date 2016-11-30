@@ -290,30 +290,36 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		for item in hascss:
 			if item['style']:
 
-				parsed_style = tinycss2.parse_declaration_list(item['style'])
+				try:
+					parsed_style = tinycss2.parse_declaration_list(item['style'])
 
-				for style_chunk in parsed_style:
-					if style_chunk.type == 'declaration':
+					for style_chunk in parsed_style:
+						if style_chunk.type == 'declaration':
 
-						if any([dec_str == style_chunk.name for dec_str in initial_keys]):
-							style_chunk.value = [tinycss2.ast.IdentToken(1, 1, "Sans-Serif")]
-						if any([dec_str == style_chunk.name for dec_str in empty_keys]):
-							style_chunk.value = []
+							if any([dec_str == style_chunk.name for dec_str in initial_keys]):
+								style_chunk.value = [tinycss2.ast.IdentToken(1, 1, "Sans-Serif")]
+							if any([dec_str == style_chunk.name for dec_str in empty_keys]):
+								style_chunk.value = []
 
-						if any([dec_str == style_chunk.name for dec_str in foreground_color_keys]):
-							style_chunk.value = clamp_css_color(style_chunk.value)
-						if any([dec_str == style_chunk.name for dec_str in background_color_keys]):
-							style_chunk.value = clamp_css_color(style_chunk.value, high=False)
+							if any([dec_str == style_chunk.name for dec_str in foreground_color_keys]):
+								style_chunk.value = clamp_css_color(style_chunk.value)
+							if any([dec_str == style_chunk.name for dec_str in background_color_keys]):
+								style_chunk.value = clamp_css_color(style_chunk.value, high=False)
 
-						# Force overflow to be visible
-						if style_chunk.name == "overflow":
-							style_chunk.value = [tinycss2.ast.IdentToken(1, 1, "visible")]
-
-
-				parsed_style = [chunk for chunk in parsed_style if chunk.value]
+							# Force overflow to be visible
+							if style_chunk.name == "overflow":
+								style_chunk.value = [tinycss2.ast.IdentToken(1, 1, "visible")]
 
 
-				item['style'] = tinycss2.serialize(parsed_style)
+					parsed_style = [chunk for chunk in parsed_style if chunk.value]
+
+					item['style'] = tinycss2.serialize(parsed_style)
+
+				except AttributeError:
+					# If the parser encountered an error, it'll produce 'ParseError' tokens without
+					# the 'value' attribute. This produces attribute errors.
+					# If the style is fucked, just clobber it.
+					item['style'] = ""
 		return soup
 
 	def cleanHtmlPage(self, soup, url=None):
