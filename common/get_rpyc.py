@@ -8,14 +8,16 @@ import time
 import common.LogBase as LogBase
 import runStatus
 
-# import zerorpc
+import zerorpc
 
 
-import socket
-from bsonrpc import BatchBuilder, BSONRpc
-from bsonrpc import request, notification, service_class
+# import socket
+# from bsonrpc import BatchBuilder, BSONRpc
+# from bsonrpc import request, notification, service_class
 
-from common.fixed_bsonrpc import Fixed_BSONRpc
+# from common.fixed_bsonrpc import Fixed_BSONRpc
+
+
 
 
 class RemoteJobInterface(LogBase.LoggerMixin):
@@ -27,17 +29,16 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 
 		sock_path = '/tmp/rwp-fetchagent-sock'
 
+
 		if not os.path.exists(sock_path):
 			raise RuntimeError("Socket '%s' does not exist. Is the RPC service running?", sock_path)
 		# Execute in self.rpc_client:
 		for x in range(99999):
 			try:
 				# Cut-the-corners TCP Client:
-				s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-				s.connect(sock_path)
-
-				self.rpc = Fixed_BSONRpc(s)
-				self.rpc_client = self.rpc.get_peer_proxy(timeout=10)
+				self.rpc_client = zerorpc.Client()
+				self.rpc_client.connect("ipc://{}".format(sock_path))
+				# self.rpc_client = self.rpc.get_peer_proxy(timeout=10)
 				self.check_ok()
 				return
 			except Exception as e:
@@ -46,7 +47,7 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 
 	def __del__(self):
 		if hasattr(self, 'rpc'):
-			self.rpc.close() # Closes the socket 's' also
+			self.rpc_client.close() # Closes the socket 's' also
 
 	def get_job(self):
 		try:
@@ -77,9 +78,10 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 	def check_ok(self):
 		ret, bstr = self.rpc_client.checkOk()
 		assert ret is True
+		assert len(bstr) > 0
 
 	def close(self):
-		self.rpc.close()
+		self.rpc_client.close()
 
 
 

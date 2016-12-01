@@ -11,6 +11,10 @@ import os
 import signal
 import FetchAgent.AmqpInterface
 import logSetup
+import zerorpc
+import gevent.monkey
+import gevent
+
 
 # import rpyc
 # rpyc.core.protocol.DEFAULT_CONFIG['allow_pickle'] = True
@@ -34,14 +38,13 @@ def build_handler(server):
 	return handler
 
 
-import gevent.socket as gsocket
-import socket
-from bsonrpc import BSONRpc, ThreadingModel
-from bsonrpc import rpc_request, request, service_class
-from common.fixed_bsonrpc import Fixed_BSONRpc
+# import gevent.socket as gsocket
+# import socket
+# from bsonrpc import BSONRpc, ThreadingModel
+# from bsonrpc import rpc_request, request, service_class
+# from common.fixed_bsonrpc import Fixed_BSONRpc
 
 
-@service_class
 class FetchInterfaceClass(object):
 
 
@@ -58,13 +61,11 @@ class FetchInterfaceClass(object):
 				self.mdict['outq'][queuename] = queue.Queue()
 				self.mdict['inq'][queuename] = queue.Queue()
 
-	@request
 	def putJob(self, queuename, job):
 		self.__check_have_queue(queuename)
 		self.log.info("Putting item in queue %s with size: %s (Queue size: %s)!", queuename, len(job), self.mdict['outq'][queuename].qsize())
 		self.mdict['outq'][queuename].put(job)
 
-	@request
 	def getJob(self, queuename):
 		self.__check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
@@ -74,7 +75,6 @@ class FetchInterfaceClass(object):
 			return None
 
 
-	@request
 	def getJobNoWait(self, queuename):
 		self.__check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
@@ -83,18 +83,15 @@ class FetchInterfaceClass(object):
 		except queue.Empty:
 			return None
 
-	@request
 	def putRss(self, message):
 		self.log.info("Putting rss item with size: %s (qsize: %s)!", len(message), self.mdict['feed_outq'].qsize())
 		self.mdict['feed_outq'].put(message)
 
-	@request
 	def putManyRss(self, messages):
 		for message in messages:
 			self.log.info("Putting rss item with size: %s!", len(message))
 			self.mdict['feed_outq'].put(message)
 
-	@request
 	def getRss(self):
 		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'].qsize())
 		try:
@@ -102,32 +99,25 @@ class FetchInterfaceClass(object):
 		except queue.Empty:
 			return None
 
-	@request
 	def checkOk(self):
 		return (True, b'wattt\0')
 
 
 sock_path = '/tmp/rwp-fetchagent-sock'
 
+
 def run_server(interface_dict):
 	print("Started.")
+	served_class = FetchInterfaceClass(interface_dict)
+	serverLog = logging.getLogger("Main.RPyCServer")
+	server = zerorpc.Server(served_class, heartbeat=30)
 
+	sock_path = '/tmp/rwp-fetchagent-sock'
+	server.bind("ipc://{}".format(sock_path))
 
+	gevent.signal(signal.SIGINT, build_handler(server))
 
-	# Quick-and-dirty TCP Server:
-	ss = gsocket.socket(gsocket.AF_UNIX, gsocket.SOCK_STREAM)
-	# ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	ss.bind(sock_path)
-	ss.listen(100)
-
-	while True:
-		s, addr = ss.accept()
-		Fixed_BSONRpc(s,
-				FetchInterfaceClass(interface_dict),
-				client_info                 = addr,
-				threading_model             = ThreadingModel.GEVENT,
-				concurrent_request_handling = ThreadingModel.GEVENT)
-
+	server.run()
 
 def before_exit():
 	print("Caught exit! Exiting")

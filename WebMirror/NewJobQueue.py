@@ -248,7 +248,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				self.normal_out_queue.put_nowait(item)
 				return
 			except queue.Full:
-				self.log.warning("Response queue full ({} items). Sleeping", self.normal_out_queue.qsize())
+				self.log.warning("Response queue full (%s items). Sleeping", self.normal_out_queue.qsize())
 				time.sleep(1)
 
 	def process_responses(self):
@@ -323,7 +323,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 		self.log.info("Job queue fetcher starting.")
 
-		for x in range(2500):
+		for x in range(1000):
 			if not runStatus.job_run_state.value == 1:
 				break
 			self.fill_jobs()
@@ -345,10 +345,11 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				# 	fp.write("{}\n".format(line))
 				# 	self.log.info(line)
 				# self.log.info("")
-			gc.collect()
+			#
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
+		gc.collect()
 
 
 	def queue_filler_proc(self):
