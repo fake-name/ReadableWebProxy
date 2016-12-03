@@ -71,7 +71,7 @@ def exposed_remote_fetch_enqueue(url, debug=True, rss_debug=False):
 	Requires the FetchAgent service to be running.
 	'''
 	print("Enqueueing ")
-	instance = WebMirror.NewJobQueue.JobAggregator(start_worker=False)
+	instance = WebMirror.NewJobQueue.JobAggregatorInternal(None, None)
 	sess = db.get_db_session()
 	job = get_create_job(sess, url)
 	job.state = 'fetching'

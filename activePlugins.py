@@ -15,20 +15,19 @@ def minutes(num):
 # All they do is specify the order in which plugins
 # are run, initially, starting after 1-minue*{key} intervals
 
-import WebMirror.TimedTriggers.RssTrigger
 import WebMirror.TimedTriggers.RollingRewalkTrigger
-import WebMirror.TimedTriggers.PageTriggers
+import WebMirror.TimedTriggers.UrlTriggers
 # import Misc.NuForwarder.NuForwarder
 import Misc.HistoryAggregator.Flatten
 import WebMirror.util.StatusUpdater.Updater
 
 scrapePlugins = {
-	0  : (WebMirror.TimedTriggers.RssTrigger.RssTriggerBase,                     minutes(15)),
-	1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase, minutes(90)),
-	2  : (WebMirror.TimedTriggers.PageTriggers.HourlyPageTrigger,                minutes(45)),
-	3  : (WebMirror.TimedTriggers.PageTriggers.EverySixHoursPageTrigger,            hours(4)),
-	4  : (WebMirror.TimedTriggers.PageTriggers.EveryOtherDayPageTrigger,             days(3)),
-	5  : (Misc.HistoryAggregator.Flatten.DbFlattener,                               hours(6)),
+	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                     minutes(15)),
+	1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase,  minutes(90)),
+	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                  minutes(45)),
+	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,              hours(4)),
+	4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,               days(3)),
+	5  : (Misc.HistoryAggregator.Flatten.DbFlattener,                                hours(6)),
 	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                      minutes(10)),
 	# 6  : (Misc.NuForwarder.NuForwarder.NuForwarder,                              minutes(30)),
 

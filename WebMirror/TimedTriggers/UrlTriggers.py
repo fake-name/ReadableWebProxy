@@ -8,8 +8,44 @@ import urllib.parse
 import datetime
 import sqlalchemy.exc
 
+class UrlTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
-class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
+	@abc.abstractmethod
+	def get_urls(self):
+		pass
+
+
+
+class RssTriggerBase(UrlTrigger):
+
+
+	pluginName = "Rss Trigger"
+
+	loggerPath = 'RssTrigger'
+
+
+	def get_urls(self):
+		self.rules =  WebMirror.rules.load_rules()
+		feeds = []
+		for item in self.rules:
+			feeds += item['feedurls']
+		return feeds
+
+
+	def retriggerRssFeeds(self, feedurls):
+		sess = self.db.get_db_session()
+
+		self.retriggerUrlList(feedurls)
+
+
+	def go(self):
+		feeds = self.get_urls()
+		self.log.info("Found %s feeds in rule files.", len(feeds))
+		self.retriggerRssFeeds(feeds)
+
+
+
+class PageTriggerBase(UrlTrigger):
 
 
 	pluginName = "Page Triggers"
@@ -20,6 +56,10 @@ class PageTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 	def pages(self):
 		pass
 
+
+	def get_urls(self):
+		# (hacky) explicit copy
+		return [tmp for tmp in self.pages]
 
 	def retriggerPages(self):
 
@@ -58,6 +98,8 @@ class HourlyPageTrigger(PageTriggerBase):
 		# Fetch the new NovelUpdates stuff.
 		'http://www.novelupdates.com/',
 	]
+
+
 
 class EverySixHoursPageTrigger(PageTriggerBase):
 	pages = [

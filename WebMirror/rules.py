@@ -445,12 +445,62 @@ def load_raw_mirror_sites():
 
 
 
+
 def netloc_send_feed(netloc):
 	for ruleset in load_rules():
 		if ruleset['send_raw_feed']:
 			if netloc in ruleset['netlocs']:
 				return True
 	return False
+
+
+
+
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+
+import activePlugins
+import WebMirror.TimedTriggers.UrlTriggers
+
+def get_triggered_urls():
+	ret = []
+	for plugin, dummy_interval in activePlugins.scrapePlugins.values():
+		if issubclass(plugin, WebMirror.TimedTriggers.UrlTriggers.UrlTrigger):
+			instance = plugin()
+			urls = instance.get_urls()
+			ret += urls
+	return ret
+
+def load_triggered_url_list():
+
+	if flags.TRIGGERED_URLS_CACHE == None or "debug" in sys.argv:
+		print("Need to load special-url handling ruleset (%s, %s)" % (flags.TRIGGERED_URLS_CACHE == None, "debug" in sys.argv))
+		flags.TRIGGERED_URLS_CACHE = get_triggered_urls()
+
+
+	return flags.TRIGGERED_URLS_CACHE
+
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Trigger cache-loading of the ruleset.
 
@@ -464,7 +514,8 @@ startup()
 
 if __name__ == "__main__":
 	# print(load_raw_mirror_sites())
-	print(load_special_case_sites())
+	# print(load_special_case_sites())
+	print(load_triggered_url_list())
 
 	# for ruleset in load_rules():
 	# 	if ruleset['send_raw_feed'] == False:

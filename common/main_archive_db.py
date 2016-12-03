@@ -197,7 +197,7 @@ class NuReleaseItem(common.db_base.Base):
 	id               = Column(BigInteger, primary_key=True)
 
 	validated        = Column(Boolean, default=False, nullable=False, index=True)
-	reviewed         = Column(Boolean, default=False, nullable=False, index=True)
+	reviewed         = Column(common.db_types.nu_item_enum, default='unverified', nullable=False, index=True)
 
 	actual_target    = Column(Text)
 

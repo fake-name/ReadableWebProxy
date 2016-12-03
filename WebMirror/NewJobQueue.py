@@ -120,9 +120,10 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 		self.print_mod = 0
 
-		self.ruleset = WebMirror.rules.load_rules()
-		self.specialcase = WebMirror.rules.load_special_case_sites()
-		self.tracker = SummaryTracker()
+		self.ruleset        = WebMirror.rules.load_rules()
+		self.specialcase    = WebMirror.rules.load_special_case_sites()
+		self.tracker        = SummaryTracker()
+		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
 		self.tracker.diff()
 		self.queue_filler_proc()
 
@@ -133,7 +134,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		self.log.info("Setting exit flag on processor.")
 		runStatus.job_run_state.value = 0
 		self.log.info("Joining on worker thread.")
-		self.j_fetch_proc.join(0)
+
 
 	def put_outbound_job(self, jobid, joburl):
 		self.active_jobs += 1
@@ -193,12 +194,17 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		badwords = list(set(badwords))
 		return badwords
 
-	def outbound_job_wanted(self, netloc, joburl):
-		badwords = self.getBadWords(netloc)
 
+	def outbound_job_wanted(self, netloc, joburl):
+
+		badwords = self.getBadWords(netloc)
 		ret = self.generalLinkClean(joburl, badwords)
 		if ret:
 			return True
+
+		if ret in self.triggerUrls:
+			return True
+
 
 		self.log.warn("Unwanted URL: '%s' - %s", joburl, ret)
 

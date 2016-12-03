@@ -19,53 +19,26 @@ class FilterBase(PageProcessor):
 
 	def __init__(self, **kwargs):
 		super().__init__()
-		# if self._needs_amqp and kwargs.get('connect', True):
-		# 	if "message_q" in kwargs and kwargs['message_q']:
-		# 		# print("Filter has a queue, not connecting directly.")
-		# 		self.msg_q = kwargs['message_q']
-		# 	else:
-		# 		# print()
-		# 		if config.C_DO_RABBIT:
-		# 			print("No message queue! Doing independent RabbitMQ connection!")
-		# 			# traceback.print_stack()
-		# 			# print("Wat?")
-		# 			# print()
-		# 			self.msg_q = False
-		# 			amqp_settings = {
-		# 				"RABBIT_LOGIN" : config.C_RABBIT_LOGIN,
-		# 				"RABBIT_PASWD" : config.C_RABBIT_PASWD,
-		# 				"RABBIT_SRVER" : config.C_RABBIT_SRVER,
-		# 				"RABBIT_VHOST" : config.C_RABBIT_VHOST,
-		# 				'taskq_task'     : 'task.master.q',
-		# 				'taskq_response' : 'response.master.q',
-		# 			}
-
-		self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
-		self.rpc_interface.check_ok()
 
 		self._no_ret = True
 
 		self.kwargs = kwargs
 		self.db_sess = kwargs['db_sess']
-		# 'pageUrl'         : url,
-		# 'pgContent'       : content,
-		# 'mimeType'        : mimeType,
-		# 'db_sess'         : self.db_sess,
-		# 'baseUrls'        : self.start_url,
-		# 'loggerPath'      : self.loggerPath,
-		# 'badwords'        : self.rules['badwords'],
-		# 'decompose'       : self.rules['decompose'],
-		# 'decomposeBefore' : self.rules['decomposeBefore'],
-		# 'fileDomains'     : self.rules['fileDomains'],
-		# 'allImages'       : self.rules['allImages'],
-		# 'ignoreBadLinks'  : self.rules['IGNORE_MALFORMED_URLS'],
-		# 'stripTitle'      : self.rules['stripTitle'],
-		# 'relinkable'      : self.relinkable,
-		# 'destyle'         : self.rules['destyle'],
-		# 'preserveAttrs'   : self.rules['preserveAttrs'],
-		# 'type'            : self.rules['type'],
-		# 'message_q'       : self.response_queue,
-		# 'job'             : self.job,
+
+	# Lazy-load the remote interface construction.
+	def __getattr__(self, name):
+		if name == "rpc_interface" and not name in self.__dict__:
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
+			self.rpc_interface.check_ok()
+			return self.rpc_interface
+
+		else:
+			raise AttributeError
+
+	def __del__(self):
+		if hasattr(self, "rpc_interface"):
+			self.rpc_interface.close()
+
 
 	def put_page_link(self, link):
 		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None and False:
