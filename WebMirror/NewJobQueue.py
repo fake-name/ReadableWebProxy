@@ -113,18 +113,16 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		self.normal_out_queue = job_queue
 		self.run_flag = run_flag
 
+		self.ruleset        = WebMirror.rules.load_rules()
+		self.specialcase    = WebMirror.rules.load_special_case_sites()
+		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
+		self.print_mod = 0
 
 
 	def run(self):
 
 
-		self.print_mod = 0
 
-		self.ruleset        = WebMirror.rules.load_rules()
-		self.specialcase    = WebMirror.rules.load_special_case_sites()
-		self.tracker        = SummaryTracker()
-		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
-		self.tracker.diff()
 		self.queue_filler_proc()
 
 	def get_queues(self):
@@ -202,9 +200,8 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		if ret:
 			return True
 
-		if ret in self.triggerUrls:
+		if joburl in self.triggerUrls:
 			return True
-
 
 		self.log.warn("Unwanted URL: '%s' - %s", joburl, ret)
 
@@ -337,21 +334,6 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 			time.sleep(2.5)
 			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.job_run_state.value==1)
-
-			self.log.info("Object diff:")
-			with open("growth.txt", "a") as fp:
-				fp.write("\n")
-				fp.write("Growth at {}\n".format(time.time()))
-				fp.write("Queue size: {}\n".format(self.normal_out_queue.qsize()))
-
-				# diff = self.tracker.format_diff()
-				# if not diff:
-				# 	diff.append("	No changes")
-				# for line in diff:
-				# 	fp.write("{}\n".format(line))
-				# 	self.log.info(line)
-				# self.log.info("")
-			#
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
