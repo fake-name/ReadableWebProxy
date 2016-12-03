@@ -117,6 +117,7 @@ class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 						self.log.info("New: '%s' -> '%s' : '%s'", item['seriesname'], item['releaseinfo'], item['groupinfo'])
 						have = db.NuReleaseItem(
 								validated        = False,
+								reviewed         = 'unverified',
 								seriesname       = item['seriesname'],
 								releaseinfo      = item['releaseinfo'],
 								groupinfo        = item['groupinfo'],

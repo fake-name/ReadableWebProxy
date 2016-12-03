@@ -230,7 +230,7 @@ def exposed_delete_nu_unresolved():
 	for row in sess.query(db.NuReleaseItem) \
 		.yield_per(50).all():
 
-		if len(list(row.resolved)) != 3 and row.reviewed == False:
+		if len(list(row.resolved)) != 3 and row.reviewed == 'unverified':
 
 			print(row.id, len(list(row.resolved)), row.referrer)
 			for bad in row.resolved:

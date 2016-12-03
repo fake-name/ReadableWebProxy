@@ -303,28 +303,6 @@ class NuForwarder(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.amqp_put_item(release)
 
 
-	def emit_verified_releases(self):
-
-		valid_recent = self.db_sess.query(db.NuReleaseItem)                                                \
-			.filter(db.NuReleaseItem.validated == True)                                                    \
-			.filter(db.NuReleaseItem.validated_on != None)                                                 \
-			.filter(db.NuReleaseItem.validated_on > datetime.datetime.now() - datetime.timedelta(days=14)) \
-			.all()
-
-		for row in valid_recent:
-			release = {
-						'releaseinfo'   : row.releaseinfo,
-						'groupinfo'     : row.groupinfo,
-						'seriesname'    : row.seriesname,
-						'addtime'       : row.first_seen,
-						'actual_target' : row.actual_target,
-					}
-			if release and not row.seriesname.endswith("..."):
-				# print(release)
-				self.do_release(release)
-
-		self.log.info("Sent %s releases.", len(list(valid_recent)))
-
 	def close(self):
 		print("Closing")
 		self.data_in.close()

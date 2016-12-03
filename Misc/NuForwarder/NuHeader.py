@@ -378,7 +378,7 @@ class NuHeader(LogBase.LoggerMixin):
 			earliest = datetime.datetime.min
 
 		validated = self.db_sess.query(db.NuReleaseItem)      \
-			.filter(db.NuReleaseItem.reviewed == True)        \
+			.filter(db.NuReleaseItem.reviewed == 'valid')        \
 			.filter(db.NuReleaseItem.validated == True)       \
 			.filter(db.NuReleaseItem.validated_on > earliest) \
 			.all()

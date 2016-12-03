@@ -68,7 +68,7 @@ def add_highlight(from_name, from_chp, from_group, namestr):
 
 def get_nu_items(sess, selector):
 
-	intf = NuHeader.NuHeader()
+	intf = NuHeader.NuHeader(connect=False)
 	intf.fix_names()
 
 
@@ -76,16 +76,18 @@ def get_nu_items(sess, selector):
 
 	if selector == "verified":
 		new_items = new_items.filter(db.NuReleaseItem.validated == True)
-		new_items = new_items.filter(db.NuReleaseItem.reviewed == True)
+		new_items = new_items.filter(db.NuReleaseItem.reviewed == 'valid')
 		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 	elif selector == "all":
 		new_items = new_items.filter(db.NuReleaseItem.validated == True)
 		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 	elif selector == "raw":
 		new_items = new_items.filter(db.NuReleaseItem.actual_target == None)
+	elif selector == "rejected":
+		new_items = new_items.filter(db.NuReleaseItem.reviewed == 'rejected')
 	elif selector == "unverified" or selector == None:
 		new_items = new_items.filter(db.NuReleaseItem.validated == True)
-		new_items = new_items.filter(db.NuReleaseItem.reviewed == False)
+		new_items = new_items.filter(db.NuReleaseItem.reviewed == 'unverified')
 		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 
 	new_items = new_items.order_by(desc(db.NuReleaseItem.first_seen))

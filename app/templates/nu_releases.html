@@ -54,15 +54,13 @@
 										<a href='/nu_releases/?view=all'>All</a>
 										<a href='/nu_releases/?view=unverified'>Unverified</a>
 										<a href='/nu_releases/?view=verified'>Verified</a>
+										<a href='/nu_releases/?view=rejected'>Rejected</a>
 										<a href='/nu_releases/?view=raw'>Raw</a>
 									</div>
 									<h4 class="pull-left">
 										Releases: {{release_selector}} ({{new | length}})
 									</h4>
 									<div class="clearfix"></div>
-									<div class="pull-right">
-										<button onclick="delete_changes()">Delete Checked</button>
-									</div>
 									<button onclick="apply_changes()">Apply changes</button>
 									<button onclick="check_rows()">Check rows</button>
 									<div class="clearfix"></div>
@@ -70,7 +68,7 @@
 									<div>
 										<table class='table-striped' style='width:100%'>
 											<colgroup>
-												<col>
+												<col style='width: 50px;'>
 												<col style='width: 75px;'>
 												<col>
 												<col>
@@ -79,7 +77,7 @@
 												<col>
 											</colgroup>
 											<tr>
-												<th>Valid</th>
+												<th>OK</th>
 												<th>Ago</th>
 												<th>TL Group</th>
 												<th>Series</th>
@@ -88,8 +86,14 @@
 
 											</tr>
 											{%- for markedup_titles, markedup_name, row_item in new -%}
-												<tr>
-													<td><center><input class='row-checkbox' type="checkbox" data-series-name='{{row_item.seriesname}}' data-row-id="[{{row_item.id}}]" data-original-value="{{'true' if row_item.reviewed else 'false'}}" {{'checked="true"' if row_item.reviewed else ''}}></center></td>
+												<tr class='release-row'>
+													<td>
+														<form class='row-state' data-series-name='{{row_item.seriesname}}' data-row-id="[{{row_item.id}}]" data-original-value="{{row_item.reviewed}}">
+															<input type="radio" name="review-state" value="valid" {{'checked="true"' if row_item.reviewed == "valid" else ''}}> ✔<br>
+															<input type="radio" name="review-state" value="rejected" {{'checked="true"' if row_item.reviewed == "rejected" else ''}}> ✖
+														</form>
+
+													</td>
 													<td>{{terse_ago(row_item.first_seen)}}<br>{{terse_ago(row_item.validated_on)}}</td>
 													<td>{{row_item.groupinfo}}</td>
 													<td>{{row_item.seriesname}}</td>
@@ -105,9 +109,6 @@
 												</tr>
 											{%- endfor -%}
 										</table>
-									</div>
-									<div class="pull-right">
-										<button onclick="delete_changes()">Delete Checked</button>
 									</div>
 									<button onclick="apply_changes()">Apply changes</button>
 									<button onclick="check_rows()">Check rows</button>
@@ -172,21 +173,24 @@
 
 		function apply_changes()
 		{
-			var rows = $(".row-checkbox");
+			var rows = $(".row-state");
 
 			var changes = [];
 			rows.each(function( index, value ) {
 				var itm = $(this);
+				var current = itm.find("input[name=review-state]:checked").val()
+				if (current == undefined)
+					current = "unverified"
 
-				if ( itm.data('originalValue') != itm.is(':checked'))
+				if ( itm.data('originalValue') != current)
 				{
-					console.log( itm.data(), itm.is(':checked') );
+					console.log( itm.data('originalValue'), current );
 					for (var idx in itm.data().rowId)
 					{
 						changes.push({
 							'id'  : itm.data().rowId[idx],
 							'old' : itm.data().originalValue,
-							'new' : itm.is(':checked'),
+							'new' : current,
 						});
 					}
 				}
@@ -210,54 +214,59 @@
 			}
 
 		}
-		function delete_changes()
-		{
-			var rows = $(".row-checkbox");
 
-			var changes = [];
-			rows.each(function( index, value ) {
-				var itm = $(this);
+		// function delete_changes()
+		// {
+		// 	var rows = $(".release-row");
 
-				if (itm.is(':checked'))
-				{
-					for (var idx in itm.data().rowId)
-					{
-						changes.push({
-							'del_id'  : itm.data().rowId[idx],
-						});
-					}
-				}
-			});
-			console.log("Changes:", changes.length, changes)
+		// 	var changes = [];
+		// 	rows.each(function( index, value ) {
+		// 		var itm = $(this);
+
+		// 		if (itm.is(':checked'))
+		// 		{
+		// 			for (var idx in itm.data().rowId)
+		// 			{
+		// 				changes.push({
+		// 					'del_id'  : itm.data().rowId[idx],
+		// 				});
+		// 			}
+		// 		}
+		// 	});
+		// 	console.log("Changes:", changes.length, changes)
 
 
-			if (changes.length)
-			{
-				console.log("Making request")
-				$.ajax({
-					url         : '/nu_api/',
-					data        : JSON.stringify({'op' : 'nu release delete', 'data' : changes}),
-					success     : content_load_cb,
-					error       : content_load_fail,
-					method      : "POST",
-					dataType    : 'json',
-					contentType : "application/json;",
+		// 	if (changes.length)
+		// 	{
+		// 		console.log("Making request")
+		// 		$.ajax({
+		// 			url         : '/nu_api/',
+		// 			data        : JSON.stringify({'op' : 'nu release delete', 'data' : changes}),
+		// 			success     : content_load_cb,
+		// 			error       : content_load_fail,
+		// 			method      : "POST",
+		// 			dataType    : 'json',
+		// 			contentType : "application/json;",
 
-				})
-			}
+		// 		})
+		// 	}
 
-		}
+		// }
 
 		function check_rows()
 		{
 			console.log("Wat?")
-			var rows = $(".row-checkbox");
+			var rows = $(".row-state");
+			console.log(rows)
 			rows.each(function( index, value ) {
 				var itm = $(this);
+				console.log()
+				console.log( itm.data(), itm.find("input[name=review-state]:checked").val(), itm.data().rowId.length, itm.data().seriesName );
 
-				console.log( itm.data(), itm.is(':checked'), itm.data().rowId.length, itm.data().seriesName );
-				if (!itm.data().seriesName.endsWith('...'))
-					itm.prop( "checked", true );
+				var set = itm.find("input[name=review-state]:checked").length != 0
+
+				if (!itm.data().seriesName.endsWith('...') && !set)
+					itm.find("input[value=valid]").prop( "checked", true );
 			});
 		}
 
