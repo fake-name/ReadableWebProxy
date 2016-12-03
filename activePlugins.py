@@ -17,7 +17,7 @@ def minutes(num):
 
 import WebMirror.TimedTriggers.RollingRewalkTrigger
 import WebMirror.TimedTriggers.UrlTriggers
-# import Misc.NuForwarder.NuForwarder
+import Misc.TimedTriggers.QueueTriggers
 import Misc.HistoryAggregator.Flatten
 import WebMirror.util.StatusUpdater.Updater
 
@@ -29,7 +29,7 @@ scrapePlugins = {
 	4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,               days(3)),
 	5  : (Misc.HistoryAggregator.Flatten.DbFlattener,                                hours(6)),
 	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                      minutes(10)),
-	# 6  : (Misc.NuForwarder.NuForwarder.NuForwarder,                              minutes(30)),
+	6  : (Misc.TimedTriggers.QueueTriggers.NuQueueTrigger,                        minutes(60)),
 
 }
 

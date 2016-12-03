@@ -22,7 +22,7 @@ Overall data-flow:
      |         +----------------------+   +--------+----------+    |    +----+-----------------+
      |         +----------------------+   |                   |    |         V
      |         |                      |   |  Process          |    |    +----+-------------+
-     |         |  Generate update     |   |  retrieved        |    |    |  WLNUpdates      |
+     |         |  Generate update     |   |  retrieved        |    |    |    WLNUpdates    |
      +--(-)----+  based on processed  +<--+  content using    |    |    | Release parsing  |
          |     |  content.            |   |  plugin LUT       |    |    +----+-------------+
          |     |                      |   |                   |    |         |

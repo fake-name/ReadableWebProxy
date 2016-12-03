@@ -39,48 +39,27 @@ import flags
 import config
 from config import C_RAW_RESOURCE_DIR
 
-def get_create_job(sess, url):
-
-	have = sess.query(db.WebPages).filter(db.WebPages.url == url).scalar()
-	if have:
-		return have
-	else:
-
-		parsed = urllib.parse.urlparse(url)
-		root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
-
-		new = db.WebPages(
-			url       = url,
-			starturl  = root,
-			netloc    = parsed.netloc,
-			distance  = 50000,
-			is_text   = True,
-			priority  = 500000,
-			type      = 'unknown',
-			fetchtime = datetime.datetime.now(),
-			)
-		sess.add(new)
-		sess.commit()
-		return new
+import WebMirror.TimedTriggers.QueueTriggers
 
 
-def exposed_remote_fetch_enqueue(url, debug=True, rss_debug=False):
+def exposed_remote_fetch_enqueue(url):
 	'''
 	Place a normal fetch request for url `url` into the remote fetch queue.
 
 	Requires the FetchAgent service to be running.
 	'''
+
 	print("Enqueueing ")
-	instance = WebMirror.NewJobQueue.JobAggregatorInternal(None, None)
-	sess = db.get_db_session()
-	job = get_create_job(sess, url)
-	job.state = 'fetching'
-	sess.commit()
-	print("Job: ", job, job.state)
+	trig = WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger()
+	trig.enqueue_url(url)
 
-	instance.check_open_rpc_interface()
+def exposed_trigger_nu_homepage_fetch():
+	'''
+	Trigger testing for the QueueTrigger system
+	'''
+	trig = WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger()
+	trig.go()
 
-	instance.put_outbound_job(job.id, job.url)
 
 def exposed_fetch(url, debug=True, rss_debug=False):
 	'''
@@ -754,3 +733,16 @@ def exposed_flatten_history():
 	Misc.HistoryAggregator.Flatten.consolidate_history()
 
 
+def exposed_test_new_job_queue():
+	'''
+	Testing function for NewJobQueue components
+	'''
+
+	instance = WebMirror.NewJobQueue.JobAggregatorInternal(None, None)
+
+	want = instance.outbound_job_wanted("www.novelupdates.com", "http://www.novelupdates.com/")
+	print(want)
+	want = instance.outbound_job_wanted("twitter.com", "https://twitter.com/Baka_Tsuki")
+	print(want)
+	want = instance.outbound_job_wanted("twitter.com", "https://twitter.com/Nano_Desu_Yo")
+	print(want)
