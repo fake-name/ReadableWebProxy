@@ -21,6 +21,22 @@ def build_error_response(message):
 		)
 	return response
 
+def set_cache_control_headers(response, allow_inline=False):
+
+	response.headers['X-UA-Compatible']         = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"]           = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"]                  = "no-cache"
+	response.headers["Expires"]                 = "Thu, 01 Jan 1970 00:00:00"
+
+	response.headers["X-XSS-Protection"]        = "1; mode=block"
+	response.headers["X-Frame-Options"]         = "deny"
+
+	# Urrrrgh, I need to fix this
+	response.headers["Content-Security-Policy"] = "default-src 'self'; style-src 'self'; script-src 'self' {}".format("" if allow_inline is False else "'unsafe-inline'")
+
+	return response
+
+
 @app.route('/view', methods=['GET'])
 def view():
 	req_url = request.args.get('url')
@@ -31,7 +47,8 @@ def view():
 	if version:
 		return render_template('error.html', title = 'Error', message = "Historical views must be routed through the /history route!")
 
-	return render_template('view.html', title = 'Rendering Content', req_url = req_url, version=None)
+	response = make_response(render_template('view.html', title = 'Rendering Content', req_url = req_url, version=None))
+	return set_cache_control_headers(response, allow_inline=True)
 
 def do_history_delete(versions, version, delete_id, delete):
 	if delete != "True":
@@ -137,13 +154,8 @@ def render():
 		cachestate = cachestate,
 		req_url    = req_url,
 		)
+	return set_cache_control_headers(response)
 
-	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-	response.headers["Pragma"] = "no-cache"
-	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
-
-	return response
 
 @app.route('/render_rsc', methods=['GET'])
 def render_resource():
@@ -159,13 +171,8 @@ def render_resource():
 	response.headers['Content-Type'] = mimetype
 	response.headers["Content-Disposition"] = "attachment; filename={}".format(fname)
 
+	return set_cache_control_headers(response)
 
-	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-	response.headers["Pragma"] = "no-cache"
-	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
-
-	return response
 	# return render_template('render.html',
 	# 	title      = title,
 	# 	contents   = content,
