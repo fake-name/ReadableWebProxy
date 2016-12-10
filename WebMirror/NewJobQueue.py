@@ -475,8 +475,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 			if not self.outbound_job_wanted(netloc, joburl):
 				self.delete_job(rid, joburl)
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
-				pass
-				# WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc)
+				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc)
 			else:
 				self.put_outbound_job(rid, joburl)
 

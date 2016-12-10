@@ -326,8 +326,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		xqtim = time.time() - start
 
 		if len(rids) == 0:
-			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
-			for dummy_x in range(5):
+			self.log.warning("No jobs available! Sleeping for 60 seconds waiting for new jobs to become available!")
+			for dummy_x in range(60):
 				if runStatus.run_state.value == 1:
 					time.sleep(1)
 			return 0

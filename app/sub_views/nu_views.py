@@ -225,7 +225,6 @@ def nu_api():
 	else:
 		data = {"wat": "wat"}
 
-	g.session.expire_all()
 	# response = make_response(jsonify(data))
 	response = jsonify(data)
 
@@ -241,6 +240,7 @@ def nu_api():
 	response.status_code = 200
 	response.mimetype="application/json"
 	g.session.commit()
+	g.session.expire_all()
 	return response
 
 

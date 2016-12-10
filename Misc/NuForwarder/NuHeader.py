@@ -389,6 +389,7 @@ class NuHeader(LogBase.LoggerMixin):
 		for row in validated:
 			self.do_release(row)
 
+		self.db_sess.commit()
 
 	def fix_names(self):
 		for old, new in self.name_lut.items():

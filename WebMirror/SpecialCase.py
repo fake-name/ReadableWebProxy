@@ -95,9 +95,16 @@ def pushSpecialCase(specialcase, rid, joburl, netloc):
 
 
 def haveSpecialCase(specialcase, joburl, netloc):
+
+	# Short circuit for the homepage root, so it
+	# always gets fetched immediately.
+	if joburl == "http://www.novelupdates.com/" or joburl == "http://www.novelupdates.com":
+		return False
+
 	if netloc in specialcase:
 		# No special case for netloc
 		return True
+
 
 	return False
 
