@@ -746,3 +746,48 @@ def exposed_test_new_job_queue():
 	print(want)
 	want = instance.outbound_job_wanted("twitter.com", "https://twitter.com/Nano_Desu_Yo")
 	print(want)
+
+
+def exposed_drop_priorities():
+	'''
+	Reset the priority of every row in the table to the IDLE_PRIORITY level
+	'''
+
+	step  = 10000
+
+	sess = db.get_db_session()
+	print("Getting minimum row in need or update..")
+	start = sess.execute("""SELECT min(id) FROM web_pages WHERE priority < 500000""")
+	start = list(start)[0][0]
+	print("Minimum row ID: ", start, "getting maximum row...")
+	stop = sess.execute("""SELECT max(id) FROM web_pages WHERE priority < 500000""")
+	stop = list(stop)[0][0]
+	print("Maximum row ID: ", stop)
+
+	if not start:
+		print("No null rows to fix!")
+		return
+
+	print("Need to fix rows from %s to %s" % (start, stop))
+	start = start - (start % step)
+
+	changed = 0
+	for idx in range(start, stop, step):
+		# SQL String munging! I'm a bad person!
+		# Only done because I can't easily find how to make sqlalchemy
+		# bind parameters ignore the postgres specific cast
+		# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+		have = sess.execute("""update web_pages set priority = 500000 where priority < 500000 AND id > {} AND id <= {};""".format(idx, idx+step))
+		# print()
+
+		processed  = idx - start
+		total_todo = stop - start
+		print('%10i, %10i, %7.4f, %6i' % (idx, stop, processed/total_todo * 100, have.rowcount))
+		changed += have.rowcount
+		if changed > 100000:
+			print("Committing (%s changed rows)...." % changed, end=' ')
+			sess.commit()
+			print("done")
+			changed = 0
+
+	sess.commit()

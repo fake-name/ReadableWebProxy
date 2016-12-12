@@ -524,8 +524,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 		new_starturl = job.starturl,
+
+		# Every step away from home is a step further in distance, and a reduction in priority.
 		new_distance = job.distance+1
-		new_priority = job.priority
+		new_priority = job.priority+1
 		new_type     = job.type
 
 		raw_cur = self.db_sess.connection().connection.cursor()
