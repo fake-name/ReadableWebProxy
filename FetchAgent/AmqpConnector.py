@@ -588,9 +588,13 @@ class Connector:
 		value of synchronous
 		'''
 		self.checkLaunchThread()
+		timeouts = 0
 		if synchronous:
 			while self.taskQueue.qsize() > synchronous:
 				time.sleep(0.1)
+				timeouts += 1
+				if timeouts > 100:
+					return self.taskQueue.qsize()
 		self.queue_put += 1
 		self.taskQueue.put(message)
 
