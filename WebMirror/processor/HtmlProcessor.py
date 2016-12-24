@@ -354,6 +354,13 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		contents = contents.replace("&lt;Blank&gt;", "")
 		contents = contents.replace("&lt;space&gt;", "")
 		contents = contents.replace("<Blank>", "")
+		contents = contents.replace("<Blank>", "")
+		contents = contents.replace("please read only translator’s websitewww.novitranslation.com", "")
+		contents = contents.replace("please read only translator’s website www.novitranslation.com", "")
+		
+		
+		
+		
 		contents = contents.replace("&lt;StarveCleric&gt;", "")
 
 

@@ -472,6 +472,8 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		deleted = 0
 		for rid, netloc, joburl in rids:
+			if "booksie" in netloc:
+				continue
 			if not self.outbound_job_wanted(netloc, joburl):
 				self.delete_job(rid, joburl)
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
