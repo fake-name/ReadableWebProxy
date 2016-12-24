@@ -171,7 +171,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# print(desc)
 
 		tags = []
-		tagdiv = soup.find('div', class_='tags')
+		tagdiv = soup.find('span', class_='tags')
 		for tag in tagdiv.find_all('span', class_='label'):
 			tagtxt = tag.get_text().strip().lower().replace(" ", "-")
 			# print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
