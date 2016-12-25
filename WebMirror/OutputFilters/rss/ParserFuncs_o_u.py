@@ -1016,6 +1016,10 @@ def extractShiroyukineko(item):
 		return buildReleaseMessage(item, 'The Strongest Dan God', vol, chp, frag=frag, postfix=postfix)
 	if 'Scriptures of the Great Emperor' in item['tags']:
 		return buildReleaseMessage(item, 'Scriptures of the Great Emperor', vol, chp, frag=frag, postfix=postfix)
+	if 'Dragon-Blooded War God' in item['tags']:
+		return buildReleaseMessage(item, 'Dragon-Blooded War God', vol, chp, frag=frag, postfix=postfix)
+	if 'Godly Model Creator' in item['tags']:
+		return buildReleaseMessage(item, 'Godly Model Creator', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3127,8 +3131,11 @@ def extractTwelveMonthsofMay(item):
 		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Ostrich Chapter"):
 		return buildReleaseMessage(item, 'Wo De Tuo Niao Xian Sheng', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith('My Fault For Being Blind'):
+	if item['title'].startswith('My Fault For Being Blind') or 'My Fault For Being Blind' in item['tags']:
 		return buildReleaseMessage(item, 'Zhi Guai Dang Chu Xia Le Yan', vol, chp, frag=frag, postfix=postfix)
+	if 'Split Zone No.13' in item['tags']:
+		return buildReleaseMessage(item, 'Split Zone No.13', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def extractUkel2x(item):
@@ -3706,6 +3713,9 @@ def extractProfessionalGameThrowersTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Monster Factory' in item['tags']:
+		return buildReleaseMessage(item, 'Monster Factory', vol, chp, frag=frag, postfix=postfix)
+
 	if re.match(r"^Chapters? [\d\- &]+$", item['title'], re.IGNORECASE):
 		return buildReleaseMessage(item, "My Ranch", vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -3828,6 +3838,14 @@ def extractSereneandTranquil(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'Abandoned Empress' in item['tags']:
+		return buildReleaseMessage(item, 'Who Dares to Touch My Abandoned Empress', vol, chp, frag=frag, postfix=postfix)
+	if 'disgraced consort' in item['tags']:
+		return buildReleaseMessage(item, 'Disgraced Consort', vol, chp, frag=frag, postfix=postfix)
+	if 'favored intelligent concubine' in item['tags']:
+		return buildReleaseMessage(item, 'Favored Intelligent Concubine', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def extractShenYuanLangMTL(item):
@@ -3879,6 +3897,17 @@ def extractStarveCleric(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if "protected" in item['title'].lower():
+		return None
+
+	if "Library of Heaven's Path" in item['tags']:
+		return buildReleaseMessage(item, "Library of Heaven's Path", vol, chp, frag=frag, postfix=postfix)
+	if 'The Experimental Diaries of A Crazy Lich' in item['tags']:
+		return buildReleaseMessage(item, 'The Experimental Diaries of A Crazy Lich', vol, chp, frag=frag, postfix=postfix)
+	if 'Tian Ying' in item['tags']:
+		return buildReleaseMessage(item, 'Tian Ying', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def extractTheVikingStoryTeller(item):

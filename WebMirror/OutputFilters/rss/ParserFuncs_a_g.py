@@ -2540,6 +2540,8 @@ def  extractCircleofShards(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if re.match(r"^Chapter \d+", item['title'], re.IGNORECASE):
+		return buildReleaseMessage(item, 'Circle of Shards', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
 def  extractCloudManor(item):
@@ -2933,14 +2935,25 @@ def extractFantasyBooksLive(item):
 		'Magical Tournament',
 		'Villainess',
 		'Walking With Giants',
+		'Invincible Level Up',
+		'The Royal Princess Fox',
 	]
 
 	tlut = {tmp.lower():tmp for tmp in snames}
 
+	tlut['pygmalion'] = 'Pygmalion Is Planting Seeds'
+
 	ltags = [tmp.lower() for tmp in item['tags']]
 	for key, value in tlut.items():
 		if key in ltags:
-			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+			if "/translations/" in item['linkUrl']:
+				tl_type = 'translated'
+			else:
+				tl_type = 'oel'
+
+			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type='tl_type')
+
+
 
 	return False
 

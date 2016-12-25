@@ -1177,6 +1177,14 @@ def extractKobatoChanDaiSukiScan(item):
 		return buildReleaseMessage(item, 'A Bird That Drinks Tears', vol, chp, frag=frag, postfix=postfix)
 	if 'Wagahai no Kare wa Baka de aru' in item['tags']:
 		return buildReleaseMessage(item, 'Wagahai no Kare wa Baka de aru', vol, chp, frag=frag, postfix=postfix)
+	if 'Omni Genius' in item['tags']:
+		return buildReleaseMessage(item, 'Omni Genius', vol, chp, frag=frag, postfix=postfix)
+	if 'Link the Orc' in item['tags']:
+		return buildReleaseMessage(item, 'Link the Orc', vol, chp, frag=frag, postfix=postfix)
+
+
+
+
 
 	return False
 
@@ -1333,6 +1341,14 @@ def extractNekoyashiki(item):
 		return buildReleaseMessage(item, 'Yamato Nadeshiko, Koibana no Gotoku', vol, chp, frag=frag, postfix=postfix)
 	if 'Youhei Monogatari' in item['tags']:
 		return buildReleaseMessage(item, 'Youhei Monogatari ~Junsuinaru Hangyakusha (Rebellion)~', vol, chp, frag=frag, postfix=postfix)
+
+
+	if 'Qualidea Code' in item['tags']:
+		return buildReleaseMessage(item, 'Qualidea Code', vol, chp, frag=frag, postfix=postfix)
+	if 'The Brander Female Fencer' in item['tags']:
+		return buildReleaseMessage(item, 'The Brander Female Fencer', vol, chp, frag=frag, postfix=postfix)
+	if 'The Elf is a Freeloader' in item['tags']:
+		return buildReleaseMessage(item, 'The Elf is a Freeloader', vol, chp, frag=frag, postfix=postfix)
 
 
 	return False
@@ -2933,6 +2949,18 @@ def extractMyoniyoniTranslations(item):
 		return buildReleaseMessage(item, "God's Song", vol, chp, frag=frag, postfix=postfix)
 	if 'Life Mission' in item['tags']:
 		return buildReleaseMessage(item, 'Life Mission', vol, chp, frag=frag, postfix=postfix)
+
+
+	if 'Demon King & Hero' in item['tags']:
+		return buildReleaseMessage(item, 'Demon King & Hero', vol, chp, frag=frag, postfix=postfix)
+	if 'Sovereign of Judgment' in item['tags']:
+		return buildReleaseMessage(item, 'Sovereign of Judgment', vol, chp, frag=frag, postfix=postfix)
+	if 'Spirit Sword' in item['tags']:
+		return buildReleaseMessage(item, 'Spirit Sword', vol, chp, frag=frag, postfix=postfix)
+
+
+
+
 	return False
 def extractNoNameTranslations(item):
 	'''
@@ -3242,6 +3270,17 @@ def extractLightNovelsWorld(item):
 	if 'Isekai Teni Jobumasuta e no Michi' in item['tags']:
 		return buildReleaseMessage(item, 'Isekai Teni Jobumasuta e no Michi', vol, chp, frag=frag, postfix=postfix)
 
+	if 'Against the Fate' in item['tags']:
+		return buildReleaseMessage(item, 'Against the Fate', vol, chp, frag=frag, postfix=postfix)
+	if 'Hone no aru Yatsu' in item['tags']:
+		return buildReleaseMessage(item, 'Hone no aru Yatsu', vol, chp, frag=frag, postfix=postfix)
+	if 'LV999 Villager' in item['tags']:
+		return buildReleaseMessage(item, 'LV999 Villager', vol, chp, frag=frag, postfix=postfix)
+	if 'Returning from the Immortal World' in item['tags']:
+		return buildReleaseMessage(item, 'Returning from the Immortal World', vol, chp, frag=frag, postfix=postfix)
+	if 'Starchild Escapes Arranged Marriage' in item['tags']:
+		return buildReleaseMessage(item, 'Starchild Escapes Arranged Marriage', vol, chp, frag=frag, postfix=postfix)
+
 
 	return False
 def extractLoathsomeTranslations(item):
@@ -3528,4 +3567,14 @@ def extractNovitranslation(item):
 		return buildReleaseMessage(item, 'The Mighty Female Immortal', vol, chp, frag=frag, postfix=postfix)
 	if 'The pygmalion is planting seeds' in item['tags']:
 		return buildReleaseMessage(item, 'The pygmalion is planting seeds', vol, chp, frag=frag, postfix=postfix)
+
+	if 'The Sacred Burial Grounds' in item['tags']:
+		return buildReleaseMessage(item, 'The Sacred Burial Grounds', vol, chp, frag=frag, postfix=postfix)
+	if 'My Dead Husband' in item['tags']:
+		return buildReleaseMessage(item, 'My Dead Husband', vol, chp, frag=frag, postfix=postfix)
+	if 'Scapegoat Sister Vs Second Prince' in item['tags']:
+		return buildReleaseMessage(item, 'Scapegoat Sister Vs Second Prince', vol, chp, frag=frag, postfix=postfix)
+	if 'World of Xianxia' in item['tags']:
+		return buildReleaseMessage(item, 'World of Xianxia', vol, chp, frag=frag, postfix=postfix)
+
 	return False

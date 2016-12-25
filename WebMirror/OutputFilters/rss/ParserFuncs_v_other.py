@@ -117,6 +117,12 @@ def extractWuxiaworld(item):
 		return buildReleaseMessage(item, "Emperor's Domination", vol, chp, frag=frag)
 	if 'Upgrade Specialist' in item['tags']:
 		return buildReleaseMessage(item, 'Upgrade Specialist', vol, chp, frag=frag)
+	if 'A Will Eternal' in item['tags']:
+		return buildReleaseMessage(item, 'A Will Eternal', vol, chp, frag=frag)
+	if 'Absolute Choice' in item['tags']:
+		return buildReleaseMessage(item, 'Absolute Choice', vol, chp, frag=frag)
+	if 'Legend of the Dragon King' in item['tags']:
+		return buildReleaseMessage(item, 'Legend of the Dragon King', vol, chp, frag=frag)
 
 	return False
 
@@ -357,6 +363,12 @@ def extractWuxiaSociety(item):
 
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "/forum/viewtopic.php" in item['linkUrl']:
+		return None
+
 
 	if 'The Heaven Sword and Dragon Sabre' in item['tags'] and (chp or vol):
 		return buildReleaseMessage(item, 'The Heaven Sword and Dragon Sabre', vol, chp, frag=frag, postfix=postfix)
@@ -841,6 +853,21 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, "Evil Emperor's Wild Consort", vol, chp, frag=frag, postfix=postfix)
 	if 'Star Rank Hunter' in item['tags']:
 		return buildReleaseMessage(item, 'Star Rank Hunter', vol, chp, frag=frag, postfix=postfix)
+
+	if 'Special Forces Spirit' in item['tags']:
+		return buildReleaseMessage(item, 'Special Forces Spirit', vol, chp, frag=frag, postfix=postfix)
+	if 'Fleeting Midsummer' in item['tags']:
+		return buildReleaseMessage(item, 'Fleeting Midsummer', vol, chp, frag=frag, postfix=postfix)
+	if 'Poison Genius Consort' in item['tags']:
+		return buildReleaseMessage(item, 'Poison Genius Consort', vol, chp, frag=frag, postfix=postfix)
+	if 'Gourmet Food Supplier' in item['tags']:
+		return buildReleaseMessage(item, 'Gourmet Food Supplier', vol, chp, frag=frag, postfix=postfix)
+	if 'Hidden Marriage' in item['tags']:
+		return buildReleaseMessage(item, 'Hidden Marriage', vol, chp, frag=frag, postfix=postfix)
+	if "History's Strongest Senior Brother" in item['tags']:
+		return buildReleaseMessage(item, "History's Strongest Senior Brother", vol, chp, frag=frag, postfix=postfix)
+	if "I'm Hui Tai Lang" in item['tags']:
+		return buildReleaseMessage(item, "I'm Hui Tai Lang", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
