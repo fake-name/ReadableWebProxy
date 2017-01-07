@@ -157,7 +157,7 @@ def scheduleJobs(sched, timeToStart):
 						next_run_time      = startWhen,
 						id                 = jId,
 						replace_existing   = True,
-						max_instances      = 1,
+						max_instances      = 5,
 						coalesce           = True,
 						misfire_grace_time = 2**30)
 
@@ -216,7 +216,7 @@ def go_sched():
 				'max_workers': '10'
 			},
 			'apscheduler.job_defaults.coalesce': 'true',
-			'apscheduler.job_defaults.max_instances': '2',
+			'apscheduler.job_defaults.max_instances': '5',
 		})
 
 	# Apparently the scheduler pull the jobs from the backend until you start it,
