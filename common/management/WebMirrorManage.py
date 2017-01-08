@@ -716,12 +716,6 @@ def exposed_fetch_other_feed_sources():
 	'''
 	WebMirror.SiteSync.fetch.fetch_other_sites()
 
-def exposed_fetch_new_sites():
-	'''
-	calls fetch_other_feed_sources and nu_new
-	in sequence. Should probably be tee'd into a file.
-	'''
-	WebMirror.SiteSync.fetch.fetch_other_sites()
 
 def exposed_flatten_history():
 	'''

@@ -81,64 +81,6 @@ class NovelUpdatesFetch(SiteSyncFetch):
 		return ret
 
 
-class AhoUpdatesFetch(SiteSyncFetch):
-
-	loggerPath = "Main.AhoUpdatesFetcher"
-
-
-
-	def getGroupSubpages(self):
-		ret = []
-
-		for x in range(500000):
-			url = 'http://aho-updates.com/groups?sort_by=title&sort_order=ASC&page={num}'.format(num=x)
-
-			try:
-				soup = self.wg.getSoup(url)
-			except urllib.error.URLError:
-				break
-
-			main = soup.find_all("div", class_='views-row')
-
-			new = 0
-			for item in [tmp for tmp in main if tmp.a]:
-				url = item.a['href']
-				if url.startswith("/group/"):
-					url = urllib.parse.urljoin('http://aho-updates.com/', url)
-					if url not in ret:
-						ret.append(url)
-						new += 1
-
-			if new == 0:
-				break
-
-		self.log.info("Found %s group subpage URLs", len(ret))
-
-		return ret
-
-	def urlFromGroupPage(self, url):
-		soup = self.wg.getSoup(url)
-		content = soup.find('div', class_='field-name-field-lnu-grp-website')
-		if not content:
-			content = soup.find('span', class_='views-field-field-lnu-feed-main-url')
-			if not content:
-				raise ValueError("Wat?")
-		if not content.a:
-			raise ValueError("Wattt?")
-		return content.a['href']
-
-	def go(self):
-		# print(self.urlFromGroupPage('http://aho-updates.com/group/dark-translations'))
-
-		ret = []
-		sp = self.getGroupSubpages()
-		for p in sp:
-			pg = self.urlFromGroupPage(p)
-			if pg:
-				ret.append(pg)
-			self.log.info("Content page: %s", pg)
-		return ret
-
 
 def getExistingUrls():
 	rules = WebMirror.rules.load_rules()
@@ -206,10 +148,7 @@ bad_urls = [
 
 
 def fetch_other_sites():
-	v1 = NovelUpdatesFetch.getGroupSites()
-	v2 = AhoUpdatesFetch.getGroupSites()
-
-	vals = v1+v2
+	vals = NovelUpdatesFetch.getGroupSites()
 
 	have = getExistingUrls()
 
