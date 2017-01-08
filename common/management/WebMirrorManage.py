@@ -635,20 +635,40 @@ def exposed_filter_links(path):
 		if item not in havestarts:
 			print(item)
 
-def exposed_missing_lut():
+def get_page_title(wg, url):
+	chunks = url.split("/")
+	baseurl = "/".join(chunks[:3])
+	title = urllib.parse.urlsplit(url).netloc
+
+	try:
+		soup = wg.getSoup(baseurl)
+		if soup.title:
+			title = soup.title.get_text().strip()
+	except Exception:
+		pass
+
+	return title
+
+def exposed_missing_lut(fetchTitle=False):
 	'''
 	Iterate over distinct RSS feed sources in database,
 	and print any for which there is not an entry in
 	feedDataLut.py to the console.
 	'''
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
+	import common.util.webFunctions as webFunctions
+	wg = webFunctions.WebGetRobust()
 	rules = WebMirror.rules.load_rules()
 	feeds = [item['feedurls'] for item in rules]
 	feeds = [item for sublist in feeds for item in sublist]
 	# feeds = [urllib.parse.urlsplit(tmp).netloc for tmp in feeds]
 	for feed in feeds:
 		if not fnl.getNiceName(feed):
-			print("Missing: ", urllib.parse.urlsplit(feed).netloc)
+			netloc = urllib.parse.urlsplit(feed).netloc
+			title = netloc
+			if fetchTitle:
+				title = get_page_title(wg, feed)
+			print('Missing: "%s" %s: "%s",' % (netloc, " " * (50 - len(netloc)), title))
 
 def exposed_delete_feed(feed_name, do_delete, search_str):
 	'''
