@@ -144,6 +144,16 @@ bad_urls = [
 	'riceballicious.info',                        # Manga
 	'september.strawberrywine.org',               # BL Manga
 	'mazuisubs.com',                              # Anime?
+
+
+	'arestiny.com',                               # Appears to now be a domain squatter
+	'www.noobtrans.ml',                           # Appears to now be a domain squatter
+
+	'www.kudalakorn.com',                         # DNS NXDOMAIN
+	'miracletranslations.azurewebsites.net',
+
+	'www.wangkaiinternational.com',               # Blogger no longer found
+	'springkrane.wixsite.com',
 ]
 
 

@@ -1,11 +1,7 @@
 #TODO:
  - Figure out how to selectively preserve some classes (I want to allow fontawesome content)
  - Search for proximate words.
- - "https://xxjohnsmithxx.wordpress.com", parser
 
-https://nadenadeshitai.wordpress.com/command-sousa-skill-de-isekai-no-subete-wo-kage-kara-shihaishitemita/
-
-http://transtranstrans.hatenablog.com/entry/2016/04/27/041607
 
 retriggering use on conflict
 search only items with releases
@@ -14,11 +10,8 @@ Job fetch system gets wedged if it can't successfully query the database for new
 
 nu series trigger clear hiatory
 also rss stuff
-rrl trigger not causing series page rewalk
-
 
 'ishioto'
-
 
 Light novels on Kindle Unlimited (self.LightNovels)
 Hey everyone, I'm not a subscriber to the service yet but I was considering it because I'm getting through so many books... before I do, does anyone know if there's any/many light novels on there or if I should just stick to hard copies?
@@ -99,7 +92,6 @@ http://www.yamitranslations.com/tondemo-skill-chapter-list/chapter-1
 
 https://drive.google.com/folderview?id=0ByWXEuvheaD2bzdzM1pEZklka28&usp=drive_web
 scrape reddit ln page
-ignore titles where the number is preceeded by 'r' so 'r18' doesn't get interpreted as chp 18 every time
 
 add r search for alt titles to admin view
 
@@ -129,62 +121,52 @@ Portals of Infinity series (adult themed OP world hopping hero)
 
 =============================================================== 
 
+
+
+archiveofourown.org
+
+## Custom sites
+
+New:  duelnoir.dreamwidth.org
 New:  sincere.dreamwidth.org
 New:  sinnesspiel.dreamwidth.org
 New:  quartia.dreamwidth.org
 New:  notaboutlogic.dreamwidth.org
-
-New:  www.ultimaguil.org
-
 New:  artonelico.wikia.com
 New:  blcxtranslations.github.io
 New:  ckmscans.halofight.com
-New:  elwiki.net
 New:  hiirowing.livejournal.com
+New:  raini7o5.livejournal.com
 New:  justblthings.weebly.com
-New:  levitytales.com
 New:  miracletranslations.azurewebsites.net
-New:  novel.oddsquad.org
-New:  toriitranslations.animeholics.org
-New:  transtranstrans.hatenablog.com
-New:  trungtnguyen123.org
-New:  www.gundamwingtales.com
-New:  www.hasutsuki.com (blogger)
-New:  www.lannyland.com
-New:  www.xianxiaworld.net
 
-# Blogger:
-New:  www.aresnovels.com
-New:  www.pegasusfarts.com
-New:  novel.oddsquad.org
+New:  elwiki.net
 
 
 ===============================================================
 
  
 # ..... Anime?
-mazuisubs.com
+New:  mazuisubs.com
 
 
 # Scanlators: (?)
-ckmscans.halofight.com
-egscans.com
-egscans.com 
-hotchocolatescans.com
-riceballicious.info
-september.strawberrywine.org
-www.world-three.org
-www.zeonic-republic.net
-www.aoitenshi.com
+New:  ckmscans.halofight.com
+New:  egscans.com
+New:  hotchocolatescans.com
+New:  riceballicious.info
+New:  september.strawberrywine.org
+New:  www.world-three.org
+New:  www.zeonic-republic.net
+New:  www.aoitenshi.com
 
-
-
+New:  gameofscanlation.moe
+New:  lolscans.com
+New:  orinjido.info
 
 fictionmania js links 
  
-update release sources from novelupdates
 log has duplicate 'thread nnn' emtries 
-tsvector column not up to date
 handle leading decimals numeric
 
 delete series
@@ -218,25 +200,10 @@ rules comditionally disable tld permutatiom
 
 Check these URLs:
 
-
-
-http://forum.wuxiaworld.com/profile/1268/areslucifer
-
-http://www.spcnet.tv/forums/forumdisplay.php/29-Wuxia-Translations
-http://www.spcnet.tv/forums/member.php/19725-foxs
-http://www.spcnet.tv/forums/member.php/2014-Jean
-http://www.spcnet.tv/forums/member.php/48798-owlHoot
-http://www.spcnet.tv/forums/member.php/6740-kohchun
-
 https://docs.google.com/document/d/1ljoXDy-ti5N7ZYPbzDsj5kvYFl3lEWaJ1l3Lzv1cuuM/pub
 https://drive.google.com/folderview?id=0B4ar77TfWmQTMTFnQmNrZTRrZUU&usp=sharing
 
 https://www.reddit.com/user/OrganicDinosaur
-
-
-
-
-## http://koongkoongtranslations.com/ - Private
 
 
 

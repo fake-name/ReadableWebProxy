@@ -18,7 +18,7 @@ baseUrl: [
 		'http://transtranstrans.hatenablog.com',
 
 		'http://www.gundamwingtales.com',
-
+		'http://englate.com',
 
 		# Dickish blocking garbage shit.
 		'http://www.nepustation.com',
@@ -29,6 +29,17 @@ baseUrl: [
 
 		# Wat?
 		'http://www.lannyland.com',
+		'http://www.eugenewoodbury.com',
+
+		# Made out of an e-commerce site?
+		# No RSS I can find.
+		'http://englate.com',
+
+		# On blogger
+		'http://www.hasutsuki.com',
+		'http://www.pegasusfarts.com',
+		'http://novel.oddsquad.org',
+
 	]
 
 feeds: [
@@ -42,6 +53,9 @@ feeds: [
 	'http://fleetingphoenix.weebly.com/1/feed',
 
 	'http://transtranstrans.hatenablog.com/rss',
+	'http://www.hasutsuki.com/feeds/posts/default',
+	'http://www.pegasusfarts.com/feeds/posts/default',
+	'http://novel.oddsquad.org/feeds/posts/default',
 
 ]
 
