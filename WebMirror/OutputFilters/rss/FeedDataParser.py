@@ -882,6 +882,109 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				'Yumeabyss'                                     : pfuncs_v_other.extractYumeabyss,
 
 
+				'A Cup of Memory'                               : pfuncs_a_g.extractACupofMemory,
+				'A Little Mirage Translation'                   : pfuncs_a_g.extractALittleMirageTranslation,
+				'ABCpwip'                                       : pfuncs_a_g.extractABCpwip,
+				'After;Translations'                            : pfuncs_a_g.extractAfterTranslations,
+				'Ai Hrist Dream Translations'                   : pfuncs_a_g.extractAiHristDreamTranslations,
+				'Alpen Glow Translations'                       : pfuncs_a_g.extractAlpenGlowTranslations,
+				'Andromeda & Boul'                              : pfuncs_a_g.extractAndromedaBoul,
+				"Ankydon's Lair"                                : pfuncs_a_g.extractAnkydonsLair,
+				'BL Novel Obsession'                            : pfuncs_a_g.extractBLNovelObsession,
+				'Chauffeur Translations'                        : pfuncs_a_g.extractChauffeurTranslations,
+				'Choyce.club'                                   : pfuncs_a_g.extractChoyceClub,
+				'Chronicles of Gaia'                            : pfuncs_a_g.extractChroniclesofGaia,
+				'Daily Dose Novels'                             : pfuncs_a_g.extractDailyDoseNovels,
+				'Drake Translations'                            : pfuncs_a_g.extractDrakeTranslations,
+				'Dusk Tales'                                    : pfuncs_a_g.extractDuskTales,
+				'End of the days42'                             : pfuncs_a_g.extractEndofthedays42,
+				'Evening Boat Translations'                     : pfuncs_a_g.extractEveningBoatTranslations,
+				'Feels Bad Translation'                         : pfuncs_a_g.extractFeelsBadTranslation,
+				'Friendship Is Power'                           : pfuncs_a_g.extractFriendshipIsPower,
+				'Halcyon Translations'                          : pfuncs_h_n.extractHalcyonTranslations,
+				'Hanashi Oba-san'                               : pfuncs_h_n.extractHanashiObasan,
+				"Hecate's Corner"                               : pfuncs_h_n.extractHecatesCorner,
+				"Hirika's MTs"                                  : pfuncs_h_n.extractHirikasMTs,
+				'IAmABanana Freshie Translation'                : pfuncs_h_n.extractIAmABananaFreshieTranslation,
+				"Ian's Corner"                                  : pfuncs_h_n.extractIansCorner,
+				'Inaccurate Translations'                       : pfuncs_h_n.extractInaccurateTranslations,
+				'Incarose Jealousy MTL'                         : pfuncs_h_n.extractIncaroseJealousyMTL,
+				'Infinity Translations'                         : pfuncs_h_n.extractInfinityTranslations,
+				'Isekai Fiction'                                : pfuncs_h_n.extractIsekaiFiction,
+				'Jawz Publications'                             : pfuncs_h_n.extractJawzPublications,
+				'Junk Burst Translations'                       : pfuncs_h_n.extractJunkBurstTranslations,
+				'Kakaoo Story'                                  : pfuncs_h_n.extractKakaooStory,
+				'Kazama Translation'                            : pfuncs_h_n.extractKazamaTranslation,
+				'Kenkyo Reika'                                  : pfuncs_h_n.extractKenkyoReika,
+				"kha'sinTH"                                     : pfuncs_h_n.extractKhasinTH,
+				'Kidney Translations'                           : pfuncs_h_n.extractKidneyTranslations,
+				'KitaKami Ooi'                                  : pfuncs_h_n.extractKitaKamiOoi,
+				'Kuro Translation'                              : pfuncs_h_n.extractKuroTranslation,
+				'Laughing Ghoul Translations'                   : pfuncs_h_n.extractLaughingGhoulTranslations,
+				'Lazy G Translations'                           : pfuncs_h_n.extractLazyGTranslations,
+				'Light Novels with Misa-chan~'                  : pfuncs_h_n.extractLightNovelswithMisachan,
+				'Logatse Translations'                          : pfuncs_h_n.extractLogatseTranslations,
+				'Lovely x Day'                                  : pfuncs_h_n.extractLovelyxDay,
+				'Luminaeris'                                    : pfuncs_h_n.extractLuminaeris,
+				"My Brain's Art"                                : pfuncs_h_n.extractMyBrainsArt,
+				'My First Time Translating'                     : pfuncs_h_n.extractMyFirstTimeTranslating,
+				'Next level for the PLOT'                       : pfuncs_h_n.extractNextlevelforthePLOT,
+				'Nieracol Translations'                         : pfuncs_h_n.extractNieracolTranslations,
+				'Ninth Charmolypi Translation'                  : pfuncs_h_n.extractNinthCharmolypiTranslation,
+				'Norva Blog'                                    : pfuncs_h_n.extractNorvaBlog,
+				'Novella Translation'                           : pfuncs_h_n.extractNovellaTranslation,
+				'OOO Translations'                              : pfuncs_o_u.extractOOOTranslations,
+				'OppaTranslations'                              : pfuncs_o_u.extractOppaTranslations,
+				'Orange Translations'                           : pfuncs_o_u.extractOrangeTranslations,
+				'Orinjido Scans'                                : pfuncs_o_u.extractOrinjidoScans,
+				'Otsumi'                                        : pfuncs_o_u.extractOtsumi,
+				'Paradox Translations'                          : pfuncs_o_u.extractParadoxTranslations,
+				'Paraphrase Translation'                        : pfuncs_o_u.extractParaphraseTranslation,
+				'Pegasus Farts'                                 : pfuncs_o_u.extractPegasusFarts,
+				'PFC – Light Novel Translations'                : pfuncs_o_u.extractPFCLightNovelTranslations,
+				'Plant Translation'                             : pfuncs_o_u.extractPlantTranslation,
+				'Productive Procrastination'                    : pfuncs_o_u.extractProductiveProcrastination,
+				"ProfessionalGameThrower's Translation"         : pfuncs_o_u.extractProfessionalGameThrowersTranslation,
+				'Proxy Translations'                            : pfuncs_o_u.extractProxyTranslations,
+				'Raenadel Translations'                         : pfuncs_o_u.extractRaenadelTranslations,
+				'Refresh Translations'                          : pfuncs_o_u.extractRefreshTranslations,
+				'rokudenashi Translations'                      : pfuncs_o_u.extractRokudenashiTranslations,
+				'Rozen Fantasy Translations'                    : pfuncs_o_u.extractRozenFantasyTranslations,
+				"Sarah's lil Novels Corner"                     : pfuncs_o_u.extractSarahslilNovelsCorner,
+				'Segmeton Translation'                          : pfuncs_o_u.extractSegmetonTranslation,
+				'Selfish Translation'                           : pfuncs_o_u.extractSelfishTranslation,
+				'Sharramycats Translations'                     : pfuncs_o_u.extractSharramycatsTranslations,
+				"Silavin's Translations"                        : pfuncs_o_u.extractSilavinsTranslations,
+				'Sloth Translation'                             : pfuncs_o_u.extractSlothTranslation,
+				"Snail's Pace"                                  : pfuncs_o_u.extractSnailsPace,
+				'SpaceforMemory'                                : pfuncs_o_u.extractSpaceforMemory,
+				'StrayCats'                                     : pfuncs_o_u.extractStrayCats,
+				'SuperNyankoMofu~'                              : pfuncs_o_u.extractSuperNyankoMofu,
+				'The Other Half of My Apple'                    : pfuncs_o_u.extractTheOtherHalfofMyApple,
+				'The World On The Other Side…'                  : pfuncs_o_u.extractTheWorldOnTheOtherSide,
+				'Towards the Sky'                               : pfuncs_o_u.extractTowardstheSky,
+				'Translating Sloth'                             : pfuncs_o_u.extractTranslatingSloth,
+				'Ttukkirabit Translation'                       : pfuncs_o_u.extractTtukkirabitTranslation,
+				'UnicornsGalore!'                               : pfuncs_o_u.extractUnicornsGalore,
+				'Versatile Guy'                                 : pfuncs_v_other.extractVersatileGuy,
+				'Whiteleaf Tribe'                               : pfuncs_v_other.extractWhiteleafTribe,
+				'Winter Translates'                             : pfuncs_v_other.extractWinterTranslates,
+				'Working NEET Translation'                      : pfuncs_v_other.extractWorkingNEETTranslation,
+				'Works of Kun'                                  : pfuncs_v_other.extractWorksofKun,
+				'WuxiaNation'                                   : pfuncs_v_other.extractWuxiaNation,
+				'www.nepustation.com'                           : pfuncs_v_other.extractNepustation,
+				'Xian Foreigners'                               : pfuncs_v_other.extractXianForeigners,
+				'yamtl'                                         : pfuncs_v_other.extractYamtl,
+				"Yuanshu's Cave"                                : pfuncs_v_other.extractYuanshusCave,
+				'yuNS Translations'                             : pfuncs_v_other.extractYuNSTranslations,
+				'Zaelum Translations'                           : pfuncs_v_other.extractZaelumTranslations,
+				'《不法之徒》 Lawless Gangster'                     : pfuncs_v_other.extract不法之徒LawlessGangster,
+				'愛主の翻訳  Ainushi Translations'                : pfuncs_v_other.extract愛主の翻訳AinushiTranslations,
+
+
+
+
+
 				# Broken
 				'Require: Cookie'                                               : pfuncs_stub.extractNop,
 
@@ -917,7 +1020,14 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		if item['srcname'] in funcMap:
-			ret = funcMap[item['srcname']](item)
+			try:
+				ret = funcMap[item['srcname']](item)
+			except Exception as e:
+				print("Failure when trying to extract item for source '%s'" % item['srcname'])
+				print("srcname in map: ", item['srcname'] in funcMap)
+				if item['srcname'] in funcMap:
+					print("Value of `item['srcname'] in funcMap`: ", funcMap[item['srcname']])
+				raise e
 		else:
 			print("No filter found for '%s'?" % item['srcname'])
 

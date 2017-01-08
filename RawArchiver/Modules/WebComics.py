@@ -194,6 +194,10 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/help/styles/default/xenforo/',
 		r'\'!>\n',
 
+		'/topic/news&q=blog/',
+		'/topic/engineering&q=comic/topic/engineering&q=comic/',
+
+		'/it-never-ends&q=comic/it-never-ends&q=comic/',
 	]
 
 	@classmethod

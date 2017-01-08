@@ -868,6 +868,8 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, "History's Strongest Senior Brother", vol, chp, frag=frag, postfix=postfix)
 	if "I'm Hui Tai Lang" in item['tags']:
 		return buildReleaseMessage(item, "I'm Hui Tai Lang", vol, chp, frag=frag, postfix=postfix)
+	if 'Poisoning the World' in item['tags']:
+		return buildReleaseMessage(item, 'Poisoning the World: The Secret Service Mysterious Doctor is a Young Beastly Wife', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1331,5 +1333,163 @@ def extractYumeabyss(item):
 	if 'Xiao Qi, Wait' in item['tags']:
 		return buildReleaseMessage(item, 'Xiao Qi, Wait', vol, chp, frag=frag, postfix=postfix)
 	return False
+
+
+
+
+def extractVersatileGuy(item):
+	'''
+	'Versatile Guy'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractWhiteleafTribe(item):
+	'''
+	'Whiteleaf Tribe'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractWinterTranslates(item):
+	'''
+	'Winter Translates'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractWorkingNEETTranslation(item):
+	'''
+	'Working NEET Translation'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractWorksofKun(item):
+	'''
+	'Works of Kun'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractWuxiaNation(item):
+	'''
+	'WuxiaNation'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractNepustation(item):
+	'''
+	'www.nepustation.com'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractXianForeigners(item):
+	'''
+	'Xian Foreigners'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractYamtl(item):
+	'''
+	'yamtl'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractYuanshusCave(item):
+	'''
+	"Yuanshu's Cave"
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractYuNSTranslations(item):
+	'''
+	'yuNS Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extractZaelumTranslations(item):
+	'''
+	'Zaelum Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extract不法之徒LawlessGangster(item):
+	'''
+	'《不法之徒》 Lawless Gangster'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
+def extract愛主の翻訳AinushiTranslations(item):
+	'''
+	'愛主の翻訳  Ainushi Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or "preview" in item['title'].lower():
+		return None
+	return False
+
+
 
 
