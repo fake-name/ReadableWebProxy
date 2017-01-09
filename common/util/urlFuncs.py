@@ -234,9 +234,16 @@ def hasDuplicatePathSegments(url):
 		if len(set(pathchunks)) == len(pathchunks):
 			return False
 
+		duplicates = list(set([(i, pathchunks.count(i)) for i in pathchunks if pathchunks.count(i) > 1]))
 
-		print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
-		return True
+		if any([cnt > 3 for (item, cnt) in duplicates]):
+			print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+			return True
+		if len(duplicates) > 3:
+			print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+			return True
+
+		return False
 
 
 
