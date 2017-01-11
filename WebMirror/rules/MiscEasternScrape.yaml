@@ -86,6 +86,8 @@ badwords: [
 			'/css/images/css/',
 			'/css/css/',
 			'/images/css/images/',
+
+			'/search.php?',
 			]
 
 

@@ -866,6 +866,10 @@ def extractMoonBunnyCafe(item):
 
 	if 'Bringing A Farm' in item['tags']:
 		return buildReleaseMessage(item, 'Bringing A Farm To Mess Around In Another World', vol, chp, frag=frag, postfix=postfix)
+	if 'Bringing A Farm To Mess Around In Another World' in item['tags']:
+		return buildReleaseMessage(item, 'Bringing A Farm To Mess Around In Another World', vol, chp, frag=frag, postfix=postfix)
+	if 'single player only' in item['tags']:
+		return buildReleaseMessage(item, 'single player only', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -2465,7 +2469,7 @@ def  extractL2M(item):
 
 def  extractNovelsJapan(item):
 	'''
-	#'Novels Japan'
+	'Novels Japan'
 	'''
 	if item['title'].endswith(" (Sponsored)"):
 		item['title'] = item['title'][:-1*len(" (Sponsored)")]
@@ -2487,6 +2491,19 @@ def  extractNovelsJapan(item):
 
 		):
 		return buildReleaseMessage(item, "Ex-Hero Candidate's, Who Turned Out To Be A Cheat From Lv2, Laid-back Life In Another World", vol, chp, frag=frag, postfix=postfix)
+	if 'Second Earth' in item['tags']:
+		return buildReleaseMessage(item, 'Second Earth', vol, chp, frag=frag, postfix=postfix)
+	if 'Strongest Revolution' in item['tags']:
+		return buildReleaseMessage(item, 'The Fierce Revolution ~ The Strongest Organism Which Can Kill the Devil and the Hero', vol, chp, frag=frag, postfix=postfix)
+	if 'Loner Dungeon' in item['tags']:
+		return buildReleaseMessage(item, 'I who is a Loner, Using cheats adapts to the Dungeon', vol, chp, frag=frag, postfix=postfix)
+	if 'Skill Up' in item['tags']:
+		return buildReleaseMessage(item, 'Skill Up with Login Bonus', vol, chp, frag=frag, postfix=postfix)
+	if 'Isobe Isobee' in item['tags']:
+		return buildReleaseMessage(item, 'Isobe Isobee', vol, chp, frag=frag, postfix=postfix)
+	if 'Ex-hero' in item['tags']:
+		return buildReleaseMessage(item, "Ex-Hero Candidate's, Who Turned Out To Be A Cheat From Lv2, Laid-back Life In Another World", vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -3289,6 +3306,15 @@ def extractLightNovelsWorld(item):
 	if 'Starchild Escapes Arranged Marriage' in item['tags']:
 		return buildReleaseMessage(item, 'Starchild Escapes Arranged Marriage', vol, chp, frag=frag, postfix=postfix)
 
+	if '9 Coffins of the Immortals' in item['tags']:
+		return buildReleaseMessage(item, '9 Coffins of the Immortals', vol, chp, frag=frag, postfix=postfix)
+	if 'Fantastic Creatures’ Travelogue' in item['tags']:
+		return buildReleaseMessage(item, 'Fantastic Creatures’ Travelogue', vol, chp, frag=frag, postfix=postfix)
+	if "Hell's Cinema" in item['tags']:
+		return buildReleaseMessage(item, "Hell's Cinema", vol, chp, frag=frag, postfix=postfix)
+	if 'The Great Conqueror' in item['tags']:
+		return buildReleaseMessage(item, 'The Great Conqueror', vol, chp, frag=frag, postfix=postfix)
+
 
 	return False
 def extractLoathsomeTranslations(item):
@@ -3584,6 +3610,8 @@ def extractNovitranslation(item):
 		return buildReleaseMessage(item, 'Scapegoat Sister Vs Second Prince', vol, chp, frag=frag, postfix=postfix)
 	if 'World of Xianxia' in item['tags']:
 		return buildReleaseMessage(item, 'World of Xianxia', vol, chp, frag=frag, postfix=postfix)
+	if 'Good Morning Miss Ghost' in item['tags']:
+		return buildReleaseMessage(item, 'Good Morning Miss Ghost', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3643,6 +3671,11 @@ def extractIAmABananaFreshieTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Prince You Are So Cheap' in item['tags']:
+		return buildReleaseMessage(item, 'Prince You Are So Cheap', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("雨露均沾 Sharing Rain and Dew –"):
+		return buildReleaseMessage(item, 'Sharing Rain and Dew', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -3687,6 +3720,14 @@ def extractInfinityTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'ETC' in item['tags']:
+		return buildReleaseMessage(item, 'Emperor of The Cosmos', vol, chp, frag=frag, postfix=postfix)
+	if 'SAS' in item['tags']:
+		return buildReleaseMessage(item, 'Strongest Abandoned Son', vol, chp, frag=frag, postfix=postfix)
+	if 'Disb' in item['tags']:
+		return buildReleaseMessage(item, 'Death is The Beginning', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -3786,6 +3827,14 @@ def extractKitaKamiOoi(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'Escaping the Nuclear Fallout Shelter that has Turned Into a Dungeon Alone?' in item['tags']:
+		return buildReleaseMessage(item, 'Escaping the Nuclear Fallout Shelter that has Turned Into a Dungeon Alone?', vol, chp, frag=frag, postfix=postfix)
+	if 'Otome Game Rokkushuume, Automode ga Kiremashita' in item['tags']:
+		return buildReleaseMessage(item, 'Otome Game Rokkushuume, Automode ga Kiremashita', vol, chp, frag=frag, postfix=postfix)
+	if 'Akuyaku Reijou wa Ringoku no Oitaishi ni Dekiai Sareru' in item['tags']:
+		return buildReleaseMessage(item, 'Akuyaku Reijou wa Ringoku no Oitaishi ni Dekiai Sareru', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -3847,6 +3896,10 @@ def extractLogatseTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	# if 'Escaping the Nuclear Fallout Shelter that has Turned Into a Dungeon Alone?' in item['tags']:
+	# 	return buildReleaseMessage(item, 'Escaping the Nuclear Fallout Shelter that has Turned Into a Dungeon Alone?', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -3913,6 +3966,12 @@ def extractNieracolTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if "The Sly Emperor's Wild Beast-Tamer Empress" in item['tags']:
+		return buildReleaseMessage(item, "The Sly Emperor's Wild Beast-Tamer Empress", vol, chp, frag=frag, postfix=postfix)
+	if 'World of Hidden Phoenixes' in item['tags']:
+		return buildReleaseMessage(item, 'World of Hidden Phoenixes', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 

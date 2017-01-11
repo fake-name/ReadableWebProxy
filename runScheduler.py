@@ -3,6 +3,7 @@
 import sys
 import traceback
 import datetime
+import threading
 import time
 from pytz import reference
 import pytz
@@ -187,6 +188,19 @@ def dump_scheduled_jobs(sched):
 	for job in existing:
 		print("	", job, job.args, "running in:", job.next_run_time - tznow)
 
+	session = db.get_db_session()
+	running = session.query(db.PluginStatus).filter(db.PluginStatus.is_running == True).all()
+	print("Running jobs:")
+	for jitem in running:
+		print("	", jitem.plugin_name, jitem.is_running, jitem.last_run, jitem.last_error, jitem.last_error_msg)
+	if not running:
+		print("	<None!>")
+
+	print("Running threads:")
+	for thread in threading.enumerate():
+		print("	", thread.getName(), thread)
+	db.delete_db_session()
+
 
 	# session = db.get_db_session()
 	# items = session.query(db.PluginStatus).all()
@@ -207,11 +221,11 @@ def go_sched():
 			'apscheduler.jobstores.memory': {
 				'type': 'memory'
 			},
+			# 'apscheduler.executors.default': {
+			# 	'class': 'apscheduler.executors.pool:ProcessPoolExecutor',
+			# 	'max_workers': '10'
+			# },
 			'apscheduler.executors.default': {
-				'class': 'apscheduler.executors.pool:ProcessPoolExecutor',
-				'max_workers': '10'
-			},
-			'apscheduler.executors.on_the_fly': {
 				'class': 'apscheduler.executors.pool:ThreadPoolExecutor',
 				'max_workers': '10'
 			},

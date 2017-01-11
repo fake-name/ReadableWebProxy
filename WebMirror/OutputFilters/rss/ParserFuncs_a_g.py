@@ -3453,6 +3453,10 @@ def extractAiHristDreamTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'One Child Two Treasures: The Billionaire Chief’s Good Wife' in item['tags']:
+		return buildReleaseMessage(item, 'One Child Two Treasures: The Billionaire Chief’s Good Wife', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -3486,6 +3490,11 @@ def extractAnkydonsLair(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'Outcast Magician And The Power Of Heretics' in item['tags']:
+		return buildReleaseMessage(item, 'Outcast Magician And The Power Of Heretics', vol, chp, frag=frag, postfix=postfix)
+	if 'Reincarnation into the Barrier Master' in item['tags']:
+		return buildReleaseMessage(item, 'Reincarnation into the Barrier Master', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -3607,6 +3616,8 @@ def extractFriendshipIsPower(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Forty Millenniums of Cultivation Chapters' in item['tags']:
+		return buildReleaseMessage(item, 'Forty Millenniums of Cultivation Chapters', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 

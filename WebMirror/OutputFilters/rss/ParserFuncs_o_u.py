@@ -717,6 +717,8 @@ def extractTranslationNations(item):
 		return buildReleaseMessage(item, 'Path to Heaven', vol, chp, frag=frag, postfix=postfix)
 	if 'The Ultimate Evolution' in item['tags']:
 		return buildReleaseMessage(item, 'The Ultimate Evolution', vol, chp, frag=frag, postfix=postfix)
+	if 'Only I Shall Be Immortal' in item['tags']:
+		return buildReleaseMessage(item, 'Only I Shall Be Immortal', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].lower().startswith("the ultimate evolution volume") and "Chapter" in item['title']:
 		return buildReleaseMessage(item, 'The Ultimate Evolution', vol, chp, frag=frag, postfix=postfix)
 	return False
@@ -1234,6 +1236,8 @@ def extractShinsori(item):
 		return buildReleaseMessage(item, 'Yuusha Ga Onna Da to Dame Desu Ka?', vol, chp, frag=frag, postfix=postfix)
 	if 'Raising Slaves' in item['tags']:
 		return buildReleaseMessage(item, 'Raising Slaves in Another World While on a Journey', vol, chp, frag=frag, postfix=postfix)
+	if 'Lilianne' in item['tags']:
+		return buildReleaseMessage(item, 'Nigotta Hitomi no Lilianne', vol, chp, frag=frag, postfix=postfix)
 
 	if 'Hone no aru Yatsu' in item['tags'] or 'Bones' in item['tags']:
 		return buildReleaseMessage(item, 'Hone no aru Yatsu', vol, chp, frag=frag, postfix=postfix)
@@ -3296,8 +3300,12 @@ def extractPathOfTranslation(item):
 
 	if "Emperor's Domination" in item['tags']:
 		return buildReleaseMessage(item, "Emperor's Domination", vol, chp, frag=frag, postfix=postfix)
+	if 'Martial God Realm' in item['tags']:
+		return buildReleaseMessage(item, 'Martial God Realm', vol, chp, frag=frag, postfix=postfix)
 	if 'Big Life' in item['tags']:
 		return buildReleaseMessage(item, 'Big Life', vol, chp, frag=frag, postfix=postfix)
+	if "I'm a Villain" in item['tags']:
+		return buildReleaseMessage(item, "I'm a Villain", vol, chp, frag=frag, postfix=postfix)
 	if 'Grasping Evil' in item['tags']:
 		return buildReleaseMessage(item, 'Grasping Evil', vol, chp, frag=frag, postfix=postfix)
 	if 'The Human Emperor' in item['tags']:
@@ -3318,7 +3326,7 @@ def extractPathOfTranslation(item):
 
 	if item['title'].startswith("Big Life") and "chapter" in item['title'].lower():
 		return buildReleaseMessage(item, 'Big Life', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Cohen of the Rebellion") and "chapter" in item['title'].lower():
+	if item['title'].startswith("Cohen of the Rebellion"):
 		return buildReleaseMessage(item, 'Cohen of the Rebellion', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Deva Wizard") and "chapter" in item['title'].lower():
 		return buildReleaseMessage(item, 'Deva Wizard', vol, chp, frag=frag, postfix=postfix)
@@ -3332,9 +3340,9 @@ def extractPathOfTranslation(item):
 		return buildReleaseMessage(item, 'Martial Emperor Reborn ', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Martial God Conqueror") and "chapter" in item['title'].lower():
 		return buildReleaseMessage(item, 'Martial God Conqueror', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Post-’80s Cultivation Journal") and "chapter" in item['title'].lower():
+	if item['title'].startswith("Post-’80s Cultivation Journal"):
 		return buildReleaseMessage(item, 'Post-’80s Cultivation Journal', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Immortal") and "chapter" in item['title'].lower():
+	if item['title'].startswith("Immortal"):
 		return buildReleaseMessage(item, 'Immortal', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Martial God Conqueror") and "chapter" in item['title'].lower():
 		return buildReleaseMessage(item, 'Martial God Conqueror', vol, chp, frag=frag, postfix=postfix)
@@ -3580,6 +3588,10 @@ def extractSnowTimeTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'In Different World With Naruto System' in item['tags']:
+		return buildReleaseMessage(item, 'In Different World With Naruto System', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 def extractSteadyTranslation(item):
 	"""
@@ -3589,8 +3601,16 @@ def extractSteadyTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
-	if 'In Different World With Naruto System' in item['tags']:
-		return buildReleaseMessage(item, 'In Different World With Naruto System', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Daily Life of an Immortal Cat in the Human World' in item['tags']:
+		return buildReleaseMessage(item, 'Daily Life of an Immortal Cat in the Human World', vol, chp, frag=frag, postfix=postfix)
+	if 'Death Notice' in item['tags']:
+		return buildReleaseMessage(item, 'Death Notice', vol, chp, frag=frag, postfix=postfix)
+	if 'Hollywood Secret Garden' in item['tags']:
+		return buildReleaseMessage(item, 'Hollywood Secret Garden', vol, chp, frag=frag, postfix=postfix)
+	if 'Strange Life of a Cat' in item['tags']:
+		return buildReleaseMessage(item, 'Strange Life of a Cat', vol, chp, frag=frag, postfix=postfix)
+	if "The Path of the Cannon Folder's Counterattack" in item['tags']:
+		return buildReleaseMessage(item, "The Path of the Cannon Folder's Counterattack", vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractSunnyTranslations(item):
 	"""
@@ -3934,6 +3954,8 @@ def extractStarveCleric(item):
 		return buildReleaseMessage(item, 'The Experimental Diaries of A Crazy Lich', vol, chp, frag=frag, postfix=postfix)
 	if 'Tian Ying' in item['tags']:
 		return buildReleaseMessage(item, 'Tian Ying', vol, chp, frag=frag, postfix=postfix)
+	if 'The Adonis Next Door' in item['tags']:
+		return buildReleaseMessage(item, 'The Adonis Next Door', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -4042,10 +4064,13 @@ def extractOppaTranslations(item):
 	'''
 	'OppaTranslations'
 	'''
-
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Main Character Hides His Strength' in item['tags']:
+		return buildReleaseMessage(item, 'Main Character Hides His Strength', vol, chp, frag=frag, postfix=postfix)
+	if 'Master Hunter K' in item['tags']:
+		return buildReleaseMessage(item, 'Master Hunter K', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -4140,17 +4165,6 @@ def extractPlantTranslation(item):
 def extractProductiveProcrastination(item):
 	'''
 	'Productive Procrastination'
-	'''
-
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol or frag) or "preview" in item['title'].lower():
-		return None
-	return False
-
-
-def extractProfessionalGameThrowersTranslation(item):
-	'''
-	"ProfessionalGameThrower's Translation"
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])

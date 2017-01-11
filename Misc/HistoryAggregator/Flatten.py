@@ -223,9 +223,8 @@ class DbFlattener(object):
 
 	def consolidate_history(self):
 
-		sess = db.get_db_session()
 		self.qlog.info("Querying for items with significant history size")
-		end = sess.execute("""
+		end = self.sess.execute("""
 				SELECT
 					count(*), url
 				FROM
@@ -249,11 +248,13 @@ class DbFlattener(object):
 
 
 	def tickle_rows(self, sess, urlset):
-		jobs = [sess.query(db.WebPages).filter(db.WebPages.url == url).one() for url in urlset]
+		jobs = [sess.query(db.WebPages).filter(db.WebPages.url == url).scalar() for url in urlset]
 		while True:
 			try:
 
 				for job in jobs:
+					if not job:
+						continue
 					# self.log.info("Need to push content into history table for URL: %s.", job.url)
 
 					cachedtitle = job.title

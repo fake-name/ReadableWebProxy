@@ -460,7 +460,7 @@ def schedule_next_exec(scheduler, at_time):
 		trigger            = 'date',
 		run_date            = at_time,
 		jobstore           = 'memory',
-		executor           = 'on_the_fly',
+		# executor           = 'on_the_fly',
 		replace_existing   = True,
 		max_instances      = 1,
 		coalesce           = True,

@@ -42,9 +42,13 @@ def extractYorasuTranslations(item):
 
 	if item['title'].startswith("DKFTOD"):
 		return buildReleaseMessage(item, 'Devil King From The Otherworldly Dimension', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("DKFTOD"):
-		return buildReleaseMessage(item, 'Devil King From The Otherworldly Dimension', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Hacker"):
+		return buildReleaseMessage(item, 'Hacker', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('Fallen God Records'):
+		return buildReleaseMessage(item, 'Fallen God Records', vol, chp, frag=frag, postfix=postfix)
 
+	if 'Godly Model Creator' in item['tags']:
+		return buildReleaseMessage(item, 'Godly Model Creator', vol, chp, frag=frag, postfix=postfix)
 	if 'Super Brain Telekinesis' in item['tags']:
 		return buildReleaseMessage(item, 'Super Brain Telekinesis', vol, chp, frag=frag, postfix=postfix)
 	if 'Super soldier' in item['tags']:
@@ -853,6 +857,8 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, "Evil Emperor's Wild Consort", vol, chp, frag=frag, postfix=postfix)
 	if 'Star Rank Hunter' in item['tags']:
 		return buildReleaseMessage(item, 'Star Rank Hunter', vol, chp, frag=frag, postfix=postfix)
+	if 'Blood Hourglass' in item['tags']:
+		return buildReleaseMessage(item, 'Blood Hourglass', vol, chp, frag=frag, postfix=postfix)
 
 	if 'Special Forces Spirit' in item['tags']:
 		return buildReleaseMessage(item, 'Special Forces Spirit', vol, chp, frag=frag, postfix=postfix)
@@ -868,6 +874,8 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, "History's Strongest Senior Brother", vol, chp, frag=frag, postfix=postfix)
 	if "I'm Hui Tai Lang" in item['tags']:
 		return buildReleaseMessage(item, "I'm Hui Tai Lang", vol, chp, frag=frag, postfix=postfix)
+	if 'Pivot of the Sky' in item['tags']:
+		return buildReleaseMessage(item, 'Pivot of the Sky', vol, chp, frag=frag, postfix=postfix)
 	if 'Poisoning the World' in item['tags']:
 		return buildReleaseMessage(item, 'Poisoning the World: The Secret Service Mysterious Doctor is a Young Beastly Wife', vol, chp, frag=frag, postfix=postfix)
 
@@ -1400,6 +1408,10 @@ def extractWuxiaNation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'the dark king' in item['tags']:
+		return buildReleaseMessage(item, 'The Dark King', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
