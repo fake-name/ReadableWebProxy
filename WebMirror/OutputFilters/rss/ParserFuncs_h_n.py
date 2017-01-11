@@ -3390,6 +3390,8 @@ def extractMountainofPigeonsTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Rokujouma' in item['tags']:
+		return buildReleaseMessage(item, 'Rokujouma no Shinryakusha!?', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractMTNovels(item):
 	"""
@@ -3627,6 +3629,8 @@ def extractHalcyonTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].startswith("Shura’s Wrath Chapter"):
+		return buildReleaseMessage(item, 'Shura’s Wrath', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -3649,6 +3653,8 @@ def extractHecatesCorner(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Lightning Empress Maid' in item['tags']:
+		return buildReleaseMessage(item, 'Lightning Empress Maid', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -3709,6 +3715,8 @@ def extractIncaroseJealousyMTL(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].lower().startswith("konyaku haki? yoroshī. naraba, fukushūda! chapter "):
+		return buildReleaseMessage(item, 'Konyaku haki? Yoroshī. Naraba, fukushūda!', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -3739,6 +3747,8 @@ def extractIsekaiFiction(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'pastry' in item['tags']:
+		return buildReleaseMessage(item, 'Upstart Pastry Chef ~Territory Management of a Genius Pâtissier~', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -3772,6 +3782,8 @@ def extractKakaooStory(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].startswith("King of Hell’s Genius Pampered Wife Chapter"):
+		return buildReleaseMessage(item, 'King of Hell’s Genius Pampered Wife', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -3911,6 +3923,8 @@ def extractLovelyxDay(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'WSU' in item['tags']:
+		return buildReleaseMessage(item, 'Because I\'m a Weapon Shop Uncle', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 

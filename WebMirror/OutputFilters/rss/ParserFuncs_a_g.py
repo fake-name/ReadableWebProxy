@@ -989,6 +989,8 @@ def extractDreamsOfJianghu(item):
 		return buildReleaseMessage(item, 'To Be A Virtuous Wife', vol, chp, frag=frag, postfix=postfix)
 	if 'WC' in item['tags']:
 		return buildReleaseMessage(item, 'World of Cultivation', vol, chp, frag=frag, postfix=postfix)
+	if '8TT' in item['tags']:
+		return buildReleaseMessage(item, 'Eight Treasure Trousseau', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1497,6 +1499,8 @@ def  extractDailyDallying(item):
 		return buildReleaseMessage(item, 'Nidome no Yuusha', vol, chp, frag=frag, postfix=postfix)
 	if "Nobunaga's Imouto" in item['tags']:
 		return buildReleaseMessage(item, "Nobunaga's Younger Sister is My Wife", vol, chp, frag=frag, postfix=postfix)
+	if 'Harem Slave Master' in item['tags']:
+		return buildReleaseMessage(item, "Most Wicked Harem Slave Master", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractDistractedChinese(item):
@@ -2932,6 +2936,7 @@ def extractFantasyBooksLive(item):
 		'Walking With Giants',
 		'Invincible Level Up',
 		'The Royal Princess Fox',
+		'Castle of Black Iron',
 	]
 
 	tlut = {tmp.lower():tmp for tmp in snames}
@@ -2984,6 +2989,8 @@ def extractGirlyNovels(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'The Captivating Crown Prince' in item['tags']:
+		return buildReleaseMessage(item, 'The Captivating Crown Prince', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractEllionoraTranslation(item):
@@ -3109,6 +3116,8 @@ def extractAvaritiakun(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'The divine protection that I got was a power that increase a girl level with semen' in item['tags']:
+		return buildReleaseMessage(item, 'The divine protection that I got was a power that increase a girl level with semen', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractAvertTranslations(item):
@@ -3279,6 +3288,8 @@ def extractExplore(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].lower().startswith("geww "):
+		return buildReleaseMessage(item, 'Ghost Emperor Wild Wife: Dandy Eldest Miss', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractExpNull(item):
@@ -3310,7 +3321,9 @@ def extractFairlyAccurateTranslations(item):
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
 
-	if item['title'].lower().startswith("Card Disciple – Chapter"):
+	if item['title'].lower().startswith("card disciple – chapter"):
+		return buildReleaseMessage(item, 'Card Disciple', vol, chp, frag=frag, postfix=postfix)
+	if 'Card Disciple' in item['tags']:
 		return buildReleaseMessage(item, 'Card Disciple', vol, chp, frag=frag, postfix=postfix)
 	return False
 
@@ -3374,6 +3387,12 @@ def extractGrandlation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'DMWG' in item['tags']:
+		return buildReleaseMessage(item, 'Dragon-Marked War God', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("DMWG Chapter"):
+		return buildReleaseMessage(item, 'Dragon-Marked War God', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Yang God Chapter"):
+		return buildReleaseMessage(item, 'Yang God', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractGurosLibraryofStories(item):
@@ -3431,6 +3450,9 @@ def extractABCpwip(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Marriage Concerto' in item['tags']:
+		return buildReleaseMessage(item, 'Marriage Concerto (Small Thing Called Love)', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -3550,6 +3572,8 @@ def extractDailyDoseNovels(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Castle of Black Iron' in item['tags']:
+		return buildReleaseMessage(item, 'Castle of Black Iron', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 

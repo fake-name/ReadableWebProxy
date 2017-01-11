@@ -26,6 +26,9 @@ def extractSousetsuka(item):
 			chp = int(extract.group(2))
 		return buildReleaseMessage(item, "Death March kara Hajimaru Isekai Kyousoukyoku", vol, chp, frag=frag, postfix=postfix)
 
+	if 'Yuusha Furi' in item['tags']:
+		return buildReleaseMessage(item, "Yuusha no Furi mo Raku Janai --Riyuu? Ore ga Kami Dakara--", vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 ####################################################################################################################################################
@@ -1074,6 +1077,8 @@ def extractRadiantTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
+	if 'Ghost Emperor Wild Wife' in item['tags']:
+		return buildReleaseMessage(item, 'Ghost Emperor Wild Wife', vol, chp, frag=frag, postfix=postfix)
 	if 'Heavenly Calamity' in item['tags']:
 		return buildReleaseMessage(item, 'Heavenly Calamity', vol, chp, frag=frag, postfix=postfix)
 	if 'Battle Frenzy' in item['tags']:
@@ -3423,6 +3428,8 @@ def extractPenguTaichou(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if item['title'].lower().startswith('sword shisho chapter'):
+		return buildReleaseMessage(item, 'I was a Sword when I Reincarnated!', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractPolarBearCatcher(item):
 	"""
@@ -3601,16 +3608,12 @@ def extractSteadyTranslation(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
-	if 'Daily Life of an Immortal Cat in the Human World' in item['tags']:
-		return buildReleaseMessage(item, 'Daily Life of an Immortal Cat in the Human World', vol, chp, frag=frag, postfix=postfix)
-	if 'Death Notice' in item['tags']:
-		return buildReleaseMessage(item, 'Death Notice', vol, chp, frag=frag, postfix=postfix)
-	if 'Hollywood Secret Garden' in item['tags']:
-		return buildReleaseMessage(item, 'Hollywood Secret Garden', vol, chp, frag=frag, postfix=postfix)
-	if 'Strange Life of a Cat' in item['tags']:
-		return buildReleaseMessage(item, 'Strange Life of a Cat', vol, chp, frag=frag, postfix=postfix)
-	if "The Path of the Cannon Folder's Counterattack" in item['tags']:
-		return buildReleaseMessage(item, "The Path of the Cannon Folder's Counterattack", vol, chp, frag=frag, postfix=postfix)
+	if 'Online Game: Evil Dragon Against The Heaven' in item['tags']:
+		return buildReleaseMessage(item, 'Online Game: Evil Dragon Against The Heaven', vol, chp, frag=frag, postfix=postfix)
+	if 'In Different World With Naruto System' in item['tags']:
+		return buildReleaseMessage(item, 'In Different World With Naruto System', vol, chp, frag=frag, postfix=postfix)
+	if 'The Alchemist God' in item['tags']:
+		return buildReleaseMessage(item, 'The Alchemist God', vol, chp, frag=frag, postfix=postfix)
 	return False
 def extractSunnyTranslations(item):
 	"""
@@ -3913,7 +3916,20 @@ def extractSinisterTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Goblin Slayer' in item['tags']:
+		return buildReleaseMessage(item, 'Goblin Slayer', vol, chp, frag=frag, postfix=postfix)
+	if 'Daily Life of an Immortal Cat in the Human World' in item['tags']:
+		return buildReleaseMessage(item, 'Daily Life of an Immortal Cat in the Human World', vol, chp, frag=frag, postfix=postfix)
+	if 'Death Notice' in item['tags']:
+		return buildReleaseMessage(item, 'Death Notice', vol, chp, frag=frag, postfix=postfix)
+	if 'Hollywood Secret Garden' in item['tags']:
+		return buildReleaseMessage(item, 'Hollywood Secret Garden', vol, chp, frag=frag, postfix=postfix)
+	if 'Strange Life of a Cat' in item['tags']:
+		return buildReleaseMessage(item, 'Strange Life of a Cat', vol, chp, frag=frag, postfix=postfix)
+	if "The Path of the Cannon Folder's Counterattack" in item['tags']:
+		return buildReleaseMessage(item, "The Path of the Cannon Folder's Counterattack", vol, chp, frag=frag, postfix=postfix)
 	return False
+
 
 def extractSlothTranslations(item):
 	'''
@@ -4203,6 +4219,8 @@ def extractRefreshTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Aspiration for Nation and Beauty' in item['tags']:
+		return buildReleaseMessage(item, 'Aspiration for Nation and Beauty', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
@@ -4280,6 +4298,8 @@ def extractSilavinsTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Martial Peak' in item['tags']:
+		return buildReleaseMessage(item, 'Martial Peak', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
