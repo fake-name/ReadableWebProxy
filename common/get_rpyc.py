@@ -46,7 +46,7 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 					raise e
 
 	def __del__(self):
-		if hasattr(self, 'rpc'):
+		if hasattr(self, 'rpc_client'):
 			self.rpc_client.close() # Closes the socket 's' also
 
 	def get_job(self):
