@@ -358,6 +358,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		contents = contents.replace("please read only translator’s websitewww.novitranslation.com", "")
 		contents = contents.replace("please read only translator’s website www.novitranslation.com", "")
 		contents = contents.replace("Please do not host elsewhere but MBC and Yumeabyss", "")
+		contents = contents.replace('Original and most updated translations are from volaretranslations.', "")
+		contents = contents.replace('Please support the translator for Wild Consort by reading on volarenovels!', "")
+		contents = contents.replace('Original and most updated translations are from volaretranslations.', "")
+		contents = contents.replace('Original and most updated translations are from volaretranslations.', "")
 		
 		
 		
@@ -415,12 +419,22 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 
 	# Miscellaneous spot-fixes for specific sites.
+	def prePatch(self, url, soup):
+		if  '//hecatescorner.wordpress.com' in url:
+			pass
+			#<span style="color:#ffffff;">the truth is out!</span>
+			badspans = soup.find_all("span", style=re.compile("color\W?:\W?#ffffff", re.I))
+			for bad in badspans:
+				bad.decompose()
+		return soup
+	
+
+	# Miscellaneous spot-fixes for specific sites.
 	def spotPatch(self, soup):
 
 		# Replace <pre> tags on wattpad.
 		# wp_div = soup.find_all('div', class_="panel-reading")
 		# for item in wp_div:
-
 		# Fukkit, just nuke them in general
 		for pre in soup.find_all("pre"):
 			pre.name = "div"
@@ -477,6 +491,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# 		raise e
 
 
+		soup = self.prePatch(self.pageUrl, soup)
+		
 		# Allow child-class hooking
 		soup = self.preprocessBody(soup)
 

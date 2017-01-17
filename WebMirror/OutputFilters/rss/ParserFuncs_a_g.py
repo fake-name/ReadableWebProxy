@@ -2937,6 +2937,7 @@ def extractFantasyBooksLive(item):
 		'Invincible Level Up',
 		'The Royal Princess Fox',
 		'Castle of Black Iron',
+		'Lone Harem Meister',
 	]
 
 	tlut = {tmp.lower():tmp for tmp in snames}
@@ -2951,7 +2952,7 @@ def extractFantasyBooksLive(item):
 			else:
 				tl_type = 'oel'
 
-			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type='tl_type')
+			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 
 
@@ -3607,6 +3608,8 @@ def extractEndofthedays42(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Slime Tensei Monogatari' in item['tags']:
+		return buildReleaseMessage(item, 'Slime Tensei Monogatari', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 

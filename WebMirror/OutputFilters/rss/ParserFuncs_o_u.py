@@ -714,6 +714,8 @@ def extractTranslationNations(item):
 		return buildReleaseMessage(item, 'God and Devil World', vol, chp, frag=frag, postfix=postfix)
 	if 'Limitless Sword God' in item['tags']:
 		return buildReleaseMessage(item, 'Limitless Sword God', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].lower().startswith("undefeated god of war") and "Chapter" in item['title']:
+		return buildReleaseMessage(item, 'Undefeated God of War', vol, chp, frag=frag, postfix=postfix)
 	if 'Undefeated God of War' in item['tags']:
 		return buildReleaseMessage(item, 'Undefeated God of War', vol, chp, frag=frag, postfix=postfix)
 	if 'Path to Heaven' in item['tags']:
@@ -1091,6 +1093,8 @@ def extractRadiantTranslations(item):
 		return buildReleaseMessage(item, 'Zither Emperor', vol, chp, frag=frag, postfix=postfix)
 	if 'Radiant Era' in item['tags']:
 		return buildReleaseMessage(item, 'Radiant Era', vol, chp, frag=frag, postfix=postfix)
+	if 'Village Girl as Family Head' in item['tags']:
+		return buildReleaseMessage(item, 'Village Girl as Family Head', vol, chp, frag=frag, postfix=postfix)
 	if 'Lord Xue Ying' in item['tags']:
 		return buildReleaseMessage(item, 'Xue Ying Ling Zhu', vol, chp, frag=frag, postfix=postfix)
 	if 'Child of Light' in item['tags'] or 'Guang Zhi Zi' in item['tags']:
@@ -3351,6 +3355,8 @@ def extractPathOfTranslation(item):
 		return buildReleaseMessage(item, 'Immortal', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Martial God Conqueror") and "chapter" in item['title'].lower():
 		return buildReleaseMessage(item, 'Martial God Conqueror', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("World Defying Dan God") and "chapter" in item['title'].lower():
+		return buildReleaseMessage(item, 'World Defying Dan God', vol, chp, frag=frag, postfix=postfix)
 
 
 

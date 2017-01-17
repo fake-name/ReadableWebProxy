@@ -1188,6 +1188,8 @@ def extractKobatoChanDaiSukiScan(item):
 		return buildReleaseMessage(item, 'Omni Genius', vol, chp, frag=frag, postfix=postfix)
 	if 'Link the Orc' in item['tags']:
 		return buildReleaseMessage(item, 'Link the Orc', vol, chp, frag=frag, postfix=postfix)
+	if "Titan's Throne" in item['tags']:
+		return buildReleaseMessage(item, "Titan's Throne", vol, chp, frag=frag, postfix=postfix)
 
 
 
