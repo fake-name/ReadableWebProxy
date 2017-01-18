@@ -243,6 +243,8 @@ class DbFlattener(object):
 				except sqlalchemy.exc.OperationalError:
 					self.sess.rollback()
 
+				self.sess.expire_all()
+
 
 	def tickle_rows(self, sess, urlset):
 		try:
