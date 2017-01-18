@@ -74,9 +74,6 @@ class DbFlattener(object):
 		return ', '.join(dhms[start:end+1])
 
 
-
-
-
 	def generate_snap_times(self):
 		incr = datetime.datetime.now()
 		times = []
@@ -248,7 +245,21 @@ class DbFlattener(object):
 
 
 	def tickle_rows(self, sess, urlset):
-		jobs = [sess.query(db.WebPages).filter(db.WebPages.url == url).scalar() for url in urlset]
+		try:
+			jobs = []
+			for url in urlset:
+				jobs.append(sess.query(db.WebPages).filter(db.WebPages.url == url).scalar())
+
+		except sqlalchemy.exc.OperationalError:
+			self.log.error("Failure during update (OperationalError)?")
+			sess.rollback()
+			return
+
+		except sqlalchemy.exc.InvalidRequestError:
+			self.log.error("Failure during update (InvalidRequestError)?")
+			sess.rollback()
+			return
+
 		while True:
 			try:
 
