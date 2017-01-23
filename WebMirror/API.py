@@ -84,9 +84,15 @@ class RemoteContentObject(object):
 
 
 		content = self.job.content
-		if content:
+		if content and relink_replace:
 			content = replace_links(content)
 		return content
+
+	def getMime(self):
+		assert self.fetched
+		assert self.job
+
+		return self.job.mimetype
 
 	def getResource(self):
 		"""
@@ -176,11 +182,11 @@ def getPage(url, ignore_cache=False, version=None):
 
 
 @contextlib.contextmanager
-def getPageRow(url):
-	page = RemoteContentObject(url)
+def getPageRow(url, ignore_cache=False, session=None):
+	page = RemoteContentObject(url, db_session=session)
 
 	try:
-		page.fetch(ignore_cache=False)
+		page.fetch(ignore_cache=ignore_cache)
 
 		yield page
 	except DownloadException:
@@ -191,12 +197,12 @@ def getPageRow(url):
 
 
 
-def getResource(url, ignore_cache=False):
+def getResource(url, ignore_cache=False, session=None):
 	'''
 	Get a url that (probably) contains resource content synchronously.
 	Return is a 4-tuple consisting of (mimetype, filename, filecontent, cache-state)
 	'''
-	page = RemoteContentObject(url)
+	page = RemoteContentObject(url, db_session=session)
 	try:
 		page.fetch(ignore_cache)
 

@@ -20,6 +20,9 @@ class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 						"application/octet-stream",
 						"image/webp",
 
+						"text/css",
+						"text/javascript",
+						"application/font-woff",
 						]
 
 	# Last case, match everything.

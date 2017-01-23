@@ -679,6 +679,7 @@ class WebGetRobust:
 
 				if "text/html" in cType or \
 					'text/javascript' in cType or    \
+					'text/css' in cType or    \
 					'application/xml' in cType or    \
 					'application/atom+xml' in cType:				# If this is a html/text page, we want to decode it using the local encoding
 

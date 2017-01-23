@@ -12,7 +12,14 @@ import fontTools.ttLib.tables._g_l_y_f as g_l_y_f
 
 import common.util.urlFuncs as urlFuncs
 from . import HtmlProcessor
-import markdown
+import WebMirror.API
+import common.database as db
+import tinycss2
+import bs4
+
+import itertools
+import code
+import io
 
 
 ########################################################################################################################
@@ -50,8 +57,8 @@ def flatten_coords(in_coords):
 		return tuple()
 
 
-def defont():
-	f = TTFont("170122074156ARIAL-KCDS.woff")
+def defont(font):
+	f = TTFont(font)
 
 	gs = f.getGlyphSet()
 	keys = list(gs.keys())
@@ -114,6 +121,8 @@ def defont():
 		print("Conversion tree: '{}' (Raw: {})".format(str(convs).rjust(10), (codepoints, symbols)))
 
 
+def isplit(iterable, conditional):
+	return [list(g) for k,g in itertools.groupby(iterable, conditional) if not k]
 
 
 class KobatoChanDaiSukiPageProcessor(HtmlProcessor.HtmlPageProcessor):
@@ -131,8 +140,82 @@ class KobatoChanDaiSukiPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			return True
 		return False
 
-	def preprocessBody(self, soup):
-		ss = soup.find_all('link', rel='stylesheet')
-		print(ss)
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.sess = db.checkout_session()
 
+	def __del__(self):
+		db.release_session(self.sess)
+
+	def _getFontUrl(self, soup):
+		ss = soup.find_all('link', rel='stylesheet')
+		for item in ss:
+			if hasattr(item, "href"):
+				if "/useanyfont/" in item['href'] and 'css' in item['href']:
+					if "http://" in item['href'] or "https://" in item['href']:
+						return item['href']
+					else:
+						return urllib.parse.urljoin(self.pageUrl, item['href'])
+
+		return None
+
+	def _extractCss(self, css):
+		# Parsing CSS is always a clusterfuck
+
+		ss, coding = tinycss2.parse_stylesheet_bytes(css)
+		ssf = [tmp.content for tmp in ss if tmp.type == "at-rule"]
+
+		ssf = [isplit(tmp, lambda x:x.type=="literal" and x.value.strip() == ";") for tmp in ssf]
+		fonts = {}
+		for fontdef in ssf:
+			name = None
+			urls = []
+			for subsection in [tmp for tmp in fontdef if len(tmp) and tmp[0].type == "ident"]:
+				if subsection[0].value == "font-family":
+					name = subsection[2].value
+				if subsection[0].value == 'src':
+					for tmp in subsection:
+						# We want the woffs
+						if tmp.type == "url" and tmp.value.lower().endswith("woff"):
+							value = tmp.value
+							if "http://" in value or "https://" in value:
+								urls.append(value)
+							else:
+								urls.append(urllib.parse.urljoin(self.pageUrl, value))
+
+
+			if name and urls:
+				fonts[name] = list(set(urls))[0]
+		return fonts
+	def _getFontLuts(self, fonturls):
+		ret = {}
+		for key, fonturl in fonturls.items():
+
+			with WebMirror.API.getPageRow(fonturl, ignore_cache=False, session=self.sess) as page:
+				mimetype, fname, content = page.getResource()
+				print(key, mimetype, fname, fonturl)
+				ret = defont(io.BytesIO(content))
+				print(ret)
+
+
+
+	def getFont(self, soup):
+		cssUrl = self._getFontUrl(soup)
+		if not cssUrl:
+			return []
+		with WebMirror.API.getPageRow(cssUrl, ignore_cache=False, session=self.sess) as page:
+			mimetype, fname, content = page.getResource()
+
+		assert mimetype.lower() == "text/css"
+
+		fonturls = self._extractCss(content)
+		fontluts = self._getFontLuts(fonturls)
+		print("Extracted URLs:")
+
+
+	def getMapTable(self, soup):
+		font = self.getFont(soup)
+
+	def preprocessBody(self, soup):
+		mt = self.getMapTable(soup)
 		return soup
