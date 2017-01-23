@@ -1644,7 +1644,7 @@ def  extractNovelSaga(item):
 	if 'Ze Tian Ji' in item['tags']:
 		return buildReleaseMessage(item, 'Ze Tian Ji', vol, chp, frag=frag, postfix=postfix)
 	if 'God of Destruction' in item['tags']:
-		return buildReleaseMessage(item, 'God of Destruction', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'God of Destruction', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 
 	return False
 

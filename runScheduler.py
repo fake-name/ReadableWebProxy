@@ -144,7 +144,7 @@ def scheduleJobs(sched, timeToStart):
 	print("JobCaller.callMod: ", JobCaller.callMod)
 
 	for jobId, callee, interval, startWhen in jobs:
-		jId = callee.__name__
+		jId = str(jobId) + " " + callee.__name__
 		activeJobs.append(jId)
 		if sched.get_job(jId):
 			print("JobID %s already scheduled." % jId)
@@ -186,7 +186,7 @@ def dump_scheduled_jobs(sched):
 
 	tznow = datetime.datetime.now(tz=pytz.utc)
 	for job in existing:
-		print("	", job, job.args, "running in:", job.next_run_time - tznow)
+		print("	", job, job.args, "running in:", job.next_run_time - tznow, (job.id, ))
 
 	session = db.get_db_session()
 	running = session.query(db.PluginStatus).filter(db.PluginStatus.is_running == True).all()

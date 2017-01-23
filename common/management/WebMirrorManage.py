@@ -33,7 +33,7 @@ import common.database as db
 import common.Exceptions
 import common.management.file_cleanup
 
-import Misc.HistoryAggregator.Flatten
+import Misc.HistoryAggregator.Consolidate
 
 import flags
 import config
@@ -737,6 +737,12 @@ def exposed_fetch_other_feed_sources():
 	WebMirror.SiteSync.fetch.fetch_other_sites()
 
 
+def exposed_fix_missing_history():
+	'''
+	Fix any items that don't have an entry in the history table.
+	'''
+	Misc.HistoryAggregator.Consolidate.fix_missing_history()
+
 def exposed_flatten_history():
 	'''
 	Flatten the page change history.
@@ -744,7 +750,7 @@ def exposed_flatten_history():
 	last 48 hours, once per day for the last 32 days, and once per
 	week after that.
 	'''
-	Misc.HistoryAggregator.Flatten.consolidate_history()
+	Misc.HistoryAggregator.Consolidate.consolidate_history()
 
 
 def exposed_test_new_job_queue():

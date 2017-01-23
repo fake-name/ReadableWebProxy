@@ -273,7 +273,6 @@ def getNetLoc(url):
 	return parsed.netloc
 
 if __name__ == "__main__":
-	print('wat')
 
 	print(isGFileUrl('https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web'))
 	print(urlClean('http://inmydaydreams.com/?p=6128&share=tumblr'))

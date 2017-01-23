@@ -18,16 +18,16 @@ def minutes(num):
 import WebMirror.TimedTriggers.RollingRewalkTrigger
 import WebMirror.TimedTriggers.UrlTriggers
 import WebMirror.TimedTriggers.QueueTriggers
-import Misc.HistoryAggregator.Flatten
+import Misc.HistoryAggregator.Consolidate
 import WebMirror.util.StatusUpdater.Updater
 
 scrapePlugins = {
-	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                     minutes(15)),
-	1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase,  minutes(90)),
-	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                  minutes(45)),
-	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,              hours(4)),
-	4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,               days(3)),
-	5  : (Misc.HistoryAggregator.Flatten.DbFlattener,                                hours(6)),
+	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                      minutes(15)),
+	1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase,   minutes(90)),
+	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                   minutes(45)),
+	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,               hours(4)),
+	4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                days(3)),
+	5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                             hours(6)),
 	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                      minutes(10)),
 	6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                    minutes(60)),
 
@@ -102,6 +102,7 @@ import WebMirror.processor.WattPadJsonProcessor
 import WebMirror.processor.RoyalRoadLChapterPageProcessor
 import WebMirror.processor.RoyalRoadLSeriesPageProcessor
 import WebMirror.processor.NuProcessor
+import WebMirror.processor.KobatoChanDaiSukiPreprocessor
 
 
 PLUGINS = [
@@ -114,6 +115,7 @@ PLUGINS = [
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
 	WebMirror.processor.RoyalRoadLChapterPageProcessor.RoyalRoadLChapterPageProcessor,
 	WebMirror.processor.RoyalRoadLSeriesPageProcessor.RoyalRoadLSeriesPageProcessor,
+	WebMirror.processor.KobatoChanDaiSukiPreprocessor.KobatoChanDaiSukiPageProcessor,
 	WebMirror.processor.NuProcessor.NuProcessor,
 ]
 

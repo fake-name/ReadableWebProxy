@@ -136,7 +136,7 @@ def delete_db_session(postfix=""):
 			# check if the session was created while
 			# we were waiting for the lock
 			if not csid in SESSIONS:
-				return SESSIONS[csid]
+				return
 			SESSIONS[csid][1].close()
 			del SESSIONS[csid]
 			# print("Deleted session for id: ", csid)

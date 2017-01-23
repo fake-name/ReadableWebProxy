@@ -32,8 +32,6 @@ import common.database as db
 import common.Exceptions
 import common.management.file_cleanup
 
-import Misc.HistoryAggregator.Flatten
-
 import flags
 import config
 from config import C_RAW_RESOURCE_DIR

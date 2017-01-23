@@ -47,7 +47,6 @@ class DbFlattener(object):
 	def __init__(self):
 		self.log = logging.getLogger("Main.DbVersioning.Cleaner")
 		self.qlog = logging.getLogger("Main.DbVersioning.Query")
-		self.sess = db.get_db_session()
 
 		self.snap_times = self.generate_snap_times()
 
@@ -119,7 +118,7 @@ class DbFlattener(object):
 
 
 
-	def relink_row_sequence(self, rows):
+	def relink_row_sequence(self, sess, rows):
 		'''
 		Each Sqlalchemy-Continum transaction references the next transaction in the chain as it's `end_transaction_id`
 		except the most recent (where the value of end_transaction_id is `None`)
@@ -139,7 +138,7 @@ class DbFlattener(object):
 
 				update = ctbl.update().where(ctbl.c.id == x.id).where(ctbl.c.transaction_id == x.transaction_id).values(end_transaction_id=end_transaction_id)
 				# print(update)
-				self.sess.execute(update)
+				sess.execute(update)
 
 				dirty = True
 			end_transaction_id = x.transaction_id
@@ -147,10 +146,10 @@ class DbFlattener(object):
 		return dirty
 
 
-	def truncate_url_history(self, url):
+	def truncate_url_history(self, sess, url):
 		ctbl = version_table(db.WebPages)
 
-		items = self.sess.query(ctbl) \
+		items = sess.query(ctbl) \
 			.filter(ctbl.c.url == url) \
 			.all()
 
@@ -169,12 +168,12 @@ class DbFlattener(object):
 			if item.state != "complete":
 				deleted_1 += 1
 				self.log.info("Deleting incomplete item for url: %s!", url)
-				self.sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 			elif item.content == None and item.file == None:
 				self.log.info("Deleting item without a file and no content for url: %s!", url)
 				# print(type(item), item.mimetype, item.file, item.content)
 				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
-				self.sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 				deleted_1 += 1
 			elif item.content != None:
 				# print(type(item), item.keys(), item.addtime, item.fetchtime)
@@ -200,7 +199,7 @@ class DbFlattener(object):
 				out.append(superset[0])
 				# print(superset[0].fetchtime, superset[0].id, superset[0].transaction_id)
 				for tmp in superset[1:]:
-					self.sess.execute(ctbl.delete().where(ctbl.c.id == tmp.id).where(ctbl.c.transaction_id == tmp.transaction_id))
+					sess.execute(ctbl.delete().where(ctbl.c.id == tmp.id).where(ctbl.c.transaction_id == tmp.transaction_id))
 					deleted_2 += 1
 			elif len(superset) == 1:
 				out.append(superset[0])
@@ -208,20 +207,21 @@ class DbFlattener(object):
 				raise ValueError("Wat? Key with no items!")
 
 		deleted = deleted_1 + deleted_2
-		seq_dirty = self.relink_row_sequence(out)
+		seq_dirty = self.relink_row_sequence(sess, out)
 		if deleted > 0 or seq_dirty:
 			# Rewrite the tid links so the history renders properly
 			self.log.info("Committing because %s items were removed!", deleted)
-			self.sess.commit()
+			sess.commit()
 		else:
-			self.sess.rollback()
+			sess.rollback()
 
 		self.log.info("Deleted: %s items when simplifying history, Total deleted: %s, remaining: %s", deleted_2, deleted, orig_cnt-deleted)
 
 	def consolidate_history(self):
 
+		sess = db.get_db_session()
 		self.qlog.info("Querying for items with significant history size")
-		end = self.sess.execute("""
+		end = sess.execute("""
 				SELECT
 					count(*), url
 				FROM
@@ -235,15 +235,21 @@ class DbFlattener(object):
 		end = list(end)
 		self.qlog.info("Found %s items with more then 10 history entries. Processing", len(end))
 
+		sess.expire_all()
+		db.delete_db_session()
+
+
+		sess = db.get_db_session()
+
 		for count, url in end:
 			while 1:
 				try:
-					self.truncate_url_history(url)
+					self.truncate_url_history(sess, url)
 					break
 				except sqlalchemy.exc.OperationalError:
-					self.sess.rollback()
+					sess.rollback()
 
-				self.sess.expire_all()
+				sess.expire_all()
 
 
 	def tickle_rows(self, sess, urlset):
@@ -310,13 +316,16 @@ class DbFlattener(object):
 				t2.url IS NULL
 			""")
 		end = [tmp[0] for tmp in end]
-
+		db.delete_db_session()
 		self.log.info("Found %s rows missing history content!", len(end))
 
 		remaining = len(end)
 		for urlset in batch(end, 50):
 			remaining = remaining - len(urlset)
+			sess = db.get_db_session()
 			self.tickle_rows(sess, urlset)
+			sess.expire_all()
+			db.delete_db_session()
 			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
 
 
@@ -335,10 +344,13 @@ def consolidate_history():
 	proc = DbFlattener()
 	proc._go()
 
+def fix_missing_history():
+	proc = DbFlattener()
+	proc.fix_missing_history()
+
 def test():
 	import logSetup
 	logSetup.initLogging()
-	print("Wat")
 	# truncate_url_history('http://royalroadl.com/fiction/4293')
 	proc = DbFlattener()
 	# proc.wat()
