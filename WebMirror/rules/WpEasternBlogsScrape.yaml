@@ -1028,6 +1028,11 @@ badwords: [
 	"diff%3D",
 	"oldid%3D",
 
+	# This image wouldn't bother me so much if it weren't HUGE, and shrunk with css.
+	"discord-feature-graphic-1.png",
+	# Another HUEG image
+	"9629673_orig-ID-62b82545-ae9c-4eb7-b488-75e7366caaca.png",
+	"cropped-starry-night-thinking21.jpg",
 	]
 
 decompose: [

@@ -650,6 +650,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# {"file" : True, "url" : url, "mimeType" : mimeType, "fName" : fName, "content" : content}
 		# print("File response!")
 		# Yeah, I'm hashing twice in lots of cases. Bite me
+
+		if isinstance(response['content'], str):
+			response['content'] = response['content'].encode("utf-8")
 		fHash = getHash(response['content'])
 
 

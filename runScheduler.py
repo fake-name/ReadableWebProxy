@@ -128,7 +128,7 @@ def scheduleJobs(sched, timeToStart):
 
 	jobs = []
 	offset = 0
-	for key, value in activePlugins.scrapePlugins.items():
+	for key, value in activeScheduledTasks.scrapePlugins.items():
 		baseModule, interval = value
 		jobs.append((key, baseModule, interval, timeToStart+datetime.timedelta(seconds=60*offset)))
 		offset += 1
@@ -136,7 +136,7 @@ def scheduleJobs(sched, timeToStart):
 	activeJobs = []
 
 
-	for callable_f in activePlugins.autoscheduler_plugins:
+	for callable_f in activeScheduledTasks.autoscheduler_plugins:
 		callable_f(sched)
 
 

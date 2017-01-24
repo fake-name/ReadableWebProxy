@@ -31,3 +31,14 @@ scrapePlugins = {
 	6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                    minutes(60)),
 
 }
+
+
+import Misc.NuForwarder.NuHeader
+
+autoscheduler_plugins = {
+	Misc.NuForwarder.NuHeader.do_schedule,
+
+}
+
+print("Trigger plugins: %s, autoscheduler plugins: %s" % (len(scrapePlugins), len(autoscheduler_plugins)))
+

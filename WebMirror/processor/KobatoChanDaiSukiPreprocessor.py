@@ -116,10 +116,15 @@ def defont(font):
 
 	items.sort()
 
+	convmap = {}
 	for codepoints, symbols in items:
 		convs = " <- ".join([chr(cp) for cp in codepoints])
-		print("Conversion tree: '{}' (Raw: {})".format(str(convs).rjust(10), (codepoints, symbols)))
+		for cp in codepoints[1:]:
+			convmap[chr(cp)] = chr(codepoints[0])
 
+
+
+	return convmap
 
 def isplit(iterable, conditional):
 	return [list(g) for k,g in itertools.groupby(iterable, conditional) if not k]
@@ -194,28 +199,56 @@ class KobatoChanDaiSukiPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			with WebMirror.API.getPageRow(fonturl, ignore_cache=False, session=self.sess) as page:
 				mimetype, fname, content = page.getResource()
 				print(key, mimetype, fname, fonturl)
-				ret = defont(io.BytesIO(content))
-				print(ret)
+				cmap = defont(io.BytesIO(content))
+				ret[key] = cmap
+
+		# I'm unclear why just this one char is being missed.
+		if 'arial-kcds' in ret:
+			ret['arial-kcds']["걣"] = "A"
+
+		return ret
 
 
+	def getMapTable(self, soup):
 
-	def getFont(self, soup):
 		cssUrl = self._getFontUrl(soup)
 		if not cssUrl:
 			return []
 		with WebMirror.API.getPageRow(cssUrl, ignore_cache=False, session=self.sess) as page:
+			assert page
 			mimetype, fname, content = page.getResource()
 
 		assert mimetype.lower() == "text/css"
 
 		fonturls = self._extractCss(content)
 		fontluts = self._getFontLuts(fonturls)
-		print("Extracted URLs:")
-
-
-	def getMapTable(self, soup):
-		font = self.getFont(soup)
+		return fontluts
 
 	def preprocessBody(self, soup):
 		mt = self.getMapTable(soup)
+
+		for key, maptable in mt.items():
+			to_fix = soup.find_all(True, style=re.compile(key, re.IGNORECASE))
+			for item in to_fix:
+				apply_correction_map(soup, item, maptable)
+			print(key)
+
+
 		return soup
+
+def apply_correction_map(soup, tag, cor_map):
+	for item in list(tag.descendants):
+		if isinstance(item, bs4.NavigableString):
+			origstr = str(item)
+			itemstr = origstr
+			for badc, goodc in cor_map.items():
+				if badc in itemstr:
+					itemstr = itemstr.replace(badc, goodc)
+			if origstr != itemstr:
+				news = soup.new_string(itemstr)
+				item.replace_with(news)
+
+	# print(str(tag).encode("utf-8"))
+	# print("걣 in str:", '걣' in str(tag))
+	# print("걣 in cor_map:", '걣' in cor_map)
+	# print("놣 in str:", '놣' in str(tag))

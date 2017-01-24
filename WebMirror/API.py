@@ -64,6 +64,7 @@ class RemoteContentObject(object):
 
 		self.job     = self.archiver.synchronousJobRequest(self.url, ignore_cache)
 
+		print("Fetched! Job:", self.job)
 		# Override the job instance if we're fetching a old version
 		if version != None:
 			self.job = self.job.versions[version]
@@ -184,11 +185,13 @@ def getPage(url, ignore_cache=False, version=None):
 @contextlib.contextmanager
 def getPageRow(url, ignore_cache=False, session=None):
 	page = RemoteContentObject(url, db_session=session)
-
+	print("Page object: ", page)
 	try:
+		print("doing fetch: ")
 		page.fetch(ignore_cache=ignore_cache)
-
+		print("Fetched. Yielding")
 		yield page
+
 	except DownloadException:
 		yield None
 	finally:

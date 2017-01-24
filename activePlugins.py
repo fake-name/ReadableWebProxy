@@ -1,14 +1,5 @@
 
 
-
-import Misc.NuForwarder.NuHeader
-
-autoscheduler_plugins = {
-	Misc.NuForwarder.NuHeader.do_schedule,
-
-}
-
-
 # The processing pipeline has three stages.
 # Preprocessors have access to the page content before it's fed through the filters
 # Filters are for extracting additional information from the in-flight pages.
@@ -94,4 +85,4 @@ INIT_CALLS = [
 	#WebMirror.OutputFilters.WattPad.WattPadInit.init_call
 ]
 
-print("Processing plugins: %s, active filters: %s, trigger plugins: %s" % (len(PLUGINS), len(FILTERS), len(scrapePlugins)))
+print("Processing plugins: %s, active filters: %s" % (len(PLUGINS), len(FILTERS)))
