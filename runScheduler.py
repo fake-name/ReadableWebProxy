@@ -28,10 +28,10 @@ from settings import NO_PROCESSES
 from settings import MAX_DB_SESSIONS
 
 from common.db_engine import SQLALCHEMY_DATABASE_URI
-import activePlugins
+import activeScheduledTasks
 
 CALLABLE_LUT = {}
-for item, dummy_interval in activePlugins.scrapePlugins.values():
+for item, dummy_interval in activeScheduledTasks.scrapePlugins.values():
 	print("Plugin: ", item.__name__)
 	assert item.__name__ not in CALLABLE_LUT, "Plugin appears twice in call lookup table (%s)?" % item.__name__
 	CALLABLE_LUT[item.__name__] = item
