@@ -163,10 +163,10 @@ def scheduleJobs(sched, timeToStart):
 						misfire_grace_time = 2**30)
 
 
-	for job in sched.get_jobs('main_jobstore'):
+	for job in sched.get_jobs():
 		if not job.id in activeJobs:
 			print("Extra job in jobstore: %s. Removing." % job.id)
-			sched.remove_job(job.id, 'main_jobstore')
+			sched.remove_job(job.id)
 
 
 def resetRunStates():
