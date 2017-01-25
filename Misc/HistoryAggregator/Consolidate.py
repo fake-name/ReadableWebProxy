@@ -9,6 +9,7 @@ import logging
 import os.path
 import json
 import calendar
+import objgraph
 
 import sqlalchemy.exc
 
@@ -304,7 +305,7 @@ class DbFlattener(object):
 	def fix_missing_history(self):
 
 		sess = db.get_db_session()
-		self.qlog.info("Querying for items without any history")
+		self.qlog.info("Querying for DB items without any history")
 		end = sess.execute("""
 			SELECT
 				t1.url
@@ -328,7 +329,9 @@ class DbFlattener(object):
 			db.delete_db_session()
 			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
 
-
+			print("Growth:")
+			growth = objgraph.show_growth(limit=3)
+			print(growth)
 
 	def wat(self):
 		sess = db.get_db_session()

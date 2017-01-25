@@ -26,9 +26,10 @@ scrapePlugins = {
 	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                   minutes(45)),
 	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,               hours(4)),
 	4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                days(3)),
-	5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                             hours(6)),
 	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                      minutes(10)),
 	6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                    minutes(60)),
+
+	# 5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                             hours(6)),
 
 }
 
