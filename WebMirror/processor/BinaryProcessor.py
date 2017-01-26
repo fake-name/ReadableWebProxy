@@ -23,6 +23,7 @@ class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 						"text/css",
 						"text/javascript",
 						"application/font-woff",
+						"application/x-font-woff",
 						]
 
 	# Last case, match everything.

@@ -9,7 +9,10 @@ import logging
 import os.path
 import json
 import calendar
+
+from pympler import tracker
 import objgraph
+import code
 
 import sqlalchemy.exc
 
@@ -254,8 +257,8 @@ class DbFlattener(object):
 
 
 	def tickle_rows(self, sess, urlset):
+		jobs = []
 		try:
-			jobs = []
 			for url in urlset:
 				jobs.append(sess.query(db.WebPages).filter(db.WebPages.url == url).scalar())
 
@@ -291,8 +294,8 @@ class DbFlattener(object):
 					job.ignoreuntiltime = datetime.datetime.min
 					# print("Mutated", job, job.fetchtime)
 				sess.commit()
-
 				# self.log.info("Pushed!")
+
 				break
 			except sqlalchemy.exc.OperationalError:
 				self.log.error("Failure during update (OperationalError)?")
@@ -300,7 +303,9 @@ class DbFlattener(object):
 			except sqlalchemy.exc.InvalidRequestError:
 				self.log.error("Failure during update (InvalidRequestError)?")
 				sess.rollback()
-
+		for item in jobs:
+			del item
+		del jobs
 
 	def fix_missing_history(self):
 
@@ -320,6 +325,8 @@ class DbFlattener(object):
 		db.delete_db_session()
 		self.log.info("Found %s rows missing history content!", len(end))
 
+		self.memory_tracker = tracker.SummaryTracker()
+		loop = 0
 		remaining = len(end)
 		for urlset in batch(end, 50):
 			remaining = remaining - len(urlset)
@@ -332,6 +339,11 @@ class DbFlattener(object):
 			print("Growth:")
 			growth = objgraph.show_growth(limit=3)
 			print(growth)
+			self.memory_tracker.print_diff()
+
+			loop += 1
+			if loop > 5:
+				import pdb; pdb.set_trace()
 
 	def wat(self):
 		sess = db.get_db_session()

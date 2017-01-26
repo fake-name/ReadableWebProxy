@@ -61,7 +61,8 @@ import WebMirror.processor.WattPadJsonProcessor
 import WebMirror.processor.RoyalRoadLChapterPageProcessor
 import WebMirror.processor.RoyalRoadLSeriesPageProcessor
 import WebMirror.processor.NuProcessor
-import WebMirror.processor.KobatoChanDaiSukiPreprocessor
+import WebMirror.processor.FontRemapProcessors
+import WebMirror.processor.GarbageInlineProcessors
 
 
 PLUGINS = [
@@ -74,8 +75,10 @@ PLUGINS = [
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
 	WebMirror.processor.RoyalRoadLChapterPageProcessor.RoyalRoadLChapterPageProcessor,
 	WebMirror.processor.RoyalRoadLSeriesPageProcessor.RoyalRoadLSeriesPageProcessor,
-	WebMirror.processor.KobatoChanDaiSukiPreprocessor.KobatoChanDaiSukiPageProcessor,
+	WebMirror.processor.FontRemapProcessors.KobatoChanDaiSukiPageProcessor,
+	WebMirror.processor.FontRemapProcessors.NepustationPageProcessor,
 	WebMirror.processor.NuProcessor.NuProcessor,
+	WebMirror.processor.GarbageInlineProcessors.HecatesCornerPageProcessor,
 ]
 
 

@@ -130,20 +130,8 @@ def isplit(iterable, conditional):
 	return [list(g) for k,g in itertools.groupby(iterable, conditional) if not k]
 
 
-class KobatoChanDaiSukiPageProcessor(HtmlProcessor.HtmlPageProcessor):
+class BaseFontRemapProcessor(HtmlProcessor.HtmlPageProcessor):
 
-
-	wanted_mimetypes = ['text/html']
-	want_priority    = 80
-
-	loggerPath = "Main.Text.KobatoChanDaiSuki"
-
-	@staticmethod
-	def wantsUrl(url):
-		if re.search(r"^https?://(?:www\.)?kobatochan\.com", url):
-			print("KobatoChanDaiSukiProcessor Wants url: '%s'" % url)
-			return True
-		return False
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -195,12 +183,19 @@ class KobatoChanDaiSukiPageProcessor(HtmlProcessor.HtmlPageProcessor):
 	def _getFontLuts(self, fonturls):
 		ret = {}
 		for key, fonturl in fonturls.items():
-
-			with WebMirror.API.getPageRow(fonturl, ignore_cache=False, session=self.sess) as page:
+			page = WebMirror.API.RemoteContentObject(fonturl, db_session=self.sess)
+			try:
+				page.fetch(ignore_cache=False)
 				mimetype, fname, content = page.getResource()
-				print(key, mimetype, fname, fonturl)
-				cmap = defont(io.BytesIO(content))
-				ret[key] = cmap
+			except AssertionError:
+				page.fetch(ignore_cache=True)
+				mimetype, fname, content = page.getResource()
+
+			print(key, mimetype, fname, fonturl)
+			cmap = defont(io.BytesIO(content))
+			ret[key] = cmap
+
+			page.close()
 
 		# I'm unclear why just this one char is being missed.
 		if 'arial-kcds' in ret:
@@ -237,6 +232,8 @@ class KobatoChanDaiSukiPageProcessor(HtmlProcessor.HtmlPageProcessor):
 
 		return soup
 
+
+
 def apply_correction_map(soup, tag, cor_map):
 	for item in list(tag.descendants):
 		if isinstance(item, bs4.NavigableString):
@@ -253,3 +250,41 @@ def apply_correction_map(soup, tag, cor_map):
 	# print("걣 in str:", '걣' in str(tag))
 	# print("걣 in cor_map:", '걣' in cor_map)
 	# print("놣 in str:", '놣' in str(tag))
+
+class KobatoChanDaiSukiPageProcessor(BaseFontRemapProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+	loggerPath = "Main.Text.KobatoChanDaiSuki"
+
+	@staticmethod
+	def wantsUrl(url):
+		if re.search(r"^https?://(?:www\.)?kobatochan\.com", url):
+			print("KobatoChanDaiSukiProcessor Wants url: '%s'" % url)
+			return True
+		return False
+
+class NepustationPageProcessor(BaseFontRemapProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+	loggerPath = "Main.Text.Nepustation"
+
+	@staticmethod
+	def wantsUrl(url):
+		if re.search(r"^https?://(?:www\.)?nepustation\.com", url):
+			print("Nepustation Wants url: '%s'" % url)
+			return True
+		return False
+
+	def preprocessBody(self, soup):
+
+		# The nepustation guy is a first-class douchecanoe
+		for item in soup.find_all("span", style=re.compile("color: transparent", re.IGNORECASE)):
+			item.decompose()
+
+		soup = super().preprocessBody(soup)
+
+		return soup

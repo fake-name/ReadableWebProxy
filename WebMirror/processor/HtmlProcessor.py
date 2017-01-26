@@ -348,25 +348,26 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		contents = soup.prettify()
 
 		# Goooooo FUCK YOURSELF
-		contents = contents.replace("This translation is property of Infinite Novel Translations.", "")
-		contents = contents.replace("This translation is property of Infinite NovelTranslations.", "")
-		contents = contents.replace("If you read this anywhere but at Infinite Novel Translations, you are reading a stolen translation.", "")
-		contents = contents.replace("&lt;Blank&gt;", "")
-		contents = contents.replace("&lt;space&gt;", "")
-		contents = contents.replace("<Blank>", "")
-		contents = contents.replace("<Blank>", "")
-		contents = contents.replace("please read only translator’s websitewww.novitranslation.com", "")
-		contents = contents.replace("please read only translator’s website www.novitranslation.com", "")
-		contents = contents.replace("Please do not host elsewhere but MBC and Yumeabyss", "")
-		contents = contents.replace('Original and most updated translations are from volaretranslations.', "")
-		contents = contents.replace('Please support the translator for Wild Consort by reading on volarenovels!', "")
-		contents = contents.replace('Original and most updated translations are from volaretranslations.', "")
-		contents = contents.replace('Original and most updated translations are from volaretranslations.', "")
-		
-		
-		
-		
-		contents = contents.replace("&lt;StarveCleric&gt;", "")
+		garbage_inline_shit = [
+			"This translation is property of Infinite Novel Translations.",
+			"This translation is property of Infinite NovelTranslations.",
+			"If you read this anywhere but at Infinite Novel Translations, you are reading a stolen translation.",
+			"&lt;Blank&gt;",
+			"&lt;space&gt;",
+			"<Blank>",
+			"<Blank>",
+			"please read only translator’s websitewww.novitranslation.com",
+			"please read only translator’s website www.novitranslation.com",
+			"Please do not host elsewhere but MBC and Yumeabyss",
+			'Original and most updated translations are from volaretranslations.',
+			'Please support the translator for Wild Consort by reading on volarenovels!',
+			'Original and most updated translations are from volaretranslations.',
+			'Original and most updated translations are from volaretranslations.',
+			"&lt;StarveCleric&gt;",
+		]
+		for item in garbage_inline_shit:
+			contents = contents.replace(item, "")
+
 
 
 		return title, contents
@@ -420,14 +421,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	# Miscellaneous spot-fixes for specific sites.
 	def prePatch(self, url, soup):
-		if  '//hecatescorner.wordpress.com' in url:
-			pass
-			#<span style="color:#ffffff;">the truth is out!</span>
-			badspans = soup.find_all("span", style=re.compile("color\W?:\W?#ffffff", re.I))
-			for bad in badspans:
-				bad.decompose()
 		return soup
-	
+
 
 	# Miscellaneous spot-fixes for specific sites.
 	def spotPatch(self, soup):
@@ -492,7 +487,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 
 		soup = self.prePatch(self.pageUrl, soup)
-		
+
 		# Allow child-class hooking
 		soup = self.preprocessBody(soup)
 
