@@ -50,10 +50,10 @@ def flatten_coords(in_coords):
 		ret = [flatten_coords(subitem for subitem in in_coords)]
 		ret.sort()
 		return tuple(ret)
-	elif in_coords.numberOfContours == 0:
+	elif hasattr(in_coords, "numberOfContours") and in_coords.numberOfContours == 0:
 		return tuple()
 	else:
-		print("Wat?")
+		print("Wat: ", type(in_coords), in_coords)
 		return tuple()
 
 
@@ -233,6 +233,7 @@ class KobatoChanDaiSukiPageProcessor(HtmlProcessor.HtmlPageProcessor):
 				apply_correction_map(soup, item, maptable)
 			print(key)
 
+		apply_correction_map(soup, soup.body, maptable)
 
 		return soup
 
