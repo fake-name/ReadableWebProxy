@@ -752,6 +752,13 @@ def exposed_flatten_history():
 	'''
 	Misc.HistoryAggregator.Consolidate.consolidate_history()
 
+def exposed_flatten_fix_missing_history():
+	'''
+	Functionally equivalent to `flatten_history`, `fix_missing_history`
+	'''
+	Misc.HistoryAggregator.Consolidate.consolidate_history()
+	Misc.HistoryAggregator.Consolidate.fix_missing_history()
+
 
 def exposed_test_new_job_queue():
 	'''

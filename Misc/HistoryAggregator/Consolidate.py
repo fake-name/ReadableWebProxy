@@ -235,30 +235,44 @@ class DbFlattener(object):
 				HAVING
 					COUNT(*) > 10
 				ORDER BY url
+
 			""")
 		end = list(end)
 		self.qlog.info("Found %s items with more then 10 history entries. Processing", len(end))
 
+		sess.flush()
 		sess.expire_all()
 		db.delete_db_session()
 
 
 		sess = db.get_db_session()
 
-		for count, url in end:
-			while 1:
-				try:
-					self.truncate_url_history(sess, url)
-					break
-				except sqlalchemy.exc.OperationalError:
-					sess.rollback()
+		remaining = len(end)
+		for batched in batch(end, 50):
+			for count, url in batched:
+				while 1:
+					try:
+						self.truncate_url_history(sess, url)
+						break
+					except sqlalchemy.exc.OperationalError:
+						sess.rollback()
 
-				sess.expire_all()
+
+			remaining = remaining - len(batched)
+			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
+
+			print("Growth:")
+			growth = objgraph.show_growth(limit=10)
+			print(growth)
+
+			sess.expire_all()
 
 
 	def tickle_rows(self, sess, urlset):
 		jobs = []
+		self.log.info("Querying for records")
 		try:
+
 			for url in urlset:
 				jobs.append(sess.query(db.WebPages).filter(db.WebPages.url == url).scalar())
 
@@ -271,6 +285,7 @@ class DbFlattener(object):
 			self.log.error("Failure during update (InvalidRequestError)?")
 			sess.rollback()
 			return
+		self.log.info("Processing fetched records")
 
 		while True:
 			try:
@@ -293,6 +308,7 @@ class DbFlattener(object):
 					job.fetchtime = cachedtime
 					job.ignoreuntiltime = datetime.datetime.min
 					# print("Mutated", job, job.fetchtime)
+				sess.flush()
 				sess.commit()
 				# self.log.info("Pushed!")
 
@@ -303,6 +319,9 @@ class DbFlattener(object):
 			except sqlalchemy.exc.InvalidRequestError:
 				self.log.error("Failure during update (InvalidRequestError)?")
 				sess.rollback()
+
+		sess.flush()
+
 		for item in jobs:
 			del item
 		del jobs
@@ -320,30 +339,25 @@ class DbFlattener(object):
 				web_pages_version t2 ON t2.url = t1.url
 			WHERE
 				t2.url IS NULL
+
 			""")
 		end = [tmp[0] for tmp in end]
-		db.delete_db_session()
 		self.log.info("Found %s rows missing history content!", len(end))
 
-		self.memory_tracker = tracker.SummaryTracker()
 		loop = 0
 		remaining = len(end)
 		for urlset in batch(end, 50):
-			remaining = remaining - len(urlset)
-			sess = db.get_db_session()
 			self.tickle_rows(sess, urlset)
 			sess.expire_all()
-			db.delete_db_session()
+
+			remaining = remaining - len(urlset)
 			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
 
 			print("Growth:")
-			growth = objgraph.show_growth(limit=3)
+			growth = objgraph.show_growth(limit=10)
 			print(growth)
-			self.memory_tracker.print_diff()
 
-			loop += 1
-			if loop > 5:
-				import pdb; pdb.set_trace()
+		db.delete_db_session()
 
 	def wat(self):
 		sess = db.get_db_session()
@@ -357,7 +371,7 @@ class DbFlattener(object):
 
 def consolidate_history():
 	proc = DbFlattener()
-	proc._go()
+	proc.consolidate_history()
 
 def fix_missing_history():
 	proc = DbFlattener()
