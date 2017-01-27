@@ -15,6 +15,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool        import ProcessPoolExecutor
 from apscheduler.executors.pool        import ThreadPoolExecutor
 from apscheduler.jobstores.sqlalchemy  import SQLAlchemyJobStore
+from apscheduler.triggers.interval     import IntervalTrigger
 
 import config
 import common.database as db
@@ -146,7 +147,25 @@ def scheduleJobs(sched, timeToStart):
 	for jobId, callee, interval, startWhen in jobs:
 		jId = str(jobId) + " " + callee.__name__
 		activeJobs.append(jId)
-		if sched.get_job(jId):
+		havejob = sched.get_job(jId)
+		ok = True
+		if not havejob:
+			ok = False
+		elif isinstance(havejob.trigger, IntervalTrigger):
+			# If it's the right kind of trigger, but the interval is more
+			# then 1 second away from the interval we want, reset the job
+			j_interval = havejob.trigger.interval_length
+			int_err = abs(j_interval - interval)
+			if int_err > 1:
+				print("Job trigger interval seems to mismatch. Recreating job: ", jId)
+				sched.remove_job(jId)
+				ok = False
+		else:
+			sched.remove_job(jId)
+			ok = False
+
+
+		if ok:
 			print("JobID %s already scheduled." % jId)
 		else:
 			print("Need to add new job for ID: ", jId)
