@@ -137,10 +137,6 @@ def scheduleJobs(sched, timeToStart):
 	activeJobs = []
 
 
-	for callable_f in activeScheduledTasks.autoscheduler_plugins:
-		callable_f(sched)
-
-
 	print("JobCaller: ", JobCaller)
 	print("JobCaller.callMod: ", JobCaller.callMod)
 
@@ -151,6 +147,7 @@ def scheduleJobs(sched, timeToStart):
 		ok = True
 		if not havejob:
 			ok = False
+
 		elif isinstance(havejob.trigger, IntervalTrigger):
 			# If it's the right kind of trigger, but the interval is more
 			# then 1 second away from the interval we want, reset the job
@@ -186,6 +183,11 @@ def scheduleJobs(sched, timeToStart):
 		if not job.id in activeJobs:
 			print("Extra job in jobstore: %s. Removing." % job.id)
 			sched.remove_job(job.id)
+
+
+	# Do this last, because they're ephemeral
+	for callable_f in activeScheduledTasks.autoscheduler_plugins:
+		callable_f(sched)
 
 
 def resetRunStates():
