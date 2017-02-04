@@ -2,7 +2,9 @@ type: eastern
 
 FOLLOW_GOOGLE_LINKS: False
 
-baseUrl: ["http://novel.dawnglare.com/"]
+baseUrl: [
+    "http://novel.dawnglare.com/"
+    ]
 
 send_raw_feed: True
 

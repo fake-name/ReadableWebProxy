@@ -713,20 +713,22 @@ def exposed_nu_new():
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
 	sess = db.get_db_session()
 
-	nu_items = sess.query(db.NuOutboundWrapperMap)             \
-		.filter(db.NuOutboundWrapperMap.validated == True)     \
-		.filter(db.NuOutboundWrapperMap.actual_target != None) \
+	nu_items = sess.query(db.NuReleaseItem)             \
+		.filter(db.NuReleaseItem.validated == True)     \
+		.filter(db.NuReleaseItem.actual_target != None) \
 		.all()
 
 	netlocs = [urllib.parse.urlsplit(row.actual_target).netloc for row in nu_items]
 	print("Nu outbound items: ", len(netlocs))
 	netlocs = set(netlocs)
 
+	missing = 0
 	for netloc in netlocs:
 		if not fnl.getNiceName(None, netloc):
 			fnl.getNiceName(None, netloc, debug=True)
 			print("Missing: ", netloc)
-	print("Nu outbound items: ", len(netlocs))
+			missing += 1
+	print("Nu outbound items: ", len(netlocs), "missing:", missing)
 
 
 def exposed_fetch_other_feed_sources():

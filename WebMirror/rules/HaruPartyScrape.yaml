@@ -3,7 +3,9 @@ type: eastern
 
 FOLLOW_GOOGLE_LINKS: True
 
-baseUrl: ["http://lasolistia.com/haruparty/"]
+baseUrl: [
+	"http://lasolistia.com/haruparty/"
+	]
 extraStartUrls: [
 		'https://docs.google.com/document/d/1ZdweQdjIBqNsJW6opMhkkRcSlrbgUN5WHCcYrMY7oqI',
 		'https://docs.google.com/document/d/1xInAD8v06AIX_urMZRRXHBocDsqBEePMoU1EOTfGRZQ/pub',
