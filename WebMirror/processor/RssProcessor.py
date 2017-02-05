@@ -101,6 +101,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 				'value' : contentDat,
 				'type'  : 'text/html'
 			}]
+
 		if len(contentDat) != 1:
 			print(contentDat)
 			raise ValueError("How can one post have multiple contents?")

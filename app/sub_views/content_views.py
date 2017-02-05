@@ -6,8 +6,12 @@ from flask import request
 from flask import jsonify
 from flask import g
 
+from sqlalchemy_continuum.utils import version_table
+
+import common.database as db
 from app import app
 import pprint
+import ast
 
 
 import WebMirror.API
@@ -105,11 +109,13 @@ def view_history():
 	with WebMirror.API.getPageRow(req_url) as page:
 		versions = []
 
-		rev = page.job.versions[0]
-		print("Versions: ", page.job.versions)
-		while rev:
-			versions.append(rev)
-			rev = rev.next
+		ctbl = version_table(db.WebPages)
+
+
+		versions = g.session.query(ctbl.c.id, ctbl.c.state, ctbl.c.fetchtime, ctbl.c.transaction_id) \
+			.filter(ctbl.c.url == req_url)                                    \
+			.order_by(ctbl.c.fetchtime)                                       \
+			.all()
 
 		versions = list(enumerate(versions))
 		versions.reverse()
@@ -136,14 +142,32 @@ def render():
 		if version == "None":
 			version = None
 		else:
-			version = int(version)
+			version = ast.literal_eval(version)
 	except ValueError:
 		return build_error_response(message = "Error! Historical version number must be an integer!")
+
 
 	if version and ignore_cache:
 		return build_error_response(message = "Error! Cannot render a historical version with nocache!")
 
-	title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache, version=version)
+	if version:
+		rid, tid = version
+
+		print("Historical row id: ", rid, tid)
+
+		ctbl = version_table(db.WebPages)
+
+		rows = g.session.query(ctbl.c.title, ctbl.c.content) \
+			.filter(ctbl.c.id == rid)                        \
+			.filter(ctbl.c.transaction_id == tid)            \
+			.all()
+
+		if rows:
+			row = rows.pop()
+			title, content = row
+			cachestate = "Historical version: %s" % (version, )
+	else:
+		title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache, version=version)
 
 	# print("Render-Version: ", version, type(version))
 	# print("Rendering with nocache=", ignore_cache)

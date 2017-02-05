@@ -233,7 +233,14 @@ class NuHeader(LogBase.LoggerMixin):
 				if new['call'] == 'getHeadPhantomJS':
 					respurl, title = new['ret'], ""
 				elif new['call'] == 'getHeadTitlePhantomJS':
-					respurl, title = new['ret']
+					if isinstance(new['ret'], (tuple, list)):
+						respurl, title = new['ret']
+					elif isinstance(new['ret'], dict):
+						respurl = new['ret']['url']
+						title   = new['ret']['title']
+					else:
+						raise RuntimeError("Don't know what the return type of `getHeadTitlePhantomJS` is! Type: %s" % type(new['ret']))
+
 				else:
 					raise RuntimeError("Response to unknown call: %s!" % new)
 

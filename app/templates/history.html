@@ -17,7 +17,7 @@
 
 		</div>
 		<hr>
-		<div id='content' class='easyreading'>
+		<div id='content'>
 			<div class="center-block text-center">
 				<h4>Old Versions:</h4>
 
@@ -29,7 +29,7 @@
 				{% for indice, version in versions %}
 					<li>
 						<span class='pull-right'><a href='/history?{{ {"url" : req_url, "version" : indice, "delete_id" : version.id, "delete" : True} | urlencode }}'>[delete]</a></span>
-						Version: <a href='/history?{{ {"url" : req_url, "version" : indice} | urlencode }}'>#{{'%03d' % indice}}, {{fixed_width_ago(version.fetchtime)}} - {{version.state}}</a>
+						<a href='/history?{{ {"url" : req_url, "version" : (version.id, version.transaction_id)} | urlencode }}'>#{{'%03d' % indice}}, ID: {{version.id}}:{{version.transaction_id}}, {{fixed_width_ago(version.fetchtime)}} - {{version.state}}</a>
 					</li>
 				{% endfor %}
 			</ul>
