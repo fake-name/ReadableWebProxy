@@ -40,7 +40,7 @@ import config
 from config import C_RAW_RESOURCE_DIR
 
 import WebMirror.TimedTriggers.QueueTriggers
-
+import WebMirror.OutputFilters.rss.FeedDataParser
 
 def exposed_remote_fetch_enqueue(url):
 	'''
@@ -610,6 +610,14 @@ def exposed_rss_month():
 	Effectively just processes the last 45 days of feed entries.
 	'''
 	exposed_rss_db_sync(days=45)
+
+
+def exposed_rss_missing_functions():
+	'''
+	Print skeleton functions for the RSS source names that are
+	not present in the lookup map.
+	'''
+	WebMirror.OutputFilters.rss.FeedDataParser.print_missing_functions()
 
 def exposed_filter_links(path):
 	"""

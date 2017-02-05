@@ -1152,6 +1152,8 @@ def extractKobatoChanDaiSukiScan(item):
 		return buildReleaseMessage(item, 'God of Crime', vol, chp, frag=frag, postfix=postfix)
 	if "The Overlord's Elite is now a Human?!" in item['tags'] :
 		return buildReleaseMessage(item, "The Overlord's Elite is now a Human?!", vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Conquest' in item['tags'] :
+		return buildReleaseMessage(item, 'Conquest', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if 'The Bird That Drinks Tears' in item['tags'] :
 		return buildReleaseMessage(item, 'The Bird That Drinks Tears', vol, chp, frag=frag, postfix=postfix)
 	if 'Survival World RPG' in item['tags'] :
@@ -1190,6 +1192,10 @@ def extractKobatoChanDaiSukiScan(item):
 		return buildReleaseMessage(item, 'Link the Orc', vol, chp, frag=frag, postfix=postfix)
 	if "Titan's Throne" in item['tags']:
 		return buildReleaseMessage(item, "Titan's Throne", vol, chp, frag=frag, postfix=postfix)
+	if "Can't Stop Craving Potions" in item['tags']:
+		return buildReleaseMessage(item, "Can't Stop Craving Potions", vol, chp, frag=frag, postfix=postfix)
+	if 'The Sorcerer Laughs in the Mirror' in item['tags']:
+		return buildReleaseMessage(item, 'The Sorcerer Laughs in the Mirror', vol, chp, frag=frag, postfix=postfix)
 
 
 
@@ -4023,5 +4029,1191 @@ def extractNovellaTranslation(item):
 		return None
 	return False
 
+
+
+
+
+
+def extractHachidoriTranslations(item):
+	'''
+	Parser for 'Hachidori Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHakureina(item):
+	'''
+	Parser for 'Hakureina'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHakushakuToYousei(item):
+	'''
+	Parser for 'Hakushaku to Yousei'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHappythexceedのCorner(item):
+	'''
+	Parser for 'Happythexceed の Corner'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHaru(item):
+	'''
+	Parser for 'Haru★'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHaruchikaGhostHuntTranslations(item):
+	'''
+	Parser for 'HaruChika & Ghost Hunt Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHaruNoSutori(item):
+	'''
+	Parser for 'Haru no Sutori'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHeavenlyStarTranslations(item):
+	'''
+	Parser for 'Heavenly Star Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHellsingFederationTranslations(item):
+	'''
+	Parser for 'Hellsing Federation Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractHimegamiNoMikoTranslated(item):
+	'''
+	Parser for 'Himegami no Miko Translated'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractIamabananaFreshieTranslationV2(item):
+	'''
+	Parser for 'IAmABanana Freshie Translation V2'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractISpeakMtl(item):
+	'''
+	Parser for 'I Speak MTL'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractIcarus(item):
+	'''
+	Parser for 'Icarus'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractIcarusBrideScanlation(item):
+	'''
+	Parser for 'Icarus Bride Scanlation'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractIchinichiBl(item):
+	'''
+	Parser for 'Ichinichi BL'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractImperator(item):
+	'''
+	Parser for 'Imperator'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractInMyDaydreams(item):
+	'''
+	Parser for 'In My Daydreams'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractInchoateOeuvre(item):
+	'''
+	Parser for 'Inchoate Oeuvre'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractIndonesianStoryTranslatio(item):
+	'''
+	Parser for 'Indonesian Story Translatio'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractInsaneTranslations(item):
+	'''
+	Parser for 'Insane Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractIOnlyWantShinji(item):
+	'''
+	Parser for 'I only want Shinji.'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractISwearIMNotLostIMJustExploring(item):
+	'''
+	Parser for 'I swear I'm not lost... I'm just... exploring...'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractIVeReincarnatedButIMAGirlWaitAmINotEvenHuman(item):
+	'''
+	Parser for 'I've reincarnated, but I'm a Girl! Wait, am I not even Human?'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractJapaneseLightNovelsPrologues(item):
+	'''
+	Parser for 'Japanese Light Novels: Prologues'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractJapaneseNovel(item):
+	'''
+	Parser for 'Japanese Novel'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+
+def extractJolecoleSStation(item):
+	'''
+	Parser for 'JoleCole's Station'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractJustBlThings(item):
+	'''
+	Parser for 'Just BL Things'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractKakkokari仮(item):
+	'''
+	Parser for 'Kakkokari (仮)'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractKisatoSHobbies(item):
+	'''
+	Parser for 'Kisato's Hobbies!'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractKiyoitsukikage(item):
+	'''
+	Parser for 'Kiyoitsukikage'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractKonkoSTranslations(item):
+	'''
+	Parser for 'Konko's Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractKudaLakorn(item):
+	'''
+	Parser for 'Kuda Lakorn'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLntranslation(item):
+	'''
+	Parser for 'LNTranslation'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLannyland(item):
+	'''
+	Parser for 'LannyLand'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLauteLaute(item):
+	'''
+	Parser for 'Laute, Laute!'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLazyNanaseruTranslation(item):
+	'''
+	Parser for 'Lazy Nanaseru Translation'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLightNovelBastion(item):
+	'''
+	Parser for 'Light Novel Bastion'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+def extractLilyRos3(item):
+	'''
+	Parser for 'Lily Ros 3'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLlian(item):
+	'''
+	Parser for 'Llian'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLoliTranslations(item):
+	'''
+	Parser for 'Loli Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLtBeefySMtl(item):
+	'''
+	Parser for 'Lt.Beefy's MTL'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractLuxiufer(item):
+	'''
+	Parser for 'Luxiufer'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMgrpTranslations(item):
+	'''
+	Parser for 'MGRP Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMakiTranslates(item):
+	'''
+	Parser for 'Maki Translates'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractManlyflowerTranslations(item):
+	'''
+	Parser for 'Manlyflower Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMediumWellTranslations(item):
+	'''
+	Parser for 'Medium Well Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMeteorRangerT(item):
+	'''
+	Parser for 'Meteor Ranger T.'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMeteoremperorSan(item):
+	'''
+	Parser for 'Meteoremperor-san'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMikaguraScanlationsClub(item):
+	'''
+	Parser for 'Mikagura Scanlations Club'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMittens220(item):
+	'''
+	Parser for 'Mittens 220'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMiumiuSMusings(item):
+	'''
+	Parser for 'Miumiu's musings'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMobileSuitZetaGundamNovelsTranslation(item):
+	'''
+	Parser for 'Mobile Suit Zeta Gundam Novels Translation'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMyTranslations(item):
+	'''
+	Parser for 'My Translations'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractMysticTales(item):
+	'''
+	Parser for 'Mystic Tales'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesuAldnoahZero(item):
+	'''
+	Parser for '(NanoDesu) - Aldnoah Zero'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesuBibliaKoshodouNoJikenTechou(item):
+	'''
+	Parser for '(NanoDesu) - Biblia Koshodou no Jiken Techou'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesucnMagicalGf(item):
+	'''
+	Parser for '(NanoDesuCN) - Magical GF'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesuHaiToGensouNoGrimgar(item):
+	'''
+	Parser for '(NanoDesu) - Hai to Gensou no Grimgar'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesuIriyaNoSoraUfoNoNatsu(item):
+	'''
+	Parser for '(NanoDesu) - Iriya no Sora, UFO no Natsu'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesuTheFireGirl(item):
+	'''
+	Parser for '(NanoDesu) - The Fire Girl'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesuVermillion(item):
+	'''
+	Parser for '(NanoDesu) - Vermillion'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesuZeroKaraHajimeruMahouNoSho(item):
+	'''
+	Parser for '(NanoDesu) - Zero Kara Hajimeru Mahou no Sho!'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNanodesu(item):
+	'''
+	Parser for 'Nanodesu'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNegativeInserts(item):
+	'''
+	Parser for 'Negative Inserts'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNeoDir(item):
+	'''
+	Parser for 'Neo DIR'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNiiselin(item):
+	'''
+	Parser for 'Niiselin'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNostalgiaOn9ThAvenue(item):
+	'''
+	Parser for 'Nostalgia on 9th Avenue'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNovel361(item):
+	'''
+	Parser for 'Novel 361'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNovelAffairs(item):
+	'''
+	Parser for 'Novel Affairs'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNovelSanctuary(item):
+	'''
+	Parser for 'Novel Sanctuary'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNovelSquare(item):
+	'''
+	Parser for 'Novel Square'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNovelsReborn(item):
+	'''
+	Parser for 'Novels Reborn'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNovelsTravel(item):
+	'''
+	Parser for 'Novels Travel'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
+
+
+
+def extractNusantaraCafe(item):
+	'''
+	Parser for 'Nusantara Cafe'
+	'''
+
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return False
+
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+
+	return False
 
 
