@@ -3485,6 +3485,12 @@ def extractAiHristDreamTranslations(item):
 
 	if 'One Child Two Treasures: The Billionaire Chief’s Good Wife' in item['tags']:
 		return buildReleaseMessage(item, 'One Child Two Treasures: The Billionaire Chief’s Good Wife', vol, chp, frag=frag, postfix=postfix)
+	if 'Good Morning, Mr. President!' in item['tags']:
+		return buildReleaseMessage(item, 'Good Morning, Mr. President!', vol, chp, frag=frag, postfix=postfix)
+	if 'Princess Medical Doctor' in item['tags']:
+		return buildReleaseMessage(item, 'Princess Medical Doctor', vol, chp, frag=frag, postfix=postfix)
+	if 'Into the World of Medicine' in item['tags']:
+		return buildReleaseMessage(item, 'Into the World of Medicine', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

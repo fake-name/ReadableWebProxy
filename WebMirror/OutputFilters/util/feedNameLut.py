@@ -3,7 +3,6 @@ import urllib.parse
 
 mapper = {
 
-
 	"a0132.blogspot.com"                                        : 'My Translations',
 	"acupofmemory.blogspot.com"                                 : "A Cup of Memory",
 	"agrypniascan.blogspot.com"                                 : "Agrypnia Scans",
@@ -1015,6 +1014,7 @@ mapper = {
 	"martialdao.com"                                           : 'Martial Dao',
 	"mike777ac.com"                                            : "Mike777ac",
 	"mistycloudtranslations.com"                               : 'Misty Cloud Translations',
+	"www.mistycloudtranslations.com"                           : 'Misty Cloud Translations',
 	"mojotranslations.com"                                     : 'Mojo Translations',
 	"moonbunnycafe.com"                                        : 'Moon Bunny Cafe',
 	"myoniyonitranslations.com"                                : 'Myoniyoni Translations',
@@ -1271,8 +1271,6 @@ mapper = {
 	"www.eugenewoodbury.com"                             : "Eugene Woodbury",
 	"www.gravitytales.com"                               : "Gravity Tales",
 	"www.kudalakorn.com"                                 : "Kuda Lakorn",
-	"www.mistycloudtranslations.com"                     : "misty cloud translations",
-	"www.mistycloudtranslations.com"                     : "misty cloud translations",
 	"www.myotterspace.com"                               : "OtterSpace Translation",
 	"www.neo-dir.pw"                                     : "Neo DIR",
 	"www.novelstranslation.com"                          : "Novels Translation",
@@ -1403,7 +1401,7 @@ def getNiceName(srcurl, netloc=None, debug=False):
 	srcnetloc = patch_blogspot(srcnetloc)
 
 	if debug:
-		print("Netlocs: ", (orig, srcnetloc))
+		print("Netlocs: ", (orig, srcnetloc, "Not in Lookup" if not srcnetloc in mapper else mapper[srcnetloc]))
 
 	if srcnetloc in mapper:
 		return mapper[srcnetloc]
