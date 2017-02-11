@@ -324,7 +324,7 @@ class UpdateAggregator(object):
 			# Kick item up to the top of the LRU list
 			self.seen[url] = now
 
-			if len(self.batched_links) > 100:
+			if len(self.batched_links) >= 500:
 				self.do_link_batch_update()
 		else:
 			self.log.info("Skipping upserting: '%s'", url)

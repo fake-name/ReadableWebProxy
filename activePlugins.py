@@ -10,12 +10,14 @@ import WebMirror.PreProcessors.RedditPreprocess
 import WebMirror.PreProcessors.WattPadPreprocess
 import WebMirror.PreProcessors.TgStoryTimePreprocess
 import WebMirror.PreProcessors.RRLPreprocess
+import WebMirror.PreProcessors.GravityTalesPreprocess
 
 PREPROCESSORS = [
 	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor,
 	WebMirror.PreProcessors.RedditPreprocess.RedditPreprocessor,
 	WebMirror.PreProcessors.WattPadPreprocess.WattPadPreprocessor,
 	WebMirror.PreProcessors.TgStoryTimePreprocess.TgStoryTimePreprocessor,
+	WebMirror.PreProcessors.GravityTalesPreprocess.GravityTalesPreprocessor,
 
 
 	# Disable the RRL Preprocessor since they rolled back the site.

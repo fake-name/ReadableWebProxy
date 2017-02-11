@@ -2,6 +2,16 @@
 import sys
 import codecs
 
+try:
+	import cchardet as chardet
+except ImportError:
+	import chardet as chardet
+
+import http.client
+import email.parser
+
+
+
 import http.client
 import email.parser
 
@@ -108,6 +118,7 @@ import logging
 import zlib
 import bs4
 import re
+import string
 import gzip
 import string
 import io
@@ -119,11 +130,15 @@ import random
 random.seed()
 
 
+import selenium.webdriver.chrome.service
+import selenium.webdriver.chrome.options
 import selenium.webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+
 
 
 def as_soup(str):
@@ -193,10 +208,38 @@ class title_not_contains(object):
 
 #pylint: disable-msg=E1101, C0325, R0201, W0702, W0703
 
+def wait_for(condition_function):
+	start_time = time.time()
+	while time.time() < start_time + 3:
+		if condition_function():
+			return True
+		else:
+			time.sleep(0.1)
+	raise Exception(
+		'Timeout waiting for {}'.format(condition_function.__name__)
+	)
+
+class load_delay_context_manager(object):
+
+	def __init__(self, browser):
+		self.browser = browser
+
+	def __enter__(self):
+		self.old_page = self.browser.find_element_by_tag_name('html')
+
+	def page_has_loaded(self):
+		new_page = self.browser.find_element_by_tag_name('html')
+		return new_page.id != self.old_page.id
+
+	def __exit__(self, *_):
+		wait_for(self.page_has_loaded)
+
 
 class HeadRequest(urllib.request.Request):
 	def get_method(self):
-		return "HEAD"
+		# Apparently HEAD is now being blocked. Because douche.
+		return "GET"
+		# return "HEAD"
 
 class HTTPRedirectBlockerErrorHandler(urllib.request.HTTPErrorProcessor):
 
@@ -219,8 +262,6 @@ class HTTPRedirectBlockerErrorHandler(urllib.request.HTTPErrorProcessor):
 		return response
 
 	https_response = http_response
-
-
 
 # Custom redirect handler to work around
 # issue https://bugs.python.org/issue17214
@@ -338,16 +379,22 @@ class WebGetRobust:
 	# if test=true, no resources are actually fetched (for testing)
 	# creds is a list of 3-tuples that gets inserted into the password manager.
 	# it is structured [(top_level_url1, username1, password1), (top_level_url2, username2, password2)]
-	def __init__(self, test=False, creds=None, logPath="Main.Web", cookie_lock=None, use_socks=False, alt_cookiejar=None):
+	def __init__(self, test=False, creds=None, logPath="Main.Web", cookie_lock=None, cloudflare=False, use_socks=False, alt_cookiejar=None):
 
+		self.rules = {}
+		self.rules['cloudflare'] = cloudflare
 		if cookie_lock:
 			self.cookie_lock = cookie_lock
 		else:
 			self.cookie_lock = COOKIEWRITELOCK
 
+		self.pjs_driver = None
+		self.cr_driver = None
+
 		self.use_socks = use_socks
+
 		# Override the global default socket timeout, so hung connections will actually time out properly.
-		socket.setdefaulttimeout(30)
+		socket.setdefaulttimeout(15)
 
 		self.log = logging.getLogger(logPath)
 		# print("Webget init! Logpath = ", logPath)
@@ -524,33 +571,7 @@ class WebGetRobust:
 			hName = ''
 		else:
 			hName = info['Content-Disposition'].split('filename=')[1]
-
-
 		return pgctnt, hName
-
-	def getFileNameMime(self, *args, **kwargs):
-		if 'returnMultiple' in kwargs:
-			raise ValueError("getFileAndName cannot be called with 'returnMultiple'")
-
-		if 'soup' in kwargs and kwargs['soup']:
-			raise ValueError("getFileAndName contradicts the 'soup' directive!")
-
-		kwargs["returnMultiple"] = True
-
-		pgctnt, pghandle = self.getpage(*args, **kwargs)
-
-		info = pghandle.info()
-		if not 'Content-Disposition' in info:
-			hName = ''
-		elif not 'filename=' in info['Content-Disposition']:
-			hName = ''
-		else:
-			hName = info['Content-Disposition'].split('filename=')[1]
-
-		mime = info.get_content_type()
-
-		return pgctnt, hName, mime
-
 
 	def buildRequest(self, pgreq, postData, addlHeaders, binaryForm, req_class = urllib.request.Request):
 		# Encode Unicode URL's properly
@@ -561,7 +582,6 @@ class WebGetRobust:
 			print("Wat?")
 			print("pgreq: '%s'", pgreq)
 
-
 		try:
 			params = {}
 			headers = {}
@@ -570,6 +590,8 @@ class WebGetRobust:
 				params['data'] = urllib.parse.urlencode(postData).encode("utf-8")
 			if addlHeaders != None:
 				self.log.info("Have additional GET parameters!")
+				for key, parameter in addlHeaders.items():
+					self.log.info("	Item: '%s' -> '%s'", key, parameter)
 				headers = addlHeaders
 			if binaryForm:
 				self.log.info("Binary form submission!")
@@ -579,7 +601,6 @@ class WebGetRobust:
 				params['data']            = binaryForm.make_result()
 				headers['Content-type']   =  binaryForm.get_content_type()
 				headers['Content-length'] =  len(params['data'])
-
 
 			return req_class(pgreq, headers=headers, **params)
 
@@ -633,7 +654,7 @@ class WebGetRobust:
 		if coding == 'deflate':
 			compType = "deflate"
 
-			pgctnt = zlib.decompress(pgctnt)
+			pgctnt = zlib.decompress(pgctnt, -zlib.MAX_WBITS)
 
 		elif coding == 'gzip':
 			compType = "gzip"
@@ -649,6 +670,127 @@ class WebGetRobust:
 			compType = "none"
 
 		return compType, pgctnt
+
+
+	def getItem(self, itemUrl):
+
+		try:
+			content, handle = self.getpage(itemUrl, returnMultiple=True)
+		except:
+			print("Failure?")
+			if self.rules['cloudflare']:
+				if not self.stepThroughCloudFlare(itemUrl, titleNotContains='Just a moment...'):
+					raise ValueError("Could not step through cloudflare!")
+				# Cloudflare cookie set, retrieve again
+				content, handle = self.getpage(itemUrl, returnMultiple=True)
+			else:
+				raise
+
+		if not content or not handle:
+			raise urllib.error.URLError("Failed to retreive file from page '%s'!" % itemUrl)
+
+		fileN = urllib.parse.unquote(urllib.parse.urlparse(handle.geturl())[2].split("/")[-1])
+		fileN = bs4.UnicodeDammit(fileN).unicode_markup
+		mType = handle.info()['Content-Type']
+
+		# If there is an encoding in the content-type (or any other info), strip it out.
+		# We don't care about the encoding, since WebFunctions will already have handled that,
+		# and returned a decoded unicode object.
+		if mType and ";" in mType:
+			mType = mType.split(";")[0].strip()
+
+		# *sigh*. So minus.com is fucking up their http headers, and apparently urlencoding the
+		# mime type, because apparently they're shit at things.
+		# Anyways, fix that.
+		if '%2F' in  mType:
+			mType = mType.replace('%2F', '/')
+
+		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
+		return content, fileN, mType
+
+
+	def _initPjsWebDriver(self):
+		if self.pjs_driver:
+			self.pjs_driver.quit()
+		dcap = dict(DesiredCapabilities.PHANTOMJS)
+		wgSettings = dict(self.browserHeaders)
+		# Install the headers from the WebGet class into phantomjs
+		dcap["phantomjs.page.settings.userAgent"] = wgSettings.pop('User-Agent')
+		for headerName in wgSettings:
+			if headerName != 'Accept-Encoding':
+				dcap['phantomjs.page.customHeaders.{header}'.format(header=headerName)] = wgSettings[headerName]
+
+		self.pjs_driver = selenium.webdriver.PhantomJS(desired_capabilities=dcap)
+		self.pjs_driver.set_window_size(1280, 1024)
+
+	def _initCrWebDriver(self):
+		if self.cr_driver:
+			self.cr_driver.quit()
+		dcap = dict(DesiredCapabilities.CHROME)
+		wgSettings = dict(self.browserHeaders)
+		# Install the headers from the WebGet class into phantomjs
+		user_agent = wgSettings.pop('User-Agent')
+		dcap["chrome.page.settings.userAgent"] = user_agent
+		for headerName in wgSettings:
+			if headerName != 'Accept-Encoding':
+				dcap['chrome.page.customHeaders.{header}'.format(header=headerName)] = wgSettings[headerName]
+
+		dcap["chrome.switches"] = ["--user-agent="+user_agent]
+
+
+		chromedriver = r'./venv/bin/chromedriver'
+		chrome       = r'./Headless/headless_shell'
+
+		chrome_options = selenium.webdriver.chrome.options.Options()
+		chrome_options.binary_location = chrome
+		chrome_options.add_argument('--load-component-extension')
+		chrome_options.add_argument("--user-agent=\"{}\"".format(user_agent))
+		chrome_options.add_argument('--verbose')
+		chrome_options.add_argument('--no-sandbox')
+		chrome_options.add_argument('--disable-extension')
+
+		self.cr_driver = selenium.webdriver.Chrome(chrome_options=chrome_options, desired_capabilities=dcap)
+		# We can't set the chrome desired capabilities, since headless chrome
+		# doesn't allow extensions.
+
+		self.cr_driver.set_page_load_timeout(30)
+
+	def _syncIntoPjsWebDriver(self):
+		# TODO
+		pass
+
+	def _syncOutOfPjsWebDriver(self):
+		for cookie in self.pjs_driver.get_cookies():
+			self.addSeleniumCookie(cookie)
+
+
+	def getItemPhantomJS(self, itemUrl):
+		self.log.info("Fetching page for URL: '%s' with PhantomJS" % itemUrl)
+
+		if not self.pjs_driver:
+			self._initPjsWebDriver()
+		self._syncIntoPjsWebDriver()
+
+		with load_delay_context_manager(self.pjs_driver):
+			self.pjs_driver.get(itemUrl)
+		time.sleep(3)
+
+		fileN = urllib.parse.unquote(urllib.parse.urlparse(self.pjs_driver.current_url)[2].split("/")[-1])
+		fileN = bs4.UnicodeDammit(fileN).unicode_markup
+
+		self._syncOutOfPjsWebDriver()
+
+		# Probably a bad assumption
+		mType = "text/html"
+
+		# So, self.pjs_driver.page_source appears to be the *compressed* page source as-rendered. Because reasons.
+		source = self.pjs_driver.execute_script("return document.getElementsByTagName('html')[0].innerHTML")
+
+		assert source != '<head></head><body></body>'
+
+		source = "<html>"+source+"</html>"
+		return source, fileN, mType
+
 
 	def decodeTextContent(self, pgctnt, cType):
 
@@ -790,6 +932,7 @@ class WebGetRobust:
 
 		requestedUrl = iri2uri(requestedUrl)
 
+
 		if not self.testMode:
 			retryCount = 0
 			while 1:
@@ -824,9 +967,9 @@ class WebGetRobust:
 				except urllib.error.HTTPError as e:								# Lotta logging
 					self.log.warning("Error opening page: %s at %s On Attempt %s.", pgreq.get_full_url(), time.ctime(time.time()), retryCount)
 					self.log.warning("Error Code: %s", e)
-					print
 
 					#traceback.print_exc()
+					lastErr = e
 					try:
 
 						self.log.warning("Original URL: %s", requestedUrl)
@@ -854,7 +997,12 @@ class WebGetRobust:
 					self.log.critical("	postData:     '%s'", postData)
 					self.log.critical("	addlHeaders:  '%s'", addlHeaders)
 					self.log.critical("	binaryForm:   '%s'", binaryForm)
+
+
 					break
+
+
+
 
 
 				except Exception:
@@ -873,6 +1021,8 @@ class WebGetRobust:
 						self.log.critical("And the URL could not be printed due to an encoding error")
 
 					time.sleep(self.retryDelay)
+
+
 					continue
 
 				if pghandle != None:
@@ -924,6 +1074,39 @@ class WebGetRobust:
 					self.log.error("Failure fetching: %s", url)
 					raise e
 
+	def getHeadTitlePhantomJS(self, url, referrer):
+		self.getHeadPhantomJS(url, referrer)
+		ret = {
+			'url'   : self.pjs_driver.current_url,
+			'title' : self.pjs_driver.title,
+		}
+		return ret
+
+	def getHeadPhantomJS(self, url, referrer):
+		self.log.info("Getting HEAD with PhantomJS")
+
+		if not self.pjs_driver:
+			self._initPjsWebDriver()
+		self._syncIntoPjsWebDriver()
+
+		def try_get(loc_url):
+			tries = 3
+			for x in range(9999):
+				try:
+					self.pjs_driver.get(loc_url)
+					time.sleep(random.uniform(2, 6))
+					return
+				except socket.timeout as e:
+					if x > tries:
+						raise e
+
+		try_get(referrer)
+		try_get(url)
+
+		self._syncOutOfPjsWebDriver()
+
+		return self.pjs_driver.current_url
+
 	def syncCookiesFromFile(self):
 		# self.log.info("Synchronizing cookies with cookieFile.")
 		if os.path.isfile(self.COOKIEFILE):
@@ -963,7 +1146,7 @@ class WebGetRobust:
 				path               = cookieDict['path'],
 				path_specified     = False,
 				secure             = cookieDict['secure'],
-				expires            = cookieDict['expiry'],
+				expires            = cookieDict['expiry'] if 'expiry' in cookieDict else None,
 				discard            = False,
 				comment            = None,
 				comment_url        = None,
@@ -1041,9 +1224,14 @@ class WebGetRobust:
 
 		return self.cj
 
+
 	def __del__(self):
 		# print "WGH Destructor called!"
 		self.saveCookies(halting=True)
+
+		if self.pjs_driver != None:
+			self.pjs_driver.quit()
+
 
 	def stepThroughCloudFlare(self, url, titleContains='', titleNotContains=''):
 		'''
@@ -1496,32 +1684,33 @@ if __name__ == "__main__":
 			fp.write(out)
 
 
+	print("Working")
+	ret = wg.getHeadTitlePhantomJS("http://www.google.com/", referrer="http://www.google.com/")
+	print("Ret:")
+	print(ret)
+	content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/07/Arifureta.png", returnMultiple = True)
+	print((handle.headers.get('Content-Encoding')))
+	print(len(content))
+	content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/03/knm.png", returnMultiple = True)
+	print((handle.headers.get('Content-Encoding')))
+	content, handle = wg.getpage("https://www.google.com/images/srpr/logo11w.png", returnMultiple = True)
+	print((handle.headers.get('Content-Encoding')))
+	content, handle = wg.getpage("http://www.doujin-moe.us/ajax/newest.php", returnMultiple = True)
+	print((handle.headers.get('Content-Encoding')))
 
-	wg.getHead("http://www.novelupdates.com/extnu/125399/", addlHeaders={"Referer" : "http://www.novelupdates.com/series/limitless-sword-god/"})
+	print("SoupGet")
+	content_1 = wg.getpage("http://www.lighttpd.net", soup = True)
 
-	# # content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/07/Arifureta.png", returnMultiple = True)
-	# # print((handle.headers.get('Content-Encoding')))
-	# # print(len(content))
-	# # content, handle = wg.getpage("http://japtem.com/wp-content/uploads/2014/03/knm.png", returnMultiple = True)
-	# # print((handle.headers.get('Content-Encoding')))
-	# # content, handle = wg.getpage("https://www.google.com/images/srpr/logo11w.png", returnMultiple = True)
-	# # print((handle.headers.get('Content-Encoding')))
-	# # content, handle = wg.getpage("http://www.doujin-moe.us/ajax/newest.php", returnMultiple = True)
-	# # print((handle.headers.get('Content-Encoding')))
+	content_2 = wg.getSoup("http://www.lighttpd.net")
+	assert(content_1 == content_2)
 
-	# # print("SoupGet")
-	# # content_1 = wg.getpage("http://www.lighttpd.net", soup = True)
+	gTest = wg.getpage('https://drive.google.com/folderview?id=0B2lnOX3NF2LOeW55WlpYQWIxYnM')
+	print(type(gTest))
 
-	# # content_2 = wg.getSoup("http://www.lighttpd.net")
-	# # assert(content_1 == content_2)
-
-	# gTest = wg.getpage('https://drive.google.com/folderview?id=0B2lnOX3NF2LOeW55WlpYQWIxYnM')
-	# print(type(gTest))
-
-	# gTest = wg.getpage('https://www.google.com/search?q=Gödel')
-	# gTest = wg.getpage('https://www.google.com/search?q=禁断の愛')
-	# gTest = wg.getpage('http://www.fanfiction.net/s/6711282/1/Jag-%C3%A4lskar-dig')
-	# print(type(gTest))
+	gTest = wg.getpage('https://www.google.com/search?q=Gödel')
+	gTest = wg.getpage('https://www.google.com/search?q=禁断の愛')
+	gTest = wg.getpage('http://www.fanfiction.net/s/6711282/1/Jag-%C3%A4lskar-dig')
+	print(type(gTest))
 
 
 
