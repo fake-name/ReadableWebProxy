@@ -10,6 +10,7 @@ from sqlalchemy_continuum.utils import version_table
 
 import common.database as db
 from app import app
+from app import utilities
 import pprint
 import ast
 
@@ -165,6 +166,7 @@ def render():
 		if rows:
 			row = rows.pop()
 			title, content = row
+			content = utilities.replace_links(content)
 			cachestate = "Historical version: %s" % (version, )
 	else:
 		title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache, version=version)

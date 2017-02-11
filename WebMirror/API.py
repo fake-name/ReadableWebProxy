@@ -1,5 +1,4 @@
-from app import app
-import config
+
 import datetime
 import os.path
 import contextlib
@@ -9,6 +8,8 @@ import WebMirror.Engine
 # import WebMirror.runtime_engines
 from common.Exceptions import DownloadException, getErrorDiv
 from flask import g
+from app import app
+from app import utilities
 
 
 def td_format(td_object):
@@ -31,15 +32,6 @@ def td_format(td_object):
 				retstr.append("%s%s" % (period_value, period_name))
 
 		return ", ".join(retstr)
-
-def replace_links(content):
-	rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
-	ctnt_key = "CONTENT:{}".format(config.relink_secret).lower()
-
-	content = content.replace(ctnt_key, "/view?url=")
-	content = content.replace(rsc_key, "/render_rsc?url=")
-	return content
-
 
 class RemoteContentObject(object):
 	def __init__(self, url, db_session = None):
@@ -86,7 +78,7 @@ class RemoteContentObject(object):
 
 		content = self.job.content
 		if content and relink_replace:
-			content = replace_links(content)
+			content = utilities.replace_links(content)
 		return content
 
 	def getMime(self):
@@ -129,7 +121,7 @@ class RemoteContentObject(object):
 		print(fetcher)
 		ret          = fetcher.dispatchContent(content, "None", "text/html")
 		content = ret['contents']
-		content = replace_links(content)
+		content = utilities.replace_links(content)
 		return content
 
 	def dispatchRetreived(self, parentjob, content, mimetype):

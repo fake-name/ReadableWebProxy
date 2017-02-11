@@ -6,6 +6,8 @@
 from flask.ext.sqlalchemy import Pagination
 from flask import abort
 
+import config
+
 # def get_latest_release(series):
 # 	latest = Releases                                        \
 # 				.query                                       \
@@ -35,5 +37,15 @@ def paginate(query, page, per_page=20, error_out=True):
 		total = query.order_by(None).count()
 
 	return Pagination(query, page, per_page, total, items)
+
+
+def replace_links(content):
+	rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
+	ctnt_key = "CONTENT:{}".format(config.relink_secret).lower()
+
+	content = content.replace(ctnt_key, "/view?url=")
+	content = content.replace(rsc_key, "/render_rsc?url=")
+	return content
+
 
 

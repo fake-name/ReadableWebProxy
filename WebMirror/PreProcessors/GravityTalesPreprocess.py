@@ -16,9 +16,13 @@ class GravityTalesPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentP
 	def botGarbage(self, content, url):
 		errs = 0
 		while '<div id="bot-alert" class="alert alert-info">' in content:
+
+
 			if errs > 4:
 				raise RuntimeError("Could not circumvent recaptcha.")
+
 			self.log.info("Trying phantomjs fetch to circumvent recaptcha")
+			self.wg.resetUa()
 			content, dummy_name, dummy_mime = self.wg.getItemPhantomJS(url)
 			errs += 1
 

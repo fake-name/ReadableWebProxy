@@ -552,6 +552,20 @@ class WebGetRobust:
 					# 	tmp_err_fp.write(page)
 					raise
 
+	def resetUa(self):
+
+		if self.pjs_driver != None:
+			self.pjs_driver.quit()
+
+		if not self.pjs_driver:
+			self._initPjsWebDriver()
+		self._syncIntoPjsWebDriver()
+
+		self.browserHeaders = getUserAgent()
+		if self.alt_cookiejar:
+			self.cj.init_agent(new_headers=self.browserHeaders)
+
+
 
 	def getFileAndName(self, *args, **kwargs):
 		if 'returnMultiple' in kwargs:

@@ -1095,6 +1095,12 @@ badwords: [
 	# Another HUEG image
 	"9629673_orig-ID-62b82545-ae9c-4eb7-b488-75e7366caaca.png",
 	"cropped-starry-night-thinking21.jpg",
+
+	# Gravity tales CDN is shitting itself, so let's just remove
+	# the shit on it entirely.
+	'patreon_img.png',
+	'/images/discord.png',
+	'cdn.gravitytales.com',
 	]
 
 decompose: [
