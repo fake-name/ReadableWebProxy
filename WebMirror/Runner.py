@@ -11,6 +11,8 @@ import threading
 import sys
 import queue
 
+import lru
+
 # from pympler.tracker import SummaryTracker, summary, muppy
 # import tracemalloc
 
@@ -188,7 +190,12 @@ class UpdateAggregator(object):
 		self.queue = msg_queue
 		self.log = logging.getLogger("Main.Agg.Manager")
 
-		self.seen = {}
+		try:
+			signal.signal(signal.SIGINT, signal.SIG_IGN)
+		except ValueError:
+			self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
+
+		self.seen = lru.LRU(1000 * 1000)
 
 		self.links = 0
 		self.amqpUpdateCount = 0
@@ -307,25 +314,20 @@ class UpdateAggregator(object):
 		assert 'ignoreuntiltime' in linkdict
 
 		url = linkdict['url']
+		now = time.time()
 
-		if not url in self.seen:
+		# Only allow items through if they're not in the LRU cache, or have not been upserted
+		# in the last 6 hours
+		if self.seen.get(url, now) > (now - 60 * 60 * 6):
 			# Fucking huzzah for ON CONFLICT!
 			self.batched_links.append(linkdict)
-			self.seen[url] = time.time()
+			# Kick item up to the top of the LRU list
+			self.seen[url] = now
 
 			if len(self.batched_links) > 100:
 				self.do_link_batch_update()
-		# 	print("Inserting", url, len(self.seen))
-		# else:
-		# 	print("Skipping", url)
-
-
-		# The seen dict was eating all my free memory (I think).
-		if len(self.seen) > 100000:
-			self.seen = {}
-
-		# else:
-		# 	print("Old item: %s", linkdict)
+		else:
+			self.log.info("Skipping upserting: '%s'", url)
 
 	def do_task(self):
 
@@ -378,6 +380,7 @@ class UpdateAggregator(object):
 
 	@classmethod
 	def launch_agg(cls, agg_queue):
+
 		try:
 			common.stuck.install_pystuck()
 			agg_db = db.get_db_session()

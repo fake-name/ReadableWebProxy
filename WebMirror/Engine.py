@@ -513,7 +513,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		resource = self.filterResourceLinks(job, resource, badwords)
 
 		filtered = len(plain)+len(resource)
-		self.log.info("Upserting %s links (%s filtered)" % (filtered, unfiltered))
+		self.log.info("Found %s links (%s filtered)" % (filtered, unfiltered))
 
 		items = []
 		[items.append((link, True))  for link in plain]
