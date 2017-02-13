@@ -41,7 +41,7 @@ NO_JOB_TIMEOUT_MINUTES = 5
 
 largv = [tmp.lower() for tmp in sys.argv]
 if "twoprocess" in largv or "oneprocess" in largv:
-	MAX_IN_FLIGHT_JOBS = 10
+	MAX_IN_FLIGHT_JOBS = 2
 else:
 	MAX_IN_FLIGHT_JOBS = 50
 	# MAX_IN_FLIGHT_JOBS = 75
@@ -232,8 +232,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			self.process_responses()
 
 			msg_loop += 1
-			time.sleep(2.5)
-			if msg_loop > 20:
+			time.sleep(0.2)
+			if msg_loop > 250:
 				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.raw_job_run_state.value==1)
 				msg_loop = 0
 
@@ -327,8 +327,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		xqtim = time.time() - start
 
 		if len(rids) == 0:
-			self.log.warning("No jobs available! Sleeping for 60 seconds waiting for new jobs to become available!")
-			for dummy_x in range(60):
+			self.log.warning("No jobs available! Sleeping for 10 seconds waiting for new jobs to become available!")
+			for dummy_x in range(10):
 				if runStatus.run_state.value == 1:
 					time.sleep(1)
 			return 0

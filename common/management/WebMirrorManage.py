@@ -13,6 +13,7 @@ import urllib.parse
 
 from sqlalchemy import and_
 from sqlalchemy import or_
+import sqlalchemy.exc
 from sqlalchemy_continuum.utils import version_table
 
 if __name__ == "__main__":
@@ -810,21 +811,28 @@ def exposed_drop_priorities():
 
 	changed = 0
 	for idx in range(start, stop, step):
-		# SQL String munging! I'm a bad person!
-		# Only done because I can't easily find how to make sqlalchemy
-		# bind parameters ignore the postgres specific cast
-		# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-		have = sess.execute("""update web_pages set priority = 500000 where priority < 500000 AND id > {} AND id <= {};""".format(idx, idx+step))
-		# print()
+		try:
+			# SQL String munging! I'm a bad person!
+			# Only done because I can't easily find how to make sqlalchemy
+			# bind parameters ignore the postgres specific cast
+			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+			have = sess.execute("""update web_pages set priority = 500000 where priority < 500000 AND id > {} AND id <= {};""".format(idx, idx+step))
+			# print()
 
-		processed  = idx - start
-		total_todo = stop - start
-		print('%10i, %10i, %7.4f, %6i' % (idx, stop, processed/total_todo * 100, have.rowcount))
-		changed += have.rowcount
-		if changed > 100000:
-			print("Committing (%s changed rows)...." % changed, end=' ')
-			sess.commit()
-			print("done")
-			changed = 0
+			processed  = idx - start
+			total_todo = stop - start
+			print('%10i, %10i, %7.4f, %6i' % (idx, stop, processed/total_todo * 100, have.rowcount))
+			changed += have.rowcount
+			if changed > step:
+				print("Committing (%s changed rows)...." % changed, end=' ')
+				sess.commit()
+				print("done")
+				changed = 0
+
+		except sqlalchemy.exc.OperationalError:
+			sess.rollback()
+		except sqlalchemy.exc.InvalidRequestError:
+			sess.rollback()
+
 
 	sess.commit()

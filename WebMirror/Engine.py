@@ -523,7 +523,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 
-		new_starturl = job.starturl,
+		new_starturl = job.starturl
 
 		# Every step away from home is a step further in distance, and a reduction in priority.
 		new_distance = job.distance+1
@@ -554,7 +554,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 					}
 				self.resp_q.put(("new_link", new))
 
-				while self.resp_q.qsize() > 1000:
+				while self.resp_q.qsize() > 10000:
 					time.sleep(0.1)
 					full_printer -= 1
 					if full_printer <= 0:

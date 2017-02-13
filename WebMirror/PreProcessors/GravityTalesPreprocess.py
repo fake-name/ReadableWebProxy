@@ -18,8 +18,8 @@ class GravityTalesPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentP
 		while '<div id="bot-alert" class="alert alert-info">' in content:
 
 
-			if errs > 4:
-				raise RuntimeError("Could not circumvent recaptcha.")
+			if errs > 1:
+				return content
 
 			self.log.info("Trying phantomjs fetch to circumvent recaptcha")
 			self.wg.resetUa()
@@ -40,5 +40,6 @@ class GravityTalesPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentP
 
 	@staticmethod
 	def wantsUrl(url):
+		return False
 		netloc = urllib.parse.urlsplit(url).netloc
 		return netloc.lower().endswith("gravitytales.com")

@@ -556,6 +556,7 @@ class WebGetRobust:
 
 		if self.pjs_driver != None:
 			self.pjs_driver.quit()
+			self.pjs_driver = None
 
 		if not self.pjs_driver:
 			self._initPjsWebDriver()

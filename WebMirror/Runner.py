@@ -205,6 +205,54 @@ class UpdateAggregator(object):
 
 		self.db_int = db_interface
 
+	def check_init_func(self):
+		raw_cur = self.db_int.connection().connection.cursor()
+
+		cmd = """
+			CREATE OR REPLACE FUNCTION upsert_link(
+			        url_v text,
+			        starturl_v text,
+			        netloc_v text,
+			        distance_v integer,
+			        is_text_v boolean,
+			        priority_v integer,
+			        type_v itemtype_enum,
+			        addtime_v timestamp without time zone,
+			        state_v dlstate_enum,
+			        ignoreuntiltime_v timestamp without time zone
+			        )
+			    RETURNS VOID AS $$
+
+			    INSERT INTO
+			        web_pages
+			         (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+			    VALUES
+			        (url_v, starturl_v, netloc_v, distance_v, is_text_v, priority_v, type_v, addtime_v, state_v)
+			    ON CONFLICT (url) DO
+			        UPDATE
+			            SET
+			                state           = EXCLUDED.state,
+			                starturl        = EXCLUDED.starturl,
+			                netloc          = EXCLUDED.netloc,
+			                is_text         = EXCLUDED.is_text,
+			                distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+			                priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+			                addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+			            WHERE
+			            (
+			                    web_pages.ignoreuntiltime < ignoreuntiltime_v
+			                AND
+			                    web_pages.url = EXCLUDED.url
+			                AND
+			                    (web_pages.state = 'complete' OR web_pages.state = 'error')
+			            )
+			        ;
+
+			$$ LANGUAGE SQL;
+
+		"""
+		raw_cur.execute(cmd)
+		raw_cur.execute("COMMIT;")
 
 	def check_open_rpc_interface(self):
 		try:
@@ -240,46 +288,82 @@ class UpdateAggregator(object):
 		raw_cur = self.db_int.connection().connection.cursor()
 
 		#  Fucking huzzah for ON CONFLICT!
-		cmd = """
-				INSERT INTO
-					web_pages
-					(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-				VALUES
-					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
-				ON CONFLICT (url) DO
-					UPDATE
-						SET
-							state           = EXCLUDED.state,
-							starturl        = EXCLUDED.starturl,
-							netloc          = EXCLUDED.netloc,
-							is_text         = EXCLUDED.is_text,
-							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-							priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
-							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-						WHERE
-						(
-								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
-							AND
-								web_pages.url = EXCLUDED.url
-							AND
-								(web_pages.state = 'complete' OR web_pages.state = 'error')
-						)
-					;
-				""".replace("	", " ").replace("\n", " ")
+		# cmd = """
+		# 	INSERT INTO
+		# 	    web_pages
+		# 	    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+		# 	VALUES
+		# 	    (%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
+		# 	ON CONFLICT (url) DO
+		# 	    UPDATE
+		# 	        SET
+		# 	            state           = EXCLUDED.state,
+		# 	            starturl        = EXCLUDED.starturl,
+		# 	            netloc          = EXCLUDED.netloc,
+		# 	            is_text         = EXCLUDED.is_text,
+		# 	            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+		# 	            priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+		# 	            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+		# 	        WHERE
+		# 	        (
+		# 	                web_pages.ignoreuntiltime < %(ignoreuntiltime)s
+		# 	            AND
+		# 	                web_pages.url = EXCLUDED.url
+		# 	            AND
+		# 	                (web_pages.state = 'complete' OR web_pages.state = 'error')
+		# 	        )
+		# 	    ;
+		# 		""".replace("	", " ").replace("\n", " ")
+
+		per_cmd = """SELECT upsert_link(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s, %(ignoreuntiltime)s)"""
+
+
+
+		cmds = ["""upsert_link(%(url_{cnt})s,
+							%(starturl_{cnt})s,
+							%(netloc_{cnt})s,
+							%(distance_{cnt})s,
+							%(is_text_{cnt})s,
+							%(priority_{cnt})s,
+							%(type_{cnt})s,
+							%(addtime_{cnt})s,
+							%(state_{cnt})s,
+							%(ignoreuntiltime_{cnt})s)""".format(cnt=cnt) for cnt in range(len(self.batched_links))]
+		bulk_cmd = "SELECT " + ", ".join(cmds)
+
+		# Build a nested list of dicts
+		bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in self.batched_links[cnt].items()} for cnt in range(len(self.batched_links)) ]
+
+		# Then flatten it down to a single dict
+		bulk_dict = {k: v for d in bulk_dict for k, v in d.items()}
+
+
+		try:
+			raw_cur.execute(bulk_cmd, bulk_dict)
+			raw_cur.execute("COMMIT;")
+			self.batched_links = []
+			return
+
+		except psycopg2.Error:
+			self.log.error("psycopg2.Error - Failure on bulk insert.")
+			traceback.print_exc()
+
+			raw_cur.execute("ROLLBACK;")
+
 
 		# Only commit per-URL if we're tried to do the update in batch, and failed.
 		commit_each = False
 		while 1:
 			try:
 				for paramset in self.batched_links:
-
+					assert isinstance(paramset['starturl'], str)
 					if len(paramset['url']) > 2000:
 						self.log.error("URL Is too long to insert into the database!")
 						self.log.error("URL: '%s'", paramset['url'])
 
 					else:
 						# Forward-data the next walk, time, rather then using now-value for the thresh.
-						raw_cur.execute(cmd, paramset)
+						raw_cur.execute(per_cmd, paramset)
 						if commit_each:
 							raw_cur.execute("COMMIT;")
 

@@ -8,8 +8,12 @@ import sys
 import common.management.WebMirrorManage
 import common.management.RawMirrorManage
 import common.management.Misc
+
 import WebMirror.OfflineFilters.offline_filters
 import WebMirror.TimedTriggers.TriggerManage
+
+# Site-specific management stuff
+import WebMirror.management.GravityTalesManage
 
 if __name__ == "__main__":
 	import logSetup
@@ -23,6 +27,7 @@ SCANNED_MODULES = [
 	common.management.Misc,
 	WebMirror.OfflineFilters.offline_filters,
 	WebMirror.TimedTriggers.TriggerManage,
+	WebMirror.management.GravityTalesManage,
 ]
 
 def load_functions():
