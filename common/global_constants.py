@@ -71,6 +71,7 @@ GLOBAL_BAD_URLS = [
 			'replytocom=',
 			'?feed=rss2&page_id',
 			'?share=tumblr',
+			'?share=facebook',
 
 			'chasingadreamtranslations.com/?fp=',
 	]

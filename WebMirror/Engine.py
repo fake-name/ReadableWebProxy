@@ -267,9 +267,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		assert interval > 7
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
-
-
-
 		while True:
 			history_size = self.checkHaveHistory(job.url)
 			if history_size > 0:

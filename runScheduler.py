@@ -145,6 +145,8 @@ def scheduleJobs(sched, timeToStart):
 		activeJobs.append(jId)
 		havejob = sched.get_job(jId)
 		ok = True
+
+
 		if not havejob:
 			ok = False
 
@@ -254,7 +256,7 @@ def go_sched():
 			'apscheduler.job_defaults.max_instances': '5',
 		})
 
-	# Apparently the scheduler pull the jobs from the backend until you start it,
+	# Apparently the scheduler won't pull the jobs from the backend until you start it,
 	# so if you're trying to validate the jobs already present, you have to start it
 	# before iterating over jobs in the jobstore.
 	sched.start()

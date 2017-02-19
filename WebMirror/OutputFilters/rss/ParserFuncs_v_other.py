@@ -824,7 +824,9 @@ def  extractWillfulCasual(item):
 
 def  extractVolareTranslations(item):
 	'''
-
+	'Volare Translations'
+	also
+	'Volare Novels'
 	'''
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
@@ -878,6 +880,15 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, 'Pivot of the Sky', vol, chp, frag=frag, postfix=postfix)
 	if 'Poisoning the World' in item['tags']:
 		return buildReleaseMessage(item, 'Poisoning the World: The Secret Service Mysterious Doctor is a Young Beastly Wife', vol, chp, frag=frag, postfix=postfix)
+
+
+	if 'King of Hell' in item['tags']:
+		return buildReleaseMessage(item, 'King of Hell', vol, chp, frag=frag, postfix=postfix)
+	if 'Prodigal Alliance Head' in item['tags']:
+		return buildReleaseMessage(item, 'Prodigal Alliance Head', vol, chp, frag=frag, postfix=postfix)
+
+
+
 
 	return False
 
@@ -1417,6 +1428,8 @@ def extractWuxiaNation(item):
 		return buildReleaseMessage(item, 'Conquer God, Asura, and 1000 Beauties', vol, chp, frag=frag, postfix=postfix)
 	if 'The Solitary Sword Sovereign' in item['tags']:
 		return buildReleaseMessage(item, 'The Solitary Sword Sovereign', vol, chp, frag=frag, postfix=postfix)
+	if 'lord shadow' in item['tags']:
+		return buildReleaseMessage(item, 'Lord Shadow', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
