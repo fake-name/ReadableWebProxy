@@ -2926,6 +2926,7 @@ def extractFantasyBooksLive(item):
 
 	snames = [
 		'Heavenward On Golden Wings',
+		'Heavenward on Golden Wings Book 2',
 		'The Abandoned',
 		'Regarding The Life of A Certain Fallen Noble',
 		'Orphans of a Dead Nation',
@@ -2944,6 +2945,8 @@ def extractFantasyBooksLive(item):
 		'The Royal Princess Fox',
 		'Castle of Black Iron',
 		'Lone Harem Meister',
+		'The Clockwork Raven',
+		'Transcending Evolution',
 	]
 
 	tlut = {tmp.lower():tmp for tmp in snames}
@@ -3374,6 +3377,10 @@ def extractFrozensLazyBlog(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Kuusen Madoushi' in item['tags']:
+		return buildReleaseMessage(item, 'Kuusen Madoushi', vol, chp, frag=frag, postfix=postfix)
+	if 'Last Embryo' in item['tags']:
+		return buildReleaseMessage(item, 'Last Embryo', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def extractFuwaFuwaTales(item):
@@ -3963,8 +3970,8 @@ def extractBeerHappyTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Spear Master and the Black Cat Chapter "):
+		return buildReleaseMessage(item, "Spear Master and the Black Cat", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -4603,8 +4610,8 @@ def extractFunwithstela(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if 'Because The Pig Duke Has Been Reincarnated, This Time I Will Say I Like You' in item['tags']:
+		return buildReleaseMessage(item, 'Because The Pig Duke Has Been Reincarnated, This Time I Will Say I Like You', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

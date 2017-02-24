@@ -1295,6 +1295,11 @@ mapper = {
 	'www.novelsreborn.com'                               : 'Novels Reborn',
 	'www.spcnet.tv'                                      : 'Spcnet.tv',
 
+	'blog.juncafe.com'                                   : 'Jun Cafe',
+	'duelnoir.dreamwidth.org'                            : 'DuelNoir',
+	'emperortranslations.wordpress.com'                  : 'Meteor Emperor-san',
+	'liberspark.com'                                     : 'Path of Translation',
+
 	'blog.juncafe.com'                                   : 'blog.juncafe.com',
 	'creiz.livejournal.com'                              : 'creiz.livejournal.com',
 	'docs.google.com'                                    : 'docs.google.com',
@@ -1314,6 +1319,9 @@ mapper = {
 	'spr.dreamwidth.org'                                 : 'spr.dreamwidth.org',
 	'springkrane.wixsite.com'                            : 'springkrane.wixsite.com',
 	'tachibanachinatsu.wixsite.com'                      : 'tachibanachinatsu.wixsite.com',
+
+
+
 
 	# Redirect loop.
 	'lightnovelcafe.com'                                       : 'Light Novel Cafe',

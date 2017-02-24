@@ -1914,6 +1914,10 @@ def  extractMojoTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	# We don't want summaries or synopsies.
+	if 'Synopsis - Summaries' in item['tags']:
+		return None
+
 	return False
 
 def  extractNanoDesuYahariOrenoSeishunLoveComewaMachigatteiru(item):
@@ -3262,6 +3266,11 @@ def extractLightNovelsWorld(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+	if 'Amaku Yasashii Sekai de Ikiru ni wa' in item['tags']:
+		return buildReleaseMessage(item, 'Amaku Yasashii Sekai de Ikiru ni wa', vol, chp, frag=frag, postfix=postfix)
+	if 'Omae Mitai na Hiroin ga Ite Tamaruka!' in item['tags']:
+		return buildReleaseMessage(item, 'Omae Mitai na Hiroin ga Ite Tamaruka!', vol, chp, frag=frag, postfix=postfix)
+
 	if 'the nine godheads' in item['tags']:
 		return buildReleaseMessage(item, 'The Nine Godheads', vol, chp, frag=frag, postfix=postfix)
 	if 'World Seed' in item['tags']:
@@ -4219,8 +4228,8 @@ def extractISpeakMtl(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if 'IIH Chapter' in item['tags']:
+		return buildReleaseMessage(item, 'I\'m In Hollywood ', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

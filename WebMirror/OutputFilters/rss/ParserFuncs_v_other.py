@@ -1559,8 +1559,12 @@ def extractVesperlxd(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if 'Invincible Level Up' in item['tags']:
+		return buildReleaseMessage(item,'Invincible Level Up', vol, chp, frag=frag, postfix=postfix)
+	if 'Rebirth of an Abandoned Woman' in item['tags']:
+		return buildReleaseMessage(item,'Rebirth of an Abandoned Woman', vol, chp, frag=frag, postfix=postfix)
+	if "Great Han's Female General Wei Qiqi" in item['tags']:
+		return buildReleaseMessage(item,"Great Han's Female General Wei Qiqi", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

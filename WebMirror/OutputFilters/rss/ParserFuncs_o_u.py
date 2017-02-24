@@ -1079,6 +1079,14 @@ def extractRadiantTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
+	if 'Amnesiac Queen' in item['tags']:
+		return buildReleaseMessage(item, 'Amnesiac Queen', vol, chp, frag=frag, postfix=postfix)
+	if 'Beautiful Girl Poison Doctor Third Miss' in item['tags']:
+		return buildReleaseMessage(item, 'Beautiful Girl Poison Doctor Third Miss', vol, chp, frag=frag, postfix=postfix)
+	if 'Death Sutra' in item['tags']:
+		return buildReleaseMessage(item, 'Death Sutra', vol, chp, frag=frag, postfix=postfix)
+	if 'My World Falls into the River of Love' in item['tags']:
+		return buildReleaseMessage(item, 'My World Falls into the River of Love', vol, chp, frag=frag, postfix=postfix)
 	if 'Ghost Emperor Wild Wife' in item['tags']:
 		return buildReleaseMessage(item, 'Ghost Emperor Wild Wife', vol, chp, frag=frag, postfix=postfix)
 	if 'Heavenly Calamity' in item['tags']:
@@ -1262,6 +1270,8 @@ def extractShinsori(item):
 		return buildReleaseMessage(item, 'Isekai Yururi Kikou', vol, chp, frag=frag, postfix=postfix)
 	if 'Chiisana Maou-sama' in item['tags']:
 		return buildReleaseMessage(item, 'Boku wa Chiisana Maou-sama', vol, chp, frag=frag, postfix=postfix)
+	if 'Obaachan' in item['tags']:
+		return buildReleaseMessage(item, 'Isekai Shoukan ni Makikomareta Obaachan', vol, chp, frag=frag, postfix=postfix)
 
 	if 'Kindred' in item['title'] or 'Kindred' in item['tags']:
 		return buildReleaseMessage(item, 'Kindred', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
@@ -3901,6 +3911,12 @@ def extractSereneandTranquil(item):
 		return buildReleaseMessage(item, 'Disgraced Consort', vol, chp, frag=frag, postfix=postfix)
 	if 'favored intelligent concubine' in item['tags']:
 		return buildReleaseMessage(item, 'Favored Intelligent Concubine', vol, chp, frag=frag, postfix=postfix)
+	if 'Beloved Empress' in item['tags']:
+		return buildReleaseMessage(item, 'Beloved Empress', vol, chp, frag=frag, postfix=postfix)
+	if "The Homebody's Lover" in item['tags']:
+		return buildReleaseMessage(item, "The Homebody's Lover", vol, chp, frag=frag, postfix=postfix)
+	if 'Xian Wang Dotes On Wife' in item['tags']:
+		return buildReleaseMessage(item, 'Xian Wang Dotes On Wife', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -4771,8 +4787,10 @@ def extractSabishiiDesu(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if "My Room Has Become A Dungeon's Rest Area" in item['tags']:
+		return buildReleaseMessage(item, "My Room Has Become A Dungeon's Rest Area", vol, chp, frag=frag, postfix=postfix)
+	if 'Sonomono. Nochi ni.....' in item['tags']:
+		return buildReleaseMessage(item, 'Sonomono. Nochi ni.....', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -5107,8 +5125,10 @@ def extractTheSunIsColdTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if '108 maidens' in item['tags']:
+		return buildReleaseMessage(item, "108 Maidens of Destiny", vol, chp, frag=frag, postfix=postfix)
+	if 'Back to the Apocalypse' in item['tags']:
+		return buildReleaseMessage(item, "Back to the Apocalypse", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
