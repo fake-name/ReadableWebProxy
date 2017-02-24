@@ -1408,6 +1408,10 @@ def extractWorksofKun(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if'Apocalypse Cockroach' in item['tags']:
+		return buildReleaseMessage(item,'Apocalypse Cockroach', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -1771,8 +1775,14 @@ def extractYorasuNovels(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if 'Fallen God Records' in item['tags']:
+		return buildReleaseMessage(item, 'Fallen God Records', vol, chp, frag=frag, postfix=postfix)
+	if 'Godly Model Creator' in item['tags']:
+		return buildReleaseMessage(item, 'Godly Model Creator', vol, chp, frag=frag, postfix=postfix)
+	if 'Super Brain Telekinesis' in item['tags']:
+		return buildReleaseMessage(item, 'Super Brain Telekinesis', vol, chp, frag=frag, postfix=postfix)
+	if 'hacker' in item['tags']:
+		return buildReleaseMessage(item, 'Hacker', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

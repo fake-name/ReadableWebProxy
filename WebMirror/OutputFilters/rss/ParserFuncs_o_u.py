@@ -863,8 +863,30 @@ def extractRebirthOnlineWorld(item):
 		return buildReleaseMessage(item, 'World Traveler ', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	if "http://rebirth.online/novel/yuusha-isagi-no-maou-hanashi" in item['linkUrl']:
 		return buildReleaseMessage(item, 'Yuusha Isagi no Maou Hanashi', vol, chp, frag=frag, postfix=postfix)
-	if "http://rebirth.online/novel/magic-bullet-in-magic-land" in item['linkUrl']:
+	if "http://rebirth.online/novel/magic-bullet-in-magic-land" in item['linkUrl'] or \
+		'http://www.rebirth.online/novel/magic-bullet-in-magic-land/' in item['linkUrl']:
 		return buildReleaseMessage(item, 'Magic Bullet in Magic Land', vol, chp, frag=frag, postfix=postfix)
+
+
+	if 'http://www.rebirth.online/novel/balada/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Balada: When death did not exist, nor yet Eternity Part I', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'http://www.rebirth.online/novel/birth-of-a-necromancer/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Birth of a Necromancer', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'http://www.rebirth.online/novel/destination-of-crybird/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Destination of Crybird', vol, chp, frag=frag, postfix=postfix)
+	if 'http://www.rebirth.online/novel/isekai-ryouridou/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Isekai Ryouridou', vol, chp, frag=frag, postfix=postfix)
+	if 'http://www.rebirth.online/novel/jintetsu/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Jintetsu', vol, chp, frag=frag, postfix=postfix)
+	if 'http://www.rebirth.online/novel/last-high-human/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Last High Human', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'http://www.rebirth.online/novel/my-god-like-adventure/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'My God-like Adventure in Another World', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'http://www.rebirth.online/novel/world-destroying-demonic-emperor/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'World Destroying Demonic Emperor', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'http://www.rebirth.online/novel/yuusha-isagi-no-maou-hanashi/' in item['linkUrl']:
+		return buildReleaseMessage(item, 'Yuusha Isagi no Maou Hanashi', vol, chp, frag=frag, postfix=postfix)
+
 
 
 	return False
@@ -1079,6 +1101,10 @@ def extractRadiantTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
+	if 'Truly Precious Shared Universe' in item['tags']:
+		return buildReleaseMessage(item, 'Truly Precious Shared Universe', vol, chp, frag=frag, postfix=postfix)
+	if 'Xyrin Empire' in item['tags']:
+		return buildReleaseMessage(item, 'Xyrin Empire', vol, chp, frag=frag, postfix=postfix)
 	if 'Amnesiac Queen' in item['tags']:
 		return buildReleaseMessage(item, 'Amnesiac Queen', vol, chp, frag=frag, postfix=postfix)
 	if 'Beautiful Girl Poison Doctor Third Miss' in item['tags']:
@@ -3329,48 +3355,40 @@ def extractPathOfTranslation(item):
 		return buildReleaseMessage(item, 'Grasping Evil', vol, chp, frag=frag, postfix=postfix)
 	if 'The Human Emperor' in item['tags']:
 		return buildReleaseMessage(item, 'The Human Emperor', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith('Game Market 1983'):
-		return buildReleaseMessage(item, 'Game Market 1983', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith('Spirit Vessel'):
-		return buildReleaseMessage(item, 'Spirit Vessel', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith('Instant Kill'):
-		return buildReleaseMessage(item, 'Instant Kill', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith('My Daoist Life'):
-		return buildReleaseMessage(item, 'My Daoist Life', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith('Tales of the Reincarnated Lord'):
-		return buildReleaseMessage(item, 'Tales of the Reincarnated Lord', vol, chp, frag=frag, postfix=postfix)
 	if "Post-80's Cultivation Journal" in item['tags']:
 		return buildReleaseMessage(item, "Post-80's Cultivation Journal", vol, chp, frag=frag, postfix=postfix)
 
+	chp_prefixes = [
+			# Series title in the release name, does the release name have to have "chapter" in it (boolean)
+			('Dragon-Marked War God',            True),
+			('Eternal Life',                     True),
+			('When God Made Me',                 True),
+			("Big Life",                         True),
+			("Deva Wizard",                      True),
+			("Emperor of Tomorrow",              True),
+			("ID – The Greatest Fusion Fantasy", True),
+			("Immortal",                         True),
+			("Martial Emperor Reborn ",          True),
+			("Martial God Conqueror",            True),
+			("World Defying Dan God",            True),
 
-	if item['title'].startswith("Big Life") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'Big Life', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Cohen of the Rebellion"):
-		return buildReleaseMessage(item, 'Cohen of the Rebellion', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Deva Wizard") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'Deva Wizard', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Emperor of Tomorrow") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'Emperor of Tomorrow', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("ID – The Greatest Fusion Fantasy") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'ID – The Greatest Fusion Fantasy', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Immortal") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'Immortal', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Martial Emperor Reborn ") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'Martial Emperor Reborn ', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Martial God Conqueror") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'Martial God Conqueror', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Post-’80s Cultivation Journal"):
-		return buildReleaseMessage(item, 'Post-’80s Cultivation Journal', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Immortal"):
-		return buildReleaseMessage(item, 'Immortal', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("Martial God Conqueror") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'Martial God Conqueror', vol, chp, frag=frag, postfix=postfix)
-	if item['title'].startswith("World Defying Dan God") and "chapter" in item['title'].lower():
-		return buildReleaseMessage(item, 'World Defying Dan God', vol, chp, frag=frag, postfix=postfix)
+			('Game Market 1983',                 False),
+			('Spirit Vessel',                    False),
+			('Instant Kill',                     False),
+			('My Daoist Life',                   False),
+			('Tales of the Reincarnated Lord',   False),
+			("Cohen of the Rebellion",           False),
+			("Post-’80s Cultivation Journal",    False),
+			("Immortal",                         False),
+			("Everlasting Immortal Firmament -", False),
 
-
+	]
+	for series, require_chp in chp_prefixes:
+		if item['title'].lower().startswith(series.lower()) and (not require_chp or "chapter" in item['title'].lower()):
+			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix)
 
 	return False
+
 def extractReincarnationTranslations(item):
 	'''
 

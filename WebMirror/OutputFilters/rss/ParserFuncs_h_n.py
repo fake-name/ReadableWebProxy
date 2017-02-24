@@ -3047,6 +3047,17 @@ def extractNovelsChill(item):
 		return buildReleaseMessage(item, 'The Mightiest Manager', vol, chp, frag=frag, postfix=postfix)
 	if 'Have A Meal Before You Go' in item['tags']:
 		return buildReleaseMessage(item, 'Have A Meal Before You Go', vol, chp, frag=frag, postfix=postfix)
+
+	if 'Ace of Ace' in item['tags']:
+		return buildReleaseMessage(item, 'Ace of Ace', vol, chp, frag=frag, postfix=postfix)
+	if 'Beast Piercing The Heavens' in item['tags']:
+		return buildReleaseMessage(item, 'Beast Piercing The Heavens', vol, chp, frag=frag, postfix=postfix)
+	if 'Half-Tried Deity' in item['tags']:
+		return buildReleaseMessage(item, 'Half-Tried Deity', vol, chp, frag=frag, postfix=postfix)
+	if 'Portal of Wonderland' in item['tags']:
+		return buildReleaseMessage(item, 'Portal of Wonderland', vol, chp, frag=frag, postfix=postfix)
+	if 'Zombie Evolution' in item['tags']:
+		return buildReleaseMessage(item, 'Zombie Evolution', vol, chp, frag=frag, postfix=postfix)
 	return False
 
 
