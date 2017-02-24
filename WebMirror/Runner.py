@@ -288,48 +288,70 @@ class UpdateAggregator(object):
 		raw_cur = self.db_int.connection().connection.cursor()
 
 		#  Fucking huzzah for ON CONFLICT!
-		# cmd = """
-		# 	INSERT INTO
-		# 	    web_pages
-		# 	    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-		# 	VALUES
-		# 	    (%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
-		# 	ON CONFLICT (url) DO
-		# 	    UPDATE
-		# 	        SET
-		# 	            state           = EXCLUDED.state,
-		# 	            starturl        = EXCLUDED.starturl,
-		# 	            netloc          = EXCLUDED.netloc,
-		# 	            is_text         = EXCLUDED.is_text,
-		# 	            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-		# 	            priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
-		# 	            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-		# 	        WHERE
-		# 	        (
-		# 	                web_pages.ignoreuntiltime < %(ignoreuntiltime)s
-		# 	            AND
-		# 	                web_pages.url = EXCLUDED.url
-		# 	            AND
-		# 	                (web_pages.state = 'complete' OR web_pages.state = 'error')
-		# 	        )
-		# 	    ;
-		# 		""".replace("	", " ").replace("\n", " ")
+		cmd = """
+			INSERT INTO
+			    web_pages
+			    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+			VALUES
+			    (%(url_{cnt})s, %(starturl_{cnt})s, %(netloc_{cnt})s, %(distance_{cnt})s, %(is_text_{cnt})s, %(priority_{cnt})s, %(type_{cnt})s, %(addtime_{cnt})s, %(state_{cnt})s)
+			ON CONFLICT (url) DO
+			    UPDATE
+			        SET
+			            state           = EXCLUDED.state,
+			            starturl        = EXCLUDED.starturl,
+			            netloc          = EXCLUDED.netloc,
+			            is_text         = EXCLUDED.is_text,
+			            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+			            priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+			            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+			        WHERE
+			        (
+			                web_pages.ignoreuntiltime < %(ignoreuntiltime_{cnt})s
+			            AND
+			                web_pages.url = EXCLUDED.url
+			            AND
+			                (web_pages.state = 'complete' OR web_pages.state = 'error')
+			        )
+			    ;
+				""".replace("	", " ").replace("\n", " ")
 
-		per_cmd = """SELECT upsert_link(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s, %(ignoreuntiltime)s)"""
+		per_cmd = """
+			INSERT INTO
+			    web_pages
+			    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+			VALUES
+			    (%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
+			ON CONFLICT (url) DO
+			    UPDATE
+			        SET
+			            state           = EXCLUDED.state,
+			            starturl        = EXCLUDED.starturl,
+			            netloc          = EXCLUDED.netloc,
+			            is_text         = EXCLUDED.is_text,
+			            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+			            priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+			            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+			        WHERE
+			        (
+			                web_pages.ignoreuntiltime < %(ignoreuntiltime)s
+			            AND
+			                web_pages.url = EXCLUDED.url
+			            AND
+			                (web_pages.state = 'complete' OR web_pages.state = 'error')
+			        )
+			    ;
+				""".replace("	", " ").replace("\n", " ")
+
+		while "  " in per_cmd:
+			per_cmd = per_cmd.replace("  ", " ")
+		while "  " in cmd:
+			cmd = cmd.replace("  ", " ")
 
 
 
-		cmds = ["""upsert_link(%(url_{cnt})s,
-							%(starturl_{cnt})s,
-							%(netloc_{cnt})s,
-							%(distance_{cnt})s,
-							%(is_text_{cnt})s,
-							%(priority_{cnt})s,
-							%(type_{cnt})s,
-							%(addtime_{cnt})s,
-							%(state_{cnt})s,
-							%(ignoreuntiltime_{cnt})s)""".format(cnt=cnt) for cnt in range(len(self.batched_links))]
-		bulk_cmd = "SELECT " + ", ".join(cmds)
+
+		cmds = [cmd.format(cnt=cnt) for cnt in range(len(self.batched_links))]
+		bulk_cmd = " ".join(cmds)
 
 		# Build a nested list of dicts
 		bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in self.batched_links[cnt].items()} for cnt in range(len(self.batched_links)) ]
@@ -337,17 +359,19 @@ class UpdateAggregator(object):
 		# Then flatten it down to a single dict
 		bulk_dict = {k: v for d in bulk_dict for k, v in d.items()}
 
+		# We use a statement timeout context of 5000 ms, so we don't get wedged on a lock.
+		raw_cur.execute("SET statement_timeout TO 5000;")
 
+		raw_cur.execute("BEGIN;")
 		try:
 			raw_cur.execute(bulk_cmd, bulk_dict)
 			raw_cur.execute("COMMIT;")
+			raw_cur.execute("RESET statement_timeout;")
 			self.batched_links = []
 			return
 
 		except psycopg2.Error:
 			self.log.error("psycopg2.Error - Failure on bulk insert.")
-			traceback.print_exc()
-
 			raw_cur.execute("ROLLBACK;")
 
 
@@ -355,6 +379,7 @@ class UpdateAggregator(object):
 		commit_each = False
 		while 1:
 			try:
+				raw_cur.execute("BEGIN;")
 				for paramset in self.batched_links:
 					assert isinstance(paramset['starturl'], str)
 					if len(paramset['url']) > 2000:
@@ -366,6 +391,7 @@ class UpdateAggregator(object):
 						raw_cur.execute(per_cmd, paramset)
 						if commit_each:
 							raw_cur.execute("COMMIT;")
+							raw_cur.execute("BEGIN;")
 
 				raw_cur.execute("COMMIT;")
 				break
@@ -380,6 +406,7 @@ class UpdateAggregator(object):
 				raw_cur.execute("ROLLBACK;")
 				commit_each = True
 
+		raw_cur.execute("RESET statement_timeout;")
 
 		self.batched_links = []
 
@@ -434,19 +461,13 @@ class UpdateAggregator(object):
 
 		while 1:
 			try:
-				# print("Loopin!")
-				self.do_task()
-				self.deathCounter = 0
+				while 1:
+					# print("Loopin!")
+					self.do_task()
+					self.deathCounter = 0
 			except queue.Empty:
-				if runStatus.agg_run_state.value == 1:
-					# Fffffuuuuu time.sleep barfs on KeyboardInterrupt
-					try:
-						time.sleep(1)
-						self.do_link_batch_update()
-					except KeyboardInterrupt:
-						pass
-				else:
-					self.do_link_batch_update()
+				if runStatus.agg_run_state.value != 1:
+
 					self.deathCounter += 1
 					time.sleep(0.1)
 					if self.deathCounter > 5:
@@ -456,6 +477,14 @@ class UpdateAggregator(object):
 				self.log.error("Exception in aggregator!")
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line.rstrip())
+			# Fffffuuuuu time.sleep barfs on KeyboardInterrupt
+			try:
+				time.sleep(1)
+				self.do_link_batch_update()
+			except KeyboardInterrupt:
+				pass
+
+		self.do_link_batch_update()
 
 	def close(self):
 		if config.C_DO_RABBIT:

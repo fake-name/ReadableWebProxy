@@ -77,7 +77,7 @@ PLUGINS = [
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
 	WebMirror.processor.RoyalRoadLChapterPageProcessor.RoyalRoadLChapterPageProcessor,
 	WebMirror.processor.RoyalRoadLSeriesPageProcessor.RoyalRoadLSeriesPageProcessor,
-	WebMirror.processor.FontRemapProcessors.KobatoChanDaiSukiPageProcessor,
+	#WebMirror.processor.FontRemapProcessors.KobatoChanDaiSukiPageProcessor,
 	WebMirror.processor.FontRemapProcessors.NepustationPageProcessor,
 	WebMirror.processor.NuProcessor.NuProcessor,
 	WebMirror.processor.GarbageInlineProcessors.HecatesCornerPageProcessor,

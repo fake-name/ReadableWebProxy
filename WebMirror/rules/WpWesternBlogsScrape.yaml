@@ -144,6 +144,11 @@ badwords: [
 
 		# Broken link is recursing.
 		'chapter-16-powers-awakening/2015/',
+
+		'turtleme.me/feed/includes/',
+		'turtleme.me/feed/images/',
+		'turtleme.me/includes/',
+
 	 ]
 
 
