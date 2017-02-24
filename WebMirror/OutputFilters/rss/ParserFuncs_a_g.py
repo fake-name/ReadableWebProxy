@@ -3970,8 +3970,8 @@ def extractBeerHappyTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if item['title'].startswith("Spear Master and the Black Cat Chapter "):
-		return buildReleaseMessage(item, "Spear Master and the Black Cat", vol, chp, frag=frag, postfix=postfix)
+	if "WATTT" in item['tags']:
+		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3986,8 +3986,8 @@ def extractBirdyTranslations(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Spear Master and the Black Cat Chapter "):
+		return buildReleaseMessage(item, "Spear Master and the Black Cat", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
