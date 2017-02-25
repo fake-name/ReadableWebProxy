@@ -355,6 +355,52 @@ def exposed_clear_bad():
 						.delete(synchronize_session=False)
 					db.get_db_session().commit()
 
+def delete_internal(sess, ids, netloc, badwords):
+
+	if ids:
+		print("Updating for netloc(s) %s. %s rows requiring update." % (netloc, len(ids)))
+	else:
+		print("No rows needing retriggering for netloc %s." % (netloc))
+
+	chunk_size = 5000
+	for chunk_idx in range(0, len(ids), chunk_size):
+		chunk = ids[chunk_idx:chunk_idx+chunk_size]
+		while 1:
+			try:
+				ctbl = version_table(db.WebPages)
+
+				ex = sess.query(db.WebPages.url).filter(db.WebPages.id == chunk[0]).one()[0]
+				triggered = [tmp for tmp in badwords if tmp in ex]
+				assert triggered
+				print("Example removed URL: '%s'" % (ex))
+				print("Triggering badwords: '%s'" % triggered)
+
+
+				q1 = sess.query(db.WebPages).filter(db.WebPages.id.in_(chunk))
+				affected_rows_main = q1.delete(synchronize_session=False)
+
+				q2 = sess.query(ctbl).filter(ctbl.c.id.in_(chunk))
+				affected_rows_ver = q2.delete(synchronize_session=False)
+
+				sess.commit()
+				print("Deleted %s rows (%s version table rows) for netloc %s. %0.2f done." %
+						(affected_rows_main, affected_rows_ver, netloc, 100 * ((chunk_idx+chunk_size) / len(ids))))
+				break
+			except sqlalchemy.exc.InternalError:
+				print("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
+				sess.rollback()
+			except sqlalchemy.exc.OperationalError:
+				print("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
+				sess.rollback()
+			except sqlalchemy.exc.IntegrityError:
+				print("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
+				sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				print("Transaction error (sqlalchemy.exc.InvalidRequestError). Retrying.")
+				traceback.print_exc()
+				sess.rollback()
+
+
 def exposed_purge_invalid_urls(selected_netloc=None):
 	'''
 	Iterate over each ruleset in the rules directory, and generate a compound query that will
@@ -378,18 +424,29 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 						(selected_netloc != None and selected_netloc in ruleset['netlocs'])
 					)
 				):
+
+			search_strs = ["%{}%".format(badword) for badword in ruleset['badwords']]
+
+			print("Badwords:")
+			for bad in search_strs:
+				print("	Bad: ", bad)
+			print("Netlocs:")
+			print(ruleset['netlocs'])
+
 			# We have to delete from the normal table before the versioning table,
 			# because deleting from the normal table causes inserts into the versioning table
 			# due to the change tracking triggers.
 
-			count = 1
+
 			ands = [
-					or_(*(db.WebPages.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
+					or_(*(db.WebPages.url.like(ss) for ss in search_strs))
 				]
 
 			if selected_netloc:
+				print("Doing specific netloc filtering!")
 				ands.append((db.WebPages.netloc == selected_netloc))
 			else:
+				print("Filtering by all netlocs in rule file.")
 				ands.append(db.WebPages.netloc.in_(ruleset['netlocs']))
 
 
@@ -399,42 +456,23 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 			# 	.filter(or_(*opts)) \
 			# 	.count()
 
-			if selected_netloc:
-				print(loc)
+			ids = sess.query(db.WebPages.id) \
+				.filter(loc)                 \
+				.all()
 
-			if count == 0:
-				print("{num} items match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=count))
+
+
+			if ids == 0:
+				print("{num} items match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=len(ids)))
 			else:
-				print("{num} items match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=count))
-
-				sess.query(db.WebPages) \
-					.filter(or_(*loc)) \
-					.delete(synchronize_session=False)
+				print("{num} items match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=len(ids)))
 
 
-			# # Do the delete from the versioning table now.
-			ctbl = version_table(db.WebPages)
-			loc2 = and_(
-					ctbl.c.netloc.in_(ruleset['netlocs']),
-					or_(*(ctbl.c.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
-				)
-			# print("Doing count on Versioning table ")
-			# count = sess.query(ctbl) \
-			# 	.filter(or_(*opts)) \
-			# 	.count()
-
-			if count == 0:
-				print("{num} items in versioning table match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=count))
-			else:
-				print("{num} items in versioning table match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=count))
-
-				sess.query(ctbl) \
-					.filter(or_(*loc2)) \
-					.delete(synchronize_session=False)
+			# Returned list of IDs is each ID packed into a 1-tuple. Unwrap those tuples so it's just a list of integer IDs.
+			ids = [tmp[0] for tmp in ids]
+			delete_internal(sess, ids, selected_netloc if selected_netloc else ruleset['netlocs'], ruleset['badwords'])
 
 
-
-			sess.commit()
 
 
 		# print(ruleset['netlocs'])
