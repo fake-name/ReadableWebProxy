@@ -4,7 +4,7 @@ from flask import render_template
 from flask import flash
 from flask import redirect
 from flask import url_for
-from flask.ext.babel import gettext
+# from flask.ext.babel import gettext
 # from guess_language import guess_language
 from app import app
 
@@ -34,7 +34,7 @@ def renderFeedsTable(page=1):
 
 
 	if feeds is None:
-		flash(gettext('No feeds? Something is /probably/ broken!.'))
+		flash('No feeds? Something is /probably/ broken!.')
 		return redirect(url_for('renderFeedsTable'))
 
 	feed_entries = paginate(feeds, page, app.config['FEED_ITEMS_PER_PAGE'])
@@ -59,7 +59,7 @@ def renderFeedsTagTable(tag, page=1):
 	feeds = query
 
 	if feeds is None:
-		flash(gettext('No feeds? Something is /probably/ broken!.'))
+		flash('No feeds? Something is /probably/ broken!.')
 		return redirect(url_for('renderFeedsTable'))
 
 	feed_entries = paginate(feeds, page, app.config['FEED_ITEMS_PER_PAGE'])
@@ -79,7 +79,7 @@ def renderFeedsSourceTable(source, page=1):
 		.order_by(desc(db.FeedItems.published))
 
 	if feeds is None:
-		flash(gettext('No feeds? Something is /probably/ broken!.'))
+		flash('No feeds? Something is /probably/ broken!.')
 		return redirect(url_for('renderFeedsTable'))
 
 	feed_entries = paginate(feeds, page, app.config['FEED_ITEMS_PER_PAGE'])

@@ -11,12 +11,12 @@ from flask import g
 from flask.ext.login import current_user
 # from flask.ext.sqlalchemy import get_debug_queries
 
-from app import AnonUser
+# from app import AnonUser
 import traceback
 from app import app
 
-from app import lm
-from app import babel
+# from app import lm
+# from app import babel
 
 from common import database
 
@@ -30,20 +30,20 @@ import app.sub_views.status_view   as status_view
 import app.sub_views.nu_views      as nu_views
 
 
-@lm.user_loader
-def load_user(id):
-	return AnonUser()
+# @lm.user_loader
+# def load_user(id):
+# 	return AnonUser()
 
 
-@babel.localeselector
-def get_locale():
-	return 'en'
+# @babel.localeselector
+# def get_locale():
+# 	return 'en'
 
 
 @app.before_request
 def before_request():
 	g.user = current_user
-	g.locale = get_locale()
+	g.locale = 'en'
 	g.session = database.checkout_session()
 
 

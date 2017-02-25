@@ -1,9 +1,9 @@
 import os
 from flask import Flask
 from flask.json import JSONEncoder
-from flask.ext.login import LoginManager
+# from flask.ext.login import LoginManager
 
-from flask.ext.babel import Babel, lazy_gettext
+# from flask.ext.babel import Babel, lazy_gettext
 from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
 from config import basedir
@@ -12,19 +12,19 @@ from babel.dates import format_datetime
 
 import urllib.parse
 
-class AnonUser():
-	def is_authenticated(self):
-		return False
-	def is_active(self):
-		return False
-	def is_admin(self):
-		return False
-	def is_mod(self):
-		return False
-	def is_anonymous(self):
-		return True
-	def get_id(self):
-		return None
+# class AnonUser():
+# 	def is_authenticated(self):
+# 		return False
+# 	def is_active(self):
+# 		return False
+# 	def is_admin(self):
+# 		return False
+# 	def is_mod(self):
+# 		return False
+# 	def is_anonymous(self):
+# 		return True
+# 	def get_id(self):
+# 		return None
 
 
 
@@ -36,13 +36,13 @@ if "debug" in sys.argv:
 	app.debug = True
 app.config.from_object('config.BaseConfig')
 
-lm = LoginManager()
-lm.anonymous_user = AnonUser
-lm.init_app(app)
-lm.login_view = 'login'
-lm.login_message = lazy_gettext('Please log in to access this page.')
+# lm = LoginManager()
+# lm.anonymous_user = AnonUser
+# lm.init_app(app)
+# lm.login_view = 'login'
+# lm.login_message = lazy_gettext('Please log in to access this page.')
 
-babel = Babel(app)
+# babel = Babel(app)
 CsrfProtect(app)
 
 if "debug" in sys.argv:
