@@ -886,6 +886,12 @@ def  extractVolareTranslations(item):
 		return buildReleaseMessage(item, 'King of Hell', vol, chp, frag=frag, postfix=postfix)
 	if 'Prodigal Alliance Head' in item['tags']:
 		return buildReleaseMessage(item, 'Prodigal Alliance Head', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('CCG Chapter'):
+		return buildReleaseMessage(item, 'Cultivation Chat Group', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('HTL Chapter'):
+		return buildReleaseMessage(item, 'I’m Hui Tai Lang', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith('YH Chapter'):
+		return buildReleaseMessage(item, 'Your Highness', vol, chp, frag=frag, postfix=postfix)
 
 
 
@@ -1250,6 +1256,10 @@ def extractWhateverTranslationsMTL(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if item['title'].startswith("Level Maker Ch"):
+		return buildReleaseMessage(item, 'Level Maker', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 def extractWisteriaTranslations(item):
@@ -1270,14 +1280,27 @@ def extractWuxiaLovers(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
-	if item['title'].startswith("CGA Chapter"):
+	if item['title'].startswith("CGA Chapter") or item['title'].startswith("CGA: Chapter"):
 		return buildReleaseMessage(item, 'Conquer God, Asura, and 1000 Beauties', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Etranger Chapter"):
 		return buildReleaseMessage(item, 'Etranger', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("Q11 Chapter"):
 		return buildReleaseMessage(item, 'Queen of No.11 Agent 11', vol, chp, frag=frag, postfix=postfix)
 	if item['title'].startswith("STS Chapter"):
-		return buildReleaseMessage(item, '', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessage(item, 'Sky Traversing Sword Master', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("DGM Chapter"):
+		return buildReleaseMessage(item, 'Descent of the God of Magic', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("The First Hunter Chapter"):
+		return buildReleaseMessage(item, 'The First Hunter', vol, chp, frag=frag, postfix=postfix)
+
+	if item['title'].startswith("Slaughter System – "):
+		return buildReleaseMessage(item, 'Slaughter System', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if item['title'].startswith("Getcha Skills Chapter "):
+		return buildReleaseMessage(item, 'Getcha Skills', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if item['title'].startswith("Empyrean Ascent Chapter"):
+		return buildReleaseMessage(item, 'Empyrean Ascent', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if item['title'].startswith("[Guardian] Chapter"):
+		return buildReleaseMessage(item, '[Guardian]', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
 	return False
 
 def extractXiakeluojiao侠客落脚(item):
@@ -1434,6 +1457,10 @@ def extractWuxiaNation(item):
 		return buildReleaseMessage(item, 'The Solitary Sword Sovereign', vol, chp, frag=frag, postfix=postfix)
 	if 'lord shadow' in item['tags']:
 		return buildReleaseMessage(item, 'Lord Shadow', vol, chp, frag=frag, postfix=postfix)
+	if 'In Different World With Naruto System' in item['tags']:
+		return buildReleaseMessage(item, 'In Different World With Naruto System', vol, chp, frag=frag, postfix=postfix)
+	if 'Wiro Sableng' in item['tags']:
+		return buildReleaseMessage(item, 'Wiro Sableng', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -1531,6 +1558,12 @@ def extract愛主の翻訳AinushiTranslations(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol or frag) or "preview" in item['title'].lower():
 		return None
+
+	if 'Maid Kara Haha ni Narimashita' in item['tags']:
+		return buildReleaseMessage(item, 'Maid Kara Haha ni Narimashita', vol, chp, frag=frag, postfix=postfix)
+	if 'maou no utsuwa' in item['tags']:
+		return buildReleaseMessage(item, 'maou no utsuwa', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 
 
@@ -1569,6 +1602,14 @@ def extractVesperlxd(item):
 		return buildReleaseMessage(item,'Rebirth of an Abandoned Woman', vol, chp, frag=frag, postfix=postfix)
 	if "Great Han's Female General Wei Qiqi" in item['tags']:
 		return buildReleaseMessage(item,"Great Han's Female General Wei Qiqi", vol, chp, frag=frag, postfix=postfix)
+	if 'The Woman Who Accepts Her Fate' in item['tags']:
+		return buildReleaseMessage(item,'The Woman Who Accepts Her Fate', vol, chp, frag=frag, postfix=postfix)
+	if 'Miracle Doctor, Wild Empress: Genius Summoner' in item['tags']:
+		return buildReleaseMessage(item,'Miracle Doctor, Wild Empress: Genius Summoner', vol, chp, frag=frag, postfix=postfix)
+	if 'The General’s Little Peasant Wife' in item['tags']:
+		return buildReleaseMessage(item,'The General’s Little Peasant Wife', vol, chp, frag=frag, postfix=postfix)
+	if 'The Man Who Met God' in item['tags']:
+		return buildReleaseMessage(item,'The Man Who Met God', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

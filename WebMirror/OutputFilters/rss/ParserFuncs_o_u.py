@@ -28,6 +28,10 @@ def extractSousetsuka(item):
 
 	if 'Yuusha Furi' in item['tags']:
 		return buildReleaseMessage(item, "Yuusha no Furi mo Raku Janai --Riyuu? Ore ga Kami Dakara--", vol, chp, frag=frag, postfix=postfix)
+	if 'Nobusan' in item['tags']:
+		return buildReleaseMessage(item, "Shinsetsu Nobu-san Isekai Ki", vol, chp, frag=frag, postfix=postfix)
+	if 'ShikkakuMon' in item['tags']:
+		return buildReleaseMessage(item, "Shikkaku Mon no Saikyou Kenja", vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3689,6 +3693,13 @@ def extractTandQ(item):
 		return buildReleaseMessage(item, 'To Our Youth That is Fading Away', vol, chp, frag=frag, postfix=postfix)
 	if "Fleeting Midsummer (Beijing University's Weakest Student)" in item['tags']:
 		return buildReleaseMessage(item, "Fleeting Midsummer (Beijing University's Weakest Student)", vol, chp, frag=frag, postfix=postfix)
+	if 'When A Snail Falls in Love| 如果蜗牛有爱情' in item['tags']:
+		return buildReleaseMessage(item, 'When A Snail Falls in Love', vol, chp, frag=frag, postfix=postfix)
+	if 'Siege in Fog | 迷雾围城' in item['tags']:
+		return buildReleaseMessage(item, 'Siege in Fog', vol, chp, frag=frag, postfix=postfix)
+	if 'Les Interpretes | 亲爱的翻译官' in item['tags']:
+		return buildReleaseMessage(item, 'Les Interpretes', vol, chp, frag=frag, postfix=postfix)
+
 	return False
 def extractTequilaMockingbard(item):
 	"""
@@ -4012,6 +4023,8 @@ def extractStarveCleric(item):
 		return buildReleaseMessage(item, 'Tian Ying', vol, chp, frag=frag, postfix=postfix)
 	if 'The Adonis Next Door' in item['tags']:
 		return buildReleaseMessage(item, 'The Adonis Next Door', vol, chp, frag=frag, postfix=postfix)
+	if 'The Diary of the Truant Death God' in item['tags']:
+		return buildReleaseMessage(item, 'The Diary of the Truant Death God', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

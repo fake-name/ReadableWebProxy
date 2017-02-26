@@ -870,6 +870,8 @@ def extractMoonBunnyCafe(item):
 		return buildReleaseMessage(item, 'Bringing A Farm To Mess Around In Another World', vol, chp, frag=frag, postfix=postfix)
 	if 'single player only' in item['tags']:
 		return buildReleaseMessage(item, 'single player only', vol, chp, frag=frag, postfix=postfix)
+	if 'Bewitching Prince Spoils His Wife: Genius Doctor Unscrupulous Consort' in item['tags']:
+		return buildReleaseMessage(item, 'Bewitching Prince Spoils His Wife: Genius Doctor Unscrupulous Consort', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 
@@ -3343,6 +3345,22 @@ def extractLightNovelsWorld(item):
 	if 'The Great Conqueror' in item['tags']:
 		return buildReleaseMessage(item, 'The Great Conqueror', vol, chp, frag=frag, postfix=postfix)
 
+	if 'Almighty Student' in item['tags']:
+		return buildReleaseMessage(item, 'Almighty Student', vol, chp, frag=frag, postfix=postfix)
+	if 'Godly Student' in item['tags']:
+		return buildReleaseMessage(item, 'Godly Student', vol, chp, frag=frag, postfix=postfix)
+	if 'Legend of the Cultivation God' in item['tags']:
+		return buildReleaseMessage(item, 'Legend of the Cultivation God', vol, chp, frag=frag, postfix=postfix)
+	if 'Supreme Arrow God' in item['tags']:
+		return buildReleaseMessage(item, 'Supreme Arrow God', vol, chp, frag=frag, postfix=postfix)
+
+	if 'Sky Prince' in item['tags']:
+		return buildReleaseMessage(item, 'Sky Prince', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'Aenthar' in item['tags']:
+		return buildReleaseMessage(item, 'Aenthar', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	if 'How to Survive a Summoning 101' in item['tags']:
+		return buildReleaseMessage(item, 'How to Survive a Summoning 101', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
 
 	return False
 def extractLoathsomeTranslations(item):
@@ -4863,8 +4881,8 @@ def extractMiumiuSMusings(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return False
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	if 'Rolling Love' in item['tags']:
+		return buildReleaseMessage(item, 'Rolling Love', vol, chp, frag=frag, postfix=postfix)
 
 	return False
 

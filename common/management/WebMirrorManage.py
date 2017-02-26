@@ -320,40 +320,6 @@ def exposed_update_feed_names():
 			print(key, value)
 			db.get_db_session().commit()
 
-def exposed_clear_bad():
-	'''
-	Iterate over all blocked strings from the various YAML rules,
-	deleting any occurances of each from the database.
-	SLOW
-	'''
-	from sqlalchemy.dialects import postgresql
-
-	rules = WebMirror.rules.load_rules()
-
-	for ruleset in rules:
-
-		print("Cleaning ruleset")
-		# print(ruleset['netlocs'])
-		# print(ruleset.keys())
-		for badword in ruleset['badwords']:
-			if not ruleset['netlocs']:
-				continue
-			if "%" in badword:
-				print(badword)
-			else:
-				print("Deleting items containing string: '%s'" % badword)
-				q = db.get_db_session().query(db.WebPages)                   \
-					.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
-					.filter(db.WebPages.url.like("%{}%".format(badword)))
-				items = q.count()
-				if items:
-					print("%s results for : '%s'" % (items, badword))
-
-					q = db.get_db_session().query(db.WebPages)                   \
-						.filter(db.WebPages.netloc.in_(ruleset['netlocs']))   \
-						.filter(db.WebPages.url.like("%{}%".format(badword))) \
-						.delete(synchronize_session=False)
-					db.get_db_session().commit()
 
 def delete_internal(sess, ids, netloc, badwords):
 
@@ -371,9 +337,9 @@ def delete_internal(sess, ids, netloc, badwords):
 
 				ex = sess.query(db.WebPages.url).filter(db.WebPages.id == chunk[0]).one()[0]
 				triggered = [tmp for tmp in badwords if tmp in ex]
-				assert triggered
 				print("Example removed URL: '%s'" % (ex))
 				print("Triggering badwords: '%s'" % triggered)
+				assert triggered
 
 
 				q1 = sess.query(db.WebPages).filter(db.WebPages.id.in_(chunk))
@@ -383,8 +349,8 @@ def delete_internal(sess, ids, netloc, badwords):
 				affected_rows_ver = q2.delete(synchronize_session=False)
 
 				sess.commit()
-				print("Deleted %s rows (%s version table rows) for netloc %s. %0.2f done." %
-						(affected_rows_main, affected_rows_ver, netloc, 100 * ((chunk_idx+chunk_size) / len(ids))))
+				print("Deleted %s rows (%s version table rows) for netloc %s. %0.2f%% done." %
+						(affected_rows_main, affected_rows_ver, netloc, 100 * ((chunk_idx) / len(ids))))
 				break
 			except sqlalchemy.exc.InternalError:
 				print("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
@@ -425,7 +391,8 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 					)
 				):
 
-			search_strs = ["%{}%".format(badword) for badword in ruleset['badwords']]
+			# So there's no way to escape a LIKE string in postgres.....
+			search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in ruleset['badwords']]
 
 			print("Badwords:")
 			for bad in search_strs:
@@ -473,10 +440,15 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 			delete_internal(sess, ids, selected_netloc if selected_netloc else ruleset['netlocs'], ruleset['badwords'])
 
 
+def exposed_delete_dangling_history():
+	'''
+	Delete items in the history table which have no corresponding entry
+	in the main table.
+	'''
+
+	pass
 
 
-		# print(ruleset['netlocs'])
-		# print(ruleset['badwords'])
 
 def exposed_sort_json(json_name):
 	'''

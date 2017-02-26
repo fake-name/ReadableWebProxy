@@ -1401,6 +1401,14 @@ def  extractDHHTranslations(item):
 		return None
 	if "god's left hand" in item['tags']:
 		return buildReleaseMessage(item, "god's left hand", vol, chp, frag=frag, postfix=postfix)
+	if 'undefeatable - league of legends' in item['tags']:
+		return buildReleaseMessage(item, "Undefeated - League of Legends", vol, chp, frag=frag, postfix=postfix)
+	if 'fish playing while trapped in a secret room' in item['tags']:
+		return buildReleaseMessage(item, "Fish Playing While Trapped in a Secret Room", vol, chp, frag=frag, postfix=postfix)
+	if 'Shui Fu Shen Qing' in item['tags']:
+		return buildReleaseMessage(item, 'Shui Fu Shen Qing', vol, chp, frag=frag, postfix=postfix)
+	if item['title'].startswith("Tea of Summer - Chapter"):
+		return buildReleaseMessage(item, "Tea of Summer", vol, chp, frag=frag, postfix=postfix)
 	return False
 
 def  extractEmruyshitTranslations(item):
