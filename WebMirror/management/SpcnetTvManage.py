@@ -98,9 +98,11 @@ def exposed_delete_spcnet_invalid_url_pages():
 
 	for ctbl in tables:
 		# Print Querying for affected rows
-		q = sess.query(ctbl) \
-			.where(ctbl.c.netloc == "www.spcnet.tv") \
-			.where(ctbl.c.content.like('%<div class="blockrow restore">Invalid Forum specified. If you followed a valid link, please notify the <a href="/contact/index.php">administrator</a>%'))
+		q = sess.query(ctbl.c.id) \
+			.filter(ctbl.c.netloc == "www.spcnet.tv") \
+			.filter(ctbl.c.content.like('%<div class="blockrow restore">Invalid Forum specified. If you followed a valid link, please notify the <a href="/contact/index.php">administrator</a>%'))
+		print("Query:")
+		print(q)
 		ids = q.all()
 
 		ids = set(ids)
