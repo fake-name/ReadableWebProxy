@@ -53,4 +53,3 @@ def exposed_delete_gravitytales_bot_blocked_pages():
 		print(update)
 		sess.execute(update)
 		sess.commit()
-

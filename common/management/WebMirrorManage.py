@@ -12,8 +12,12 @@ import urllib.error
 import urllib.parse
 
 from sqlalchemy import and_
+from sqlalchemy import desc
 from sqlalchemy import or_
+from sqlalchemy.sql import func
+from sqlalchemy.orm import outerjoin
 import sqlalchemy.exc
+import sqlalchemy.orm.exc
 from sqlalchemy_continuum.utils import version_table
 
 if __name__ == "__main__":
@@ -335,7 +339,13 @@ def delete_internal(sess, ids, netloc, badwords):
 			try:
 				ctbl = version_table(db.WebPages)
 
-				ex = sess.query(db.WebPages.url).filter(db.WebPages.id == chunk[0]).one()[0]
+				# Allow ids that only exist in the history table by falling back to a
+				# history-table query if the main table doesn't have the ID.
+				try:
+					ex = sess.query(db.WebPages.url).filter(db.WebPages.id == chunk[0]).one()[0]
+				except sqlalchemy.orm.exc.NoResultFound:
+					ex = sess.query(ctbl.c.url).filter(ctbl.c.id == chunk[0]).all()[0][0]
+
 				triggered = [tmp for tmp in badwords if tmp in ex]
 				print("Example removed URL: '%s'" % (ex))
 				print("Triggering badwords: '%s'" % triggered)
@@ -427,7 +437,7 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 				.filter(loc)                 \
 				.all()
 
-
+			ids = set(ids)
 
 			if ids == 0:
 				print("{num} items match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=len(ids)))
@@ -440,14 +450,59 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 			delete_internal(sess, ids, selected_netloc if selected_netloc else ruleset['netlocs'], ruleset['badwords'])
 
 
-def exposed_delete_dangling_history():
+def exposed_purge_invalid_url_history():
 	'''
-	Delete items in the history table which have no corresponding entry
-	in the main table.
+	Functionally identical to `purge_invalid_urls`, but
+	operates on the history table only.
+
+	This means that it will operate on row IDs that have been deleted from the main DB (intentionally or not)
 	'''
 
-	pass
 
+	sess = db.get_db_session()
+	ctbl = version_table(db.WebPages)
+	for ruleset in WebMirror.rules.load_rules():
+
+		if ruleset['netlocs'] and ruleset['badwords']:
+
+			# So there's no way to escape a LIKE string in postgres.....
+			search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in ruleset['badwords']]
+
+			print("Badwords:")
+			for bad in search_strs:
+				print("	Bad: ", bad)
+			print("Netlocs:")
+			print(ruleset['netlocs'])
+
+			# We have to delete from the normal table before the versioning table,
+			# because deleting from the normal table causes inserts into the versioning table
+			# due to the change tracking triggers.
+
+
+			ands = [
+					or_(*(ctbl.c.url.like(ss) for ss in search_strs))
+				]
+
+			print("Filtering by all netlocs in rule file.")
+			ands.append(ctbl.c.netloc.in_(ruleset['netlocs']))
+
+
+			ids = sess.query(ctbl.c.id) \
+				.filter(and_(*ands))                 \
+				.all()
+
+			# Collapse duplicates
+			ids = set(ids)
+
+			if ids == 0:
+				print("{num} items match badwords from file {file}. No deletion required ".format(file=ruleset['filename'], num=len(ids)))
+			else:
+				print("{num} items match badwords from file {file}. Deleting ".format(file=ruleset['filename'], num=len(ids)))
+
+
+			# Returned list of IDs is each ID packed into a 1-tuple. Unwrap those tuples so it's just a list of integer IDs.
+			ids = [tmp[0] for tmp in ids]
+			delete_internal(sess, ids, ruleset['netlocs'], ruleset['badwords'])
 
 
 def exposed_sort_json(json_name):
@@ -591,6 +646,31 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 		# print(ctnt)
 	if target == None:
 		exposed_sort_json(json_file)
+
+def exposed_db_count_netlocs():
+	'''
+	Select and count the number of instances for each netloc in
+	the database.
+
+	Returns the netlocs sorted by count in decending order.
+	'''
+
+
+	sess = db.get_db_session()
+
+	q = sess.query(db.WebPages.netloc, func.count(db.WebPages.netloc).label("count")) \
+		.group_by(db.WebPages.netloc)\
+		.order_by(desc(func.count(db.WebPages.netloc)))
+	print("Doing query.")
+	res = q.all()
+	res = list(res)
+	for row in res:
+		print("Row: ", row)
+
+	with open("nl_counts.json", "w") as fp:
+		json.dump(res, fp)
+
+
 
 def exposed_rss_db_silent():
 	'''

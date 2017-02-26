@@ -73,6 +73,15 @@ badwords: [
 			'forumdisplay.php/4-Productions',
 			'forumdisplay.php/5-Creative-Minds',
 			'forumdisplay.php/6-Lounge',
+
+			'/showthread.php/search.php?',
+			'/mobile/',
+			'/clientscript/',
+			'?do=whoposted',
+			'/images/buttons/',
+			'/cron.php?',
+			'/external.php?',
+
 			]
 
 

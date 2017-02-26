@@ -14,6 +14,7 @@ import WebMirror.TimedTriggers.TriggerManage
 
 # Site-specific management stuff
 import WebMirror.management.GravityTalesManage
+import WebMirror.management.SpcnetTvManage
 
 if __name__ == "__main__":
 	import logSetup
@@ -27,7 +28,9 @@ SCANNED_MODULES = [
 	common.management.Misc,
 	WebMirror.OfflineFilters.offline_filters,
 	WebMirror.TimedTriggers.TriggerManage,
+
 	WebMirror.management.GravityTalesManage,
+	WebMirror.management.SpcnetTvManage,
 ]
 
 def load_functions():

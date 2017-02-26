@@ -42,6 +42,14 @@ badwords: [
 			'/Free Verse3_files/',
 			'/free%20verse3_files/',
 			'_files/',
+
+			'/liked-writers-by/',
+			'/member/connect?',
+
+
+			'_MEDIA_IMAGE__230x230',
+			'_MEDIA_IMAGE__120x120',
+			'_USER_PROFILE__70x70',
 			]
 
 # Content Stripping needs to be determined.
