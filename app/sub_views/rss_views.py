@@ -109,3 +109,38 @@ def renderFeedEntry(postid):
 						   entry = post,
 						   contents = contents
 						   )
+
+
+
+
+
+@app.route('/feed-filters/feedid/<int:feedid>')
+def feedIdView(feedid):
+
+	feed = g.session.query(db.RssParserFunctions) \
+		.filter(db.RssParserFunctions.id == feedid)    \
+		.scalar()
+
+	return render_template('rss-pages/feed_filter_item.html',
+						   feed = feed
+						   )
+
+
+
+
+
+@app.route('/feed-filters/')
+def feedFiltersRoot():
+
+
+	feeds = g.session.query(db.RssParserFunctions) \
+		.order_by(db.RssParserFunctions.feed_name) \
+		.all()
+
+
+
+	return render_template('rss-pages/feed_filter_base.html',
+						   feeds = feeds,
+						   )
+
+

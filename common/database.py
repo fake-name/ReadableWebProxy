@@ -3,9 +3,6 @@
 # Import the DB things.
 from common.main_archive_db import WebPages
 from common.main_archive_db import WebFiles
-from common.main_archive_db import Tags
-from common.main_archive_db import Author
-from common.main_archive_db import FeedItems
 from common.main_archive_db import PluginStatus
 from common.main_archive_db import NuReleaseItem
 from common.main_archive_db import NuResolvedOutbound
@@ -13,6 +10,9 @@ from common.main_archive_db import NuResolvedOutbound
 
 from common.raw_archive_db import RawWebPages
 
+from common.rss_func_db import Tags
+from common.rss_func_db import Author
+from common.rss_func_db import FeedItems
 from common.rss_func_db import RssFeedFuncLut
 from common.rss_func_db import RssParserFunctions
 

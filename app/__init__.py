@@ -12,20 +12,6 @@ from babel.dates import format_datetime
 
 import urllib.parse
 
-# class AnonUser():
-# 	def is_authenticated(self):
-# 		return False
-# 	def is_active(self):
-# 		return False
-# 	def is_admin(self):
-# 		return False
-# 	def is_mod(self):
-# 		return False
-# 	def is_anonymous(self):
-# 		return True
-# 	def get_id(self):
-# 		return None
-
 
 
 app = Flask(__name__)
@@ -36,18 +22,11 @@ if "debug" in sys.argv:
 	app.debug = True
 app.config.from_object('config.BaseConfig')
 
-# lm = LoginManager()
-# lm.anonymous_user = AnonUser
-# lm.init_app(app)
-# lm.login_view = 'login'
-# lm.login_message = lazy_gettext('Please log in to access this page.')
-
-# babel = Babel(app)
 CsrfProtect(app)
 
-if "debug" in sys.argv:
-	print("Installing debug toolbar!")
-	toolbar = DebugToolbarExtension(app)
+# if "debug" in sys.argv:
+# 	print("Installing debug toolbar!")
+# 	toolbar = DebugToolbarExtension(app)
 
 if not app.debug:
 	import logging
