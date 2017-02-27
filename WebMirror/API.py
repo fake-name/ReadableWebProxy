@@ -98,8 +98,12 @@ class RemoteContentObject(object):
 
 		itempath = os.path.join(app.config['RESOURCE_DIR'], self.job.file_item.fspath)
 		fname = self.job.file_item.filename
+
 		with open(itempath, "rb") as fp:
 			contents = fp.read()
+
+		self.db_sess.commit()
+
 		return self.job.mimetype, fname, contents
 
 	def getCacheState(self):

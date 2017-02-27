@@ -39,9 +39,10 @@ import WebMirror.OutputFilters.rss.FeedDataParser
 def delete_internal(sess, ids):
 
 	if ids:
-		print("Updating for netloc(s) %s. %s rows requiring update." % (netloc, len(ids)))
+		print("Doint delete. %s rows requiring update." % (len(ids), ))
 	else:
-		print("No rows needing retriggering for netloc %s." % (netloc))
+		print("No rows needing deletion.")
+		return
 
 	ctbl = version_table(db.WebPages)
 	chunk_size = 5000
@@ -100,7 +101,7 @@ def exposed_delete_spcnet_invalid_url_pages():
 		# Print Querying for affected rows
 		q = sess.query(ctbl.c.id) \
 			.filter(ctbl.c.netloc == "www.spcnet.tv") \
-			.filter(ctbl.c.content.like('%<div class="blockrow restore">Invalid Forum specified. If you followed a valid link, please notify the <a href="/contact/index.php">administrator</a>%'))
+			.filter(ctbl.c.content.like('%Invalid Forum specified. If you followed a valid link, please notify the%'))
 		print("Query:")
 		print(q)
 		ids = q.all()
@@ -110,7 +111,7 @@ def exposed_delete_spcnet_invalid_url_pages():
 		# Returned list of IDs is each ID packed into a 1-tuple. Unwrap those tuples so it's just a list of integer IDs.
 		ids = [tmp[0] for tmp in ids]
 
-		print("Fount %s rows requring deletion. Deleting." % len(update))
+		print("Fount %s rows requring deletion. Deleting." % len(ids))
 		delete_internal(sess, ids)
 		sess.commit()
 
