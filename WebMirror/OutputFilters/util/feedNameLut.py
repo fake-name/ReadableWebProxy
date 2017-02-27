@@ -1408,6 +1408,8 @@ def getNiceName(srcurl, netloc=None, debug=False):
 
 	srcnetloc = patch_blogspot(srcnetloc)
 
+	# sess =
+
 	if debug:
 		print("Netlocs: ", (orig, srcnetloc, "Not in Lookup" if not srcnetloc in mapper else mapper[srcnetloc]))
 

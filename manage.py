@@ -16,6 +16,9 @@ import WebMirror.TimedTriggers.TriggerManage
 import WebMirror.management.GravityTalesManage
 import WebMirror.management.SpcnetTvManage
 
+# Moar
+import WebMirror.management.FeedDbManage
+
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
@@ -31,6 +34,8 @@ SCANNED_MODULES = [
 
 	WebMirror.management.GravityTalesManage,
 	WebMirror.management.SpcnetTvManage,
+
+	WebMirror.management.FeedDbManage,
 ]
 
 def load_functions():

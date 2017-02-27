@@ -13,6 +13,9 @@ from common.main_archive_db import NuResolvedOutbound
 
 from common.raw_archive_db import RawWebPages
 
+from common.rss_func_db import RssFeedFuncLut
+from common.rss_func_db import RssParserFunctions
+
 from common.cookie_db import WebCookieDb
 
 from common.db_engine import get_engine
