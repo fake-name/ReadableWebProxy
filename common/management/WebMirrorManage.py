@@ -284,10 +284,12 @@ def exposed_delete_comment_feed_items():
 	sess = db.get_db_session()
 	bad = sess.query(db.FeedItems) \
 			.filter(or_(
+				db.FeedItems.feedurl.like("%/comments/%"),
 				db.FeedItems.contenturl.like("%#comment-%"),
 				db.FeedItems.contenturl.like("%CommentsForInMyDaydreams%"),
 				db.FeedItems.contenturl.like("%www.fanfiction.net%"),
 				db.FeedItems.contenturl.like("%www.fictionpress.com%"),
+				db.FeedItems.contenturl.like("%?showComment=%"),
 				db.FeedItems.contenturl.like("%www.booksie.com%")))    \
 			.order_by(db.FeedItems.contenturl) \
 			.all()
@@ -311,7 +313,7 @@ def exposed_delete_comment_feed_items():
 
 def exposed_update_feed_names():
 	'''
-	Apply any new feednamelut names to existing fetched RSS posts.
+	Apply any new feednamelut LUT names to existing fetched RSS posts.
 	'''
 	for key, value in feedNameLut.mapper.items():
 		feed_items = db.get_db_session().query(db.FeedItems) \

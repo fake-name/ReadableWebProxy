@@ -1300,7 +1300,6 @@ mapper = {
 	'emperortranslations.wordpress.com'                  : 'Meteor Emperor-san',
 	'liberspark.com'                                     : 'Path of Translation',
 
-	'blog.juncafe.com'                                   : 'blog.juncafe.com',
 	'creiz.livejournal.com'                              : 'creiz.livejournal.com',
 	'docs.google.com'                                    : 'docs.google.com',
 	'duelnoir.dreamwidth.org'                            : 'duelnoir.dreamwidth.org',

@@ -8,15 +8,9 @@ import os.path
 from flask import render_template
 from flask import send_file
 from flask import g
-from flask.ext.login import current_user
-# from flask.ext.sqlalchemy import get_debug_queries
 
-# from app import AnonUser
 import traceback
 from app import app
-
-# from app import lm
-# from app import babel
 
 from common import database
 
@@ -42,7 +36,6 @@ import app.sub_views.nu_views      as nu_views
 
 @app.before_request
 def before_request():
-	g.user = current_user
 	g.locale = 'en'
 	g.session = database.checkout_session()
 

@@ -1,7 +1,6 @@
 import os
 from flask import Flask
 from flask.json import JSONEncoder
-# from flask.ext.login import LoginManager
 
 # from flask.ext.babel import Babel, lazy_gettext
 from flask_wtf.csrf import CsrfProtect
