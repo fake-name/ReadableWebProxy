@@ -121,8 +121,12 @@ def feedIdView(feedid):
 		.filter(db.RssParserFunctions.id == feedid)    \
 		.scalar()
 
+	items = list(feed.releases)
+
 	return render_template('rss-pages/feed_filter_item.html',
-						   feed = feed
+						   feed          = feed,
+						   items         = items,
+						   release_count = len(items),
 						   )
 
 

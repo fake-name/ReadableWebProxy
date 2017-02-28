@@ -28,31 +28,38 @@
 {%- block content -%}
 	{%- include '_block_flash.html' -%}
 	<div class="well well-large" style="min-height: 140px;">
-		<div><h2 style='display: inline'>RSS Feed Items</h2><h3 style='display: inline; float:right'>{{subheader}}</h3></div>
+		<div><h2 style='display: inline'>RSS Feed Items</h2><h5 style='display: inline; float:right'>Releases: {{release_count}}</h5></div>
 
+		<div>
+			{{feed}}
+		</div>
 
-
-			{{ tableHeader() }}
-			{%- for entry in feeds: -%}
-
-				<tr>
-					<td>
-						<a href='/feed-filters/feedid/{{entry.id}}'>{{entry.feed_name}}</a>
-					</td>
-					<td>
-						<ul>
-							{%- for urlobj in entry.urls -%}
-								<li><a href='/feed-filters/feedid/{{entry.id}}'><code>{{ urlobj.feed_netloc }}</code>{% if not loop.last %}, {% endif %}</a></li>
-							{%- endfor -%}
-						</ul>
-					</td>
-				</tr>
-			{%- endfor -%}
-			{{ tableFooter() }}
-
+	<div id="code-editor">{{"\n\n\n"}}{{feed.func}}{{"\n\n\n"}}</div>
 
 
 
 	</div>
 
+{%- endblock -%}
+
+{%- block footer -%}
+	<style type="text/css" media="screen">
+		#code-editor {
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			min-height: 500px
+		}
+	</style>
+	<script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var editor = ace.edit("code-editor");
+		editor.getSession().setUseSoftTabs(false);
+		editor.setDisplayIndentGuides(true);
+		editor.setShowInvisibles(true);
+		editor.setTheme("ace/theme/cobalt");
+		editor.getSession().setMode("ace/mode/python");
+		editor.resize()
+	</script>
 {%- endblock -%}
