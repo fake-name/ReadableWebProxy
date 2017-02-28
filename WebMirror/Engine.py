@@ -314,6 +314,49 @@ class SiteArchiver(LogBase.LoggerMixin):
 			except sqlalchemy.exc.InvalidRequestError:
 				self.db_sess.rollback()
 
+	def getCreateRssSource(self, feedname, feedurl):
+
+		# First try matching the whole feed URL
+		fullurl = self.db_sess.query(self.db.RssFeedUrlMapper) \
+			.filter(self.db.RssFeedUrlMapper.feed_url == feedurl) \
+			.scalar()
+
+		if fullurl:
+			return fullurl.feed_id
+
+		# fall back to netloc-only matching if that barfed.
+		nl = urllib.parse.urlsplit(feedurl).netloc
+		nl_only = self.db_sess.query(self.db.RssFeedUrlMapper) \
+			.filter(self.db.RssFeedUrlMapper.feed_netloc == nl) \
+			.all()
+
+		if len(nl_only) == 1:
+			return nl_only[0].feed_id
+		elif len(nl_only) > 1:
+			return None
+
+
+		new_pfunc = db.RssFeedEntry(
+				version   = 1,
+				feed_name = feedname,
+				enabled   = False,
+				func      = None,
+			)
+		self.db_sess.add(new_pfunc)
+		self.db_sess.flush()
+
+		new_nl = db.RssFeedUrlMapper(
+				feed_netloc = nl,
+				feed_url    = feedurl,
+				feed_id     = new_pfunc.id,
+			)
+		self.db_sess.add(new_nl)
+		self.db_sess.flush()
+
+		return new_pfunc.id
+
+
+
 	def insertRssItem(self, entry, feedurl):
 
 
@@ -326,8 +369,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			return
 
 
-		have = self.db_sess.query(self.db.FeedItems) \
-			.filter(self.db.FeedItems.contentid == entry['guid'])   \
+		have = self.db_sess.query(self.db.RssFeedPost) \
+			.filter(self.db.RssFeedPost.contentid == entry['guid'])   \
 			.limit(1)                                  \
 			.scalar()
 
@@ -347,12 +390,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 			for tag in entry['tags']:
 				tags[tag.lower()] = tag
 
-			new = self.db.FeedItems(
+			feed_source = self.getCreateRssSource(entry['srcname'], feedurl)
+
+			new = self.db.RssFeedPost(
 					contentid  = entry['guid'],
 					title      = entry['title'],
-					srcname    = entry['srcname'],
-					feedurl    = feedurl,
 					contenturl = entry['linkUrl'],
+
+					feed_id    = feed_source,
 
 					type       = entry['feedtype'],
 					contents   = entry['contents'],

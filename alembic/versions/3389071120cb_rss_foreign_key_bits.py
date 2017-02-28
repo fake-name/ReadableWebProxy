@@ -56,7 +56,7 @@ Base = declarative_base()
 
 
 
-class FeedItems(Base):
+class RssFeedPost(Base):
 	__tablename__ = 'feed_pages'
 
 	id          = Column(BigInteger, primary_key=True)
@@ -67,7 +67,7 @@ class FeedItems(Base):
 
 
 
-class RssParserFunctions(Base):
+class RssFeedEntry(Base):
 
 	__tablename__     = 'rss_parser_funcs'
 	name              = 'rss_parser_funcs'
@@ -85,19 +85,24 @@ def upgrade():
 
 
 	# create the teams table and the players.team_id column
-	# FeedItems.__table__.create(bind)
-	# RssParserFunctions.__table__.create(bind)
+	# RssFeedPost.__table__.create(bind)
+	# RssFeedEntry.__table__.create(bind)
 
-	name_map = sess.query(RssParserFunctions).all()
+	name_map = sess.query(RssFeedEntry).all()
 	name_map = {row.feed_name : row.id for row in name_map}
 
-	feednames = sess.query(FeedItems.srcname).group_by(FeedItems.srcname).all()
+	feednames = sess.query(RssFeedPost.srcname).group_by(RssFeedPost.srcname).all()
 	for feedname, in feednames:
 		if not feedname in name_map:
 			print(feedname)
+		else:
+			sess.query(RssFeedPost).filter(RssFeedPost.srcname == feedname).update({"feed_id" : name_map[feedname]})
+			print("Updating for {} -> {}".format(feedname, name_map[feedname]))
 
+	sess.commit()
 
-	raise RuntimeError("Wat?")
+	null_rows = sess.query(RssFeedPost.srcname).filter(RssFeedPost.feed_id == None).all()
+	print(null_rows)
 
 	op.alter_column('feed_pages', 'feed_id',
 			   existing_type=sa.BIGINT(),

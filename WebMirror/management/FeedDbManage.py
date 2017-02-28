@@ -32,8 +32,8 @@ import WebMirror.OutputFilters.util.feedNameLut
 import astor
 
 def add_name(sess, netloc, nametxt):
-	check = sess.query(db.RssParserFunctions) \
-		.filter(db.RssParserFunctions.feed_name == nametxt) \
+	check = sess.query(db.RssFeedEntry) \
+		.filter(db.RssFeedEntry.feed_name == nametxt) \
 		.scalar()
 
 	if not check:
@@ -41,13 +41,13 @@ def add_name(sess, netloc, nametxt):
 		return
 
 
-	have = sess.query(db.RssFeedFuncLut) \
-		.filter(db.RssFeedFuncLut.feed_netloc == netloc) \
+	have = sess.query(db.RssFeedUrlMapper) \
+		.filter(db.RssFeedUrlMapper.feed_netloc == netloc) \
 		.scalar()
 	if have:
-		assert(check.id == have.feed_id)
+		assert check.id == have.feed_id, "Wat: {}, {} ({}, {})".format(check.id, have.feed_id, netloc, nametxt)
 	else:
-		new = db.RssFeedFuncLut(
+		new = db.RssFeedUrlMapper(
 				feed_netloc = netloc,
 				feed_id     = check.id,
 			)
@@ -55,8 +55,8 @@ def add_name(sess, netloc, nametxt):
 		sess.commit()
 
 def update_func(sess, feed_name, fcont):
-	res = sess.query(db.RssParserFunctions) \
-		.filter(db.RssParserFunctions.feed_name == feed_name) \
+	res = sess.query(db.RssFeedEntry) \
+		.filter(db.RssFeedEntry.feed_name == feed_name) \
 		.scalar()
 
 	if res:
@@ -66,9 +66,9 @@ def update_func(sess, feed_name, fcont):
 			res.func = fcont
 			sess.commit()
 
-		print("Func: ", res.get_func())
+		print("	Func: ", res.get_func())
 	else:
-		new = db.RssParserFunctions(
+		new = db.RssFeedEntry(
 				version   = 1,
 				feed_name = feed_name,
 				enabled   = False,

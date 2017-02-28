@@ -282,16 +282,53 @@ def exposed_delete_comment_feed_items():
 	like they're comment feed articles.
 	'''
 	sess = db.get_db_session()
-	bad = sess.query(db.FeedItems) \
+	bad = sess.query(db.RssFeedPost) \
 			.filter(or_(
-				db.FeedItems.feedurl.like("%/comments/%"),
-				db.FeedItems.contenturl.like("%#comment-%"),
-				db.FeedItems.contenturl.like("%CommentsForInMyDaydreams%"),
-				db.FeedItems.contenturl.like("%www.fanfiction.net%"),
-				db.FeedItems.contenturl.like("%www.fictionpress.com%"),
-				db.FeedItems.contenturl.like("%?showComment=%"),
-				db.FeedItems.contenturl.like("%www.booksie.com%")))    \
-			.order_by(db.FeedItems.contenturl) \
+				db.RssFeedPost.feedurl.like("%/comments/%"),
+				db.RssFeedPost.feedurl.like("%40pics.com%"),
+				db.RssFeedPost.feedurl.like("%www.miforcampuspolice.com%"),     # wat
+				db.RssFeedPost.feedurl.like("%198.199.119.217%"),
+				db.RssFeedPost.feedurl.like("%www.fictionmania.tv%"),
+				db.RssFeedPost.feedurl.like("%www.asstr.org%"),
+				db.RssFeedPost.feedurl.like("%storiesonline.net%"),
+				db.RssFeedPost.feedurl.like("%www.booksiesilk.com%"),
+				db.RssFeedPost.feedurl.like("%www.miforcampuspolice.com%"),
+				db.RssFeedPost.feedurl.like("%wordpress-8932-19922-46194.cloudwaysapps.com%"),
+				db.RssFeedPost.feedurl.like("%wordpress-8932-48656-126389.cloudwaysapps.com%"),
+				db.RssFeedPost.feedurl.like("%www.mcstories.com%"),
+				db.RssFeedPost.feedurl.like("%www.asstr.org%"),
+				db.RssFeedPost.feedurl.like("%pokegirls.org%"),
+				db.RssFeedPost.feedurl.like("%wtracking.feedpress.itg%"),
+
+				# Let's not keep the bt stuff around, it's only used for update triggering.
+				db.RssFeedPost.feedurl.like("%www.baka-tsuki.org%"),
+				db.RssFeedPost.feedurl.like("%baka-tsuki.org%"),
+
+				db.RssFeedPost.contenturl.like("%/comments/%"),
+				db.RssFeedPost.contenturl.like("%pokegirls.org%"),
+				db.RssFeedPost.contenturl.like("%tracking.feedpress.it%"),
+				db.RssFeedPost.contenturl.like("%40pics.com%"),
+				db.RssFeedPost.contenturl.like("%storiesonline.org%"),
+				db.RssFeedPost.contenturl.like("%www.miforcampuspolice.com%"),
+				db.RssFeedPost.contenturl.like("%198.199.119.217%"),
+				db.RssFeedPost.contenturl.like("%www.fictionmania.tv%"),
+				db.RssFeedPost.contenturl.like("%www.asstr.org%"),
+				db.RssFeedPost.contenturl.like("%storiesonline.net%"),
+				db.RssFeedPost.contenturl.like("%www.booksiesilk.com%"),
+				db.RssFeedPost.contenturl.like("%www.miforcampuspolice.com%"),
+				db.RssFeedPost.contenturl.like("%wordpress-8932-19922-46194.cloudwaysapps.com%"),
+				db.RssFeedPost.contenturl.like("%wordpress-8932-48656-126389.cloudwaysapps.com%"),
+				db.RssFeedPost.contenturl.like("%www.mcstories.com%"),
+				db.RssFeedPost.contenturl.like("%www.asstr.org%"),
+
+				db.RssFeedPost.contenturl.like("%www.miforcampuspolice.com%"),
+				db.RssFeedPost.contenturl.like("%#comment-%"),
+				db.RssFeedPost.contenturl.like("%CommentsForInMyDaydreams%"),
+				db.RssFeedPost.contenturl.like("%www.fanfiction.net%"),
+				db.RssFeedPost.contenturl.like("%www.fictionpress.com%"),
+				db.RssFeedPost.contenturl.like("%?showComment=%"),
+				db.RssFeedPost.contenturl.like("%www.booksie.com%")))    \
+			.order_by(db.RssFeedPost.contenturl) \
 			.all()
 
 	count = 0
@@ -309,6 +346,7 @@ def exposed_delete_comment_feed_items():
 			sess.commit()
 
 	print("Done. Committing...")
+	print("Total changed rows: %s" % count)
 	sess.commit()
 
 def exposed_update_feed_names():
@@ -316,8 +354,8 @@ def exposed_update_feed_names():
 	Apply any new feednamelut LUT names to existing fetched RSS posts.
 	'''
 	for key, value in feedNameLut.mapper.items():
-		feed_items = db.get_db_session().query(db.FeedItems) \
-				.filter(db.FeedItems.srcname == key)    \
+		feed_items = db.get_db_session().query(db.RssFeedPost) \
+				.filter(db.RssFeedPost.srcname == key)    \
 				.all()
 		if feed_items:
 			for item in feed_items:
@@ -607,23 +645,23 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 
 	if target:
 		print("Limiting to '%s' source." % target)
-		feed_items = db.get_db_session().query(db.FeedItems) \
-				.filter(db.FeedItems.srcname == target)    \
-				.order_by(db.FeedItems.srcname)           \
-				.order_by(db.FeedItems.title)           \
+		feed_items = db.get_db_session().query(db.RssFeedPost) \
+				.filter(db.RssFeedPost.srcname == target)    \
+				.order_by(db.RssFeedPost.srcname)           \
+				.order_by(db.RssFeedPost.title)           \
 				.all()
 	elif days:
 		print("RSS age override: ", days)
 		cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
-		feed_items = db.get_db_session().query(db.FeedItems) \
-				.filter(db.FeedItems.published > cutoff)  \
-				.order_by(db.FeedItems.srcname)           \
-				.order_by(db.FeedItems.title)             \
+		feed_items = db.get_db_session().query(db.RssFeedPost) \
+				.filter(db.RssFeedPost.published > cutoff)  \
+				.order_by(db.RssFeedPost.srcname)           \
+				.order_by(db.RssFeedPost.title)             \
 				.all()
 	else:
-		feed_items = db.get_db_session().query(db.FeedItems) \
-				.order_by(db.FeedItems.srcname)           \
-				.order_by(db.FeedItems.title)           \
+		feed_items = db.get_db_session().query(db.RssFeedPost) \
+				.order_by(db.RssFeedPost.srcname)           \
+				.order_by(db.RssFeedPost.title)           \
 				.all()
 
 
@@ -787,8 +825,8 @@ def exposed_delete_feed(feed_name, do_delete, search_str):
 	'''
 
 	sess = db.get_db_session()
-	items = sess.query(db.FeedItems)               \
-		.filter(db.FeedItems.srcname == feed_name) \
+	items = sess.query(db.RssFeedPost)               \
+		.filter(db.RssFeedPost.srcname == feed_name) \
 		.all()
 
 	do_delete = "true" in do_delete.lower()

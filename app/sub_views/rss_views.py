@@ -24,8 +24,8 @@ import common.database as db
 @app.route('/feeds/')
 def renderFeedsTable(page=1):
 
-	feeds = g.session.query(db.FeedItems)       \
-		.order_by(desc(db.FeedItems.published))
+	feeds = g.session.query(db.RssFeedPost)       \
+		.order_by(desc(db.RssFeedPost.published))
 
 
 	feeds = feeds.options(joinedload('tag_rel'))
@@ -51,10 +51,10 @@ def renderFeedsTable(page=1):
 @app.route('/feeds/tag/<tag>/<int:page>')
 @app.route('/feeds/tag/<tag>/')
 def renderFeedsTagTable(tag, page=1):
-	query = g.session.query(db.FeedItems)
+	query = g.session.query(db.RssFeedPost)
 	# query = query.join(db.Tags)
-	query = query.filter(db.FeedItems.tags.contains(tag))
-	query = query.order_by(desc(db.FeedItems.published))
+	query = query.filter(db.RssFeedPost.tags.contains(tag))
+	query = query.order_by(desc(db.RssFeedPost.published))
 
 	feeds = query
 
@@ -74,9 +74,9 @@ def renderFeedsTagTable(tag, page=1):
 @app.route('/feeds/source/<source>/<int:page>')
 @app.route('/feeds/source/<source>/')
 def renderFeedsSourceTable(source, page=1):
-	feeds = g.session.query(db.FeedItems) \
-		.filter(db.FeedItems.srcname == source)  \
-		.order_by(desc(db.FeedItems.published))
+	feeds = g.session.query(db.RssFeedPost) \
+		.filter(db.RssFeedPost.srcname == source)  \
+		.order_by(desc(db.RssFeedPost.published))
 
 	if feeds is None:
 		flash('No feeds? Something is /probably/ broken!.')
@@ -98,8 +98,8 @@ def renderFeedEntry(postid):
 
 
 
-	post = g.session.query(db.FeedItems) \
-		.filter(db.FeedItems.id == postid)    \
+	post = g.session.query(db.RssFeedPost) \
+		.filter(db.RssFeedPost.id == postid)    \
 		.scalar()
 
 	# relink the feed contents.
@@ -117,8 +117,8 @@ def renderFeedEntry(postid):
 @app.route('/feed-filters/feedid/<int:feedid>')
 def feedIdView(feedid):
 
-	feed = g.session.query(db.RssParserFunctions) \
-		.filter(db.RssParserFunctions.id == feedid)    \
+	feed = g.session.query(db.RssFeedEntry) \
+		.filter(db.RssFeedEntry.id == feedid)    \
 		.scalar()
 
 	items = list(feed.releases)
@@ -137,8 +137,8 @@ def feedIdView(feedid):
 def feedFiltersRoot():
 
 
-	feeds = g.session.query(db.RssParserFunctions) \
-		.order_by(db.RssParserFunctions.feed_name) \
+	feeds = g.session.query(db.RssFeedEntry) \
+		.order_by(db.RssFeedEntry.feed_name) \
 		.all()
 
 

@@ -74,6 +74,10 @@ GLOBAL_BAD_URLS = [
 			'?share=facebook',
 
 			'chasingadreamtranslations.com/?fp=',
+
+			# NFI where /this/ came from
+			'www.miforcampuspolice.com',
+			'tracking.feedpress.it',
 	]
 
 

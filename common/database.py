@@ -12,9 +12,9 @@ from common.raw_archive_db import RawWebPages
 
 from common.rss_func_db import Tags
 from common.rss_func_db import Author
-from common.rss_func_db import FeedItems
-from common.rss_func_db import RssFeedFuncLut
-from common.rss_func_db import RssParserFunctions
+from common.rss_func_db import RssFeedPost
+from common.rss_func_db import RssFeedUrlMapper
+from common.rss_func_db import RssFeedEntry
 
 from common.cookie_db import WebCookieDb
 

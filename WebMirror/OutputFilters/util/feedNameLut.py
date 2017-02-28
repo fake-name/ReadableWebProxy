@@ -169,6 +169,7 @@ mapper = {
 	"asylumtranslations.wordpress.com"                         : 'Asylum Translations',
 	"atentranslationswordpresscom.wordpress.com"               : 'Aten Translations',
 	"avaritiakuns.wordpress.com"                               : 'Avaritia-kun',
+	"avaritiakuns.com"                                         : 'Avaritia-kun',
 	"ayaxworld.wordpress.com"                                  : 'Ayax World',
 	"azuremysterioustofusect.wordpress.com"                    : '青玄豆腐幇',
 	"azurro4cielo.wordpress.com"                               : 'Azurro 4 Cielo',
@@ -275,6 +276,7 @@ mapper = {
 	"endlessfantasytranslations.wordpress.com"                 : "EndlessFantasy Translations",
 	"endofthedays42.wordpress.com"                             : "End of the days42",
 	"endonline.wordpress.com"                                  : 'End Online Novel',
+	"endonline.net"                                            : 'End Online Novel',
 	"ensigblog.wordpress.com"                                  : 'Ensig\'s Writings',
 	"ensjtrans.wordpress.com"                                  : "Ensj Translations",
 	"ente38.wordpress.com"                                     : 'Ente38 translations',
@@ -400,6 +402,7 @@ mapper = {
 	"jynkitl.wordpress.com"                                    : 'Jynki\'s TLs',
 	"kagurojp.wordpress.com"                                   : 'Kaguro Jp',
 	"kahoim.wordpress.com"                                     : 'Kahoim Translations',
+	"kahoim.com"                                               : 'Kahoim Translations',
 	"kai5404.wordpress.com"                                    : 'Kai\'s Translations',
 	"kakaoostory.wordpress.com"                                : "Kakaoo Story",
 	"kakemonoko.wordpress.com"                                 : 'A Place Of Legends',
@@ -658,7 +661,7 @@ mapper = {
 	"selfishtranslations.wordpress.com"                        : "Selfish Translation",
 	"selkinnovel.wordpress.com"                                : 'Selkin Novel',
 	"senjiqcreations.wordpress.com"                            : 'SenjiQ creations',
-	"senpainetwork.wordpress.com"                              : "senpainetwork.wordpress.com",
+	"senpainetwork.wordpress.com"                              : "Senpai Network",
 	"sereneandtranquil.wordpress.com"                          : 'Serene and Tranquil',
 	"setsuna86blog.wordpress.com"                              : 'SETSUNA86BLOG',
 	"shalvationtranslations.wordpress.com"                     : 'Shalvation Translations',
@@ -708,6 +711,7 @@ mapper = {
 	"springscents.wordpress.com"                               : 'Spring Scents',
 	"starrydawntranslations.wordpress.com"                     : 'Starrydawn Translations',
 	"starvecleric.wordpress.com"                               : 'StarveCleric',
+	"starvecleric.com"                                         : 'StarveCleric',
 	"stcon.wordpress.com"                                      : 'Stellar Transformation Con.',
 	"stltranslations.wordpress.com"                            : 'STL Translations',
 	"stoneburners.wordpress.com"                               : 'Stone Burners',
@@ -1066,6 +1070,7 @@ mapper = {
 	"saigotranslation.com"                                     : "Saigo Translation",
 	"sakurane.sky-field.org"                                   : 'Sakurane',
 	"scrya.org"                                                : 'Scrya Translations',
+	"scrya.me"                                                 : 'Scrya Translations',
 	"selftaughtjapanese.com"                                   : 'Self Taught Japanese ',
 	"selkinnovel.com"                                          : 'Selkin Novel',
 	"seonbinovels.com"                                         : 'Seonbi Novels',
@@ -1125,6 +1130,7 @@ mapper = {
 	"www.arantranslations.com"                                 : 'Aran Translations',
 	"www.avertranslation.org"                                  : 'Avert Translations~',
 	"www.baka-tsuki.org"                                       : 'Baka-Tsuki',
+	"baka-tsuki.org"                                           : 'Baka-Tsuki',
 	"www.bladeofhearts.com"                                    : 'Blade of Hearts',
 	"www.blazingtranslations.com"                              : 'Blazing Translations',
 	"www.bluephoenixnovel.com"                                 : 'Blue Phoenix',
@@ -1296,18 +1302,18 @@ mapper = {
 	'www.spcnet.tv'                                      : 'Spcnet.tv',
 
 	'blog.juncafe.com'                                   : 'Jun Cafe',
+	'www.juncafe.com'                                    : 'Jun Cafe',
 	'duelnoir.dreamwidth.org'                            : 'DuelNoir',
 	'emperortranslations.wordpress.com'                  : 'Meteor Emperor-san',
 	'liberspark.com'                                     : 'Path of Translation',
 
 	'creiz.livejournal.com'                              : 'creiz.livejournal.com',
 	'docs.google.com'                                    : 'docs.google.com',
-	'duelnoir.dreamwidth.org'                            : 'duelnoir.dreamwidth.org',
 	'egscans.com'                                        : 'egscans.com',
 	'elwiki.net'                                         : 'elwiki.net',
 	'forum.wuxiaworld.com'                               : 'forum.wuxiaworld.com',
 	'geekyoven.com'                                      : 'geekyoven.com',
-	'haruchika.dreamwidth.org'                           : 'haruchika.dreamwidth.org',
+	'haruchika.dreamwidth.org'                           : 'Haruchika Novel',
 	'koalasplayground.com'                               : 'koalasplayground.com',
 	'madsnail.ru'                                        : 'madsnail.ru',
 	'mahou-shoujo-ikusei-keikaku.wikia.com'              : 'mahou-shoujo-ikusei-keikaku.wikia.com',
@@ -1315,11 +1321,12 @@ mapper = {
 	'novel.dawnglare.com'                                : 'novel.dawnglare.com',
 	'raindax.wixsite.com'                                : 'raindax.wixsite.com',
 	'sinnesspiel.dreamwidth.org'                         : 'sinnesspiel.dreamwidth.org',
-	'spr.dreamwidth.org'                                 : 'spr.dreamwidth.org',
+	'spr.dreamwidth.org'                                 : 'Shibuya Psychic Research',
 	'springkrane.wixsite.com'                            : 'springkrane.wixsite.com',
 	'tachibanachinatsu.wixsite.com'                      : 'tachibanachinatsu.wixsite.com',
 
 
+	'eternalgoddessaria.moe'                                   : 'Eternal Goddess Aria',
 
 
 	# Redirect loop.
@@ -1340,9 +1347,9 @@ mapper = {
 	'slothfulworks.wordpress.com'                              : 'slothfulworks.wordpress.com',
 
 	# Gone
-	'thepaperfictions.wordpress.com'                           : 'thepaperfictions.wordpress.com',
-	'namelesstranslation.wordpress.com'                        : 'namelesstranslation.wordpress.com',
-	"engrishtranslation.wordpress.com"                         : "engrishtranslation.wordpress.com",
+	'thepaperfictions.wordpress.com'                           : 'The Paper Fictions',
+	'namelesstranslation.wordpress.com'                        : 'Nameless Translation',
+	"engrishtranslation.wordpress.com"                         : "Engrish Translation",
 	"kumabearfailtranslations.blogspot.com"                    : "kumabearfailtranslations.blogspot.com",
 	'blcxtranslations.github.io'                               : 'blcxtranslations.github.io',
 
@@ -1371,6 +1378,13 @@ mapper = {
 
 	# Fix things
 	'Rosy Fantasy' : 'Rosyfantasy - Always Dreaming',
+	"misty cloud translations"                               : 'Misty Cloud Translations',
+
+
+
+
+	"quartia.dreamwidth.org" : "An Unkie Musebox",
+
 
 
 }

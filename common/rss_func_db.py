@@ -92,7 +92,7 @@ def author_creator(author):
 	return Author(author=author)
 
 
-class FeedItems(common.db_base.Base):
+class RssFeedPost(common.db_base.Base):
 	__tablename__ = 'feed_pages'
 
 	id          = Column(BigInteger, primary_key=True)
@@ -103,9 +103,7 @@ class FeedItems(common.db_base.Base):
 	# feed_id     = Column(BigInteger, ForeignKey('rss_parser_funcs.id'), nullable = False, index = True)
 	feed_id     = Column(BigInteger, ForeignKey('rss_parser_funcs.id'), index = True, nullable=False)
 
-	srcname      = Column(Text, nullable=False, index=True)
 
-	feedurl      = Column(Text, nullable=False, index=True)
 	contenturl   = Column(Text, nullable=False, index=True)
 	contentid    = Column(Text, nullable=False, index=True, unique=True)
 
@@ -132,7 +130,7 @@ class FeedItems(common.db_base.Base):
 
 
 
-class RssFeedFuncLut(common.db_base.Base):
+class RssFeedUrlMapper(common.db_base.Base):
 	__versioned__ = {}
 
 	__tablename__     = 'rss_parser_feed_name_lut'
@@ -140,13 +138,16 @@ class RssFeedFuncLut(common.db_base.Base):
 
 	id                = Column(BigInteger, primary_key = True, index = True)
 	feed_netloc       = Column(Text, nullable = False, index = True)
+
+	# Most feeds are defined by netloc, so we have to allow that, at least untill the first feed scrape.
+	feed_url          = Column(Text, nullable = True, index = True)
 	feed_id           = Column(BigInteger, ForeignKey('rss_parser_funcs.id'), nullable = False, index = True)
 
 	__table_args__ = (
 		UniqueConstraint('feed_netloc', 'feed_id'),
 		)
 
-class RssParserFunctions(common.db_base.Base):
+class RssFeedEntry(common.db_base.Base):
 	__versioned__ = {}
 
 	__tablename__     = 'rss_parser_funcs'
@@ -161,8 +162,8 @@ class RssParserFunctions(common.db_base.Base):
 
 	func              = Column(Text)
 
-	urls              = relationship('RssFeedFuncLut', backref='rss_parser_funcs')
-	releases          = relationship('FeedItems',      backref='rss_parser_funcs')
+	urls              = relationship('RssFeedUrlMapper', backref='rss_parser_funcs')
+	releases          = relationship('RssFeedPost',      backref='rss_parser_funcs')
 
 
 
@@ -172,7 +173,6 @@ class RssParserFunctions(common.db_base.Base):
 		if self.__loaded_func:
 			return self.__loaded_func
 
-		print("Need to load function!")
 
 		func_container = compile(self.func+"\n\n",
 				"<db_for_<{}>>".format(self.feed_name), "exec")

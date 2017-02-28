@@ -1198,6 +1198,18 @@ RSS_PARSE_FUNCTION_MAP = {
 
 				# Broken
 				'Require: Cookie'                                                      : pfuncs_stub.extractNop,
+				'Jun Cafe'                                                             : pfuncs_stub.extractNop,
+				'Meteor Emperor-san'                                                   : pfuncs_stub.extractNop,
+				'DuelNoir'                                                             : pfuncs_stub.extractNop,
+				'Eternal Goddess Aria'                                                 : pfuncs_stub.extractNop,
+				'An Unkie Musebox'                                                     : pfuncs_stub.extractNop,
+				'Senpai Network'                                                       : pfuncs_stub.extractNop,
+				'The Paper Fictions'                                                   : pfuncs_stub.extractNop,
+				'Haruchika Novel'                                                      : pfuncs_stub.extractNop,
+				'Re:Translations'                                                      : pfuncs_stub.extractNop,
+				'Engrish Translation'                                                  : pfuncs_stub.extractNop,
+				'Shibuya Psychic Research'                                             : pfuncs_stub.extractNop,
+				'Nameless Translation'                                                 : pfuncs_stub.extractNop,
 
 
 	}

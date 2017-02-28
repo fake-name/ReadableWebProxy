@@ -204,9 +204,9 @@ def format_row(title, volume, chapter, fragment, postfix):
 	return "	" + str((title, (volume, chapter, fragment, postfix))) + ",\n"
 
 def load_items():
-	feed_items = db.get_db_session().query(db.FeedItems) \
-			.order_by(db.FeedItems.srcname)           \
-			.order_by(db.FeedItems.title)           \
+	feed_items = db.get_db_session().query(db.RssFeedPost) \
+			.order_by(db.RssFeedPost.srcname)           \
+			.order_by(db.RssFeedPost.title)           \
 			.all()
 
 	with open("tests/title_test_data_two.py", 'w') as fp:
