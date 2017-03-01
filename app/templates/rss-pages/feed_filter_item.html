@@ -1,4 +1,5 @@
 <!-- extend base layout -->
+{%- extends "__base.html" -%}
 
 
 {%- macro tableHeader() -%}
@@ -23,20 +24,32 @@
 
 
 
-{%- extends "__base.html" -%}
+{%- macro release_block(block_item_list) -%}
+	<div>
+		{{block_item_list}}
+	</div>
+{%- endmacro -%}
+
+
+
 
 {%- block content -%}
 	{%- include '_block_flash.html' -%}
-	<div class="well well-large" style="min-height: 140px;">
-		<div><h2 style='display: inline'>RSS Feed Items</h2><h5 style='display: inline; float:right'>Releases: {{release_count}}</h5></div>
+	<div class="well well-large" style="min-height: 140px; width: 100%;">
+		<div><h2 style='display: inline'>RSS Feed Source: {{feed.feed_name}}</h2><h5 style='display: inline; float:right'>Releases: {{release_count}}</h5></div>
+		<div class='clearfix'></div>
 
-		<div>
-			{{feed}}
+		<div id="code-editor">{{"\n\n\n"}}{{feed.func}}{{"\n\n\n"}}</div>
+		<hr>
+		<div id="process-results">
+			<div class="center-block text-center">
+				<h4>Loading results.</h4>
+				<p>Please Wait.</p>
+				<img src="/static/loading.gif">
+				<br>
+				<br>
+			</div>
 		</div>
-
-	<div id="code-editor">{{"\n\n\n"}}{{feed.func}}{{"\n\n\n"}}</div>
-
-
 
 	</div>
 
@@ -61,5 +74,9 @@
 		editor.setTheme("ace/theme/cobalt");
 		editor.getSession().setMode("ace/mode/python");
 		editor.resize()
+
+
+		$("#process-results").load("/feed-filters/feedid-process-results/{{feedid}}")
+
 	</script>
 {%- endblock -%}

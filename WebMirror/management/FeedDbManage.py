@@ -95,3 +95,50 @@ def exposed_import_feed_parse_funcs():
 	for key, val in name_map.items():
 		print(key, val)
 		add_name(sess, key, val)
+
+def ret_to_dict_list(keys, iterable):
+
+	as_dict = [
+			dict(
+				zip(
+					keys,
+					(
+						single.strftime('%s') if isinstance(single, datetime.datetime) else single
+					for
+						single in tmp
+					)
+				)
+			)
+		for
+			tmp in iterable
+		]
+	return as_dict
+
+def exposed_dump_raw_feed_data():
+	'''
+	Dump the raw feed data to a json file.
+	'''
+	import json
+
+	sess = db.get_db_session()
+	print("Selecting 1")
+	feed_pages = sess.execute("SELECT * FROM feed_pages;")
+	print("Selecting 2")
+	nu_outbound_wrappers = sess.execute("SELECT * FROM nu_outbound_wrappers;")
+
+	ret = {}
+	print("processing ret 1")
+	cols_feed = ('id', 'type', 'srcname', 'feedurl', 'contenturl', 'contentid', 'title', 'contents', 'updated', 'published', 'feed_id')
+	ret['feed_pages'] = ret_to_dict_list(cols_feed, feed_pages)
+
+	print("processing ret 2")
+	nucols = ['id', 'actual_target', 'client_id', 'client_key', 'groupinfo', 'outbound_wrapper', 'referrer', 'releaseinfo', 'seriesname', 'validated', 'released_on']
+	ret['nu_outbound_wrappers'] = ret_to_dict_list(nucols, nu_outbound_wrappers)
+
+	print("Dumping ret")
+
+	with open("db_bak_{}.json".format(str(datetime.datetime.now()).replace(":", "-").replace(" ", "_")), "w") as fp:
+		json.dump(ret, fp, indent="	")
+
+
+

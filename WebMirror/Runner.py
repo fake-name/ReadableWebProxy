@@ -11,7 +11,7 @@ import threading
 import sys
 import queue
 
-import lru
+import cachetools
 
 # from pympler.tracker import SummaryTracker, summary, muppy
 # import tracemalloc
@@ -195,7 +195,8 @@ class UpdateAggregator(object):
 		except ValueError:
 			self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
 
-		self.seen = lru.LRU(1000 * 1000)
+		# LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
+		self.seen = cachetools.TTLCache(maxsize=1000 * 1000, ttl=60 * 60 * 6)
 
 		self.links = 0
 		self.amqpUpdateCount = 0
@@ -425,15 +426,14 @@ class UpdateAggregator(object):
 		assert 'ignoreuntiltime' in linkdict
 
 		url = linkdict['url']
-		now = time.time()
 
 		# Only allow items through if they're not in the LRU cache, or have not been upserted
 		# in the last 6 hours
-		if self.seen.get(url, now) > (now - 60 * 60 * 6):
+		if url in self.seen:
 			# Fucking huzzah for ON CONFLICT!
 			self.batched_links.append(linkdict)
 			# Kick item up to the top of the LRU list
-			self.seen[url] = now
+			self.seen[url] = True
 
 			if len(self.batched_links) >= 500:
 				self.do_link_batch_update()

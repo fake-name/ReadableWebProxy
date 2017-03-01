@@ -122,29 +122,27 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 		# extracted = scraper.extractContent()
 		# assert contentDat['type'] == 'text/html'
 		# content = extracted['contents']
-		content = "Disabled?"
 
 		# Use a parser that doesn't try to generate a well-formed output (and therefore doesn't insert
 		# <html> or <body> into content that will be only a part of the rendered page)
-		soup = bs4.BeautifulSoup(content, "html.parser")
+		# soup = bs4.BeautifulSoup(content, "html.parser")
+
+		# if soup.html:
+		# 	soup.html.unwrap()
+		# if soup.body:
+		# 	soup.body.unwrap()
+
+		# try:
+		# 	cont = soup.prettify()
+		# except RuntimeError:
+		# 	try:
+		# 		cont = str(soup)
+		# 	except RuntimeError:
+		# 		cont = '<H2>WARNING - Failure when cleaning and extracting content!</H2><br><br>'
+		# 		cont += content
 
 
-
-		if soup.html:
-			soup.html.unwrap()
-		if soup.body:
-			soup.body.unwrap()
-
-		try:
-			cont = soup.prettify()
-		except RuntimeError:
-			try:
-				cont = str(soup)
-			except RuntimeError:
-				cont = '<H2>WARNING - Failure when cleaning and extracting content!</H2><br><br>'
-				cont += content
-
-
+		content = "Disabled?"
 		return content
 
 

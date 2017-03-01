@@ -1,0 +1,46 @@
+
+{%- macro tableHeader() -%}
+	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
+		<colgroup>
+			<col />
+			<col style="width: 50%;" />
+		</colgroup>
+		<tr>
+			<th>
+				Feed name
+			</th>
+			<th>
+				URLs
+			</th>
+		</tr>
+{%- endmacro -%}
+
+{%- macro tableFooter() -%}
+	</table>
+{%- endmacro -%}
+
+
+
+{%- macro release_block(block_item_list) -%}
+	<div>
+		{{block_item_list}}
+	</div>
+{%- endmacro -%}
+
+
+
+<div>
+	<div>
+		<h4>Missed items: {{items['missed'] | length}}</h4>
+		{{ release_block(items['missed']) }}
+	</div>
+	<div>
+		<h4>Ignored items: {{items['ignored'] | length}}</h4>
+		{{ release_block(items['ignored']) }}
+	</div>
+	<div>
+		<h4>Successful items: {{items['successful'] | length}}</h4>
+		{{ release_block(items['successful']) }}
+	</div>
+
+</div>

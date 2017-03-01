@@ -1102,6 +1102,10 @@ badwords: [
 	'patreon_img.png',
 	'/images/discord.png',
 	'cdn.gravitytales.com',
+
+	# Are there any fucktards who can do url sanitization correctly?
+	'/"http:/www.translationnations.com',
+
 	]
 
 decompose: [

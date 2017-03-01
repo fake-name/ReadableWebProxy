@@ -20,6 +20,17 @@ import WebMirror.rules
 import flags
 import common.global_constants
 
+from common import database as db
+
+
+from sqlalchemy import and_
+from sqlalchemy import desc
+from sqlalchemy import or_
+from sqlalchemy.sql import func
+from sqlalchemy.orm import outerjoin
+import sqlalchemy.exc
+import sqlalchemy.orm.exc
+from sqlalchemy_continuum.utils import version_table
 
 
 RSS_PARSE_FUNCTION_MAP = {
@@ -1240,6 +1251,18 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	####################################################################################################################################################
 
+	def dispatchReleaseDbBacked(self, item):
+		processor_row = self.db_sess.query(db.RssFeedEntry)       \
+			.filter(db.RssFeedEntry.feed_name == item['srcname']) \
+			.scalar()
+		if not processor_row:
+			raise RuntimeError("No feed filter system found for {} from url {}.".format(item['srcname'], item['linkUrl']))
+
+		# Pull the function from the database
+		func = processor_row.get_func()
+
+		# And then use it.
+		return(func(item))
 
 	def dispatchRelease(self, item):
 

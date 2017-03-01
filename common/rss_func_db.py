@@ -27,10 +27,9 @@ import common.db_types
 import code
 import ast
 import datetime
+import cachetools
 
 import citext
-
-
 from common.db_engine import get_db_session
 
 from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
@@ -99,8 +98,6 @@ class RssFeedPost(common.db_base.Base):
 
 	type        = Column(common.db_types.itemtype_enum, default='unknown', index=True)
 
-	# TODO: Make non-nullable constraint enforceable
-	# feed_id     = Column(BigInteger, ForeignKey('rss_parser_funcs.id'), nullable = False, index = True)
 	feed_id     = Column(BigInteger, ForeignKey('rss_parser_funcs.id'), index = True, nullable=False)
 
 
@@ -147,6 +144,9 @@ class RssFeedUrlMapper(common.db_base.Base):
 		UniqueConstraint('feed_netloc', 'feed_id'),
 		)
 
+# LRU Cache of function text -> function objects.
+PARSED_FUNCTION_CACHE = cachetools.LRUCache(maxsize=5000)
+
 class RssFeedEntry(common.db_base.Base):
 	__versioned__ = {}
 
@@ -170,11 +170,19 @@ class RssFeedEntry(common.db_base.Base):
 	__loaded_func       = None
 
 	def get_func(self):
-		if self.__loaded_func:
-			return self.__loaded_func
 
+		# So compile needs a trailing newline to properly terminate (or something?)
+		# anyways, stick some extra on to be safe.
+		func_str = self.func+"\n\n"
 
-		func_container = compile(self.func+"\n\n",
+		# Use the loaded function when possible.
+		if func_str in PARSED_FUNCTION_CACHE:
+			print("Using LRU cached function")
+			return PARSED_FUNCTION_CACHE[func_str]
+
+		print("Compiling function from DB")
+
+		func_container = compile(func_str,
 				"<db_for_<{}>>".format(self.feed_name), "exec")
 
 		scope = {
@@ -194,6 +202,9 @@ class RssFeedEntry(common.db_base.Base):
 		assert(callable(func[0]))
 
 		self.__loaded_func = func[0]
+
+		# Push processed function into the cache
+		PARSED_FUNCTION_CACHE[func_str] = self.__loaded_func
 
 		return self.__loaded_func
 

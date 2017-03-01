@@ -836,7 +836,7 @@ mapper = {
 	"yasashihonyaku.wordpress.com"                             : 'Yasashi Honyaku',
 	"yasashiinosekaiwa.wordpress.com"                          : "Incarose Jealousy MTL",
 	"yeagdrasil.wordpress.com"                                 : 'Yeagdrasil',
-	"yellawlaw.wordpress.com"                                  : 'Wuxiaworld',
+	"yellawlaw.wordpress.com"                                  : 'WuxiaWorld',
 	"yoraikun.wordpress.com"                                   : 'Yoraikun Translation',
 	"youjinsite.wordpress.com"                                 : 'Youjinsite Translations',
 	"youkoadvent.wordpress.com"                                : 'Youko Advent',
@@ -1123,7 +1123,7 @@ mapper = {
 	"wuxiaheroes.com"                                          : 'Wuxia Heroes',
 	"wuxianation.com"                                          : "WuxiaNation",
 	"wuxiasociety.com"                                         : 'WuxiaSociety',
-	"wuxiaworld.com"                                           : 'Wuxia World',
+	"wuxiaworld.com"                                           : 'WuxiaWorld',
 	"www.ainushi.com"                                          : "愛主の翻訳  Ainushi Translations",
 	"www.ameryedge.com"                                        : 'Amery Edge',
 	"www.anotherparallel.space"                                : 'Another Parallel World',
@@ -1188,7 +1188,7 @@ mapper = {
 	"www.worldofwatermelons.com"                               : "World of Watermelons",
 	"www.wuxiaheroes.com"                                      : 'Wuxia Heroes',
 	"www.wuxiatranslations.com"                                : 'Wuxia Translations',
-	"www.wuxiaworld.com"                                       : 'Wuxiaworld',
+	"www.wuxiaworld.com"                                       : 'WuxiaWorld',
 	"www.xianxiaworld.net"                                     : 'Xian Xia World',
 	"www.yamitranslations.com"                                 : 'Yami Translations',
 	"www.yorasutranslations.com"                               : "Yorasu Translations",
@@ -1197,7 +1197,7 @@ mapper = {
 	"www.zxzxzx.info"                                          : 'Zxzxzx\'s blog',
 	"xianforeigners.tk"                                        : "Xian Foreigners",
 	"yamitranslations.com"                                     : 'Yami Translations',
-	"yellawtwl.com"                                            : 'Wuxiaworld',
+	"yellawtwl.com"                                            : 'WuxiaWorld',
 	"youjinsite.com"                                           : 'Youjinsite Translations',
 	"zirusmusings.com"                                         : 'Ziru\'s Musings | Translations~',
 	"zxzxzx.info"                                              : 'Zxzxzx\'s Blog',
@@ -1384,6 +1384,8 @@ mapper = {
 
 
 	"quartia.dreamwidth.org" : "An Unkie Musebox",
+	'Wuxia World' : 'WuxiaWorld',
+	'Wuxiaworld'  : 'WuxiaWorld',
 
 
 

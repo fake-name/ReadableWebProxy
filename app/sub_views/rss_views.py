@@ -19,6 +19,8 @@ from app.utilities import paginate
 import common.database as db
 
 
+from WebMirror.processor.RssProcessor import RssProcessor
+
 @app.route('/feeds/<page>')
 @app.route('/feeds/<int:page>')
 @app.route('/feeds/')
@@ -112,6 +114,60 @@ def renderFeedEntry(postid):
 
 
 
+def proto_process_releases(feed):
+	ret_dict = {
+			"successful" : [],
+			"missed"     : [],
+			"ignored"    : [],
+	}
+
+	dp = RssProcessor(
+			db_sess=g.session,
+			loggerPath="Main.WebProto",
+			pageUrl=None,
+			pgContent=None,
+			type=None,
+			)
+
+	for item in feed.releases:
+		proc_tmp = {}
+		proc_tmp['feedtype']  = item.type
+		proc_tmp['title']     = item.title
+		proc_tmp['guid']      = item.contentid
+		proc_tmp['linkUrl']   = item.contenturl
+		proc_tmp['updated']   = item.updated
+		proc_tmp['published'] = item.published
+		proc_tmp['contents']  = item.contents
+		proc_tmp['tags']      = item.tags
+		proc_tmp['authors']   = item.author
+		proc_tmp['srcname']   = feed.feed_name
+
+		ret = dp.dispatchReleaseDbBacked(proc_tmp)
+
+		# False means not caught. None means intentionally ignored.
+		if ret:
+			ret_dict["successful"].append((ret, proc_tmp))
+		elif ret is False:
+			ret_dict["missed"].append((ret, proc_tmp))
+		elif ret is None:
+			ret_dict["ignored"].append((ret, proc_tmp))
+		else:
+			raise RuntimeError("Wat? Unknown ret ({}) for release: {}".format(ret, proc_tmp))
+
+	print("Returning: ", ret_dict)
+	return ret_dict
+
+@app.route('/feed-filters/feedid-process-results/<int:feedid>')
+def feedLoadFilteredData(feedid):
+
+	feed = g.session.query(db.RssFeedEntry) \
+		.filter(db.RssFeedEntry.id == feedid)    \
+		.scalar()
+	items = proto_process_releases(feed)
+
+	return render_template('rss-pages/feed_items_processed_block.html',
+						   items         = items,
+						   )
 
 
 @app.route('/feed-filters/feedid/<int:feedid>')
@@ -120,13 +176,12 @@ def feedIdView(feedid):
 	feed = g.session.query(db.RssFeedEntry) \
 		.filter(db.RssFeedEntry.id == feedid)    \
 		.scalar()
-
-	items = list(feed.releases)
+	rellist = list(feed.releases)
 
 	return render_template('rss-pages/feed_filter_item.html',
 						   feed          = feed,
-						   items         = items,
-						   release_count = len(items),
+						   feedid        = feedid,
+						   release_count = len(rellist),
 						   )
 
 
