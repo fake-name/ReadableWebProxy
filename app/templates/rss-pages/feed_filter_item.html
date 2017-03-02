@@ -40,10 +40,13 @@
 		<div class='clearfix'></div>
 
 		<div id="code-editor">{{"\n\n\n"}}{{feed.func}}{{"\n\n\n"}}</div>
+		<button onclick="apply_function_update()" class="btn btn-primary" style='display: inline; float:right'>Update function and execute</button>
+		<button onclick="discard_changes()" class="btn btn-danger">Discard changes</button>
+		<div class='clearfix'></div>
 		<hr>
 		<div id="process-results">
 			<div class="center-block text-center">
-				<h4>Loading results.</h4>
+				<h4>Loading current feed items.</h4>
 				<p>Please Wait.</p>
 				<img src="/static/loading.gif">
 				<br>
@@ -62,7 +65,7 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			min-height: 500px
+			min-height: 100px
 		}
 	</style>
 	<script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -74,9 +77,84 @@
 		editor.setTheme("ace/theme/cobalt");
 		editor.getSession().setMode("ace/mode/python");
 		editor.resize()
-
+		editor.setOptions({
+			autoScrollEditorIntoView: true,
+			maxLines: 500
+		})
 
 		$("#process-results").load("/feed-filters/feedid-process-results/{{feedid}}")
+
+
+		var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				console.log("Ajax setup!", csrftoken);
+				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken)
+				}
+			}
+		})
+
+
+		function content_load_cb(data, textStatus, jqXHR)
+		{
+			console.log("Response: ", data)
+			if (data['error'] == false)
+				location.reload();
+			else
+				alert("Non-False error response!\nError: " + textStatus + "\nStatus text: " + data);
+		};
+
+		function new_func_apply_fail_cb(jqXHR, textStatus, errorThrown)
+		{
+			$("#process-results").html(`
+				<div class="center-block text-center">
+					<h4>Error applying changes!</h4>
+					<p>Error: ` + errorThrown + `</p>
+					<p>Status text: ` + textStatus + `</p>
+					<p>Possibly a function issue?</p>
+				</div>`)
+		}
+
+
+		function new_func_ok_cb(data, textStatus, jqXHR)
+		{
+			// If we've loaded OK, refresh the contents of the process-results div
+			$("#process-results").html('<div class="center-block text-center"><h4>Loading results.</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>')
+			$("#process-results").load("/feed-filters/feedid-process-results/{{feedid}}")
+		}
+
+		function applied_err()
+		{
+			// If we've loaded OK, refresh the contents of the process-results div
+			$("#process-results").html('<div class="center-block text-center"><h4>Loading results.</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>')
+		}
+
+		function apply_function_update()
+		{
+			console.log("Apply and update call!")
+			$("#process-results").html('<div class="center-block text-center"><h4>Applying updated function.</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>')
+
+
+			console.log("Making request")
+			$.ajax({
+				url         : '/feed-filters/api/',
+				data        : JSON.stringify({'op' : 'nu release validity update', 'data' : 'wat'}),
+				success     : new_func_ok_cb,
+				error       : new_func_apply_fail_cb,
+				method      : "POST",
+				dataType    : 'json',
+				contentType : "application/json;",
+
+			})
+
+
+		}
+		function discard_changes()
+		{
+			console.log("Discard changes call!")
+		}
 
 	</script>
 {%- endblock -%}

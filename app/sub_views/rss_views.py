@@ -4,6 +4,9 @@ from flask import render_template
 from flask import flash
 from flask import redirect
 from flask import url_for
+from flask import make_response
+from flask import request
+from flask import jsonify
 # from flask.ext.babel import gettext
 # from guess_language import guess_language
 from app import app
@@ -18,7 +21,7 @@ import traceback
 from app.utilities import paginate
 import common.database as db
 
-
+from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 from WebMirror.processor.RssProcessor import RssProcessor
 
 @app.route('/feeds/<page>')
@@ -142,6 +145,8 @@ def proto_process_releases(feed):
 		proc_tmp['authors']   = item.author
 		proc_tmp['srcname']   = feed.feed_name
 
+		proc_tmp['vcfp']      = extractVolChapterFragmentPostfix(item.title)
+
 		ret = dp.dispatchReleaseDbBacked(proc_tmp)
 
 		# False means not caught. None means intentionally ignored.
@@ -191,15 +196,53 @@ def feedIdView(feedid):
 @app.route('/feed-filters/')
 def feedFiltersRoot():
 
-
 	feeds = g.session.query(db.RssFeedEntry) \
 		.order_by(db.RssFeedEntry.feed_name) \
 		.all()
 
-
-
 	return render_template('rss-pages/feed_filter_base.html',
 						   feeds = feeds,
 						   )
+
+
+
+@app.route('/feed-filters/api/', methods=['GET', 'POST'])
+def feedFiltersApi():
+	if not request.json:
+		# print("Non-JSON request!")
+		js = {
+			"error"   : True,
+			"message" : "This endpoint only accepts JSON POST requests."
+		}
+		resp = jsonify(js)
+		resp.status_code = 200
+		resp.mimetype="application/json"
+		return resp
+
+
+	print("API Request!")
+	print("session:", g.session)
+	print("Request method: ", request.method)
+	print("Request json: ", request.json)
+
+	data = {"wat": "wat"}
+
+	# response = make_response(jsonify(data))
+	response = jsonify(data)
+
+	# print("response", response)
+	# response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	# response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	# response.headers["Pragma"] = "no-cache"
+	# response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+
+	print("ResponseData: ", data)
+	print("Response: ", response)
+
+	response.status_code = 200
+	response.mimetype="application/json"
+	g.session.commit()
+	g.session.expire_all()
+	return response
 
 
