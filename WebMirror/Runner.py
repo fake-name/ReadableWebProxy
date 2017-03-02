@@ -437,15 +437,15 @@ class UpdateAggregator(object):
 
 			if len(self.batched_links) >= 500:
 				self.do_link_batch_update()
-		else:
-			self.log.info("Skipping upserting: '%s'", url)
+		# else:
+		# 	self.log.info("Skipping upserting: '%s'", url)
 
 	def do_task(self):
 
 		target, value = self.queue.get_nowait()
 
 		if (self.links % 50) == 0:
-			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s, transmitted release messages: %s.", len(self.seen), self.queue.qsize(), self.amqpUpdateCount)
+			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s, transmitted release messages: %s.", self.seen.currsize(), self.queue.qsize(), self.amqpUpdateCount)
 
 		self.links += 1
 
