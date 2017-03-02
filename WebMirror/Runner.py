@@ -445,7 +445,7 @@ class UpdateAggregator(object):
 		target, value = self.queue.get_nowait()
 
 		if (self.links % 50) == 0:
-			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s, transmitted release messages: %s.", self.seen.currsize(), self.queue.qsize(), self.amqpUpdateCount)
+			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s, transmitted release messages: %s.", self.seen.currsize, self.queue.qsize(), self.amqpUpdateCount)
 
 		self.links += 1
 
