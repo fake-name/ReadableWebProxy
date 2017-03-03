@@ -145,6 +145,18 @@ badwords: [
 			'cron.php/external.php',
 			'cron.php/cron.php',
 
+			'/member.php',
+			'printthread.php',
+			'newreply.php',
+			'do=newreply',
+			'search.php',
+			'do=finduser',
+			'?goto=',
+			'&goto=',
+			'?do=',
+			'&do=',
+
+			'/statusicon/',
 
 			# WHY are there MULTIPLE pagination modes?
 			'?p=',

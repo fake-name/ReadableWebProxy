@@ -187,8 +187,8 @@ def resetInProgress():
 
 class UpdateAggregator(object):
 	def __init__(self, msg_queue, db_interface):
-		self.queue = msg_queue
-		self.log = logging.getLogger("Main.Agg.Manager")
+		self.response_queue = msg_queue
+		self.log = logging.getLogger("Main.LinkAggregator")
 
 		try:
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -198,7 +198,8 @@ class UpdateAggregator(object):
 		# LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
 		self.seen = cachetools.TTLCache(maxsize=1000 * 1000, ttl=60 * 60 * 6)
 
-		self.links = 0
+		self.queue_items = 0
+		self.link_count = 0
 		self.amqpUpdateCount = 0
 		self.deathCounter = 0
 
@@ -288,6 +289,8 @@ class UpdateAggregator(object):
 
 		raw_cur = self.db_int.connection().connection.cursor()
 
+
+
 		#  Fucking huzzah for ON CONFLICT!
 		cmd = """
 			INSERT INTO
@@ -303,7 +306,7 @@ class UpdateAggregator(object):
 			            netloc          = EXCLUDED.netloc,
 			            is_text         = EXCLUDED.is_text,
 			            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-			            priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+			            priority        = GREATEST(EXCLUDED.priority, web_pages.priority, %(maximum_priority_{cnt})s),
 			            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 			        WHERE
 			        (
@@ -330,7 +333,7 @@ class UpdateAggregator(object):
 			            netloc          = EXCLUDED.netloc,
 			            is_text         = EXCLUDED.is_text,
 			            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-			            priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+			            priority        = GREATEST(EXCLUDED.priority, web_pages.priority, %(maximum_priority)s),
 			            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 			        WHERE
 			        (
@@ -414,22 +417,25 @@ class UpdateAggregator(object):
 
 	def do_link(self, linkdict):
 
-		assert 'url'             in linkdict
-		assert 'starturl'        in linkdict
-		assert 'netloc'          in linkdict
-		assert 'distance'        in linkdict
-		assert 'is_text'         in linkdict
-		assert 'priority'        in linkdict
-		assert 'type'            in linkdict
-		assert 'state'           in linkdict
-		assert 'addtime'         in linkdict
-		assert 'ignoreuntiltime' in linkdict
+		assert 'url'              in linkdict
+		assert 'starturl'         in linkdict
+		assert 'netloc'           in linkdict
+		assert 'distance'         in linkdict
+		assert 'is_text'          in linkdict
+		assert 'priority'         in linkdict
+		assert 'type'             in linkdict
+		assert 'state'            in linkdict
+		assert 'addtime'          in linkdict
+		assert 'ignoreuntiltime'  in linkdict
+		assert 'maximum_priority' in linkdict
 
 		url = linkdict['url']
 
 		# Only allow items through if they're not in the LRU cache, or have not been upserted
 		# in the last 6 hours
-		if url in self.seen:
+		if url not in self.seen:
+			self.link_count += 1
+
 			# Fucking huzzah for ON CONFLICT!
 			self.batched_links.append(linkdict)
 			# Kick item up to the top of the LRU list
@@ -442,12 +448,13 @@ class UpdateAggregator(object):
 
 	def do_task(self):
 
-		target, value = self.queue.get_nowait()
+		target, value = self.response_queue.get_nowait()
 
-		if (self.links % 50) == 0:
-			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s, transmitted release messages: %s.", self.seen.currsize, self.queue.qsize(), self.amqpUpdateCount)
+		if (self.queue_items % 50) == 0:
+			self.log.info("Aggregator active. Total cached URLs: %s, Items in processing queue: %s, transmitted release messages: %s, batchLink buf: %s (%s).",
+				self.seen.currsize, self.response_queue.qsize(), self.amqpUpdateCount, len(self.batched_links), self.link_count)
 
-		self.links += 1
+		self.queue_items += 1
 
 		if target == "amqp_msg":
 			if config.C_DO_RABBIT:

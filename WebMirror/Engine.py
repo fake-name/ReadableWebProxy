@@ -336,24 +336,32 @@ class SiteArchiver(LogBase.LoggerMixin):
 			return None
 
 
-		new_pfunc = db.RssFeedEntry(
-				version   = 1,
-				feed_name = feedname,
-				enabled   = False,
-				func      = None,
-			)
-		self.db_sess.add(new_pfunc)
-		self.db_sess.flush()
+		have_feed = self.db_sess.query(self.db.RssFeedEntry) \
+			.filter(self.db.RssFeedEntry.feed_name == feedname) \
+			.scalar()
+
+		if have_feed:
+			feed_id = have_feed.id
+		else:
+			new_feed_entry = db.RssFeedEntry(
+					version   = 1,
+					feed_name = feedname,
+					enabled   = False,
+					func      = None,
+				)
+			self.db_sess.add(new_feed_entry)
+			self.db_sess.flush()
+			feed_id = new_feed_entry.id
 
 		new_nl = db.RssFeedUrlMapper(
 				feed_netloc = nl,
 				feed_url    = feedurl,
-				feed_id     = new_pfunc.id,
+				feed_id     = feed_id,
 			)
 		self.db_sess.add(new_nl)
 		self.db_sess.flush()
 
-		return new_pfunc.id
+		return feed_id
 
 
 
@@ -542,8 +550,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 		badwords = list(set(badwords))
 		return badwords
 
+	def getMaxPriority(self, netloc):
+		return max(rules['maximum_priority'] for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs'])
+
 	def upsertResponseLinks(self, job, plain=[], resource=[]):
-		self.log.info("Updating database with response links")
+		self.log.info("Processing response links.")
 		plain    = set(plain)
 		resource = set(resource)
 
@@ -581,18 +592,21 @@ class SiteArchiver(LogBase.LoggerMixin):
 				assert link.startswith("http")
 				assert start
 				new = {
-						'url'             : link,
-						'starturl'        : new_starturl,
-						'netloc'          : start,
-						'distance'        : new_distance,
-						'is_text'         : istext,
-						'priority'        : new_priority,
-						'type'            : new_type,
-						'state'           : "new",
-						'addtime'         : datetime.datetime.now(),
+						'url'              : link,
+						'starturl'         : new_starturl,
+						'netloc'           : start,
+						'distance'         : new_distance,
+						'is_text'          : istext,
+						'priority'         : new_priority,
+						'type'             : new_type,
+						'state'            : "new",
+						'addtime'          : datetime.datetime.now(),
 
 						# Don't retrigger unless the ignore time has elaped.
-						'ignoreuntiltime' : datetime.datetime.now(),
+						'ignoreuntiltime'  : datetime.datetime.now(),
+
+						'maximum_priority' : self.getMaxPriority(start),
+
 					}
 				self.resp_q.put(("new_link", new))
 
@@ -603,8 +617,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 						self.log.error("NewLinkQueue seems to have too many URLs in it (%s). Sleeping until it drains.", self.resp_q.qsize())
 						full_printer = 25
 
-			self.log.info("Links upserted. Items in processing queue: %s", self.resp_q.qsize())
+			self.log.info("Links placed into queue. Items in processing queue: %s", self.resp_q.qsize())
 		else:
+			self.log.info("Doing local link upsert in engine thread!")
 
 			#  Fucking huzzah for ON CONFLICT!
 			#  Priority is smaller = higher, so go with the smallest priority in most cases

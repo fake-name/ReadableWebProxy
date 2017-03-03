@@ -211,6 +211,13 @@ def getIgnoreMalformed(ruleset):
 		return False
 	return ruleset['IGNORE_MALFORMED_URLS']
 
+def getMaximumFetchPriority(ruleset):
+	# Highest priority is 0, lowest is 1000000
+	if not 'get_maximum_fetch_priority' in ruleset:
+		return 0
+	# Clamp the max to 999999
+	return min(ruleset['get_maximum_fetch_priority'], 999999)
+
 def getGenreType(ruleset):
 	assert 'type' in ruleset, "Type missing from ruleset!"
 	assert ruleset['type'] in ['western', 'eastern', 'unknown']
@@ -297,35 +304,37 @@ def load_validate_rules(fname, dat):
 
 
 	rules = {}
-	rules['starturls']             = getStartURLs(dat)
-	rules['attrRewriteRules']      = getAttributeRewriteRules(dat)
-	rules['feedurls']              = getFeedUrls(dat)
+	rules['starturls']                         = getStartURLs(dat)
+	rules['attrRewriteRules']                  = getAttributeRewriteRules(dat)
+	rules['feedurls']                          = getFeedUrls(dat)
 
-	rules['badwords']              = getUrlBadWords(dat)
-	rules['stripTitle']            = getStripTitle(dat)
-	rules['decomposeBefore']       = getDecomposeBefore(dat)
-	rules['decompose']             = getDecomposeAfter(dat)
-	rules['netlocs']               = getPossibleNetLocs(dat)
+	rules['badwords']                          = getUrlBadWords(dat)
+	rules['stripTitle']                        = getStripTitle(dat)
+	rules['decomposeBefore']                   = getDecomposeBefore(dat)
+	rules['decompose']                         = getDecomposeAfter(dat)
+	rules['netlocs']                           = getPossibleNetLocs(dat)
 
-	rules['allImages']             = getAllImages(dat)
-	rules['fileDomains']           = getFileDomains(dat, rules['netlocs'])
-	rules['cloudflare']            = getCloudflare(dat)
-	rules['IGNORE_MALFORMED_URLS'] = getIgnoreMalformed(dat)
-	rules['type']                  = getGenreType(dat)
+	rules['allImages']                         = getAllImages(dat)
+	rules['fileDomains']                       = getFileDomains(dat, rules['netlocs'])
+	rules['cloudflare']                        = getCloudflare(dat)
+	rules['IGNORE_MALFORMED_URLS']             = getIgnoreMalformed(dat)
+	rules['type']                              = getGenreType(dat)
 
-	rules['send_raw_feed']         = transmitFeeds(dat)
-	rules['destyle']               = getDestyles(dat)
-	rules['preserveAttrs']         = getPreserveAttrs(dat)
-	rules['rewalk_interval_days']  = getRewalkIntervalDays(dat)
+	rules['send_raw_feed']                     = transmitFeeds(dat)
+	rules['destyle']                           = getDestyles(dat)
+	rules['preserveAttrs']                     = getPreserveAttrs(dat)
+
+	rules['rewalk_interval_days']              = getRewalkIntervalDays(dat)
 	rules['disallow_duplicate_path_segments']  = getDisallowDuplicatePathComponents(dat)
+	rules['maximum_priority']                  = getMaximumFetchPriority(dat)
 
-	rules['trigger']               = getTrigger(dat)
+	rules['trigger']                           = getTrigger(dat)
 	if not rules['trigger']:
-		rules['starturls']         = []
+		rules['starturls']                     = []
 
-	rules['normal_fetch_mode']     = getRefetch(dat)
+	rules['normal_fetch_mode']                 = getRefetch(dat)
 
-	rules['filename']              = fname
+	rules['filename']                          = fname
 	special = getSpecialFilters(dat)
 
 	return rules, special

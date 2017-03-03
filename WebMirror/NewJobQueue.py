@@ -90,7 +90,7 @@ def buildjob(
 
 class JobAggregatorInternal(LogBase.LoggerMixin):
 
-	loggerPath = "Main.JobAggregator"
+	loggerPath = "Main.JobManager"
 
 	def __init__(self, job_queue, run_flag):
 		# print("Job __init__()")
