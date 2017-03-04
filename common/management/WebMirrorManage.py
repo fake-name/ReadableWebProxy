@@ -355,11 +355,11 @@ def exposed_update_feed_names():
 	'''
 	for key, value in feedNameLut.mapper.items():
 		feed_items = db.get_db_session().query(db.RssFeedPost) \
-				.filter(db.RssFeedPost.srcname == key)    \
+				.filter(db.RssFeedPost.feed_entry.feed_name == key)    \
 				.all()
 		if feed_items:
 			for item in feed_items:
-				item.srcname = value
+				item.feed_entry.feed_name = value
 			print(len(feed_items))
 			print(key, value)
 			db.get_db_session().commit()
@@ -567,13 +567,12 @@ def exposed_sort_json(json_name):
 	out = []
 	for key in data:
 
-		out.append((data[key][0]['Have Func'], len(data[key]), data[key]))
+		out.append((len(data[key]), data[key]))
 
 	out.sort(key=lambda x: (x[0], x[1]*-1))
 	out.sort(key=lambda x: (x[1]*-1))
 
 	key_order = [
-		"Have Func",
 		"SourceName",
 		"Title",
 		"Tags",
@@ -594,7 +593,7 @@ def exposed_sort_json(json_name):
 	with open(outf, "w") as fp:
 		for item in out:
 			# print(item[1])
-			items = item[2]
+			items = item[1]
 			[tmp['Tags'].sort() for tmp in items]
 			items.sort(key=lambda x: (x['Tags'], x['Title']))
 
@@ -617,6 +616,8 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 
 	json_file = 'rss_filter_misses-1.json'
 
+	config.C_DO_RABBIT = False
+
 	write_debug = True
 	if silent:
 		config.C_DO_RABBIT = False
@@ -637,7 +638,7 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 															type        = 'application/atom+xml',
 															transfer    = False,
 															debug_print = True,
-															db_sess = None,
+															db_sess     = db.get_db_session(),
 															write_debug = write_debug)
 
 
@@ -646,8 +647,7 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 	if target:
 		print("Limiting to '%s' source." % target)
 		feed_items = db.get_db_session().query(db.RssFeedPost) \
-				.filter(db.RssFeedPost.srcname == target)    \
-				.order_by(db.RssFeedPost.srcname)           \
+				.filter(db.RssFeedPost.feed_entry.feed_name == target)    \
 				.order_by(db.RssFeedPost.title)           \
 				.all()
 	elif days:
@@ -655,12 +655,10 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 		cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
 		feed_items = db.get_db_session().query(db.RssFeedPost) \
 				.filter(db.RssFeedPost.published > cutoff)  \
-				.order_by(db.RssFeedPost.srcname)           \
 				.order_by(db.RssFeedPost.title)             \
 				.all()
 	else:
 		feed_items = db.get_db_session().query(db.RssFeedPost) \
-				.order_by(db.RssFeedPost.srcname)           \
 				.order_by(db.RssFeedPost.title)           \
 				.all()
 
@@ -669,7 +667,7 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 
 	for item in feed_items:
 		ctnt = {}
-		ctnt['srcname']   = item.srcname
+		ctnt['srcname']   = item.feed_entry.feed_name
 		ctnt['title']     = item.title
 		ctnt['tags']      = item.tags
 		ctnt['linkUrl']   = item.contenturl
@@ -826,7 +824,7 @@ def exposed_delete_feed(feed_name, do_delete, search_str):
 
 	sess = db.get_db_session()
 	items = sess.query(db.RssFeedPost)               \
-		.filter(db.RssFeedPost.srcname == feed_name) \
+		.filter(db.RssFeedPost.feed_entry.feed_name == feed_name) \
 		.all()
 
 	do_delete = "true" in do_delete.lower()

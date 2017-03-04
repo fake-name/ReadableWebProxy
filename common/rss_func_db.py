@@ -26,6 +26,7 @@ import common.db_types
 
 import code
 import ast
+import re
 import datetime
 import cachetools
 
@@ -33,6 +34,7 @@ import citext
 from common.db_engine import get_db_session
 
 from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
+from WebMirror.OutputFilters.util.TitleParsers import extractChapterVol
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
@@ -162,8 +164,8 @@ class RssFeedEntry(common.db_base.Base):
 
 	func              = Column(Text)
 
-	urls              = relationship('RssFeedUrlMapper', backref='rss_parser_funcs')
-	releases          = relationship('RssFeedPost',      backref='rss_parser_funcs')
+	urls              = relationship('RssFeedUrlMapper', backref='feed_entry')
+	releases          = relationship('RssFeedPost',      backref='feed_entry')
 
 
 
@@ -177,7 +179,7 @@ class RssFeedEntry(common.db_base.Base):
 
 		# Use the loaded function when possible.
 		if func_str in PARSED_FUNCTION_CACHE:
-			print("Using LRU cached function")
+			print("Using LRU cached function (%s items)" % len(PARSED_FUNCTION_CACHE))
 			return PARSED_FUNCTION_CACHE[func_str]
 
 		print("Compiling function from DB")
@@ -185,10 +187,14 @@ class RssFeedEntry(common.db_base.Base):
 		func_container = compile(func_str,
 				"<db_for_<{}>>".format(self.feed_name), "exec")
 
+		# These keys determine what modules are available to the database functions.
+		# If a database function needs a library, it has to be imported here!
 		scope = {
 			"buildReleaseMessage"              : buildReleaseMessage,
+			"extractChapterVol"                : extractChapterVol,
 			"extractChapterVolFragment"        : extractChapterVolFragment,
 			"extractVolChapterFragmentPostfix" : extractVolChapterFragmentPostfix,
+			"re"                               : re,
 		}
 		popkeys = set(scope.keys())
 		popkeys.add("__builtins__")

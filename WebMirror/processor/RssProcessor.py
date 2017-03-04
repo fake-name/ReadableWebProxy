@@ -175,6 +175,8 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 			item['linkUrl']  = entry['link']
 			item['authors']  = entry['authors']
 
+			item['feedUrl']  = feedUrl
+
 
 
 			if 'updated_parsed' in entry and entry['updated_parsed']:

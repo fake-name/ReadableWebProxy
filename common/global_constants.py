@@ -40,6 +40,8 @@ GLOBAL_BAD_URLS = [
 			'www.pinterest.com/pin/',
 			'www.wattpad.com/login?',
 
+			'www.paypalobjects.com',
+
 			# Tumblr can seriously go fuck itself with a rusty stake
 			'tumblr.com/widgets/',
 			'www.tumblr.com/login',
