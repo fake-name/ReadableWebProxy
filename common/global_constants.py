@@ -80,6 +80,8 @@ GLOBAL_BAD_URLS = [
 			# NFI where /this/ came from
 			'www.miforcampuspolice.com',
 			'tracking.feedpress.it',
+
+			'www.quantcast.com',
 	]
 
 

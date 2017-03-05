@@ -37,6 +37,7 @@ import RawArchiver.RawEngine
 import common.database as db
 import common.Exceptions
 import common.management.file_cleanup
+import common.global_constants
 
 import Misc.HistoryAggregator.Consolidate
 
@@ -441,8 +442,11 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 					)
 				):
 
+			agg_bad = [tmp for tmp in ruleset['badwords']]
+			agg_bad.extend(common.global_constants.GLOBAL_BAD_URLS)
+
 			# So there's no way to escape a LIKE string in postgres.....
-			search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in ruleset['badwords']]
+			search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in agg_bad]
 
 			print("Badwords:")
 			for bad in search_strs:
@@ -487,7 +491,7 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 
 			# Returned list of IDs is each ID packed into a 1-tuple. Unwrap those tuples so it's just a list of integer IDs.
 			ids = [tmp[0] for tmp in ids]
-			delete_internal(sess, ids, selected_netloc if selected_netloc else ruleset['netlocs'], ruleset['badwords'])
+			delete_internal(sess, ids, selected_netloc if selected_netloc else ruleset['netlocs'], agg_bad)
 
 
 def exposed_purge_invalid_url_history():
@@ -505,8 +509,11 @@ def exposed_purge_invalid_url_history():
 
 		if ruleset['netlocs'] and ruleset['badwords']:
 
+			agg_bad = [tmp for tmp in ruleset['badwords']]
+			agg_bad.extend(common.global_constants.GLOBAL_BAD_URLS)
+
 			# So there's no way to escape a LIKE string in postgres.....
-			search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in ruleset['badwords']]
+			search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in agg_bad]
 
 			print("Badwords:")
 			for bad in search_strs:
