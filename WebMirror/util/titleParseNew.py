@@ -153,19 +153,19 @@ class CharSplitter(SplitterBase):
 		return ret
 
 
+LETTER_NUMBER_SPLITS = [
+	re.compile(r"([a-z_]+)(\.?)([0-9\.]+)", re.IGNORECASE),
+	re.compile(r"([0-9\.]+)(\.?)([a-z_]+)", re.IGNORECASE),
+	re.compile(r"([a-z_]+)(\-?)([0-9\.]+)", re.IGNORECASE),
+	re.compile(r"([0-9\.]+)(\-?)([a-z_]+)", re.IGNORECASE),
+
+	re.compile(r"([a-z_\-]+)(\.)([0-9\.]+)", re.IGNORECASE),
+	re.compile(r"([0-9\.]+)(\.)([a-z_\-]+)", re.IGNORECASE),
+]
+
 class LetterNumberSplitter(SplitterBase):
 	def split_component(self, instr):
-
-		splits = [
-			re.compile(r"([a-z_]+)(\.?)([0-9\.]+)", re.IGNORECASE),
-			re.compile(r"([0-9\.]+)(\.?)([a-z_]+)", re.IGNORECASE),
-			re.compile(r"([a-z_]+)(\-?)([0-9\.]+)", re.IGNORECASE),
-			re.compile(r"([0-9\.]+)(\-?)([a-z_]+)", re.IGNORECASE),
-
-			re.compile(r"([a-z_\-]+)(\.)([0-9\.]+)", re.IGNORECASE),
-			re.compile(r"([0-9\.]+)(\.)([a-z_\-]+)", re.IGNORECASE),
-		]
-		for split in splits:
+		for split in LETTER_NUMBER_SPLITS:
 			match = split.fullmatch(instr)
 			# print((instr, split, match, instr))
 			if match:
@@ -174,23 +174,23 @@ class LetterNumberSplitter(SplitterBase):
 
 		return [instr]
 
+MISC_LETTER_SPLITS = [
+	# Split <letter>.<letter> to ('<letter>', '.', '<letter>')
+	re.compile(r"(.*?[a-z]+)(\.)([a-z]+.*?)", re.IGNORECASE),
+
+	# Split <whitespace>-<letter> to ('<whitespace>', '.', '<letter>')
+	re.compile(r"((?:.*?[\W]|^))(\-)([a-z]+.*?)", re.IGNORECASE),
+
+	# Split <letter>-<whitespace> to ('<letter>', '.', '<whitespace>')
+	re.compile(r"([a-z]+.*?)(\-)((?:.*?[\W]|$))", re.IGNORECASE),
+
+	# Detach commas from everything.
+	re.compile(r"(.*?)(,)(.*?)", re.IGNORECASE),
+]
 class MiscLetterSplitter(SplitterBase):
 	def split_component(self, instr):
 
-		splits = [
-			# Split <letter>.<letter> to ('<letter>', '.', '<letter>')
-			re.compile(r"(.*?[a-z]+)(\.)([a-z]+.*?)", re.IGNORECASE),
-
-			# Split <whitespace>-<letter> to ('<whitespace>', '.', '<letter>')
-			re.compile(r"((?:.*?[\W]|^))(\-)([a-z]+.*?)", re.IGNORECASE),
-
-			# Split <letter>-<whitespace> to ('<letter>', '.', '<whitespace>')
-			re.compile(r"([a-z]+.*?)(\-)((?:.*?[\W]|$))", re.IGNORECASE),
-
-			# Detach commas from everything.
-			re.compile(r"(.*?)(,)(.*?)", re.IGNORECASE),
-		]
-		for split in splits:
+		for split in MISC_LETTER_SPLITS:
 			match = split.fullmatch(instr)
 			# print((instr, split, match, instr))
 			if match:
@@ -199,14 +199,14 @@ class MiscLetterSplitter(SplitterBase):
 
 		return [instr]
 
+HYPHENATED_LETTER_SPLITS = [
+	re.compile(r"([a-z]+)(\-)([a-z]+)", re.IGNORECASE),
+	# re.compile(r"([a-z]+)(\-)([a-z]+)", re.IGNORECASE),
+]
 class HyphenatedLetterSplitter(SplitterBase):
 	def split_component(self, instr):
 
-		splits = [
-			re.compile(r"([a-z]+)(\-)([a-z]+)", re.IGNORECASE),
-			# re.compile(r"([a-z]+)(\-)([a-z]+)", re.IGNORECASE),
-		]
-		for split in splits:
+		for split in HYPHENATED_LETTER_SPLITS:
 			match = split.fullmatch(instr)
 			if match:
 				return list(match.groups())
@@ -982,16 +982,16 @@ class DateGlobber(GlobBase):
 		return before, target, after
 
 
+R18_GLOBBER_REGEX = [
+	re.compile(r"[ \(]R18[ \)]", re.IGNORECASE),
+	re.compile(r"(?: |\A)R21(?: |\Z)", re.IGNORECASE),
+]
 class R18Globber(GlobBase):
 	'''
 	Attach to text that looks like a age notification string, so it doesn't get further processed later.
 	'''
 	def attach_token(self, before, target, after):
-		tags = [
-			re.compile(r"[ \(]R18[ \)]", re.IGNORECASE),
-			re.compile(r"(?: |\A)R21(?: |\Z)", re.IGNORECASE),
-		]
-		for glob in tags:
+		for glob in R18_GLOBBER_REGEX:
 			if isinstance(target, str):
 				if glob.search(target):
 					target = IgnoreTextToken(target)

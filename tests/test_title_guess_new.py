@@ -1,7 +1,6 @@
 
 # from FeedScrape.FeedDataParser import extractChapterVol
 from WebMirror.util.titleParseNew import TitleParser as TPN
-from WebMirror.util.titleParse import TitleParser as TP
 
 import common.database as db
 
@@ -203,30 +202,30 @@ def test_mismatch():
 def format_row(title, volume, chapter, fragment, postfix):
 	return "	" + str((title, (volume, chapter, fragment, postfix))) + ",\n"
 
-def load_items():
-	feed_items = db.get_db_session().query(db.RssFeedPost) \
-			.order_by(db.RssFeedPost.srcname)           \
-			.order_by(db.RssFeedPost.title)           \
-			.all()
+# def load_items():
+# 	feed_items = db.get_db_session().query(db.RssFeedPost) \
+# 			.order_by(db.RssFeedPost.srcname)           \
+# 			.order_by(db.RssFeedPost.title)           \
+# 			.all()
 
-	with open("tests/title_test_data_two.py", 'w') as fp:
-		fp.write("data = [\n")
-		for row in feed_items:
-			title = row.title
+# 	with open("tests/title_test_data_two.py", 'w') as fp:
+# 		fp.write("data = [\n")
+# 		for row in feed_items:
+# 			title = row.title
 
-			try:
-				p = TP(title)
-				fp.write(format_row(title, p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()))
-			except ValueError:
-				fp.write(format_row(title, 0, 0, 0, ''))
+# 			try:
+# 				p = TPO(title)
+# 				fp.write(format_row(title, p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()))
+# 			except ValueError:
+# 				fp.write(format_row(title, 0, 0, 0, ''))
 
-		fp.write("]\n")
+# 		fp.write("]\n")
 
 if __name__ == "__main__":
 	import sys
-	if 'regenerate' in sys.argv:
-		load_items()
-	elif "extract-mismatch" in sys.argv:
+	# if 'regenerate' in sys.argv:
+	# 	load_items()
+	if "extract-mismatch" in sys.argv:
 		extract_mismatch()
 	elif "test-mismatch" in sys.argv:
 		test_mismatch()
