@@ -149,6 +149,43 @@ class RssFeedUrlMapper(common.db_base.Base):
 # LRU Cache of function text -> function objects.
 PARSED_FUNCTION_CACHE = cachetools.LRUCache(maxsize=5000)
 
+def str_to_function(instr, name):
+	# So compile needs a trailing newline to properly terminate (or something?)
+	# anyways, stick some extra on to be safe.
+	func_str = instr+"\n\n"
+
+	# Use the loaded function when possible.
+	if instr in PARSED_FUNCTION_CACHE:
+		print("Using LRU cached function (%s items)" % len(PARSED_FUNCTION_CACHE))
+		return PARSED_FUNCTION_CACHE[instr]
+
+	print("Compiling function from DB")
+
+	func_container = compile(func_str,
+			"<db_for_<{}>>".format(name), "exec")
+
+	# These keys determine what modules are available to the database functions.
+	# If a database function needs a library, it has to be imported here!
+	scope = {
+		"buildReleaseMessage"              : buildReleaseMessage,
+		"extractChapterVol"                : extractChapterVol,
+		"extractChapterVolFragment"        : extractChapterVolFragment,
+		"extractVolChapterFragmentPostfix" : extractVolChapterFragmentPostfix,
+		"re"                               : re,
+	}
+	popkeys = set(scope.keys())
+	popkeys.add("__builtins__")
+
+	exec(func_container, scope)
+
+	func = [val for key, val in scope.items() if not key in popkeys]
+
+	# Check we have just one object in the return, and that it's callable
+	assert len(func) == 1
+	assert callable(func[0])
+
+	return func[0]
+
 class RssFeedEntry(common.db_base.Base):
 	__versioned__ = {}
 
@@ -172,45 +209,10 @@ class RssFeedEntry(common.db_base.Base):
 	__loaded_func       = None
 
 	def get_func(self):
-
-		# So compile needs a trailing newline to properly terminate (or something?)
-		# anyways, stick some extra on to be safe.
-		func_str = self.func+"\n\n"
-
-		# Use the loaded function when possible.
-		if func_str in PARSED_FUNCTION_CACHE:
-			print("Using LRU cached function (%s items)" % len(PARSED_FUNCTION_CACHE))
-			return PARSED_FUNCTION_CACHE[func_str]
-
-		print("Compiling function from DB")
-
-		func_container = compile(func_str,
-				"<db_for_<{}>>".format(self.feed_name), "exec")
-
-		# These keys determine what modules are available to the database functions.
-		# If a database function needs a library, it has to be imported here!
-		scope = {
-			"buildReleaseMessage"              : buildReleaseMessage,
-			"extractChapterVol"                : extractChapterVol,
-			"extractChapterVolFragment"        : extractChapterVolFragment,
-			"extractVolChapterFragmentPostfix" : extractVolChapterFragmentPostfix,
-			"re"                               : re,
-		}
-		popkeys = set(scope.keys())
-		popkeys.add("__builtins__")
-
-		exec(func_container, scope)
-
-		func = [val for key, val in scope.items() if not key in popkeys]
-
-		# Check we have just one object in the return, and that it's callable
-		assert(len(func) == 1)
-		assert(callable(func[0]))
-
-		self.__loaded_func = func[0]
+		self.__loaded_func = str_to_function(self.func, self.feed_name)
 
 		# Push processed function into the cache
-		PARSED_FUNCTION_CACHE[func_str] = self.__loaded_func
+		PARSED_FUNCTION_CACHE[self.func] = self.__loaded_func
 
 		return self.__loaded_func
 

@@ -23,6 +23,7 @@ def build_error_response(message):
 		contents   = "Error message:<br> {}".format(message),
 		cachestate = "Error!",
 		req_url    = "None",
+		error      = True,
 		)
 	return response
 

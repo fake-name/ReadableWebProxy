@@ -27,8 +27,17 @@
 			{{tableHeader()}}
 				{%- for after_dispatch, raw in block_item_list -%}
 					<tr><td>SourceName</td><td>{{raw['srcname']}}</td></tr>
-					<tr><td>Title</td><td>{{raw['title']}}</td></tr>
-					<tr><td>Tags</td><td>{{raw['tags']}}</td></tr>
+					<tr><td>Title</td><td><a href='https://www.wlnupdates.com/search?{{{"title":raw['title']} | urlencode}}'>{{raw['title']}}</a></td></tr>
+					<tr>
+						<td>Tags</td>
+						<td>
+							<ul>
+								{%- for tag in raw['tags'] -%}
+									<li><a href='https://www.wlnupdates.com/search?{{{"title":tag} | urlencode}}'>{{tag}}</a></li>
+								{%- endfor -%}
+							</ul>
+						</td>
+					</tr>
 					<tr><td>Feed</td><td><a href='{{raw['linkUrl']}}'>{{raw['linkUrl']}}</a></td></tr>
 					<tr><td>Vol, Chp, Frag, Postfix</td><td>{{raw['vcfp']}}</td></tr>
 					<tr><td>GUID</td><td>{{raw['guid']}}</td></tr>
@@ -50,10 +59,6 @@
 	<div>
 		<h4>Ignored items: {{items['ignored'] | length}}</h4>
 		{{ release_block(items['ignored']) }}
-	</div>
-	<div>
-		<h4>Successful items: {{items['successful'] | length}}</h4>
-		{{ release_block(items['successful']) }}
 	</div>
 
 </div>

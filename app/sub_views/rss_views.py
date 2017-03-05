@@ -19,9 +19,12 @@ from sqlalchemy.orm import joinedload
 import traceback
 import datetime
 import collections
+import astor
 
 from app.utilities import paginate
+import app.sub_views.content_views as content_views
 import common.database as db
+import common.rss_func_db as rfdb
 
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 from WebMirror.processor.RssProcessor import RssProcessor
@@ -273,6 +276,37 @@ def feedFiltersRecent():
 						   )
 
 
+def update_function_text(feedrow, new_func):
+	current = feedrow.func.strip()
+	new_func = new_func.strip()
+	print("New function:", new_func)
+	print("Current function:", current)
+
+	if current == new_func:
+		return {
+			'error'   : True,
+			'message' : "Function has not changed? Nothing to do!",
+			'reload'  : False,
+		}
+
+	try:
+		rfdb.str_to_function(new_func, "testing_compile")
+	except Exception:
+		resp  = '<div class="center-block text-center"><h4>New function failed to compile!</h4></div>'
+		resp += "<pre><code>"+ traceback.format_exc() + "</code></pre>"
+		return {
+			'error'   : True,
+			'message' : resp,
+			'reload'  : False,
+		}
+
+	feedrow.func = new_func
+
+	return {
+		'error'   : False,
+		'message' : "Function updated successfully!",
+		'reload'  : True,
+	}
 
 @app.route('/feed-filters/api/', methods=['GET', 'POST'])
 def feedFiltersApi():
@@ -293,24 +327,42 @@ def feedFiltersApi():
 	print("Request method: ", request.method)
 	print("Request json: ", request.json)
 
-	data = {"wat": "wat"}
+	assert "mode"    in request.json
+	assert "data"    in request.json
+	assert "feed_id" in request.json
 
-	# response = make_response(jsonify(data))
-	response = jsonify(data)
+	try:
+		mode    =     request.json["mode"]
+		data    =     request.json["data"]
+		feed_id = int(request.json["feed_id"])
+	except ValueError:
+		return content_views.build_error_response("Feed ID must be an integer!")
 
-	# print("response", response)
-	# response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-	# response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-	# response.headers["Pragma"] = "no-cache"
-	# response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+	feed = g.session.query(db.RssFeedEntry)    \
+		.filter(db.RssFeedEntry.id == feed_id) \
+		.scalar()
 
-	print("ResponseData: ", data)
-	print("Response: ", response)
+	if not feed:
+		return content_views.build_error_response("Feed ID not found!")
+
+	if mode == "update_feed_parse_func":
+		raw_resp = update_function_text(feed, data)
+
+	response = jsonify(raw_resp)
+
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"] = "no-cache"
+	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
 
 	response.status_code = 200
 	response.mimetype="application/json"
 	g.session.commit()
 	g.session.expire_all()
+
+	print("ResponseData: ", raw_resp)
+	print("Response: ", response)
+
 	return response
 
 
