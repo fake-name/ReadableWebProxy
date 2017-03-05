@@ -162,6 +162,9 @@ badwords: [
 			'?p=',
 			'#post',
 
+			# Per post links from wuxiaworld
+			'/discussion/comment/',
+
 			]
 
 

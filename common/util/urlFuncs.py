@@ -230,7 +230,7 @@ def hasDuplicatePathSegments(url):
 		pathchunks = [chunk for chunk in pathchunks if chunk]
 
 		# http://www.spcnet.tv/forums/showthread.php/21185-mobile-suit-gundam-the-second-century-(part-2-the-second-century)/images/icons/images/misc/showthread.php/21185-Mobile-Suit-Gundam-The-Second-Century-(Part-2-The-Second-Century)/page10
-		if netloc == 'www.spcnet.tv':
+		if netloc == 'www.spcnet.tv' or netloc == 'www.eugenewoodbury.com':
 			# Yeah, special case stuff because spcnet is garbage.
 
 			# Block instances where there are multiple known-bad segments.

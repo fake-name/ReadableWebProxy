@@ -18,6 +18,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 import traceback
 import datetime
+import collections
 
 from app.utilities import paginate
 import common.database as db
@@ -145,6 +146,7 @@ def proto_process_releases(feed_releases):
 		proc_tmp['tags']      = item.tags
 		proc_tmp['authors']   = item.author
 		proc_tmp['srcname']   = item.feed_entry.feed_name
+		proc_tmp['feed_id']   = item.feed_entry.id
 
 		proc_tmp['vcfp']      = extractVolChapterFragmentPostfix(item.title)
 
@@ -240,10 +242,33 @@ def feedFiltersRecent():
 	items = proto_process_releases(feeds)
 
 	release_count = len(feeds)
+	missed_count  = len(items['missed'])
+
+	bykey = {}
+	for dummy_ret, item in items['missed']:
+		if not item['srcname'] in bykey:
+			bykey[item['srcname']] = []
+
+		bykey[item['srcname']].append(item)
+
+	sortable = []
+	for key in bykey:
+		# 1e9 subtraction inverts the ordering of the first item.
+		sortable.append((1e9 - len(bykey[key]), key.lower(), key, len(bykey[key]), bykey[key][0]['feed_id'], bykey[key]))
+
+	sortable.sort()
+
+	sorted_items = collections.OrderedDict()
+	for dummy_1, dummy_2, source_name, count, source_id, item in sortable:
+		key = (source_name, count, source_id)
+		if key not in sorted_items:
+			sorted_items[key] = []
+		sorted_items[key].extend(item)
 
 	return render_template('rss-pages/feeds_only_results.html',
 						   release_count = release_count,
-						   items         = items,
+						   missed_count  = missed_count,
+						   items         = sorted_items,
 						   item_scope    = item_scope_str,
 						   )
 

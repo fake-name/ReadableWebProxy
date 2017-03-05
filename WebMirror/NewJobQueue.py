@@ -18,6 +18,7 @@ import os
 
 import settings
 import common.global_constants
+import common.util.urlFuncs
 # import common.database as db
 import common.LogBase as LogBase
 import WebMirror.rules
@@ -195,6 +196,18 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 	def outbound_job_wanted(self, netloc, joburl):
 
+		disallowDupe = False
+		for ruleset in self.ruleset:
+			if ruleset['netlocs'] and netloc in ruleset['netlocs']:
+				disallowDupe = ruleset['disallow_duplicate_path_segments'] or disallowDupe
+
+		if disallowDupe:
+			bad = common.util.urlFuncs.hasDuplicatePathSegments(joburl)
+			if bad:
+				self.log.warn("Unwanted URL (pathchunks): '%s' - %s", joburl, bad)
+				return False
+
+
 		badwords = self.getBadWords(netloc)
 		ret = self.generalLinkClean(joburl, badwords)
 		if ret:
@@ -210,7 +223,8 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 	def delete_job(self, rid, joburl):
 		self.log.warning("Deleting job for url: '%s'", joburl)
 		cursor = self.db_interface.cursor()
-		cursor.execute("""DELETE FROM web_pages WHERE web_pages.id = %s AND web_pages.url = %s;""", (rid, joburl))
+		cursor.execute("""DELETE FROM web_pages         WHERE web_pages.id = %s         AND web_pages.url = %s;""", (rid, joburl))
+		cursor.execute("""DELETE FROM web_pages_version WHERE web_pages_version.id = %s AND web_pages_version.url = %s;""", (rid, joburl))
 		self.db_interface.commit()
 
 	def fill_jobs(self):

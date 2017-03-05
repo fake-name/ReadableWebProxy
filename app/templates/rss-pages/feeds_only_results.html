@@ -1,20 +1,18 @@
-<!-- extend base layout -->
-{%- extends "__base.html" -%}
-
 
 {%- macro tableHeader() -%}
 	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
 		<colgroup>
 			<col />
-			<col style="width: 50%;" />
+			<col style="width: 12%;" />
+			<col style="width: 30%;" />
 		</colgroup>
 		<tr>
-			<th>
-				Feed name
-			</th>
-			<th>
-				URLs
-			</th>
+			<th>Title</th>
+			<th>Tags</th>
+			<th>Feed</th>
+			<th>Vol, Chp, Frag, Postfix</th>
+			<th>GUID</th>
+			<th>Published</th>
 		</tr>
 {%- endmacro -%}
 
@@ -32,22 +30,6 @@
 
 
 
-{%- macro tableHeader() -%}
-	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
-		<colgroup>
-			<col />
-			<col style="width: 75%;" />
-		</colgroup>
-		<tr>
-			<th>
-				Feed name
-			</th>
-			<th>
-				URLs
-			</th>
-		</tr>
-{%- endmacro -%}
-
 {%- macro tableFooter() -%}
 	</table>
 {%- endmacro -%}
@@ -56,26 +38,29 @@
 
 {%- macro release_block(block_item_list) -%}
 	<div>
-		<div>
+		{%- for key, releases in block_item_list.items() -%}
+			{% set sourcename, count, source_id = key %}
+			<h5 class='pull-right'>{{releases | length}} item{{"s" if releases|length > 1 else ""}}</h5>
+			<h4><a href='{{url_for('feedIdView', feedid=source_id)}}'>Source: {{sourcename}}, Id: {{source_id}}</a></h4>
 			{{tableHeader()}}
-				{%- for after_dispatch, raw in block_item_list -%}
-					<tr><td>SourceName</td><td>{{raw['srcname']}}</td></tr>
-					<tr><td>Title</td><td>{{raw['title']}}</td></tr>
-					<tr><td>Tags</td><td>{{raw['tags']}}</td></tr>
-					<tr><td>Feed</td><td><a href='{{raw['linkUrl']}}'>{{raw['linkUrl']}}</a></td></tr>
-					<tr><td>Vol, Chp, Frag, Postfix</td><td>{{raw['vcfp']}}</td></tr>
-					<tr><td>GUID</td><td>{{raw['guid']}}</td></tr>
-					<tr><td>Published</td><td>{{raw['published']}}</td></tr>
-					<tr><td colspan=2><hr></td></tr>
+				{%- for release in releases -%}
+					<tr>
+						<td>{{release['title']}}</td>
+						<td>{{release['tags']}}</td>
+						<td><a href='{{release['linkUrl']}}'>{{release['linkUrl']}}</a></td>
+						<td>{{release['vcfp']}}</td>
+						<td>{{release['guid']}}</td>
+						<td>{{release['published']}}</td>
+					</tr>
 				{%- endfor -%}
 			{{tableFooter()}}
-		</div>
+		{%- endfor -%}
 	</div>
 {%- endmacro -%}
 
 
 
-{%- block content -%}
+{%- macro content() -%}
 	{%- include '_block_flash.html' -%}
 	<div class="well well-large" style="min-height: 140px; width: 100%;">
 		<div class='pull-right'>
@@ -88,11 +73,76 @@
 		<div class='clearfix'></div>
 
 		<div id="process-results">
-			<h5 style='display: inline; float:right'>TotalReleases: {{release_count}}</h5>
-			<h4>Missed items: {{items['missed'] | length}}</h4>
-			{{ release_block(items['missed']) }}
+			<div class='pull-right'>TotalReleases: {{release_count}}</div>
+			<h4>Missed items: {{missed_count}}</h4>
+			<div class='clearfix'></div>
+			{{ release_block(items) }}
 		</div>
 
 	</div>
 
-{%- endblock -%}
+{%- endmacro -%}
+
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		{%- if title -%}
+			<title>ReadProxy - {{ title }}</title>
+		{%- else -%}
+			<title>ReadProxy</title>
+		{%- endif -%}
+
+		<!-- Base template header -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<!-- Sub template header -->
+
+		<style>
+			#segment_container
+			{
+				max-width: none !important;
+			}
+			body
+			{
+				max-width: none !important;
+			}
+			table, th, td {
+			    border: 1px solid black !important;
+			}
+			th, td
+			{
+				padding : 2px !important;
+			}
+		</style>
+		<!-- template header end -->
+	</head>
+	<body>
+		<div id='segment_container'>
+			<div id='segment_body'>
+				<div class="container-fluid">
+					<div class="row" style='display: flex;'>
+						<div  style='width:180px !important'>
+							{%- include '_block_nav.html' -%}
+						</div>
+						<div style='flex-grow: 1;'>
+
+							{% include '_block_flash.html' %}
+								{{content()}}
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</body>
+
+	<link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/static/css/custom.css" rel="stylesheet" media="screen">
+	<script src="/static/js/jquery-latest.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+</html>
+
+

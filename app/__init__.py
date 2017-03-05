@@ -1,12 +1,9 @@
-import os
-from flask import Flask
-from flask.json import JSONEncoder
 
-# from flask.ext.babel import Babel, lazy_gettext
-from flask_wtf.csrf import CsrfProtect
-from flask_debugtoolbar import DebugToolbarExtension
-from config import basedir
+import os
 import datetime
+
+from flask import Flask
+from flask_wtf.csrf import CsrfProtect
 from babel.dates import format_datetime
 
 import urllib.parse
@@ -23,9 +20,6 @@ app.config.from_object('config.BaseConfig')
 
 CsrfProtect(app)
 
-# if "debug" in sys.argv:
-# 	print("Installing debug toolbar!")
-# 	toolbar = DebugToolbarExtension(app)
 
 if not app.debug:
 	import logging
