@@ -116,7 +116,7 @@ class RssFeedPost(common.db_base.Base):
 	author_rel    = relationship('Author',     secondary=feed_author_link, backref='feed_pages')
 
 	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
-	author       = association_proxy('author_rel',   'author',    creator=author_creator)
+	author        = association_proxy('author_rel',   'author',    creator=author_creator)
 
 
 

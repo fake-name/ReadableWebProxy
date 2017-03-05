@@ -23,9 +23,9 @@
 
 {%- macro release_block(block_item_list) -%}
 	<div>
-		{%- for after_dispatch, raw in block_item_list -%}
-			<div>
-				{{tableHeader()}}
+		<div>
+			{{tableHeader()}}
+				{%- for after_dispatch, raw in block_item_list -%}
 					<tr><td>SourceName</td><td>{{raw['srcname']}}</td></tr>
 					<tr><td>Title</td><td>{{raw['title']}}</td></tr>
 					<tr><td>Tags</td><td>{{raw['tags']}}</td></tr>
@@ -33,15 +33,17 @@
 					<tr><td>Vol, Chp, Frag, Postfix</td><td>{{raw['vcfp']}}</td></tr>
 					<tr><td>GUID</td><td>{{raw['guid']}}</td></tr>
 					<tr><td>Published</td><td>{{raw['published']}}</td></tr>
-				{{tableFooter()}}
-			</div>
-		{%- endfor -%}
+					<tr><td colspan=2><hr></td></tr>
+				{%- endfor -%}
+			{{tableFooter()}}
+		</div>
 	</div>
 {%- endmacro -%}
 
 
 <div>
 	<div>
+		<h5 style='display: inline; float:right'>TotalReleases: {{release_count}}</h5>
 		<h4>Missed items: {{items['missed'] | length}}</h4>
 		{{ release_block(items['missed']) }}
 	</div>

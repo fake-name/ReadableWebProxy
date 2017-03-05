@@ -227,8 +227,36 @@ def hasDuplicatePathSegments(url):
 			return True
 
 		pathchunks = parsed.path.split("/")
-
 		pathchunks = [chunk for chunk in pathchunks if chunk]
+
+		# http://www.spcnet.tv/forums/showthread.php/21185-mobile-suit-gundam-the-second-century-(part-2-the-second-century)/images/icons/images/misc/showthread.php/21185-Mobile-Suit-Gundam-The-Second-Century-(Part-2-The-Second-Century)/page10
+		if netloc == 'www.spcnet.tv':
+			# Yeah, special case stuff because spcnet is garbage.
+
+			# Block instances where there are multiple known-bad segments.
+			disallow_multiple = [
+				'images',
+				'avatars',
+				'smilies',
+				]
+			if any([pathchunks.count(i) > 1 for i in disallow_multiple]):
+				return True
+
+			# Block a url where multiple instances of the php page is present.
+			disalow_several = [
+				'cron.php',
+				'external.php',
+				'forumdisplay.php',
+				'member.php',
+				'register.php',
+				'showthread.php',
+			]
+
+			if sum([pathchunks.count(i) for i in disalow_several]) > 1:
+				return True
+
+
+
 
 
 		if len(set(pathchunks)) == len(pathchunks):

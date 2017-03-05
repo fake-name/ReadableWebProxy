@@ -36,7 +36,7 @@
 {%- block content -%}
 	{%- include '_block_flash.html' -%}
 	<div class="well well-large" style="min-height: 140px; width: 100%;">
-		<div><h2 style='display: inline'>RSS Feed Source: {{feed.feed_name}}</h2><h5 style='display: inline; float:right'>Releases: {{release_count}}</h5></div>
+		<div><h2 style='display: inline'>RSS Feed Source: {{feed.feed_name}}</h2></div>
 		<div class='clearfix'></div>
 
 		<div id="code-editor">{{"\n\n\n"}}{{feed.func}}{{"\n\n\n"}}</div>

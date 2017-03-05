@@ -1,0 +1,98 @@
+<!-- extend base layout -->
+{%- extends "__base.html" -%}
+
+
+{%- macro tableHeader() -%}
+	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
+		<colgroup>
+			<col />
+			<col style="width: 50%;" />
+		</colgroup>
+		<tr>
+			<th>
+				Feed name
+			</th>
+			<th>
+				URLs
+			</th>
+		</tr>
+{%- endmacro -%}
+
+{%- macro tableFooter() -%}
+	</table>
+{%- endmacro -%}
+
+
+
+{%- macro release_block(block_item_list) -%}
+	<div>
+		{{block_item_list}}
+	</div>
+{%- endmacro -%}
+
+
+
+{%- macro tableHeader() -%}
+	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
+		<colgroup>
+			<col />
+			<col style="width: 75%;" />
+		</colgroup>
+		<tr>
+			<th>
+				Feed name
+			</th>
+			<th>
+				URLs
+			</th>
+		</tr>
+{%- endmacro -%}
+
+{%- macro tableFooter() -%}
+	</table>
+{%- endmacro -%}
+
+
+
+{%- macro release_block(block_item_list) -%}
+	<div>
+		<div>
+			{{tableHeader()}}
+				{%- for after_dispatch, raw in block_item_list -%}
+					<tr><td>SourceName</td><td>{{raw['srcname']}}</td></tr>
+					<tr><td>Title</td><td>{{raw['title']}}</td></tr>
+					<tr><td>Tags</td><td>{{raw['tags']}}</td></tr>
+					<tr><td>Feed</td><td><a href='{{raw['linkUrl']}}'>{{raw['linkUrl']}}</a></td></tr>
+					<tr><td>Vol, Chp, Frag, Postfix</td><td>{{raw['vcfp']}}</td></tr>
+					<tr><td>GUID</td><td>{{raw['guid']}}</td></tr>
+					<tr><td>Published</td><td>{{raw['published']}}</td></tr>
+					<tr><td colspan=2><hr></td></tr>
+				{%- endfor -%}
+			{{tableFooter()}}
+		</div>
+	</div>
+{%- endmacro -%}
+
+
+
+{%- block content -%}
+	{%- include '_block_flash.html' -%}
+	<div class="well well-large" style="min-height: 140px; width: 100%;">
+		<div class='pull-right'>
+			<span><a href="{{ url_for('feedFiltersRecent') }}">Last Day</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', scope='week') }}">Last Week</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', scope='month') }}">Last Month</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', scope='all') }}">All</a></span>
+		</div>
+		<div><h2 style='display: inline'>Feeds by date: {{item_scope}}</h2></div>
+		<div class='clearfix'></div>
+
+		<div id="process-results">
+			<h5 style='display: inline; float:right'>TotalReleases: {{release_count}}</h5>
+			<h4>Missed items: {{items['missed'] | length}}</h4>
+			{{ release_block(items['missed']) }}
+		</div>
+
+	</div>
+
+{%- endblock -%}

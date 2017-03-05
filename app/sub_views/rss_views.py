@@ -17,6 +17,7 @@ from sqlalchemy import desc
 
 from sqlalchemy.orm import joinedload
 import traceback
+import datetime
 
 from app.utilities import paginate
 import common.database as db
@@ -117,7 +118,7 @@ def renderFeedEntry(postid):
 
 
 
-def proto_process_releases(feed):
+def proto_process_releases(feed_releases):
 	ret_dict = {
 			"successful" : [],
 			"missed"     : [],
@@ -132,7 +133,7 @@ def proto_process_releases(feed):
 			type=None,
 			)
 
-	for item in feed.releases:
+	for item in feed_releases:
 		proc_tmp = {}
 		proc_tmp['feedtype']  = item.type
 		proc_tmp['title']     = item.title
@@ -143,7 +144,7 @@ def proto_process_releases(feed):
 		proc_tmp['contents']  = item.contents
 		proc_tmp['tags']      = item.tags
 		proc_tmp['authors']   = item.author
-		proc_tmp['srcname']   = feed.feed_name
+		proc_tmp['srcname']   = item.feed_entry.feed_name
 
 		proc_tmp['vcfp']      = extractVolChapterFragmentPostfix(item.title)
 
@@ -159,34 +160,34 @@ def proto_process_releases(feed):
 		else:
 			raise RuntimeError("Wat? Unknown ret ({}) for release: {}".format(ret, proc_tmp))
 
-	print("Returning: ", ret_dict)
 	return ret_dict
 
 @app.route('/feed-filters/feedid-process-results/<int:feedid>')
 def feedLoadFilteredData(feedid):
 
-	feed = g.session.query(db.RssFeedEntry) \
-		.filter(db.RssFeedEntry.id == feedid)    \
+	feed = g.session.query(db.RssFeedEntry)   \
+		.filter(db.RssFeedEntry.id == feedid) \
+		.options(joinedload('releases'))  \
 		.scalar()
-	items = proto_process_releases(feed)
+
+	items = proto_process_releases(feed.releases)
 
 	return render_template('rss-pages/feed_items_processed_block.html',
 						   items         = items,
+						   release_count = len(feed.releases),
 						   )
 
 
 @app.route('/feed-filters/feedid/<int:feedid>')
 def feedIdView(feedid):
 
-	feed = g.session.query(db.RssFeedEntry) \
-		.filter(db.RssFeedEntry.id == feedid)    \
+	feed = g.session.query(db.RssFeedEntry)   \
+		.filter(db.RssFeedEntry.id == feedid) \
 		.scalar()
-	rellist = list(feed.releases)
 
 	return render_template('rss-pages/feed_filter_item.html',
 						   feed          = feed,
 						   feedid        = feedid,
-						   release_count = len(rellist),
 						   )
 
 
@@ -202,6 +203,48 @@ def feedFiltersRoot():
 
 	return render_template('rss-pages/feed_filter_base.html',
 						   feeds = feeds,
+						   )
+
+
+
+
+@app.route('/feed-filters/recent')
+def feedFiltersRecent():
+
+	valid_scopes = ["day", "week", "month", "all"]
+	scope = 'day'
+	if "scope" in request.args and request.args['scope'] in valid_scopes:
+		scope = request.args['scope']
+
+	if   scope == "day":
+		item_scope_str   = "Last day"
+		item_scope_limit = datetime.datetime.now() - datetime.timedelta(days=1)
+	elif scope == "week":
+		item_scope_str   = "Last Week"
+		item_scope_limit = datetime.datetime.now() - datetime.timedelta(days=7)
+	elif scope == "month":
+		item_scope_str   = "Last Month"
+		item_scope_limit = datetime.datetime.now() - datetime.timedelta(days=45)
+	elif scope == "all":
+		item_scope_str   = "All"
+		item_scope_limit = datetime.datetime.min
+	else:
+		return render_template('error.html', title = 'Viewer', message = "Error! Invalid history scope!")
+
+
+
+	feeds = g.session.query(db.RssFeedPost)                  \
+		.filter(db.RssFeedPost.published > item_scope_limit) \
+		.all()
+
+	items = proto_process_releases(feeds)
+
+	release_count = len(feeds)
+
+	return render_template('rss-pages/feeds_only_results.html',
+						   release_count = release_count,
+						   items         = items,
+						   item_scope    = item_scope_str,
 						   )
 
 
