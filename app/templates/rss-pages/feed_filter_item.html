@@ -1,6 +1,4 @@
 <!-- extend base layout -->
-{%- extends "__base.html" -%}
-
 
 {%- macro tableHeader() -%}
 	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
@@ -33,32 +31,86 @@
 
 
 
-{%- block content -%}
-	{%- include '_block_flash.html' -%}
-	<div class="well well-large" style="min-height: 140px; width: 100%;">
-		<div><h2 style='display: inline'>RSS Feed Source: {{feed.feed_name}}</h2></div>
-		<div class='clearfix'></div>
+<!DOCTYPE html>
+<html>
+	<head>
+		{%- if title -%}
+			<title>ReadProxy - {{ title }}</title>
+		{%- else -%}
+			<title>ReadProxy</title>
+		{%- endif -%}
 
-		<div id="code-editor">{{feed.func}}{{"\n\n\n"}}</div>
-		<button onclick="apply_function_update()" class="btn btn-primary" style='display: inline; float:right'>Update function and execute</button>
-		<button onclick="discard_changes()" class="btn btn-danger">Discard changes</button>
-		<div class='clearfix'></div>
-		<hr>
-		<div id="process-results">
-			<div class="center-block text-center">
-				<h4>Loading current feed items.</h4>
-				<p>Please Wait.</p>
-				<img src="/static/loading.gif">
-				<br>
-				<br>
+		<!-- Base template header -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<!-- Sub template header -->
+
+		<style>
+			#segment_container
+			{
+				max-width: none !important;
+			}
+			body
+			{
+				max-width: none !important;
+			}
+			table, th, td {
+			    border: 1px solid black !important;
+			}
+			th, td
+			{
+				padding : 2px !important;
+			}
+		</style>
+		<!-- template header end -->
+	</head>
+	<body>
+		<div id='segment_container'>
+			<div id='segment_body'>
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-2" style='width:180px !important'>
+							{%- include '_block_nav.html' -%}
+						</div>
+						<div class="col-md-10">
+							{%- include '_block_flash.html' -%}
+							<div class="well well-large" style="min-height: 140px; width: 100%;">
+								<div><h2 style='display: inline'>RSS Feed Source: {{feed.feed_name}}</h2></div>
+								<div class='clearfix'></div>
+
+								<div id="code-editor">{{feed.func}}{{"\n\n\n"}}</div>
+								<button onclick="apply_function_update()" class="btn btn-primary" style='display: inline; float:right'>Update function and execute</button>
+								<button onclick="discard_changes()" class="btn btn-danger">Discard changes</button>
+								<div class='clearfix'></div>
+								<hr>
+								<div id="process-results">
+									<div class="center-block text-center">
+										<h4>Loading current feed items.</h4>
+										<p>Please Wait.</p>
+										<img src="/static/loading.gif">
+										<br>
+										<br>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
 			</div>
 		</div>
 
-	</div>
 
-{%- endblock -%}
 
-{%- block footer -%}
+	</body>
+
+	<!-- Base template footer -->
+	<link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/static/css/custom.css" rel="stylesheet" media="screen">
+	<script src="/static/js/jquery-latest.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+
 	<style type="text/css" media="screen">
 		#code-editor {
 			top: 0;
@@ -162,4 +214,7 @@
 		}
 
 	</script>
-{%- endblock -%}
+</html>
+
+
+
