@@ -29,7 +29,9 @@ import config
 
 import WebMirror.OutputFilters.rss.FeedDataParser
 import WebMirror.OutputFilters.util.feedNameLut
+import common.rss_func_db as rfdb
 import astor
+import astor.source_repr
 
 def add_name(sess, netloc, nametxt):
 	check = sess.query(db.RssFeedEntry) \
@@ -140,5 +142,37 @@ def exposed_dump_raw_feed_data():
 	with open("db_bak_{}.json".format(str(datetime.datetime.now()).replace(":", "-").replace(" ", "_")), "w") as fp:
 		json.dump(ret, fp, indent="	")
 
+def better_pretty_source(sauce):
+	# I specifically don't want to wrap lines basically ever.
+	# the code editor interface is ~180 cols.
+	t1 = astor.source_repr.split_lines(sauce, maxline=170)
+	t2 = astor.source_repr.flatten(t1)
+	ret = ''.join(t2)
+	return ret
 
+def exposed_astor_roundtrip_parser_functions():
+	'''
+	Shove the feed-functions through the astor "round-trip"
+	facility.
+
+	Mostly, this homogenizes the indentation, and reformats the function.
+	'''
+
+	sess = db.get_db_session()
+	res = sess.query(db.RssFeedEntry) \
+		.all()
+
+	for row in res:
+		func = row.get_func()
+		_ast = row._get_ast()
+		src = astor.to_source(_ast, indent_with="	", pretty_source=better_pretty_source)
+
+		if src.strip() != row.func.strip():
+			try:
+				rfdb.str_to_function(src, "testing_compile")
+				print("Compiled OK")
+				row.func = src
+			except Exception:
+				print("Compilation failed?")
+	sess.commit()
 

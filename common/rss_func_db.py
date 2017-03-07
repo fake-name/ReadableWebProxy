@@ -149,10 +149,18 @@ class RssFeedUrlMapper(common.db_base.Base):
 # LRU Cache of function text -> function objects.
 PARSED_FUNCTION_CACHE = cachetools.LRUCache(maxsize=5000)
 
-def str_to_function(instr, name):
+def str_to_ast(instr, name):
+	print("Compiling function from DB")
+
 	# So compile needs a trailing newline to properly terminate (or something?)
 	# anyways, stick some extra on to be safe.
 	func_str = instr+"\n\n"
+
+	func_container = ast.parse(func_str, "<db_for_<{}>>".format(name), "exec")
+	return func_container
+
+def str_to_function(instr, name):
+	instr = instr.strip()
 
 	# Use the loaded function when possible.
 	if instr in PARSED_FUNCTION_CACHE:
@@ -161,8 +169,11 @@ def str_to_function(instr, name):
 
 	print("Compiling function from DB")
 
-	func_container = compile(func_str,
-			"<db_for_<{}>>".format(name), "exec")
+	# So compile needs a trailing newline to properly terminate (or something?)
+	# anyways, stick some extra on to be safe.
+	func_str = instr+"\n\n"
+
+	func_container = compile(func_str, "<db_for_<{}>>".format(name), "exec")
 
 	# These keys determine what modules are available to the database functions.
 	# If a database function needs a library, it has to be imported here!
@@ -207,6 +218,9 @@ class RssFeedEntry(common.db_base.Base):
 
 
 	__loaded_func       = None
+
+	def _get_ast(self):
+		return str_to_ast(self.func, self.feed_name)
 
 	def get_func(self):
 		self.__loaded_func = str_to_function(self.func, self.feed_name)

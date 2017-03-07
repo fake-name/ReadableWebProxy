@@ -469,10 +469,10 @@ def netloc_send_feed(netloc):
 ##############################################################################################################
 ##############################################################################################################
 
-import activeScheduledTasks
-import WebMirror.TimedTriggers.UrlTriggers
 
 def get_triggered_urls():
+	import WebMirror.TimedTriggers.UrlTriggers
+	import activeScheduledTasks
 	ret = []
 	for plugin, dummy_interval in activeScheduledTasks.scrapePlugins.values():
 		if issubclass(plugin, WebMirror.TimedTriggers.UrlTriggers.UrlTrigger):

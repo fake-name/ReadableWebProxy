@@ -1,29 +1,25 @@
 
-
 import time
 import urllib.parse
 import pprint
-import json
 import datetime
 import traceback
 import os.path
 import json
 import calendar
-import urllib.parse
 
 import sqlalchemy.exc
 from sqlalchemy.orm import joinedload
 from sqlalchemy import desc
 from sqlalchemy import func
-from sqlalchemy.sql.expression import nullslast
 
+from WebMirror.NewJobQueue import buildjob
 import common.database as db
 
 import common.get_rpyc
 import common.LogBase as LogBase
 import random
 import bsonrpc.exceptions
-from WebMirror.NewJobQueue import buildjob
 
 from WebMirror.OutputFilters.util.MessageConstructors import fix_string
 from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
@@ -437,6 +433,50 @@ class NuHeader(LogBase.LoggerMixin):
 
 		self.db_sess.commit()
 
+	def check_probable_validate(self, row):
+		titles = [tmp.resolved_title for tmp in row.resolved]
+		tgts   = [tmp.actual_target for tmp in row.resolved]
+		if not all(titles):
+			return
+
+		badwords = [
+			'523',
+			'404',
+			'403',
+			'not found',
+			'error',
+			'wordpress.com',
+			'access denied',
+			'unavailable',
+			'nothing found',
+			'stole this page',
+		]
+		for title in titles:
+			if any([badword in title.lower() for badword in badwords]):
+				self.log.info("Badword in title: %s", titles)
+				return
+
+		if not all([tgts[0] == tgt for tgt in tgts]):
+			self.log.info("URL Mismatch!")
+			return
+
+		row.reviewed = 'valid'
+
+	def validate_probable_ok(self):
+		self.log.info("Doing optional validation")
+
+		new_items = self.db_sess.query(db.NuReleaseItem)           \
+				.filter(db.NuReleaseItem.validated == True)        \
+				.filter(db.NuReleaseItem.reviewed == 'unverified') \
+				.filter(db.NuReleaseItem.actual_target != None)    \
+				.order_by(desc(db.NuReleaseItem.first_seen))       \
+				.all()
+
+		for row in new_items:
+			self.check_probable_validate(row)
+
+		self.db_sess.commit()
+
 def fetch_and_flush():
 	hd = NuHeader()
 	hd.process_avail()
@@ -453,6 +493,8 @@ def fetch_and_flush():
 	hd.validate_from_new()
 	hd.timestamp_validated()
 	hd.fix_names()
+
+	hd.validate_probable_ok()
 
 	ago = datetime.datetime.now() - datetime.timedelta(days=3)
 	hd.transmit_since(ago)
@@ -494,5 +536,10 @@ def do_schedule(scheduler):
 	exec_at = datetime.datetime.now() + datetime.timedelta(seconds=5)
 	schedule_next_exec(scheduler, exec_at)
 
+if __name__ == '__main__':
+	import logSetup
+	logSetup.initLogging()
 
+	hdl = NuHeader()
+	hdl.validate_probable_ok()
 
