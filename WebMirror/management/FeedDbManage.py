@@ -189,11 +189,14 @@ def do_db_sync():
 	func_json_path = os.path.join(this_dir, "function_database.json")
 
 	file_funcs = {}
-	if os.path.exists(func_json_path):
-		with open(func_json_path, "r") as fp:
-			data = fp.read()
-			if data:
-				file_funcs = json.loads(data)
+	try:
+		if os.path.exists(func_json_path):
+			with open(func_json_path, "r") as fp:
+				data = fp.read()
+				if data:
+					file_funcs = json.loads(data)
+	except json.JSONDecodeError:
+		pass
 
 	if have_funcs == file_funcs:
 		print("Function storage file is up-to-date. Nothing to do!")
@@ -210,8 +213,17 @@ def do_db_sync():
 
 
 
+class RssFunctionSaver(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
+
+	pluginName = "Rss Database Function Saver"
+	loggerPath = 'RssFuncSaver'
+
+	def go(self):
+		do_db_sync()
+
 def exposed_sync_rss_functions():
 	'''
 	Synchronize the function database with the disk backing file.
 	'''
-	do_db_sync()
+	rfs = RssFunctionSaver()
+	rfs._go()

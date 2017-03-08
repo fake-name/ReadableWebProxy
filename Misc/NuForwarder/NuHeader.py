@@ -319,6 +319,19 @@ class NuHeader(LogBase.LoggerMixin):
 					for lookup in valid.resolved:
 						self.log.error("	Resolved URL: %s", lookup.actual_target)
 
+					self.log.info("Deleting oldest value.")
+					oldest_time = datetime.datetime.max
+					oldest_row  = None
+
+					for lookup in valid.resolved:
+						if lookup.fetched_on < oldest_time:
+							oldest_row = lookup
+							oldest_time = lookup.fetched_on
+					if oldest_row:
+						self.log.info("Deleting row with ID: %s", oldest_row.id)
+						self.db_sess.delete(oldest_row)
+
+
 		self.db_sess.commit()
 		self.log.info("Added validated series: %s", len(new_items))
 		for new in new_items:
