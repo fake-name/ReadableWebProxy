@@ -301,6 +301,7 @@ def update_function_text(feedrow, new_func):
 		}
 
 	feedrow.func = new_func
+	feedrow.last_changed = datetime.datetime.now()
 
 	return {
 		'error'   : False,

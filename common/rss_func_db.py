@@ -216,6 +216,7 @@ class RssFeedEntry(common.db_base.Base):
 	releases          = relationship('RssFeedPost',      backref='feed_entry')
 
 
+	last_changed      = Column(DateTime, nullable=False)
 
 	__loaded_func       = None
 

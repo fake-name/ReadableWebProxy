@@ -4,6 +4,7 @@
 import urllib.parse
 import json
 import traceback
+import datetime
 import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 
 
@@ -99,6 +100,7 @@ def getCreateRssSource(db_sess, feedname, feedurl):
 				feed_name = feedname,
 				enabled   = False,
 				func      = create_function_for_name(feedname),
+				last_changed = datetime.datetime.now(),
 			)
 		db_sess.add(feed_row)
 		db_sess.flush()

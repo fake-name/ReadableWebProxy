@@ -71,10 +71,11 @@ def update_func(sess, feed_name, fcont):
 		print("	Func: ", res.get_func())
 	else:
 		new = db.RssFeedEntry(
-				version   = 1,
-				feed_name = feed_name,
-				enabled   = False,
-				func      = fcont,
+				version      = 1,
+				feed_name    = feed_name,
+				enabled      = False,
+				func         = fcont,
+				last_changed = datetime.datetime.now(),
 			)
 		print("Adding ", feed_name)
 		sess.add(new)
@@ -176,3 +177,30 @@ def exposed_astor_roundtrip_parser_functions():
 				print("Compilation failed?")
 	sess.commit()
 
+def do_db_sync():
+
+	sess = db.get_db_session()
+	res = sess.query(db.RssFeedEntry) \
+		.all()
+
+	for row in res:
+		func = row.get_func()
+		_ast = row._get_ast()
+		src = astor.to_source(_ast, indent_with="	", pretty_source=better_pretty_source)
+
+		if src.strip() != row.func.strip():
+			try:
+				rfdb.str_to_function(src, "testing_compile")
+				print("Compiled OK")
+				row.func = src
+			except Exception:
+				print("Compilation failed?")
+	sess.commit()
+
+
+
+def exposed_sync_rss_functions():
+	'''
+	Synchronize the function database with the disk backing file.
+	'''
+	do_db_sync()

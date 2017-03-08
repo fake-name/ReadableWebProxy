@@ -250,6 +250,17 @@ def hasDuplicatePathSegments(url):
 				'member.php',
 				'register.php',
 				'showthread.php',
+
+				'angel',
+				'biblio',
+				'essays',
+				'foxwolf',
+				'image',
+				'kasho',
+				'paradise',
+				'path',
+				'serpent',
+				'wind',
 			]
 
 			if sum([pathchunks.count(i) for i in disalow_several]) > 1:
