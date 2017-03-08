@@ -182,20 +182,31 @@ def do_db_sync():
 	sess = db.get_db_session()
 	res = sess.query(db.RssFeedEntry) \
 		.all()
-
-	for row in res:
-		func = row.get_func()
-		_ast = row._get_ast()
-		src = astor.to_source(_ast, indent_with="	", pretty_source=better_pretty_source)
-
-		if src.strip() != row.func.strip():
-			try:
-				rfdb.str_to_function(src, "testing_compile")
-				print("Compiled OK")
-				row.func = src
-			except Exception:
-				print("Compilation failed?")
+	have_funcs = {row.feed_name : (row.func, row.last_changed) for row in res}
 	sess.commit()
+
+	this_dir = os.path.dirname(__file__)
+	func_json_path = os.path.join(this_dir, "function_database.json")
+
+	file_funcs = {}
+	if os.path.exists(func_json_path):
+		with open(func_json_path, "r") as fp:
+			data = fp.read()
+			if data:
+				file_funcs = json.loads(data)
+
+	if have_funcs == file_funcs:
+		print("Function storage file is up-to-date. Nothing to do!")
+		return
+
+	print("Updating function database file.")
+	def datetime_handler(x):
+		if isinstance(x, datetime.datetime):
+			return x.isoformat()
+		raise TypeError("Unknown type")
+
+	with open(func_json_path, "w") as fp:
+		json.dump(have_funcs, fp, indent=True, sort_keys=True, default=datetime_handler)
 
 
 

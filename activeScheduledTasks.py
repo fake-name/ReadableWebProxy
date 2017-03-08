@@ -19,6 +19,7 @@ import WebMirror.TimedTriggers.UrlTriggers
 import WebMirror.TimedTriggers.QueueTriggers
 import Misc.HistoryAggregator.Consolidate
 import WebMirror.util.StatusUpdater.Updater
+import WebMirror.management.FeedDbManage
 
 scrapePlugins = {
 	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                      minutes(15)),
@@ -30,6 +31,7 @@ scrapePlugins = {
 	6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                    minutes(60)),
 
 	# 5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                             hours(6)),
+	7  : (WebMirror.management.FeedDbManage.do_db_sync,                                days(1)),
 
 }
 
