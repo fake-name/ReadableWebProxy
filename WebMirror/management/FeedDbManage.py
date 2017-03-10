@@ -227,3 +227,23 @@ def exposed_sync_rss_functions():
 	'''
 	rfs = RssFunctionSaver()
 	rfs._go()
+
+def exposed_underp_rss_functions():
+	'''
+	Do stupid fixes to the RSS database.
+	'''
+	bad = '''	if not (chp or vol) or 'preview' in item['title'].lower():
+		return False'''
+	good = '''	if not (chp or vol) or 'preview' in item['title'].lower():
+		return None'''
+
+	sess = db.get_db_session()
+
+	rows = sess.query(db.RssFeedEntry).all()
+	for row in rows:
+		if bad in row.func:
+			row.func = row.func.replace(bad, good)
+			print(row)
+			print(row.func)
+	sess.commit()
+	pass
