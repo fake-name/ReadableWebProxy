@@ -10,12 +10,13 @@ import os.path
 import time
 import ssl
 import uuid
+import statsd
 
 
 class RabbitQueueHandler(object):
 	die = False
 
-	def __init__(self, settings, mdict):
+	def __init__(self, settings_param, mdict):
 
 		self.logPath = 'Main.Feeds.RPC'
 
@@ -25,42 +26,53 @@ class RabbitQueueHandler(object):
 
 		self.dispatch_map = {}
 
-		# Require clientID in settings
-		assert "RABBIT_LOGIN"       in settings
-		assert "RABBIT_PASWD"       in settings
-		assert "RABBIT_SRVER"       in settings
-		assert "RABBIT_VHOST"       in settings
+		# Require clientID in settings_param
+		assert "RABBIT_LOGIN"       in settings_param
+		assert "RABBIT_PASWD"       in settings_param
+		assert "RABBIT_SRVER"       in settings_param
+		assert "RABBIT_VHOST"       in settings_param
 
-		assert "taskq_task"         in settings
-		assert "taskq_response"     in settings
+		assert "taskq_task"         in settings_param
+		assert "taskq_response"     in settings_param
 
-		assert 'taskq_name' in settings
-		assert 'respq_name' in settings
-		self.settings = settings
+		assert 'taskq_name' in settings_param
+		assert 'respq_name' in settings_param
+		self.settings = settings_param
 
 		sslopts = self.getSslOpts()
-		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
-												password           = settings["RABBIT_PASWD"],
-												host               = settings["RABBIT_SRVER"],
-												virtual_host       = settings["RABBIT_VHOST"],
+		self.vhost = settings_param["RABBIT_VHOST"]
+		self.connector = AmqpConnector.Connector(userid            = settings_param["RABBIT_LOGIN"],
+												password           = settings_param["RABBIT_PASWD"],
+												host               = settings_param["RABBIT_SRVER"],
+												virtual_host       = settings_param["RABBIT_VHOST"],
 												ssl                = sslopts,
-												master             = settings.get('master', True),
-												synchronous        = settings.get('synchronous', False),
+												master             = settings_param.get('master', True),
+												synchronous        = settings_param.get('synchronous', False),
 												flush_queues       = False,
-												prefetch           = settings.get('prefetch', 25),
+												prefetch           = settings_param.get('prefetch', 25),
 												durable            = True,
 												heartbeat          = 60,
-												task_exchange_type = settings.get('queue_mode', 'fanout'),
-												poll_rate          = settings.get('poll_rate', 1.0/100),
-												task_queue         = settings["taskq_task"],
-												response_queue     = settings["taskq_response"],
+												task_exchange_type = settings_param.get('queue_mode', 'fanout'),
+												poll_rate          = settings_param.get('poll_rate', 1.0/100),
+												task_queue         = settings_param["taskq_task"],
+												response_queue     = settings_param["taskq_response"],
 												)
 
 		self.chunks = {}
 
 		self.log.info("Connected AMQP Interface: %s", self.connector)
-		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
+		self.log.info("Connection parameters: %s, %s, %s, %s", settings_param["RABBIT_LOGIN"], settings_param["RABBIT_PASWD"], settings_param["RABBIT_SRVER"], settings_param["RABBIT_VHOST"])
+
+		self.log.info("Setting up stats reporter")
+
+		self.mon_con = statsd.StatsClient(
+				host = settings.GRAPHITE_DB_IP,
+				port = 8125,
+				prefix = 'ReadableWebProxy.FetchAgent',
+				)
+
+		self.log.info("Setup complete!")
+
 
 	def getSslOpts(self):
 		'''
@@ -203,6 +215,8 @@ class RabbitQueueHandler(object):
 		self.connector.stop()
 
 
+
+
 	def dispatch_outgoing(self):
 
 		for qname, q in self.mdict[self.settings['taskq_name']].items():
@@ -211,7 +225,8 @@ class RabbitQueueHandler(object):
 					job = q.get_nowait()
 					jkey = uuid.uuid1().hex
 					job['jobmeta'] = {'sort_key' : jkey}
-					self.dispatch_map[jkey] = qname
+					self.mon_con.incr("Fetch.Get.{}".format(qname), 1)
+					self.dispatch_map[jkey] = (qname, time.time())
 					self.put_job(job)
 				except queue.Empty:
 					break
@@ -239,14 +254,20 @@ class RabbitQueueHandler(object):
 				self.log.error("Job contents: '%s'", new)
 				continue
 
-			qname = self.dispatch_map[jkey]
+			qname, started_at = self.dispatch_map[jkey]
 			if not qname in self.mdict[self.settings['respq_name']]:
 				self.log.error("Job response queue missing?")
 				self.log.error("Queue name: '%s'", qname)
 				continue
 
-			self.log.info("Demultiplexed job for '%s'", qname)
 			self.mdict[self.settings['respq_name']][qname].put(new)
+
+			fetchtime = (time.time() - started_at) * 1000
+
+			self.mon_con.incr("Fetch.Resp.{}".format(qname), 1)
+			self.mon_con.timing("Fetch.Duration.{}".format(qname), fetchtime)
+
+			self.log.info("Demultiplexed job for '%s'. Time to response: %s", qname, fetchtime)
 
 
 	def runner(self):
@@ -264,7 +285,7 @@ class RabbitQueueHandler(object):
 class PlainRabbitQueueHandler(object):
 	die = False
 
-	def __init__(self, settings, mdict):
+	def __init__(self, settings_param, mdict):
 
 		self.logPath = 'Main.Feeds.RPC'
 
@@ -274,41 +295,52 @@ class PlainRabbitQueueHandler(object):
 
 		self.dispatch_map = {}
 
-		# Require clientID in settings
-		assert "RABBIT_LOGIN"       in settings
-		assert "RABBIT_PASWD"       in settings
-		assert "RABBIT_SRVER"       in settings
-		assert "RABBIT_VHOST"       in settings
+		# Require clientID in settings_param
+		assert "RABBIT_LOGIN"       in settings_param
+		assert "RABBIT_PASWD"       in settings_param
+		assert "RABBIT_SRVER"       in settings_param
+		assert "RABBIT_VHOST"       in settings_param
 
-		assert "taskq_task"         in settings
-		assert "taskq_response"     in settings
+		assert "taskq_task"         in settings_param
+		assert "taskq_response"     in settings_param
 
-		assert 'taskq_name' in settings
-		assert 'respq_name' in settings
-		self.settings = settings
+		assert 'taskq_name' in settings_param
+		assert 'respq_name' in settings_param
+		self.settings = settings_param
 
 		sslopts = self.getSslOpts()
-		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
-												password           = settings["RABBIT_PASWD"],
-												host               = settings["RABBIT_SRVER"],
-												virtual_host       = settings["RABBIT_VHOST"],
+		self.vhost = settings_param["RABBIT_VHOST"]
+		self.connector = AmqpConnector.Connector(userid            = settings_param["RABBIT_LOGIN"],
+												password           = settings_param["RABBIT_PASWD"],
+												host               = settings_param["RABBIT_SRVER"],
+												virtual_host       = settings_param["RABBIT_VHOST"],
 												ssl                = sslopts,
-												master             = settings.get('master', True),
-												synchronous        = settings.get('synchronous', False),
+												master             = settings_param.get('master', True),
+												synchronous        = settings_param.get('synchronous', False),
 												flush_queues       = False,
-												prefetch           = settings.get('prefetch', 25),
+												prefetch           = settings_param.get('prefetch', 25),
 												durable            = True,
 												heartbeat          = 60,
-												task_exchange_type = settings.get('queue_mode', 'fanout'),
-												poll_rate          = settings.get('poll_rate', 1.0/100),
-												task_queue         = settings["taskq_task"],
-												response_queue     = settings["taskq_response"],
+												task_exchange_type = settings_param.get('queue_mode', 'fanout'),
+												poll_rate          = settings_param.get('poll_rate', 1.0/100),
+												task_queue         = settings_param["taskq_task"],
+												response_queue     = settings_param["taskq_response"],
 												)
 
 
 		self.log.info("Connected AMQP Interface: %s", self.connector)
-		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
+		self.log.info("Connection parameters: %s, %s, %s, %s", settings_param["RABBIT_LOGIN"], settings_param["RABBIT_PASWD"], settings_param["RABBIT_SRVER"], settings_param["RABBIT_VHOST"])
+
+
+		self.log.info("Setting up stats reporter")
+
+		self.mon_con = statsd.StatsClient(
+				host = settings.GRAPHITE_DB_IP,
+				port = 8125,
+				prefix = 'ReadableWebProxy.FetchAgent',
+				)
+
+		self.log.info("Setup complete!")
 
 	def getSslOpts(self):
 		'''
@@ -359,6 +391,7 @@ class PlainRabbitQueueHandler(object):
 			try:
 				job = self.mdict[self.settings['taskq_name']].get_nowait()
 				self.put_job(job)
+				self.mon_con.incr("Feed.Put.{}".format(qname), 1)
 			except queue.Empty:
 				break
 
@@ -371,6 +404,8 @@ class PlainRabbitQueueHandler(object):
 				return
 
 			self.mdict[self.settings['respq_name']].put(new)
+
+			self.mon_con.incr("Feed.Recv.{}".format(qname), 1)
 
 
 

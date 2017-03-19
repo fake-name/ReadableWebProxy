@@ -82,6 +82,9 @@ GLOBAL_BAD_URLS = [
 			'tracking.feedpress.it',
 
 			'www.quantcast.com',
+
+			'mailto:',
+			'javascript:popupWindow(',
 	]
 
 

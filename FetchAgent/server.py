@@ -15,6 +15,11 @@ import zerorpc
 import gevent.monkey
 import gevent
 
+# from graphitesend import graphitesend
+import statsd
+
+import settings
+import time
 
 # import rpyc
 # rpyc.core.protocol.DEFAULT_CONFIG['allow_pickle'] = True
@@ -55,6 +60,7 @@ class FetchInterfaceClass(object):
 		self.log.info("Connection")
 
 
+
 	def __check_have_queue(self, queuename):
 		if not queuename in self.mdict['outq']:
 			with self.mdict['qlock']:
@@ -70,7 +76,8 @@ class FetchInterfaceClass(object):
 		self.__check_have_queue(queuename)
 		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
 		try:
-			return self.mdict['inq'][queuename].get_nowait()
+			tmp = self.mdict['inq'][queuename].get_nowait()
+			return tmp
 		except queue.Empty:
 			return None
 
@@ -95,7 +102,8 @@ class FetchInterfaceClass(object):
 	def getRss(self):
 		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'].qsize())
 		try:
-			return self.mdict['feed_inq'].get_nowait()
+			ret = self.mdict['feed_inq'].get_nowait()
+			return ret
 		except queue.Empty:
 			return None
 
