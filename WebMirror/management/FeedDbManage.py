@@ -33,13 +33,24 @@ import common.rss_func_db as rfdb
 import astor
 import astor.source_repr
 
+
+
+# def getCreateRssSource(db_sess, feedname, feedurl):
+
 def add_name(sess, netloc, nametxt):
+	if netloc == nametxt:
+		return
+
 	check = sess.query(db.RssFeedEntry) \
 		.filter(db.RssFeedEntry.feed_name == nametxt) \
 		.scalar()
 
 	if not check:
 		print("Wat?", nametxt)
+		fakeurl = "http://{}".format(netloc)
+		newfunc = WebMirror.OutputFilters.rss.FeedDataParser.getCreateRssSource(sess, nametxt, fakeurl)
+		sess.commit()
+		print("Created function: ", newfunc)
 		return
 
 
@@ -81,6 +92,8 @@ def update_func(sess, feed_name, fcont):
 		sess.add(new)
 		sess.commit()
 
+
+
 def exposed_import_feed_parse_funcs():
 	'''
 	Import the feed parsing functions into the database.
@@ -88,15 +101,14 @@ def exposed_import_feed_parse_funcs():
 
 	sess = db.get_db_session()
 
-	parse_map = WebMirror.OutputFilters.rss.FeedDataParser.RSS_PARSE_FUNCTION_MAP
-	for key, func in parse_map.items():
-		func_str = astor.to_source(astor.code_to_ast(func), indent_with="	")
-		update_func(sess, key, func_str)
+	# parse_map = WebMirror.OutputFilters.rss.FeedDataParser.RSS_PARSE_FUNCTION_MAP
+	# for key, func in parse_map.items():
+	# 	func_str = astor.to_source(astor.code_to_ast(func), indent_with="	")
+	# 	update_func(sess, key, func_str)
 
 	name_map = WebMirror.OutputFilters.util.feedNameLut.mapper
 
 	for key, val in name_map.items():
-		print(key, val)
 		add_name(sess, key, val)
 
 def ret_to_dict_list(keys, iterable):

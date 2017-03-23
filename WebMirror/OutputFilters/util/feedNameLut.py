@@ -836,7 +836,6 @@ mapper = {
 	"yasashihonyaku.wordpress.com"                             : 'Yasashi Honyaku',
 	"yasashiinosekaiwa.wordpress.com"                          : "Incarose Jealousy MTL",
 	"yeagdrasil.wordpress.com"                                 : 'Yeagdrasil',
-	"yellawlaw.wordpress.com"                                  : 'WuxiaWorld',
 	"yoraikun.wordpress.com"                                   : 'Yoraikun Translation',
 	"youjinsite.wordpress.com"                                 : 'Youjinsite Translations',
 	"youkoadvent.wordpress.com"                                : 'Youko Advent',
@@ -1123,7 +1122,6 @@ mapper = {
 	"wuxiaheroes.com"                                          : 'Wuxia Heroes',
 	"wuxianation.com"                                          : "WuxiaNation",
 	"wuxiasociety.com"                                         : 'WuxiaSociety',
-	"wuxiaworld.com"                                           : 'WuxiaWorld',
 	"www.ainushi.com"                                          : "愛主の翻訳  Ainushi Translations",
 	"www.ameryedge.com"                                        : 'Amery Edge',
 	"www.anotherparallel.space"                                : 'Another Parallel World',
@@ -1188,7 +1186,6 @@ mapper = {
 	"www.worldofwatermelons.com"                               : "World of Watermelons",
 	"www.wuxiaheroes.com"                                      : 'Wuxia Heroes',
 	"www.wuxiatranslations.com"                                : 'Wuxia Translations',
-	"www.wuxiaworld.com"                                       : 'WuxiaWorld',
 	"www.xianxiaworld.net"                                     : 'Xian Xia World',
 	"www.yamitranslations.com"                                 : 'Yami Translations',
 	"www.yorasutranslations.com"                               : "Yorasu Translations",
@@ -1197,7 +1194,6 @@ mapper = {
 	"www.zxzxzx.info"                                          : 'Zxzxzx\'s blog',
 	"xianforeigners.tk"                                        : "Xian Foreigners",
 	"yamitranslations.com"                                     : 'Yami Translations',
-	"yellawtwl.com"                                            : 'WuxiaWorld',
 	"youjinsite.com"                                           : 'Youjinsite Translations',
 	"zirusmusings.com"                                         : 'Ziru\'s Musings | Translations~',
 	"zxzxzx.info"                                              : 'Zxzxzx\'s Blog',
@@ -1311,7 +1307,6 @@ mapper = {
 	'docs.google.com'                                    : 'docs.google.com',
 	'egscans.com'                                        : 'egscans.com',
 	'elwiki.net'                                         : 'elwiki.net',
-	'forum.wuxiaworld.com'                               : 'forum.wuxiaworld.com',
 	'geekyoven.com'                                      : 'geekyoven.com',
 	'haruchika.dreamwidth.org'                           : 'Haruchika Novel',
 	'koalasplayground.com'                               : 'koalasplayground.com',
@@ -1373,7 +1368,6 @@ mapper = {
 	'raspomme.tumblr.com'                                      : 'raspomme.tumblr.com',                         # 'Soup Fanclub',            # raspomme.tumblr.com/rss
 	'shuuen-scans.tumblr.com'                                  : 'shuuen-scans.tumblr.com',                     # 'Shuuen Scanlations',        # shuuen-scans.tumblr.com/rss
 
-	'm.wuxiaworld.com'                                   : 'm.wuxiaworld.com',
 	'm.xianxiaworld.net'                                 : 'm.xianxiaworld.net',
 
 	# Fix things
@@ -1381,14 +1375,80 @@ mapper = {
 	"misty cloud translations"                               : 'Misty Cloud Translations',
 
 
+	"yellawlaw.wordpress.com"                                  : 'yellawlaw.wordpress.com',
+	"yellawtwl.com"                                            : 'yellawtwl.com',             # Now a domain squatter
 
 
-	"quartia.dreamwidth.org" : "An Unkie Musebox",
+	"wuxiaworld.com"                                           : 'WuxiaWorld',
+	"www.wuxiaworld.com"                                       : 'WuxiaWorld',
+
 	'Wuxia World' : 'WuxiaWorld',
 	'Wuxiaworld'  : 'WuxiaWorld',
 
+	'm.wuxiaworld.com'                                   : 'm.wuxiaworld.com',
+	'forum.wuxiaworld.com'                               : 'forum.wuxiaworld.com',
 
 
+
+
+
+
+	"quartia.dreamwidth.org" : "An Unkie Musebox",
+
+
+	'chaikathetranslation.wordpress.com'       : '(NanoDesu) - Hitsugi no Chaika',
+	'majonakathetranslation.wordpress.com'     : '(NanoDesu) - MajoNaka',
+	'atling.wordpress.com'                     : 'ATranslation',
+	'baixingheiyue.wordpress.com'              : 'BaiXingHeiYue Translations',
+	'berrymtl.wordpress.com'                   : 'Berry MTL',
+	'bluebugsstory.wordpress.com'              : 'bluebugsstory',
+	'cloudytl.wordpress.com'                   : 'Cloudy Translations',
+	'confusedtls.wordpress.com'                : 'Confused Translations',
+	'cutesthime.wordpress.com'                 : 'Pretty Princess Translations',
+	'enlightenedworks.wordpress.com'           : 'EnlightenedWorks',
+	'etherealnovels.wordpress.com'             : 'Ethereal Novels',
+	'fatsotranslations.wordpress.com'          : "So Fat Translations",
+	'fushigitranslations.wordpress.com'        : 'Fushigi Translations',
+	'hoopla2017.wordpress.com'                 : 'Hoopla Translations',
+	'hoshiandme.wordpress.com'                 : 'hoshiandme',
+	'inconnuesite.wordpress.com'               : 'inconnuesite',
+	'jessichi13.wordpress.com'                 : 'Jessichi Notebook',
+	'kaparintranslation.wordpress.com'         : 'Kaparin translations',
+	'keiproject.wordpress.com'                 : 'Kei Project',
+	'kikaimtl.wordpress.com'                   : 'Kikai MTL',
+	'killerninjablog.wordpress.com'            : 'Killer Ninja  Scrap  Book',
+	'kingsweetpotato.wordpress.com'            : 'Potatoes Have Eyes But Cannot See Mt. Tai',
+	'kitsunesamanoshinto.wordpress.com'        : 'Kitsune-Sama no Shinto',
+	'lyran1mtranslation.wordpress.com'         : 'lyran1Mtranslation',
+	'missinghairtranslation.wordpress.com'     : 'Jeepney Passenger Translations',
+	'mudanaagakiwo.wordpress.com'              : 'Futile Struggle',
+	'mysteryrabbittranslations.wordpress.com'  : 'Mystery Rabbit Translations',
+	'otomeruri.wordpress.com'                  : 'OtomeRuri',
+	'pandatranslationswordpress.wordpress.com' : 'Panda Translations',
+	'pooptl.wordpress.com'                     : 'Poop Translations',
+	'poormanstranslation.wordpress.com'        : "Poor Man's Translations",
+	'rexelsite.wordpress.com'                  : 'Relex Translations',
+	'ritorukohi.wordpress.com'                 : 'Ritoru Kohi',
+	'roseredcamellia.wordpress.com'            : 'Rose Red Camellia',
+	'sakyuya.wordpress.com'                    : 'Snow Flower Translation',
+	'seijakunomarionette.wordpress.com'        : 'Seijaku no Marionette',
+	'sheeptranslator.wordpress.com'            : 'SheepTranslator',
+	'shmtrans.wordpress.com'                   : 'Simple Harmonic Machine Translation',
+	'sicillblog.wordpress.com'                 : 'SicillTranslates',
+	'silveredtongue.wordpress.com'             : 'Silvered Tongue',
+	'soyokazeweb.wordpress.com'                : 'Soyokaze Translations',
+	'terminustranslations.files.wordpress.com' : 'Terminus Translation',
+	'thattokanya.wordpress.com'                : 'Tsundere ojisan',
+	'translaboratory.wordpress.com'            : 'TransLaboratory',
+	'trianglenovels.wordpress.com'             : "Triangle Novels",
+	'vexedtranslations.wordpress.com'          : 'VexedTranslations',
+	'walkerika.wordpress.com'                  : 'ErikaWalker',
+	'watashiwasugoidesu.wordpress.com'         : 'Watashi wa Sugoi Desu',
+	'xcaliburwn.wordpress.com'                 : "xCalibur Stories",
+	'xdarkteddy.wordpress.com'                 : 'Teddy ღ',
+	'xianxiauniverse.wordpress.com'            : 'Xianxia Universe',
+	'xtostos.wordpress.com'                    : 'Breaking off the engagement .. Bring it on!',
+	'yanggodtranslations.wordpress.com'        : 'Yang God',
 }
 
 

@@ -848,13 +848,16 @@ def exposed_delete_feed(feed_name, do_delete, search_str):
 	sess.commit()
 
 
-def exposed_nu_new():
+def exposed_nu_new(fetch_title=False):
 	'''
 	Parse outbound netlocs from NovelUpdates releases, extracting
 	any sites that are not known in the feednamelut.
 	'''
-
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
+	import common.util.webFunctions as webFunctions
+
+	wg = webFunctions.WebGetRobust()
+
 	sess = db.get_db_session()
 
 	nu_items = sess.query(db.NuReleaseItem)             \
@@ -862,17 +865,20 @@ def exposed_nu_new():
 		.filter(db.NuReleaseItem.actual_target != None) \
 		.all()
 
-	netlocs = [urllib.parse.urlsplit(row.actual_target).netloc for row in nu_items]
-	print("Nu outbound items: ", len(netlocs))
-	netlocs = set(netlocs)
+	mapdict = {urllib.parse.urlsplit(row.actual_target).netloc : row.actual_target for row in nu_items}
+	print("Nu outbound items: ", len(mapdict))
+
 
 	missing = 0
-	for netloc in netlocs:
+	for netloc, tgturl in mapdict.items():
 		if not fnl.getNiceName(None, netloc):
-			fnl.getNiceName(None, netloc, debug=True)
-			print("Missing: ", netloc)
+			fnl.getNiceName(None, netloc)
+			title = netloc
+			if fetch_title:
+				title = get_page_title(wg, tgturl)
+			print("Missing: ", (netloc, title, tgturl))
 			missing += 1
-	print("Nu outbound items: ", len(netlocs), "missing:", missing)
+	print("Nu outbound items: ", len(mapdict), "missing:", missing)
 
 
 def exposed_fetch_other_feed_sources():
@@ -930,10 +936,10 @@ def exposed_drop_priorities():
 
 	sess = db.get_db_session()
 	print("Getting minimum row in need or update..")
-	start = sess.execute("""SELECT min(id) FROM web_pages WHERE priority < 500000""")
+	start = sess.execute("""SELECT min(id) FROM web_pages WHERE priority != 500000""")
 	start = list(start)[0][0]
 	print("Minimum row ID: ", start, "getting maximum row...")
-	stop = sess.execute("""SELECT max(id) FROM web_pages WHERE priority < 500000""")
+	stop = sess.execute("""SELECT max(id) FROM web_pages WHERE priority != 500000""")
 	stop = list(stop)[0][0]
 	print("Maximum row ID: ", stop)
 
@@ -951,7 +957,7 @@ def exposed_drop_priorities():
 			# Only done because I can't easily find how to make sqlalchemy
 			# bind parameters ignore the postgres specific cast
 			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-			have = sess.execute("""update web_pages set priority = 500000 where priority < 500000 AND id > {} AND id <= {};""".format(idx, idx+step))
+			have = sess.execute("""update web_pages set priority = 500000 where priority != 500000 AND id > {} AND id <= {};""".format(idx, idx+step))
 			# print()
 
 			processed  = idx - start

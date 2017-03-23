@@ -81,6 +81,8 @@ PLUGINS = [
 	WebMirror.processor.FontRemapProcessors.NepustationPageProcessor,
 	WebMirror.processor.NuProcessor.NuProcessor,
 	WebMirror.processor.GarbageInlineProcessors.HecatesCornerPageProcessor,
+	WebMirror.processor.GarbageInlineProcessors.ZenithNovelsPageProcessor,
+	WebMirror.processor.GarbageInlineProcessors.LightNovelsWorldPageProcessor,
 ]
 
 

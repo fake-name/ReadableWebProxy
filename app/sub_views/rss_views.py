@@ -129,6 +129,9 @@ def proto_process_releases(feed_releases):
 			"ignored"    : [],
 	}
 
+	feed_releases = list(feed_releases)
+	feed_releases.sort(key=lambda x: x.published, reverse=True)
+
 	dp = RssProcessor(
 			db_sess=g.session,
 			loggerPath="Main.WebProto",

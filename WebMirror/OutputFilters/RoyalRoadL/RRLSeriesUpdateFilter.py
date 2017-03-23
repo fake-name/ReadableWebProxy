@@ -62,6 +62,16 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'http://royalroadl.com/fictions/active-top-50/',
 			'http://royalroadl.com/fictions/weekly-views-top-50/',
 			'http://royalroadl.com/fictions/new-releases/',
+			'http://www.royalroadl.com/fictions/best-rated',
+			'http://www.royalroadl.com/fictions/latest-updates',
+			'http://www.royalroadl.com/fictions/active-top-50',
+			'http://www.royalroadl.com/fictions/weekly-views-top-50',
+			'http://www.royalroadl.com/fictions/new-releases',
+			'http://royalroadl.com/fictions/best-rated',
+			'http://royalroadl.com/fictions/latest-updates',
+			'http://royalroadl.com/fictions/active-top-50',
+			'http://royalroadl.com/fictions/weekly-views-top-50',
+			'http://royalroadl.com/fictions/new-releases',
 		]
 
 		if url in want:
