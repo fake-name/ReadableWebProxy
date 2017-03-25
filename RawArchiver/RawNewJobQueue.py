@@ -272,7 +272,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				        WHERE
 				            raw_web_pages.state = 'new'
 				        AND
-				            raw_web_pages.priority = (
+				            raw_web_pages.priority <= (
 				               SELECT
 				                    min(priority)
 				                FROM
@@ -283,7 +283,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				                    distance < 1000000
 				                AND
 				                    raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				            )
+				            ) + 10
 				        AND
 				            raw_web_pages.distance < 1000000
 				        AND

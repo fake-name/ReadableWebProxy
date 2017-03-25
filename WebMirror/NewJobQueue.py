@@ -415,7 +415,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				        AND
 				            normal_fetch_mode = true
 				        AND
-				            web_pages.priority = (
+				            web_pages.priority <= (
 				               SELECT
 				                    min(priority)
 				                FROM
@@ -428,7 +428,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				                    normal_fetch_mode = true
 				                AND
 				                    web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				            )
+				            ) + 10 -- Be a bit more greedy about new jobs
 				        AND
 				            web_pages.distance < 1000000
 				        AND
