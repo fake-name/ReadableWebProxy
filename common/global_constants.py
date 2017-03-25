@@ -85,6 +85,8 @@ GLOBAL_BAD_URLS = [
 
 			'mailto:',
 			'javascript:popupWindow(',
+
+			'en.blog.wordpress.com',
 	]
 
 

@@ -150,7 +150,7 @@ class RssFeedUrlMapper(common.db_base.Base):
 PARSED_FUNCTION_CACHE = cachetools.LRUCache(maxsize=5000)
 
 def str_to_ast(instr, name):
-	print("Compiling function from DB")
+	print("Compiling function from DB (str_to_ast)")
 
 	# So compile needs a trailing newline to properly terminate (or something?)
 	# anyways, stick some extra on to be safe.
@@ -167,7 +167,7 @@ def str_to_function(instr, name):
 		print("Using LRU cached function (%s items)" % len(PARSED_FUNCTION_CACHE))
 		return PARSED_FUNCTION_CACHE[instr]
 
-	print("Compiling function from DB")
+	print("Compiling function from DB (str_to_function)")
 
 	# So compile needs a trailing newline to properly terminate (or something?)
 	# anyways, stick some extra on to be safe.

@@ -105,7 +105,6 @@
 	if not (chp or vol or frag) or 'preview' in item['title'].lower():
 		return None
 
-
 	snames = [
 			'The Thrilling Sword',
 			'Fanatic Martial God',
@@ -113,7 +112,6 @@
 		]
 
 	tlut = {tmp.lower(): tmp for tmp in snames}
-
 
 	tlut['demon god'] = "Demon God"
 
@@ -123,8 +121,29 @@
 			tl_type = 'translated'
 
 			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
-	return False
 
+	################################################################################################################
+
+	tagmap = {
+		'A Will Eternal'                                  : 'A Will Eternal',
+	}
+
+	for tag, sname in tagmap.items():
+		if tag in item['tags']:
+			return buildReleaseMessage(item, sname, vol, chp, frag=frag)
+
+	################################################################################################################
+
+	chp_prefixes = [
+			('Lord of the Star Ocean',                               True),
+			('Game Market 1983',                                     False),
+		]
+
+	for series, require_chp in chp_prefixes:
+		if item['title'].lower().startswith(series.lower()) and (not require_chp or 'chapter' in item['title'].lower()):
+			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix)
+
+	return False
 </code></pre>
 								<hr>
 </div>
