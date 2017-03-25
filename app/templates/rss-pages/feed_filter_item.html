@@ -79,8 +79,10 @@
 								<div class='clearfix'></div>
 
 								<div id="code-editor">{{feed.func}}{{"\n\n\n"}}</div>
+								<hr>
 								<div>
 
+<div id='code-templates' class='collapse'>
 <pre><code>{
 	'srcname': 'String',
 	'contents': 'wat',
@@ -95,11 +97,42 @@
 	'vcfp': (None, 69, 0, ''),
 	'title': 'String'
 }</code></pre>
+<pre><code>def extractSOMEONE(item):
+	"""
+	SOMEONE
+	"""
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or 'preview' in item['title'].lower():
+		return None
 
+
+	snames = [
+			'The Thrilling Sword',
+			'Fanatic Martial God',
+			'The Supreme Sword',
+		]
+
+	tlut = {tmp.lower(): tmp for tmp in snames}
+
+
+	tlut['demon god'] = "Demon God"
+
+	ltags = [tmp.lower() for tmp in item['tags']]
+	for key, value in tlut.items():
+		if key in ltags:
+			tl_type = 'translated'
+
+			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+	return False
+
+</code></pre>
+								<hr>
+</div>
 
 								</div>
 								<button onclick="apply_function_update()" class="btn btn-primary" style='display: inline; float:right'>Update function and execute</button>
-								<button onclick="discard_changes()" class="btn btn-danger">Discard changes</button>
+								<button onclick="discard_changes()" style='display: inline; float:left' class="btn btn-danger">Discard changes</button>
+								<center><button class="btn" data-toggle="collapse" data-target="#code-templates">Toggle Templates</button></center>
 								<div class='clearfix'></div>
 								<hr>
 								<div id="process-results">

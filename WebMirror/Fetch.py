@@ -21,6 +21,9 @@ from activePlugins import PLUGINS
 from activePlugins import FILTERS
 
 from common.Exceptions import DownloadException
+import statsd
+import settings
+import time
 
 ########################################################################################################################
 #
@@ -114,6 +117,13 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		self.target_url = target_url
 		self.start_url = start_url
+
+
+		self.mon_con = statsd.StatsClient(
+				host = settings.GRAPHITE_DB_IP,
+				port = 8125,
+				prefix = 'ReadableWebProxy.FetchAgent',
+				)
 
 	########################################################################################################################
 
@@ -289,4 +299,15 @@ class ItemFetcher(LogBase.LoggerMixin):
 		else:
 			content, fName, mimeType = preretrieved
 
-		return self.dispatchContent(content, fName, mimeType)
+		started_at = time.time()
+		ret = self.dispatchContent(content, fName, mimeType)
+
+		fetchtime = (time.time() - started_at) * 1000
+
+		cleaned_mime = mimeType
+		for replace in ['/', '\\', ':', '.']:
+			cleaned_mime = cleaned_mime.replace(replace, "-")
+
+		self.mon_con.timing("ReadableWebProxy.Processing.{}".format(cleaned_mime), fetchtime)
+
+		return ret

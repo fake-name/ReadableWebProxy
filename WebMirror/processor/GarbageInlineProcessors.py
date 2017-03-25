@@ -23,7 +23,7 @@ class HecatesCornerPageProcessor(HtmlProcessor.HtmlPageProcessor):
 		if re.search(r"^https?://(?:www\.)?hecatescorner\.wordpress\.com", url):
 			print("hecatescorner Wants url: '%s'" % url)
 			return True
-		print("hecatescorner doesn't want url: '%s'" % url)
+		# print("hecatescorner doesn't want url: '%s'" % url)
 		return False
 
 	def preprocessBody(self, soup):
@@ -50,7 +50,7 @@ class ZenithNovelsPageProcessor(HtmlProcessor.HtmlPageProcessor):
 		if re.search(r"^https?://(?:www\.)?zenithnovels\.com", url):
 			print("zenith novels Wants url: '%s'" % url)
 			return True
-		print("zenith novels doesn't want url: '%s'" % url)
+		# print("zenith novels doesn't want url: '%s'" % url)
 		return False
 
 	def preprocessBody(self, soup):
@@ -76,7 +76,7 @@ class LightNovelsWorldPageProcessor(HtmlProcessor.HtmlPageProcessor):
 		if re.search(r"^https?://(?:www\.)?lightnovels\.world", url):
 			print("lnw Wants url: '%s'" % url)
 			return True
-		print("lnw doesn't want url: '%s'" % url)
+		# print("lnw doesn't want url: '%s'" % url)
 		return False
 
 	def preprocessBody(self, soup):
