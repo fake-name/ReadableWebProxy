@@ -67,7 +67,7 @@ def go():
 			print("Not resetting in-progress downloads.")
 
 		RawArchiver.RawRunner.initializeRawStartUrls()
-		runner.run(main=False)
+		runner.run_raw()
 	else:
 
 		if not "noreset" in largv:
@@ -76,7 +76,7 @@ def go():
 		else:
 			print("Not resetting in-progress downloads.")
 		WebMirror.Runner.initializeStartUrls(rules)
-		runner.run(main=True)
+		runner.run()
 
 
 	# print("Thread halted. App exiting.")
