@@ -122,7 +122,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		self.mon_con = statsd.StatsClient(
 				host = settings.GRAPHITE_DB_IP,
 				port = 8125,
-				prefix = 'ReadableWebProxy.FetchAgent',
+				prefix = 'ReadableWebProxy.Processing',
 				)
 
 	########################################################################################################################
@@ -308,6 +308,6 @@ class ItemFetcher(LogBase.LoggerMixin):
 		for replace in ['/', '\\', ':', '.']:
 			cleaned_mime = cleaned_mime.replace(replace, "-")
 
-		self.mon_con.timing("ReadableWebProxy.Processing.{}".format(cleaned_mime), fetchtime)
+		self.mon_con.timing("{}".format(cleaned_mime), fetchtime)
 
 		return ret
