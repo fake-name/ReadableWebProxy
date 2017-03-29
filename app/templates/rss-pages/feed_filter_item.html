@@ -84,43 +84,25 @@
 
 <div id='code-templates' class='collapse'>
 <pre><code>{
-	'srcname': 'String',
-	'contents': 'wat',
-	'published': datetime.datetime(),
-	'feedtype': 'eastern',
-	'guid': 'String',
-	'linkUrl': 'String',
-	'tags': [...],
-	'feed_id': 000,
-	'authors': [...],
-	'updated': datetime.datetime(),
-	'vcfp': (None, 69, 0, ''),
-	'title': 'String'
+	'srcname': 'String',              'contents': 'wat',
+	'published': datetime.datetime(), 'feedtype': 'eastern',
+	'guid': 'String',                 'linkUrl': 'String',
+	'tags': [...],                    'feed_id': 000,
+	'authors': [...],                 'updated': datetime.datetime(),
+	'vcfp': (None, 69, 0, ''),        'title': 'String'
 }</code></pre>
-<pre><code>def extractSOMEONE(item):
-	"""
-	SOMEONE
-	"""
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol or frag) or 'preview' in item['title'].lower():
-		return None
-
+<pre><code>
 	snames = [
 			'The Thrilling Sword',
-			'Fanatic Martial God',
-			'The Supreme Sword',
 		]
 
 	tlut = {tmp.lower(): tmp for tmp in snames}
-
 	tlut['demon god'] = "Demon God"
 
 	ltags = [tmp.lower() for tmp in item['tags']]
 	for key, value in tlut.items():
 		if key in ltags:
-			tl_type = 'translated'
-
-			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type='translated')
 
 	################################################################################################################
 
@@ -147,11 +129,57 @@
 </code></pre>
 								<hr>
 </div>
+<div id='code-longer-templates' class='collapse'>
+<pre><code>
+	tagmap = [
+		('PRC',       'Parameter Remote Control', 'translated'),
+		('Loiterous', 'Loiterous',                'oel'),
+	]
+
+	for tagname, name, tl_type in tagmap:
+		if tagname in item['tags']:
+			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+
+	urlfrag = [
+		('http://www.rebirth.online/novel/jintetsu/',  'Jintetsu',     'translated'),
+
+		('rebirth.online/novel/earths-core' ,          "Earth's Core", 'oel'),
+	]
+
+	for key, name, tl_type in urlfrag:
+		if key in item['linkUrl'].lower():
+			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+	titlemap = [
+		('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+		('Master of Dungeon',           'Master of Dungeon',               'oel'),
+	]
+
+	for titlecomponent, name, tl_type in tagmap:
+		if titlecomponent.lower() in item['title'].lower():
+			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+	if 'tdadp' in item['title'].lower() or 'To deprive a deprived person episode'.lower() in item['title'].lower():
+		if vol and chp:
+			vol = None
+		return buildReleaseMessage(item, 'To Deprive a Deprived Person', vol, chp, frag=frag, postfix=postfix)
+
+	if item['title'].startswith('[SS] '):
+		return buildReleaseMessage(item, '[Second Saga]', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+
+	return False
+</code></pre>
+								<hr>
+</div>
 
 								</div>
 								<button onclick="apply_function_update()" class="btn btn-primary" style='display: inline; float:right'>Update function and execute</button>
 								<button onclick="discard_changes()" style='display: inline; float:left' class="btn btn-danger">Discard changes</button>
-								<center><button class="btn" data-toggle="collapse" data-target="#code-templates">Toggle Templates</button></center>
+								<center>
+									<button class="btn" data-toggle="collapse" data-target="#code-templates">Toggle Templates</button>
+									<button class="btn" data-toggle="collapse" data-target="#code-longer-templates">Longer Templates</button>
+								</center>
 								<div class='clearfix'></div>
 								<hr>
 								<div id="process-results">
