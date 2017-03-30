@@ -1,5 +1,5 @@
 requests
-git+https://github.com/fake-name/py-amqp.git
+git+https://github.com/fake-name/amqpstorm.git
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit
 
