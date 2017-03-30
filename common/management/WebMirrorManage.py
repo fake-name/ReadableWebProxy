@@ -46,6 +46,7 @@ import config
 from config import C_RAW_RESOURCE_DIR
 
 import WebMirror.TimedTriggers.QueueTriggers
+import WebMirror.SiteSync.fetch
 import WebMirror.OutputFilters.rss.FeedDataParser
 
 def exposed_remote_fetch_enqueue(url):
@@ -847,8 +848,16 @@ def exposed_delete_feed(feed_name, do_delete, search_str):
 
 	sess.commit()
 
+def exposed_nu_fetch_sources():
+	'''
+	Fetch the active sources from NovelUpdates
+	'''
+	names = WebMirror.SiteSync.fetch.fetch_other_sites()
+	for name in names:
+		print("	- ", name)
 
-def exposed_nu_new(fetch_title=False):
+
+def exposed_nu_new_from_feeds(fetch_title=False):
 	'''
 	Parse outbound netlocs from NovelUpdates releases, extracting
 	any sites that are not known in the feednamelut.
