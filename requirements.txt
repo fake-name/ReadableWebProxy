@@ -1,8 +1,21 @@
 requests
 git+https://github.com/fake-name/amqpstorm.git
 git+https://github.com/fake-name/AmqpConnector.git
-git+https://github.com/fake-name/unshortenit
+git+https://github.com/fake-name/unshortenit.git
+git+https://github.com/berkerpeksag/astor.git
 
+chardet
+pymysql
+mem_top
+statsd
+xxhash
+objgraph
+zerorpc
+cssutils
+tinycss2
+fontTools
+semantic
+cachetools
 bleach
 Jinja2
 psycopg2

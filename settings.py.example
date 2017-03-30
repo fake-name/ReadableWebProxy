@@ -5,6 +5,7 @@ DATABASE_DB_NAME = "database DB name"
 DATABASE_USER    = "database username"
 DATABASE_PASS    = "database password"
 
+RAW_RESOURCE_DIR = "/a/path"
 
 RELINK_SECRET = "random string for relinking. Put >10 characters of randomness here"
 RESOURCE_DIR  = "Absolute filesystem path where resources will be stored."
@@ -40,4 +41,9 @@ WATTPAD_MASKED_TAGS = [
 
 BOOKSIE_REQUIRED_TAGS = WATTPAD_REQUIRED_TAGS
 BOOKSIE_MASKED_TAGS   = WATTPAD_MASKED_TAGS
+
+
+RAW_NO_PROCESSES = 10
+MAX_DB_SESSIONS  = 10
+NO_PROCESSES     = 10
 
