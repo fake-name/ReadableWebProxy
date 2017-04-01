@@ -159,6 +159,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		"http://desertfox.katbox.net",
 		"http://falsestart.katbox.net",
 		"http://anaria.katbox.net",
+		"http://www.irovedout.com",
 
 
 	]

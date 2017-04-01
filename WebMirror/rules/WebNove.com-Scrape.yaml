@@ -1,0 +1,65 @@
+type: eastern
+
+baseUrl: [ "https://www.webnovel.com" ]
+
+
+send_raw_feed: False
+
+# Any url containing any of the words in the `badwords` list will be ignored.
+badwords: [
+			"/welcome",
+
+
+			"/manga/",
+			"/recruitment/",
+			"wpmp_switcher=mobile",
+			"account/begin_password_reset",
+			"/comment-page-",
+
+			# Why do people think they need a fucking comment system?
+			'/?replytocom=',
+			'#comments',
+
+			# Mask out the PDFs
+			"-online-pdf-viewer/",
+
+			# Who the fuck shares shit like this anyways?
+			"?share=",
+
+			]
+
+decompose: [
+	{'id'    : 'header'},
+	{'id'    : 'modalTheme'},
+	{'id'    : 'modalCatalog'},
+	{'id'    : 'switchCatalog'},
+	{'id'    : 'switchTheme'},
+
+	{'class' : 'widget-area'},
+	{'class' : 'cha-fly'},
+	{'class' : 'theme-set'},
+	{'class' : 'nav-menu'},
+	{'id'    : 'site-navigation'},
+	{'id'    : 'masthead'},
+	{'id'    : 'footer'},
+	{'class' : 'bit'},
+	{'class' : 'comments-link'},
+	{'id'    : 'nav-above'},
+	{'id'    : 'nav-below'},
+	{'id'    : 'colophon'},
+
+	{'id'    : 'jp-post-flair'},
+	{'id'    : 'comments'},
+	{'class' : 'entry-utility'},
+
+]
+
+decomposeBefore: [
+	{'class' : 'comments'},
+	{'class' : 'comments-area'},
+	{'id'    : 'addthis-share'},
+	{'id'    : 'info-bt'},
+]
+
+stripTitle: ["| Krytyk's translations"]
+
