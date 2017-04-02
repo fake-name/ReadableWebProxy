@@ -105,7 +105,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		self.rules = None
 		for ruleset in self.ruleset:
 			if netloc in ruleset['netlocs']:
-				self.log.info("Found specific ruleset for netloc: %s -> %s", netloc, ruleset['netlocs'])
+				# self.log.info("Found specific ruleset for netloc: %s -> %s", netloc, ruleset['netlocs'])
 				self.rules = ruleset
 
 		if not self.rules:
