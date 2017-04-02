@@ -59,14 +59,11 @@ from WebMirror.OutputFilters.rss.FeedDataParser import getCreateRssSource
 
 
 
-
 def getHash(fCont):
 
 	m = hashlib.md5()
 	m.update(fCont)
 	return m.hexdigest()
-
-
 
 
 def saveCoverFile(filecont, fHash, filename):

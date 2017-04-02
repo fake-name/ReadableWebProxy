@@ -305,10 +305,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if srcSoup.title:
 			return srcSoup.title.get_text().strip()
 
-
 		return "'%s' has no title!" % url
-
-
 
 	def processNewUrl(self, url, baseUrl=None, istext=True):
 		if not url.lower().startswith("http"):

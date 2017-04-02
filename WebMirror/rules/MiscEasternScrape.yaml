@@ -35,11 +35,6 @@ baseUrl: [
 		'http://www.lannyland.com',
 		'http://www.eugenewoodbury.com',
 
-		# Made out of an e-commerce site?
-		# No RSS I can find.
-		'http://www.englate.com',
-		'http://englate.com',
-
 		# On blogger
 		'http://www.hasutsuki.com',
 		'http://www.pegasusfarts.com',
@@ -123,7 +118,6 @@ decomposeBefore: [
 ]
 
 decompose: [
-
 
 	{'class'  : 'main-nav'},
 	{'class'  : 'inside-right-sidebar'},

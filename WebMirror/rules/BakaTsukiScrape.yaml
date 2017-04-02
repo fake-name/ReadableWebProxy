@@ -115,10 +115,10 @@ decomposeBefore:
 	- {'rel'     : 'EditURI'}
 
 decompose:
-	 - {'role'    :'navigation'}
-	 - {'id'      :'footer'}
-	 - {'id'      :'mw-panel'}
-	 - {'id'      :'mw-head'}
-	 - {'id'      :'mw-navigation'}
+	 - {'role'    : 'navigation'}
+	 - {'id'      : 'footer'}
+	 - {'id'      : 'mw-panel'}
+	 - {'id'      : 'mw-head'}
+	 - {'id'      : 'mw-navigation'}
 
 

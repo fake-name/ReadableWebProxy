@@ -87,6 +87,8 @@ GLOBAL_BAD_URLS = [
 			'javascript:popupWindow(',
 
 			'en.blog.wordpress.com',
+
+			'counter.yadro.ru',
 	]
 
 
@@ -126,4 +128,26 @@ RSS_TITLE_FILTER = [
 	"by: ",
 	"comments on: ",
 	"comment on: ",
+]
+
+
+# Goooooo FUCK YOURSELF
+GLOBAL_INLINE_BULLSHIT = [
+
+			"This translation is property of Infinite Novel Translations.",
+			"This translation is property of Infinite NovelTranslations.",
+			"If you read this anywhere but at Infinite Novel Translations, you are reading a stolen translation.",
+			"&lt;Blank&gt;",
+			"&lt;space&gt;",
+			"<Blank>",
+			"<Blank>",
+			"please read only translator’s websitewww.novitranslation.com",
+			"please read only translator’s website www.novitranslation.com",
+			"Please do not host elsewhere but MBC and Yumeabyss",
+			'Original and most updated translations are from volaretranslations.',
+			'Please support the translator for Wild Consort by reading on volarenovels!',
+			'Original and most updated translations are from volaretranslations.',
+			'Original and most updated translations are from volaretranslations.',
+			"&lt;StarveCleric&gt;",
+
 ]

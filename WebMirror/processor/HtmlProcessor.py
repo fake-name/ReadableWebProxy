@@ -80,10 +80,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			for item in src:
 				dst.append(item)
 
-
-
-
-
 	########################################################################################################################
 	#
 	#	 ######   ######  ########     ###    ########  #### ##    ##  ######      ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
@@ -95,9 +91,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	#	 ######   ######  ##     ## ##     ## ##        #### ##    ##  ######      ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######
 	#
 	########################################################################################################################
-
-
-
 
 	def processImageLink(self, url, baseUrl):
 
@@ -122,10 +115,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		url = urlFuncs.urlClean(url)
 
 		return self.processNewUrl(url, baseUrl=baseUrl, istext=False)
-
-
-
-
 
 	def extractImages(self, soup, baseUrl):
 		ret = []
@@ -165,9 +154,16 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Use a custom function so we only walk the tree once.
 		def searchFunc(tag):
 			for candidate in toDecompose:
-				matches = [
-					(tag.get(key) and any([sattr == value.lower() for sattr in tag.get(key)]))
-						for key, value in candidate.items()]
+				matches = []
+				for key, value in candidate.items():
+					haskey = tag.get(key)
+					if haskey:
+						vallist = tag.get(key)
+						if isinstance(vallist, str):
+							vallist = [vallist, ]
+
+						hasval = any([sattr.lower() == value.lower() for sattr in vallist if sattr])
+						matches.append(hasval)
 				match = any(matches)
 				if match:
 					return True
@@ -347,28 +343,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		contents = soup.prettify()
 
-		# Goooooo FUCK YOURSELF
-		garbage_inline_shit = [
-			"This translation is property of Infinite Novel Translations.",
-			"This translation is property of Infinite NovelTranslations.",
-			"If you read this anywhere but at Infinite Novel Translations, you are reading a stolen translation.",
-			"&lt;Blank&gt;",
-			"&lt;space&gt;",
-			"<Blank>",
-			"<Blank>",
-			"please read only translator’s websitewww.novitranslation.com",
-			"please read only translator’s website www.novitranslation.com",
-			"Please do not host elsewhere but MBC and Yumeabyss",
-			'Original and most updated translations are from volaretranslations.',
-			'Please support the translator for Wild Consort by reading on volarenovels!',
-			'Original and most updated translations are from volaretranslations.',
-			'Original and most updated translations are from volaretranslations.',
-			"&lt;StarveCleric&gt;",
-		]
-		for item in garbage_inline_shit:
+		for item in common.global_constants.GLOBAL_INLINE_BULLSHIT:
 			contents = contents.replace(item, "")
-
-
 
 		return title, contents
 
