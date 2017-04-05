@@ -1161,6 +1161,9 @@ badwords: [
 	# Are there any fucktards who can do url sanitization correctly?
 	'/"http:/www.translationnations.com',
 
+
+	'/contact/?v=',
+
 	]
 
 decompose: [
