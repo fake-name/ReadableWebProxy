@@ -1163,6 +1163,7 @@ badwords: [
 
 
 	'/contact/?v=',
+	"/rg-erdr.php",
 
 	]
 

@@ -132,7 +132,7 @@
 <div id='code-longer-templates' class='collapse'>
 <pre><code>
 	tagmap = [
-		('PRC',       'Parameter Remote Control', 'translated'),
+		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 
@@ -156,7 +156,7 @@
 		('Master of Dungeon',           'Master of Dungeon',               'oel'),
 	]
 
-	for titlecomponent, name, tl_type in tagmap:
+	for titlecomponent, name, tl_type in titlemap:
 		if titlecomponent.lower() in item['title'].lower():
 			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
@@ -172,6 +172,25 @@
 </code></pre>
 								<hr>
 </div>
+<div id='name-edit' class='collapse form-inline'>
+	<div>
+		<label class="col-form-label">Feed source name:</label>
+	</div>
+	<div class='form-group'>
+		Feed Name -
+		<input id="feed-name-edit" class='form-control' data-old-name="{{feed.feed_name}}" data-feed-id="{{feed.id}}" value="{{feed.feed_name}}" style="width:500px">
+		<button onclick="update_name()" style='display: inline; float:right' class="btn btn-info">Update Name</button>
+	</div>
+	<div>
+		Feed URLs: - {{feed.urls | length}}
+		<ul>
+			{% for feedurl in feed.urls %}
+				<li><code>{{feedurl.netloc}}</code> - <code>{{feedurl.feed_url}}</code></li>
+			{% endfor %}
+		</ul>
+	</div>
+	<hr>
+</div>
 
 								</div>
 								<button onclick="apply_function_update()" class="btn btn-primary" style='display: inline; float:right'>Update function and execute</button>
@@ -179,6 +198,7 @@
 								<center>
 									<button class="btn" data-toggle="collapse" data-target="#code-templates">Toggle Snippets</button>
 									<button class="btn" data-toggle="collapse" data-target="#code-longer-templates">Longer Snippets</button>
+									<button class="btn" data-toggle="collapse" data-target="#name-edit">Name Edit</button>
 								</center>
 								<div class='clearfix'></div>
 								<hr>
@@ -270,7 +290,13 @@
 
 			if (data.error)
 			{
-				$("#process-results").html('<div>' + data.message + '<br><br></div>')
+
+				$("#process-results").html(`
+					<div class="center-block">
+						<h4>Error applying changes!</h4>
+						<p>Error: <br><pre><code>` + data.message + `</code></pre></p>
+						<p>Possibly a function issue?</p>
+					</div>`)
 			}
 
 			if (data.reload)
@@ -310,6 +336,43 @@
 		function discard_changes()
 		{
 			console.log("Discard changes call!")
+		}
+
+		function update_name()
+		{
+			var edit = $('#feed-name-edit');
+			console.log("edit", edit)
+			var newname = edit.val();
+			var oldname = edit.data()['oldName']
+			var feedid  = edit.data()['feedId']
+			if (newname == oldname)
+			{
+				alert("Name not changed? Nothing to do!");
+				return;
+			}
+
+			var params = {
+				'mode'     : 'update_feed_name',
+				'data'     : {
+					'old_name' : oldname,
+					'new_name' : newname,
+				},
+				'feed_id'  : {{feedid}},
+			};
+
+			console.log("Making request")
+			$.ajax({
+				url         : '/feed-filters/api/',
+				data        : JSON.stringify(params),
+				success     : new_func_ok_cb,
+				error       : new_func_apply_fail_cb,
+				method      : "POST",
+				dataType    : 'json',
+				contentType : "application/json;",
+
+			})
+			console.log("New: ", newname, oldname, feedid)
+
 		}
 
 	</script>

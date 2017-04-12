@@ -279,6 +279,33 @@ def feedFiltersRecent():
 						   )
 
 
+def update_feed_name(feedrow, params):
+	oldn = params['old_name'].strip()
+	newn = params['new_name'].strip()
+
+	if oldn == newn:
+		return {
+			'error'   : True,
+			'message' : "Name has not changed? Nothing to do!",
+			'reload'  : False,
+		}
+
+	if not newn:
+		return {
+			'error'   : True,
+			'message' : "Name is empty!",
+			'reload'  : False,
+		}
+
+	feedrow.feed_name = newn
+
+	return {
+		'error'   : False,
+		'message' : "Name updated successfully!",
+		'reload'  : True,
+	}
+
+
 def update_function_text(feedrow, new_func):
 	current = feedrow.func.strip()
 	new_func = new_func.strip()
@@ -351,6 +378,17 @@ def feedFiltersApi():
 
 	if mode == "update_feed_parse_func":
 		raw_resp = update_function_text(feed, data)
+	elif mode == "update_feed_name":
+		raw_resp = update_feed_name(feed, data)
+	else:
+		js = {
+			"error"   : True,
+			"message" : "Unknown API call mode: {}".format(mode)
+		}
+		resp = jsonify(js)
+		resp.status_code = 200
+		resp.mimetype="application/json"
+		return resp
 
 	response = jsonify(raw_resp)
 

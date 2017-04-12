@@ -10,8 +10,6 @@ except ImportError:
 import http.client
 import email.parser
 
-
-
 import http.client
 import email.parser
 

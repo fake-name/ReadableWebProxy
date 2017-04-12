@@ -53,6 +53,8 @@ baseUrl: [
 		"https://quartia.dreamwidth.org",
 		"https://sincere.dreamwidth.org",
 
+		'https://wuxiadream.com',
+
 	]
 
 feeds: [
@@ -73,6 +75,8 @@ feeds: [
 
 	'https://justblthings.weebly.com/1/feed',
 	'https://earlandfairy.weebly.com/1/feed',
+
+	'https://wuxiadream.com/rss'
 
 ]
 
