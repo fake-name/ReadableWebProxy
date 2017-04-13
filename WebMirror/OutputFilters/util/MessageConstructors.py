@@ -36,6 +36,32 @@ WHITESPACE_CHARS = [
 		'\u2004', '\u2005', '\u2006', '\u2007', '\u2008', '\u2009', '\u200a',
 		'\u2028', '\u2029', '\u202f', '\u205f', '\u3000'
 	]
+def fixHtmlEntities(inText):
+	inText = inText.replace('&nbsp;', ' ')
+	inText = inText.replace('&lt;', '<')
+	inText = inText.replace('&gt;', '>')
+	inText = inText.replace('&amp;', '&')
+	inText = inText.replace('&quot;', '"')
+	inText = inText.replace('&apos;', '\'')
+	inText = inText.replace('&cent;', '¢')
+	inText = inText.replace('&pound;', '£')
+	inText = inText.replace('&yen;', '¥')
+	inText = inText.replace('&euro;', '€')
+	inText = inText.replace('&copy;', '©')
+	inText = inText.replace('&reg;', '®')
+	inText = inText.replace('&#160;', ' ')
+	inText = inText.replace('&#60;', '<')
+	inText = inText.replace('&#62;', '>')
+	inText = inText.replace('&#38;', '&')
+	inText = inText.replace('&#34;', '"')
+	inText = inText.replace('&#39;', '\'')
+	inText = inText.replace('&#162;', '¢')
+	inText = inText.replace('&#163;', '£')
+	inText = inText.replace('&#165;', '¥')
+	inText = inText.replace('&#8364;', '€')
+	inText = inText.replace('&#169;', '©')
+	inText = inText.replace('&#174;', '®')
+	return inText
 
 def fixUnicodeSpaces(val):
 	for badchar in WHITESPACE_CHARS:
@@ -54,6 +80,7 @@ def fix_string(val):
 	val = fixUnicodeSpaces(val)
 	val = fixSmartQuotes(val)
 	val = fixCase(val)
+	val = fixHtmlEntities(val)
 	val = ftfy.fix_text(val)
 	return val
 
