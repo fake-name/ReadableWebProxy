@@ -84,6 +84,7 @@ PLUGINS = [
 	WebMirror.processor.GarbageInlineProcessors.ZenithNovelsPageProcessor,
 	WebMirror.processor.GarbageInlineProcessors.LightNovelsWorldPageProcessor,
 	WebMirror.processor.GarbageInlineProcessors.WatashiWaSugoiDesuPageProcessor,
+	WebMirror.processor.GarbageInlineProcessors.ShamelessOniisanPageProcessor,
 ]
 
 
