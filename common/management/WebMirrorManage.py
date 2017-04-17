@@ -686,7 +686,7 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 		ctnt['contents']  = 'wat'
 
 		try:
-			parser.processFeedData(ctnt, tx_raw=False, tx_parse=not bool(days))
+			parser.processFeedData(db.get_db_session(), ctnt, tx_raw=False, tx_parse=not bool(days))
 		except ValueError:
 			pass
 		# print(ctnt)
@@ -800,6 +800,7 @@ def exposed_missing_lut(fetchTitle=False):
 	and print any for which there is not an entry in
 	feedDataLut.py to the console.
 	'''
+	sess = db.get_db_session()
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
 	import common.util.webFunctions as webFunctions
 	wg = webFunctions.WebGetRobust()
@@ -808,7 +809,7 @@ def exposed_missing_lut(fetchTitle=False):
 	feeds = [item for sublist in feeds for item in sublist]
 	# feeds = [urllib.parse.urlsplit(tmp).netloc for tmp in feeds]
 	for feed in feeds:
-		if not fnl.getNiceName(feed):
+		if not fnl.getNiceName(sess, feed):
 			netloc = urllib.parse.urlsplit(feed).netloc
 			title = netloc
 			if fetchTitle:
@@ -865,6 +866,7 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
 	import common.util.webFunctions as webFunctions
 
+	sess = db.get_db_session()
 	wg = webFunctions.WebGetRobust()
 
 	sess = db.get_db_session()
@@ -880,8 +882,8 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 
 	missing = 0
 	for netloc, tgturl in mapdict.items():
-		if not fnl.getNiceName(None, netloc):
-			fnl.getNiceName(None, netloc)
+		if not fnl.getNiceName(sess, None, netloc):
+			fnl.getNiceName(sess, None, netloc)
 			title = netloc
 			if fetch_title:
 				title = get_page_title(wg, tgturl)

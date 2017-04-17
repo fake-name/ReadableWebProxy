@@ -212,7 +212,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 			# processFeedData() call has to be /before/ we convert the tags to a json object.
-			self.processFeedData(item)
+			self.processFeedData(self.db_sess, item)
 
 
 			assert(isinstance(item['published'], (float, int))), "Wrong type for item['published']. Expected '%s', received '%s'" % ((float, int), type(item['published']))

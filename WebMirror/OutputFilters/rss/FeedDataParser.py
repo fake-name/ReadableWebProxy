@@ -312,7 +312,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		return False
 
-	def processFeedData(self, feedDat, tx_raw=True, tx_parse=True):
+	def processFeedData(self, session, feedDat, tx_raw=True, tx_parse=True):
 
 		if any([item in feedDat['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
 			# print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
@@ -331,7 +331,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		netloc = urllib.parse.urlparse(feedDat['linkUrl']).netloc
 
-		nicename = feedNameLut.getNiceName(feedDat['linkUrl'])
+		nicename = feedNameLut.getNiceName(session, feedDat['linkUrl'])
 		if not nicename:
 			nicename = netloc
 		feedDat['srcname'] = nicename
