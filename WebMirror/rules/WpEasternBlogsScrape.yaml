@@ -1164,7 +1164,8 @@ badwords: [
 
 	'/contact/?v=',
 	"/rg-erdr.php",
-
+	"&view=print",
+	'wuxiasociety.com/forum/',
 	]
 
 decompose: [

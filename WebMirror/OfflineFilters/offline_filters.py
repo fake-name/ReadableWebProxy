@@ -16,7 +16,7 @@ import common.RunManager
 import common.get_rpyc
 import common.util.webFunctions
 from WebMirror.NewJobQueue import buildjob
-from . import NuSeriesPageFilter
+from WebMirror.OutputFilters.Nu import NuSeriesPageFilter
 
 import Misc.NuForwarder.NuHeader
 
@@ -256,14 +256,18 @@ def exposed_process_nu_pages(transmit=True):
 	sess = db.get_db_session()
 
 	if transmit == True:
+		print("Transmitting processed results")
 		rm = common.RunManager.Crawler(1, 1)
 		message_q = rm.start_aggregator()
 	else:
+		print("Not translating processed results")
 		message_q = queue.Queue()
 
 	pages = []
+	print("Beginning DB retreival")
 	for row in sess.query(db.WebPages) \
 		.filter(db.WebPages.netloc == "www.novelupdates.com") \
+		.filter(db.WebPages.url.ilike("%/series/%")) \
 		.yield_per(50).all():
 
 		rowtmp = {
@@ -275,7 +279,7 @@ def exposed_process_nu_pages(transmit=True):
 		}
 		pages.append(rowtmp)
 
-		if len(pages) == 100:
+		if len(pages) % 100 == 0:
 			print("Loaded %s pages..." % len(pages))
 	sess.flush()
 	sess.commit()

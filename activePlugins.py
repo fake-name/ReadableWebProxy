@@ -35,6 +35,7 @@ import WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter
 import WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter
 import WebMirror.OutputFilters.Twitter.TwitterFilter
 import WebMirror.OutputFilters.Nu.NUHomepageFilter
+import WebMirror.OutputFilters.Nu.NuSeriesPageFilter
 
 
 # Filters are executed against fetched content first.
@@ -43,6 +44,7 @@ FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter.RRLSeriesUpdateFilter,
 
 	WebMirror.OutputFilters.Nu.NUHomepageFilter.NuHomepageFilter,
+	WebMirror.OutputFilters.Nu.NuSeriesPageFilter.NUSeriesPageProcessor,
 	WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter.JapTemSeriesPageProcessor,
 	#WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
 	WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter.BooksieSeriesPageProcessor,

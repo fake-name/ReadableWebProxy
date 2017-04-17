@@ -178,7 +178,7 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if data_sets['yeartg'] and data_sets['yeartg'][0]:
 			# print("Non-null data_sets['yeartg']:", data_sets['yeartg'])
-			tmp_d = datetime.datetime(year=int(data_sets['yeartg'].pop()), month=1, day=1)
+			tmp_d = datetime.datetime(year=int(data_sets['yeartg'].pop().split("-")[0]), month=1, day=1)
 			data_sets['yeartg'] = calendar.timegm(tmp_d.timetuple())
 		else:
 			data_sets['yeartg'] = None
