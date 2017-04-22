@@ -2,7 +2,7 @@
 import urllib.parse
 import RawArchiver.ModuleBase
 
-class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
+class MiscRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 	module_name = "MiscRawModule"
 

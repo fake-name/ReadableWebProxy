@@ -783,16 +783,18 @@ def exposed_filter_links(path):
 def get_page_title(wg, url):
 	chunks = url.split("/")
 	baseurl = "/".join(chunks[:3])
-	title = urllib.parse.urlsplit(url).netloc
+	ret = {}
+	ret['title'] = urllib.parse.urlsplit(url).netloc
 
 	try:
 		soup = wg.getSoup(baseurl)
+		ret['is-wp'] = "/wp-content/" in str(soup)
 		if soup.title:
-			title = soup.title.get_text().strip()
+			ret['title'] = soup.title.get_text().strip()
 	except Exception:
 		pass
 
-	return title
+	return ret
 
 def exposed_missing_lut(fetchTitle=False):
 	'''
@@ -813,8 +815,8 @@ def exposed_missing_lut(fetchTitle=False):
 			netloc = urllib.parse.urlsplit(feed).netloc
 			title = netloc
 			if fetchTitle:
-				title = get_page_title(wg, feed)
-			print('Missing: "%s" %s: "%s",' % (netloc, " " * (50 - len(netloc)), title))
+				meta = get_page_title_meta(wg, feed)
+			print('Missing: "%s" %s: "%s",' % (netloc, " " * (50 - len(netloc)), meta))
 
 def exposed_delete_feed(feed_name, do_delete, search_str):
 	'''
@@ -876,12 +878,36 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 		.filter(db.NuReleaseItem.actual_target != None) \
 		.all()
 
-	mapdict = {urllib.parse.urlsplit(row.actual_target).netloc : row.actual_target for row in nu_items}
+	mapdict = {fnl.patch_blogspot(urllib.parse.urlsplit(row.actual_target).netloc) : row.actual_target for row in nu_items}
 	print("Nu outbound items: ", len(mapdict))
 
+	# Some sites have gone down or are now squatters.
+	# Mask them off.
+	mask_netlocs = [
+		'endofdays42.ph.tn',
+		'endofdays42.000webhostapp.com',
+		'host307.hostmonster.com',
+		'plus.google.com',
+
+		'thundertranslations.com',
+		'ww1.thundertranslations.com',
+		'ww12.thundertranslations.com',
+		'ww2.thundertranslations.com',
+
+		'hugginglovetranslations.heliohost.org',
+		'suspendeddomain.org',
+		'www.facebook.com',
+		'www.testing.wuxiaworld.com',
+		'www.wangkaiinternational.com',
+		'www.xiaoxiaonovels.com',
+	]
 
 	missing = 0
 	for netloc, tgturl in mapdict.items():
+
+		if netloc in mask_netlocs:
+			continue
+
 		if not fnl.getNiceName(sess, None, netloc):
 			fnl.getNiceName(sess, None, netloc)
 			title = netloc
