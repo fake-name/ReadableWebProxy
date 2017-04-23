@@ -205,9 +205,23 @@ def feedIdView(feedid):
 @app.route('/feed-filters/')
 def feedFiltersRoot():
 
-	feeds = g.session.query(db.RssFeedEntry) \
+	feeds_in = g.session.query(db.RssFeedEntry) \
 		.order_by(db.RssFeedEntry.feed_name) \
 		.all()
+
+	valid_name_filters = ["all", "missing-name"]
+
+	if "name-filter" in request.args and request.args['name-filter'] in valid_name_filters:
+		name_filter = request.args['name-filter']
+	else:
+		name_filter = None
+		feeds = feeds_in
+
+	if name_filter == "missing-name":
+		feeds = []
+		for feed in feeds_in:
+			if feed.feed_name in [tmp.feed_netloc for tmp in feed.urls]:
+				feeds.append(feed)
 
 	return render_template('rss-pages/feed_filter_base.html',
 						   feeds = feeds,

@@ -61,6 +61,7 @@ baseUrl: [
 	'https://atling.wordpress.com/',
 	'https://atranslatorsjourney.wordpress.com',
 	'https://avaritiakuns.wordpress.com',
+	'https://avaritiakuns.com',
 	'https://ayaxworld.wordpress.com',
 	'https://azuremysterioustofusect.wordpress.com',
 	'https://azurro4cielo.wordpress.com',
@@ -814,6 +815,7 @@ baseUrl: [
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
 	'https://zumiedits.wordpress.com',
+	'https://wanderingtranslations.wordpress.com',
 
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
@@ -843,6 +845,7 @@ baseUrl: [
 	'http://cookiepasta.com',
 	'http://dailydallying.com',
 	'http://eccentrictranslations.com',
+	'http://eccentrictranslations.wordpress.com',
 	'http://faktranslations.com',
 	'http://fgilantranslations.com',
 	'http://firebirdsnest.org',
@@ -961,6 +964,7 @@ baseUrl: [
 	'https://martialdao.com',
 	'https://www.readingattic.com',
 	'http://www.mistycloudtranslations.com',
+	'http://mistycloudtranslations.wordpress.com',
 	'http://mistycloudtranslations.com',
 	'http://hachidoritranslations.com',
 	'http://weletranslation.com',
@@ -1058,6 +1062,7 @@ baseUrl: [
 	'http://yorasutranslations.com',   # Redirects to yorasunovels
 	'http://www.myotterspace.com',
 	'http://www.mistycloudtranslations.com',
+	'http://mistycloudtranslations.wordpress.com',
 	'https://www.kudalakorn.com',
 	'http://novitranslation.com',
 	'https://rpgnovels.com',

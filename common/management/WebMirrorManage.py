@@ -1014,3 +1014,125 @@ def exposed_drop_priorities():
 
 
 	sess.commit()
+
+
+def unwrap_ret(ret):
+
+	ret = list(ret)
+	if not ret:
+		print("Not list ret!", list(ret))
+		return 0
+
+	if not ret[0]:
+		print("Not ret[0]", ret[0])
+		return 0
+	if not ret[0][0]:
+		print("Coercing to zero?")
+		return 0
+	print("Returning ret[0][0]: ", ret[0][0])
+	return ret[0][0]
+
+def delete_by_netloc_internal(netloc):
+	'''
+	List netlocs from database that aren't in the rules.
+	'''
+
+	sess = db.get_db_session()
+
+
+	step  = 10000
+
+	sess = db.get_db_session()
+	print("Getting minimum row in need or update..")
+	start = sess.execute("""SELECT min(id) FROM web_pages WHERE netloc = :nl""", {"nl":netloc})
+	start = unwrap_ret(start)
+	print("Minimum row ID: ", start, "getting maximum row...")
+	stop = sess.execute("""SELECT max(id) FROM web_pages WHERE netloc = :nl""", {"nl":netloc})
+	stop = unwrap_ret(stop)
+	print("Maximum row ID: ", stop)
+
+	startv = sess.execute("""SELECT min(id) FROM web_pages_version WHERE netloc = :nl""", {"nl":netloc})
+	startv = unwrap_ret(startv)
+	print("Minimum version row ID: ", startv, "getting maximum version row...")
+	stopv = sess.execute("""SELECT max(id) FROM web_pages_version WHERE netloc = :nl""", {"nl":netloc})
+	stopv = unwrap_ret(stopv)
+	print("Maximum version row ID: ", stopv)
+
+	if not (start or startv) :
+		print("No null rows to fix!")
+		return
+
+	print("Need to fix rows from %s to %s" % (start, stop))
+	print("Need to fix version rows from %s to %s" % (startv, stopv))
+	start = start - (start % step)
+
+	changed = 0
+	for idx in range(start, stop, step):
+		try:
+			# SQL String munging! I'm a bad person!
+			# Only done because I can't easily find how to make sqlalchemy
+			# bind parameters ignore the postgres specific cast
+			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+			have = sess.execute("""DELETE FROM web_pages WHERE netloc = :nl AND id > :idmin AND id <= :idmax;""", {'idmin':idx, 'idmax':idx+step, 'nl':netloc})
+			# print()
+
+			processed  = idx - start
+			total_todo = stop - start
+			print('%10i, %10i, %7.4f, %6i' % (idx, stop, processed/total_todo * 100, have.rowcount))
+			changed += have.rowcount
+			if changed > step:
+				print("Committing (%s changed rows)...." % changed, end=' ')
+				sess.commit()
+				print("done")
+				changed = 0
+
+		except sqlalchemy.exc.OperationalError:
+			sess.rollback()
+		except sqlalchemy.exc.InvalidRequestError:
+			sess.rollback()
+
+
+	changed = 0
+	for idx in range(startv, stopv, step):
+		try:
+			# SQL String munging! I'm a bad person!
+			# Only done because I can't easily find how to make sqlalchemy
+			# bind parameters ignore the postgres specific cast
+			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+			have = sess.execute("""DELETE FROM web_pages_version WHERE netloc = :nl AND id > :idmin AND id <= :idmax;""", {'idmin':idx, 'idmax':idx+step, 'nl':netloc})
+			# print()
+
+			processed  = idx - startv
+			total_todo = stopv - startv
+			print('%10i, %10i, %7.4f, %6i' % (idx, stopv, processed/total_todo * 100, have.rowcount))
+			changed += have.rowcount
+			if changed > step:
+				print("Committing (%s changed rows)...." % changed, end=' ')
+				sess.commit()
+				print("done")
+				changed = 0
+
+		except sqlalchemy.exc.OperationalError:
+			sess.rollback()
+		except sqlalchemy.exc.InvalidRequestError:
+			sess.rollback()
+
+	sess.commit()
+
+def exposed_delete_netlocs():
+	'''
+	List netlocs from database that aren't in the rules.
+	'''
+	rm = [
+
+		'www.wattpad.com',                                                                                     # - [(2,)]
+		'www.booksie.com',                                                                                     # - [(4369566,)]
+	]
+
+
+
+	for bad_nl in rm:
+		print("Processing for NL: ", bad_nl)
+		delete_by_netloc_internal(bad_nl)
+
+
