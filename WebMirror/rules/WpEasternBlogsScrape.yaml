@@ -1150,6 +1150,10 @@ badwords: [
 	"account/begin_password_reset",
 	"/comment-page-",
 
+	'lnegtl.club/forum/',
+	'/css.php',
+	'/member.php?',
+
 	 # Why do people think they need a fucking comment system?
 	'/?replytocom=',
 	'#comments',

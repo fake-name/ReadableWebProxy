@@ -197,10 +197,10 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 		'/topic/news&q=blog/',
 		'/topic/engineering&q=comic/topic/engineering&q=comic/',
-
 		'/it-never-ends&q=comic/it-never-ends&q=comic/',
 		"/happy-day?q=comic/happy-day&q=comic/",
 		'/fun-everyone&q=comic/fun-everyone&q=comic/',
+		'/incommuni-coiffure&q=comic/incommuni-coiffure&q=comic/',
 	]
 
 	@classmethod

@@ -4,7 +4,7 @@ import datetime
 import json
 import os
 import os.path
-import shutil
+import datetime
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 
@@ -1099,7 +1099,7 @@ def delete_by_netloc_internal(netloc):
 			# Only done because I can't easily find how to make sqlalchemy
 			# bind parameters ignore the postgres specific cast
 			# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-			have = sess.execute("""DELETE FROM web_pages_version WHERE netloc = :nl AND id > :idmin AND id <= :idmax;""", {'idmin':idx, 'idmax':idx+step, 'nl':netloc})
+			have = sess.execute("""DELETE FROM web_pages_version WHERE netloc = :nl AND id > :idmin AND id <= :idmax;""", {'idmin':max(idx-1, 0), 'idmax':idx+step+1, 'nl':netloc})
 			# print()
 
 			processed  = idx - startv
@@ -1119,6 +1119,37 @@ def delete_by_netloc_internal(netloc):
 
 	sess.commit()
 
+def exposed_delete_transactions():
+	'''
+	List netlocs from database that aren't in the rules.
+	'''
+
+	sess = db.get_db_session()
+
+	print("Getting minimum transaction table date..")
+	start = sess.execute("""SELECT min(issued_at) FROM transaction""")
+	start = unwrap_ret(start)
+	print("Minimum transaction time: ", start, "getting maximum transaction table date...")
+	stop = sess.execute("""SELECT max(issued_at) FROM transaction""")
+	stop = unwrap_ret(stop)
+	print("Maximum transaction time: ", stop)
+
+	step = datetime.timedelta(hours=8)
+	mind = start
+	while mind < stop:
+		print("Doing delete from %s to %s" % (mind, mind+step))
+
+		have = sess.execute("""DELETE FROM transaction WHERE issued_at >= :startd AND issued_at <= :stopd;""", {'startd':mind, 'stopd':mind+step})
+		print('Deleted %6i rows. Committing...' % (have.rowcount, ))
+		sess.commit()
+		print('Comitted')
+
+		# print()
+
+
+		mind += step
+
+
 def exposed_delete_netlocs():
 	'''
 	List netlocs from database that aren't in the rules.
@@ -1130,9 +1161,16 @@ def exposed_delete_netlocs():
 	]
 
 
+	sess = db.get_db_session()
+	print("Doing web_pages delete")
+	have = sess.execute("""DELETE FROM web_pages WHERE netloc = 'www.wattpad.com' OR netloc = 'www.booksie.com';""")
+	print("Deleted %s rows. committing" % have.rowcount)
+	sess.commit()
+	print("Doing web_pages_version delete")
+	have = sess.execute("""DELETE FROM web_pages_version WHERE netloc = 'www.wattpad.com' OR netloc = 'www.booksie.com';""")
+	print("Deleted %s rows. committing" % have.rowcount)
+	sess.commit()
+	print("Done!")
 
-	for bad_nl in rm:
-		print("Processing for NL: ", bad_nl)
-		delete_by_netloc_internal(bad_nl)
 
 

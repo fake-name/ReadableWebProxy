@@ -145,6 +145,13 @@ badwords: [
 			'cron.php/external.php',
 			'cron.php/cron.php',
 
+			'/faq.php',
+			'/images/pagination/',
+			'/smilies/',
+			'/195-justice-bao/',
+			'/contact/index.php',
+			'/activity.php',
+
 			'/member.php',
 			'printthread.php',
 			'newreply.php',
