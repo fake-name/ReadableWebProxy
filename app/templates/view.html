@@ -13,6 +13,7 @@
 				<a href='/history?{{ {"url" : req_url} | urlencode }}'>Historical Versions</a> |
 				<a href="javascript:void(0)" id="refetch_link_1">Re-Fetch</a>
 				| Age: <span class='cachestate'>loading...</span>
+				| Filter: <span class='filterstate'>loading...</span>
 			</p>
 
 			<p>
@@ -40,6 +41,7 @@
 				<a href='/history?{{ {"url" : req_url} | urlencode }}'>Historical Versions</a> |
 				<a href="javascript:void(0)" id="refetch_link_2">Re-Fetch</a>
 				| Age: <span class='cachestate'>loading...</span>
+				| Filter: <span class='filterstate'>loading...</span>
 			</p>
 
 		</div>
@@ -56,11 +58,13 @@
 			console.log("Replacing content")
 			var content = $("#content");
 			var cachest = $(".cachestate");
+			var filtst  = $(".filterstate");
 			console.log("content", content);
 			console.log("data", data);
 			console.log("textStatus", textStatus);
 
 			cachest.text(data['cachestate']);
+			filtst.text(data['filterstate']);
 			content.html(data['contents']);
 			document.title = "ReadProxy - " + data['title']
 		};

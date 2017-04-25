@@ -89,6 +89,11 @@ GLOBAL_BAD_URLS = [
 			'en.blog.wordpress.com',
 
 			'counter.yadro.ru',
+
+
+			'/js/js/',
+			'/css/css/',
+			'/images/images/',
 	]
 
 

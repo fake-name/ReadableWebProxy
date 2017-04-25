@@ -1,5 +1,7 @@
 
 
+import urllib.parse
+
 from flask import render_template
 from flask import make_response
 from flask import request
@@ -14,6 +16,9 @@ from app import utilities
 import pprint
 import ast
 
+
+import WebMirror.rules
+import common.global_constants
 
 import WebMirror.API
 
@@ -129,6 +134,29 @@ def view_history():
 		return render_template('history.html', title = 'Item History', page = page, req_url = req_url, versions=versions)
 
 
+def get_filter_state_for_url(url):
+	url = url.lower()
+	nl = urllib.parse.urlsplit(url).netloc
+
+	if any([tmp.lower() in url for tmp in common.global_constants.GLOBAL_BAD_URLS]):
+		return "Global badword filtered!"
+
+	had_ruleset = False
+	for ruleset in WebMirror.rules.load_rules():
+		if not ruleset['netlocs']:
+			continue
+
+		if nl in ruleset['netlocs']:
+			print("Have rule file!")
+			had_ruleset = True
+			if any([badword.lower() in url for badword in ruleset['badwords']]):
+				return "Badword from ruleset!"
+		# return "Rulefile badword filtered!"
+
+	if had_ruleset:
+		return "Not filtered, had ruleset!"
+	return "Not Filtered, no ruleset."
+
  # @no_cache
 @app.route('/render', methods=['GET'])
 def render():
@@ -139,6 +167,8 @@ def render():
 
 	version = request.args.get('version')
 	ignore_cache = request.args.get("nocache")
+
+	filterstate = get_filter_state_for_url(req_url)
 
 	try:
 		if version == "None":
@@ -176,10 +206,11 @@ def render():
 	# print("Rendering with nocache=", ignore_cache)
 	# print("Return:", cachestate)
 	response = jsonify(
-		title      = title,
-		contents   = content,
-		cachestate = cachestate,
-		req_url    = req_url,
+		title       = title,
+		contents    = content,
+		cachestate  = cachestate,
+		filterstate = filterstate,
+		req_url     = req_url,
 		)
 	return set_cache_control_headers(response)
 
