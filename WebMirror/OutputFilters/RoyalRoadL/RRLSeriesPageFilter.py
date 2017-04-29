@@ -192,8 +192,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		seriesmeta = {}
 
-		seriesmeta['title']       = title
-		seriesmeta['author']      = author
+		seriesmeta['title']       = msgpackers.fix_string(title)
+		seriesmeta['author']      = msgpackers.fix_string(author)
 		seriesmeta['tags']        = tags
 		seriesmeta['homepage']    = seriesPageUrl
 		seriesmeta['desc']        = "\r\n".join(desc)
