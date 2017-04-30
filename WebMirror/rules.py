@@ -51,6 +51,13 @@ def getUrlBadWords(ruleset):
 	assert isinstance(ruleset['badwords'], list)
 	return ruleset['badwords']
 
+
+def getCompoundUrlBadWords(ruleset):
+	if 'compound_badwords' in ruleset:
+		assert isinstance(ruleset['compound_badwords'], list)
+		return ruleset['compound_badwords']
+	return []
+
 def getStripTitle(ruleset):
 	if not 'stripTitle' in ruleset:
 		return []
@@ -264,6 +271,7 @@ def validateRuleKeys(dat, fname):
 	# print(keys)
 	valid = [
 		'badwords',
+		'compound_badwords',
 
 		'decompose',
 		'decomposeBefore',
@@ -309,6 +317,7 @@ def load_validate_rules(fname, dat):
 	rules['feedurls']                          = getFeedUrls(dat)
 
 	rules['badwords']                          = getUrlBadWords(dat)
+	rules['compound_badwords']                 = getCompoundUrlBadWords(dat)
 	rules['stripTitle']                        = getStripTitle(dat)
 	rules['decomposeBefore']                   = getDecomposeBefore(dat)
 	rules['decompose']                         = getDecomposeAfter(dat)

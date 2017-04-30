@@ -432,13 +432,18 @@ class SiteArchiver(LogBase.LoggerMixin):
 					traceback.print_exc()
 					self.db_sess.rollback()
 
-	def generalLinkClean(self, link, badwords):
+
+	def generalLinkClean(self, link, badwords, badcompounds):
 		if link.startswith("data:"):
 			return None
 		linkl = link.lower()
 		if any([badword in linkl for badword in badwords]):
-			# print("Filtered:", link)
 			return None
+
+		if any([all([badword in linkl for badword in badcompound]) for badcompound in badcompounds]):
+			print("Compound Filtered:", link, [badword for badword in badwords if badword in linkl ])
+			return None
+
 		return link
 
 	def haveBadPathSegments(self, url):
@@ -460,10 +465,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	# Todo: FIXME
-	def filterContentLinks(self, job, links, badwords):
+	def filterContentLinks(self, job, links, badwords, badcompounds):
 		ret = set()
 		for link in links:
-			link = self.generalLinkClean(link, badwords)
+			link = self.generalLinkClean(link, badwords, badcompounds)
 			if not link:
 				continue
 			if self.haveBadPathSegments(link):
@@ -475,10 +480,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 				ret.add(link)
 		return ret
 
-	def filterResourceLinks(self, job, links, badwords):
+	def filterResourceLinks(self, job, links, badwords, badcompounds):
 		ret = set()
 		for link in links:
-			link = self.generalLinkClean(link, badwords)
+			link = self.generalLinkClean(link, badwords, badcompounds)
 			if not link:
 				continue
 			if self.haveBadPathSegments(link):
@@ -498,7 +503,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 		badwords = [badword for badword in badwords if badword]
 		badwords = [badword.lower() for badword in badwords]
 		badwords = list(set(badwords))
-		return badwords
+
+		badcompounds = []
+
+		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
+			if item['compound_badwords']:
+				badcompounds += item['compound_badwords']
+
+		return badwords, badcompounds
 
 	def getMaxPriority(self, netloc):
 		return max(rules['maximum_priority'] for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs'])
@@ -510,10 +522,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		unfiltered = len(plain)+len(resource)
 
-		badwords = self.getBadWords(job)
+		badwords, badcompounds = self.getBadWords(job)
 
-		plain    = self.filterContentLinks(job,  plain,    badwords)
-		resource = self.filterResourceLinks(job, resource, badwords)
+		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds)
+		resource = self.filterResourceLinks(job, resource, badwords, badcompounds)
 
 		filtered = len(plain)+len(resource)
 		self.log.info("Found %s links (%s filtered)" % (filtered, unfiltered))

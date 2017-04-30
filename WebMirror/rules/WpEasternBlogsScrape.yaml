@@ -1144,104 +1144,108 @@ feedPostfix: "/feed/"
 
 # Any url containing any of the words in the `badwords` list will be ignored.
 badwords: [
-	"/manga/",
-	"/recruitment/",
-	"wpmp_switcher=mobile",
-	"account/begin_password_reset",
-	"/comment-page-",
+		"/manga/",
+		"/recruitment/",
+		"wpmp_switcher=mobile",
+		"account/begin_password_reset",
+		"/comment-page-",
 
-	'lnegtl.club/forum/',
-	'/css.php',
-	'/member.php?',
+		'lnegtl.club/forum/',
+		'/css.php',
+		'/member.php?',
 
-	 # Why do people think they need a fucking comment system?
-	'/?replytocom=',
-	'#comments',
-	"_wpnonce=",
-	'public-api.wordpress.com',
-	 # Mask out the PDFs
-	"-online-pdf-viewer/",
+		 # Why do people think they need a fucking comment system?
+		'/?replytocom=',
+		'#comments',
+		"_wpnonce=",
+		'public-api.wordpress.com',
+		 # Mask out the PDFs
+		"-online-pdf-viewer/",
 
-	 # Who the fuck shares shit like this anyways?
-	"?share=",
+		 # Who the fuck shares shit like this anyways?
+		"?share=",
 
-	"//page/",
+		"//page/",
 
-	"giraffecorps.liamak.net/pdf/",
-	"giraffecorps.liamak.net/contact/",
-	"giraffecorps.liamak.net/extras/",
-	"wp-comments-post",
-	"/page/page/",
+		"giraffecorps.liamak.net/pdf/",
+		"giraffecorps.liamak.net/contact/",
+		"giraffecorps.liamak.net/extras/",
+		"wp-comments-post",
+		"/page/page/",
 
-	'rejecthero.wordpress.com',
-	'farmerbob1.wordpress.com',
-	'pactwebserial.wordpress.com',
-
-
-	'https://docs.google.com/forms/d',
+		'rejecthero.wordpress.com',
+		'farmerbob1.wordpress.com',
+		'pactwebserial.wordpress.com',
 
 
-	 'http:/mistycloudtranslations.com',
-	" http://gravitytales.com",
-	" http:/gravitytales.com",
-	"%20http%3A//gravitytales.com",
+		'https://docs.google.com/forms/d',
 
 
-	 "/manga/",
-	 "/recruitment/",
-	 "wpmp_switcher=mobile",
-	 "account/begin_password_reset",
-	 "/comment-page-",
-
-	# Why do people think they need a fucking comment system?
-	 '/?replytocom=',
-	 '#comments',
-
-	# Mask out the PDFs
-	 "-online-pdf-viewer/",
-
-	# Who the fuck shares shit like this anyways?
-	 "?share=",
-
-	 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
-	 '&author=',
-	 '/#comment-',
-
-	# Siiigh.
-	'demo-to-prevent-copy-paste-on-blogger_files',
+		 'http:/mistycloudtranslations.com',
+		" http://gravitytales.com",
+		" http:/gravitytales.com",
+		"%20http%3A//gravitytales.com",
 
 
-	"Special:WhatLinksHere",
-	"Special:UserLogin",
-	"Special:RecentChangesLinked",
-	"Special:",
-	"action=edit",
-	"diff=",
-	"oldid=",
-	"diff%3D",
-	"oldid%3D",
+		 "/manga/",
+		 "/recruitment/",
+		 "wpmp_switcher=mobile",
+		 "account/begin_password_reset",
+		 "/comment-page-",
 
-	# This image wouldn't bother me so much if it weren't HUGE, and shrunk with css.
-	"discord-feature-graphic-1.png",
-	# Another HUEG image
-	"9629673_orig-ID-62b82545-ae9c-4eb7-b488-75e7366caaca.png",
-	"cropped-starry-night-thinking21.jpg",
+		# Why do people think they need a fucking comment system?
+		 '/?replytocom=',
+		 '#comments',
 
-	# Gravity tales CDN is shitting itself, so let's just remove
-	# the shit on it entirely.
-	'patreon_img.png',
-	'/images/discord.png',
-	'cdn.gravitytales.com',
+		# Mask out the PDFs
+		 "-online-pdf-viewer/",
 
-	# Are there any fucktards who can do url sanitization correctly?
-	'/"http:/www.translationnations.com',
+		# Who the fuck shares shit like this anyways?
+		 "?share=",
+
+		 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
+		 '&author=',
+		 '/#comment-',
+
+		# Siiigh.
+		'demo-to-prevent-copy-paste-on-blogger_files',
 
 
-	'/contact/?v=',
-	"/rg-erdr.php",
-	"&view=print",
-	'wuxiasociety.com/forum/',
+		"Special:WhatLinksHere",
+		"Special:UserLogin",
+		"Special:RecentChangesLinked",
+		"Special:",
+		"action=edit",
+		"diff=",
+		"oldid=",
+		"diff%3D",
+		"oldid%3D",
+
+		# This image wouldn't bother me so much if it weren't HUGE, and shrunk with css.
+		"discord-feature-graphic-1.png",
+		# Another HUEG image
+		"9629673_orig-ID-62b82545-ae9c-4eb7-b488-75e7366caaca.png",
+		"cropped-starry-night-thinking21.jpg",
+
+		# Gravity tales CDN is shitting itself, so let's just remove
+		# the shit on it entirely.
+		'patreon_img.png',
+		'/images/discord.png',
+		'cdn.gravitytales.com',
+
+		# Are there any fucktards who can do url sanitization correctly?
+		'/"http:/www.translationnations.com',
+
+
+		'/contact/?v=',
+		"/rg-erdr.php",
+		"&view=print",
+		'wuxiasociety.com/forum/',
 	]
+
+compound_badwords: [
+	['slavetranslations.com', '.mht'],
+]
 
 decompose: [
 	{'class'                         : 'authorpost'},

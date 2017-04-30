@@ -172,14 +172,18 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 
 
-	def generalLinkClean(self, link, badwords):
+	def generalLinkClean(self, link, badwords, badcompounds):
 		if link.startswith("data:"):
 			return None
 		linkl = link.lower()
 		if any([badword in linkl for badword in badwords]):
-
 			print("Filtered:", link, [badword for badword in badwords if badword in linkl ])
 			return None
+
+		if any([all([badword in linkl for badword in badcompound]) for badcompound in badcompounds]):
+			print("Compound Filtered:", link, [badword for badword in badwords if badword in linkl ])
+			return None
+
 		return link
 
 	def getBadWords(self, netloc):
@@ -191,7 +195,14 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		badwords = [badword for badword in badwords if badword]
 		badwords = [badword.lower() for badword in badwords]
 		badwords = list(set(badwords))
-		return badwords
+
+		badcompounds = []
+
+		for item in [rules for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs']]:
+			if item['compound_badwords']:
+				badcompounds += item['compound_badwords']
+
+		return badwords, badcompounds
 
 
 	def outbound_job_wanted(self, netloc, joburl):
@@ -208,8 +219,8 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				return False
 
 
-		badwords = self.getBadWords(netloc)
-		ret = self.generalLinkClean(joburl, badwords)
+		badwords, badcompounds = self.getBadWords(netloc)
+		ret = self.generalLinkClean(joburl, badwords, badcompounds)
 		if ret:
 			return True
 
