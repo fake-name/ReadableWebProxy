@@ -229,6 +229,43 @@ def feedFiltersRoot():
 
 
 
+@app.route('/feed-filters/merge-parsers')
+def mergeFeedParsers():
+
+	if not "f1" in request.args and "f2" in request.args:
+		return render_template('error.html', title = 'Viewer', message = "This function has to have feeds to merge as parameters!")
+
+	try:
+		f1 = int(request.args['f1'])
+		f2 = int(request.args['f2'])
+	except ValueError:
+		return render_template('error.html', title = 'Viewer', message = "Feed IDs must be integers!")
+
+	if f1 == f2:
+		return render_template('error.html', title = 'Viewer', message = "Cannot merge a feed with itself!")
+
+
+
+
+	feed1 = g.session.query(db.RssFeedEntry)   \
+		.filter(db.RssFeedEntry.id == f1) \
+		.scalar()
+
+	feed2 = g.session.query(db.RssFeedEntry)   \
+		.filter(db.RssFeedEntry.id == f2) \
+		.scalar()
+
+	if not feed1 and feed2:
+		return render_template('error.html', title = 'Viewer', message = "One of the feed IDs has no feed!!")
+
+
+	return render_template('rss-pages/feed_filter_merge.html',
+						   feed1 = feed1,
+						   feed2 = feed2,
+						   )
+
+
+
 
 @app.route('/feed-filters/recent')
 def feedFiltersRecent():
@@ -297,6 +334,19 @@ def update_feed_name(feedrow, params):
 	oldn = params['old_name'].strip()
 	newn = params['new_name'].strip()
 
+	havef = g.session.query(db.RssFeedEntry)    \
+		.filter(db.RssFeedEntry.feed_name == newn) \
+		.scalar()
+
+	if havef:
+		return {
+			'error'   : True,
+			'message' : "A feed with that name already exists!",
+			'reload'  : False,
+			'merge_ids' : [feedrow.id, havef.id],
+		}
+
+
 	if oldn == newn:
 		return {
 			'error'   : True,
@@ -353,6 +403,35 @@ def update_function_text(feedrow, new_func):
 		'reload'  : True,
 	}
 
+def merge_feeds(params):
+	need = ['merge_from', 'merge_into']
+	if not all([tmp in params for tmp in need]):
+		return {"error"   : True, "message" : "Missing parameter!"}
+	try:
+		merge_from, merge_to = int(params['merge_from']), int(params['merge_into'])
+	except ValueError:
+		return {"error"   : True, "message" : "ID Was not an int!"}
+	except TypeError:
+		return {"error"   : True, "message" : "ID Was not an int!"}
+
+
+	g.session.query(db.RssFeedPost)    \
+		.filter(db.RssFeedPost.feed_id == merge_from) \
+		.update({'feed_id' : merge_to})
+	g.session.query(db.RssFeedUrlMapper)    \
+		.filter(db.RssFeedUrlMapper.feed_id == merge_from) \
+		.update({'feed_id' : merge_to})
+
+	g.session.query(db.RssFeedEntry)    \
+		.filter(db.RssFeedEntry.id == merge_from) \
+		.delete()
+
+	return {
+		'error'   : False,
+		'message' : "Function updated successfully!",
+		'reload'  : False,
+	}
+
 @app.route('/feed-filters/api/', methods=['GET', 'POST'])
 def feedFiltersApi():
 	if not request.json:
@@ -382,19 +461,17 @@ def feedFiltersApi():
 		feed_id = int(request.json["feed_id"])
 	except ValueError:
 		return content_views.build_error_response("Feed ID must be an integer!")
+	except TypeError:
+		return content_views.build_error_response("Feed ID must be an integer!")
 
-	feed = g.session.query(db.RssFeedEntry)    \
-		.filter(db.RssFeedEntry.id == feed_id) \
-		.scalar()
+	function_dispatch = {
+		'merge-feed-parsers'     : (merge_feeds, False),
+		"update_feed_parse_func" : (update_function_text, True),
+		"update_feed_name"       : (update_feed_name, True),
+	}
 
-	if not feed:
-		return content_views.build_error_response("Feed ID not found!")
+	if mode not in function_dispatch:
 
-	if mode == "update_feed_parse_func":
-		raw_resp = update_function_text(feed, data)
-	elif mode == "update_feed_name":
-		raw_resp = update_feed_name(feed, data)
-	else:
 		js = {
 			"error"   : True,
 			"message" : "Unknown API call mode: {}".format(mode)
@@ -403,6 +480,20 @@ def feedFiltersApi():
 		resp.status_code = 200
 		resp.mimetype="application/json"
 		return resp
+
+	func, needs_feed = function_dispatch[mode]
+
+	if needs_feed:
+		feed = g.session.query(db.RssFeedEntry)    \
+			.filter(db.RssFeedEntry.id == feed_id) \
+			.scalar()
+
+		if not feed:
+			return content_views.build_error_response("Feed ID not found!")
+
+		raw_resp = func(feed, data)
+	else:
+		raw_resp = func(data)
 
 	response = jsonify(raw_resp)
 

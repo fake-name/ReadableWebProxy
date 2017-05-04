@@ -288,13 +288,22 @@
 			console.log("reload:", data.reload)
 
 
+
 			if (data.error)
 			{
+				var merge_link = '';
 
+				if (data.merge_ids)
+				{
+					merge_link = '<p><a href="/feed-filters/merge-parsers?' + $.param({f1 : data.merge_ids[0], f2 : data.merge_ids[1] } ) + '"">Merge viewer for: ' + data.merge_ids + '</a></p>';
+
+				}
+				console.log("Merge link:", merge_link)
 				$("#process-results").html(`
 					<div class="center-block">
 						<h4>Error applying changes!</h4>
-						<p>Error: <br><pre><code>` + data.message + `</code></pre></p>
+						<p>Error: <br><pre><code>` + data.message + `</code></pre><br><pre><code>` + data.contents + `</code></pre></p>
+						` + merge_link + `
 						<p>Possibly a function issue?</p>
 					</div>`)
 			}

@@ -1,0 +1,278 @@
+<!-- extend base layout -->
+
+{%- macro tableHeader() -%}
+	<table class='table-striped table table-bordered table-condensed fullwidth' style="table-layout: fixed;">
+		<colgroup>
+			<col />
+			<col style="width: 50%;" />
+		</colgroup>
+		<tr>
+			<th>
+				Feed name
+			</th>
+			<th>
+				URLs
+			</th>
+		</tr>
+{%- endmacro -%}
+
+{%- macro tableFooter() -%}
+	</table>
+{%- endmacro -%}
+
+
+
+{%- macro release_block(block_item_list) -%}
+	<div>
+		{{block_item_list}}
+	</div>
+{%- endmacro -%}
+
+
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		{%- if title -%}
+			<title>ReadProxy - {{ title }}</title>
+		{%- else -%}
+			<title>ReadProxy</title>
+		{%- endif -%}
+
+		<!-- Base template header -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<!-- Sub template header -->
+
+		<style>
+			#segment_container
+			{
+				max-width: none !important;
+			}
+			body
+			{
+				max-width: none !important;
+			}
+			table, th, td {
+			    border: 1px solid black !important;
+			}
+			th, td
+			{
+				padding : 2px !important;
+			}
+		</style>
+		<!-- template header end -->
+	</head>
+	<body>
+		<div id='segment_container'>
+			<div id='segment_body'>
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-2" style='width:180px !important'>
+							{%- include '_block_nav.html' -%}
+						</div>
+						<div class="col-md-5">
+							<div class="well well-large" style="min-height: 140px; width: 100%;">
+								<div><h2 style='display: inline'>RSS Feed Source: {{feed1.feed_name}} - {{feed1.id}}</h2></div>
+								<div class='clearfix'></div>
+
+								<div id="code-editor-1">{{feed1.func}}{{"\n\n\n"}}</div>
+								<hr>
+								<div id='name-edit' class='form-inline'>
+									<div>
+										Feed URLs: - {{feed1.urls | length}}
+										<ul>
+											{% for feedurl in feed1.urls %}
+												<li><code>{{feedurl.netloc}}</code> - <code>{{feedurl.feed_url}}</code></li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<div class='clearfix'></div>
+								<hr>
+								<button onclick="merge_items({{feed1.id}}, {{feed2.id}})" class="pull-left btn btn-info">Merge Left</button>
+								<div class='clearfix'></div>
+							</div>
+						</div>
+						<div class="col-md-5">
+							<div class="well well-large" style="min-height: 140px; width: 100%;">
+								<div><h2 style='display: inline'>RSS Feed Source: {{feed2.feed_name}} - {{feed2.id}}</h2></div>
+								<div class='clearfix'></div>
+
+								<div id="code-editor-2">{{feed2.func}}{{"\n\n\n"}}</div>
+								<hr>
+								<div id='name-edit' class='form-inline'>
+									<div>
+										Feed URLs: - {{feed2.urls | length}}
+										<ul>
+											{% for feedurl in feed2.urls %}
+												<li><code>{{feedurl.netloc}}</code> - <code>{{feedurl.feed_url}}</code></li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<div class='clearfix'></div>
+								<hr>
+								<button onclick="merge_items({{feed2.id}}, {{feed1.id}})" class="pull-right btn btn-info">Merge Right</button>
+								<div class='clearfix'></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class='col-md-2' style='width:180px !important'>
+						</div>
+						<div class='col-md-10'>
+							<div class="well well-large" >
+								<div id="process-results">
+									<div class="center-block text-center">
+										<h4>Output</h4>
+										<p>Nothing yet.</p>
+										<br>
+										<br>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+
+
+	</body>
+
+	<!-- Base template footer -->
+	<link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/static/css/custom.css" rel="stylesheet" media="screen">
+	<script src="/static/js/jquery-latest.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+
+	<style type="text/css" media="screen">
+		#code-editor {
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			min-height: 100px
+		}
+	</style>
+	<script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var editor_1 = ace.edit("code-editor-1");
+		var editor_2 = ace.edit("code-editor-2");
+
+		editor_1.getSession().setUseSoftTabs(false);
+		editor_1.setDisplayIndentGuides(true);
+		editor_1.setShowInvisibles(true);
+		editor_1.setTheme("ace/theme/cobalt");
+		editor_1.getSession().setMode("ace/mode/python");
+		editor_1.resize()
+		editor_1.setOptions({
+			autoScrollEditorIntoView: true,
+			maxLines: 500
+		})
+
+		editor_2.getSession().setUseSoftTabs(false);
+		editor_2.setDisplayIndentGuides(true);
+		editor_2.setShowInvisibles(true);
+		editor_2.setTheme("ace/theme/cobalt");
+		editor_2.getSession().setMode("ace/mode/python");
+		editor_2.resize()
+		editor_2.setOptions({
+			autoScrollEditorIntoView: true,
+			maxLines: 500
+		})
+
+		editor_1.setReadOnly(true)
+		editor_2.setReadOnly(true)
+
+		var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken)
+				}
+			}
+		})
+
+
+		function merge_items(merge_to, merge_from)
+		{
+			console.log("Apply and update call!")
+			$("#process-results").html('<div class="center-block text-center"><h4>Applying updated function.</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>')
+
+			var params = {
+				'mode'    : 'merge-feed-parsers',
+				'data'    : {
+							'merge_into' : merge_to,
+							'merge_from' : merge_from,
+						},
+				'feed_id' : -1,
+
+			};
+
+			console.log("Making request")
+			$.ajax({
+				url         : '/feed-filters/api/',
+				data        : JSON.stringify(params),
+				success     : new_func_ok_cb(merge_to),
+				error       : new_func_apply_fail_cb,
+				method      : "POST",
+				dataType    : 'json',
+				contentType : "application/json;",
+
+			})
+
+
+		}
+
+		function new_func_apply_fail_cb(jqXHR, textStatus, errorThrown)
+		{
+			console.log("Apply failed callback?")
+			$("#process-results").html(`
+				<div class="center-block text-center">
+					<h4>Error applying changes!</h4>
+					<p>Error: ` + errorThrown + `</p>
+					<p>Status text: ` + textStatus + `</p>
+				</div>`)
+		}
+
+		function new_func_ok_cb(merge_to_id)
+		{
+			return function(data, textStatus, jqXHR)
+			{
+				console.log("Applied data:", data)
+				console.log("error:", data.error)
+				console.log("reload:", data.reload)
+
+
+
+				var merge_link = '';
+
+				if (data.merge_ids)
+				{
+					merge_link = '<p><a href="/feed-filters/merge-parsers?' + $.param({f1 : data.merge_ids[0], f2 : data.merge_ids[1] } ) + '"">Merge viewer for: ' + data.merge_ids + '</a></p>';
+
+				}
+				console.log("Merge link:", merge_link)
+				$("#process-results").html(`
+					<div class="center-block">
+						<h4>Response:</h4>
+						<p><pre><code>` + data.message + `</code></pre></p>
+						` + merge_link + `
+						<p><a href='http://10.1.1.60:5001/feed-filters/feedid/` + merge_to_id + `'>Merged item</a></p>
+					</div>`)
+
+			}
+		}
+
+	</script>
+</html>
+
+
+
