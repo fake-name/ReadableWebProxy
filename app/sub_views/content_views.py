@@ -113,25 +113,24 @@ def view_history():
 	if version and not (delete_id or delete):
 		return render_template('view.html', title = 'Rendering Content', req_url = req_url, version=version)
 
-	with WebMirror.API.getPageRow(req_url) as page:
-		versions = []
+	versions = []
 
-		ctbl = version_table(db.WebPages)
-
-
-		versions = g.session.query(ctbl.c.id, ctbl.c.state, ctbl.c.fetchtime, ctbl.c.transaction_id) \
-			.filter(ctbl.c.url == req_url)                                    \
-			.order_by(ctbl.c.fetchtime)                                       \
-			.all()
-
-		versions = list(enumerate(versions))
-		versions.reverse()
-
-		if delete_id and delete:
-			return do_history_delete(versions, version, delete_id, delete)
+	ctbl = version_table(db.WebPages)
 
 
-		return render_template('history.html', title = 'Item History', page = page, req_url = req_url, versions=versions)
+	versions = g.session.query(ctbl.c.id, ctbl.c.state, ctbl.c.fetchtime, ctbl.c.transaction_id) \
+		.filter(ctbl.c.url == req_url)                                    \
+		.order_by(ctbl.c.fetchtime)                                       \
+		.all()
+
+	versions = list(enumerate(versions))
+	versions.reverse()
+
+	if delete_id and delete:
+		return do_history_delete(versions, version, delete_id, delete)
+
+
+	return render_template('history.html', title = 'Item History', req_url = req_url, versions=versions)
 
 
 def get_filter_state_for_url(url):

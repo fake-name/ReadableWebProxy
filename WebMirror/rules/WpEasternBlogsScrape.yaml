@@ -1241,6 +1241,11 @@ badwords: [
 		"/rg-erdr.php",
 		"&view=print",
 		'wuxiasociety.com/forum/',
+		'iframe=true',
+		'theme_preview=true',
+
+		# Google amp crap, I assume?
+		'/amp/',
 	]
 
 compound_badwords: [

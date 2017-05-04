@@ -204,6 +204,21 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/ikea-dilemma&q=comic/ikea-dilemma&q=comic/',
 		'/webcomics&q=category/web-links/',
 		'/lost-omens&q=forum/lost-omens&q=forum/',
+
+		'/jam/book-one-we-are-engineers&q=blog/jam/',
+		'www.wastedtalent.ca/forum/',
+		'/red?q=character/red&q=character/',
+		'/topic/vancouver&q=comic/topic/',
+		'/ferry-times?q=comic/ferry-times&q=comic/',
+		'/office-life?q=tags/office-life&q=tags/',
+		'/general&q=forum/general&q=forum/',
+
+		'/time-traveler&q=comic/time-traveler&q=comic/',
+		'/christmas-wishes&q=comic/christmas-wishes&q=comic/',
+		'/time-traveler&q=comic/time-traveler&q=comic/',
+
+		'/preventative-measures&q=comic/preventative-measures&q=comic/',
+
 	]
 
 	@classmethod
