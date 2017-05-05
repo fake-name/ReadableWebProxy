@@ -104,7 +104,8 @@ def getCreateRssSource(db_sess, feedname, feedurl):
 			)
 		db_sess.add(feed_row)
 		db_sess.flush()
-		feed_id = feed_row.id
+	feed_id = feed_row.id
+
 
 	new_nl = db.RssFeedUrlMapper(
 			feed_netloc = nl,
