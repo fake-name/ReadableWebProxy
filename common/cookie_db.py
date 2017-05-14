@@ -63,7 +63,9 @@ class WebCookieDb(common.db_base.Base):
 	c_path               = Column(Text)
 	c_path_specified     = Column(Boolean)
 	c_secure             = Column(Boolean)
-	c_expires            = Column(Integer)
+
+	# So yeah... I'm having 2038 problems. NOW.
+	c_expires            = Column(BigInteger)
 	c_discard            = Column(Boolean)
 	c_comment            = Column(Text)
 	c_comment_url        = Column(Text)

@@ -1244,6 +1244,15 @@ badwords: [
 		'iframe=true',
 		'theme_preview=true',
 
+
+		'gravitytranslations.com/Online_Novels.cfm?fp=',
+		'gravitytranslations.com/Romantic_Novels.cfm?fp=',
+		'gravitytranslations.com/Fiction_Novels.cfm?fp=',
+		'gravitytranslations.com/display.cfm?fp=',
+		'gravitytranslations.com/Fantasy_Novels.cfm?fp=',
+		'gravitytranslations.com/display.cfm?fp=',
+		'gravitytranslations.com/Humorous_Novels.cfm?fp=',
+
 		# Google amp crap, I assume?
 		'/amp/',
 	]

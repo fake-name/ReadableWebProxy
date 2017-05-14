@@ -163,6 +163,8 @@ badwords: [
 			'?do=',
 			'&do=',
 
+			'spcnet.tv/music-',
+
 			'/statusicon/',
 
 			# WHY are there MULTIPLE pagination modes?

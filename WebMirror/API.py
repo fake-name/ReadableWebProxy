@@ -2,8 +2,10 @@
 import datetime
 import os.path
 import contextlib
+import logging
 
 import common.database
+import Misc.txt_to_img
 import WebMirror.Engine
 # import WebMirror.runtime_engines
 from common.Exceptions import DownloadException, getErrorDiv
@@ -35,6 +37,7 @@ def td_format(td_object):
 
 class RemoteContentObject(object):
 	def __init__(self, url, db_session = None):
+		self.log = logging.getLogger("Main.RemoteContentObject")
 		self.url     = url
 		self.fetched = False
 		self.job     = None
@@ -93,6 +96,49 @@ class RemoteContentObject(object):
 		replace the url/resource keys with the proper paths
 		so that the page will render properly
 		"""
+
+		assert self.fetched
+		if self.job.state != "complete":
+			self.log.error("Job resource retreival attempted when job has not been completed!")
+			self.log.error("Target URL %s", self.job.url)
+
+			msg  = "Job failed or not fetched!\n"
+			msg += "Current job state: %s\n" % self.job.state
+			msg += "URL: %s\n" % self.job.url
+			img_dat = Misc.txt_to_img.text_to_png(msg)
+			return "image/png", "genimg.%s.png", img_dat
+			# job failed
+		if not self.job.file:
+			try:
+				self.fetch(ignore_cache=True)
+
+			except DownloadException:
+				self.log.error("Failure during refetch-attempt for item!")
+				self.log.error("Refetch attempt for %s", self.job.url)
+
+				msg  = "Job complete, but no file present?!\n"
+				msg += "Current job state: %s\n" % self.job.state
+				msg += "URL: %s\n" % self.job.url
+				msg += "Returned MIME: %s\n" % self.job.mimetype
+				msg += "Content size: %s\n" % len(self.job.content)
+				# msg += "Body: %s\n" % self.job.content
+				img_dat = Misc.txt_to_img.text_to_png(msg)
+				return "image/png", "genimg.%s.png", img_dat
+
+			if not self.job.file:
+
+				self.log.error("Refetch for resource did not return content!")
+				self.log.error("Target URL %s", self.job.url)
+
+				msg  = "Job complete, no file present, and refetch failed!\n"
+				msg += "Current job state: %s\n" % self.job.state
+				msg += "URL: %s\n" % self.job.url
+				msg += "Returned MIME: %s\n" % self.job.mimetype
+				msg += "Content size: %s\n" % len(self.job.content)
+				# msg += "Body: %s\n" % self.job.content
+				img_dat = Misc.txt_to_img.text_to_png(msg)
+				return "image/png", "genimg.%s.png", img_dat
+
 		assert self.fetched
 		assert self.job.file
 

@@ -154,5 +154,6 @@ GLOBAL_INLINE_BULLSHIT = [
 			'Original and most updated translations are from volaretranslations.',
 			'Original and most updated translations are from volaretranslations.',
 			"&lt;StarveCleric&gt;",
+			'(trytranslations.com at your service!)',
 
 ]
