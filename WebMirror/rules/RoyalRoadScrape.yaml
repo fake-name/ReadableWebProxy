@@ -42,6 +42,10 @@ badwords: [
 			'?ReturnUrl=',
 			'/ratereview/',
 			'?review=',
+
+			# Fuck your associate shit.
+			'royalroadl.com/Kindle-eBooks/',
+			'royalroadl.com/b/ref=nav_shopall_Deals?',
 			]
 
 # Content Stripping needs to be determined.

@@ -1221,6 +1221,8 @@ badwords: [
 		"diff%3D",
 		"oldid%3D",
 
+		'http:/jigglypuffsdiary',
+
 		# This image wouldn't bother me so much if it weren't HUGE, and shrunk with css.
 		"discord-feature-graphic-1.png",
 		# Another HUEG image
@@ -1252,6 +1254,12 @@ badwords: [
 		'gravitytranslations.com/Fantasy_Novels.cfm?fp=',
 		'gravitytranslations.com/display.cfm?fp=',
 		'gravitytranslations.com/Humorous_Novels.cfm?fp=',
+
+		'.cfm?fp=',
+
+		# Some scummy domain squatter
+		'.mht?ga=',
+
 
 		# Google amp crap, I assume?
 		'/amp/',

@@ -113,6 +113,10 @@ badwords: [
 			# I think I can conclude basically 85% of people who hand-roll
 			# their own HTML are completely incapable.
 			'www.eugenewoodbury.com/feeds/posts/',
+
+
+			# Stupid dreamwidth commenting garbage.
+			'?replyto=',
 			]
 
 

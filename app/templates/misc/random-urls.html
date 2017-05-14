@@ -1,0 +1,42 @@
+<!-- extend base layout -->
+{% set title = "Loading" %}
+{% extends "__base.html" %}
+
+{% block header %}
+
+	<style>
+		#segment_container
+		{
+			max-width: none !important;
+		}
+		body
+		{
+			max-width: none !important;
+		}
+		table, th, td {
+		    border: 1px solid black !important;
+		}
+		th, td
+		{
+			padding : 2px !important;
+		}
+	</style>
+
+{% endblock %}
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well well-large breakword" style="min-height: 140px; width: 100%;">
+		<h4>Random URL Subset:</h4>
+		<div>
+			<ul>
+				{% for url in results %}
+				<li><code>{{url[0]}}</code></li>
+				{% endfor %}
+			</ul>
+
+			bleh
+
+		</div>
+	</div>
+
+{% endblock %}

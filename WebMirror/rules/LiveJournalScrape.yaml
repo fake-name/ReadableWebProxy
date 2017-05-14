@@ -102,6 +102,9 @@ badwords: [
 	 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
 	 '&author=',
 	 '/#comment-',
+
+	 # I think this is a redirect, NFI why it exists.
+	 '/?get=prev',
 	]
 
 decompose: [

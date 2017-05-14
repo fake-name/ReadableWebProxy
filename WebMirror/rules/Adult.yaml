@@ -173,8 +173,10 @@ badwords: [
 			'/editors/contacteditor.php?',
 			'&page=contact',
 			'/secretsound.php?',
-			
+
 			'literotica.com/search.php',
+
+			'/member/connect?',
 
 			]
 
