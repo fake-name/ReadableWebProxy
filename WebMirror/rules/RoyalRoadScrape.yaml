@@ -43,9 +43,33 @@ badwords: [
 			'/ratereview/',
 			'?review=',
 
-			# Fuck your associate shit.
+			# Did RoyalRoadL redirect to amazon somewhere?
 			'royalroadl.com/Kindle-eBooks/',
 			'royalroadl.com/b/ref=nav_shopall_Deals?',
+			'royalroadl.com/gp/redirect.html/',
+			'royalroadl.com/product-reviews/',
+			'/b/ref=dp_brlad_entry',
+			'/ref=nav_shopall_?',
+			'royalroadl.com/b/ref=nav_shopal',
+			'royalroadl.com/Science-Fiction-Fantasy-Books/b/',
+			'royalroadl.com/gp/product/',
+			'royalroadl.com/b/ref=sv_kinc_5',
+			'royalroadl.com/services/ref=footer_services/',
+			'/ref=nav_shopall_',
+			'/ref=nav_nav_orders_first',
+			'/ref=nav_cs_gc_registry',
+			'/order-history/',
+			'royalroadl.com/gp/css/',
+			'https://www.amazon.com',
+			'-ebook/dp/',
+			'www.royalroadl.com/gp/',
+			'/ref=pd_',
+			'/ref=sp_',
+			'royalroadl.com/b/ref=footer_seeall/',
+			'/ref=footer_amazonglobal',
+			'royalroadl.com/gp/help/',
+			'royalroadl.com/b/ref=nav_',
+			'royalroadl.com/gp/prime/'
 			]
 
 # Content Stripping needs to be determined.

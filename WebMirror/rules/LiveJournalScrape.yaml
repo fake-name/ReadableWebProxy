@@ -104,6 +104,7 @@ badwords: [
 	 '/#comment-',
 
 	 # I think this is a redirect, NFI why it exists.
+	 '/?get=next',
 	 '/?get=prev',
 	]
 

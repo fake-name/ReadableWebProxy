@@ -17,6 +17,7 @@ badwords: [
 			'#Comments',
 			'/comments/',
 			'/history/',
+			'lndb.info/javascript/',
 			]
 
 

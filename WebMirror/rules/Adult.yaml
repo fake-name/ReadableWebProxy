@@ -177,6 +177,7 @@ badwords: [
 			'literotica.com/search.php',
 
 			'/member/connect?',
+			'/log-out.html?',
 
 			]
 

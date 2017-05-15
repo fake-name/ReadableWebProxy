@@ -117,6 +117,8 @@ badwords: [
 
 			# Stupid dreamwidth commenting garbage.
 			'?replyto=',
+
+			'&reverse-paginate=true&',
 			]
 
 

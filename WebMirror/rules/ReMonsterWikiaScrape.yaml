@@ -86,8 +86,11 @@ badwords: [
 			"printable=yes",
 			"/Special:RecentChanges?",
 
-			'/Null?action=render'
-
+			'/Null?action=render',
+			're-monster.wikia.com/signin?',
+			'/category:articles_that_needs_more_content',
+			'/Category:Articles_that_needs_more_content',
+			're-monster.wikia.com/forgot-password',
 
 			]
 

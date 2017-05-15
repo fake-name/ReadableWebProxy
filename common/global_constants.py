@@ -94,6 +94,8 @@ GLOBAL_BAD_URLS = [
 			'/js/js/',
 			'/css/css/',
 			'/images/images/',
+			'ref=dp_brlad_entry',
+			'https:/www.',
 	]
 
 

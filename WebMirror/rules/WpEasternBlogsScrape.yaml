@@ -1133,7 +1133,6 @@ baseUrl: [
 
 
 
-
 	]
 
 
@@ -1256,10 +1255,17 @@ badwords: [
 		'gravitytranslations.com/Humorous_Novels.cfm?fp=',
 
 		'.cfm?fp=',
+		'thundertranslations.com/feed/bh.php',
 
 		# Some scummy domain squatter
 		'.mht?ga=',
+		'slavetranslations.com/?fp=',
 
+		'kencephalontranslations.com/contact/',
+		'pandatranslations.net/rg-erdr.php',
+		'/js/css/js/',
+		'?payment-mode=paypal',
+		'tototrans.com/rg-erdr.php',
 
 		# Google amp crap, I assume?
 		'/amp/',
@@ -1312,6 +1318,25 @@ decompose: [
 	{'class'                         : 'sd-content'},
 	{'class'                         : 'wpl-button'},
 	{'class'                         : 'wpl-likebox'},
+	{'class'                         : 'td-login-form-wrap'},
+	{'class'                         : 'td-login-wrap'},
+	{'class'                         : 'td-login-mob'},
+	{'class'                         : 'td-register-mob'},
+	{'class'                         : 'td-register-div'},
+	{'class'                         : 'td-forgot-pass-mob'},
+	{'class'                         : 'td-login-close'},
+	{'class'                         : 'login-form-mobile'},
+	{'class'                         : 'td-search-wrapper'},
+	{'class'                         : 'header-search-wrap'},
+	{'class'                         : 'td-header-top-menu'},
+	{'class'                         : 'td-login-hide-mob'},
+	{'class'                         : 'td-search-wrap-mob'},
+	{'class'                         : 'td-search-background'},
+	{'class'                         : 'td-menu-socials-wrap'},
+	{'class'                         : 'td-menu-login-section'},
+	{'class'                         : 'td-guest-wrap'},
+	{'class'                         : 'td-post-sharing'},
+	{'class'                         : 'td-post-sharing-top'},
 
 	{'class'                         : 'sidebar-primary'},
 

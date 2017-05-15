@@ -182,6 +182,11 @@ badwords: [
 			'/entry/signin?',
 
 			'/usercp.php',
+			'/index/index/index/',
+			'/index/css.php',
+			'/index/index/images/',
+			'/subscription.php?',
+			'/showgroups.php?',
 
 			]
 

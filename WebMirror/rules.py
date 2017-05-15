@@ -408,9 +408,9 @@ def get_rules():
 
 
 
-def load_rules():
+def load_rules(override=False):
 
-	if flags.RULE_CACHE == None or "debug" in sys.argv:
+	if flags.RULE_CACHE == None or "debug" in sys.argv or override:
 		print("Need to load rules (%s, %s)" % (flags.RULE_CACHE == None, "debug" in sys.argv))
 		rules, specials = get_rules()
 
@@ -422,9 +422,9 @@ def load_rules():
 
 
 
-def load_special_case_sites():
+def load_special_case_sites(override=False):
 
-	if flags.SPECIAL_CASE_CACHE == None or "debug" in sys.argv:
+	if flags.SPECIAL_CASE_CACHE == None or "debug" in sys.argv or override:
 		print("Need to load special-url handling ruleset (%s, %s)" % (flags.SPECIAL_CASE_CACHE == None, "debug" in sys.argv))
 		rules, specials = get_rules()
 
