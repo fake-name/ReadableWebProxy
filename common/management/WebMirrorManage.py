@@ -284,27 +284,42 @@ def exposed_delete_comment_feed_items():
 	like they're comment feed articles.
 	'''
 	sess = db.get_db_session()
+
+	bad_sources = 	sess.query(db.RssFeedUrlMapper) \
+			.filter(or_(
+
+				db.RssFeedUrlMapper.feed_url.like("%/comments/%"),
+				db.RssFeedUrlMapper.feed_url.like("%pokegirls.org%"),
+				db.RssFeedUrlMapper.feed_url.like("%tracking.feedpress.it%"),
+				db.RssFeedUrlMapper.feed_url.like("%40pics.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%storiesonline.org%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.miforcampuspolice.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%198.199.119.217%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.fictionmania.tv%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.asstr.org%"),
+				db.RssFeedUrlMapper.feed_url.like("%storiesonline.net%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.booksiesilk.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.miforcampuspolice.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%wordpress-8932-19922-46194.cloudwaysapps.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%wordpress-8932-48656-126389.cloudwaysapps.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.mcstories.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.asstr.org%"),
+
+				db.RssFeedUrlMapper.feed_url.like("%www.miforcampuspolice.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%#comment-%"),
+				db.RssFeedUrlMapper.feed_url.like("%CommentsForInMyDaydreams%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.fanfiction.net%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.fictionpress.com%"),
+				db.RssFeedUrlMapper.feed_url.like("%?showComment=%"),
+				db.RssFeedUrlMapper.feed_url.like("%www.booksie.com%")))    \
+			.order_by(db.RssFeedUrlMapper.feed_url) \
+			.all()
+	bad_sources = list(bad_sources)
+	print("Bad sources")
+	print(bad_sources)
+
 	bad = sess.query(db.RssFeedPost) \
 			.filter(or_(
-				db.RssFeedPost.feedurl.like("%/comments/%"),
-				db.RssFeedPost.feedurl.like("%40pics.com%"),
-				db.RssFeedPost.feedurl.like("%www.miforcampuspolice.com%"),     # wat
-				db.RssFeedPost.feedurl.like("%198.199.119.217%"),
-				db.RssFeedPost.feedurl.like("%www.fictionmania.tv%"),
-				db.RssFeedPost.feedurl.like("%www.asstr.org%"),
-				db.RssFeedPost.feedurl.like("%storiesonline.net%"),
-				db.RssFeedPost.feedurl.like("%www.booksiesilk.com%"),
-				db.RssFeedPost.feedurl.like("%www.miforcampuspolice.com%"),
-				db.RssFeedPost.feedurl.like("%wordpress-8932-19922-46194.cloudwaysapps.com%"),
-				db.RssFeedPost.feedurl.like("%wordpress-8932-48656-126389.cloudwaysapps.com%"),
-				db.RssFeedPost.feedurl.like("%www.mcstories.com%"),
-				db.RssFeedPost.feedurl.like("%www.asstr.org%"),
-				db.RssFeedPost.feedurl.like("%pokegirls.org%"),
-				db.RssFeedPost.feedurl.like("%wtracking.feedpress.itg%"),
-
-				# Let's not keep the bt stuff around, it's only used for update triggering.
-				db.RssFeedPost.feedurl.like("%www.baka-tsuki.org%"),
-				db.RssFeedPost.feedurl.like("%baka-tsuki.org%"),
 
 				db.RssFeedPost.contenturl.like("%/comments/%"),
 				db.RssFeedPost.contenturl.like("%pokegirls.org%"),

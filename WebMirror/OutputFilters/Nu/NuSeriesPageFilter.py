@@ -178,8 +178,12 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		if data_sets['yeartg'] and data_sets['yeartg'][0]:
 			# print("Non-null data_sets['yeartg']:", data_sets['yeartg'])
-			tmp_d = datetime.datetime(year=int(data_sets['yeartg'].pop().split("-")[0]), month=1, day=1)
-			data_sets['yeartg'] = calendar.timegm(tmp_d.timetuple())
+			try:
+				yearstr = data_sets['yeartg'].pop().split("-")[0]
+				tmp_d = datetime.datetime(year=int(yearstr), month=1, day=1)
+				data_sets['yeartg'] = calendar.timegm(tmp_d.timetuple())
+			except ValueError:
+				data_sets['yeartg'] = None
 		else:
 			data_sets['yeartg'] = None
 
@@ -286,10 +290,11 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.log.info("Committing!")
 		self.raw_cur.execute("COMMIT;")
 		self.log.info("Committed!")
+
 		# Do not add series without 3 chapters.
-		if valid_releases < 3:
-			self.log.warning("Less then three chapters!")
-			return
+		# if valid_releases < 3:
+		# 	self.log.warning("Less then three chapters!")
+		# 	return
 
 		self.amqp_put_item(series_info_packet)
 		return

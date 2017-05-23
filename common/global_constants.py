@@ -135,6 +135,7 @@ RSS_TITLE_FILTER = [
 	"by: ",
 	"comments on: ",
 	"comment on: ",
+	"comment on ",
 ]
 
 

@@ -33,6 +33,7 @@ VOLUME_KEYS_GLOBAL   = [
 		'v',
 		'b',
 		's',
+		'bk',
 	]
 
 
