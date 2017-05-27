@@ -52,8 +52,14 @@ baseUrl: [
 		"https://spr.dreamwidth.org",
 		"https://quartia.dreamwidth.org",
 		"https://sincere.dreamwidth.org",
+		'https://talesof.dreamwidth.org',
 
 		'https://wuxiadream.com',
+		'http://www.heavenlyenchantress.com',
+		'http://lilith-art.de.tl',
+
+		'http://www.novellatranslation.com',
+		'http://www.lionmask.pro',
 
 	]
 
@@ -72,11 +78,14 @@ feeds: [
 	'https://www.sabishiidesu.com/feeds/posts/default',
 	'http://www.pegasusfarts.com/feeds/posts/default',
 	'http://novel.oddsquad.org/feeds/posts/default',
+	'http://www.heavenlyenchantress.com/feeds/posts/default',
 
 	'https://justblthings.weebly.com/1/feed',
 	'https://earlandfairy.weebly.com/1/feed',
 
-	'https://wuxiadream.com/rss'
+	'https://wuxiadream.com/rss',
+	'http://www.novellatranslation.com/feed',
+	'http://www.lionmask.pro/feeds/posts/default',
 
 ]
 
@@ -128,6 +137,7 @@ badwords: [
 
 decomposeBefore: [
 	{'class'      :'comments-area'},
+	{'class' : "adsbygoogle"},
 ]
 
 decompose: [

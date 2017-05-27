@@ -915,6 +915,12 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 		'www.testing.wuxiaworld.com',
 
 		'www.wangkaiinternational.com',    # Some garbage korean soap opera actor's website?
+
+
+		'gakno.com.mx',          # Mexican food manufacturer?
+
+		'kitakamiooi.com',   # Redirects to www.kitakamiooi.com
+
 	]
 
 	missing = 0
