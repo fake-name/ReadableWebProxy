@@ -913,8 +913,8 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 		'suspendeddomain.org',
 		'www.facebook.com',
 		'www.testing.wuxiaworld.com',
-		'www.wangkaiinternational.com',
-		'www.xiaoxiaonovels.com',
+
+		'www.wangkaiinternational.com',    # Some garbage korean soap opera actor's website?
 	]
 
 	missing = 0
@@ -931,6 +931,12 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 			print("Missing: ", (netloc, title, tgturl))
 			missing += 1
 	print("Nu outbound items: ", len(mapdict), "missing:", missing)
+
+def exposed_find_dead_netlocs():
+	'''
+	Try to fetch each URL in the available netlocs and see if they're valid.
+	'''
+	pass
 
 
 def exposed_fetch_other_feed_sources():

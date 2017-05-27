@@ -3,7 +3,7 @@
 # from sqlalchemy.sql.expression import nullslast
 # from sqlalchemy import desc
 
-from flask.ext.sqlalchemy import Pagination
+from flask_sqlalchemy import Pagination
 from flask import abort
 
 import config

@@ -119,6 +119,9 @@ badwords: [
 			'?replyto=',
 
 			'&reverse-paginate=true&',
+
+			# Block mobile garbage.
+			'm.xianxiaworld.net',
 			]
 
 
