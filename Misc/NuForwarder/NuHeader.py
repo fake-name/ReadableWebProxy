@@ -81,21 +81,19 @@ class NuHeader(LogBase.LoggerMixin):
 			self.check_open_rpc_interface()
 
 	def put_job(self, put=3):
-		self.log.info("Loading a row to fetch...")
-		# haveq = self.db_sess.query(db.NuReleaseItem)                   \
-		# 	.outerjoin(db.NuResolvedOutbound)                         \
-		# 	.filter(db.NuReleaseItem.validated == False)              \
-		# 	.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
-		# 	.order_by(func.random())                                  \
-		# 	.group_by(db.NuReleaseItem.id)                            \
-		# 	.limit(max(100, put*3))
+		self.log.info("Loading rows to fetch...")
+		recent_d = datetime.datetime.now() - datetime.timedelta(hours=72)
+		recentq = self.db_sess.query(db.NuReleaseItem)                \
+			.outerjoin(db.NuResolvedOutbound)                         \
+			.filter(db.NuReleaseItem.validated == False)              \
+			.filter(db.NuReleaseItem.first_seen >= recent_d)          \
+			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
+			.order_by(desc(db.NuReleaseItem.first_seen))              \
+			.group_by(db.NuReleaseItem.id)                            \
+			.limit(max(100, put))
 
-		# # .order_by(desc(db.NuReleaseItem.first_seen))                \
-		# moar = haveq.all()
 
-
-		self.log.info("Loading a row to fetch...")
-		haveq = self.db_sess.query(db.NuReleaseItem)                   \
+		bulkq = self.db_sess.query(db.NuReleaseItem)                  \
 			.outerjoin(db.NuResolvedOutbound)                         \
 			.filter(db.NuReleaseItem.validated == False)              \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
@@ -103,8 +101,11 @@ class NuHeader(LogBase.LoggerMixin):
 			.group_by(db.NuReleaseItem.id)                            \
 			.limit(max(100, put*3))
 
-		haveset = haveq.all()
+		bulkset   = bulkq.all()
+		recentset = recentq.all()
 
+		self.log.info("Have %s recent items, %s long-term items to fetch", len(recentset), len(bulkset))
+		haveset   = bulkset + recentset
 
 
 

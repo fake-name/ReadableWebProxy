@@ -10,6 +10,8 @@ import common.database as db
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
+from . import NUBaseFilter
+
 import sqlalchemy.exc
 import bs4
 import re
@@ -37,7 +39,7 @@ import common.util.urlFuncs
 
 
 
-class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
+class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 
 
 	wanted_mimetypes = ['text/html']
@@ -157,21 +159,7 @@ class NuHomepageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		assert container is not None
 
-
-		masked_classes = []
-
-		mask_style = soup.find_all("style", text=re.compile(r"\.chp-release\..*?display:none"))
-		for style in mask_style:
-			parsed_style = cssutils.parseString(style.get_text())
-			for rule in parsed_style:
-				if rule.type == rule.STYLE_RULE:
-					disp = rule.style.getProperty('display')
-					if disp and disp.cssValue.cssText.lower() == "none":
-						for selector in rule.selectorList:
-							if len(selector.seq) == 2:
-								root, key = selector.seq
-								if root.value == ".chp-release" and root.type == 'class':
-									masked_classes.append(key.value[1:])
+		masked_classes = self.getMaskedClasses(soup)
 
 		release_tables = container.find_all('table', class_='tablesorter')
 

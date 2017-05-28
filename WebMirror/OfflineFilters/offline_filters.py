@@ -221,7 +221,8 @@ def exposed_delete_nu_unresolved():
 	Delete all nu head system rows that have not been reviewed.
 
 	This is needed for historical purges, particularly if
-	nu changes their extnu ids.
+	nu changes their extnu ids, or if the url masking
+	mechanism has significant changes.
 	'''
 	sess = db.get_db_session()
 

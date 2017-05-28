@@ -40,6 +40,7 @@ import common.management.file_cleanup
 import common.global_constants
 
 import Misc.HistoryAggregator.Consolidate
+import Misc.NuForwarder.NuHeader
 
 import flags
 import config
@@ -48,6 +49,8 @@ from config import C_RAW_RESOURCE_DIR
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.SiteSync.fetch
 import WebMirror.OutputFilters.rss.FeedDataParser
+
+
 
 def exposed_remote_fetch_enqueue(url):
 	'''
@@ -66,6 +69,12 @@ def exposed_trigger_nu_homepage_fetch():
 	'''
 	trig = WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger()
 	trig.go()
+
+def exposed_do_nu_head_cycle():
+	'''
+	Do a fetch and wait for results session through the NU Header system.
+	'''
+	Misc.NuForwarder.NuHeader.fetch_and_flush()
 
 
 def exposed_fetch(url, debug=True, rss_debug=False):

@@ -9,6 +9,8 @@ from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import WebMirror.SpecialCase
 
+from . import NUBaseFilter
+
 import bs4
 import re
 import calendar
@@ -71,7 +73,7 @@ def upsertNuItem(raw_cur, itemparams):
 	raw_cur.execute(cmd, data)
 
 
-class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 
 
 	wanted_mimetypes = [
@@ -253,9 +255,12 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		releases = chapter_tbl.find_all("tr")
 
+
+		masked_classes = self.getMaskedClasses(soup)
+
+
 		valid_releases = 0
 		for release in releases:
-
 			items = release.find_all("td")
 			if len(items) != 3:
 				continue
@@ -272,16 +277,21 @@ class NUSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			group_name = group_tg.get_text().strip()
 			group_name = msgpackers.fixSmartQuotes(group_name)
 
+			linkas = release.find_all('a', class_='chp-release')
 
-			upsertNuItem(self.raw_cur,
-				{
-					'seriesname'       : title,
-					'releaseinfo'      : release_info,
-					'groupinfo'        : group_name,
-					'referrer'         : seriesPageUrl,
-					'outbound_wrapper' : chp_tg.a['href'],
-					'first_seen'       : reldate,
-				})
+			for link in linkas:
+				bad = any([tmp in masked_classes for tmp in link['class']])
+				if not bad:
+
+					upsertNuItem(self.raw_cur,
+						{
+							'seriesname'       : title,
+							'releaseinfo'      : release_info,
+							'groupinfo'        : group_name,
+							'referrer'         : seriesPageUrl,
+							'outbound_wrapper' : link['href'],
+							'first_seen'       : reldate,
+						})
 
 
 			valid_releases += 1
