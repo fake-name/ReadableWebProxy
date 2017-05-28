@@ -62,6 +62,9 @@ def view():
 	return set_cache_control_headers(response, allow_inline=True)
 
 def do_history_delete(versions, version, delete_id, delete):
+
+	ctbl = version_table(db.WebPages)
+
 	if delete != "True":
 		return render_template('error.html', title = 'Error when deleting!', message = "Delete param not true?")
 	try:
@@ -80,7 +83,12 @@ def do_history_delete(versions, version, delete_id, delete):
 
 		for vid, version in versions.items():
 			if vid != maxid:
-				g.session.delete(version)
+				rid, tid = version.id, version.transaction_id
+				print("Deleting:", version, rid, tid)
+				g.session.query(ctbl)                     \
+					.filter(ctbl.c.id             == rid) \
+					.filter(ctbl.c.transaction_id == tid) \
+					.delete(synchronize_session=False)
 		g.session.commit()
 		return render_template('error.html', title = 'All old versions deleted', message = "All old versions deleted")
 
@@ -91,7 +99,11 @@ def do_history_delete(versions, version, delete_id, delete):
 		if not target.id == delete_id:
 			return render_template('error.html', title = 'Error when deleting!', message = "Delete row PK Id doesn't match specified delete ID?")
 
-		g.session.delete(target)
+		print("Deleting:", target)
+		g.session.query(ctbl)                                       \
+			.filter(ctbl.c.id == target.id)                         \
+			.filter(ctbl.c.transaction_id == target.transaction_id) \
+			.delete(synchronize_session=False)
 		g.session.commit()
 
 		return render_template('error.html', title = 'Row deleted', message = "Row: '%s', '%s'" % (delete_id, version))
