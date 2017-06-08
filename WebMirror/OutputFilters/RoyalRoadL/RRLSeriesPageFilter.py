@@ -19,7 +19,7 @@ import common.util.webFunctions
 import os.path
 import bleach
 
-MIN_RATING = 5
+MIN_RATING = 2.5
 
 ########################################################################################################################
 #
@@ -53,7 +53,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	loggerPath = "Main.Filter.RoyalRoad.Page"
 
-	match_re = re.compile(r"^http://(?:www\.)?royalroadl\.com/fiction/(\d+)/?$", flags=re.IGNORECASE)
+	match_re = re.compile(r"^http://(?:www\.)?royalroadl\.com/fiction/(\d+)/", flags=re.IGNORECASE)
 
 	@classmethod
 	def wantsUrl(cls, url):
@@ -99,40 +99,25 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		header   = soup.find("div", class_='fic-title')
-		titletg  = header.find("h2")
+		titletg  = header.find("h1")
 		authortg = header.find("h4")
 		authortg.find("span").decompose()
 
-		ratingtg_type_1 = soup.find("div", class_='rating')
-		ratingtg_type_2 = soup.find("li", text=re.compile('Overall Score'))
+		rating_val   = soup.find("meta", property='books:rating:value')
+		rating_scale = soup.find("meta", property='books:rating:scale')
 
+		print("Rating value:", rating_val)
+		print("Rating scale:", rating_scale)
 
-		if ratingtg_type_1:
-			startg = ratingtg_type_1.find("span", class_='star')
-		elif ratingtg_type_2:
-			# print(ratingtg_type_2)
-			starcontainer = ratingtg_type_2.find_next_sibling("li")
-			if not starcontainer:
-				self.log.error("Could not find rating tag (starcontainer)!")
-				return []
-			startg = starcontainer.find("span", class_='star')
-			if not startg:
-				self.log.error("Could not find rating tag (startg)!")
-				return []
-
-
-		else:
-			self.log.error("Could not find rating tag!")
+		if not rating_val or not rating_scale:
 			return []
 
-		ratingcls = [tmp for tmp in startg['class'] if re.match(r"star\-\d+", tmp)]
-		rating = ratingcls[0].split("-")[-1]
+		rval_f   = float(rating_val.get('content', "0"))
+		rscale_f = float(rating_scale.get('content', "999999"))
 
-		rating = float(rating) / 10
-		rating = rating * 2  # Normalize to 1-10 scale
-		# print(startg['class'])
-		if not ratingcls:
-			return []
+		rating = 5 * (rval_f / rscale_f)
+
+		print("Float rating: ", rating)
 
 		if not rating >= MIN_RATING and rating != 0.0:
 			self.log.error("Item rating below upload threshold: %s", rating)
@@ -201,7 +186,6 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['sourcesite']  = 'RoyalRoadL'
 		seriesmeta['create_tags'] = True
 
-
 		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
 		extra = {}
 		extra['tags']     = tags
@@ -233,6 +217,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 			raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 
+
+			# print("Chapter:", raw_item)
 			raw_retval.append(raw_msg)
 
 		missing_chap = 0
@@ -262,8 +248,9 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.log.info("Retval empty?!")
 			return []
 
-		self.amqp_put_item(meta_pkt)
+		# self.amqp_put_item(meta_pkt)
 		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval]
+		retval = []
 		return retval
 
 

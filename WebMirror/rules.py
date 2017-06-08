@@ -244,7 +244,7 @@ def getAttributeRewriteRules(ruleset):
 
 def getRewalkIntervalDays(ruleset):
 	if not 'rewalk_interval_days' in ruleset:
-		return False
+		return 90
 	ret = ruleset['rewalk_interval_days']
 	assert ret > 3
 	return ret

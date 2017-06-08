@@ -227,20 +227,23 @@ def exposed_delete_nu_unresolved():
 	sess = db.get_db_session()
 
 	count = 0
+	print("Loading rows....")
+	rows = sess.query(db.NuReleaseItem) \
+		.options(joinedload('resolved'))    \
+		.all()
+	print("Loaded %s rows. Scanning." % len(rows))
+	for row in rows:
 
-	for row in sess.query(db.NuReleaseItem) \
-		.yield_per(50).all():
-
-		if len(list(row.resolved)) != 3 and row.reviewed == 'unverified':
+		if len(list(row.resolved)) == 0 and row.reviewed == 'unverified':
 
 			print(row.id, len(list(row.resolved)), row.referrer)
 			for bad in row.resolved:
 				sess.delete(bad)
 			sess.delete(row)
 			count += 1
-			# if count % 500 == 0:
-			# 	print("Committing!")
-			# 	sess.commit()
+			if count % 500 == 0:
+				print("Committing!")
+				sess.commit()
 
 	print("Committing!")
 	sess.commit()

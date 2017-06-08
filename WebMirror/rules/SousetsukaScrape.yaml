@@ -1,7 +1,7 @@
 
 type: eastern
 FOLLOW_GOOGLE_LINKS: False
-
+rewalk_interval_days : 30
 baseUrl: [
 	"http://www.sousetsuka.com/"
 	]

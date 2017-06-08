@@ -46,6 +46,8 @@ import flags
 import config
 from config import C_RAW_RESOURCE_DIR
 
+
+import WebMirror.TimedTriggers.RollingRewalkTrigger
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.SiteSync.fetch
 import WebMirror.OutputFilters.rss.FeedDataParser
@@ -1207,6 +1209,14 @@ def exposed_delete_netlocs():
 	print("Deleted %s rows. committing" % have.rowcount)
 	sess.commit()
 	print("Done!")
+
+
+
+def exposed_rolling_rewalk():
+
+	run = WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase()
+	run._go()
+
 
 
 

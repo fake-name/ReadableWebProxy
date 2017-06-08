@@ -29,18 +29,21 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 		sess = self.db.get_db_session()
 		q = sess.query(self.db.WebPages.id)                    \
-					.filter(self.db.WebPages.netloc == netloc)       \
 					.filter(
 						and_(
+							self.db.WebPages.netloc == netloc,
 							or_(
 								self.db.WebPages.state == 'complete',
 								self.db.WebPages.state == 'new',
 							),
-							self.db.WebPages.fetchtime       < ago,
-							self.db.WebPages.ignoreuntiltime > (datetime.datetime.min + datetime.timedelta(days=1)),
+							or_(
+								self.db.WebPages.fetchtime       < ago,
+								self.db.WebPages.fetchtime is None
+							)
+							# self.db.WebPages.ignoreuntiltime > (datetime.datetime.min + datetime.timedelta(days=1)),
 						)
 					)
-
+		# print("Query:", q)
 		ids = q.all()
 
 		# Returned list of IDs is each ID packed into a 1-tuple. Unwrap those tuples so it's just a list of integer IDs.
@@ -119,6 +122,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 				else:
 					interval = ruleset['rewalk_interval_days']
 				nl = urllib.parse.urlsplit(starturl).netloc
+				print("Interval: %s, netloc: %s" % (interval, nl))
 				starturls.append((interval, nl))
 
 		starturls = set(starturls)
