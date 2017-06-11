@@ -8,14 +8,14 @@ send_raw_feed: False
 baseUrl: [
 		'http://www.spcnet.tv/forums',
 		'http://forum.wuxiaworld.com',
-	]
+]
 
 feeds: [
 
 ]
 
 extraStartUrls: [
-	]
+]
 
 badwords: [
 			"/about/",
@@ -193,7 +193,7 @@ badwords: [
 
 
 decomposeBefore: [
-	{'class'      :'comments-area'},
+
 ]
 
 decompose: [
@@ -205,8 +205,6 @@ decompose: [
 	{'class'  : 'site-footer'},
 	{'class'  : 'menu-toggle'},
 	{'class'  : 'site-header'},
-	{'class'  : 'paging-navigation'},
-	{'class'  : 'comments-area'},
 ]
 
 stripTitle: [

@@ -53,7 +53,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	loggerPath = "Main.Filter.RoyalRoad.Page"
 
-	match_re = re.compile(r"^http://(?:www\.)?royalroadl\.com/fiction/(\d+)/", flags=re.IGNORECASE)
+	match_re = re.compile(r"^http://(?:www\.)?royalroadl\.com/fiction/(\d+)(?:/?$|/[a-zA-Z0-9\-]+/?$)", flags=re.IGNORECASE)
 
 	@classmethod
 	def wantsUrl(cls, url):
@@ -250,7 +250,6 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		# self.amqp_put_item(meta_pkt)
 		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval]
-		retval = []
 		return retval
 
 
