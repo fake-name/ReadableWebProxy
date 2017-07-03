@@ -39,6 +39,7 @@ GLOBAL_BAD_URLS = [
 			'www.addtoany.com'
 			'www.pinterest.com/pin/',
 			'www.wattpad.com/login?',
+			'www.tumblr.com/reblog/',
 
 			'www.paypalobjects.com',
 
@@ -159,5 +160,6 @@ GLOBAL_INLINE_BULLSHIT = [
 			"&lt;StarveCleric&gt;",
 			'(trytranslations.com at your service!)',
 			'Please do not host elsewhere but volare and Yumeabyss',
+			'[Follow the latest chapter at wuxiadream.com]',
 
 ]

@@ -183,6 +183,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 						bad = any([tmp in masked_classes for tmp in link['class']])
 						if not bad:
 							self.log.info("Using %s for referrer for %s -> %s -> %s, %s, %s", referrer, sname, gname, link.get_text().strip(), link['class'], bad)
+							self.log.info("Intermediate URL: %s", link['href'])
 							release = {
 								'seriesname'       : sname,
 								'releaseinfo'      : link.get_text().strip(),
