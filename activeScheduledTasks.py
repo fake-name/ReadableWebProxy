@@ -23,7 +23,7 @@ import WebMirror.management.FeedDbManage
 
 scrapePlugins = {
 	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                      minutes(15)),
-	1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase,   minutes(90)),
+	# 1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase,   minutes(90)),
 	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                   minutes(45)),
 	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,               hours(4)),
 	4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                days(3)),

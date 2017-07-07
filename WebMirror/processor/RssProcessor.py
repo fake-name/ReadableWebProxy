@@ -160,12 +160,11 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 				# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
 				continue
 
+			# Fake various components if the rss source is fucked up.
 			if not 'guid' in entry:
-				# print("if not 'guid' in entry:")
-				continue
+				entry['guid'] = entry['link'] + entry['title']
 			if not "authors" in entry:
-				# print('if not "authors" in entry:')
-				continue
+				entry['authors'] = ""
 
 			item = {}
 			item['feedtype'] = self.type
