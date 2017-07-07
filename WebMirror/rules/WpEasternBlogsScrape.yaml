@@ -1389,6 +1389,9 @@ decompose: [
 	{'class'                         : 'td-post-sharing-top'},
 
 	{'class'                         : 'sidebar-primary'},
+	{'class'                         : 'shins-before-content'},
+	{'class'                         : 'osny-nightmode'},
+	
 
 
 	{'role'                          : "complementary"},

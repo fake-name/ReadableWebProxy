@@ -246,6 +246,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# Reset the fetch time download
 
 	def checkHaveHistory(self, url):
+		# Only do version fiddling if versioning is enabled.
+		if not settings.DO_VERSIONING:
+			return 99
+
 		ctbl = version_table(db.WebPages)
 
 		count = self.db_sess.query(ctbl) \

@@ -1,7 +1,9 @@
 
+import settings
 
-from sqlalchemy_continuum import make_versioned
-make_versioned(user_cls=None)
+if settings.DO_VERSIONING:
+	from sqlalchemy_continuum import make_versioned
+	make_versioned(user_cls=None)
 
 
 # Patch in knowledge of the citext type, so it reflects properly.
