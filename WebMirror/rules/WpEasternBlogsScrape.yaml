@@ -928,7 +928,6 @@ baseUrl: [
 	'http://manlyflower.com',
 	'http://mistycloudtranslations.com',
 	'http://mistycloudtranslations.wordpress.com',
-	'http://mistycloudtranslations.wordpress.com',
 	'http://moonbunnycafe.com',
 	'http://moonbunnycafe.com',
 	'http://mousou-haven.com',
@@ -1159,7 +1158,7 @@ baseUrl: [
 	'https://zelskytranslations.com',
 	'https://zirusmusings.com',
 	'http://restart-wn.com',
-
+	'https://soupybaozi.wordpress.com',
 
 	 # Seriously bro, you can change your A record:
 	 # 'http://tototr.com'
@@ -1189,6 +1188,8 @@ feedPostfix: "/feed/"
 
 # Any url containing any of the words in the `badwords` list will be ignored.
 badwords: [
+		"kobatochan.com/?blackhole=",
+
 		"/manga/",
 		"/recruitment/",
 		"wpmp_switcher=mobile",
@@ -1391,7 +1392,7 @@ decompose: [
 	{'class'                         : 'sidebar-primary'},
 	{'class'                         : 'shins-before-content'},
 	{'class'                         : 'osny-nightmode'},
-	
+
 
 
 	{'role'                          : "complementary"},
@@ -1413,13 +1414,13 @@ decompose: [
 	{'id'                            : 'comments-title'},
 	{'id'                            : 'access'},
 	{'id'                            : 'bit'},
-	
+
 	{'id'                            : 'likes-other-gravatars'},
 	{'id'                            : 'branding'},
 	{'id'                            : 'calendar_wrap'},
 	{'id'                            : 'carousel-reblog-box'},
 	{'id'                            : 'colophon'},
-	
+
 	{'id'                            : 'comments'},
 	{'id'                            : 'conversation'},
 	{'id'                            : 'credit-wrapper'},
@@ -1428,8 +1429,8 @@ decompose: [
 	{'id'                            : 'header'},
 	{'id'                            : 'layout'},
 	{'id'                            : 'masthead'},
-	
-	
+
+
 	{'id'                            : 'global-alert'},
 	{'id'                            : 'main-nav'},
 	{'id'                            : 'header-meta'},
@@ -1440,7 +1441,7 @@ decompose: [
 	{'id'                            : 'nav-above'},
 	{'id'                            : 'nav-below'},
 	{'id'                            : 'respond'},
-	
+
 	{'id'                            : 'secondary'},
 	{'id'                            : 'conversation'},
 	{'id'                            : 'sidebar'},
@@ -1448,13 +1449,13 @@ decompose: [
 	{'id'                            : 'sidebar-wrapper'},
 	{'id'                            : 'sidebar-wrapper1'},    # Yes, two `sidebar-wrapper` ids. Gah.
 	{'id'                            : 'site-header'},
-	
+
 	{'id'                            : 'commentlist'},
 	{'id'                            : 'comments'},
 	{'id'                            : 'bitsubscribe'},
 	{'id'                            : 'site-navigation'},
 	{'id'                            : 'banner-widgets'},
-	
+
 	{'name'                          : 'likes-master'},
 	{'style'                         : 'display:none'},
 	#{'role'                          : 'banner'},
