@@ -65,6 +65,7 @@ badwords: [
 	"?share=",
 
 	"//page/",
+	'livejournal.com/data/atom',
 
 	"giraffecorps.liamak.net/pdf/",
 	"giraffecorps.liamak.net/contact/",

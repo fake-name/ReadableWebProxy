@@ -925,9 +925,12 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 		'www.facebook.com',
 		'www.testing.wuxiaworld.com',
 
+		'www.patreon.com',
+		'wordpress.com',
+		'forum.gravitytales.com',
 		'www.wangkaiinternational.com',    # Some garbage korean soap opera actor's website?
 
-
+		'drive.google.com',
 		'gakno.com.mx',          # Mexican food manufacturer?
 
 		'kitakamiooi.com',   # Redirects to www.kitakamiooi.com

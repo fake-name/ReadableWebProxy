@@ -97,6 +97,7 @@ GLOBAL_BAD_URLS = [
 			'/images/images/',
 			'ref=dp_brlad_entry',
 			'https:/www.',
+			'tumblr.com/oembed/1.0?',
 	]
 
 

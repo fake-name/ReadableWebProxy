@@ -241,6 +241,11 @@ def getAttributeRewriteRules(ruleset):
 	if not 'rewriteAttrs' in ruleset:
 		return False
 	return ruleset['rewriteAttrs']
+	
+def getDecomposeSvg(ruleset):
+	if not 'decompose_svg' in ruleset:
+		return False
+	return ruleset['decompose_svg']
 
 def getRewalkIntervalDays(ruleset):
 	if not 'rewalk_interval_days' in ruleset:
@@ -290,6 +295,7 @@ def validateRuleKeys(dat, fname):
 		'type',
 		'extraStartUrls',
 		'trigger',
+		'decompose_svg',
 
 		'normal_fetch_mode',
 		'send_raw_feed',
@@ -332,7 +338,8 @@ def load_validate_rules(fname, dat):
 	rules['send_raw_feed']                     = transmitFeeds(dat)
 	rules['destyle']                           = getDestyles(dat)
 	rules['preserveAttrs']                     = getPreserveAttrs(dat)
-
+	rules['decompose_svg']                     = getDecomposeSvg(dat)
+	
 	rules['rewalk_interval_days']              = getRewalkIntervalDays(dat)
 	rules['disallow_duplicate_path_segments']  = getDisallowDuplicatePathComponents(dat)
 	rules['maximum_priority']                  = getMaximumFetchPriority(dat)

@@ -68,6 +68,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		self.stripTitle       = copy.copy(kwargs['stripTitle'])
 		self.destyle          = copy.copy(kwargs['destyle'])
 		self.preserveAttrs    = copy.copy(kwargs['preserveAttrs'])
+		self.decompose_svg    = bool(kwargs['decompose_svg'])
 
 
 		appends = [
@@ -214,7 +215,11 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Comments
 		for item in soup.findAll(text=lambda text:isinstance(text, bs4.Comment)):
 			item.extract()
-
+		
+		if self.decompose_svg:
+			for item in soup.find_all("svg"):
+				item.decompose()
+		
 		return soup
 
 

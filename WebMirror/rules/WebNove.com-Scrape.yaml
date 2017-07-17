@@ -27,6 +27,8 @@ badwords: [
 			"?share=",
 
 			]
+			
+decompose_svg: True
 
 decompose: [
 	{'id'    : 'header'},

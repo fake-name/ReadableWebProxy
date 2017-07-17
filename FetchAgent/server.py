@@ -122,6 +122,7 @@ def run_server(interface_dict):
 
 	sock_path = '/tmp/rwp-fetchagent-sock'
 	server.bind("ipc://{}".format(sock_path))
+	server.bind("tcp://*:4314")
 
 	gevent.signal(signal.SIGINT, build_handler(server))
 

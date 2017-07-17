@@ -219,9 +219,28 @@ def feedFiltersRoot():
 
 	if name_filter == "missing-name":
 		feeds = []
+
+		# Feed sources that are either dead or not actually a feed.
+		# Don't show these as "missing", to not clutter up the missing-name interface.
+		skip_missing = [
+			'sincere.dreamwidth.org',
+			'sakuraidreader.com',
+			'ruzetranslations.org',
+			'm.xianxiaworld.net',
+			'm.wuxiaworld.com',
+			'mahou-shoujo-ikusei-keikaku.wikia.com',
+			'madsnail.ru',
+			'hereticlnt.blogspot.com',   # Private
+			'elwiki.net',
+			'egscans.com',
+			'docs.google.com',
+			'avertranslation.blogspot.com',
+		]
 		for feed in feeds_in:
 			if feed.feed_name in [tmp.feed_netloc for tmp in feed.urls]:
-				feeds.append(feed)
+				if feed.feed_name not in skip_missing:
+
+					feeds.append(feed)
 
 	return render_template('rss-pages/feed_filter_base.html',
 						   feeds = feeds,

@@ -151,6 +151,16 @@ badwords: [
 		'turtleme.me/feed/images/',
 		'turtleme.me/includes/',
 
+		# Appears to now be a squatter
+		'vikingstoryteller.com/RPG.cfm?fp=',
+		'vikingstoryteller.com/Rpg_Novels.cfm?fp=',
+		'vikingstoryteller.com/Novels.cfm?fp=',
+		'vikingstoryteller.com/eBook.cfm?fp=',
+		'vikingstoryteller.com/Mystery_Novels.cfm?fp=',
+		'vikingstoryteller.com/Novell_Certification.cfm?fp=',
+		'vikingstoryteller.com/RPG.cfm?fp=',
+		'vikingstoryteller.com/Shockwave_Games.cfm?fp=',
+
 	 ]
 
 

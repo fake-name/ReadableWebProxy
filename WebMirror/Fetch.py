@@ -172,6 +172,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'decomposeBefore' : self.rules['decomposeBefore'],
 									'fileDomains'     : self.rules['fileDomains'],
 									'allImages'       : self.rules['allImages'],
+									'decompose_svg'   : self.rules['decompose_svg'],
 									'ignoreBadLinks'  : self.rules['IGNORE_MALFORMED_URLS'],
 									'stripTitle'      : self.rules['stripTitle'],
 									'relinkable'      : self.relinkable,

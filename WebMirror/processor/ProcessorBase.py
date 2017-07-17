@@ -361,6 +361,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'destyle',
 			'preserveAttrs',
 			'type',
+			'decompose_svg',
 			'message_q',
 			'job',
 			'wg',
