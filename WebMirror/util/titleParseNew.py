@@ -750,7 +750,10 @@ class AsciiVolumeChapterFragGlobber(GlobBase):
 								tok = clstype(prec, intervening, tgtstr)
 								# print("Instantiating token: ", (tgtstr, clstype, tok, tok.content))
 								if tok.is_ascii():
-									num = tok.to_number(parse_ascii=True)
+									try:
+										num = tok.to_number(parse_ascii=True)
+									except NumberConversionException:
+										return before, lasttok, after[idx-1:]
 									if num != last:
 										# print("Num changed", (prec, intervening, target, after))
 										last = num
