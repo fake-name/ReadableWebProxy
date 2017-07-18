@@ -1385,6 +1385,8 @@ badwords: [
 
 		# Block mobile garbage
 		'm.wuxiaworld.com',
+		'worldofwatermelons.com/?',
+		'littleshanks.net/?',
 
 	]
 

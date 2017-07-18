@@ -69,7 +69,8 @@ badwords: [
 			'/ref=footer_amazonglobal',
 			'royalroadl.com/gp/help/',
 			'royalroadl.com/b/ref=nav_',
-			'royalroadl.com/gp/prime/'
+			'royalroadl.com/gp/prime/',
+			'royalroadl.com/gp/slredirect/picassoRedirect.html/',
 			]
 
 # Content Stripping needs to be determined.

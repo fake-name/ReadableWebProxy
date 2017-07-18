@@ -33,7 +33,9 @@ badwords: [
 			"/wp-login.php",
 			"/#comments",      # Ignore in-page anchor tags
 			"#comment-",
-			"/staff/"]
+			"/staff/",
+			"/fanfic/static/css/",
+			]
 
 
 decomposeBefore: [
