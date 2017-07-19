@@ -8,7 +8,7 @@ def init_yappi():
 	import yappi
 
 	print('[YAPPI START]')
-	yappi.set_clock_type('')
+	# yappi.set_clock_type('')
 	yappi.start()
 
 	@atexit.register
