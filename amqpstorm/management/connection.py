@@ -1,5 +1,4 @@
-import json
-
+from amqpstorm.compatibility import json
 from amqpstorm.compatibility import quote
 from amqpstorm.management.base import ManagementHandler
 

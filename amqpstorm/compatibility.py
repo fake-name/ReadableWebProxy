@@ -8,6 +8,11 @@ except ImportError:
     ssl = None
 
 try:
+    import simplejson as json  # noqa
+except ImportError:
+    import json  # noqa
+
+try:
     import urlparse  # noqa
 except ImportError:
     import urllib.parse as urlparse  # noqa
@@ -40,9 +45,7 @@ def get_default_ssl_version():
 
     :rtype: bool|None
     """
-    if not ssl:
-        return None
-    elif hasattr(ssl, 'PROTOCOL_TLSv1_2'):
+    if hasattr(ssl, 'PROTOCOL_TLSv1_2'):
         return ssl.PROTOCOL_TLSv1_2
     elif hasattr(ssl, 'PROTOCOL_TLSv1_1'):
         return ssl.PROTOCOL_TLSv1_1

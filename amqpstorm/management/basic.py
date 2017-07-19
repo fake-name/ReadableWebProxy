@@ -1,5 +1,4 @@
-import json
-
+from amqpstorm.compatibility import json
 from amqpstorm.compatibility import quote
 from amqpstorm.management.base import ManagementHandler
 from amqpstorm.message import Message
@@ -62,10 +61,15 @@ class Basic(ManagementHandler):
 
         :rtype: list
         """
+        ackmode = 'ack_requeue_false'
+        if requeue:
+            ackmode = 'ack_requeue_true'
+
         get_messages = json.dumps(
             {
                 'count': count,
                 'requeue': requeue,
+                'ackmode': ackmode,
                 'encoding': encoding,
                 'truncate': truncate,
                 'vhost': virtual_host

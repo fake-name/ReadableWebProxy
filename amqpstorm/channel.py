@@ -5,7 +5,7 @@ import multiprocessing
 from time import sleep
 from time import time
 
-from pamqp import specification as pamqp_spec
+from pamqp import specification
 from pamqp.header import ContentHeader
 
 from amqpstorm import compatibility
@@ -30,19 +30,19 @@ CONTENT_FRAME = ['Basic.Deliver', 'ContentHeader', 'ContentBody']
 class Channel(BaseChannel):
     """RabbitMQ Channel."""
     __slots__ = [
-        'confirming_deliveries', 'consumer_callback', 'rpc', '_basic',
+        '_confirming_deliveries', 'consumer_callback', 'rpc', '_basic',
         '_connection', '_exchange', '_inbound', '_queue', '_tx', '_die',
         'message_build_timeout'
     ]
 
     def __init__(self, channel_id, connection, rpc_timeout):
         super(Channel, self).__init__(channel_id)
+        self.consumer_callback = None
         self.rpc = Rpc(self, timeout=rpc_timeout)
         self.message_build_timeout = rpc_timeout
-        self.confirming_deliveries = False
-        self.consumer_callback = None
-        self._inbound = []
+        self._confirming_deliveries = False
         self._connection = connection
+        self._inbound = []
         self._basic = Basic(self)
         self._exchange = Exchange(self)
         self._tx = Tx(self)
@@ -171,10 +171,14 @@ class Channel(BaseChannel):
                 return
             self.set_state(self.CLOSING)
             LOGGER.debug('Channel #%d Closing', self.channel_id)
-            self.stop_consuming()
-            self.rpc_request(pamqp_spec.Channel.Close(
+            try:
+                self.stop_consuming()
+            except AMQPChannelError:
+                self.remove_consumer_tag()
+            self.rpc_request(specification.Channel.Close(
                 reply_code=reply_code,
-                reply_text=reply_text)
+                reply_text=reply_text),
+                adapter=self._connection
             )
         finally:
             if self._inbound:
@@ -215,9 +219,17 @@ class Channel(BaseChannel):
 
         :return:
         """
-        self.confirming_deliveries = True
-        confirm_frame = pamqp_spec.Confirm.Select()
+        self._confirming_deliveries = True
+        confirm_frame = specification.Confirm.Select()
         return self.rpc_request(confirm_frame)
+
+    @property
+    def confirming_deliveries(self):
+        """Is the channel set to confirm deliveries.
+
+        :return:
+        """
+        return self._confirming_deliveries
 
     def on_frame(self, frame_in):
         """Handle frame sent to this specific channel.
@@ -241,7 +253,7 @@ class Channel(BaseChannel):
         elif frame_in.name == 'Channel.Close':
             self._close_channel(frame_in)
         elif frame_in.name == 'Channel.Flow':
-            self.write_frame(pamqp_spec.Channel.FlowOk(frame_in.active))
+            self.write_frame(specification.Channel.FlowOk(frame_in.active))
         else:
             LOGGER.error(
                 '[Channel%d] Unhandled Frame: %s -- %s',
@@ -256,7 +268,7 @@ class Channel(BaseChannel):
         self._inbound = []
         self._exceptions = []
         self.set_state(self.OPENING)
-        self.rpc_request(pamqp_spec.Channel.Open())
+        self.rpc_request(specification.Channel.Open())
         self.set_state(self.OPEN)
 
     def process_data_events(self, to_tuple=False, auto_decode=False):
@@ -288,16 +300,16 @@ class Channel(BaseChannel):
             self.consumer_callback(message)
         sleep(IDLE_WAIT)
 
-    def rpc_request(self, frame_out):
+    def rpc_request(self, frame_out, adapter=None):
         """Perform a RPC Request.
 
-        :param pamqp_spec.Frame frame_out: Amqp frame.
+        :param specification.Frame frame_out: Amqp frame.
         :rtype: dict
         """
         with self.rpc.lock:
             uuid = self.rpc.register_request(frame_out.valid_responses)
-            self.write_frame(frame_out)
-            return self.rpc.get_request(uuid)
+            self._connection.write_frame(self.channel_id, frame_out)
+            return self.rpc.get_request(uuid, adapter=adapter)
 
     def start_consuming(self, to_tuple=False, auto_decode=False):
         """Start consuming messages.
@@ -339,7 +351,7 @@ class Channel(BaseChannel):
     def write_frame(self, frame_out):
         """Write a pamqp frame from the current channel.
 
-        :param pamqp_spec.Frame frame_out: A single pamqp frame.
+        :param specification.Frame frame_out: A single pamqp frame.
         :return:
         """
         self.check_for_errors()
@@ -357,7 +369,7 @@ class Channel(BaseChannel):
     def _basic_cancel(self, frame_in):
         """Handle a Basic Cancel frame.
 
-        :param pamqp_spec.Basic.Cancel frame_in: Amqp frame.
+        :param specification.Basic.Cancel frame_in: Amqp frame.
         :return:
         """
         LOGGER.warning(
@@ -369,7 +381,7 @@ class Channel(BaseChannel):
     def _basic_return(self, frame_in):
         """Handle a Basic Return Frame and treat it as an error.
 
-        :param pamqp_spec.Basic.Return frame_in: Amqp frame.
+        :param specification.Basic.Return frame_in: Amqp frame.
         :return:
         """
         reply_text = try_utf8_decode(frame_in.reply_text)
@@ -415,7 +427,7 @@ class Channel(BaseChannel):
         :rtype: tuple|None
         """
         basic_deliver = self._inbound.pop(0)
-        if not isinstance(basic_deliver, pamqp_spec.Basic.Deliver):
+        if not isinstance(basic_deliver, specification.Basic.Deliver):
             LOGGER.warning(
                 'Received an out-of-order frame: %s was '
                 'expecting a Basic.Deliver frame',
@@ -453,10 +465,9 @@ class Channel(BaseChannel):
     def _close_channel(self, frame_in):
         """Close Channel.
 
-        :param pamqp_spec.Channel.Close frame_in: Amqp frame.
+        :param specification.Channel.Close frame_in: Channel Close frame.
         :return:
         """
-        self.set_state(self.CLOSED)
         if frame_in.reply_code != 200:
             reply_text = try_utf8_decode(frame_in.reply_text)
             message = (
@@ -469,4 +480,12 @@ class Channel(BaseChannel):
             exception = AMQPChannelError(message,
                                          reply_code=frame_in.reply_code)
             self.exceptions.append(exception)
+        self.set_state(self.CLOSED)
+        if self._connection.is_open:
+            try:
+                self._connection.write_frame(
+                    self.channel_id, specification.Channel.CloseOk()
+                )
+            except AMQPConnectionError:
+                pass
         self.close()

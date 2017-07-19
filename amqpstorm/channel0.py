@@ -3,7 +3,7 @@
 import logging
 import platform
 
-from pamqp import specification as pamqp_spec
+from pamqp import specification
 from pamqp.heartbeat import Heartbeat
 
 from amqpstorm import __version__
@@ -62,19 +62,21 @@ class Channel0(object):
 
         :return:
         """
-        self._write_frame(pamqp_spec.Connection.Close())
+        self._write_frame(specification.Connection.Close())
 
     def send_heartbeat(self):
         """Send Heartbeat frame.
 
         :return:
         """
+        if not self._connection.is_open:
+            return
         self._write_frame(Heartbeat())
 
     def _close_connection(self, frame_in):
         """Connection Close.
 
-        :param pamqp_spec.Connection.Close frame_in: Amqp frame.
+        :param specification.Connection.Close frame_in: Amqp frame.
         :return:
         """
         self._set_connection_state(Stateful.CLOSED)
@@ -125,7 +127,7 @@ class Channel0(object):
     def _send_start_ok(self, frame_in):
         """Send Start OK frame.
 
-        :param pamqp_spec.Connection.Start frame_in: Amqp frame.
+        :param specification.Connection.Start frame_in: Amqp frame.
         :return:
         """
         if 'PLAIN' not in try_utf8_decode(frame_in.mechanisms):
@@ -136,11 +138,12 @@ class Channel0(object):
             self._connection.exceptions.append(exception)
             return
         credentials = self._plain_credentials()
-        start_ok_frame = pamqp_spec.Connection.StartOk(
+        start_ok_frame = specification.Connection.StartOk(
             mechanism=AUTH_MECHANISM,
             client_properties=self._client_properties(),
             response=credentials,
-            locale=LOCALE)
+            locale=LOCALE
+        )
         self._write_frame(start_ok_frame)
 
     def _send_tune_ok(self):
@@ -148,9 +151,10 @@ class Channel0(object):
 
         :return:
         """
-        tune_ok_frame = pamqp_spec.Connection.TuneOk(channel_max=MAX_CHANNELS,
-                                                     frame_max=FRAME_MAX,
-                                                     heartbeat=self._heartbeat)
+        tune_ok_frame = specification.Connection.TuneOk(
+            channel_max=MAX_CHANNELS,
+            frame_max=FRAME_MAX,
+            heartbeat=self._heartbeat)
         self._write_frame(tune_ok_frame)
 
     def _send_open_connection(self):
@@ -158,7 +162,7 @@ class Channel0(object):
 
         :return:
         """
-        open_frame = pamqp_spec.Connection.Open(
+        open_frame = specification.Connection.Open(
             virtual_host=self._parameters['virtual_host']
         )
         self._write_frame(open_frame)
