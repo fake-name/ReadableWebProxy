@@ -1,5 +1,4 @@
-import json
-
+from amqpstorm.compatibility import json
 from amqpstorm.compatibility import quote
 from amqpstorm.compatibility import urlparse
 from amqpstorm.management.base import ManagementHandler
@@ -45,6 +44,7 @@ class Exchange(ManagementHandler):
         """
         if show_all:
             return self.http_client.get(API_EXCHANGES)
+        virtual_host = quote(virtual_host, '')
         return self.http_client.get(
             API_EXCHANGES_VIRTUAL_HOST % virtual_host
         )

@@ -23,6 +23,7 @@ class Poller(object):
     """Socket Read Poller."""
 
     def __init__(self, fileno, exceptions, timeout=5):
+        self.select = select
         self._fileno = fileno
         self._exceptions = exceptions
         self.timeout = timeout
@@ -42,10 +43,10 @@ class Poller(object):
         :rtype: tuple
         """
         try:
-            ready, _, _ = select.select([self.fileno], [], [],
-                                        self.timeout)
+            ready, _, _ = self.select.select([self.fileno], [], [],
+                                             self.timeout)
             return bool(ready)
-        except select.error as why:
+        except self.select.error as why:
             if why.args[0] != EINTR:
                 self._exceptions.append(AMQPConnectionError(why))
         return False

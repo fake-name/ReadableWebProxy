@@ -11,13 +11,13 @@ from amqpstorm.exception import AMQPChannelError
 class Rpc(object):
     """Internal RPC handler."""
 
-    def __init__(self, adapter, timeout=360):
+    def __init__(self, default_adapter, timeout=360):
         """
-        :param Stateful adapter: Connection or Channel.
+        :param object default_adapter: Connection or Channel.
         :param int|float timeout: Rpc timeout.
         """
         self._lock = threading.Lock()
-        self._adapter = adapter
+        self._default_adapter = default_adapter
         self._timeout = timeout
         self._response = {}
         self._request = {}
@@ -29,7 +29,7 @@ class Rpc(object):
     def on_frame(self, frame_in):
         """On RPC Frame.
 
-        :param pamqp_spec.Frame frame_in: Amqp frame.
+        :param specification.Frame frame_in: Amqp frame.
         :return:
         """
         if frame_in.name not in self._request:
@@ -83,18 +83,19 @@ class Rpc(object):
         if uuid in self._response:
             del self._response[uuid]
 
-    def get_request(self, uuid, raw=False, multiple=False):
+    def get_request(self, uuid, raw=False, multiple=False, adapter=None):
         """Get a RPC request.
 
         :param str uuid: Rpc Identifier
         :param bool raw: If enabled return the frame as is, else return
                          result as a dictionary.
         :param bool multiple: Are we expecting multiple frames.
+        :param obj adapter: Provide custom adapter.
         :return:
         """
         if uuid not in self._response:
             return
-        self._wait_for_request(uuid)
+        self._wait_for_request(uuid, adapter or self._default_adapter)
         frame = self._get_response_frame(uuid)
         if not multiple:
             self.remove(uuid)
@@ -117,15 +118,16 @@ class Rpc(object):
             frame = frames.pop(0)
         return frame
 
-    def _wait_for_request(self, uuid):
+    def _wait_for_request(self, uuid, adapter=None):
         """Wait for RPC request to arrive.
 
         :param str uuid: Rpc Identifier.
+        :param obj adapter: Provide custom adapter.
         :return:
         """
         start_time = time.time()
         while not self._response[uuid]:
-            self._adapter.check_for_errors()
+            adapter.check_for_errors()
             if time.time() - start_time > self._timeout:
                 self._raise_rpc_timeout_error(uuid)
             time.sleep(IDLE_WAIT)
