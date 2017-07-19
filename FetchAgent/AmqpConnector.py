@@ -227,7 +227,7 @@ class ConnectorManager:
 
 		if self.prefetch_extended is False:
 			self.prefetch_extended = True
-			self.storm_channel.basic.qos(50, global_=True)
+			self.storm_channel.basic.qos(self.config['prefetch'], global_=True)
 			self.log.info("Prefetch updated")
 
 
