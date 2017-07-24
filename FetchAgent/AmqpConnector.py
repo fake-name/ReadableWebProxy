@@ -100,7 +100,7 @@ class ConnectorManager:
 				password     = self.config['password'],
 				port         = int(self.config['host'].split(":")[1]),
 				virtual_host = self.config['virtual_host'],
-				heartbeat    = self.config['socket_timeout'] // 2,
+				heartbeat    = self.config['heartbeat'],
 				timeout      = self.config['socket_timeout'],
 				ssl          = True,
 				ssl_options  = {

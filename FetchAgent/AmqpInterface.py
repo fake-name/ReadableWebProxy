@@ -434,6 +434,7 @@ def monitor(manager):
 		print("Monitor looping!")
 
 
+# Note:
 def startup_interface(manager):
 	rpc_amqp_settings = {
 		'RABBIT_LOGIN'            : settings_file.RPC_RABBIT_LOGIN,
@@ -441,7 +442,7 @@ def startup_interface(manager):
 		'RABBIT_SRVER'            : settings_file.RPC_RABBIT_SRVER,
 		'RABBIT_VHOST'            : settings_file.RPC_RABBIT_VHOST,
 		'master'                  : True,
-		'prefetch'                : 750,
+		'prefetch'                : 50,
 		# 'prefetch'                : 50,
 		# 'prefetch'                : 5,
 		'queue_mode'              : 'direct',
@@ -449,6 +450,9 @@ def startup_interface(manager):
 		'taskq_response'          : 'response.q',
 
 		"poll_rate"               : 1/100,
+
+		'heartbeat'               : 20,
+		'socket_timeout'          : 45,
 
 		'taskq_name'              : 'outq',
 		'respq_name'              : 'inq',
@@ -463,7 +467,7 @@ def startup_interface(manager):
 		'RABBIT_SRVER'            : settings_file.RABBIT_SRVER,
 		'RABBIT_VHOST'            : settings_file.RABBIT_VHOST,
 		'master'                  : True,
-		'prefetch'                : 250,
+		'prefetch'                : 50,
 		# 'prefetch'                : 50,
 		# 'prefetch'                : 5,
 		'queue_mode'              : 'fanout',
@@ -474,6 +478,9 @@ def startup_interface(manager):
 		'response_exchange_type'  : 'direct',
 
 		"poll_rate"               : 1/100,
+
+		'heartbeat'               : 20,
+		'socket_timeout'          : 45,
 
 		'taskq_name'              : 'feed_outq',
 		'respq_name'              : 'feed_inq',
