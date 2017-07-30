@@ -66,6 +66,7 @@ decompose:
      - {'id' : 'secondarymenu-container'}
      - {'id' : 'mainmenu-container'}
      - {'id' : 'mobile-menu'}
+	 - {'class'  : 'blog-sidebar'}
      - {'id' : 'footer'}
      - {'id' : 'sidebar'}
      - {'id' : 'disqus_thread'}

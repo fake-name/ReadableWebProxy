@@ -150,6 +150,7 @@ decompose: [
 	{'class'  : 'site-footer'},
 	{'class'  : 'menu-toggle'},
 	{'class'  : 'site-header'},
+	{'class'  : 'blog-sidebar'},
 	{'class'  : 'paging-navigation'},
 	{'class'  : 'comments-area'},
 ]

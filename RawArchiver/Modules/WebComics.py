@@ -161,6 +161,9 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		"http://anaria.katbox.net",
 		"http://www.irovedout.com",
 
+		"http://ironheart-rune.com",
+		"http://straycomic.com",
+
 
 	]
 
