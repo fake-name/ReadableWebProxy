@@ -34,7 +34,8 @@ class TgStoryTimePreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPr
 		if not isinstance(contentstr, str):
 			return contentstr
 		self.log.info("Preprocessing content from URL: '%s'", url)
-		if 'This story has explicit content.' in contentstr:
+		if 'This story has explicit content.' in contentstr or\
+			'This story has deviant content.' in contentstr:
 			self.log.info("Adult clickwrap page. Stepping through")
 			contentstr = self.acceptAdult(contentstr, url)
 			self.log.info("Retreived clickwrapped content successfully")
