@@ -41,7 +41,8 @@ class RabbitQueueHandler(object):
 
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
+		self.connector = AmqpConnector.Connector(
+												userid            = settings["RABBIT_LOGIN"],
 												password           = settings["RABBIT_PASWD"],
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
@@ -52,10 +53,16 @@ class RabbitQueueHandler(object):
 												prefetch           = settings['prefetch'],
 												durable            = settings['durable'],
 												heartbeat          = settings['heartbeat'],
-												task_exchange_type = settings['queue_mode'],
+												task_exchange_type = settings['task_exchange_type'],
 												poll_rate          = settings['poll_rate'],
 												task_queue         = settings["taskq_task"],
 												response_queue     = settings["taskq_response"],
+
+												response_exchange_type = settings['response_exchange_type'],
+												task_exchange          = settings["task_exchange"],
+												response_exchange      = settings["response_exchange"],
+												socket_timeout         = settings["socket_timeout"],
+												ack_rx                 = settings["ack_rx"],
 												)
 
 		self.chunks = {}
@@ -319,10 +326,16 @@ class PlainRabbitQueueHandler(object):
 												prefetch           = settings['prefetch'],
 												durable            = settings['durable'],
 												heartbeat          = settings['heartbeat'],
-												task_exchange_type = settings['queue_mode'],
+												task_exchange_type = settings['task_exchange_type'],
 												poll_rate          = settings['poll_rate'],
 												task_queue         = settings["taskq_task"],
 												response_queue     = settings["taskq_response"],
+
+												response_exchange_type = settings['response_exchange_type'],
+												task_exchange          = settings["task_exchange"],
+												response_exchange      = settings["response_exchange"],
+												socket_timeout         = settings["socket_timeout"],
+												ack_rx                 = settings["ack_rx"],
 												)
 
 
@@ -445,13 +458,15 @@ def startup_interface(manager):
 		'prefetch'                : 50,
 		# 'prefetch'                : 50,
 		# 'prefetch'                : 5,
-		'queue_mode'              : 'direct',
+		'task_exchange_type'      : 'direct',
+		'response_exchange_type'  : 'direct',
+
 		'taskq_task'              : 'task.q',
 		'taskq_response'          : 'response.q',
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               :  60,
+		'heartbeat'               : 240,
 		'socket_timeout'          : 120,
 
 		'flush_queues'            : False,
@@ -463,6 +478,11 @@ def startup_interface(manager):
 		'GRAPHITE_DB_IP'          : settings_file.GRAPHITE_DB_IP,
 
 		'synchronous'             : False,
+
+		'task_exchange'           : 'tasks.e',
+		'response_exchange'       : 'resps.e',
+
+		'ack_rx'                  : True
 	}
 
 	feed_amqp_settings = {
@@ -474,7 +494,7 @@ def startup_interface(manager):
 		'prefetch'                : 50,
 		# 'prefetch'                : 50,
 		# 'prefetch'                : 5,
-		'queue_mode'              : 'fanout',
+		'task_exchange_type'      : 'fanout',
 		'taskq_task'              : 'task.q',
 		'taskq_response'          : 'response.q',
 
@@ -483,7 +503,7 @@ def startup_interface(manager):
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               :  60,
+		'heartbeat'               : 240,
 		'socket_timeout'          : 120,
 
 		'flush_queues'            : False,
@@ -496,7 +516,10 @@ def startup_interface(manager):
 
 		'synchronous'             : False,
 
+		'task_exchange'           : 'tasks.e',
+		'response_exchange'       : 'resps.e',
 
+		'ack_rx'                  : True
 
 
 	}

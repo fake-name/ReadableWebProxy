@@ -40,7 +40,6 @@ class ConnectorManager:
 		assert 'prefetch'                 in config
 		assert 'durable'                  in config
 		assert 'socket_timeout'           in config
-		assert 'hearbeat_packet_timeout'  in config
 		assert 'ack_rx'                   in config
 
 
@@ -59,8 +58,8 @@ class ConnectorManager:
 
 
 		self.info_printerval        = time.time()
-		self.last_hearbeat_sent     = time.time()
-		self.last_hearbeat_received = time.time()
+		self.last_heartbeat_sent     = time.time()
+		self.last_heartbeat_received = time.time()
 		self.last_message_received  = time.time()
 
 		self.rx_timeout_lock        = threading.Lock()
@@ -85,7 +84,7 @@ class ConnectorManager:
 	def __connect(self):
 
 
-		self.hearbeat_packet_timeout = self.config['hearbeat_packet_timeout']
+		self.heartbeat_packet_timeout = self.config['heartbeat']
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
 
 		self.__open_connection()
@@ -206,7 +205,7 @@ class ConnectorManager:
 				'correlation_id' : "keepalive_{}".format(self.keepalive_num)
 			})
 		self.keepalive_num += 1
-		self.last_hearbeat_sent = time.time()
+		self.last_heartbeat_sent = time.time()
 
 
 
@@ -235,7 +234,7 @@ class ConnectorManager:
 	def __handle_keepalive_rx(self, corr_id, message):
 
 		with self.heartbeat_timeout_lock:
-			self.last_hearbeat_received = time.time()
+			self.last_heartbeat_received = time.time()
 		message.ack()
 		self.log.info("Heartbeat packet received! %s -> %s", message.body.decode("ascii"), corr_id)
 
@@ -333,7 +332,7 @@ class ConnectorManager:
 
 		if self.info_printerval + 10 < now:
 			self.log.info("Interface timeout thread. Ages: heartbeat -> %0.2f, last message -> %0.2f, TX, RX q: (%s, %s).",
-					now - self.last_hearbeat_received,
+					now - self.last_heartbeat_received,
 					now-self.last_message_received,
 					self.task_queue.qsize(),
 					self.response_queue.qsize(),
@@ -341,20 +340,20 @@ class ConnectorManager:
 			self.info_printerval += 10
 
 		# Send heartbeats every 5 seconds.
-		if self.last_hearbeat_sent + 5 < now:
+		if self.last_heartbeat_sent + 5 < now:
 			self.__poke_keepalive()
 
-		if self.last_hearbeat_received + self.config['hearbeat_packet_timeout'] < now:
+		if self.last_heartbeat_received + self.config['heartbeat'] < now:
 			self.log.error("Heartbeat receive timeout! Triggering reconnect due to missed heartbeat.")
-			self.last_hearbeat_received = now
+			self.last_heartbeat_received = now
 			try:
 				self.__reset_channel()
 			except:
 				self.had_exception.value = 1
 
 
-		if (self.last_message_received + (self.config['hearbeat_packet_timeout'] * 8) < now or
-			self.last_hearbeat_received + (self.config['hearbeat_packet_timeout'] * 8) < now):
+		if (self.last_message_received + (self.config['heartbeat'] * 8) < now or
+			self.last_heartbeat_received + (self.config['heartbeat'] * 8) < now):
 			# Attempt recover if we've been idle for a while.
 			self.log.info("Reconnect retrigger seems to have not fixed the issue?")
 
@@ -453,6 +452,40 @@ class Connector:
 
 		self.log.info("Setting up AqmpConnector!")
 
+	# 	'task_exchange'            : kwargs.get('task_exchange',            'tasks.e'),
+	# 	'response_exchange'        : kwargs.get('response_exchange',        'resps.e'),
+	# 	'response_exchange_type'   : kwargs.get('response_exchange_type',   'direct'),
+	# 	'master'                   : kwargs.get('master',                   False),
+	# 	'synchronous'              : kwargs.get('synchronous',              True),
+	# 	'flush_queues'             : kwargs.get('flush_queues',             False),
+	# 	'heartbeat'                : kwargs.get('heartbeat',                 15),
+	# 	'sslopts'                  : kwargs.get('ssl',                      None),
+	# 	'poll_rate'                : kwargs.get('poll_rate',                  0.25),
+	# 	'prefetch'                 : kwargs.get('prefetch',                   1),
+	# 	'durable'                  : kwargs.get('durable',                  False),
+	# 	'socket_timeout'           : kwargs.get('socket_timeout',            15),
+
+	# 	'heartbeat_packet_timeout'  : kwargs.get('heartbeat_packet_timeout',  30),
+	# 	'ack_rx'                   : kwargs.get('ack_rx',                   True),
+	# }
+
+	# userid
+	# password
+	# host
+	# virtual_host
+	# ssl
+	# master
+	# synchronous
+	# flush_queues
+	# prefetch
+	# durable
+	# heartbeat
+	# task_exchange_type
+	# poll_rate
+	# task_queue
+	# response_queue
+
+
 		config = {
 			'host'                     : kwargs['host'],
 			'userid'                   : kwargs['userid'],
@@ -461,26 +494,25 @@ class Connector:
 			'task_queue_name'          : kwargs['task_queue'],
 			'response_queue_name'      : kwargs['response_queue'],
 			'task_exchange_type'       : kwargs['task_exchange_type'],
-			'task_exchange'            : kwargs.get('task_exchange',            'tasks.e'),
-			'response_exchange'        : kwargs.get('response_exchange',        'resps.e'),
-			'response_exchange_type'   : kwargs.get('response_exchange_type',   'direct'),
-			'master'                   : kwargs.get('master',                   False),
-			'synchronous'              : kwargs.get('synchronous',              True),
-			'flush_queues'             : kwargs.get('flush_queues',             False),
-			'heartbeat'                : kwargs.get('heartbeat',                 15),
-			'sslopts'                  : kwargs.get('ssl',                      None),
-			'poll_rate'                : kwargs.get('poll_rate',                  0.25),
-			'prefetch'                 : kwargs.get('prefetch',                   1),
-			'durable'                  : kwargs.get('durable',                  False),
-			'socket_timeout'           : kwargs.get('socket_timeout',            15),
+			'task_exchange'            : kwargs['task_exchange'],
+			'response_exchange'        : kwargs['response_exchange'],
+			'response_exchange_type'   : kwargs['response_exchange_type'],
+			'master'                   : kwargs['master'],
+			'synchronous'              : kwargs['synchronous'],
+			'flush_queues'             : kwargs['flush_queues'],
+			'heartbeat'                : kwargs['heartbeat'],
+			'sslopts'                  : kwargs['ssl'],
+			'poll_rate'                : kwargs['poll_rate'],
+			'prefetch'                 : kwargs['prefetch'],
+			'durable'                  : kwargs['durable'],
+			'socket_timeout'           : kwargs['socket_timeout'],
 
-			'hearbeat_packet_timeout'  : kwargs.get('hearbeat_packet_timeout',  30),
-			'ack_rx'                   : kwargs.get('ack_rx',                   True),
+			'ack_rx'                   : kwargs['ack_rx'],
 		}
 
-		assert config['hearbeat_packet_timeout'] > config['socket_timeout'],                                   \
+		assert config['heartbeat'] > config['socket_timeout'],                                   \
 			"Heartbeat time must be greater then socket timeout! Heartbeat interval: %s. Socket timeout: %s" % \
-			(config['hearbeat_packet_timeout'], config['socket_timeout'])
+			(config['heartbeat'], config['socket_timeout'])
 
 		self.log.info("Comsuming from queue '%s', emitting responses on '%s'.", config['task_queue_name'], config['response_queue_name'])
 
