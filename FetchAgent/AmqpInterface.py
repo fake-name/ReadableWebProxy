@@ -46,14 +46,14 @@ class RabbitQueueHandler(object):
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
 												ssl                = sslopts,
-												master             = settings.get('master', True),
-												synchronous        = settings.get('synchronous', False),
-												flush_queues       = False,
-												prefetch           = settings.get('prefetch', 25),
-												durable            = True,
-												heartbeat          = 60,
-												task_exchange_type = settings.get('queue_mode', 'fanout'),
-												poll_rate          = settings.get('poll_rate', 1.0/100),
+												master             = settings['master'],
+												synchronous        = settings['synchronous'],
+												flush_queues       = settings['flush_queues'],
+												prefetch           = settings['prefetch'],
+												durable            = settings['durable'],
+												heartbeat          = settings['heartbeat'],
+												task_exchange_type = settings['queue_mode'],
+												poll_rate          = settings['poll_rate'],
 												task_queue         = settings["taskq_task"],
 												response_queue     = settings["taskq_response"],
 												)
@@ -313,14 +313,14 @@ class PlainRabbitQueueHandler(object):
 												host               = settings["RABBIT_SRVER"],
 												virtual_host       = settings["RABBIT_VHOST"],
 												ssl                = sslopts,
-												master             = settings.get('master', True),
-												synchronous        = settings.get('synchronous', False),
-												flush_queues       = False,
-												prefetch           = settings.get('prefetch', 25),
-												durable            = True,
-												heartbeat          = 60,
-												task_exchange_type = settings.get('queue_mode', 'fanout'),
-												poll_rate          = settings.get('poll_rate', 1.0/100),
+												master             = settings['master'],
+												synchronous        = settings['synchronous'],
+												flush_queues       = settings['flush_queues'],
+												prefetch           = settings['prefetch'],
+												durable            = settings['durable'],
+												heartbeat          = settings['heartbeat'],
+												task_exchange_type = settings['queue_mode'],
+												poll_rate          = settings['poll_rate'],
 												task_queue         = settings["taskq_task"],
 												response_queue     = settings["taskq_response"],
 												)
@@ -451,14 +451,18 @@ def startup_interface(manager):
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               : 20,
-		'socket_timeout'          : 45,
+		'heartbeat'               :  60,
+		'socket_timeout'          : 120,
+
+		'flush_queues'            : False,
+		'durable'                 : True,
 
 		'taskq_name'              : 'outq',
 		'respq_name'              : 'inq',
 
 		'GRAPHITE_DB_IP'          : settings_file.GRAPHITE_DB_IP,
 
+		'synchronous'             : False,
 	}
 
 	feed_amqp_settings = {
@@ -479,13 +483,22 @@ def startup_interface(manager):
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               : 20,
-		'socket_timeout'          : 45,
+		'heartbeat'               :  60,
+		'socket_timeout'          : 120,
+
+		'flush_queues'            : False,
+		'durable'                 : True,
 
 		'taskq_name'              : 'feed_outq',
 		'respq_name'              : 'feed_inq',
 
 		'GRAPHITE_DB_IP'          : settings_file.GRAPHITE_DB_IP,
+
+		'synchronous'             : False,
+
+
+
+
 	}
 
 	STATE['rpc_instance'] = RabbitQueueHandler(rpc_amqp_settings, manager)
