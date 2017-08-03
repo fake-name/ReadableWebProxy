@@ -42,22 +42,21 @@ class RabbitQueueHandler(object):
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
 		self.connector = AmqpConnector.Connector(
-												userid            = settings["RABBIT_LOGIN"],
-												password           = settings["RABBIT_PASWD"],
-												host               = settings["RABBIT_SRVER"],
-												virtual_host       = settings["RABBIT_VHOST"],
-												ssl                = sslopts,
-												master             = settings['master'],
-												synchronous        = settings['synchronous'],
-												flush_queues       = settings['flush_queues'],
-												prefetch           = settings['prefetch'],
-												durable            = settings['durable'],
-												heartbeat          = settings['heartbeat'],
-												task_exchange_type = settings['task_exchange_type'],
-												poll_rate          = settings['poll_rate'],
-												task_queue         = settings["taskq_task"],
-												response_queue     = settings["taskq_response"],
-
+												userid                 = settings["RABBIT_LOGIN"],
+												password               = settings["RABBIT_PASWD"],
+												host                   = settings["RABBIT_SRVER"],
+												virtual_host           = settings["RABBIT_VHOST"],
+												ssl                    = sslopts,
+												master                 = settings['master'],
+												synchronous            = settings['synchronous'],
+												flush_queues           = settings['flush_queues'],
+												prefetch               = settings['prefetch'],
+												durable                = settings['durable'],
+												heartbeat              = settings['heartbeat'],
+												task_exchange_type     = settings['task_exchange_type'],
+												poll_rate              = settings['poll_rate'],
+												task_queue             = settings["taskq_task"],
+												response_queue         = settings["taskq_response"],
 												response_exchange_type = settings['response_exchange_type'],
 												task_exchange          = settings["task_exchange"],
 												response_exchange      = settings["response_exchange"],
@@ -315,22 +314,21 @@ class PlainRabbitQueueHandler(object):
 
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
-												password           = settings["RABBIT_PASWD"],
-												host               = settings["RABBIT_SRVER"],
-												virtual_host       = settings["RABBIT_VHOST"],
-												ssl                = sslopts,
-												master             = settings['master'],
-												synchronous        = settings['synchronous'],
-												flush_queues       = settings['flush_queues'],
-												prefetch           = settings['prefetch'],
-												durable            = settings['durable'],
-												heartbeat          = settings['heartbeat'],
-												task_exchange_type = settings['task_exchange_type'],
-												poll_rate          = settings['poll_rate'],
-												task_queue         = settings["taskq_task"],
-												response_queue     = settings["taskq_response"],
-
+		self.connector = AmqpConnector.Connector(userid                = settings["RABBIT_LOGIN"],
+												password               = settings["RABBIT_PASWD"],
+												host                   = settings["RABBIT_SRVER"],
+												virtual_host           = settings["RABBIT_VHOST"],
+												ssl                    = sslopts,
+												master                 = settings['master'],
+												synchronous            = settings['synchronous'],
+												flush_queues           = settings['flush_queues'],
+												prefetch               = settings['prefetch'],
+												durable                = settings['durable'],
+												heartbeat              = settings['heartbeat'],
+												task_exchange_type     = settings['task_exchange_type'],
+												poll_rate              = settings['poll_rate'],
+												task_queue             = settings["taskq_task"],
+												response_queue         = settings["taskq_response"],
 												response_exchange_type = settings['response_exchange_type'],
 												task_exchange          = settings["task_exchange"],
 												response_exchange      = settings["response_exchange"],
@@ -466,7 +464,7 @@ def startup_interface(manager):
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               : 240,
+		'heartbeat'               :  60,
 		'socket_timeout'          : 120,
 
 		'flush_queues'            : False,
@@ -503,7 +501,7 @@ def startup_interface(manager):
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               : 240,
+		'heartbeat'               :  60,
 		'socket_timeout'          : 120,
 
 		'flush_queues'            : False,

@@ -510,9 +510,9 @@ class Connector:
 			'ack_rx'                   : kwargs['ack_rx'],
 		}
 
-		assert config['heartbeat'] > config['socket_timeout'],                                   \
-			"Heartbeat time must be greater then socket timeout! Heartbeat interval: %s. Socket timeout: %s" % \
-			(config['heartbeat'], config['socket_timeout'])
+		# assert config['heartbeat'] > config['socket_timeout'],                                   \
+		# 	"Heartbeat time must be greater then socket timeout! Heartbeat interval: %s. Socket timeout: %s" % \
+		# 	(config['heartbeat'], config['socket_timeout'])
 
 		self.log.info("Comsuming from queue '%s', emitting responses on '%s'.", config['task_queue_name'], config['response_queue_name'])
 

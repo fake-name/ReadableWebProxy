@@ -11,6 +11,7 @@ import datetime
 import sqlalchemy.exc
 from sqlalchemy import or_
 from sqlalchemy import and_
+from sqlalchemy import func
 import common.database as dbm
 
 import WebMirror.rules
@@ -82,29 +83,41 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 	def retrigger_other(self):
 		sess = self.db.get_db_session()
-		ago = datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS + 3)
-		while 1:
-			try:
-				self.log.info("Doing general unspecified netloc retrigger.")
-				q = sess.query(self.db.WebPages) \
-					.filter(self.db.WebPages.state == 'complete')   \
-					.filter(self.db.WebPages.fetchtime < ago)
-				affected_rows = q.update({"state" : "new"})
-				sess.commit()
-				self.log.info("Updated for all unspecified netlocs - %s rows", affected_rows)
-				break
-			except sqlalchemy.exc.InternalError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
-			except sqlalchemy.exc.OperationalError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
-			except sqlalchemy.exc.IntegrityError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.log.info("Transaction error. Retrying.")
-				sess.rollback()
+		ago = datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS + 2)
+
+		minid = sess.query(func.min(self.db.WebPages.id)).scalar()
+		maxid = sess.query(func.max(self.db.WebPages.id)).scalar()
+
+		print(minid, maxid)
+		chunk_size = 50000
+		ids_tot = maxid - minid
+		for chunk in range(minid, maxid, chunk_size):
+			while 1:
+				try:
+					self.log.info("Doing general unspecified netloc retrigger.")
+					q = sess.query(self.db.WebPages)                      \
+						.filter(self.db.WebPages.state == 'complete')     \
+						.filter(self.db.WebPages.fetchtime < ago)         \
+						.filter(self.db.WebPages.id < (chunk + chunk_size)) \
+						.filter(self.db.WebPages.id >= chunk)
+
+					affected_rows = q.update({"state" : "new"})
+					sess.commit()
+					self.log.info("Updated for all unspecified netlocs - %s rows, Id: %s, %f%% done.",
+						affected_rows, chunk, ((chunk - minid) / ids_tot) * 100)
+					break
+				except sqlalchemy.exc.InternalError:
+					self.log.info("Transaction error. Retrying.")
+					sess.rollback()
+				except sqlalchemy.exc.OperationalError:
+					self.log.info("Transaction error. Retrying.")
+					sess.rollback()
+				except sqlalchemy.exc.IntegrityError:
+					self.log.info("Transaction error. Retrying.")
+					sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					self.log.info("Transaction error. Retrying.")
+					sess.rollback()
 
 
 	def go(self):
@@ -161,5 +174,6 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 	run = RollingRewalkTriggerBase()
-	run._go()
+	run.retrigger_other()
+	# run._go()
 

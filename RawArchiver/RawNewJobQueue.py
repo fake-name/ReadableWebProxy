@@ -156,6 +156,9 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	def fill_jobs(self):
 
+		if 'drain' in sys.argv:
+			return
+
 		while self.active_jobs < MAX_IN_FLIGHT_JOBS:
 			old = self.normal_out_queue.qsize()
 			num_new = self._get_task_internal()
