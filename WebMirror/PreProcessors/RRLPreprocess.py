@@ -1,9 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
 import WebMirror.PreProcessors.PreProcessorBase
 import bs4
 import re
