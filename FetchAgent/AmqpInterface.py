@@ -39,9 +39,16 @@ class RabbitQueueHandler(object):
 		assert 'respq_name' in settings
 		self.settings = settings
 
+		self.put_idx = 0
+		self.get_idx = 0
+
+		self.ext_taskq = queue.Queue()
+		self.ext_repq  = queue.Queue()
+
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = AmqpConnector.Connector(
+		self.connectors = [
+			AmqpConnector.Connector(
 												userid                 = settings["RABBIT_LOGIN"],
 												password               = settings["RABBIT_PASWD"],
 												host                   = settings["RABBIT_SRVER"],
@@ -62,11 +69,16 @@ class RabbitQueueHandler(object):
 												response_exchange      = settings["response_exchange"],
 												socket_timeout         = settings["socket_timeout"],
 												ack_rx                 = settings["ack_rx"],
-												)
 
+												external_task_queue     = self.ext_taskq,
+												external_response_queue = self.ext_repq,
+
+												)
+				for _ in range(settings['consumer_threads'])
+			]
 		self.chunks = {}
 
-		self.log.info("Connected AMQP Interface: %s", self.connector)
+		self.log.info("Connected AMQP Interface: %s", self.connectors)
 		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
 
 		self.log.info("Setting up stats reporter")
@@ -105,14 +117,17 @@ class RabbitQueueHandler(object):
 
 	def put_item(self, data):
 		# self.log.info("Putting data: %s", data)
-		return self.connector.putMessage(data)
+		self.put_idx = (self.put_idx + 1) % len(self.connectors)
+		return self.connectors[self.put_idx].putMessage(data)
 		# self.log.info("Outgoing data size: %s bytes.", len(data))
 
 
 	def get_item(self):
-		ret = self.connector.getMessage()
-		if ret:
-			self.log.info("Received data size: %s bytes.", len(ret))
+		for x in range(len(self.connectors)):
+			ret = self.connectors[x].getMessage()
+			if ret:
+				self.log.info("Received data size: %s bytes.", len(ret))
+				return ret
 		return ret
 
 	def process_chunk(self, chunk_message):
@@ -138,7 +153,6 @@ class RabbitQueueHandler(object):
 		# Check our chunk count is sane.
 		assert self.chunks[merge_key]['chunk-count'] == total_chunks
 		self.chunks[merge_key]['chunks'][chunk_num] = data
-
 
 		# TODO: clean out partial messages based on their age (see 'first-seen')
 
@@ -218,7 +232,8 @@ class RabbitQueueHandler(object):
 
 	def close(self):
 		self.log.info("Closing connector wrapper: %s -> %s", self.logPath, self.vhost)
-		self.connector.stop()
+		for connector in self.connectors:
+			connector.stop()
 
 
 	def dispatch_outgoing(self):
@@ -439,7 +454,8 @@ STATE = {}
 
 def monitor(manager):
 	while manager['amqp_runstate']:
-		STATE['rpc_instance'].connector.checkLaunchThread()
+		for connector in STATE['rpc_instance'].connectors:
+			connector.checkLaunchThread()
 		STATE['feed_instance'].connector.checkLaunchThread()
 		time.sleep(1)
 		print("Monitor looping!")
@@ -448,13 +464,14 @@ def monitor(manager):
 # Note:
 def startup_interface(manager):
 	rpc_amqp_settings = {
+		'consumer_threads'        : 4,
+
 		'RABBIT_LOGIN'            : settings_file.RPC_RABBIT_LOGIN,
 		'RABBIT_PASWD'            : settings_file.RPC_RABBIT_PASWD,
 		'RABBIT_SRVER'            : settings_file.RPC_RABBIT_SRVER,
 		'RABBIT_VHOST'            : settings_file.RPC_RABBIT_VHOST,
 		'master'                  : True,
-		'prefetch'                : 50,
-		# 'prefetch'                : 50,
+		'prefetch'                : 25,
 		# 'prefetch'                : 5,
 		'task_exchange_type'      : 'direct',
 		'response_exchange_type'  : 'direct',
@@ -464,8 +481,8 @@ def startup_interface(manager):
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               :  60,
-		'socket_timeout'          : 120,
+		'heartbeat'               :  45,
+		'socket_timeout'          :  90,
 
 		'flush_queues'            : False,
 		'durable'                 : True,
@@ -489,20 +506,17 @@ def startup_interface(manager):
 		'RABBIT_SRVER'            : settings_file.RABBIT_SRVER,
 		'RABBIT_VHOST'            : settings_file.RABBIT_VHOST,
 		'master'                  : True,
-		'prefetch'                : 50,
-		# 'prefetch'                : 50,
+		'prefetch'                : 25,
 		# 'prefetch'                : 5,
 		'task_exchange_type'      : 'fanout',
 		'taskq_task'              : 'task.q',
 		'taskq_response'          : 'response.q',
-
-		'task_exchange_type'      : 'fanout',
 		'response_exchange_type'  : 'direct',
 
 		"poll_rate"               : 1/100,
 
-		'heartbeat'               :  60,
-		'socket_timeout'          : 120,
+		'heartbeat'               :  45,
+		'socket_timeout'          :  90,
 
 		'flush_queues'            : False,
 		'durable'                 : True,
@@ -518,8 +532,6 @@ def startup_interface(manager):
 		'response_exchange'       : 'resps.e',
 
 		'ack_rx'                  : True
-
-
 	}
 
 	STATE['rpc_instance'] = RabbitQueueHandler(rpc_amqp_settings, manager)

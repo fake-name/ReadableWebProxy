@@ -59,8 +59,6 @@ class FetchInterfaceClass(object):
 		self.mdict = interface_dict
 		self.log.info("Connection")
 
-
-
 	def __check_have_queue(self, queuename):
 		if not queuename in self.mdict['outq']:
 			with self.mdict['qlock']:
@@ -80,7 +78,6 @@ class FetchInterfaceClass(object):
 			return tmp
 		except queue.Empty:
 			return None
-
 
 	def getJobNoWait(self, queuename):
 		self.__check_have_queue(queuename)

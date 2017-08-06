@@ -115,7 +115,7 @@ class ConnectorManager:
 
 		if hasattr(self, 'storm_channel'):
 			close_funcs = [
-				self.storm_channel.stop_consuming,
+				# self.storm_channel.stop_consuming,
 				self.storm_channel.close,
 			]
 			for cfunc in close_funcs:
@@ -186,9 +186,9 @@ class ConnectorManager:
 				)
 
 		self.storm_channel.queue.declare(
-					queue         =self.config['response_queue_name'],
-					durable       =self.config['durable'],
-					auto_delete=False)
+					queue         = self.config['response_queue_name'],
+					durable       = self.config['durable'],
+					auto_delete   = False)
 
 		self.storm_channel.queue.bind(
 					queue         =self.config['response_queue_name'],
@@ -343,12 +343,16 @@ class ConnectorManager:
 		if self.last_heartbeat_sent + 5 < now:
 			self.__poke_keepalive()
 
-		if self.last_heartbeat_received + self.config['heartbeat'] < now:
+		# Allow data to act as a heartbeat.
+		if (self.last_heartbeat_received + self.config['heartbeat'] < now
+				and self.last_message_received + self.config['heartbeat'] < now):
+
 			self.log.error("Heartbeat receive timeout! Triggering reconnect due to missed heartbeat.")
 			self.last_heartbeat_received = now
 			try:
 				self.__reset_channel()
-			except:
+			except Exception:
+				self.log.exception("Error during channel reset.")
 				self.had_exception.value = 1
 
 
@@ -543,8 +547,8 @@ class Connector:
 		# These need to be multiprocessing queues because
 		# messages can sometimes be inserted from a different process
 		# then the interface is created in.
-		self.taskQueue = queue.Queue()
-		self.responseQueue = queue.Queue()
+		self.taskQueue     = kwargs.get('external_task_queue', queue.Queue())
+		self.responseQueue = kwargs.get('external_response_queue', queue.Queue())
 
 		self.runstate = multiprocessing.Value("b", 1)
 
