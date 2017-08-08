@@ -839,7 +839,7 @@ def exposed_missing_lut(fetchTitle=False):
 	for feed in feeds:
 		if not fnl.getNiceName(sess, feed):
 			netloc = urllib.parse.urlsplit(feed).netloc
-			title = netloc
+			meta = netloc
 			if fetchTitle:
 				meta = get_page_title_meta(wg, feed)
 			print('Missing: "%s" %s: "%s",' % (netloc, " " * (50 - len(netloc)), meta))
@@ -934,6 +934,7 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 		'gakno.com.mx',          # Mexican food manufacturer?
 
 		'kitakamiooi.com',   # Redirects to www.kitakamiooi.com
+		'kanojo.eu',
 
 	]
 

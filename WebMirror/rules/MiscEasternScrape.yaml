@@ -40,6 +40,8 @@ baseUrl: [
 		'http://www.pegasusfarts.com',
 		'http://novel.oddsquad.org',
 		'https://www.sabishiidesu.com',
+		'http://www.comegatranslations.com',
+		'http://www.karasunovels.com',
 
 		# Uses blogger JS. Is juncafe part of blogger?
 		'http://blog.juncafe.com',
@@ -54,12 +56,21 @@ baseUrl: [
 		"https://sincere.dreamwidth.org",
 		'https://talesof.dreamwidth.org',
 
+		'http://uncommittedtranslations.bravesites.com',
+
 		'https://wuxiadream.com',
 		'http://www.heavenlyenchantress.com',
 		'http://lilith-art.de.tl',
 
 		'http://www.novellatranslation.com',
 		'http://www.lionmask.pro',
+
+		'https://catatopatch.wixsite.com/catatopatch/',
+		'https://syzctranslations.github.io',
+
+
+		# Oh god javascript shit.
+		'http://translations.afteraugustmaking.me',
 
 	]
 

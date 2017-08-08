@@ -88,8 +88,7 @@ baseUrl: [
 	'http://clock08.tumblr.com',
 	'https://www.tumblr.com',
 	'https://erratictranslations.tumblr.com',
-	'https://miss-awesome0948.tumblr',
-
+	'https://miss-awesome0948.tumblr.com',
 	# Low quality
 	'http://owari-owari.tumblr.com',
 	'http://chilly-territory.tumblr.com',
@@ -152,11 +151,16 @@ badwords: [
 	 "-online-pdf-viewer/",
 
 	# Who the fuck shares shit like this anyways?
-	 "?share=",
+	"?share=",
 
 	 # Wordpress has a new bullshit "make RSS for EVERYTHING" thing.
-	 '&author=',
-	 '/#comment-',
+	'&author=',
+	'/#comment-',
+
+	'.tumblr.com/search/',
+	'.tumblr.com/register/',
+	'.tumblr.com/follow/',
+	'.tumblr.com/tagged/',
 	]
 
 decompose: [

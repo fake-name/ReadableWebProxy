@@ -91,15 +91,9 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 
 		if BAD_TOC_STR in contentstr:
 			content_soup = soup = bs4.BeautifulSoup(contentstr, "lxml")
-
 			self.update_toc(url, content_soup)
-
 			contentstr = content_soup.prettify()
 
-		# if '<a id="header-item-login" rel="nofollow" href=' in contentstr:
-		# 	self.log.info("Not logged into wattpad. Rectifying.")
-		# 	contentstr = self.doLogin(contentstr, url)
-		# 	self.log.info("Wattpad logged in.")
 		return contentstr
 
 	@staticmethod

@@ -375,9 +375,9 @@ class ConnectorManager:
 				self.__check_timeouts()
 				time.sleep(0.1)
 			except Exception as e:
-				with open("mq error %s.txt" % time.time(), 'w') as fp:
-					fp.write("Error!\n\n")
-					fp.write(traceback.format_exc())
+				# with open("mq error %s.txt" % time.time(), 'w') as fp:
+				# 	fp.write("Error!\n\n")
+				# 	fp.write(traceback.format_exc())
 				self.log.error("Error!")
 				self.log.error("%s", e)
 				for line in traceback.format_exc().split("\n"):

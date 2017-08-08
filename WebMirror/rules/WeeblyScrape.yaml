@@ -16,6 +16,11 @@ baseUrl:
      - "http://negativeinserts.weebly.com"
      - "http://comettranslations.weebly.com"
      - "http://snowtimeff.weebly.com"
+     - "http://comettranslations.weebly.com"
+     - "http://kuukai.weebly.com"
+     - "http://negativeinserts.weebly.com"
+     - "http://snowtimeff.weebly.com"
+
 
 badwords:
      - "pages/reportAbuse"

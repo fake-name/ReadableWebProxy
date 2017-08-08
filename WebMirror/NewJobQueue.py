@@ -376,9 +376,9 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				self.log.warning("RPC Remote appears to not be listening!")
 				time.sleep(1)
 			except Exception as e:
-				with open("error - {}.txt".format(time.time()), "w") as fp:
-					fp.write("Wat? Exception!\n\n")
-					fp.write(traceback.format_exc())
+				# with open("error - {}.txt".format(time.time()), "w") as fp:
+				# 	fp.write("Wat? Exception!\n\n")
+				# 	fp.write(traceback.format_exc())
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 

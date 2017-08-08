@@ -3,7 +3,8 @@
 type: eastern
 
 baseUrl: [
-	"https://sites.google.com/site/sekaigameoredake/"
+		"https://sites.google.com/site/sekaigameoredake/",
+		"https://sites.google.com/site/fraiziartranslations/",
 	]
 
 send_raw_feed: True

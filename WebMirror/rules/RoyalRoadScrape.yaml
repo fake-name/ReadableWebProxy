@@ -71,6 +71,12 @@ badwords: [
 			'royalroadl.com/b/ref=nav_',
 			'royalroadl.com/gp/prime/',
 			'royalroadl.com/gp/slredirect/picassoRedirect.html/',
+			'/ref=sv_kstore_7/',
+
+			'royalroadl.com/gp/voting/cast/',
+			'royalroadl.com/Kindle-Daily-Deals/',
+			'royalroadl.com/Giftcards-Giftvouchers-Vouchers-Birthday-Gifts/',
+			'royalroadl.com/Kindle-Store/',
 			]
 
 # Content Stripping needs to be determined.

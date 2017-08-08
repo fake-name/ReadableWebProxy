@@ -35,6 +35,7 @@ badwords: [
 			"#comment-",
 			"/staff/",
 			"/fanfic/static/css/",
+			'japtem.com/fanfic/static/res/',
 			]
 
 
