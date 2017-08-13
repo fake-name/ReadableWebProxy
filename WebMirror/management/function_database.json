@@ -3148,8 +3148,8 @@
   "2017-04-22T07:52:51.340719"
  ],
  "Novel 44": [
-  "def extractNovel44BlogspotCom(item):\n\t'''\n\tParser for 'novel44.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\t\n\ttagmap = [\n\t\t('Saikyou Juzoku Tensei',                                                'Saikyou Juzoku Tensei',                                                 'translated'),\n\t\t('Isekai Majutsushi wa Mahou wo Tonaenai',                               'Isekai Majutsushi wa Mahou wo Tonaenai',                                'translated'),\n\t\t('Different world dungeon life',                                         'Different World Dungeon Life',                                          'translated'),\n\t\t('As The Spirit-Sama Says',                                              'As The Spirit-Sama Says',                                               'translated'),\n\t\t('I use semen in another world and live by relying on other\\'s power.',  'I Use Semen in Another World and Live by Relying on Other\\'s Power',    'translated'),\n\t\t('Flirting With Beast Girls! Doing Nothing but Copulation!',             'Flirting With Beast Girls! Doing Nothing but Copulation!',              'translated'),\n\t\t('Level Maker',                                                          'Level Maker',                                                           'translated'),\n\t\t('Fantasy world Oiliel',                                                 'Fantasy world Oiliel',                                                  'translated'),\n\t\t('Library of Heaven\u2019s Path',                                             'Library of Heaven\u2019s Path',                                              'translated'),\n\t\t('Isekai Cheat',                                                         'Isekai Cheat Magician',                                                 'translated'),\n\t\t\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\t\n\treturn False",
-  "2017-07-18T05:42:39.473282"
+  "def extractNovel44BlogspotCom(item):\n\t'''\n\tParser for 'novel44.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\t\n\ttagmap = [\n\t\t('Saikyou Juzoku Tensei',                                                'Saikyou Juzoku Tensei',                                                 'translated'),\n\t\t('Isekai Majutsushi wa Mahou wo Tonaenai',                               'Isekai Majutsushi wa Mahou wo Tonaenai',                                'translated'),\n\t\t('Different world dungeon life',                                         'Different World Dungeon Life',                                          'translated'),\n\t\t('As The Spirit-Sama Says',                                              'As The Spirit-Sama Says',                                               'translated'),\n\t\t('I use semen in another world and live by relying on other\\'s power.',  'I Use Semen in Another World and Live by Relying on Other\\'s Power',    'translated'),\n\t\t('Flirting With Beast Girls! Doing Nothing but Copulation!',             'Flirting With Beast Girls! Doing Nothing but Copulation!',              'translated'),\n\t\t('Level Maker',                                                          'Level Maker',                                                           'translated'),\n\t\t('Fantasy world Oiliel',                                                 'Fantasy world Oiliel',                                                  'translated'),\n\t\t('Library of Heaven\u2019s Path',                                             'Library of Heaven\u2019s Path',                                              'translated'),\n\t\t('Isekai Cheat',                                                         'Isekai Cheat',                                                 'translated'),\n\t\t\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\t\n\treturn False",
+  "2017-08-11T03:49:21.586089"
  ],
  "Novel Affairs": [
   "def extractNovelAffairs(item):\n\t\"\"\"\n\tParser for 'Novel Affairs'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'WATTT' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'WATTT', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
@@ -5439,6 +5439,10 @@
   "def extractAlicetranslations(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "anpinguo.blogspot.com": [
+  "\ndef extractAnpinguoBlogspotCom(item):\n\t'''\n\tParser for 'anpinguo.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:55.014001"
+ ],
  "asd398": [
   "def extractAsd398(item):\n\t\"\"\"\n\t# 'asd398'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif \"Don't tell me this is the true history of the Three Kingdoms!\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"Don't tell me this is the true history of the Three Kingdoms!\", vol, chp, frag=frag, postfix=postfix)\n\tif 'Leading an Explosive Revolution in Another World!' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Leading an Explosive Revolution in Another World!', vol, chp, frag=frag, postfix=postfix)\n\tif 'No Battle No Life' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'No Battle No Life', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
@@ -5454,6 +5458,10 @@
  "clock08.tumblr.com": [
   "def extractClock08TumblrCom(item):\n\t'''\n\tParser for 'clock08.tumblr.com'\n\t'''\n\n\treturn None",
   "2017-07-18T02:12:25.427320"
+ ],
+ "dao.ist": [
+  "\ndef extractDaoIst(item):\n\t'''\n\tParser for 'dao.ist'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:51.852668"
  ],
  "devildante777's Blog": [
   "def extractDevildante777SBlog(item):\n\t\"\"\"\n\tParser for 'devildante777's Blog'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'WATTT' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'WATTT', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
@@ -5475,6 +5483,10 @@
   "def extractEnBlogWordpressCom(item):\n\t'''\n\tParser for 'en.blog.wordpress.com'\n\t'''\n\n\treturn None",
   "2017-03-26T09:35:46.654786"
  ],
+ "errorknife.wordpress.com": [
+  "\ndef extractErrorknifeWordpressCom(item):\n\t'''\n\tParser for 'errorknife.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:41.102552"
+ ],
  "eternalpath.net": [
   "def extractEternalpath(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
@@ -5483,9 +5495,17 @@
   "def extractFantasyBooksLive(item):\n\t\"\"\"\n\tfantasy-books.live\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tsnames = ['Heavenward On Golden Wings', 'Heavenward on Golden Wings Book 2', 'The Abandoned', 'Regarding The Life of A Certain Fallen Noble',\n\t    'Orphans of a Dead Nation', 'Life and Times of Mitch and Akki', \"God's Island\", 'Black Titan', 'Aeterna Saga', 'Fighting God', 'Antagonist Rewind',\n\t    'Black Watch Asylum', 'Three Lifetimes', 'Magical Tournament', 'Villainess', 'Walking With Giants', 'Invincible Level Up', 'The Royal Princess Fox',\n\t    'Castle of Black Iron', 'Lone Harem Meister', 'The Clockwork Raven', 'Transcending Evolution']\n\ttlut = {tmp.lower(): tmp for tmp in snames}\n\ttlut['pygmalion'] = 'Pygmalion Is Planting Seeds'\n\tltags = [tmp.lower() for tmp in item['tags']]\n\tfor key, value in tlut.items():\n\t\tif key in ltags:\n\t\t\tif '/translations/' in item['linkUrl']:\n\t\t\t\ttl_type = 'translated'\n\t\t\telse:\n\t\t\t\ttl_type = 'oel'\n\t\t\treturn buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "fantasytranslation.wordpress.com": [
+  "\ndef extractFantasytranslationWordpressCom(item):\n\t'''\n\tParser for 'fantasytranslation.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:50.433608"
+ ],
  "fgiLaN translations": [
   "def extractfgiLaNTranslations(item):\n\t\"\"\"\n\t# 'fgiLaN translations'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'kimi no na wa' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'kimi no na wa', vol, chp, frag=frag, postfix=postfix)\n\tif 'shuumatsu nani shitemasu ka? isogashii desu ka? sukutte moratte ii desu ka?' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'shuumatsu nani shitemasu ka? isogashii desu ka? sukutte moratte ii desu ka?', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "gloomytranslations.blogspot.com": [
+  "\ndef extractGloomytranslationsBlogspotCom(item):\n\t'''\n\tParser for 'gloomytranslations.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:44.146727"
  ],
  "guhehe.TRANSLATIONS": [
   "def extractGuhehe(item):\n\t\"\"\"\n\t# guhehe.TRANSLATIONS\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'ShominSample' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Ore ga Ojou-sama Gakkou ni \"Shomin Sample\" Toshite Rachirareta Ken', vol, chp, frag=frag, postfix=postfix)\n\tif 'OniAi' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Onii-chan Dakedo Ai Sae Areba Kankeinai yo ne', vol, chp, frag=frag, postfix=postfix)\n\tif 'Haganai' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Boku wa Tomodachi ga Sukunai', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
@@ -5499,6 +5519,14 @@
   "\ndef extractHoshiandme(item):\n\t'''\n\tParser for 'hoshiandme'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
   "2017-03-23T05:27:55.312323"
  ],
+ "icecreamcaketl.wordpress.com": [
+  "\ndef extractIcecreamcaketlWordpressCom(item):\n\t'''\n\tParser for 'icecreamcaketl.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-07T15:53:29.972348"
+ ],
+ "ikigainovels.wordpress.com": [
+  "\ndef extractIkigainovelsWordpressCom(item):\n\t'''\n\tParser for 'ikigainovels.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:37.257810"
+ ],
  "inconnuesite": [
   "def extractInconnuesite(item):\n\t'''\n\tParser for 'inconnuesite'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\ttagmap = [\n\t\t(\"SGS\", \"Shoujo Grand Summoning\",    'translated'),\n\t\t(\"UAW\", \"Unlimited Anime Works\",     'translated'),\n\t\t(\"HF\",  \"Holistic Fantasy\",          'translated'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False",
   "2017-05-01T03:43:14.443219"
@@ -5511,17 +5539,37 @@
   "def extractIzra709(item):\n\t\"\"\"\n\t# izra709 | B Group no Shounen Translations\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif not postfix and '\u2013' in item['title']:\n\t\tpostfix = item['title'].split('\u2013')[-1]\n\tif 'monohito chapter' in item['title'].lower():\n\t\treturn buildReleaseMessage(item, 'Monogatari no Naka no Hito', vol, chp, frag=frag, postfix=postfix)\n\tif 'b group chapter' in item['title'].lower():\n\t\treturn buildReleaseMessage(item, 'B Group no Shounen', vol, chp, frag=frag, postfix=postfix)\n\tif 'assassin chapter' in item['title'].lower():\n\t\treturn buildReleaseMessage(item, 'Other World Assassin Life of a Man who was a Shut-in', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "jarjartranslationsblog.wordpress.com": [
+  "\ndef extractJarjartranslationsblogWordpressCom(item):\n\t'''\n\tParser for 'jarjartranslationsblog.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:54.292444"
+ ],
  "kha'sinTH": [
   "def extractKhasinTH(item):\n\t\"\"\"\n\t\"kha'sinTH\"\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "kieukieudays.com": [
+  "\ndef extractKieukieudaysCom(item):\n\t'''\n\tParser for 'kieukieudays.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:38.119275"
  ],
  "kyoptionslibrary.blogspot.com": [
   "def extractKyOptionsLibrary(item):\n\t\"\"\"\n\t# 'kyoptionslibrary.blogspot.com'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'Death March' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Death March kara Hajimaru Isekai Kyusoukyoku (LN)', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "lazypioneer.wordpress.com": [
+  "\ndef extractLazypioneerWordpressCom(item):\n\t'''\n\tParser for 'lazypioneer.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:45.911110"
+ ],
  "levitytales.com": [
   "def extractLevityTales(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif item['title'].startswith('Overthrowing Fate'):\n\t\treturn buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)\n\tif item['title'].startswith('Ancient Godly Monarch'):\n\t\treturn buildReleaseMessage(item, 'Ancient Godly Monarch', vol, chp, frag=frag, postfix=postfix)\n\tif 'Chaotic Lightning Cultivation' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Chaotic Lightning Cultivation', vol, chp, frag=frag, postfix=postfix)\n\tif 'Overthrowing Fate' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Overthrowing Fate', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "liarmask21.wordpress.com": [
+  "\ndef extractLiarmask21WordpressCom(item):\n\t'''\n\tParser for 'liarmask21.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:43.419235"
+ ],
+ "lost-talez.livejournal.com": [
+  "\ndef extractLostTalezLivejournalCom(item):\n\t'''\n\tParser for 'lost-talez.livejournal.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:45.878986"
  ],
  "m.wuxiaworld.com": [
   "\ndef extractMWuxiaworldCom(item):\n\t'''\n\tParser for 'm.wuxiaworld.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
@@ -5539,9 +5587,21 @@
   "\ndef extractMahouShoujoIkuseiKeikakuWikiaCom(item):\n\t'''\n\tParser for 'mahou-shoujo-ikusei-keikaku.wikia.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
   "2017-03-23T05:27:54.528414"
  ],
+ "miss-awesome0948.tumblr.com": [
+  "\ndef extractMissAwesome0948TumblrCom(item):\n\t'''\n\tParser for 'miss-awesome0948.tumblr.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:57.969935"
+ ],
  "mousou-haven.com": [
   "def extractMousouhaven(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "myswallowtails.wordpress.com": [
+  "\ndef extractMyswallowtailsWordpressCom(item):\n\t'''\n\tParser for 'myswallowtails.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:46.433609"
+ ],
+ "noveltoread.com": [
+  "\ndef extractNoveltoreadCom(item):\n\t'''\n\tParser for 'noveltoread.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-07T06:22:02.941241"
  ],
  "omgitsaray translations": [
   "def extractOmgitsarayTranslations(item):\n\t\"\"\"\n\tParser for 'omgitsaray translations'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\t\t\n\ttagmap = [\n\t\t('undefeatable',       'Leveling Up And Becoming Undefeatable', 'translated'),\n\t\t('9HTM',               '9 Heavenly Thunder Manual', 'translated'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False",
@@ -5551,6 +5611,10 @@
   "def extractOtterspaceTranslation(item):\n\t\"\"\"\n\t# Otterspace Translation\n\n\t\"\"\"\n\tchp, vol, frag = extractChapterVolFragment(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'Elqueeness' in item['title']:\n\t\treturn buildReleaseMessage(item, 'Spirit King Elqueeness', vol, chp, frag=frag)\n\tif '[Dark Mage]' in item['title'] or '[DarkMage]' in item['title']:\n\t\treturn buildReleaseMessage(item, 'Dark Mage', vol, chp, frag=frag)\n\tif 'Dragon Maken War' in item['title']:\n\t\treturn buildReleaseMessage(item, 'Dragon Maken War', vol, chp, frag=frag)\n\tif 'Legend of Legend' in item['title']:\n\t\treturn buildReleaseMessage(item, 'Legend of Legend', vol, chp, frag=frag)\n\tif \"Seoul Station's Necromancer\" in item['title'] or \"Seoul Station's Necromancer\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"Seoul Station's Necromancer\", vol, chp, frag=frag)\n\tif 'Dark Mage' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Dark Mage', vol, chp, frag=frag)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "oxytl.wordpress.com": [
+  "\ndef extractOxytlWordpressCom(item):\n\t'''\n\tParser for 'oxytl.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:38.211978"
+ ],
  "pandafuqtranslations": [
   "def extractPandafuqTranslations(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
@@ -5559,9 +5623,21 @@
   "def extractPanisal(item):\n\t\"\"\"\n\tParser for 'panisal'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'WATTT' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'WATTT', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "pineappletranslations.wordpress.com": [
+  "\ndef extractPineappletranslationsWordpressCom(item):\n\t'''\n\tParser for 'pineappletranslations.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:42.099526"
+ ],
  "putttytranslations": [
   "def extractPuttty(item):\n\t\"\"\"\n\t# putttytranslations\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif any([('god of thunder' == val.lower()) for val in item['tags']]) and (vol or chp):\n\t\tif ':' in item['title']:\n\t\t\tpostfix = item['title'].split(':', 1)[-1]\n\t\treturn buildReleaseMessage(item, 'God of Thunder', vol, chp, frag=frag, postfix=postfix)\n\tif 'Beseech the devil'.lower() in item['title'].lower():\n\t\treturn buildReleaseMessage(item, 'Beseech the Devil', vol, chp, frag=frag, postfix=postfix)\n\tif 'Goblin' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Goblin', vol, chp, frag=frag, postfix=postfix)\n\tif 'King of the Eternal Night' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'King of the Eternal Night', vol, chp, frag=frag, postfix=postfix)\n\tif 'Martial World' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Martial World', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "queenahearts.wordpress.com": [
+  "\ndef extractQueenaheartsWordpressCom(item):\n\t'''\n\tParser for 'queenahearts.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:45.734195"
+ ],
+ "ramdomtl.blogspot.com": [
+  "\ndef extractRamdomtlBlogspotCom(item):\n\t'''\n\tParser for 'ramdomtl.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:44.849078"
  ],
  "rokudenashi Translations": [
   "def extractRokudenashiTranslations(item):\n\t\"\"\"\n\t'rokudenashi Translations'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
@@ -5587,6 +5663,18 @@
   "\ndef extractSincereDreamwidthOrg(item):\n\t'''\n\tParser for 'sincere.dreamwidth.org'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
   "2017-07-10T03:04:41.565286"
  ],
+ "soupytranslations.blogspot.com": [
+  "\ndef extractSoupytranslationsBlogspotCom(item):\n\t'''\n\tParser for 'soupytranslations.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:26:51.347498"
+ ],
+ "sub29translation.wordpress.com": [
+  "\ndef extractSub29TranslationWordpressCom(item):\n\t'''\n\tParser for 'sub29translation.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:44.518664"
+ ],
+ "takeyourhearttranslation.000webhostapp.com": [
+  "\ndef extractTakeyourhearttranslation000WebhostappCom(item):\n\t'''\n\tParser for 'takeyourhearttranslation.000webhostapp.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:41.531393"
+ ],
  "tap-trans \u00bb tappity tappity tap.": [
   "def extractTaptrans(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'Manga' in item['tags']:\n\t\treturn None\n\tif 'Doujinshi' in item['tags']:\n\t\treturn None\n\t\t\n\treturn False",
   "2017-05-05T08:59:28.714022"
@@ -5606,6 +5694,10 @@
  "tiffybook.com": [
   "def extractCrazyForHENovels(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) and not 'preview' in item['title']:\n\t\treturn False\n\tchp = frag\n\tfrag = None\n\tif '\u5982\u679c\u8717\u725b\u6709\u7231\u60c5 When A Snail Loves \u2013 \u4e01\u58a8 Ding Mo (HE)(Incomplete)' in item['tags'] or 'When a snail loves' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'When A Snail Loves', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "translatinotaku.cf": [
+  "\ndef extractTranslatinotakuCf(item):\n\t'''\n\tParser for 'translatinotaku.cf'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:48.470920"
  ],
  "unnamedtranslations.blogspot.com": [
   "def extractUnnamedtranslations(item):\n\t\"\"\"\n\t# 'unnamedtranslations.blogspot.com'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
@@ -5647,9 +5739,21 @@
   "def extractXantbos(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "xianwuhub.com": [
+  "\ndef extractXianwuhubCom(item):\n\t'''\n\tParser for 'xianwuhub.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:37.483481"
+ ],
+ "xiose.wordpress.com": [
+  "\ndef extractXioseWordpressCom(item):\n\t'''\n\tParser for 'xiose.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:33.373877"
+ ],
  "yamtl": [
   "def extractYamtl(item):\n\t\"\"\"\n\t'yamtl'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "ynvermoon.wordpress.com": [
+  "\ndef extractYnvermoonWordpressCom(item):\n\t'''\n\tParser for 'ynvermoon.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:34.647519"
  ],
  "youtsubasilver's Blog": [
   "def extractYoutsubasilversBlog(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
@@ -5658,6 +5762,10 @@
  "yuNS Translations": [
   "def extractYuNSTranslations(item):\n\t\"\"\"\n\t'yuNS Translations'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\t\t\n\n\ttitlemap = [\n\t\t('Akashic Records of the Bastard Magical Instructor',  'Akashic Records of the Bastard Magical Instructor',      'translated'),\n\t\t('Akashic Records of the Bastard Magic Instructor',    'Akashic Records of the Bastard Magical Instructor',      'translated'),\n\t\t('Gifting this Wonderful World with Blessings!',       'Gifting this Wonderful World with Blessings!',           'translated'),\n\t\t('Gifting this Wonderful Worlds with Explosions!',     'Gifting this Wonderful Worlds with Explosions!',         'translated'),\n\t]\n\n\tfor titlecomponent, name, tl_type in titlemap:\n\t\tif titlecomponent.lower() in item['title'].lower():\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\t\t\n\treturn False",
   "2017-07-15T22:28:44.593987"
+ ],
+ "yuugentranslations.wordpress.com": [
+  "\ndef extractYuugentranslationsWordpressCom(item):\n\t'''\n\tParser for 'yuugentranslations.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
+  "2017-08-09T04:25:33.231297"
  ],
  "~Taffy Translations~": [
   "def extractTaffyTranslations(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'CCM' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Close Combat Mage', vol, chp, frag=frag, postfix=postfix)\n\tif 'CC' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Cheating Craft', vol, chp, frag=frag, postfix=postfix)\n\tif 'KSM' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Key of Sunken Moon', vol, chp, frag=frag, postfix=postfix)\n\t\t\n\treturn False",

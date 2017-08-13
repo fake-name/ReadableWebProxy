@@ -123,12 +123,17 @@ RSS_SKIP_FILTER = [
 	'www.fictionpress.com',
 	'storiesonline.net',
 	'www.fictionmania.tv',
+	'www.bestories.net',
+	'www.tgstorytime.com',
+	'www.literotica.com',
 	'pokegirls.org',
 	'www.asstr.org',
 	'www.mcstories.com',
 	'www.novelupdates.com',
 	'40pics.com',
 	'#comment-',
+
+
 
 ]
 
@@ -163,4 +168,8 @@ GLOBAL_INLINE_BULLSHIT = [
 			'Please do not host elsewhere but volare and Yumeabyss',
 			'[Follow the latest chapter at wuxiadream.com]',
 
+			'I slid my penis inside her. She squirmed a bit but YOU SICK FUCK STOP STEALING MY TRANSLATIONS',   # siiiiigh
+			'I kissed her sweet anus once more before leaving',   # siiiiiiiiiiiiigh
+
+			'(Watermark: read this translation only at shinku. xiaoxiaonovels.com)',
 ]
