@@ -137,7 +137,6 @@ class RabbitQueueHandler(object):
 		assert 'data'         in chunk_message
 		assert 'merge-key'    in chunk_message
 
-		merge_key     = chunk_message['merge-key']
 		total_chunks  = chunk_message['total-chunks']
 		chunk_num     = chunk_message['chunk-num']
 		data          = chunk_message['data']
@@ -243,7 +242,10 @@ class RabbitQueueHandler(object):
 				try:
 					job = q.get_nowait()
 					jkey = uuid.uuid1().hex
-					job['jobmeta'] = {'sort_key' : jkey}
+					job['jobmeta'] = {
+						'sort_key' : jkey,
+						'qname'    : qname,
+						}
 					self.mon_con.incr("Fetch.Get.{}".format(qname), 1)
 					self.dispatch_map[jkey] = (qname, time.time())
 					self.put_job(job)
@@ -261,19 +263,28 @@ class RabbitQueueHandler(object):
 				self.log.error("No metadata in job! Wat?")
 				self.log.error("Job contents: '%s'", new)
 				continue
-			if not 'sort_key' in new['jobmeta']:
+
+			if not any(['sort_key' in new['jobmeta'], 'qname' in new['jobmeta']]):
 				self.log.error("No sort key in job! Wat?")
 				self.log.error("Job contents: '%s'", new)
 				continue
 
-			jkey = new['jobmeta']['sort_key']
-			if not jkey in self.dispatch_map:
+			if 'sort_key' in new['jobmeta'] and new['jobmeta']['sort_key'] in self.dispatch_map:
+				qname, started_at = self.dispatch_map[new['jobmeta']['sort_key']]
+			elif 'qname' in new['jobmeta']:
+				qname = new['jobmeta']['qname']
+				started_at = None
+
+			elif 'sort_key' in new['jobmeta'] and not new['jobmeta']['sort_key'] in self.dispatch_map:
 				self.log.error("Job sort key not in known table! Does the job predate the current execution session?")
-				self.log.error("Job key: '%s'", jkey)
+				self.log.error("Job key: '%s'", new['jobmeta']['sort_key'])
 				self.log.error("Job contents: '%s'", new)
 				continue
+			else:
+				self.log.error("No sort key or queue name in response!")
+				self.log.error("Response meta: %s", new['jobmeta'])
+				continue
 
-			qname, started_at = self.dispatch_map[jkey]
 			if not qname in self.mdict[self.settings['respq_name']]:
 				self.log.error("Job response queue missing?")
 				self.log.error("Queue name: '%s'", qname)
@@ -281,10 +292,11 @@ class RabbitQueueHandler(object):
 
 			self.mdict[self.settings['respq_name']][qname].put(new)
 
-			fetchtime = (time.time() - started_at) * 1000
+			if started_at:
+				fetchtime = (time.time() - started_at) * 1000
 
+				self.mon_con.timing("Fetch.Duration.{}".format(qname), fetchtime)
 			self.mon_con.incr("Fetch.Resp.{}".format(qname), 1)
-			self.mon_con.timing("Fetch.Duration.{}".format(qname), fetchtime)
 
 			self.log.info("Demultiplexed job for '%s'. Time to response: %s", qname, fetchtime)
 

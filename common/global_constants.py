@@ -172,4 +172,10 @@ GLOBAL_INLINE_BULLSHIT = [
 			'I kissed her sweet anus once more before leaving',   # siiiiiiiiiiiiigh
 
 			'(Watermark: read this translation only at shinku. xiaoxiaonovels.com)',
+			"<TLN: If you're reading this novel at any other site than Sousetsuka.com you might be reading an unedited, uncorrected version of the novel.>",
+
+			'Original and most updated translations are from volare. If read elsewhere, this chapter has been stolen. Please stop supporting theft.',
+			'*******If you are reading this on a place other than rinkagetranslation.com, this chapter has been stolen and is neither the most recent or complete chapter.*******',
+			'*******Read the chapters at rinkagetranslation.com. The chapters for this series will NOT be posted anywhere else other than on that site itself. If you are reading this from somewhere else then this is chapter has been stolen.*******',
+			'If you are reading this on a place other than rinkagetranslation.com, this chapter has been stolen and is neither the most recent or complete chapter.',			
 ]

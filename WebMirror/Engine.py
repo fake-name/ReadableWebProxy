@@ -878,9 +878,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 				content += "<br>"
 				if 'traceback' in rpcresp:
 					content += "<pre>"
-					content += rpcresp['traceback']
+					content += "<br>".join(rpcresp['traceback'])
 					content += "</pre>"
-					for line in rpcresp['traceback'].strip().split("\n"):
+					for line in rpcresp['traceback']:
 						self.log.error("Remote traceback: %s", line)
 				# job.raw_content = content
 				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
