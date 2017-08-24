@@ -79,6 +79,7 @@ class FilterBase(PageProcessor):
 			raise ValueError("Plugin declared to not require AMQP connectivity, and yet AMQP call used?")
 
 		if config.C_DO_RABBIT:
+			self.log.info("Putting item in to AMQP queue!")
 			self.rpc_interface.put_feed_job(item)
 		else:
 			self.log.info("NOT Putting item in to AMQP queue!")
