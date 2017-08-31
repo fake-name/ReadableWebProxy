@@ -42,6 +42,8 @@ baseUrl: [
 		'https://www.sabishiidesu.com',
 		'http://www.comegatranslations.com',
 		'http://www.karasunovels.com',
+		'http://www.karasunovels.com',
+		'http://www.comegatranslations.com',
 
 		# Uses blogger JS. Is juncafe part of blogger?
 		'http://blog.juncafe.com',
@@ -68,6 +70,7 @@ baseUrl: [
 		'https://catatopatch.wixsite.com/catatopatch/',
 		'https://syzctranslations.github.io',
 
+		'http://www.wiseclock.ca',
 
 		# Oh god javascript shit.
 		'http://translations.afteraugustmaking.me',

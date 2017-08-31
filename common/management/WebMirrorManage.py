@@ -891,6 +891,13 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 	import WebMirror.OutputFilters.util.feedNameLut as fnl
 	import common.util.webFunctions as webFunctions
 
+	rules = WebMirror.rules.load_rules()
+	urls = [item['starturls'] if item['starturls'] else [] + item['feedurls'] if item['feedurls'] else [] for item in rules]
+	urls = [item for sublist in urls for item in sublist]
+
+	starturldict = {fnl.patch_blogspot(urllib.parse.urlsplit(url).netloc) : url for url in urls}
+
+
 	wg = webFunctions.WebGetRobust()
 
 	with db.session_context() as sess:
@@ -932,6 +939,22 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 			'kitakamiooi.com',   # Redirects to www.kitakamiooi.com
 			'kanojo.eu',
 
+			'www.tumblr.com',
+
+
+			# In the LUT already
+			'catatopatch.wixsite.com',
+			'kitsune.club',   # Also failing DNS resolution
+			'uncommittedtranslations.bravesites.com',
+
+			'www.optranslations.net',  # Ded
+			'steadytranslation.com',
+			'translatinotaku.ml',
+			'www.worldofwatermelons.com',
+			'ww5.worldofwatermelons.com',
+
+			# Manga site?
+			'ckmscans.halofight.com',
 		]
 
 		missing = 0
@@ -940,13 +963,19 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 			if netloc in mask_netlocs:
 				continue
 
-			if not fnl.getNiceName(sess, None, netloc):
-				fnl.getNiceName(sess, None, netloc)
-				title = netloc
-				if fetch_title:
-					title = get_page_title(wg, tgturl)
-				print("Missing: ", (netloc, title, tgturl))
-				missing += 1
+			if fnl.getNiceName(sess, None, netloc):
+				continue
+
+			if netloc in starturldict:
+				continue
+
+
+			fnl.getNiceName(sess, None, netloc)
+			title = netloc
+			if fetch_title:
+				title = get_page_title(wg, tgturl)
+			print("Missing: ", (netloc, title, tgturl))
+			missing += 1
 		print("Nu outbound items: ", len(mapdict), "missing:", missing)
 
 def exposed_find_dead_netlocs():

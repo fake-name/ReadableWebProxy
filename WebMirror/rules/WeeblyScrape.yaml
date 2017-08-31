@@ -5,18 +5,12 @@ FOLLOW_GOOGLE_LINKS: False
 send_raw_feed: True
 
 baseUrl:
+     - "http://comettranslations.weebly.com"
      - "http://earlandfairy.weebly.com/"
      - "http://eccentrictranslations.weebly.com"
+     - "http://fallentranslations.weebly.com"
      - "http://hakushakutoyousei.weebly.com"
-     - "http://snowtimeff.weebly.com"
      - "http://justblthings.weebly.com"
-     - "http://snowtimeff.weebly.com"
-     - "http://comettranslations.weebly.com"
-     - "http://negativeinserts.weebly.com"
-     - "http://negativeinserts.weebly.com"
-     - "http://comettranslations.weebly.com"
-     - "http://snowtimeff.weebly.com"
-     - "http://comettranslations.weebly.com"
      - "http://kuukai.weebly.com"
      - "http://negativeinserts.weebly.com"
      - "http://snowtimeff.weebly.com"
@@ -42,8 +36,6 @@ badwords:
      - "/wp-login.php"
      - "/#comments"      # Ignore in-page anchor tags
      - "/staff/"
-
-
 
 
 decomposeBefore:

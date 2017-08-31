@@ -851,6 +851,17 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 	'https://zumiedits.wordpress.com',
 
+	'https://crimsonjianghu.wordpress.com',
+	'https://guanatranslations.wordpress.com',
+	'https://itranslatech.wordpress.com',
+	'https://kanyome.wordpress.com',
+	'https://konglongblog.wordpress.com',
+	'https://lotustranslations.wordpress.com',
+	'https://mikazuki2017.wordpress.com',
+	'https://senseitranslates.wordpress.com',
+	'https://skylordsite.wordpress.com',
+	'https://sparemysite.wordpress.com',
+	'https://suihansanyou.wordpress.com',
 
 
 
@@ -1269,6 +1280,11 @@ baseUrl: [
 	'https://takeyourhearttranslation.000webhostapp.com',
 	'https://xianwuhub.com',
 
+	'https://myswallowtails.com',
+	'https://pumanovels.com',
+	'https://www.lnovelreader.com',
+	'https://yado-inn.com',
+
 
 	'http://translatinotaku.cf',
 
@@ -1414,6 +1430,7 @@ badwords: [
 		'gravitytranslations.com/Humorous_Novels.cfm?fp=',
 
 		'.cfm?fp=',
+		'.com/?fp=',
 		'thundertranslations.com/feed/bh.php',
 
 		# Some scummy domain squatter

@@ -129,9 +129,9 @@
 </code></pre>
 								<hr>
 </div>
-<div id='code-longer-templates' class='collapse'>
-<pre><code>
-	tagmap = [
+<div id='code-longer-templates' class='collapse' style='position:relative;'>
+<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('tag-lut-snippet')">Insert</button>
+<pre><code id='tag-lut-snippet'>	tagmap = [
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -139,9 +139,10 @@
 	for tagname, name, tl_type in tagmap:
 		if tagname in item['tags']:
 			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+</code></pre>
 
-
-	urlfrag = [
+<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('url-lut-snippet')">Insert</button>
+<pre><code id='url-lut-snippet'>	urlfrag = [
 		('http://www.rebirth.online/novel/jintetsu/',  'Jintetsu',     'translated'),
 
 		('rebirth.online/novel/earths-core' ,          "Earth's Core", 'oel'),
@@ -150,8 +151,10 @@
 	for key, name, tl_type in urlfrag:
 		if key in item['linkUrl'].lower():
 			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+</code></pre>
 
-	titlemap = [
+<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('title-lut-snippet')">Insert</button>
+<pre><code id='title-lut-snippet'>	titlemap = [
 		('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 		('Master of Dungeon',           'Master of Dungeon',               'oel'),
 	]
@@ -159,17 +162,27 @@
 	for titlecomponent, name, tl_type in titlemap:
 		if titlecomponent.lower() in item['title'].lower():
 			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+</code></pre>
+<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-lut-snippet')">Insert</button>
+<pre><code id='startswith-lut-snippet'>	chp_prefixes = [
+			('Lord of the Star Ocean',                               True,  'translated'),
+			('Game Market 1983',                                     False, 'translated'),
+		]
 
-	if 'tdadp' in item['title'].lower() or 'To deprive a deprived person episode'.lower() in item['title'].lower():
-		if vol and chp:
-			vol = None
-		return buildReleaseMessage(item, 'To Deprive a Deprived Person', vol, chp, frag=frag, postfix=postfix)
-
-	if item['title'].startswith('[SS] '):
-		return buildReleaseMessage(item, '[Second Saga]', vol, chp, frag=frag, postfix=postfix, tl_type='oel')
+	for series, require_chp, tl_type in chp_prefixes:
+		if item['title'].lower().startswith(series.lower()) and (not require_chp or 'chapter' in item['title'].lower()):
+			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 	return False
 </code></pre>
+
+<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('lower-lut-snippet')">Insert</button>
+<pre><code id='lower-lut-snippet'>	if 'tdadp' in item['title'].lower() or 'To deprive a deprived person episode'.lower() in item['title'].lower():
+		if vol and chp:
+			vol = None
+		return buildReleaseMessage(item, 'To Deprive a Deprived Person', vol, chp, frag=frag, postfix=postfix)
+</code></pre>
+
 								<hr>
 </div>
 <div id='name-edit' class='collapse form-inline'>
@@ -384,6 +397,16 @@
 
 		}
 
+		function insert_snippet(snippet_name)
+		{
+			console.log("Snippet: ", snippet_name)
+			var edit = $('#'+snippet_name);
+			console.log(edit)
+			console.log(edit.text())
+
+			editor.session.insert(editor.getCursorPosition(), edit.text())
+
+		}
 	</script>
 </html>
 

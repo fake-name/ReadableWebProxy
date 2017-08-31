@@ -168,6 +168,7 @@ badwords: [
 		'vikingstoryteller.com/Creative_Writing_Ideas.cfm?fp=',
 		'vikingstoryteller.com/Author_Biographies.cfm?fp=',
 		'?fp=',
+		'.mht?ga='
 
 	 ]
 
