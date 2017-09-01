@@ -10,6 +10,7 @@ import WebMirror.PreProcessors.RedditPreprocess
 import WebMirror.PreProcessors.WattPadPreprocess
 import WebMirror.PreProcessors.TgStoryTimePreprocess
 import WebMirror.PreProcessors.RRLPreprocess
+import WebMirror.PreProcessors.QidianPreprocess
 import WebMirror.PreProcessors.GravityTalesPreprocess
 
 PREPROCESSORS = [
@@ -17,6 +18,7 @@ PREPROCESSORS = [
 	WebMirror.PreProcessors.RedditPreprocess.RedditPreprocessor,
 	WebMirror.PreProcessors.WattPadPreprocess.WattPadPreprocessor,
 	WebMirror.PreProcessors.TgStoryTimePreprocess.TgStoryTimePreprocessor,
+	WebMirror.PreProcessors.QidianPreprocess.QidianPreprocessor,
 	WebMirror.PreProcessors.GravityTalesPreprocess.GravityTalesPreprocessor,
 
 

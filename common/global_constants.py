@@ -123,12 +123,17 @@ RSS_SKIP_FILTER = [
 	'www.fictionpress.com',
 	'storiesonline.net',
 	'www.fictionmania.tv',
+	'www.bestories.net',
+	'www.tgstorytime.com',
+	'www.literotica.com',
 	'pokegirls.org',
 	'www.asstr.org',
 	'www.mcstories.com',
 	'www.novelupdates.com',
 	'40pics.com',
 	'#comment-',
+
+
 
 ]
 
@@ -162,5 +167,19 @@ GLOBAL_INLINE_BULLSHIT = [
 			'(trytranslations.com at your service!)',
 			'Please do not host elsewhere but volare and Yumeabyss',
 			'[Follow the latest chapter at wuxiadream.com]',
+
+			'I slid my penis inside her. She squirmed a bit but YOU SICK FUCK STOP STEALING MY TRANSLATIONS',   # siiiiigh
+			'I kissed her sweet anus once more before leaving',   # siiiiiiiiiiiiigh
+
+			'(Watermark: read this translation only at shinku. xiaoxiaonovels.com)',
+			"<TLN: If you're reading this novel at any other site than Sousetsuka.com you might be reading an unedited, uncorrected version of the novel.>",
+
+			'Original and most updated translations are from volare. If read elsewhere, this chapter has been stolen. Please stop supporting theft.',
+			'*******If you are reading this on a place other than rinkagetranslation.com, this chapter has been stolen and is neither the most recent or complete chapter.*******',
+			'*******Read the chapters at rinkagetranslation.com. The chapters for this series will NOT be posted anywhere else other than on that site itself. If you are reading this from somewhere else then this is chapter has been stolen.*******',
+			'If you are reading this on a place other than rinkagetranslation.com, this chapter has been stolen and is neither the most recent or complete chapter.',			
+
+			"Read The Lazy Swordmaster first on Lightnovelbastion.com (If you're reading this elsewhere, it has been stolen)",
+			"Read The Lazy Swordmaster on Lightnovelbastion.com",
 
 ]

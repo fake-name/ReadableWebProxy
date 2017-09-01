@@ -31,7 +31,7 @@ class NuProcessor(HtmlProcessor.HtmlPageProcessor):
 
 
 	wanted_mimetypes = ['text/html']
-	want_priority    = 90
+	want_priority    = 80
 
 	loggerPath = "Main.Text.NUProc"
 
@@ -40,7 +40,7 @@ class NuProcessor(HtmlProcessor.HtmlPageProcessor):
 	@staticmethod
 	def wantsUrl(url):
 		if re.search(r"^https?://(?:www\.)?novelupdates\.com", url):
-			print("NovelUpdates Wants url: '%s'" % url)
+			print("NovelUpdates NoCleaner Wants url: '%s'" % url)
 			return True
 
 		return False

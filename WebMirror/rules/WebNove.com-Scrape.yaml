@@ -27,7 +27,7 @@ badwords: [
 			"?share=",
 
 			]
-			
+
 decompose_svg: True
 
 decompose: [
@@ -41,9 +41,21 @@ decompose: [
 	{'class' : 'cha-fly'},
 	{'class' : 'theme-set'},
 	{'class' : 'nav-menu'},
+	{'class' : 'rev-modal-score-list'},
 	{'id'    : 'site-navigation'},
+	{'id'    : 'reviewBlock'},
 	{'id'    : 'masthead'},
 	{'id'    : 'footer'},
+	{'class' : '_bts'},
+	{'class' : 'j_loginWrap'},
+	{'class' : 'j_abuse_drop'},
+	{'class' : 'g_mod_wrap'},
+	{'class' : 'g_app_mod'},
+	{'class' : 'g_footer'},
+	{'class' : 'g_header'},
+	{'class' : '_link_row'},
+	{'class' : '_score'},
+	{'class' : 'j_getApp'},
 	{'class' : 'bit'},
 	{'class' : 'comments-link'},
 	{'id'    : 'nav-above'},

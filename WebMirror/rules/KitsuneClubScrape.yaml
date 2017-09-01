@@ -1,6 +1,8 @@
 type: eastern
 
-baseUrl: [ "http://kitsune.club" ]
+baseUrl: [
+	"http://kitsune.club"
+]
 
 # THey don't seem to have RSS or anything. Annoying.
 feeds: [ ]

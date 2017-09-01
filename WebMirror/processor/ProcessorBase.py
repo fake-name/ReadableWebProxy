@@ -128,6 +128,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 						if "google.com" in urllib.parse.urlsplit(link[attr].lower()).netloc:
 							link[attr] = urlFuncs.trimGDocUrl(link[attr])
 							# print("Relinked", link[attr])
+					except TypeError:
+						# Empty href tags, not sure how this happens.
+						continue
 					except KeyError:
 						continue
 
@@ -145,6 +148,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 							if 'height' in link.attrs:
 								del link.attrs['height']
 
+					except TypeError:
+						continue
 					except KeyError:
 						continue
 

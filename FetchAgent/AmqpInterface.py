@@ -2,6 +2,7 @@
 import msgpack
 import settings as settings_file
 import datetime
+import traceback
 import queue
 from . import AmqpConnector
 import logging
@@ -11,6 +12,7 @@ import time
 import ssl
 import uuid
 import statsd
+import cachetools
 
 
 class RabbitQueueHandler(object):
@@ -39,28 +41,50 @@ class RabbitQueueHandler(object):
 		assert 'respq_name' in settings
 		self.settings = settings
 
+		self.put_idx = 0
+		self.get_idx = 0
+
+		self.ext_taskq = queue.Queue()
+		self.ext_repq  = queue.Queue()
+
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
-												password           = settings["RABBIT_PASWD"],
-												host               = settings["RABBIT_SRVER"],
-												virtual_host       = settings["RABBIT_VHOST"],
-												ssl                = sslopts,
-												master             = settings.get('master', True),
-												synchronous        = settings.get('synchronous', False),
-												flush_queues       = False,
-												prefetch           = settings.get('prefetch', 25),
-												durable            = True,
-												heartbeat          = 60,
-												task_exchange_type = settings.get('queue_mode', 'fanout'),
-												poll_rate          = settings.get('poll_rate', 1.0/100),
-												task_queue         = settings["taskq_task"],
-												response_queue     = settings["taskq_response"],
+		self.connectors = [
+			AmqpConnector.Connector(
+												userid                 = settings["RABBIT_LOGIN"],
+												password               = settings["RABBIT_PASWD"],
+												host                   = settings["RABBIT_SRVER"],
+												virtual_host           = settings["RABBIT_VHOST"],
+												ssl                    = sslopts,
+												master                 = settings['master'],
+												synchronous            = settings['synchronous'],
+												flush_queues           = settings['flush_queues'],
+												prefetch               = settings['prefetch'],
+												durable                = settings['durable'],
+												heartbeat              = settings['heartbeat'],
+												task_exchange_type     = settings['task_exchange_type'],
+												poll_rate              = settings['poll_rate'],
+												task_queue             = settings["taskq_task"],
+												response_queue         = settings["taskq_response"],
+												response_exchange_type = settings['response_exchange_type'],
+												task_exchange          = settings["task_exchange"],
+												response_exchange      = settings["response_exchange"],
+												socket_timeout         = settings["socket_timeout"],
+												ack_rx                 = settings["ack_rx"],
+
+												external_task_queue     = self.ext_taskq,
+												external_response_queue = self.ext_repq,
+
 												)
+				for _ in range(settings['consumer_threads'])
+			]
 
-		self.chunks = {}
 
-		self.log.info("Connected AMQP Interface: %s", self.connector)
+		# The chunk structure is slightly annoying, so just limit to 200 partial messages.
+		self.chunks     = cachetools.LRUCache(maxsize=200)
+		self.chunk_lock = threading.Lock()
+
+		self.log.info("Connected AMQP Interface: %s", self.connectors)
 		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
 
 		self.log.info("Setting up stats reporter")
@@ -99,14 +123,17 @@ class RabbitQueueHandler(object):
 
 	def put_item(self, data):
 		# self.log.info("Putting data: %s", data)
-		return self.connector.putMessage(data)
+		self.put_idx = (self.put_idx + 1) % len(self.connectors)
+		return self.connectors[self.put_idx].putMessage(data)
 		# self.log.info("Outgoing data size: %s bytes.", len(data))
 
 
 	def get_item(self):
-		ret = self.connector.getMessage()
-		if ret:
-			self.log.info("Received data size: %s bytes.", len(ret))
+		for x in range(len(self.connectors)):
+			ret = self.connectors[x].getMessage()
+			if ret:
+				self.log.info("Received data size: %s bytes.", len(ret))
+				return ret
 		return ret
 
 	def process_chunk(self, chunk_message):
@@ -116,41 +143,39 @@ class RabbitQueueHandler(object):
 		assert 'data'         in chunk_message
 		assert 'merge-key'    in chunk_message
 
-		merge_key     = chunk_message['merge-key']
 		total_chunks  = chunk_message['total-chunks']
 		chunk_num     = chunk_message['chunk-num']
 		data          = chunk_message['data']
 		merge_key     = chunk_message['merge-key']
 
-		if not merge_key in self.chunks:
-			self.chunks[merge_key] = {
-				'first-seen'  : datetime.datetime.now(),
-				'chunk-count' : total_chunks,
-				'chunks'      : {}
-			}
+		with self.chunk_lock:
+			if not merge_key in self.chunks:
+				self.chunks[merge_key] = {
+					'first-seen'  : datetime.datetime.now(),
+					'chunk-count' : total_chunks,
+					'chunks'      : {}
+				}
 
-		# Check our chunk count is sane.
-		assert self.chunks[merge_key]['chunk-count'] == total_chunks
-		self.chunks[merge_key]['chunks'][chunk_num] = data
+			# Check our chunk count is sane.
+			assert self.chunks[merge_key]['chunk-count'] == total_chunks
+			self.chunks[merge_key]['chunks'][chunk_num] = data
 
+			if len(self.chunks[merge_key]['chunks']) == total_chunks:
+				components = list(self.chunks[merge_key]['chunks'].items())
+				components.sort()
+				packed_message = b''.join([part[1] for part in components])
+				ret = msgpack.unpackb(packed_message, encoding='utf-8', use_list=False)
 
-		# TODO: clean out partial messages based on their age (see 'first-seen')
+				del self.chunks[merge_key]
 
-		if len(self.chunks[merge_key]['chunks']) == total_chunks:
-			components = list(self.chunks[merge_key]['chunks'].items())
-			components.sort()
-			packed_message = b''.join([part[1] for part in components])
-			ret = msgpack.unpackb(packed_message, encoding='utf-8', use_list=False)
+				self.log.info("Received all chunks for key %s! Decoded size: %0.3fk from %s chunks. Active partial chunked messages: %s.",
+					merge_key, len(packed_message) / 1024, len(components), len(self.chunks))
 
-			del self.chunks[merge_key]
+				return ret
 
-			self.log.info("Received all chunks for key %s! Decoded size: %0.3fk from %s chunks. Active partial chunked messages: %s.",
-				merge_key, len(packed_message) / 1024, len(components), len(self.chunks))
-
-			return ret
-
-		else:
-			return None
+			else:
+				self.log.info("Have %s/%s items for chunk, %s different partial messages in queue.", len(self.chunks[merge_key]['chunks']), total_chunks, len(self.chunks))
+				return None
 
 	def unchunk(self, new_message):
 		new = msgpack.unpackb(new_message, encoding='utf-8', use_list=False)
@@ -184,6 +209,8 @@ class RabbitQueueHandler(object):
 					if tmp:
 						return tmp
 				except Exception:
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
 					self.log.error("Failure unpacking message!")
 					msgstr = str(new)
 					if len(new) < 5000:
@@ -212,7 +239,8 @@ class RabbitQueueHandler(object):
 
 	def close(self):
 		self.log.info("Closing connector wrapper: %s -> %s", self.logPath, self.vhost)
-		self.connector.stop()
+		for connector in self.connectors:
+			connector.stop()
 
 
 	def dispatch_outgoing(self):
@@ -222,7 +250,10 @@ class RabbitQueueHandler(object):
 				try:
 					job = q.get_nowait()
 					jkey = uuid.uuid1().hex
-					job['jobmeta'] = {'sort_key' : jkey}
+					job['jobmeta'] = {
+						'sort_key' : jkey,
+						'qname'    : qname,
+						}
 					self.mon_con.incr("Fetch.Get.{}".format(qname), 1)
 					self.dispatch_map[jkey] = (qname, time.time())
 					self.put_job(job)
@@ -240,19 +271,28 @@ class RabbitQueueHandler(object):
 				self.log.error("No metadata in job! Wat?")
 				self.log.error("Job contents: '%s'", new)
 				continue
-			if not 'sort_key' in new['jobmeta']:
+
+			if not any(['sort_key' in new['jobmeta'], 'qname' in new['jobmeta']]):
 				self.log.error("No sort key in job! Wat?")
 				self.log.error("Job contents: '%s'", new)
 				continue
 
-			jkey = new['jobmeta']['sort_key']
-			if not jkey in self.dispatch_map:
+			if 'sort_key' in new['jobmeta'] and new['jobmeta']['sort_key'] in self.dispatch_map:
+				qname, started_at = self.dispatch_map[new['jobmeta']['sort_key']]
+			elif 'qname' in new['jobmeta']:
+				qname = new['jobmeta']['qname']
+				started_at = None
+
+			elif 'sort_key' in new['jobmeta'] and not new['jobmeta']['sort_key'] in self.dispatch_map:
 				self.log.error("Job sort key not in known table! Does the job predate the current execution session?")
-				self.log.error("Job key: '%s'", jkey)
+				self.log.error("Job key: '%s'", new['jobmeta']['sort_key'])
 				self.log.error("Job contents: '%s'", new)
 				continue
+			else:
+				self.log.error("No sort key or queue name in response!")
+				self.log.error("Response meta: %s", new['jobmeta'])
+				continue
 
-			qname, started_at = self.dispatch_map[jkey]
 			if not qname in self.mdict[self.settings['respq_name']]:
 				self.log.error("Job response queue missing?")
 				self.log.error("Queue name: '%s'", qname)
@@ -260,12 +300,16 @@ class RabbitQueueHandler(object):
 
 			self.mdict[self.settings['respq_name']][qname].put(new)
 
-			fetchtime = (time.time() - started_at) * 1000
+			if started_at:
+				fetchtime = (time.time() - started_at) * 1000
+				self.mon_con.timing("Fetch.Duration.{}".format(qname), fetchtime)
+				self.log.info("Demultiplexed job for '%s'. Time to response: %s", qname, fetchtime)
+			else:
+				self.log.info("Demultiplexed job for '%s'. Original fetchtime missing!", qname)
+
 
 			self.mon_con.incr("Fetch.Resp.{}".format(qname), 1)
-			self.mon_con.timing("Fetch.Duration.{}".format(qname), fetchtime)
 
-			self.log.info("Demultiplexed job for '%s'. Time to response: %s", qname, fetchtime)
 
 
 	def runner(self):
@@ -308,21 +352,26 @@ class PlainRabbitQueueHandler(object):
 
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
-		self.connector = AmqpConnector.Connector(userid            = settings["RABBIT_LOGIN"],
-												password           = settings["RABBIT_PASWD"],
-												host               = settings["RABBIT_SRVER"],
-												virtual_host       = settings["RABBIT_VHOST"],
-												ssl                = sslopts,
-												master             = settings.get('master', True),
-												synchronous        = settings.get('synchronous', False),
-												flush_queues       = False,
-												prefetch           = settings.get('prefetch', 25),
-												durable            = True,
-												heartbeat          = 60,
-												task_exchange_type = settings.get('queue_mode', 'fanout'),
-												poll_rate          = settings.get('poll_rate', 1.0/100),
-												task_queue         = settings["taskq_task"],
-												response_queue     = settings["taskq_response"],
+		self.connector = AmqpConnector.Connector(userid                = settings["RABBIT_LOGIN"],
+												password               = settings["RABBIT_PASWD"],
+												host                   = settings["RABBIT_SRVER"],
+												virtual_host           = settings["RABBIT_VHOST"],
+												ssl                    = sslopts,
+												master                 = settings['master'],
+												synchronous            = settings['synchronous'],
+												flush_queues           = settings['flush_queues'],
+												prefetch               = settings['prefetch'],
+												durable                = settings['durable'],
+												heartbeat              = settings['heartbeat'],
+												task_exchange_type     = settings['task_exchange_type'],
+												poll_rate              = settings['poll_rate'],
+												task_queue             = settings["taskq_task"],
+												response_queue         = settings["taskq_response"],
+												response_exchange_type = settings['response_exchange_type'],
+												task_exchange          = settings["task_exchange"],
+												response_exchange      = settings["response_exchange"],
+												socket_timeout         = settings["socket_timeout"],
+												ack_rx                 = settings["ack_rx"],
 												)
 
 
@@ -428,33 +477,50 @@ STATE = {}
 
 def monitor(manager):
 	while manager['amqp_runstate']:
-		STATE['rpc_instance'].connector.checkLaunchThread()
+		for connector in STATE['rpc_instance'].connectors:
+			connector.checkLaunchThread()
 		STATE['feed_instance'].connector.checkLaunchThread()
 		time.sleep(1)
 		print("Monitor looping!")
 
 
+# Note:
 def startup_interface(manager):
 	rpc_amqp_settings = {
+		'consumer_threads'        : 4,
+
 		'RABBIT_LOGIN'            : settings_file.RPC_RABBIT_LOGIN,
 		'RABBIT_PASWD'            : settings_file.RPC_RABBIT_PASWD,
 		'RABBIT_SRVER'            : settings_file.RPC_RABBIT_SRVER,
 		'RABBIT_VHOST'            : settings_file.RPC_RABBIT_VHOST,
 		'master'                  : True,
-		'prefetch'                : 750,
-		# 'prefetch'                : 50,
+		'prefetch'                : 25,
 		# 'prefetch'                : 5,
-		'queue_mode'              : 'direct',
+		'task_exchange_type'      : 'direct',
+		'response_exchange_type'  : 'direct',
+
 		'taskq_task'              : 'task.q',
 		'taskq_response'          : 'response.q',
 
 		"poll_rate"               : 1/100,
+
+		'heartbeat'               :  45,
+		'socket_timeout'          :  90,
+
+		'flush_queues'            : False,
+		'durable'                 : True,
 
 		'taskq_name'              : 'outq',
 		'respq_name'              : 'inq',
 
 		'GRAPHITE_DB_IP'          : settings_file.GRAPHITE_DB_IP,
 
+		'synchronous'             : False,
+
+		'task_exchange'           : 'tasks.e',
+		'response_exchange'       : 'resps.e',
+
+		'ack_rx'                  : True
 	}
 
 	feed_amqp_settings = {
@@ -463,22 +529,32 @@ def startup_interface(manager):
 		'RABBIT_SRVER'            : settings_file.RABBIT_SRVER,
 		'RABBIT_VHOST'            : settings_file.RABBIT_VHOST,
 		'master'                  : True,
-		'prefetch'                : 250,
-		# 'prefetch'                : 50,
+		'prefetch'                : 25,
 		# 'prefetch'                : 5,
-		'queue_mode'              : 'fanout',
+		'task_exchange_type'      : 'fanout',
 		'taskq_task'              : 'task.q',
 		'taskq_response'          : 'response.q',
-
-		'task_exchange_type'      : 'fanout',
 		'response_exchange_type'  : 'direct',
 
 		"poll_rate"               : 1/100,
+
+		'heartbeat'               :  45,
+		'socket_timeout'          :  90,
+
+		'flush_queues'            : False,
+		'durable'                 : True,
 
 		'taskq_name'              : 'feed_outq',
 		'respq_name'              : 'feed_inq',
 
 		'GRAPHITE_DB_IP'          : settings_file.GRAPHITE_DB_IP,
+
+		'synchronous'             : False,
+
+		'task_exchange'           : 'tasks.e',
+		'response_exchange'       : 'resps.e',
+
+		'ack_rx'                  : True
 	}
 
 	STATE['rpc_instance'] = RabbitQueueHandler(rpc_amqp_settings, manager)

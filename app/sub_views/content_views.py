@@ -1,5 +1,6 @@
 
 
+import io
 import urllib.parse
 
 from flask import render_template
@@ -21,6 +22,8 @@ import WebMirror.rules
 import common.global_constants
 
 import WebMirror.API
+
+from PIL import Image
 
 def build_error_response(message):
 	response = jsonify(
@@ -236,9 +239,19 @@ def render_resource():
 
 	mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url, ignore_cache=ignore_cache)
 
+	# Deal with internet explorer being garbage.
+	if mimetype == 'image/webp':
+		img = Image.open(io.BytesIO(content))
+		out = io.BytesIO()
+		img.save(out, format="jpeg")
+		content = out.getvalue()
+		mimetype = 'img/jpeg'
+		fname = fname + ".jpeg"
+
 	response = make_response(content)
 	response.headers['Content-Type'] = mimetype
 	response.headers["Content-Disposition"] = "attachment; filename={}".format(fname)
+
 
 	return set_cache_control_headers(response)
 

@@ -155,6 +155,8 @@ class RemoteContentObject(object):
 	def getCacheState(self):
 		assert self.fetched
 		fetched = self.job.fetchtime
+		if fetched is None:
+			fetched = datetime.datetime.now()
 		ago = datetime.datetime.now() - fetched
 		return td_format(ago)
 

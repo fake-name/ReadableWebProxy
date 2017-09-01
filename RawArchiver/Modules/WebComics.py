@@ -161,6 +161,9 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		"http://anaria.katbox.net",
 		"http://www.irovedout.com",
 
+		"http://ironheart-rune.com",
+		"http://straycomic.com",
+
 
 	]
 
@@ -204,6 +207,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/ikea-dilemma&q=comic/ikea-dilemma&q=comic/',
 		'/webcomics&q=category/web-links/',
 		'/lost-omens&q=forum/lost-omens&q=forum/',
+		'/mergency-supply&q=comic/mergency-supply&q=comic/',
 
 		'/jam/book-one-we-are-engineers&q=blog/jam/',
 		'www.wastedtalent.ca/forum/',

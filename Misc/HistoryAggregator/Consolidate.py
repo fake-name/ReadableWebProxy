@@ -54,8 +54,6 @@ class DbFlattener(object):
 
 		self.snap_times = self.generate_snap_times()
 
-	def __del__(self):
-		db.delete_db_session()
 
 	def ago(self, then):
 		if then == None:
@@ -185,6 +183,8 @@ class DbFlattener(object):
 				if not closest in attachments:
 					attachments[closest] = []
 				attachments[closest].append(item)
+			elif item.file != None:
+				pass
 			else:
 				print("Wat?")
 
@@ -223,40 +223,37 @@ class DbFlattener(object):
 
 	def consolidate_history(self):
 
-		sess = db.get_db_session()
-		self.qlog.info("Querying for items with significant history size")
-		end = sess.execute("""
-				SELECT
-					count(*), url
-				FROM
-					web_pages_version
-				GROUP BY
-					url
-				HAVING
-					COUNT(*) > 10
-				ORDER BY url
+		with db.session_context() as sess:
+			self.qlog.info("Querying for items with significant history size")
+			end = sess.execute("""
+					SELECT
+						count(*), url
+					FROM
+						web_pages_version
+					GROUP BY
+						url
+					HAVING
+						COUNT(*) > 10
+					ORDER BY url
 
-			""")
-		end = list(end)
-		self.qlog.info("Found %s items with more then 10 history entries. Processing", len(end))
+				""")
+			end = list(end)
+			self.qlog.info("Found %s items with more then 10 history entries. Processing", len(end))
 
-		sess.flush()
-		sess.expire_all()
-		db.delete_db_session()
-
-
-		sess = db.get_db_session()
+			sess.flush()
+			sess.expire_all()
 
 		remaining = len(end)
 		for batched in batch(end, 50):
 			for count, url in batched:
-				while 1:
-					try:
-						self.truncate_url_history(sess, url)
-						break
-					except sqlalchemy.exc.OperationalError:
-						sess.rollback()
 
+				with db.session_context() as temp_sess:
+					while 1:
+						try:
+							self.truncate_url_history(temp_sess, url)
+							break
+						except sqlalchemy.exc.OperationalError:
+							temp_sess.rollback()
 
 			remaining = remaining - len(batched)
 			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
@@ -265,7 +262,7 @@ class DbFlattener(object):
 			growth = objgraph.show_growth(limit=10)
 			print(growth)
 
-			sess.expire_all()
+
 
 
 	def tickle_rows(self, sess, urlset):
@@ -328,41 +325,40 @@ class DbFlattener(object):
 
 	def fix_missing_history(self):
 
-		sess = db.get_db_session()
-		self.qlog.info("Querying for DB items without any history")
-		end = sess.execute("""
-			SELECT
-				t1.url
-			FROM
-				web_pages t1
-			LEFT JOIN
-				web_pages_version t2 ON t2.url = t1.url
-			WHERE
-				t2.url IS NULL
+		with db.session_context() as sess:
+			self.qlog.info("Querying for DB items without any history")
+			end = sess.execute("""
+				SELECT
+					t1.url
+				FROM
+					web_pages t1
+				LEFT JOIN
+					web_pages_version t2 ON t2.url = t1.url
+				WHERE
+					t2.url IS NULL
 
-			""")
-		end = [tmp[0] for tmp in end]
-		self.log.info("Found %s rows missing history content!", len(end))
+				""")
+			end = [tmp[0] for tmp in end]
+			self.log.info("Found %s rows missing history content!", len(end))
 
-		loop = 0
-		remaining = len(end)
-		for urlset in batch(end, 50):
-			self.tickle_rows(sess, urlset)
-			sess.expire_all()
+			loop = 0
+			remaining = len(end)
+			for urlset in batch(end, 50):
+				self.tickle_rows(sess, urlset)
+				sess.expire_all()
 
-			remaining = remaining - len(urlset)
-			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
+				remaining = remaining - len(urlset)
+				self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
 
-			print("Growth:")
-			growth = objgraph.show_growth(limit=10)
-			print(growth)
+				print("Growth:")
+				growth = objgraph.show_growth(limit=10)
+				print(growth)
 
-		db.delete_db_session()
 
 	def wat(self):
-		sess = db.get_db_session()
-		urls = ['http://rancerqz.com/tag/chapter-release/']
-		self.tickle_rows(sess, urls)
+		with db.session_context() as sess:
+			urls = ['http://rancerqz.com/tag/chapter-release/']
+			self.tickle_rows(sess, urls)
 
 
 	def _go(self):

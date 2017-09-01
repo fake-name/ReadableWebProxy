@@ -8,6 +8,7 @@ send_raw_feed: False
 baseUrl: [
 		'http://www.spcnet.tv/forums',
 		'http://forum.wuxiaworld.com',
+		'http://wuxiasociety.freeforums.net',
 ]
 
 feeds: [
@@ -73,6 +74,17 @@ badwords: [
 			'forumdisplay.php/4-Productions',
 			'forumdisplay.php/5-Creative-Minds',
 			'forumdisplay.php/6-Lounge',
+
+			'/board/18/older-male-celebrities',
+			'/board/19/older-female-celebrities',
+			'/board/20/current-male-celebrities',
+			'/board/21/current-female-celebrities',
+			"/board/29/general-wuxia-tv-series",
+			"/board/31/general-kungfu-series",
+			"/board/7/tvb-atv-hk-productions",
+			"/board/9/taiwan-singapore-productions",
+			"/board/8/cctv-mainland-china-productions",
+			'/board/1/forum-regulations',
 
 			'/showthread.php/search.php?',
 			'/mobile/',

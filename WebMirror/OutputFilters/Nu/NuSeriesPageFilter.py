@@ -230,15 +230,15 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 			'tl_type'       : "translated" if 'English' not in data_sets['langtg'] else "oel",
 
 			# New:
-			'coostate'      : data_sets['coostatustg'],
+			'coostate'      : "<br />".join(data_sets['coostatustg']),
 			'type'          : data_sets['typetg'],
 			'genres'        : data_sets['genretg'],
-			'licensed'      : data_sets['licensedtg'],
-			'transcomplete' : data_sets['transcompletetg'],
+			'licensed'      : "<br />".join(data_sets['licensedtg']),
+			'transcomplete' : "<br />".join(data_sets['transcompletetg']),
 
 			'create_tags'   : True,
 		}
-		# pprint.pprint(series_message)
+		pprint.pprint(series_message)
 		series_info_packet = msgpackers.createSeriesInfoPacket(series_message, matchAuthor=True, beta=self.is_beta)
 		# print(series_info_packet)
 

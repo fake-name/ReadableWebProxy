@@ -269,22 +269,22 @@ class SiteArchiver(LogBase.LoggerMixin):
 		assert interval > 7
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
-		while True:
-			history_size = self.checkHaveHistory(job.url)
-			if history_size > 0:
-				break
-			try:
-				self.log.info("Need to push content into history table (current length: %s).", history_size)
-				job.state     = "complete"
-				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=1)
+		# while True:
+		# 	history_size = self.checkHaveHistory(job.url)
+		# 	if history_size > 0:
+		# 		break
+		# 	try:
+		# 		self.log.info("Need to push content into history table (current length: %s).", history_size)
+		# 		job.state     = "complete"
+		# 		job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=1)
 
-				self.db_sess.commit()
-				self.log.info("Pushing old job content into history table!")
-				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
+		# 		self.db_sess.commit()
+		# 		self.log.info("Pushing old job content into history table!")
+		# 		break
+		# 	except sqlalchemy.exc.OperationalError:
+		# 		self.db_sess.rollback()
+		# 	except sqlalchemy.exc.InvalidRequestError:
+		# 		self.db_sess.rollback()
 
 		while 1:
 			try:
@@ -878,9 +878,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 				content += "<br>"
 				if 'traceback' in rpcresp:
 					content += "<pre>"
-					content += rpcresp['traceback']
+					content += "<br>".join(rpcresp['traceback'])
 					content += "</pre>"
-					for line in rpcresp['traceback'].strip().split("\n"):
+					for line in rpcresp['traceback']:
 						self.log.error("Remote traceback: %s", line)
 				# job.raw_content = content
 				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)

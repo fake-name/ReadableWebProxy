@@ -376,9 +376,9 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				self.log.warning("RPC Remote appears to not be listening!")
 				time.sleep(1)
 			except Exception as e:
-				with open("error - {}.txt".format(time.time()), "w") as fp:
-					fp.write("Wat? Exception!\n\n")
-					fp.write(traceback.format_exc())
+				# with open("error - {}.txt".format(time.time()), "w") as fp:
+				# 	fp.write("Wat? Exception!\n\n")
+				# 	fp.write(traceback.format_exc())
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 
@@ -426,7 +426,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				        AND
 				            normal_fetch_mode = true
 				        AND
-				            web_pages.priority <= (
+				            web_pages.priority = (
 				               SELECT
 				                    min(priority)
 				                FROM
@@ -439,7 +439,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 				                    normal_fetch_mode = true
 				                AND
 				                    web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				            ) + 10 -- Be a bit more greedy about new jobs
+				            )
 				        AND
 				            web_pages.distance < 1000000
 				        AND

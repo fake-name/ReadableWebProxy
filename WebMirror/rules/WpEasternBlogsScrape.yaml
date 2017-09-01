@@ -851,6 +851,17 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 	'https://zumiedits.wordpress.com',
 
+	'https://crimsonjianghu.wordpress.com',
+	'https://guanatranslations.wordpress.com',
+	'https://itranslatech.wordpress.com',
+	'https://kanyome.wordpress.com',
+	'https://konglongblog.wordpress.com',
+	'https://lotustranslations.wordpress.com',
+	'https://mikazuki2017.wordpress.com',
+	'https://senseitranslates.wordpress.com',
+	'https://skylordsite.wordpress.com',
+	'https://sparemysite.wordpress.com',
+	'https://suihansanyou.wordpress.com',
 
 
 
@@ -1226,6 +1237,57 @@ baseUrl: [
 	'https://shirokuns.com',
 	'https://amateurtranslations.wordpress.com',
 
+	'https://8yours.wordpress.com',
+	'https://arvelhurst.wordpress.com',
+	'https://asterlucerne.wordpress.com',
+	'https://dominantprogrammer.wordpress.com',
+	'https://ebisutranslations.wordpress.com',
+	'https://fuyuneko.wordpress.com',
+	'https://happysheeptraduction.wordpress.com',
+	'https://isekaintr.wordpress.com',
+	'https://lmsnovel.wordpress.com',
+	'https://releasethatwitch.wordpress.com',
+	'https://rintranstudio.wordpress.com',
+	'https://sakhyulations.wordpress.com',
+	'https://shiraei.wordpress.com',
+	'https://tenseihonyakusha.wordpress.com',
+	'https://tenseiken.wordpress.com',
+	'https://thernotstudio.wordpress.com',
+	'https://trackest.wordpress.com',
+	'https://translasi.sanusi.me',
+	'http://translatinotaku.net',
+	'https://weissnoveltranslation.wordpress.com',
+
+	'https://errorknife.wordpress.com',
+	'https://fantasytranslation.wordpress.com',
+	'https://icecreamcaketl.wordpress.com',
+	'https://ikigainovels.wordpress.com',
+	'https://jarjartranslationsblog.wordpress.com',
+	'https://lazypioneer.wordpress.com',
+	'https://liarmask21.wordpress.com',
+	'https://myswallowtails.wordpress.com',
+	'https://oxytl.wordpress.com',
+	'https://pineappletranslations.wordpress.com',
+	'https://queenahearts.wordpress.com',
+	'https://sub29translation.wordpress.com',
+	'https://xiose.wordpress.com',
+	'https://ynvermoon.wordpress.com',
+	'https://yuugentranslations.wordpress.com',
+
+	'http://dao.ist',
+	'https://kieukieudays.com',
+	'https://noveltoread.com',
+	'https://takeyourhearttranslation.000webhostapp.com',
+	'https://xianwuhub.com',
+
+	'https://myswallowtails.com',
+	'https://pumanovels.com',
+	'https://www.lnovelreader.com',
+	'https://yado-inn.com',
+
+
+	'http://translatinotaku.cf',
+
 	 # Seriously bro, you can change your A record:
 	 # 'http://tototr.com'
 	'http://tototrans.com',
@@ -1368,6 +1430,7 @@ badwords: [
 		'gravitytranslations.com/Humorous_Novels.cfm?fp=',
 
 		'.cfm?fp=',
+		'.com/?fp=',
 		'thundertranslations.com/feed/bh.php',
 
 		# Some scummy domain squatter
@@ -1382,6 +1445,9 @@ badwords: [
 
 		# Google amp crap, I assume?
 		'/amp/',
+
+		# Siiiigh.
+		'http:/totobro.com',
 
 		# Block mobile garbage
 		'm.wuxiaworld.com',

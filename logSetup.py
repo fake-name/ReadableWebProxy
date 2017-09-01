@@ -277,10 +277,26 @@ def initLogging(logLevel=logging.INFO):
 
 
 if __name__ == "__main__":
-	initLogging(logToDb=True)
+	initLogging()
 	log = logging.getLogger("Main.Test")
 	log.debug("Testing logging - level: debug")
 	log.info("Testing logging - level: info")
 	log.warn("Testing logging - level: warn")
 	log.error("Testing logging - level: error")
 	log.critical("Testing logging - level: critical")
+	print()
+	log.info("Exception using exc_info:")
+	try:
+		x = 1 / 0
+	except Exception as e:
+		log.error("Failed to do thing", exc_info=e)
+
+	print()
+	log.info("Exception using manually extracted traceback")
+	try:
+		x = 1 / 0
+	except Exception as e:
+		log.error("Failed to do thing")
+		for line in traceback.format_exc().strip().split("\n"):
+			log.error(line)
+

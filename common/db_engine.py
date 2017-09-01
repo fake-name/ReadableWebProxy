@@ -2,6 +2,7 @@
 import sys
 import multiprocessing
 import threading
+import contextlib
 
 from settings import MAX_DB_SESSIONS
 
@@ -141,6 +142,14 @@ def delete_db_session(postfix=""):
 			SESSIONS[csid][1].close()
 			del SESSIONS[csid]
 			# print("Deleted session for id: ", csid)
+
+@contextlib.contextmanager
+def session_context():
+	sess = get_db_session(postfix='context-sess')
+	try:
+		yield sess
+	finally:
+		delete_db_session(postfix='context-sess')
 
 
 # import traceback

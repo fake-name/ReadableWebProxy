@@ -45,5 +45,5 @@ if "grpc" in sys.argv:
 	FetchAgent.server_grpc.main()
 else:
 	import FetchAgent.server
-	init_yappi()
+	# init_yappi()
 	FetchAgent.server.main()
