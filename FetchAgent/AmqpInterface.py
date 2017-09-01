@@ -2,6 +2,7 @@
 import msgpack
 import settings as settings_file
 import datetime
+import traceback
 import queue
 from . import AmqpConnector
 import logging
@@ -11,6 +12,7 @@ import time
 import ssl
 import uuid
 import statsd
+import cachetools
 
 
 class RabbitQueueHandler(object):
@@ -76,7 +78,11 @@ class RabbitQueueHandler(object):
 												)
 				for _ in range(settings['consumer_threads'])
 			]
-		self.chunks = {}
+
+
+		# The chunk structure is slightly annoying, so just limit to 200 partial messages.
+		self.chunks     = cachetools.LRUCache(maxsize=200)
+		self.chunk_lock = threading.Lock()
 
 		self.log.info("Connected AMQP Interface: %s", self.connectors)
 		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
@@ -142,34 +148,34 @@ class RabbitQueueHandler(object):
 		data          = chunk_message['data']
 		merge_key     = chunk_message['merge-key']
 
-		if not merge_key in self.chunks:
-			self.chunks[merge_key] = {
-				'first-seen'  : datetime.datetime.now(),
-				'chunk-count' : total_chunks,
-				'chunks'      : {}
-			}
+		with self.chunk_lock:
+			if not merge_key in self.chunks:
+				self.chunks[merge_key] = {
+					'first-seen'  : datetime.datetime.now(),
+					'chunk-count' : total_chunks,
+					'chunks'      : {}
+				}
 
-		# Check our chunk count is sane.
-		assert self.chunks[merge_key]['chunk-count'] == total_chunks
-		self.chunks[merge_key]['chunks'][chunk_num] = data
+			# Check our chunk count is sane.
+			assert self.chunks[merge_key]['chunk-count'] == total_chunks
+			self.chunks[merge_key]['chunks'][chunk_num] = data
 
-		# TODO: clean out partial messages based on their age (see 'first-seen')
+			if len(self.chunks[merge_key]['chunks']) == total_chunks:
+				components = list(self.chunks[merge_key]['chunks'].items())
+				components.sort()
+				packed_message = b''.join([part[1] for part in components])
+				ret = msgpack.unpackb(packed_message, encoding='utf-8', use_list=False)
 
-		if len(self.chunks[merge_key]['chunks']) == total_chunks:
-			components = list(self.chunks[merge_key]['chunks'].items())
-			components.sort()
-			packed_message = b''.join([part[1] for part in components])
-			ret = msgpack.unpackb(packed_message, encoding='utf-8', use_list=False)
+				del self.chunks[merge_key]
 
-			del self.chunks[merge_key]
+				self.log.info("Received all chunks for key %s! Decoded size: %0.3fk from %s chunks. Active partial chunked messages: %s.",
+					merge_key, len(packed_message) / 1024, len(components), len(self.chunks))
 
-			self.log.info("Received all chunks for key %s! Decoded size: %0.3fk from %s chunks. Active partial chunked messages: %s.",
-				merge_key, len(packed_message) / 1024, len(components), len(self.chunks))
+				return ret
 
-			return ret
-
-		else:
-			return None
+			else:
+				self.log.info("Have %s/%s items for chunk, %s different partial messages in queue.", len(self.chunks[merge_key]['chunks']), total_chunks, len(self.chunks))
+				return None
 
 	def unchunk(self, new_message):
 		new = msgpack.unpackb(new_message, encoding='utf-8', use_list=False)
@@ -203,6 +209,8 @@ class RabbitQueueHandler(object):
 					if tmp:
 						return tmp
 				except Exception:
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
 					self.log.error("Failure unpacking message!")
 					msgstr = str(new)
 					if len(new) < 5000:
@@ -294,11 +302,14 @@ class RabbitQueueHandler(object):
 
 			if started_at:
 				fetchtime = (time.time() - started_at) * 1000
-
 				self.mon_con.timing("Fetch.Duration.{}".format(qname), fetchtime)
+				self.log.info("Demultiplexed job for '%s'. Time to response: %s", qname, fetchtime)
+			else:
+				self.log.info("Demultiplexed job for '%s'. Original fetchtime missing!", qname)
+
+
 			self.mon_con.incr("Fetch.Resp.{}".format(qname), 1)
 
-			self.log.info("Demultiplexed job for '%s'. Time to response: %s", qname, fetchtime)
 
 
 	def runner(self):
