@@ -173,16 +173,21 @@ class ConnectorManager:
 
 		self.log.info("Configuring RPC channel.")
 
+		args = {}
+		# if 'dlq' in self.config and self.config['dlq']:
+		# 	dlexc =
+
 		self.storm_channel.exchange.declare(
-					exchange      =self.config['task_exchange'],
-					exchange_type =self.config['task_exchange_type'],
-					durable       =self.config['durable']
+					exchange      = self.config['task_exchange'],
+					exchange_type = self.config['task_exchange_type'],
+					durable       = self.config['durable'],
+					arguments     = args,
 				)
 
 		self.storm_channel.exchange.declare(
-					exchange      =self.config['response_exchange'],
-					exchange_type =self.config['response_exchange_type'],
-					durable       =self.config['durable']
+					exchange      = self.config['response_exchange'],
+					exchange_type = self.config['response_exchange_type'],
+					durable       = self.config['durable']
 				)
 
 		self.storm_channel.queue.declare(
@@ -191,9 +196,11 @@ class ConnectorManager:
 					auto_delete   = False)
 
 		self.storm_channel.queue.bind(
-					queue         =self.config['response_queue_name'],
-					exchange      =self.config['response_exchange'],
-					routing_key   =self.config['response_queue_name'].split(".")[0])
+					queue         = self.config['response_queue_name'],
+					exchange      = self.config['response_exchange'],
+					routing_key   = self.config['response_queue_name'].split(".")[0])
+
+
 
 		self.log.info("Configured.")
 
@@ -347,7 +354,10 @@ class ConnectorManager:
 		if (self.last_heartbeat_received + self.config['heartbeat'] < now
 				and self.last_message_received + self.config['heartbeat'] < now):
 
-			self.log.error("Heartbeat receive timeout! Triggering reconnect due to missed heartbeat.")
+			self.log.error("Heartbeat receive timeout! Triggering reconnect due to missed heartbeat (%s, %s).",
+					self.last_heartbeat_received + self.config['heartbeat'] - now,
+					self.last_message_received + self.config['heartbeat'] - now,
+				)
 			self.last_heartbeat_received = now
 			try:
 				self.__reset_channel()

@@ -49,35 +49,39 @@ class RabbitQueueHandler(object):
 
 		sslopts = self.getSslOpts()
 		self.vhost = settings["RABBIT_VHOST"]
-		self.connectors = [
-			AmqpConnector.Connector(
-												userid                 = settings["RABBIT_LOGIN"],
-												password               = settings["RABBIT_PASWD"],
-												host                   = settings["RABBIT_SRVER"],
-												virtual_host           = settings["RABBIT_VHOST"],
-												ssl                    = sslopts,
-												master                 = settings['master'],
-												synchronous            = settings['synchronous'],
-												flush_queues           = settings['flush_queues'],
-												prefetch               = settings['prefetch'],
-												durable                = settings['durable'],
-												heartbeat              = settings['heartbeat'],
-												task_exchange_type     = settings['task_exchange_type'],
-												poll_rate              = settings['poll_rate'],
-												task_queue             = settings["taskq_task"],
-												response_queue         = settings["taskq_response"],
-												response_exchange_type = settings['response_exchange_type'],
-												task_exchange          = settings["task_exchange"],
-												response_exchange      = settings["response_exchange"],
-												socket_timeout         = settings["socket_timeout"],
-												ack_rx                 = settings["ack_rx"],
+		self.connectors = []
+		for threadno in range(settings['consumer_threads']):
+			self.log.info("Creating worker %s", threadno)
+			self.connectors.append(
+				AmqpConnector.Connector(
+													userid                 = settings["RABBIT_LOGIN"],
+													password               = settings["RABBIT_PASWD"],
+													host                   = settings["RABBIT_SRVER"],
+													virtual_host           = settings["RABBIT_VHOST"],
+													ssl                    = sslopts,
+													master                 = settings['master'],
+													synchronous            = settings['synchronous'],
+													flush_queues           = settings['flush_queues'],
+													prefetch               = settings['prefetch'],
+													durable                = settings['durable'],
+													heartbeat              = settings['heartbeat'],
+													task_exchange_type     = settings['task_exchange_type'],
+													poll_rate              = settings['poll_rate'],
+													task_queue             = settings["taskq_task"],
+													response_queue         = settings["taskq_response"],
+													response_exchange_type = settings['response_exchange_type'],
+													task_exchange          = settings["task_exchange"],
+													response_exchange      = settings["response_exchange"],
+													socket_timeout         = settings["socket_timeout"],
+													ack_rx                 = settings["ack_rx"],
 
-												external_task_queue     = self.ext_taskq,
-												external_response_queue = self.ext_repq,
-
-												)
-				for _ in range(settings['consumer_threads'])
-			]
+													external_task_queue     = self.ext_taskq,
+													external_response_queue = self.ext_repq,
+													)
+				)
+			# We spread out the socket creation along the timeout interval, so
+			# that all the connectors don't function in apparent lockstep
+			time.sleep(settings['socket_timeout'] / settings['consumer_threads'])
 
 
 		# The chunk structure is slightly annoying, so just limit to 200 partial messages.

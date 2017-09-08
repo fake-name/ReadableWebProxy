@@ -1248,3 +1248,39 @@ def exposed_rolling_rewalk():
 
 
 
+
+def exposed_nu_retrigger_series_pages():
+	'''
+
+	'''
+	step = 500000
+
+	with db.session_context() as sess:
+		end = sess.execute("""SELECT MAX(id) FROM web_pages;""")
+		end = list(end)[0][0]
+
+		start = sess.execute("""SELECT MIN(id) FROM web_pages;""")
+		start = list(start)[0][0]
+
+		changed = 0
+
+		if not start:
+			print("No null rows to fix!")
+			return
+
+		start = start - (start % step)
+
+		for x in range(start, end, step):
+
+			have = sess.execute("""UPDATE web_pages SET state='new', priority=50000 WHERE url LIKE 'http://www.novelupdates.com/series/%%/' AND id < %s AND id >= %s AND state != 'new';""" % (x, x-step))
+
+			print('%10i, %7.4f, %6i, %6i' % (x, x/end * 100, have.rowcount, changed))
+			changed += have.rowcount
+			if changed > 100:
+				print("Committing (%s changed rows)...." % changed, end=' ')
+				sess.commit()
+				print("done")
+				changed = 0
+		sess.commit()
+
+

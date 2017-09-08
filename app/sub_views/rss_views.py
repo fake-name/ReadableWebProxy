@@ -235,12 +235,17 @@ def feedFiltersRoot():
 			'egscans.com',
 			'docs.google.com',
 			'avertranslation.blogspot.com',
+			'noveltoread.com',
+			'wuxiasociety.freeforums.net',
 		]
 		for feed in feeds_in:
 			if feed.feed_name in [tmp.feed_netloc for tmp in feed.urls]:
 				if feed.feed_name not in skip_missing:
 
 					feeds.append(feed)
+	else:
+		feeds = feeds_in
+
 
 	return render_template('rss-pages/feed_filter_base.html',
 						   feeds = feeds,

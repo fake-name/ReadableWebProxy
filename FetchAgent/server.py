@@ -9,9 +9,11 @@ import sys
 import queue
 import os
 import signal
+from gevent.server import StreamServer
 import FetchAgent.AmqpInterface
 import logSetup
 import zerorpc
+import mprpc
 import gevent.monkey
 import gevent
 
@@ -29,18 +31,46 @@ import time
 
 
 
-INTERRUPTS = 0
-def build_handler(server):
+INTERRUPTS_1 = 0
+INTERRUPTS_2 = 0
+
+TO_EXIT = []
+
+def build_zerorpc_handler(server):
+	global TO_EXIT
+	TO_EXIT.append(server)
+
 	def handler(signum=-1, frame=None):
-		global INTERRUPTS
-		INTERRUPTS += 1
-		print('Signal handler called with signal %s for the %s time' % (signum, INTERRUPTS))
-		if INTERRUPTS > 2:
+		global INTERRUPTS_1
+		INTERRUPTS_1 += 1
+		print('Signal handler called with signal %s for the %s time' % (signum, INTERRUPTS_1))
+		if INTERRUPTS_1 > 2:
 			print("Raising due to repeat interrupts")
 			raise KeyboardInterrupt
-		server.close()
+		for server in TO_EXIT:
+			server.close()
 		# server.stop()
 	return handler
+
+def build_mprpc_handler(server):
+	global TO_EXIT
+	TO_EXIT.append(server)
+
+	def handler(signum=-1, frame=None):
+		global INTERRUPTS_2
+		INTERRUPTS_2 += 1
+		print('Signal handler called with signal %s for the %s time' % (signum, INTERRUPTS_2))
+		if INTERRUPTS_2 > 2:
+			print("Raising due to repeat interrupts")
+			raise KeyboardInterrupt
+		for server in TO_EXIT:
+			server.close()
+	return handler
+
+def base_abort():
+	print("Low level keyboard interrupt")
+	for server in TO_EXIT:
+		server.close()
 
 
 # import gevent.socket as gsocket
@@ -50,14 +80,18 @@ def build_handler(server):
 # from common.fixed_bsonrpc import Fixed_BSONRpc
 
 
-class FetchInterfaceClass(object):
+class FetchInterfaceClass(mprpc.RPCServer):
 
 
-	def __init__(self, interface_dict):
-		self.log = logging.getLogger("Main.RPC-Interface")
+	def __init__(self, interface_dict, rpc_prefix):
 
+		super().__init__()
+
+		self.log = logging.getLogger("Main.{}-Interface".format(rpc_prefix))
 		self.mdict = interface_dict
 		self.log.info("Connection")
+
+
 
 	def __check_have_queue(self, queuename):
 		if not queuename in self.mdict['outq']:
@@ -112,22 +146,25 @@ sock_path = '/tmp/rwp-fetchagent-sock'
 
 
 def run_server(interface_dict):
-	print("Started.")
-	served_class = FetchInterfaceClass(interface_dict)
-	serverLog = logging.getLogger("Main.RPyCServer")
+	print("ZeroRPC server Started.")
+	served_class = FetchInterfaceClass(interface_dict, "ZeroRPC")
 	server = zerorpc.Server(served_class, heartbeat=30)
 
-	sock_path = '/tmp/rwp-fetchagent-sock'
 	server.bind("ipc://{}".format(sock_path))
-	server.bind("tcp://*:4314")
+	server.bind("tcp://*:4316")
 
-	gevent.signal(signal.SIGINT, build_handler(server))
+	gevent.signal(signal.SIGINT, build_zerorpc_handler(server))
 
 	server.run()
 
-def before_exit():
-	print("Caught exit! Exiting")
 
+def run_mprpc(interface_dict):
+	print("MpRPC server Started.")
+	server_instance = FetchInterfaceClass(interface_dict, "MpRPC")
+	mprpc_server = StreamServer(('0.0.0.0', 4315), server_instance)
+
+	gevent.signal(signal.SIGINT, build_mprpc_handler(mprpc_server))
+	mprpc_server.serve_forever()
 
 
 def initialize_manager(interface_dict):
@@ -158,11 +195,28 @@ def run():
 
 	initialize_manager(interface_dict)
 	FetchAgent.AmqpInterface.startup_interface(interface_dict)
-	try:
-		run_server(interface_dict)
-	except KeyboardInterrupt:
-		pass
 
+	print("AMQP Interfaces have started. Launching RPC threads.")
+
+	t1 = threading.Thread(target=run_server, args=(interface_dict, ))
+	t2 = threading.Thread(target=run_mprpc, args=(interface_dict, ))
+
+	t1.start()
+	t2.start()
+
+	try:
+		while 1:
+			time.sleep(1)
+	except KeyboardInterrupt:
+		print("Main worker abort")
+		base_abort()
+
+	print("Joining on worker threads")
+
+	t1.join()
+	t2.join()
+
+	print("Terminating AMQP interface.")
 	FetchAgent.AmqpInterface.shutdown_interface(interface_dict)
 
 	os.unlink(sock_path)
