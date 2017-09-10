@@ -182,4 +182,6 @@ GLOBAL_INLINE_BULLSHIT = [
 			"Read The Lazy Swordmaster first on Lightnovelbastion.com (If you're reading this elsewhere, it has been stolen)",
 			"Read The Lazy Swordmaster on Lightnovelbastion.com",
 
+			"Property of © Fantasy-Books.live; outside of it, it is stolen.",
+
 ]

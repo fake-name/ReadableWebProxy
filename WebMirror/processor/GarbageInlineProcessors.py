@@ -115,7 +115,7 @@ class ShamelessOniisanPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			bad.decompose()
 
 		return soup
-		
+
 class WatashiWaSugoiDesuPageProcessor(HtmlProcessor.HtmlPageProcessor):
 
 	wanted_mimetypes = ['text/html']
@@ -141,7 +141,7 @@ class WatashiWaSugoiDesuPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			bad.decompose()
 
 		return soup
-	
+
 class FantasyBooksLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 
 	wanted_mimetypes = ['text/html']
@@ -164,12 +164,38 @@ class FantasyBooksLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 		# ex: <span style="color:#ffffff;">the truth is out!</span>
 		badlinks = soup.find_all('a', href="https://fantasy-books.live/approved-list")
 		for bad in badlinks:
-		
+
 			bad.parent.decompose()
-			
+
 		badspans = soup.find_all("div", text=re.compile(r"https://fantasy\-books\.live/approved\-list then this work has been stolen", re.I))
 		for bad in badspans:
 			print('baddiv', bad)
+			bad.decompose()
+
+		return soup
+
+class MayonaizeShrimpLiveProcessor(HtmlProcessor.HtmlPageProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+
+	loggerPath = "Main.Text.MayonaizeShrimp"
+
+	@staticmethod
+	def wantsUrl(url):
+		if re.search(r"^https?://mayonaizeshrimp\.wordpress\.com/", url):
+			print("ms Wants url: '%s'" % url)
+			return True
+		# print("lnw doesn't want url: '%s'" % url)
+		return False
+
+	def preprocessBody(self, soup):
+
+		# Decompose the annoying inline shit.
+		# ex: <span style="color:#ffffff;">the truth is out!</span>
+		badspans = soup.find_all("span", style=re.compile(r"color\W?:\W?#ffffff", re.I))
+		for bad in badspans:
 			bad.decompose()
 
 		return soup

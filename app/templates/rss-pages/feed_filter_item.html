@@ -163,8 +163,8 @@
 		if titlecomponent.lower() in item['title'].lower():
 			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 </code></pre>
-<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-lut-snippet')">Insert</button>
-<pre><code id='startswith-lut-snippet'>	chp_prefixes = [
+<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-keyed-lut-snippet')">Insert</button>
+<pre><code id='startswith-keyed-lut-snippet'>	chp_prefixes = [
 			('Lord of the Star Ocean',                               True,  'translated'),
 			('Game Market 1983',                                     False, 'translated'),
 		]
@@ -173,7 +173,19 @@
 		if item['title'].lower().startswith(series.lower()) and (not require_chp or 'chapter' in item['title'].lower()):
 			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
-	return False
+</code></pre>
+<button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-lut-snippet')">Insert</button>
+<pre><code id='startswith-lut-snippet'>	chp_prefixes = [
+
+	chp_prefixes = [
+			('Manowa',  'Manowa Mamono Taosu Nouryoku Ubau Watashi Tsuyokunaru',               'translated'),
+			('Cat ',    'Me and My Beloved Cat (Girlfriend)',                                  'translated'),
+		]
+
+	for prefix, series, tl_type in chp_prefixes:
+		if item['title'].lower().startswith(prefix.lower()):
+			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
 </code></pre>
 
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('lower-lut-snippet')">Insert</button>
