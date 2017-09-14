@@ -456,6 +456,7 @@ class NuHeader(LogBase.LoggerMixin):
 		badwords = [
 			'523',
 			'404',
+			'sucuri website firewall',
 			'403',
 			'not found',
 			'error',
@@ -485,6 +486,15 @@ class NuHeader(LogBase.LoggerMixin):
 				.filter(db.NuReleaseItem.actual_target != None)    \
 				.order_by(desc(db.NuReleaseItem.first_seen))       \
 				.all()
+				
+				
+		unverified = self.db_sess.query(db.NuReleaseItem)           \
+				.filter(db.NuReleaseItem.validated == False)        \
+				.filter(db.NuReleaseItem.actual_target != None)    \
+				.count()
+				
+		self.log.info("Have %s items to do validity checks on", len(new_items))
+		self.log.info("%s items needing checking", unverified)
 
 		for row in new_items:
 			self.check_probable_validate(row)
@@ -494,9 +504,21 @@ class NuHeader(LogBase.LoggerMixin):
 def fetch_and_flush():
 	hd = NuHeader()
 	hd.process_avail()
+	
 	hd.validate_from_new()
 	hd.timestamp_validated()
-	hd.put_job(put=30)
+	hd.fix_names()
+
+	hd.validate_probable_ok()
+
+	ago = datetime.datetime.now() - datetime.timedelta(days=3)
+	hd.transmit_since(ago)
+
+
+	
+	hd.validate_from_new()
+	hd.timestamp_validated()
+	hd.put_job(put=100)
 	mins = 10
 	for x in range(mins):
 		hd.process_avail()
@@ -536,7 +558,7 @@ def do_nu_sync(scheduler):
 		fetch_and_flush()
 	finally:
 
-		sleeptime = int(random.triangular(7*60, (30*60), (15*60)))
+		sleeptime = int(random.triangular(3*60, (30*60), (15*60)))
 		next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
 		schedule_next_exec(scheduler, next_exec)
 
@@ -557,3 +579,5 @@ if __name__ == '__main__':
 	hdl = NuHeader()
 	hdl.validate_probable_ok()
 
+	ago = datetime.datetime.now() - datetime.timedelta(days=3)
+	hdl.transmit_since(ago)
