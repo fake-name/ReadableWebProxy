@@ -39,6 +39,7 @@ SCANNED_MODULES = [
 ]
 
 def load_functions():
+	print("Loading functions")
 	ret = {}
 	for module in SCANNED_MODULES:
 		for name, member in inspect.getmembers(module):
@@ -46,6 +47,7 @@ def load_functions():
 				sname = name[len(func_prefix):]
 				assert sname not in ret, "Duplicate management functions named: '%s'" % name
 				ret[sname] = member
+	print("Found %s functions" % len(ret))
 	return ret
 
 

@@ -1,8 +1,11 @@
 
 import urllib.parse
+import cachetools
 from common import database as db
 from sqlalchemy.orm import joinedload
 
+
+FEED_LOOKUP_CACHE     = cachetools.LRUCache(maxsize=200)
 
 def patch_blogspot(innetloc):
 	# Blogspot domains are coerced to ".com" since they seem to localize their TLD,
@@ -13,7 +16,11 @@ def patch_blogspot(innetloc):
 	return innetloc
 
 
+
 def get_name_for_netloc_db(db_sess, netloc):
+
+	if netloc in FEED_LOOKUP_CACHE:
+		return FEED_LOOKUP_CACHE[netloc]
 
 	row = db_sess.query(db.RssFeedUrlMapper) \
 		.filter(db.RssFeedUrlMapper.feed_netloc == netloc) \
@@ -28,6 +35,7 @@ def get_name_for_netloc_db(db_sess, netloc):
 
 	feedname = row[0].feed_entry.feed_name
 	if feedname:
+		FEED_LOOKUP_CACHE[netloc] = feedname
 		return feedname
 	else:
 		return False

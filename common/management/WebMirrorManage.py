@@ -287,11 +287,8 @@ def exposed_fix_null():
 				changed = 0
 		sess.commit()
 
-def exposed_delete_comment_feed_items():
-	'''
-	Iterate over all retreived feed article entries, and delete any that look
-	like they're comment feed articles.
-	'''
+def delete_bad_rss_by_url():
+
 	with db.session_context() as sess:
 
 		bad_sources = 	sess.query(db.RssFeedUrlMapper) \
@@ -375,21 +372,49 @@ def exposed_delete_comment_feed_items():
 		print("Total changed rows: %s" % count)
 		sess.commit()
 
-def exposed_update_feed_names():
-	'''
-	Apply any new feednamelut LUT names to existing fetched RSS posts.
-	'''
+def delete_bad_by_check():
+
+
 	with db.session_context() as sess:
-		for key, value in feedNameLut.mapper.items():
-			feed_items = sess.query(db.RssFeedPost) \
-					.filter(db.RssFeedPost.feed_entry.feed_name == key)    \
-					.all()
-			if feed_items:
-				for item in feed_items:
-					item.feed_entry.feed_name = value
-				print(len(feed_items))
-				print(key, value)
-				sess.commit()
+		print("Fetching all rows to scan")
+		all_bad = sess.query(db.RssFeedPost).all()
+		all_bad = list(all_bad)
+		print("Processing %s rows." % len(all_bad))
+
+		count = 0
+		deleted = False
+		for bad in all_bad:
+			post_dict = {
+				'srcname' : feedNameLut.getNiceName(sess, bad.contenturl),
+				'title'   : bad.title,
+				'linkUrl' : bad.contenturl,
+			}
+			if WebMirror.OutputFilters.rss.FeedDataParser.should_ignore_feed_post(post_dict):
+				print(post_dict)
+				sess.delete(bad)
+				deleted = True
+			count += 1
+			if count % 1000 == 0:
+				print("Processed %s of %s" % (count, len(all_bad)))
+				if deleted:
+					print("Committing...", end='')
+					sess.commit()
+					deleted = False
+					print("Committed")
+		if deleted:
+			print("Committing...", end='')
+			sess.commit()
+			print("Committed")
+
+		print("Done")
+
+def exposed_delete_comment_feed_items():
+	'''
+	Iterate over all retreived feed article entries, and delete any that look
+	like they're comment feed articles.
+	'''
+	delete_bad_rss_by_url()
+	delete_bad_by_check()
 
 
 def delete_internal(sess, ids, netloc, badwords):
@@ -771,13 +796,6 @@ def exposed_rss_month():
 	'''
 	exposed_rss_db_sync(days=45)
 
-
-def exposed_rss_missing_functions():
-	'''
-	Print skeleton functions for the RSS source names that are
-	not present in the lookup map.
-	'''
-	WebMirror.OutputFilters.rss.FeedDataParser.print_missing_functions()
 
 def exposed_filter_links(path):
 	"""

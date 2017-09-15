@@ -122,6 +122,35 @@ def getCreateRssSource(db_sess, feedname, feedurl):
 	return feed_row
 
 
+# Manual patches for dealing with a few broken feeds.
+def should_ignore_feed_post(feedDat):
+
+	# Japtem seems to put their comments in their main feed, for no good reason.
+	if feedDat['srcname'] == "Japtem" and feedDat['title'].startswith("By: "):
+		return True
+	if feedDat['srcname'] == "Zeonic" and feedDat['title'].startswith("By: "):
+		return True
+	if feedDat['srcname'] == 'Sora Translations' and feedDat['title'].startswith("Comment on"):
+		return True
+	if feedDat['srcname'] == 'Uncommitted Translations' and ' comments on ' in feedDat['title']:
+		return True
+	if feedDat['srcname'] == 'Uncommitted Translations' and feedDat['title'].startswith("Comment by "):
+		return True
+	if '?showComment=' in feedDat['linkUrl']:
+		return True
+
+	bad_starts = [
+		('FeedProxy', 'Comment on '),
+		("Krytyk's Translations", 'By: '),
+		('Prince Revolution!', 'By: '),
+		('Blazing Translations', 'By: '),
+		('Blazing Translations', 'Comment on '),
+		('Aran Translations', 'Comment on '),
+	]
+
+	if any([(feedDat['title'].startswith(bad) and feedDat['srcname'] == src) for src, bad in bad_starts]):
+		return True
+	return False
 
 class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
@@ -150,6 +179,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def dispatchReleaseDbBacked(self, item):
+
 		processor_row = self.db_sess.query(db.RssFeedEntry)       \
 			.filter(db.RssFeedEntry.feed_name == item['srcname']) \
 			.scalar()
@@ -184,69 +214,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if ret is None:
 			return False
 
-		bad_starts = [
-			('FeedProxy', 'Comment on '),
-			("Krytyk's Translations", 'By: '),
-			('Prince Revolution!', 'By: '),
-			('Blazing Translations', 'By: '),
-			('Blazing Translations', 'Comment on '),
-			('Aran Translations', 'Comment on '),
-
-		]
-
-		if (
-				(flags.RSS_DEBUG or self.dbg_print)   and
-				self.write_debug                      and
-				ret is False                          and
-				not "teaser" in item['title'].lower() and
-				not "Preview" in item['tags']
-			):
-			vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-			if vol or chp or frag and not flags.RSS_DEBUG:
-
-				if not any([(item['title'].startswith(bad) and item['srcname'] == src) for src, bad in bad_starts]):
-					with open('rss_filter_misses-1.json', "a") as fp:
-
-						write_items = {
-							"SourceName" : item['srcname'],
-							"Title"      : item['title'],
-							"Tags"       : list(item['tags']),
-							"Vol"        : False if not vol else vol,
-							"Chp"        : False if not chp else chp,
-							"Frag"       : False if not frag else frag,
-							"Postfix"    : postfix,
-							"Feed URL"   : item['linkUrl'],
-							"GUID"       : item['guid'],
-						}
-
-
-						fp.write("%s" % (json.dumps(write_items, )))
-						fp.write("\n")
-
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-		if self.dbg_print or flags.RSS_DEBUG:
-			# False means not caught. None means intentionally ignored.
-
-			if (
-					ret is False         and
-					(vol or chp or frag) and
-					not "teaser" in item['title'].lower()
-				):
-				print("Missed:")
-				print("	Source: '%s'" % (item['srcname'], ))
-				print("	Title:  '%s'" % (item['title'], ))
-				print("	Tags:   '%s'" % (item['tags'], ))
-				print("	Vol %s, chp %s, fragment %s, postfix '%s'" % (vol, chp, frag, postfix))
-				# print("Missed: '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix))
-			elif ret:
-				pass
-				# print("OK! '%s', V:'%s', C:'%s', '%s', '%s', '%s'" % (ret['srcname'], ret['vol'], ret['chp'], ret['postfix'], ret['series'], item['title']))
-			else:
-				pass
-				# print("Wat: '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix, item['linkUrl']))
-
-			if flags.RSS_DEBUG:
-				ret = False
 
 		# Only return a value if we've actually found a chapter/vol
 		if ret and not (ret['vol'] or ret['chp'] or ret['postfix']):
@@ -299,19 +267,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		except TypeError:
 			return None
 
-	# Manual patches for dealing with a few broken feeds.
-	def checkIgnore(self, feedDat):
-
-		# Japtem seems to put their comments in their main feed, for no good reason.
-		if feedDat['srcname'] == "Japtem" and feedDat['title'].startswith("By: "):
-			return True
-		if feedDat['srcname'] == "Zeonic" and feedDat['title'].startswith("By: "):
-			return True
-		if feedDat['srcname'] == 'Sora Translations' and feedDat['title'].startswith("Comment on"):
-			return True
-
-
-		return False
 
 	def processFeedData(self, session, feedDat, tx_raw=True, tx_parse=True):
 
@@ -337,7 +292,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			nicename = netloc
 		feedDat['srcname'] = nicename
 
-		if self.checkIgnore(feedDat):
+		if should_ignore_feed_post(feedDat):
 			return
 
 		# print("ProcessFeedData! ", netloc)
