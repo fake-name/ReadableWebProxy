@@ -2,6 +2,9 @@ type: eastern
 
 baseUrl: [ "https://www.webnovel.com" ]
 
+feeds: [
+	'https://www.webnovel.com/feed/',
+]
 
 send_raw_feed: False
 

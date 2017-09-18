@@ -823,13 +823,11 @@ def exposed_filter_links(path):
 			print(item)
 
 def get_page_title(wg, url):
-	chunks = url.split("/")
-	baseurl = "/".join(chunks[:3])
 	ret = {}
 	ret['title'] = urllib.parse.urlsplit(url).netloc
 
 	try:
-		soup = wg.getSoup(baseurl)
+		soup = wg.getSoup(url)
 		ret['is-wp'] = "/wp-content/" in str(soup)
 		if soup.title:
 			ret['title'] = soup.title.get_text().strip()
@@ -857,8 +855,29 @@ def exposed_missing_lut(fetchTitle=False):
 				netloc = urllib.parse.urlsplit(feed).netloc
 				meta = netloc
 				if fetchTitle:
-					meta = get_page_title_meta(wg, feed)
+					chunks = feed.split("/")
+					baseurl = "/".join(chunks[:3])
+					meta = get_page_title(wg, baseurl)
 				print('Missing: "%s" %s: "%s",' % (netloc, " " * (50 - len(netloc)), meta))
+
+def exposed_fetch_titles(url_file):
+	'''
+	Fetch a set of urls, and print the page title for each
+	'''
+	with open(url_file, "r") as fp:
+		content = fp.readlines()
+
+	import common.util.webFunctions as webFunctions
+
+	wg = webFunctions.WebGetRobust()
+
+
+	for url in content:
+		meta = get_page_title(wg, url)
+		print('Missing: "%s" %s: "%s",' % (url, " " * (50 - len(url)), meta))
+
+
+	print(content)
 
 def exposed_delete_feed(feed_name, do_delete, search_str):
 	'''

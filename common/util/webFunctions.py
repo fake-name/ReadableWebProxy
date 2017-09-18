@@ -48,7 +48,7 @@ def decode_headers(header_list):
 		if cchardet:
 			inferred = cchardet.detect(header)
 			if inferred and inferred['confidence'] > 0.8:
-				print("Parsing headers!", header)
+				# print("Parsing headers!", header)
 				decoded_headers.append(header.decode(inferred['encoding']))
 			else:
 				decoded_headers.append(header.decode('iso-8859-1'))
