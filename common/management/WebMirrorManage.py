@@ -388,6 +388,7 @@ def delete_bad_by_check():
 				'srcname' : feedNameLut.getNiceName(sess, bad.contenturl),
 				'title'   : bad.title,
 				'linkUrl' : bad.contenturl,
+				'guid'    : bad.contentid,
 			}
 			if WebMirror.OutputFilters.rss.FeedDataParser.should_ignore_feed_post(post_dict):
 				print(post_dict)

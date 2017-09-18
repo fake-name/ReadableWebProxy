@@ -136,8 +136,14 @@ def should_ignore_feed_post(feedDat):
 		return True
 	if feedDat['srcname'] == 'Uncommitted Translations' and feedDat['title'].startswith("Comment by "):
 		return True
-	if '?showComment=' in feedDat['linkUrl']:
+	if '?showComment='.lower() in feedDat['linkUrl'].lower():
 		return True
+	if '.bravesites.com/'.lower() in feedDat['linkUrl'].lower() and 'Comment by ' in feedDat['title']:
+		return True
+
+	if any([item in feedDat['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
+		return True
+
 
 	bad_starts = [
 		('FeedProxy', 'Comment on '),
