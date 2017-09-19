@@ -136,21 +136,40 @@ class NuHeader(LogBase.LoggerMixin):
 
 			self.log.info("Putting job for url '%s'", have.outbound_wrapper)
 			self.log.info("Referring page '%s'", have.referrer)
-			raw_job = buildjob(
-				module         = 'NUWebRequest',
-				call           = 'getHeadTitlePhantomJS',
-				dispatchKey    = "fetcher",
-				jobid          = -1,
-				args           = [have.outbound_wrapper, have.referrer],
-				kwargs         = {},
-				additionalData = {
-					'mode'        : 'fetch',
-					'wrapper_url' : have.outbound_wrapper,
-					'referrer'    : have.referrer
-					},
-				postDelay      = 0,
-				unique_id      = have.outbound_wrapper
-			)
+			rval = random.random()
+			if rval >= 0.5:
+				raw_job = buildjob(
+					module         = 'NUWebRequest',
+					call           = 'getHeadTitlePhantomJS',
+					dispatchKey    = "fetcher",
+					jobid          = -1,
+					args           = [have.outbound_wrapper, have.referrer],
+					kwargs         = {},
+					additionalData = {
+						'mode'        : 'fetch',
+						'wrapper_url' : have.outbound_wrapper,
+						'referrer'    : have.referrer
+						},
+					postDelay      = 0,
+					unique_id      = have.outbound_wrapper
+				)
+			else:
+				raw_job = buildjob(
+					module         = 'WebRequest',
+					call           = 'getHeadTitleChromium',
+					dispatchKey    = "fetcher",
+					jobid          = -1,
+					args           = [have.outbound_wrapper, have.referrer],
+					kwargs         = {},
+					additionalData = {
+						'mode'        : 'fetch',
+						'wrapper_url' : have.outbound_wrapper,
+						'referrer'    : have.referrer
+						},
+					postDelay      = 0,
+					unique_id      = have.outbound_wrapper
+				)
+
 
 			self.rpc.put_job(raw_job)
 
@@ -486,13 +505,13 @@ class NuHeader(LogBase.LoggerMixin):
 				.filter(db.NuReleaseItem.actual_target != None)    \
 				.order_by(desc(db.NuReleaseItem.first_seen))       \
 				.all()
-				
-				
+
+
 		unverified = self.db_sess.query(db.NuReleaseItem)           \
 				.filter(db.NuReleaseItem.validated == False)        \
 				.filter(db.NuReleaseItem.actual_target != None)    \
 				.count()
-				
+
 		self.log.info("Have %s items to do validity checks on", len(new_items))
 		self.log.info("%s items needing checking", unverified)
 
@@ -504,7 +523,7 @@ class NuHeader(LogBase.LoggerMixin):
 def fetch_and_flush():
 	hd = NuHeader()
 	hd.process_avail()
-	
+
 	hd.validate_from_new()
 	hd.timestamp_validated()
 	hd.fix_names()
@@ -515,7 +534,7 @@ def fetch_and_flush():
 	hd.transmit_since(ago)
 
 
-	
+
 	hd.validate_from_new()
 	hd.timestamp_validated()
 	hd.put_job(put=100)
