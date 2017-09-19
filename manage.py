@@ -8,6 +8,7 @@ import sys
 import common.management.WebMirrorManage
 import common.management.RawMirrorManage
 import common.management.Misc
+import common.management.Testing
 
 import WebMirror.OfflineFilters.offline_filters
 import WebMirror.TimedTriggers.TriggerManage
@@ -29,6 +30,8 @@ SCANNED_MODULES = [
 	common.management.WebMirrorManage,
 	common.management.RawMirrorManage,
 	common.management.Misc,
+	common.management.Testing,
+
 	WebMirror.OfflineFilters.offline_filters,
 	WebMirror.TimedTriggers.TriggerManage,
 
