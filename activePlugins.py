@@ -91,6 +91,7 @@ PLUGINS = [
 	WebMirror.processor.GarbageInlineProcessors.ShamelessOniisanPageProcessor,
 	WebMirror.processor.GarbageInlineProcessors.FantasyBooksLiveProcessor,
 	WebMirror.processor.GarbageInlineProcessors.MayonaizeShrimpLiveProcessor,
+	WebMirror.processor.GarbageInlineProcessors.RebirthOnlineLiveProcessor,
 ]
 
 

@@ -90,7 +90,7 @@ class NuHeader(LogBase.LoggerMixin):
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put))
+			.limit(max(100, put*3))
 
 
 		bulkq = self.db_sess.query(db.NuReleaseItem)                  \
@@ -99,13 +99,14 @@ class NuHeader(LogBase.LoggerMixin):
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put*3))
+			.limit(max(100, put))
 
 		bulkset   = bulkq.all()
 		recentset = recentq.all()
 
 		self.log.info("Have %s recent items, %s long-term items to fetch", len(recentset), len(bulkset))
 		haveset   = bulkset + recentset
+		# haveset   = recentset
 
 
 
@@ -136,39 +137,57 @@ class NuHeader(LogBase.LoggerMixin):
 
 			self.log.info("Putting job for url '%s'", have.outbound_wrapper)
 			self.log.info("Referring page '%s'", have.referrer)
-			rval = random.random()
-			if rval >= 0.5:
-				raw_job = buildjob(
-					module         = 'NUWebRequest',
-					call           = 'getHeadTitlePhantomJS',
-					dispatchKey    = "fetcher",
-					jobid          = -1,
-					args           = [have.outbound_wrapper, have.referrer],
-					kwargs         = {},
-					additionalData = {
-						'mode'        : 'fetch',
-						'wrapper_url' : have.outbound_wrapper,
-						'referrer'    : have.referrer
-						},
-					postDelay      = 0,
-					unique_id      = have.outbound_wrapper
-				)
-			else:
-				raw_job = buildjob(
-					module         = 'WebRequest',
-					call           = 'getHeadTitleChromium',
-					dispatchKey    = "fetcher",
-					jobid          = -1,
-					args           = [have.outbound_wrapper, have.referrer],
-					kwargs         = {},
-					additionalData = {
-						'mode'        : 'fetch',
-						'wrapper_url' : have.outbound_wrapper,
-						'referrer'    : have.referrer
-						},
-					postDelay      = 0,
-					unique_id      = have.outbound_wrapper
-				)
+
+
+			raw_job = buildjob(
+				module         = 'WebRequest',
+				call           = 'getHeadTitleChromium',
+				dispatchKey    = "fetcher",
+				jobid          = -1,
+				args           = [have.outbound_wrapper, have.referrer],
+				kwargs         = {},
+				additionalData = {
+					'mode'        : 'fetch',
+					'wrapper_url' : have.outbound_wrapper,
+					'referrer'    : have.referrer
+					},
+				postDelay      = 0,
+				unique_id      = have.outbound_wrapper
+			)
+
+			# rval = random.random()
+			# if rval >= 0.5:
+			# 	raw_job = buildjob(
+			# 		module         = 'NUWebRequest',
+			# 		call           = 'getHeadTitlePhantomJS',
+			# 		dispatchKey    = "fetcher",
+			# 		jobid          = -1,
+			# 		args           = [have.outbound_wrapper, have.referrer],
+			# 		kwargs         = {},
+			# 		additionalData = {
+			# 			'mode'        : 'fetch',
+			# 			'wrapper_url' : have.outbound_wrapper,
+			# 			'referrer'    : have.referrer
+			# 			},
+			# 		postDelay      = 0,
+			# 		unique_id      = have.outbound_wrapper
+			# 	)
+			# else:
+			# 	raw_job = buildjob(
+			# 		module         = 'WebRequest',
+			# 		call           = 'getHeadTitleChromium',
+			# 		dispatchKey    = "fetcher",
+			# 		jobid          = -1,
+			# 		args           = [have.outbound_wrapper, have.referrer],
+			# 		kwargs         = {},
+			# 		additionalData = {
+			# 			'mode'        : 'fetch',
+			# 			'wrapper_url' : have.outbound_wrapper,
+			# 			'referrer'    : have.referrer
+			# 			},
+			# 		postDelay      = 0,
+			# 		unique_id      = have.outbound_wrapper
+			# 	)
 
 
 			self.rpc.put_job(raw_job)
@@ -248,7 +267,7 @@ class NuHeader(LogBase.LoggerMixin):
 
 				if new['call'] == 'getHeadPhantomJS':
 					respurl, title = new['ret'], ""
-				elif new['call'] == 'getHeadTitlePhantomJS':
+				elif new['call'] == 'getHeadTitlePhantomJS' or new['call'] == 'getHeadTitleChromium':
 					if isinstance(new['ret'], (tuple, list)):
 						respurl, title = new['ret']
 					elif isinstance(new['ret'], dict):

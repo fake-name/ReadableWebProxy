@@ -1,5 +1,6 @@
 
 import re
+import tinycss2
 
 from . import HtmlProcessor
 
@@ -199,3 +200,73 @@ class MayonaizeShrimpLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 			bad.decompose()
 
 		return soup
+
+class RebirthOnlineLiveProcessor(HtmlProcessor.HtmlPageProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+
+	loggerPath = "Main.Text.MayonaizeShrimp"
+
+	@staticmethod
+	def wantsUrl(url):
+
+		if re.search(r"^https?://www\.rebirth\.online/", url):
+			print("ms Wants url: '%s'" % url)
+			return True
+		# print("lnw doesn't want url: '%s'" % url)
+		return False
+
+	def process_css_block(self, css_text):
+
+		ss = tinycss2.parse_stylesheet(css_text, skip_whitespace=True, skip_comments=True)
+		# print(ss)
+
+		bad_classes = []
+
+		ssf = [tmp for tmp in ss if tmp.type == "qualified-rule"]
+		for rule in ssf:
+			prelude = rule.prelude
+			content = rule.content
+			prelude = [tmp for tmp in prelude if tmp.type != 'whitespace']
+			content = [tmp for tmp in content if tmp.type != 'whitespace']
+			if (
+					len(prelude) == 2 and
+					prelude[0].type == "literal" and
+					prelude[1].type == "ident" and
+					prelude[0].value == "." and
+					len(content) == 4 and
+					content[0].type == "ident" and
+					content[1].type == "literal" and
+					content[2].type == "ident" and
+					content[3].type == "literal" and
+					content[0].lower_value == "display" and
+					content[2].lower_value == "none"
+				):
+
+				bad_class = prelude[1].value
+
+				bad_classes.append(bad_class)
+		return bad_classes
+
+	def preprocessBody(self, soup):
+		styles = soup.find_all('style')
+		decomp_classes = []
+		for style in styles:
+			if not style.get_text():
+				continue
+
+			new = self.process_css_block(style.get_text())
+
+			decomp_classes.extend(new)
+
+		# Decompose the annoying inline shit.
+		for bad_class in decomp_classes:
+			bad_p = soup.find_all("p", class_=bad_class)
+			for bad in bad_p:
+				bad.decompose()
+
+		return soup
+
+
