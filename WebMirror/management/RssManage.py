@@ -96,90 +96,6 @@ def exposed_sort_json(json_name):
 					fp.write("%s, " % ((key, value[key]), ))
 				fp.write("\n")
 
-def exposed_rss_db_sync(target = None, days=False, silent=False):
-	'''
-	Feed RSS feed history through the feedparsing system, generating a log
-	file of the feed articles that were not captured by the feed parsing system.
-
-	Target is an optional netloc. If not none, only feeds with that netloc are
-		processed.
-	Days is the number of days into the past to process. None results in all
-		available history being read.
-	Silent suppresses some debug printing to the console.
-	'''
-
-	json_file = 'rss_filter_misses-1.json'
-
-	config.C_DO_RABBIT = False
-
-	write_debug = True
-	if silent:
-		config.C_DO_RABBIT = False
-	if target:
-		config.C_DO_RABBIT = False
-		flags.RSS_DEBUG    = True
-		write_debug = False
-	else:
-		try:
-			os.unlink(json_file)
-		except FileNotFoundError:
-			pass
-
-
-	with db.session_context() as sess:
-
-		parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
-																pageUrl     = 'http://www.example.org',
-																pgContent   = '',
-																type        = 'application/atom+xml',
-																transfer    = False,
-																debug_print = True,
-																db_sess     = sess,
-																write_debug = write_debug)
-
-
-		print("Getting feed items....")
-
-		if target:
-			print("Limiting to '%s' source." % target)
-			feed_items = sess.query(db.RssFeedPost) \
-					.filter(db.RssFeedPost.feed_entry.feed_name == target)    \
-					.order_by(db.RssFeedPost.title)           \
-					.all()
-		elif days:
-			print("RSS age override: ", days)
-			cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
-			feed_items = sess.query(db.RssFeedPost) \
-					.filter(db.RssFeedPost.published > cutoff)  \
-					.order_by(db.RssFeedPost.title)             \
-					.all()
-		else:
-			feed_items = sess.query(db.RssFeedPost) \
-					.order_by(db.RssFeedPost.title)           \
-					.all()
-
-
-		print("Feed items: ", len(feed_items))
-
-		for item in feed_items:
-			ctnt = {}
-			ctnt['srcname']   = item.feed_entry.feed_name
-			ctnt['title']     = item.title
-			ctnt['tags']      = item.tags
-			ctnt['linkUrl']   = item.contenturl
-			ctnt['guid']      = item.contentid
-			ctnt['published'] = calendar.timegm(item.published.timetuple())
-
-			# Pop()ed off in processFeedData().
-			ctnt['contents']  = 'wat'
-
-			try:
-				parser.processFeedData(sess, ctnt, tx_raw=False, tx_parse=not bool(days))
-			except ValueError:
-				pass
-			# print(ctnt)
-		if target is None:
-			exposed_sort_json(json_file)
 
 
 def exposed_missing_lut(fetchTitle=False):
@@ -395,6 +311,94 @@ def exposed_delete_feed(feed_name, do_delete, search_str):
 
 		sess.commit()
 
+
+
+def exposed_rss_db_sync(target = None, days=False, silent=False):
+	'''
+	Feed RSS feed history through the feedparsing system, generating a log
+	file of the feed articles that were not captured by the feed parsing system.
+
+	Target is an optional netloc. If not none, only feeds with that netloc are
+		processed.
+	Days is the number of days into the past to process. None results in all
+		available history being read.
+	Silent suppresses some debug printing to the console.
+	'''
+
+	json_file = 'rss_filter_misses-1.json'
+
+	config.C_DO_RABBIT = False
+
+	write_debug = True
+	if silent:
+		config.C_DO_RABBIT = False
+	if target:
+		config.C_DO_RABBIT = False
+		flags.RSS_DEBUG    = True
+		write_debug = False
+	else:
+		try:
+			os.unlink(json_file)
+		except FileNotFoundError:
+			pass
+
+
+	with db.session_context() as sess:
+
+		parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
+																pageUrl     = 'http://www.example.org',
+																pgContent   = '',
+																type        = 'application/atom+xml',
+																transfer    = False,
+																debug_print = True,
+																db_sess     = sess,
+																write_debug = write_debug)
+
+
+		print("Getting feed items....")
+
+		if target:
+			print("Limiting to '%s' source." % target)
+			feed_items = sess.query(db.RssFeedPost) \
+					.filter(db.RssFeedPost.feed_entry.feed_name == target)    \
+					.order_by(db.RssFeedPost.title)           \
+					.all()
+
+		elif days:
+			print("RSS age override: ", days)
+			cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
+			feed_items = sess.query(db.RssFeedPost) \
+					.filter(db.RssFeedPost.published > cutoff)  \
+					.order_by(db.RssFeedPost.title)             \
+					.all()
+		else:
+			feed_items = sess.query(db.RssFeedPost) \
+					.order_by(db.RssFeedPost.title)           \
+					.all()
+
+
+		print("Feed items: ", len(feed_items))
+
+		for item in feed_items:
+			ctnt = {}
+			ctnt['srcname']   = item.feed_entry.feed_name
+			ctnt['title']     = item.title
+			ctnt['tags']      = item.tags
+			ctnt['linkUrl']   = item.contenturl
+			ctnt['guid']      = item.contentid
+			ctnt['published'] = calendar.timegm(item.published.timetuple())
+
+			# Pop()ed off in processFeedData().
+			ctnt['contents']  = 'wat'
+
+			try:
+				parser.processFeedData(sess, ctnt, tx_raw=False, tx_parse=not bool(days))
+			except ValueError:
+				pass
+			# print(ctnt)
+		if target is None:
+			exposed_sort_json(json_file)
+
 def exposed_rss_db_silent():
 	'''
 	Eqivalent to rss_db_sync(None, False, True)
@@ -424,3 +428,63 @@ def exposed_rss_month():
 	Effectively just processes the last 45 days of feed entries.
 	'''
 	exposed_rss_db_sync(days=45)
+
+def exposed_process_qidian_feeds():
+	'''
+
+	'''
+
+	with db.session_context() as sess:
+
+		parser = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
+																pageUrl     = 'http://www.example.org',
+																pgContent   = '',
+																type        = 'application/atom+xml',
+																transfer    = False,
+																debug_print = True,
+																db_sess     = sess,
+																write_debug = False)
+
+
+		print("Getting feed items....")
+
+		feed_item = sess.query(db.RssFeedEntry) \
+				.filter(db.RssFeedEntry.feed_name == "Qidian")    \
+				.one()
+
+		feed_url = feed_item.urls[0].feed_url
+		pfunc = feed_item.get_func()
+
+		missing = []
+
+		for release in feed_item.releases:
+			item = {}
+			item['title']    = release.title
+			item['guid']     = release.contentid
+			item['linkUrl']  = release.contenturl
+
+			item['feedUrl']  = feed_url
+			item['srcname']  = "wat"
+			item['published']  = "wat"
+
+			ret = pfunc(item)
+			if not ret:
+				missing.append(release.contenturl)
+
+		urls = {}
+		for url in missing:
+			root, _ = url.rsplit("/", 1)
+			urls[root] = url
+
+		wg = common.util.webFunctions.WebGetRobust()
+
+		lines = []
+		for root, url in urls.items():
+			urlfrag = root.split("www")[-1]
+			meta = common.management.util.get_page_title(wg, url)
+			title =  meta['title']
+			outstr = "		('www{}/', '{}', 'translated'),".format(urlfrag, title)
+			lines.append(outstr)
+
+		for outstr in lines:
+			print(outstr)

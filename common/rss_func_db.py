@@ -227,7 +227,5 @@ class RssFeedEntry(common.db_base.Base):
 
 	def get_func(self):
 		self.__loaded_func = str_to_function(self.func, self.feed_name)
-
-
 		return self.__loaded_func
 
