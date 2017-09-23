@@ -33,10 +33,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 					.filter(
 						and_(
 							self.db.WebPages.netloc == netloc,
-							or_(
-								self.db.WebPages.state == 'complete',
-								self.db.WebPages.state == 'new',
-							),
+							self.db.WebPages.state != 'new',
 							or_(
 								self.db.WebPages.fetchtime       < ago,
 								self.db.WebPages.fetchtime is None
@@ -91,20 +88,22 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		print(minid, maxid)
 		chunk_size = 50000
 		ids_tot = maxid - minid
+		affected = 0
 		for chunk in range(minid, maxid, chunk_size):
 			while 1:
 				try:
 					self.log.info("Doing general unspecified netloc retrigger.")
 					q = sess.query(self.db.WebPages)                      \
-						.filter(self.db.WebPages.state == 'complete')     \
+						.filter(self.db.WebPages.state != 'new')     \
 						.filter(self.db.WebPages.fetchtime < ago)         \
 						.filter(self.db.WebPages.id < (chunk + chunk_size)) \
 						.filter(self.db.WebPages.id >= chunk)
 
 					affected_rows = q.update({"state" : "new"})
+					affected += affected_rows
 					sess.commit()
-					self.log.info("Updated for all unspecified netlocs - %s rows, Id: %s, %f%% done.",
-						affected_rows, chunk, ((chunk - minid) / ids_tot) * 100)
+					self.log.info("Updated for all unspecified netlocs - %s rows (%s total), Id: %s, %f%% done.",
+						affected_rows, affected, chunk, ((chunk - minid) / ids_tot) * 100)
 					break
 				except sqlalchemy.exc.InternalError:
 					self.log.info("Transaction error. Retrying.")

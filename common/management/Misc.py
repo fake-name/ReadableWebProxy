@@ -8,6 +8,7 @@ import common.database as db
 
 import WebMirror.TimedTriggers.QueueTriggers
 import pickle
+import urllib.parse
 import pprint
 
 def exposed_print_scheduled_jobs():
@@ -28,3 +29,4 @@ def exposed_print_scheduled_jobs():
 
 		dat = pickle.loads(content)
 		pprint.pprint(dat)
+

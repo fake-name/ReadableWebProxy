@@ -16,6 +16,7 @@ import WebMirror.TimedTriggers.TriggerManage
 # Site-specific management stuff
 import WebMirror.management.GravityTalesManage
 import WebMirror.management.SpcnetTvManage
+import WebMirror.management.RssManage
 
 # Moar
 import WebMirror.management.FeedDbManage
@@ -39,6 +40,7 @@ SCANNED_MODULES = [
 	WebMirror.management.SpcnetTvManage,
 
 	WebMirror.management.FeedDbManage,
+	WebMirror.management.RssManage,
 ]
 
 def load_functions():

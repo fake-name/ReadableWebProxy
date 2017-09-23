@@ -212,7 +212,7 @@ class RebirthOnlineLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 	@staticmethod
 	def wantsUrl(url):
 
-		if re.search(r"^https?://www\.rebirth\.online/", url):
+		if re.search(r"^https?://(www\.)?rebirth\.online/", url):
 			print("ms Wants url: '%s'" % url)
 			return True
 		# print("lnw doesn't want url: '%s'" % url)
