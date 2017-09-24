@@ -152,7 +152,8 @@ class NuHeader(LogBase.LoggerMixin):
 					'referrer'    : have.referrer
 					},
 				postDelay      = 0,
-				unique_id      = have.outbound_wrapper
+				unique_id      = have.outbound_wrapper,
+				serialize      = True,
 			)
 
 			# rval = random.random()

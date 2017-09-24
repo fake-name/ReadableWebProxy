@@ -182,6 +182,8 @@ badwords: [
 			'/member/connect?',
 			'/log-out.html?',
 
+			'/~BE_Games/',
+
 			]
 
 

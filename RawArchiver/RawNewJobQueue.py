@@ -58,7 +58,8 @@ def buildjob(
 			args           = [],
 			kwargs         = {},
 			additionalData = None,
-			postDelay      = 0
+			postDelay      = 0,
+			serialize      = False,
 		):
 
 	job = {
@@ -70,6 +71,7 @@ def buildjob(
 			'jobid'        : jobid,
 			'dispatch_key' : dispatchKey,
 			'postDelay'    : postDelay,
+			'serialize'    : serialize,
 		}
 	return job
 

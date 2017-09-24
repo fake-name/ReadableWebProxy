@@ -72,9 +72,11 @@ badwords: [
 			'royalroadl.com/gp/prime/',
 			'royalroadl.com/gp/slredirect/picassoRedirect.html/',
 			'/ref=sv_kstore_7/',
+			'/?reviews=3',
 
 			'royalroadl.com/gp/voting/cast/',
 			'royalroadl.com/Kindle-Daily-Deals/',
+			'royalroadl.com/New-Used-Textbooks-Books/',
 			'royalroadl.com/Giftcards-Giftvouchers-Vouchers-Birthday-Gifts/',
 			'royalroadl.com/Kindle-Store/',
 			]

@@ -43,6 +43,8 @@ badwords: [
 			'/css/css/',
 			'/images/css/images/',
 
+			'forum.wuxiaworld.com/profile/',
+
 			# IDGAF about tv shows and shit.
 			'forumdisplay.php/10-Singapore-TV-Series',
 			'forumdisplay.php/11-Mainland-China-TV-Series',

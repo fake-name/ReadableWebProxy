@@ -57,9 +57,9 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 100
 	# MAX_IN_FLIGHT_JOBS = 250
-	# MAX_IN_FLIGHT_JOBS = 500
+	MAX_IN_FLIGHT_JOBS = 500
 	# MAX_IN_FLIGHT_JOBS = 1000
-	MAX_IN_FLIGHT_JOBS = 2500
+	# MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
 
 def buildjob(
@@ -71,8 +71,8 @@ def buildjob(
 			kwargs         = {},
 			additionalData = None,
 			postDelay      = 0,
-			extra_keys     = {},
 			unique_id      = None,
+			serialize      = False,
 		):
 
 	job = {
@@ -84,6 +84,7 @@ def buildjob(
 			'jobid'        : jobid,
 			'dispatch_key' : dispatchKey,
 			'postDelay'    : postDelay,
+			'serialize'    : serialize,
 		}
 	if unique_id is not None:
 		job['unique_id'] = unique_id

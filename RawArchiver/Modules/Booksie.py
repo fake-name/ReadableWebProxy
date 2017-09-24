@@ -23,7 +23,7 @@ class BooksieRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 			'/bookshelf-recommended/',
 			'/member/connect?',
 			'_USER_PROFILE__',
-
+			'_MEDIA_IMAGE__120x120.',
 			# Booksie tags can apparently nest arbitrarily, so
 			# they basically take over the scraper if left unchecked.
 			"/tags/",

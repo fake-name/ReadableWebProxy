@@ -261,7 +261,10 @@ def delete_internal(sess, ids, netloc, badwords):
 				try:
 					ex = sess.query(db.WebPages.url).filter(db.WebPages.id == chunk[0]).one()[0]
 				except sqlalchemy.orm.exc.NoResultFound:
-					ex = sess.query(ctbl.c.url).filter(ctbl.c.id == chunk[0]).all()[0][0]
+					try:
+						ex = sess.query(ctbl.c.url).filter(ctbl.c.id == chunk[0]).all()[0][0]
+					except IndexError:
+						ex = None
 
 				triggered = [tmp for tmp in badwords if tmp in ex]
 				print("Example removed URL: '%s'" % (ex))
