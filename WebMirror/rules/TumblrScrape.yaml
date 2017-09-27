@@ -129,6 +129,7 @@ badwords: [
 	"giraffecorps.liamak.net/extras/",
 	"wp-comments-post",
 	"/page/page/",
+	'/reblog/',
 
 	'rejecthero.wordpress.com',
 	'farmerbob1.wordpress.com',

@@ -144,6 +144,7 @@ badwords: [
 			'?replyto=',
 
 			'&reverse-paginate=true&',
+			'?like_comment=',
 
 			# Block mobile garbage.
 			'm.xianxiaworld.net',

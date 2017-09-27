@@ -38,6 +38,7 @@ badwords: [
 			'/images/images/',
 			'/images/assets/css/images/',
 			'/assets/js/images/',
+			'/index/index/',
 
 			'/css/images/css/',
 			'/css/css/',

@@ -304,8 +304,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		# print("ProcessFeedData! ", netloc)
 
 		# A bunch of crap is aggregated through the "feedproxy.google.com" netloc.
-		if not WebMirror.rules.netloc_send_feed(netloc) and not "feedproxy.google.com" in netloc:
-			print("Not sending data for netloc: ", netloc)
+		if "feedproxy.google.com" in netloc:
+			print("Not sending data for feedproxy netloc: ", netloc)
 			return
 
 		try:
@@ -314,13 +314,17 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.log.error("Exception when processing release!")
 			for line in traceback.format_exc().split("\n"):
 				self.log.error(line.rstrip())
-
 			return
 
 		if tx_parse:
 			if new:
+				self.log.info("Sending parsed release!")
 				self.amqp_put_item(new)
 
+		# A bunch of crap is aggregated through the "feedproxy.google.com" netloc.
+		if not WebMirror.rules.netloc_send_feed(netloc):
+			print("Not sending raw feed for netloc due to rules: ", netloc)
+			return
 
 		raw = self.getRawFeedMessage(feedDat)
 		if tx_raw:
