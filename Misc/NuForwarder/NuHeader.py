@@ -87,6 +87,7 @@ class NuHeader(LogBase.LoggerMixin):
 			.outerjoin(db.NuResolvedOutbound)                         \
 			.filter(db.NuReleaseItem.validated == False)              \
 			.filter(db.NuReleaseItem.first_seen >= recent_d)          \
+			.filter(db.NuReleaseItem.fetch_attempts < 3)              \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
@@ -96,6 +97,7 @@ class NuHeader(LogBase.LoggerMixin):
 		bulkq = self.db_sess.query(db.NuReleaseItem)                  \
 			.outerjoin(db.NuResolvedOutbound)                         \
 			.filter(db.NuReleaseItem.validated == False)              \
+			.filter(db.NuReleaseItem.fetch_attempts < 3)              \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
@@ -134,6 +136,15 @@ class NuHeader(LogBase.LoggerMixin):
 				self.log.error("Bad Referrer URL got into the input queue!")
 				self.log.error("Id: %s", have.id)
 				continue
+			if have.fetch_attempts >= 3:
+				self.log.error("Wat?")
+				self.log.error("Item fetched too many times!")
+				self.log.error("Id: %s", have.id)
+				continue
+
+
+			have.fetch_attempts += 1
+			self.db_sess.commit()
 
 			self.log.info("Putting job for url '%s'", have.outbound_wrapper)
 			self.log.info("Referring page '%s'", have.referrer)
