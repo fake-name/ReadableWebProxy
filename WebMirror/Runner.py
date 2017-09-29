@@ -207,6 +207,8 @@ class UpdateAggregator(object):
 
 		self.db_int = db_interface
 
+		self.check_init_func()
+
 	def check_init_func(self):
 		raw_cur = self.db_int.connection().connection.cursor()
 
@@ -221,7 +223,8 @@ class UpdateAggregator(object):
 			        type_v itemtype_enum,
 			        addtime_v timestamp without time zone,
 			        state_v dlstate_enum,
-			        ignoreuntiltime_v timestamp without time zone
+			        ignoreuntiltime_v timestamp without time zone,
+			        max_priority_v integer
 			        )
 			    RETURNS VOID AS $$
 
@@ -238,7 +241,7 @@ class UpdateAggregator(object):
 			                netloc          = EXCLUDED.netloc,
 			                is_text         = EXCLUDED.is_text,
 			                distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-			                priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
+			                priority        = GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v),
 			                addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 			            WHERE
 			            (
@@ -286,13 +289,46 @@ class UpdateAggregator(object):
 			return
 		self.log.info("Inserting %s items into DB in batch.", len(self.batched_links))
 
-
+		# This is kind of horrible.
 		raw_cur = self.db_int.connection().connection.cursor()
 
 
 
 		#  Fucking huzzah for ON CONFLICT!
-		cmd = """
+		# bulk_cmd_prefix = """
+		# 	INSERT INTO
+		# 	    web_pages
+		# 	    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+		# 	VALUES
+		# 	""".replace("	", " ").replace("\n", " ")
+		# bulk_cmd = """
+		# 	    (%(url_{cnt})s, %(starturl_{cnt})s, %(netloc_{cnt})s, %(distance_{cnt})s, %(is_text_{cnt})s, %(priority_{cnt})s, %(type_{cnt})s, %(addtime_{cnt})s, %(state_{cnt})s)
+		# 	    """.replace("	", " ").replace("\n", " ")
+		# bulk_cmd_postfix = """
+		# 	ON CONFLICT (url) DO
+		# 	    UPDATE
+		# 	        SET
+		# 	            state           = EXCLUDED.state,
+		# 	            starturl        = EXCLUDED.starturl,
+		# 	            netloc          = EXCLUDED.netloc,
+		# 	            is_text         = EXCLUDED.is_text,
+		# 	            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+		# 	            priority        = GREATEST(EXCLUDED.priority, web_pages.priority, %(maximum_priority_{cnt})s),
+		# 	            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+		# 	        WHERE
+		# 	        (
+		# 	                web_pages.ignoreuntiltime < %(ignoreuntiltime_{cnt})s
+		# 	            AND
+		# 	                web_pages.url = EXCLUDED.url
+		# 	            AND
+		# 	                (web_pages.state = 'complete' OR web_pages.state = 'error')
+		# 	        )
+		# 	    ;
+		# 		""".replace("	", " ").replace("\n", " ")
+
+
+
+		bulk_cmd = """
 			INSERT INTO
 			    web_pages
 			    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
@@ -318,6 +354,22 @@ class UpdateAggregator(object):
 			        )
 			    ;
 				""".replace("	", " ").replace("\n", " ")
+
+		bulk_cmd = """
+			SELECT upsert_link(
+				%(url_{cnt})s,
+				%(starturl_{cnt})s,
+				%(netloc_{cnt})s,
+				%(distance_{cnt})s,
+				%(is_text_{cnt})s,
+				%(priority_{cnt})s,
+				%(type_{cnt})s,
+				%(addtime_{cnt})s,
+				%(state_{cnt})s,
+				%(ignoreuntiltime_{cnt})s,
+				%(maximum_priority_{cnt})s
+				)
+		""".replace("	", " ").replace("\n", " ")
 
 		per_cmd = """
 			INSERT INTO
@@ -348,14 +400,16 @@ class UpdateAggregator(object):
 
 		while "  " in per_cmd:
 			per_cmd = per_cmd.replace("  ", " ")
-		while "  " in cmd:
-			cmd = cmd.replace("  ", " ")
+		while "  " in bulk_cmd:
+			bulk_cmd = bulk_cmd.replace("  ", " ")
 
 
+		bulk_cmd_list = [bulk_cmd.format(cnt=cnt) for cnt in range(len(self.batched_links))]
+		bulk_cmd_assembled = "; ".join(bulk_cmd_list)
 
-
-		cmds = [cmd.format(cnt=cnt) for cnt in range(len(self.batched_links))]
-		bulk_cmd = " ".join(cmds)
+		# Build the overall SQL string
+		# bulk_cmds = [bulk_cmd.format(cnt=cnt) for cnt in range(len(self.batched_links))]
+		# bulk_cmd_assembled = bulk_cmd_prefix + ", ".join(bulk_cmds) + bulk_cmd_postfix
 
 		# Build a nested list of dicts
 		bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in self.batched_links[cnt].items()} for cnt in range(len(self.batched_links)) ]
@@ -365,10 +419,11 @@ class UpdateAggregator(object):
 
 		# We use a statement timeout context of 5000 ms, so we don't get wedged on a lock.
 		raw_cur.execute("SET statement_timeout TO 5000;")
-
 		raw_cur.execute("BEGIN;")
+
 		try:
-			raw_cur.execute(bulk_cmd, bulk_dict)
+			# We try the bulk insert command first.
+			raw_cur.execute(bulk_cmd_assembled, bulk_dict)
 			raw_cur.execute("COMMIT;")
 			raw_cur.execute("RESET statement_timeout;")
 			self.batched_links = []
@@ -376,10 +431,12 @@ class UpdateAggregator(object):
 
 		except psycopg2.Error:
 			self.log.error("psycopg2.Error - Failure on bulk insert.")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
 			raw_cur.execute("ROLLBACK;")
 
-
-		# Only commit per-URL if we're tried to do the update in batch, and failed.
+		# If the bulk insert failed, we then try a per-URL upsert
+		# We only commit per-URL if we're tried to do per-URL update in batch, and failed.
 		commit_each = False
 		while 1:
 			try:

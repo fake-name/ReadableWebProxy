@@ -126,6 +126,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 								referrer         = item['referrer'],
 								outbound_wrapper = item['outbound_wrapper'],
 								first_seen       = datetime.datetime.now(),
+								fetch_attempts   = 0,
 							)
 						self.db_sess.add(have)
 						new_count += 1

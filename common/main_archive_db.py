@@ -120,6 +120,7 @@ class NuReleaseItem(common.db_base.Base):
 
 	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 	validated_on     = Column(DateTime, index=True)
+
 	fetch_attempts   = Column(Integer,  index=True, default=0, nullable=False)
 
 	resolved         = relationship("NuResolvedOutbound")
