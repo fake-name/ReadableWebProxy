@@ -18,7 +18,7 @@ import datetime
 import time
 import json
 import pprint
-import common.util.webFunctions
+import common.util.WebRequest
 import bleach
 import multiprocessing
 import common.database as db
@@ -312,7 +312,7 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 
 	def processPage(self, url, content):
 
-		soup = common.util.webFunctions.as_soup(self.content)
+		soup = common.util.WebRequest.as_soup(self.content)
 		self.extractSeriesReleases(self.pageUrl, soup)
 
 

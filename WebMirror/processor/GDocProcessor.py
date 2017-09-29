@@ -14,7 +14,7 @@ import hashlib
 import os.path
 
 import traceback
-import common.util.webFunctions
+import common.util.WebRequest
 
 from WebMirror.processor.ProcessorBase import PageProcessor
 # import TextScrape.SiteArchiver
@@ -231,7 +231,7 @@ class GdocPageProcessor(PageProcessor):
 
 	def processGdocPage(self, url, content):
 		dummy_fName, content = content
-		soup = common.util.webFunctions.as_soup(content)
+		soup = common.util.WebRequest.as_soup(content)
 		urlFuncs.canonizeUrls(soup, url)
 
 		pgTitle, soup = self.cleanGdocPage(soup, url)
@@ -310,11 +310,11 @@ class GdocPageProcessor(PageProcessor):
 
 def test():
 	print("Test mode!")
-	import webFunctions
+	import WebRequest
 	import logSetup
 	logSetup.initLogging()
 
-	wg = webFunctions.WebGetRobust()
+	wg = WebRequest.WebGetRobust()
 	# content = wg.getpage('http://www.arstechnica.com')
 	scraper = GdocPageProcessor('https://docs.google.com/document/d/1atXMtCutHRpcHwSRS5UyMAC58_gQjMPR2dDVn1LCD3E', 'Main.Test', 'testinating')
 	print(scraper)

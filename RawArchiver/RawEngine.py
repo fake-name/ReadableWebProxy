@@ -29,7 +29,7 @@ import psycopg2
 
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
-import common.util.webFunctions as webFunctions
+import common.util.WebRequest as WebRequest
 import common.util.DbCookieJar as dbCj
 
 import hashlib
@@ -148,7 +148,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		# print("Prelim Alt cookiejar = ", alt_cj)
 
-		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
+		self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
 
 
 	def get_file_name_mime(self, url):
@@ -206,7 +206,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		return []
 
 	def extractHtml(self, content, url):
-		soup = webFunctions.as_soup(content)
+		soup = WebRequest.as_soup(content)
 		links = common.util.urlFuncs.extractUrls(soup, url, truncate_fragment=True)
 
 		# for link in links:

@@ -39,7 +39,7 @@ import common.Exceptions
 import common.management.file_cleanup
 import common.management.util
 import common.global_constants
-import common.util.webFunctions as webFunctions
+import common.util.WebRequest as WebRequest
 
 import Misc.HistoryAggregator.Consolidate
 import Misc.NuForwarder.NuHeader
@@ -487,7 +487,7 @@ def exposed_fetch_titles(url_file):
 
 
 
-	wg = webFunctions.WebGetRobust()
+	wg = WebRequest.WebGetRobust()
 
 
 	for url in content:
@@ -520,7 +520,7 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 	starturldict = {WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(url).netloc) : url for url in urls}
 
 
-	wg = webFunctions.WebGetRobust()
+	wg = WebRequest.WebGetRobust()
 
 	with db.session_context() as sess:
 

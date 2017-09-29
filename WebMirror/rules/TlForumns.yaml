@@ -166,7 +166,15 @@ badwords: [
 			'/195-justice-bao/',
 			'/contact/index.php',
 			'/index/images/misc/index/',
+			'/index/index/',
 			'/activity.php',
+			'/usercp.php',
+			'/index/index/index/',
+			'/index/css.php',
+			'/index/index/images/',
+			'/subscription.php?',
+			'/showgroups.php?',
+			'/icons/index/',
 
 			'/member.php',
 			'printthread.php',
@@ -197,12 +205,6 @@ badwords: [
 			'/entry/signin?',
 			'/entry/signin?',
 
-			'/usercp.php',
-			'/index/index/index/',
-			'/index/css.php',
-			'/index/index/images/',
-			'/subscription.php?',
-			'/showgroups.php?',
 
 			]
 

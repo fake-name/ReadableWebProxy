@@ -37,7 +37,7 @@ import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.OutputFilters.rss.FeedDataParser
 
 import WebMirror.OutputFilters.util.feedNameLut
-import common.util.webFunctions
+import common.util.WebRequest
 
 def exposed_sort_json(json_name):
 	'''
@@ -105,7 +105,7 @@ def exposed_missing_lut(fetchTitle=False):
 	feedDataLut.py to the console.
 	'''
 	with db.session_context() as sess:
-		wg = common.util.webFunctions.WebGetRobust()
+		wg = common.util.WebRequest.WebGetRobust()
 		rules = WebMirror.rules.load_rules()
 		feeds = [item['feedurls'] for item in rules]
 		feeds = [item for sublist in feeds for item in sublist]
@@ -476,7 +476,7 @@ def exposed_process_qidian_feeds():
 			root, _ = url.rsplit("/", 1)
 			urls[root] = url
 
-		wg = common.util.webFunctions.WebGetRobust()
+		wg = common.util.WebRequest.WebGetRobust()
 
 		lines = []
 		for root, url in urls.items():

@@ -1,7 +1,6 @@
 
 import re
 import urllib.parse
-import common.util.webFunctions
 import unshortenit
 from common.Exceptions import CannotAccessGDocException
 

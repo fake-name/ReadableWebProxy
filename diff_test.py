@@ -5,7 +5,7 @@ if __name__ == '__main__':
 
 import json
 import Misc.diff_match_patch as dmp
-import common.util.webFunctions as wf
+import common.util.WebRequest as wf
 
 def go():
 	wg = wf.WebGetRobust()

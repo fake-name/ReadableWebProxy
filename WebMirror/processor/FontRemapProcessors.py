@@ -5,7 +5,6 @@ import re
 import time
 import webcolors
 import urllib.parse
-import common.util.webFunctions
 
 from fontTools.ttLib import TTFont
 import fontTools.ttLib.tables._g_l_y_f as g_l_y_f

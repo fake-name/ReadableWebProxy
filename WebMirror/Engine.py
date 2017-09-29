@@ -33,7 +33,7 @@ import psycopg2
 
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
-import common.util.webFunctions as webFunctions
+import common.util.WebRequest as WebRequest
 import common.util.DbCookieJar as dbCj
 
 import hashlib
@@ -160,7 +160,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 		alt_cj = dbCj.DatabaseCookieJar(db=db, session=common.database.get_db_session(postfix="_cookie_interface"))
-		self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
+		self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
 
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 

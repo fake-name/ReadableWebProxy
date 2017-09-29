@@ -7,7 +7,7 @@ import webcolors
 import urllib.parse
 import markdown
 import tinycss2
-import common.util.webFunctions
+import common.util.WebRequest
 import common.global_constants
 
 import common.util.urlFuncs as urlFuncs
@@ -215,11 +215,11 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Comments
 		for item in soup.findAll(text=lambda text:isinstance(text, bs4.Comment)):
 			item.extract()
-		
+
 		if self.decompose_svg:
 			for item in soup.find_all("svg"):
 				item.decompose()
-		
+
 		return soup
 
 
@@ -421,7 +421,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				continue
 
 			formatted = markdown.markdown(contentstr, extensions=["linkify"])
-			formatted = common.util.webFunctions.as_soup(formatted)
+			formatted = common.util.WebRequest.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()
 				formatted.body.unwrap()
@@ -458,9 +458,9 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			self.content = self.content[len(badxmlprefix):]
 
 
-		soup = common.util.webFunctions.as_soup(self.content)
+		soup = common.util.WebRequest.as_soup(self.content)
 		# try:
-		# 	soup = common.util.webFunctions.as_soup(self.content)
+		# 	soup = common.util.WebRequest.as_soup(self.content)
 		# except AttributeError as e:
 		# 	with open("badpage %s.html" % time.time(), "w") as fp:
 		# 		fp.write(self.content)

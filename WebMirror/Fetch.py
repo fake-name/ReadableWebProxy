@@ -11,7 +11,7 @@ import datetime
 
 import common.util.urlFuncs as url_util
 import urllib.parse
-import common.util.webFunctions as webFunctions
+import common.util.WebRequest as WebRequest
 import bs4
 
 import WebMirror.processor.ProcessorBase
@@ -60,9 +60,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 		if wg_handle:
 			self.wg = wg_handle
 		elif cookie_lock:
-			self.wg = webFunctions.WebGetRobust(cookie_lock=cookie_lock)
+			self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock)
 		else:
-			self.wg = webFunctions.WebGetRobust()
+			self.wg = WebRequest.WebGetRobust()
 
 		# Validate the plugins implement the proper interface
 		for item in PLUGINS:
@@ -222,7 +222,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		mType = handle.info()['Content-Type']
 
 		# If there is an encoding in the content-type (or any other info), strip it out.
-		# We don't care about the encoding, since WebFunctions will already have handled that,
+		# We don't care about the encoding, since WebRequest will already have handled that,
 		# and returned a decoded unicode object.
 		if mType and ";" in mType:
 			mType = mType.split(";")[0].strip()

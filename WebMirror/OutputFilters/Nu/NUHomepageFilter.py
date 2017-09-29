@@ -21,7 +21,7 @@ import datetime
 import time
 import json
 import cssutils
-import common.util.webFunctions
+import common.util.WebRequest
 import common.util.urlFuncs
 
 ########################################################################################################################
@@ -200,7 +200,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 
 
 	def processPage(self, url, content):
-		soup = common.util.webFunctions.as_soup(self.content)
+		soup = common.util.WebRequest.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.__addNewLinks(releases)

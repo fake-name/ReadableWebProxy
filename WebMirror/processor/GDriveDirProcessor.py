@@ -139,7 +139,6 @@ class GDriveDirProcessor(ProcessorBase.PageProcessor):
 
 def test():
 	print("Test mode!")
-	import webFunctions
 	import logSetup
 	logSetup.initLogging()
 

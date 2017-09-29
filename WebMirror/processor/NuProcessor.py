@@ -5,7 +5,6 @@ import re
 import time
 import webcolors
 import urllib.parse
-import common.util.webFunctions
 
 import common.util.urlFuncs as urlFuncs
 from . import HtmlProcessor

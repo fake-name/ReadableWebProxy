@@ -1,17 +1,17 @@
 
-
-import common.util.webFunctions as webFunctions
-import common.LogBase as LogBase
-import WebMirror.rules
 import urllib.parse
 import urllib.error
 
-class SiteSyncFetch(LogBase.LoggerMixin):
+import common.util.WebRequest
+import common.LogBase
+import WebMirror.rules
+
+class SiteSyncFetch(common.LogBase.LoggerMixin):
 
 
 	def __init__(self):
 		super().__init__()
-		self.wg = webFunctions.WebGetRobust()
+		self.wg = common.util.WebRequest.WebGetRobust()
 		self.log.info("Startup!")
 
 
