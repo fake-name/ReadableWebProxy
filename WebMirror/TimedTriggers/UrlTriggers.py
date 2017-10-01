@@ -81,10 +81,10 @@ class PageTriggerBase(UrlTrigger):
 class HourlyPageTrigger(PageTriggerBase):
 	pages = [
 		# RoyalRoadL
-		'http://royalroadl.com/fictions/new-releases',
-		'http://royalroadl.com/fictions/weekly-popular',
-		'http://royalroadl.com/fictions/latest-updates',
-		'http://royalroadl.com/fictions/active-popular',
+		'https://royalroadl.com/fictions/new-releases',
+		'https://royalroadl.com/fictions/weekly-popular',
+		'https://royalroadl.com/fictions/latest-updates',
+		'https://royalroadl.com/fictions/active-popular',
 		# 'http://royalroadl.com/fictions/best-rated/',
 
 		# Japtem bits
@@ -96,7 +96,7 @@ class HourlyPageTrigger(PageTriggerBase):
 		'https://twitter.com/Nano_Desu_Yo',
 
 		# Fetch the new NovelUpdates stuff.
-		'http://www.novelupdates.com/',
+		'https://www.novelupdates.com/',
 	]
 
 

@@ -6,16 +6,14 @@ import datetime
 import traceback
 
 from sqlalchemy.orm import joinedload
-from sqlalchemy import desc
 from sqlalchemy import not_
-import sqlalchemy.exc
 
 import runStatus
 import common.database as db
 import common.RunManager
 import common.get_rpyc
 import common.util.WebRequest
-from WebMirror.NewJobQueue import buildjob
+from WebMirror.JobUtils import buildjob
 from WebMirror.OutputFilters.Nu import NuSeriesPageFilter
 
 import Misc.NuForwarder.NuHeader

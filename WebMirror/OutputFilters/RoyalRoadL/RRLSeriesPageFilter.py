@@ -53,13 +53,16 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	loggerPath = "Main.Filter.RoyalRoad.Page"
 
-	match_re = re.compile(r"^http://(?:www\.)?royalroadl\.com/fiction/(\d+)(?:/?$|/[a-zA-Z0-9\-]+/?$)", flags=re.IGNORECASE)
+	match_re = re.compile(r"^https?://(?:www\.)?royalroadl\.com/fiction/(\d+)(?:/?$|/[a-zA-Z0-9\-]+/?$)", flags=re.IGNORECASE)
 
 	@classmethod
 	def wantsUrl(cls, url):
 		if cls.match_re.search(url):
 			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
 			return True
+		else:
+			print("RRLSeriesPageProcessor doesn't want url: '%s'" % url)
+
 		return False
 
 	def __init__(self, **kwargs):
@@ -106,8 +109,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		rating_val   = soup.find("meta", property='books:rating:value')
 		rating_scale = soup.find("meta", property='books:rating:scale')
 
-		print("Rating value:", rating_val)
-		print("Rating scale:", rating_scale)
+		# print("Rating value:", rating_val)
+		# print("Rating scale:", rating_scale)
 
 		if not rating_val or not rating_scale:
 			return []
@@ -117,7 +120,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		rating = 5 * (rval_f / rscale_f)
 
-		print("Float rating: ", rating)
+		# print("Float rating: ", rating)
 
 		if not rating >= MIN_RATING and rating != 0.0:
 			self.log.error("Item rating below upload threshold: %s", rating)

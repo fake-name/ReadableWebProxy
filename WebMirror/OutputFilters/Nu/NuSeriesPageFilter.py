@@ -52,9 +52,9 @@ def upsertNuItem(raw_cur, itemparams):
 	cmd = """
 			INSERT INTO
 				nu_release_item
-				(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, validated)
+				(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, validated, fetch_attempts)
 			VALUES
-				(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(validated)s)
+				(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(validated)s, %(fetch_attempts)s)
 			ON CONFLICT (outbound_wrapper) DO NOTHING
 				;
 			""".replace("	", " ").replace("\n", " ")
@@ -68,6 +68,7 @@ def upsertNuItem(raw_cur, itemparams):
 			'outbound_wrapper' : itemparams['outbound_wrapper'],
 			'first_seen'       : itemparams['first_seen'],
 			'validated'        : False,
+			'fetch_attempts'   : 0,
 		}
 
 	raw_cur.execute(cmd, data)
@@ -238,7 +239,7 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 
 			'create_tags'   : True,
 		}
-		pprint.pprint(series_message)
+		# pprint.pprint(series_message)
 		series_info_packet = msgpackers.createSeriesInfoPacket(series_message, matchAuthor=True, beta=self.is_beta)
 		# print(series_info_packet)
 
