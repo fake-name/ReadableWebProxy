@@ -178,6 +178,28 @@ class WebGetCrMixin(object):
 
 		return cur_url
 
+
+	def chromiumGetRenderedItem(self, url):
+
+		if not self._cr:
+			self._initChromium()
+		self._syncIntoChromium()
+
+		# get_rendered_page_source
+		self._cr.blocking_navigate(url)
+
+
+		content = self._cr.get_rendered_page_source()
+		mType = 'text/html'
+		fileN = ''
+
+		self._syncOutOfChromium()
+
+
+		return content, fileN, mType
+
+
+
 	def close_chromium(self):
 		if self._cr != None:
 			self._cr.close()

@@ -67,14 +67,10 @@ baseUrl: [
 		'http://www.novellatranslation.com',
 		'http://www.lionmask.pro',
 
-		'https://catatopatch.wixsite.com/catatopatch/',
-		'https://www.catatopatch.com',
 		'https://syzctranslations.github.io',
 
 		'http://www.wiseclock.ca',
 
-		# Oh god javascript shit.
-		'http://translations.afteraugustmaking.me',
 
 	]
 

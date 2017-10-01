@@ -8,6 +8,7 @@ import WebMirror.rules
 import common.LogBase as LogBase
 
 import datetime
+import traceback
 
 import common.util.urlFuncs as url_util
 import urllib.parse
@@ -200,8 +201,16 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 	def getItem(self, itemUrl):
 
+		error = None
 		try:
 			content, handle = self.wg.getpage(itemUrl, returnMultiple=True)
+		except WebRequest.FetchFailureError:
+			self.log.error("Failed to fetch page!")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
+
+			error = traceback.format_exc()
+			content, handle = None, None
 		except:
 			print("Failure?")
 			if self.rules['cloudflare']:
@@ -215,6 +224,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 		if not content or not handle:
+			if error:
+				raise DownloadException("Failed to retreive file from page '%s'!\n\nFetch traceback:\n%s\n\nEnd fetch traceback." % (itemUrl, error))
 			raise DownloadException("Failed to retreive file from page '%s'!" % itemUrl)
 
 		fileN = urllib.parse.unquote(urllib.parse.urlparse(handle.geturl())[2].split("/")[-1])

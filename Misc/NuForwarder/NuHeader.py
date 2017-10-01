@@ -13,7 +13,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy import desc
 from sqlalchemy import func
 
-from WebMirror.NewJobQueue import buildjob
+from WebMirror.JobUtils import buildjob
 import common.database as db
 
 import common.get_rpyc

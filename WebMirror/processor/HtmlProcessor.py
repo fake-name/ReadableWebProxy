@@ -39,6 +39,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	def __init__(self, baseUrls, pageUrl, pgContent, loggerPath, relinkable, **kwargs):
 
+		self.log.info("HtmlProc processing HTML content.")
 		self._tld           = set()
 		self._fileDomains   = set()
 
@@ -272,12 +273,32 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		]
 
 		empty_keys = [
+				'font-size',
 				'width',
 				'height',
 				'display',
 				'max-width',
 				'max-height',
 				'background-image',
+				'margin-bottom',
+				'box-sizing',
+				'cursor',
+				'display',
+				'height',
+				'left',
+				'margin-bottom',
+				'margin-right',
+				'margin',
+				'object-fit',
+				'overflow',
+				'position',
+				'right',
+				'text-align',
+				'top',
+				'visibility',
+				'width',
+				'z-index',
+
 		]
 
 		foreground_color_keys = [
@@ -311,7 +332,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 							if style_chunk.name == "overflow":
 								style_chunk.value = [tinycss2.ast.IdentToken(1, 1, "visible")]
 
-
 					parsed_style = [chunk for chunk in parsed_style if chunk.value]
 
 					item['style'] = tinycss2.serialize(parsed_style)
@@ -321,6 +341,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 					# the 'value' attribute. This produces attribute errors.
 					# If the style is fucked, just clobber it.
 					item['style'] = ""
+
 		return soup
 
 	def cleanHtmlPage(self, soup, url=None):
@@ -338,13 +359,24 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		title = title.strip()
 
+		if soup.head:
+			soup.head.decompose()
+
 		# Since the content we're extracting will be embedded into another page, we want to
 		# strip out the <body> and <html> tags. `unwrap()`  replaces the soup with the contents of the
 		# tag it's called on. We end up with just the contents of the <body> tag.
-		if soup.body:
+		while soup.body:
+			print("Unwrapping body tag")
 			soup.body.unwrap()
-		elif soup.html:
+
+		while soup.html:
+			print("Unwrapping html tag")
 			soup.html.unwrap()
+
+		for item in soup.children:
+			if isinstance(item, bs4.Doctype):
+				print("decomposing doctype")
+				item.extract()
 
 		contents = soup.prettify()
 
@@ -356,8 +388,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 
 	def removeClasses(self, soup):
-		cnt = 0
-
 		validattrs = [
 			'href',
 			'src',

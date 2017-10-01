@@ -27,6 +27,7 @@ import common.get_rpyc
 import zerorpc
 import runStatus
 import WebMirror.SpecialCase
+import WebMirror.JobUtils
 
 import mem_top
 from pympler.tracker import SummaryTracker
@@ -61,34 +62,6 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 1000
 	MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
-
-def buildjob(
-			module,
-			call,
-			dispatchKey,
-			jobid,
-			args           = [],
-			kwargs         = {},
-			additionalData = None,
-			postDelay      = 0,
-			unique_id      = None,
-			serialize      = False,
-		):
-
-	job = {
-			'call'         : call,
-			'module'       : module,
-			'args'         : args,
-			'kwargs'       : kwargs,
-			'extradat'     : additionalData,
-			'jobid'        : jobid,
-			'dispatch_key' : dispatchKey,
-			'postDelay'    : postDelay,
-			'serialize'    : serialize,
-		}
-	if unique_id is not None:
-		job['unique_id'] = unique_id
-	return job
 
 
 
@@ -138,26 +111,16 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		self.log.info("Joining on worker thread.")
 
 
-	def put_outbound_job(self, jobid, joburl):
-		self.active_jobs += 1
-		self.log.info("Dispatching new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
-		self.jobs_out += 1
-		raw_job = buildjob(
-			module         = 'WebRequest',
-			call           = 'getItem',
-			dispatchKey    = "fetcher",
-			jobid          = jobid,
-			args           = [joburl],
-			kwargs         = {},
-			additionalData = {'mode' : 'fetch'},
-			postDelay      = 0
-		)
+	def put_assembled_job(self, raw_job):
 
 		# Recycle the rpc interface if it ded
 		errors = 0
 		while 1:
 			try:
 				self.rpc_interface.put_job(raw_job)
+				self.active_jobs += 1
+				self.log.info("Dispatched new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
+				self.jobs_out += 1
 				return
 			except TypeError:
 				self.check_open_rpc_interface()
@@ -174,6 +137,20 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 						self.log.warning(line)
 
 
+	def put_fetch_job(self, jobid, joburl):
+		# module='WebRequest', call='getItem'
+		raw_job = WebMirror.JobUtils.buildjob(
+			module         = 'WebRequest',
+			call           = 'getItem',
+			dispatchKey    = "fetcher",
+			jobid          = jobid,
+			args           = [joburl],
+			kwargs         = {},
+			additionalData = {'mode' : 'fetch'},
+			postDelay      = 0
+		)
+
+		self.put_assembled_job(raw_job)
 
 	def generalLinkClean(self, link, badwords, badcompounds):
 		if link.startswith("data:"):
@@ -400,7 +377,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		rid, joburl, netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 		newcnt = 0
 		while rid:
-			self.put_outbound_job(rid, joburl)
+			self.put_fetch_job(rid, joburl)
 			newcnt += 1
 			rid, joburl, netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 
@@ -505,9 +482,9 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 			if not self.outbound_job_wanted(netloc, joburl):
 				self.delete_job(rid, joburl)
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
-				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc)
+				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc, self)
 			else:
-				self.put_outbound_job(rid, joburl)
+				self.put_fetch_job(rid, joburl)
 
 		cursor.close()
 

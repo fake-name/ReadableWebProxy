@@ -12,6 +12,7 @@ import WebMirror.PreProcessors.TgStoryTimePreprocess
 import WebMirror.PreProcessors.RRLPreprocess
 import WebMirror.PreProcessors.QidianPreprocess
 import WebMirror.PreProcessors.GravityTalesPreprocess
+import WebMirror.PreProcessors.WixsitePreprocess
 
 PREPROCESSORS = [
 	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor,
@@ -20,7 +21,7 @@ PREPROCESSORS = [
 	WebMirror.PreProcessors.TgStoryTimePreprocess.TgStoryTimePreprocessor,
 	WebMirror.PreProcessors.QidianPreprocess.QidianPreprocessor,
 	WebMirror.PreProcessors.GravityTalesPreprocess.GravityTalesPreprocessor,
-
+	WebMirror.PreProcessors.WixsitePreprocess.JsRendererPreprocessor,
 
 	# Disable the RRL Preprocessor since they rolled back the site.
 	# WebMirror.PreProcessors.RRLPreprocess.RRLListPagePreprocessor,
