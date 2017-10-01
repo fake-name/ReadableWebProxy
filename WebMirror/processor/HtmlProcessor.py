@@ -366,16 +366,16 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# strip out the <body> and <html> tags. `unwrap()`  replaces the soup with the contents of the
 		# tag it's called on. We end up with just the contents of the <body> tag.
 		while soup.body:
-			print("Unwrapping body tag")
+			# print("Unwrapping body tag")
 			soup.body.unwrap()
 
 		while soup.html:
-			print("Unwrapping html tag")
+			# print("Unwrapping html tag")
 			soup.html.unwrap()
 
 		for item in soup.children:
 			if isinstance(item, bs4.Doctype):
-				print("decomposing doctype")
+				# print("decomposing doctype")
 				item.extract()
 
 		contents = soup.prettify()
