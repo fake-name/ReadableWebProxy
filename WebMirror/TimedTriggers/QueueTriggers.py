@@ -53,7 +53,7 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 		self.sess.commit()
 		print("Job: ", job, job.state)
 
-		self.instance.put_outbound_job(job.id, job.url)
+		self.instance.put_fetch_job(job.id, job.url)
 
 
 	def go(self):

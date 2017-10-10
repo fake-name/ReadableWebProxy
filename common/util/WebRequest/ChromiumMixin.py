@@ -11,68 +11,67 @@ import gc
 
 import bs4
 
-from cachetools import LRUCache
 import ChromeController
 
+# from cachetools import LRUCache
 
-class ChromeLRUCache(LRUCache):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.log = logging.getLogger("Main.ChromeInterfaceCache")
+# class ChromeLRUCache(LRUCache):
+# 	def __init__(self, *args, **kwargs):
+# 		super().__init__(*args, **kwargs)
+# 		self.log = logging.getLogger("Main.ChromeInterfaceCache")
 
-	def close_chrome(self, pop_key, to_del):
-		try:
-			self.log.info("LRU Cache is closing chromium interface for %s", pop_key)
-			to_del.close()
-		except Exception:
-			self.log.error("Exception in chromium teardown!")
-			for line in traceback.format_exc().split("\n"):
-				self.log.error("	%s", line)
+# 	def close_chrome(self, pop_key, to_del):
+# 		try:
+# 			self.log.info("LRU Cache is closing chromium interface for %s", pop_key)
+# 			to_del.close()
+# 		except Exception:
+# 			self.log.error("Exception in chromium teardown!")
+# 			for line in traceback.format_exc().split("\n"):
+# 				self.log.error("	%s", line)
 
-	def popitem(self):
-		pop_key, to_del = super().popitem()
-		self.close_chrome(pop_key, to_del)
+# 	def popitem(self):
+# 		pop_key, to_del = super().popitem()
+# 		self.close_chrome(pop_key, to_del)
 
-	def close_by_key(self, key):
-		pop_key, to_del = self.pop(key)
-		self.close_chrome(pop_key, to_del)
+# 	def close_by_key(self, key):
+# 		pop_key, to_del = self.pop(key)
+# 		self.close_chrome(pop_key, to_del)
 
 
-	def get_chromium_instance(self, cr_binary, cr_port):
-		cpid = multiprocessing.current_process().name
-		ctid = threading.current_thread().name
-		csid = "{}-{}".format(cpid, ctid)
+# 	def get_chromium_instance(self, cr_binary, cr_port):
+# 		cpid = multiprocessing.current_process().name
+# 		ctid = threading.current_thread().name
+# 		csid = "{}-{}".format(cpid, ctid)
 
-		if csid in self:
-			self.log.info("Using existing chromium process.")
-			# We probe the remote chrome to make sure it's not defunct
-			try:
-				self[csid].get_current_url()
-				return self[csid]
-			except ChromeController.ChromeControllerException:
-				self.log.error("Chromium appears to be defunct. Creating new")
-				self.close_by_key(csid)
+# 		if csid in self:
+# 			self.log.info("Using existing chromium process.")
+# 			# We probe the remote chrome to make sure it's not defunct
+# 			try:
+# 				self[csid].get_current_url()
+# 				return self[csid]
+# 			except ChromeController.ChromeControllerException:
+# 				self.log.error("Chromium appears to be defunct. Creating new")
+# 				self.close_by_key(csid)
 
-		self.log.info("Creating Chromium process.")
-		try:
-			instance = ChromeController.ChromeRemoteDebugInterface(cr_binary, dbg_port = cr_port)
-		except Exception as e:
-			self.log.error("Failure creating chromium process!")
-			for line in traceback.format_exc().split("\n"):
-				self.log.error("	%s", line)
+# 		self.log.info("Creating Chromium process.")
+# 		try:
+# 			instance = ChromeController.ChromeRemoteDebugInterface(cr_binary, dbg_port = cr_port)
+# 		except Exception as e:
+# 			self.log.error("Failure creating chromium process!")
+# 			for line in traceback.format_exc().split("\n"):
+# 				self.log.error("	%s", line)
 
-			# Sometimes the old process is around because
-			# the GC hasn't seen it, and forcing a collection can fix that.
-			# Yes, this is HORRIBLE.
-			gc.collect()
+# 			# Sometimes the old process is around because
+# 			# the GC hasn't seen it, and forcing a collection can fix that.
+# 			# Yes, this is HORRIBLE.
+# 			gc.collect()
 
-			raise e
+# 			raise e
 
-		self[csid] = instance
-		return instance
+# 		self[csid] = instance
+# 		return instance
 
-CHROME_CACHE = ChromeLRUCache(maxsize=2)
-
+# CHROME_CACHE = ChromeLRUCache(maxsize=2)
 
 
 class WebGetCrMixin(object):
@@ -80,51 +79,34 @@ class WebGetCrMixin(object):
 	# it is structured [(top_level_url1, username1, password1), (top_level_url2, username2, password2)]
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self._cr = None
-		self._cr_port = 9222
 		self._cr_binary = "google-chrome"
-		# self._initChromium()
 
 
-
-	def _initChromium(self):
-		for _ in range(25):
-			try:
-				self._cr = CHROME_CACHE.get_chromium_instance(
-						self._cr_binary,
-						self._cr_port,
-					)
-				return
-			except (ChromeController.ChromeConnectFailure,
-					ChromeController.ChromeStartupException):
-				self._cr_port += 1
-
-	def _syncIntoChromium(self):
+	def _syncIntoChromium(self, cr):
 		# Headers are a list of 2-tuples. We need a dict
 		hdict = dict(self.browserHeaders)
-		self._cr.update_headers(hdict)
+		cr.update_headers(hdict)
 		for cookie in self.cj:
-			self._cr.set_cookie(cookie)
+			cr.set_cookie(cookie)
 
-	def _syncOutOfChromium(self):
-		for cookie in self._cr.get_cookies():
+	def _syncOutOfChromium(self, cr):
+		for cookie in cr.get_cookies():
 			self.cj.set_cookie(cookie)
 
 	def getItemChromium(self, itemUrl):
 		self.log.info("Fetching page for URL: '%s' with Chromium" % itemUrl)
 
-		if not self._cr:
-			self._initChromium()
+		with ChromeController.ChromeContext(self._cr_binary) as cr:
 
-		self._syncIntoChromium()
+			self._syncIntoChromium(cr)
 
-		response = self._cr.blocking_navigate_and_get_source(itemUrl, timeout=10)
+			response = cr.blocking_navigate_and_get_source(itemUrl, timeout=10)
 
-		raw_url = self._cr.get_current_url()
-		fileN = urllib.parse.unquote(urllib.parse.urlparse(raw_url)[2].split("/")[-1])
-		fileN = bs4.UnicodeDammit(fileN).unicode_markup
+			raw_url = cr.get_current_url()
+			fileN = urllib.parse.unquote(urllib.parse.urlparse(raw_url)[2].split("/")[-1])
+			fileN = bs4.UnicodeDammit(fileN).unicode_markup
 
-		self._syncOutOfChromium()
+			self._syncOutOfChromium(cr)
 
 		# Probably a bad assumption
 		if response['binary']:
@@ -141,17 +123,18 @@ class WebGetCrMixin(object):
 		if not referrer:
 			referrer = url
 
-		if not self._cr:
-			self._initChromium()
-		self._syncIntoChromium()
+		with ChromeController.ChromeContext(self._cr_binary) as cr:
+			self._syncIntoChromium(cr)
 
-		self._cr.blocking_navigate(referrer)
-		time.sleep(random.uniform(2, 6))
-		self._cr.blocking_navigate(url)
+			cr.blocking_navigate(referrer)
+			time.sleep(random.uniform(2, 6))
+			cr.blocking_navigate(url)
 
-		title, cur_url = self._cr.get_page_url_title()
+			title, cur_url = cr.get_page_url_title()
 
-		self._syncOutOfChromium()
+			self._syncOutOfChromium(cr)
+
+		self.log.info("Resolved URL for %s -> %s", url, cur_url)
 
 		ret = {
 			'url': cur_url,
@@ -164,50 +147,41 @@ class WebGetCrMixin(object):
 		if not referrer:
 			referrer = url
 
-		if not self._cr:
-			self._initChromium()
-		self._syncIntoChromium()
+		with ChromeController.ChromeContext(self._cr_binary) as cr:
+			self._syncIntoChromium(cr)
 
-		self._cr.blocking_navigate(referrer)
-		time.sleep(random.uniform(2, 6))
-		self._cr.blocking_navigate(url)
 
-		dummy_title, cur_url = self._cr.get_page_url_title()
+			cr.blocking_navigate(referrer)
+			time.sleep(random.uniform(2, 6))
+			cr.blocking_navigate(url)
 
-		self._syncOutOfChromium()
+			dummy_title, cur_url = cr.get_page_url_title()
+
+			self._syncOutOfChromium(cr)
 
 		return cur_url
 
 
 	def chromiumGetRenderedItem(self, url):
 
-		if not self._cr:
-			self._initChromium()
-		self._syncIntoChromium()
+		with ChromeController.ChromeContext(self._cr_binary) as cr:
+			self._syncIntoChromium(cr)
 
-		# get_rendered_page_source
-		self._cr.blocking_navigate(url)
+			# get_rendered_page_source
+			cr.blocking_navigate(url)
 
 
-		content = self._cr.get_rendered_page_source()
-		mType = 'text/html'
-		fileN = ''
-
-		self._syncOutOfChromium()
+			content = cr.get_rendered_page_source()
+			mType = 'text/html'
+			fileN = ''
+			self._syncOutOfChromium(cr)
 
 
 		return content, fileN, mType
 
 
-
-	def close_chromium(self):
-		if self._cr != None:
-			self._cr.close()
-			self._cr = None
-
 	def __del__(self):
 		# print("ChromiumMixin destructor")
-		self.close_chromium()
 		sup = super()
 		if hasattr(sup, '__del__'):
 			sup.__del__()
