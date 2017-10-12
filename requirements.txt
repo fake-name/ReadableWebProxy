@@ -19,7 +19,7 @@ cachetools==2.0.1
 bleach==2.1.1
 Jinja2==2.9.6
 psycopg2==2.7.3.1
-SQLAlchemy
+SQLAlchemy==1.1.14
 sqlalchemy-citext
 
 PySocks
