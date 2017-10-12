@@ -15,7 +15,7 @@ cssutils==1.0.2
 tinycss2==0.6.1
 fontTools==3.16.0
 semantic==1.0.3
-cachetools
+cachetools==2.0.1
 bleach
 Jinja2
 psycopg2
