@@ -12,7 +12,7 @@ xxhash==1.0.1
 objgraph==3.1.0
 zerorpc==0.6.1
 cssutils==1.0.2
-tinycss2
+tinycss2==0.6.1
 fontTools
 semantic
 cachetools
