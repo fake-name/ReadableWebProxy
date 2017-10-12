@@ -35,7 +35,7 @@ mdx_linkify==1.0
 ftfy==5.1.1
 lxml==4.0.0
 Flask==0.12.2
-Flask-DebugToolbar
+Flask-DebugToolbar==0.10.1
 Flask-Login
 Flask-Babel
 selenium
