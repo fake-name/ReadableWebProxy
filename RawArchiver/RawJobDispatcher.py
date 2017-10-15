@@ -11,7 +11,6 @@ import signal
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
 
-import zerorpc
 import psycopg2
 import sys
 
@@ -147,9 +146,6 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			try:
 				self.rpc_interface.put_job(raw_job)
 				return
-			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
-				self.log.error("Failure when putting job? Is the remote running?")
-				self.open_rpc_interface()
 			except TypeError:
 				self.open_rpc_interface()
 			except KeyError:
@@ -191,10 +187,6 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			try:
 				tmp = self.rpc_interface.get_job()
 			except queue.Empty:
-				return
-			except (zerorpc.TimeoutExpired, zerorpc.LostRemote, zerorpc.RemoteError):
-				self.open_rpc_interface()
-				self.log.warning("Error in RPC interface?")
 				return
 
 			except TypeError:
@@ -332,8 +324,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		xqtim = time.time() - start
 
 		if len(rids) == 0:
-			self.log.warning("No jobs available! Sleeping for 10 seconds waiting for new jobs to become available!")
-			for dummy_x in range(10):
+			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
+			for dummy_x in range(5):
 				if runStatus.run_state.value == 1:
 					time.sleep(1)
 			return 0

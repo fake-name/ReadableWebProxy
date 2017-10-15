@@ -91,6 +91,10 @@ baseUrl: [
 	'https://www.tumblr.com',
 	'https://erratictranslations.tumblr.com',
 	'https://miss-awesome0948.tumblr.com',
+	'https://enochianmurmurs.tumblr.com',
+
+
+
 	# Low quality
 	'http://owari-owari.tumblr.com',
 	'http://chilly-territory.tumblr.com',
@@ -164,6 +168,7 @@ badwords: [
 	'.tumblr.com/register/',
 	'.tumblr.com/follow/',
 	'.tumblr.com/tagged/',
+	'.tumblr.com/theme/',
 	]
 
 decompose: [

@@ -73,9 +73,9 @@ def getSpecialCase(specialcase):
 	log.info("Special case handler checking for deferred fetches.")
 	with FETCH_LOCK:
 		print()
-		print()
-		print("RATE_LIMIT_ITEMS", RATE_LIMIT_ITEMS)
-		print()
+		print("RATE_LIMIT_ITEMS")
+		for key, value in RATE_LIMIT_ITEMS.items():
+			print("	%s -> %s (%s)" % (key, value['queue'].qsize(), value))
 		print()
 		for key in RATE_LIMIT_ITEMS.keys():
 			if RATE_LIMIT_ITEMS[key]['ntime'] < time.time():

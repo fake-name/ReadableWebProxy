@@ -34,8 +34,9 @@ import WebMirror.Engine
 import WebMirror.rules
 import common.util.urlFuncs as urlFuncs
 import common.database as db
-import WebMirror.NewJobQueue
-import RawArchiver.RawNewJobQueue
+import WebMirror.JobDispatcher
+import WebMirror.UrlUpserter
+import RawArchiver.RawJobDispatcher
 
 import RawArchiver.RawRunner
 import WebMirror.Runner
@@ -133,7 +134,7 @@ class Crawler(object):
 	def start_aggregator(self):
 		agg_queue = multiprocessing.Queue()
 		with logSetup.stdout_lock:
-			self.main_job_agg = multiprocessing.Process(target=WebMirror.Runner.UpdateAggregator.launch_agg, args=(agg_queue, ))
+			self.main_job_agg = multiprocessing.Process(target=WebMirror.UrlUpserter.UpdateAggregator.launch_agg, args=(agg_queue, ))
 			self.main_job_agg.start()
 		return agg_queue
 
@@ -147,11 +148,11 @@ class Crawler(object):
 
 	def start_main_job_fetcher(self):
 
-		self.main_job_fetcher = WebMirror.NewJobQueue.AggregatorWrapper()
+		self.main_job_fetcher = WebMirror.JobDispatcher.RpcJobManagerWrapper()
 		return self.main_job_fetcher.get_queues()
 
 	def start_raw_job_fetcher(self):
-		self.raw_job_fetcher = RawArchiver.RawNewJobQueue.RawJobFetcher()
+		self.raw_job_fetcher = RawArchiver.RawJobDispatcher.RawJobFetcher()
 		return self.raw_job_fetcher.get_queue()
 
 	def join_job_fetcher(self):
@@ -170,8 +171,6 @@ class Crawler(object):
 
 		assert self.main_thread_count >= 1
 		assert self.raw_thread_count >= 1
-
-
 
 
 		# Dummy queues to shut up the teardown garbage

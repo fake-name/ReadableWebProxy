@@ -42,6 +42,9 @@ badwords: [
 			'?ReturnUrl=',
 			'/ratereview/',
 			'?review=',
+			'nav-sa-kindle-amazon-echo',
+			'/kindle-dbs/',
+			'/prime-pr/',
 
 			# Did RoyalRoadL redirect to amazon somewhere?
 			'royalroadl.com/Kindle-eBooks/',

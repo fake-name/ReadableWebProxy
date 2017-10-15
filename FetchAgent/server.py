@@ -12,7 +12,6 @@ import signal
 from gevent.server import StreamServer
 import FetchAgent.AmqpInterface
 import logSetup
-import zerorpc
 import mprpc
 import gevent.monkey
 import gevent
@@ -36,21 +35,6 @@ INTERRUPTS_2 = 0
 
 TO_EXIT = []
 
-def build_zerorpc_handler(server):
-	global TO_EXIT
-	TO_EXIT.append(server)
-
-	def handler(signum=-1, frame=None):
-		global INTERRUPTS_1
-		INTERRUPTS_1 += 1
-		print('Signal handler called with signal %s for the %s time' % (signum, INTERRUPTS_1))
-		if INTERRUPTS_1 > 2:
-			print("Raising due to repeat interrupts")
-			raise KeyboardInterrupt
-		for server in TO_EXIT:
-			server.close()
-		# server.stop()
-	return handler
 
 def build_mprpc_handler(server):
 	global TO_EXIT
@@ -73,19 +57,13 @@ def base_abort():
 		server.close()
 
 
-# import gevent.socket as gsocket
-# import socket
-# from bsonrpc import BSONRpc, ThreadingModel
-# from bsonrpc import rpc_request, request, service_class
-# from common.fixed_bsonrpc import Fixed_BSONRpc
-
-
 class FetchInterfaceClass(mprpc.RPCServer):
 
 
 	def __init__(self, interface_dict, rpc_prefix):
 
-		super().__init__()
+		mp_conf = {"use_bin_type":True}
+		super().__init__(pack_params=mp_conf)
 
 		self.log = logging.getLogger("Main.{}-Interface".format(rpc_prefix))
 		self.mdict = interface_dict
@@ -145,17 +123,6 @@ class FetchInterfaceClass(mprpc.RPCServer):
 sock_path = '/tmp/rwp-fetchagent-sock'
 
 
-def run_server(interface_dict):
-	print("ZeroRPC server Started.")
-	served_class = FetchInterfaceClass(interface_dict, "ZeroRPC")
-	server = zerorpc.Server(served_class, heartbeat=30)
-
-	server.bind("ipc://{}".format(sock_path))
-	server.bind("tcp://*:4316")
-
-	gevent.signal(signal.SIGINT, build_zerorpc_handler(server))
-
-	server.run()
 
 
 def run_mprpc(interface_dict):
@@ -198,10 +165,8 @@ def run():
 
 	print("AMQP Interfaces have started. Launching RPC threads.")
 
-	t1 = threading.Thread(target=run_server, args=(interface_dict, ))
 	t2 = threading.Thread(target=run_mprpc, args=(interface_dict, ))
 
-	t1.start()
 	t2.start()
 
 	try:
@@ -213,7 +178,6 @@ def run():
 
 	print("Joining on worker threads")
 
-	t1.join()
 	t2.join()
 
 	print("Terminating AMQP interface.")

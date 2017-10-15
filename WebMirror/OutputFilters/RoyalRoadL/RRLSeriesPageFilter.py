@@ -189,6 +189,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		seriesmeta['sourcesite']  = 'RoyalRoadL'
 		seriesmeta['create_tags'] = True
 
+
 		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
 		extra = {}
 		extra['tags']     = tags
@@ -251,7 +252,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.log.info("Retval empty?!")
 			return []
 
-		# self.amqp_put_item(meta_pkt)
+		self.amqp_put_item(meta_pkt)
+
 		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval]
 		return retval
 

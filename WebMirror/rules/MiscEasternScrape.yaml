@@ -70,6 +70,7 @@ baseUrl: [
 		'https://syzctranslations.github.io',
 
 		'http://www.wiseclock.ca',
+		'http://girlyboysalliance.mozello.com',
 
 
 	]
@@ -97,7 +98,7 @@ feeds: [
 	'https://wuxiadream.com/rss',
 	'http://www.novellatranslation.com/feed',
 	'http://www.lionmask.pro/feeds/posts/default',
-
+	'http://girlyboysalliance.mozello.com/blog/rss/',
 ]
 
 extraStartUrls: [

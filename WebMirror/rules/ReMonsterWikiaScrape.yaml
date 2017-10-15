@@ -43,6 +43,7 @@ badwords: [
 			"Special:Search",
 			"Special:Log",
 			"action=purge",
+			'/register?redirect=',
 
 			"Special:WhatLinksHere",
 			"Special:Editcount",

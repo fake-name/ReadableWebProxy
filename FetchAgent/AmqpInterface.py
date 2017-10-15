@@ -81,7 +81,7 @@ class RabbitQueueHandler(object):
 				)
 			# We spread out the socket creation along the timeout interval, so
 			# that all the connectors don't function in apparent lockstep
-			time.sleep(settings['socket_timeout'] / settings['consumer_threads'])
+			# time.sleep(settings['socket_timeout'] / settings['consumer_threads'])
 
 
 		# The chunk structure is slightly annoying, so just limit to 200 partial messages.

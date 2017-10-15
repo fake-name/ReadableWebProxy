@@ -8,7 +8,7 @@ import time
 import queue
 import pprint
 import common.get_rpyc
-import WebMirror.NewJobQueue
+import WebMirror.JobDispatcher
 
 def dump_response(resp):
 	pprint.pprint(resp)
@@ -30,7 +30,7 @@ def exposed_test_chromium_fetch():
 
 	print("Dispatching job engine")
 
-	raw_job_1 = WebMirror.NewJobQueue.buildjob(
+	raw_job_1 = WebMirror.JobDispatcher.buildjob(
 		module         = 'NUWebRequest',
 		call           = 'getHeadTitlePhantomJS',
 		dispatchKey    = "lolwattttt",
@@ -40,7 +40,7 @@ def exposed_test_chromium_fetch():
 		additionalData = {'herp' : 'derp'},
 		postDelay      = 0
 	)
-	raw_job_2 = WebMirror.NewJobQueue.buildjob(
+	raw_job_2 = WebMirror.JobDispatcher.buildjob(
 		module         = 'WebRequest',
 		call           = 'getHeadTitleChromium',
 		dispatchKey    = "lolwattttt",

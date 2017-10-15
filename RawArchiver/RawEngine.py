@@ -41,7 +41,7 @@ from sqlalchemy_continuum.utils import version_table
 import common.global_constants
 import common.database
 import RawArchiver.RawActiveModules
-import RawArchiver.RawNewJobQueue
+import RawArchiver.RawJobDispatcher
 import RawArchiver.misc
 
 
@@ -568,7 +568,7 @@ def test():
 
 
 def test2():
-	fetcher = RawArchiver.RawNewJobQueue.RawJobFetcher()
+	fetcher = RawArchiver.RawJobDispatcher.RawJobFetcher()
 	import common.database
 	sess = common.database.get_db_session()
 

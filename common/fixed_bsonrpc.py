@@ -7,8 +7,6 @@ import sys
 import time
 import common.LogBase as LogBase
 
-# import zerorpc
-
 
 import socket
 from bsonrpc import BatchBuilder, BSONRpc

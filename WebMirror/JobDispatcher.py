@@ -24,7 +24,6 @@ import common.LogBase as LogBase
 import WebMirror.rules
 # import WebMirror.OutputFilters.AmqpInterface
 import common.get_rpyc
-import zerorpc
 import runStatus
 import WebMirror.SpecialCase
 import WebMirror.JobUtils
@@ -65,7 +64,7 @@ else:
 
 
 
-class JobAggregatorInternal(LogBase.LoggerMixin):
+class RpcJobManagerInternal(LogBase.LoggerMixin):
 
 	loggerPath = "Main.JobManager"
 
@@ -97,8 +96,6 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 
 	def run(self):
-
-
 
 		self.queue_filler_proc()
 
@@ -349,6 +346,7 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 
 		while self.run_flag.value == 1:
+			print("Queue filler looping!")
 			try:
 
 				self.__queue_fillter_internal()
@@ -390,7 +388,36 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		# get sqlalchemy to emit /exactly/ what I wanted.
 		# TINY changes will break the query optimizer, and
 		# the 10 ms query will suddenly take 10 seconds!
-		raw_query = '''
+		raw_query_never_fetched = '''
+				UPDATE
+				    web_pages
+				SET
+				    state = 'fetching'
+				WHERE
+				    web_pages.id IN (
+				        SELECT
+				            web_pages.id
+				        FROM
+				            web_pages
+				        WHERE
+				            web_pages.state = 'new'
+				        AND
+				            normal_fetch_mode = true
+				        AND
+				            web_pages.fetchtime IS NULL
+				        AND
+				            web_pages.distance < 1000000
+				        AND
+				            web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+				        LIMIT {in_flight}
+				    )
+				AND
+				    web_pages.state = 'new'
+				RETURNING
+				    web_pages.id, web_pages.netloc, web_pages.url;
+			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
+
+		raw_query_ordered = '''
 				UPDATE
 				    web_pages
 				SET
@@ -437,8 +464,13 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 
 		while runStatus.run_state.value == 1:
 			try:
-				cursor.execute(raw_query)
-				rids = cursor.fetchall()
+				cursor.execute(raw_query_never_fetched)
+				rids_1 = cursor.fetchall()
+				cursor.execute(raw_query_ordered)
+				rids_2 = cursor.fetchall()
+
+				rids = rids_1 + rids_2
+
 				cursor.execute("COMMIT;")
 				break
 			except psycopg2.Error:
@@ -491,11 +523,19 @@ class JobAggregatorInternal(LogBase.LoggerMixin):
 		return len(rids)
 
 def run_shim(job_queue, run_flag):
-	instance = JobAggregatorInternal(job_queue, run_flag)
-	instance.run()
+	try:
+		instance = RpcJobManagerInternal(job_queue, run_flag)
+		instance.run()
+	except Exception:
+		print("Error!")
+		print("Error!")
+		print("Error!")
+		print("Error!")
+		traceback.print_exc()
+		raise
 
 
-class AggregatorWrapper():
+class RpcJobManagerWrapper():
 	def __init__(self, start_worker=True):
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
 		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS)

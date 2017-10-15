@@ -14,7 +14,7 @@ import rpyc.core.vinegar
 
 import time
 
-from WebMirror.NewJobQueue import buildjob
+from WebMirror.JobDispatcher import buildjob
 
 
 

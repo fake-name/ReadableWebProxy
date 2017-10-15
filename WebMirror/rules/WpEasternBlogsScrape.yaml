@@ -1329,12 +1329,26 @@ baseUrl: [
 
 	# Very custom theme:
 	'http://weaboodesu.com',
-	'http://Weaboodesu.com'
+	'http://Weaboodesu.com',
 
 	# Private:
 	# 'koongkoongtranslations.com',
 
-
+	'https://arftranslations.wordpress.com',
+	'https://badgrammartranslations.wordpress.com',
+	'https://binbogami.wordpress.com',
+	'https://dothacktranslate.wordpress.com',
+	'http://froglation.xyz',
+	'https://it4f.wordpress.com',
+	'https://lostinspacetl.wordpress.com',
+	'https://nontransblog.wordpress.com',
+	'https://okamiyuutranslations.wordpress.com',
+	'https://oniichanshinpai.wordpress.com',
+	'https://snailtranslations.wordpress.com',
+	'https://sonoyaku.wordpress.com',
+	'https://sugardarkthetranslation.wordpress.com',
+	'https://unhingedtranslation.wordpress.com',
+	'http://www.world-three.org',
 
 	]
 

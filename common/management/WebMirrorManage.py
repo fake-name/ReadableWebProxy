@@ -29,7 +29,7 @@ import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 import WebMirror.rules
 import WebMirror.SiteSync.fetch
 import WebMirror.SpecialCase
-import WebMirror.NewJobQueue
+import WebMirror.JobDispatcher
 
 import RawArchiver.RawActiveModules
 import RawArchiver.RawEngine
@@ -577,6 +577,9 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 
 			# Manga site?
 			'ckmscans.halofight.com',
+
+			"www1.faktranslations.com",  # Bought by a domain squatter
+			'box479.bluehost.com',       # Site error thing.
 		]
 
 		missing = 0
@@ -640,10 +643,10 @@ def exposed_flatten_fix_missing_history():
 
 def exposed_test_new_job_queue():
 	'''
-	Testing function for NewJobQueue components
+	Testing function for JobDispatcher components
 	'''
 
-	instance = WebMirror.NewJobQueue.JobAggregatorInternal(None, None)
+	instance = WebMirror.JobDispatcher.JobAggregatorInternal(None, None)
 
 	want = instance.outbound_job_wanted("www.novelupdates.com", "http://www.novelupdates.com/")
 	print(want)

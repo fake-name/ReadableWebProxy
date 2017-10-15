@@ -7,7 +7,7 @@ import WebMirror.TimedTriggers.TriggerBase
 import urllib.parse
 import datetime
 import sqlalchemy.exc
-import WebMirror.NewJobQueue
+import WebMirror.JobDispatcher
 
 
 
@@ -16,7 +16,7 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.instance = WebMirror.NewJobQueue.JobAggregatorInternal(None, None)
+		self.instance = WebMirror.JobDispatcher.JobAggregatorInternal(None, None)
 		self.instance.check_open_rpc_interface()
 		self.sess = self.db.get_db_session()
 
