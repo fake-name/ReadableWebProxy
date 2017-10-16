@@ -11,14 +11,6 @@ import runStatus
 import mprpc
 
 
-# import socket
-# from bsonrpc import BatchBuilder, BSONRpc
-# from bsonrpc import request, notification, service_class
-
-# from common.fixed_bsonrpc import Fixed_BSONRpc
-
-
-
 
 class RemoteJobInterface(LogBase.LoggerMixin):
 
@@ -30,12 +22,19 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		# Execute in self.rpc_client:
 		for x in range(99999):
 			try:
+				self.log.info("Creating rpc_client")
 				mp_conf = {"use_bin_type":True}
 				self.rpc_client = mprpc.RPCClient('127.0.0.1', 4315, pack_params=mp_conf)
+				self.log.info("Validating RPC connection")
 
 				# self.rpc_client = self.rpc.get_peer_proxy(timeout=10)
 				self.check_ok()
 				return
+			except AttributeError as e:
+				self.log.error("Failed to create RPC interface?")
+				if x > 3:
+					raise e
+
 			except Exception as e:
 				if x > 3:
 					raise e
@@ -71,7 +70,7 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 
 
 	def check_ok(self):
-		ret, bstr = self.rpc_client.call('checkOk', )
+		ret, bstr = self.rpc_client.call('checkOk')
 		assert ret is True
 		assert len(bstr) > 0
 

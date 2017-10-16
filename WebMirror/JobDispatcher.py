@@ -85,8 +85,12 @@ class RpcBase(LogBase.LoggerMixin):
 				self.log.error("Failure when closing errored RPC interface")
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
-			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
-
+			try:
+				del self.rpc_interface
+			except Exception:
+				self.log.error("Failure when deleting errored RPC interface")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
 
 class RpcJobConsumerInternal(RpcBase):
 	loggerPath = "Main.JobConsumer"
