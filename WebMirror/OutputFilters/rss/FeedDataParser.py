@@ -180,9 +180,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	####################################################################################################################################################
 	####################################################################################################################################################
 
-	def getFunctionFromDb(self, srcname):
-		self.db_sess
-
 
 	def dispatchReleaseDbBacked(self, item):
 
@@ -213,9 +210,6 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			print("Failure when trying to extract item for source '%s'" % item['srcname'])
 			raise e
 
-		# NanoDesu is annoying and makes their releases basically impossible to parse. FFFUUUUUu
-		if "(NanoDesu)" in item['srcname'] and not ret:
-			return False
 
 		if ret is None:
 			return False

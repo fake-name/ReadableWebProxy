@@ -15,6 +15,8 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 
+from sqlalchemy.dialects.postgresql import JSON
+
 # from  sqlalchemy.sql.expression import func
 # from citext import CIText
 
@@ -118,6 +120,13 @@ class RssFeedPost(common.db_base.Base):
 	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
 	author        = association_proxy('author_rel',   'author',    creator=author_creator)
 
+class FeedPostMeta(common.db_base.Base):
+	__tablename__ = 'feed_post_meta'
+
+	id          = Column(BigInteger, primary_key=True)
+
+	contentid    = Column(Text, nullable=False, index=True, unique=True)
+	meta         = Column(JSON)
 
 
 ##########################################################################################
@@ -125,6 +134,36 @@ class RssFeedPost(common.db_base.Base):
 ##########################################################################################
 ##########################################################################################
 
+
+def get_feed_article_meta(feedid):
+	sess = get_db_session()
+	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
+	if have:
+		ret = have.meta
+	else:
+		ret = {}
+
+	sess.commit()
+
+	return ret
+
+def set_feed_article_meta(feedid, new_data):
+	sess = get_db_session()
+	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
+	if have:
+		print("Updating item: ", have, have.contentid, have.meta, new_data)
+		have.meta = new_data
+	else:
+		print("New item: ", feedid, new_data)
+		new = FeedPostMeta(
+			contentid = feedid,
+			meta      = new_data,
+			)
+		sess.add(new)
+
+	sess.commit()
+
+	return
 
 
 
@@ -177,6 +216,8 @@ def str_to_function(instr, name):
 	# These keys determine what modules are available to the database functions.
 	# If a database function needs a library, it has to be imported here!
 	scope = {
+		"get_feed_article_meta"            : get_feed_article_meta,
+		"set_feed_article_meta"            : set_feed_article_meta,
 		"buildReleaseMessage"              : buildReleaseMessage,
 		"extractChapterVol"                : extractChapterVol,
 		"extractChapterVolFragment"        : extractChapterVolFragment,

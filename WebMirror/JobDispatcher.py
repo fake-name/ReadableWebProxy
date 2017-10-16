@@ -8,6 +8,7 @@ import random
 import datetime
 import threading
 import signal
+import socket
 
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
@@ -141,6 +142,7 @@ class RpcJobConsumerInternal(RpcBase):
 					self.system_state['active_jobs']     -= 1
 					self.system_state['jobs_in']         += 1
 					self.system_state['active_jobs']      = max(self.system_state['active_jobs'], 0)
+					self.system_state['qsize']            = self.normal_out_queue.qsize()
 
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
@@ -187,7 +189,7 @@ class RpcJobConsumerInternal(RpcBase):
 		gc.collect()
 
 
-	def run(self):
+	def consume(self):
 
 
 		while self.run_flag.value == 1:
@@ -196,12 +198,15 @@ class RpcJobConsumerInternal(RpcBase):
 
 				self.__queue_consumer_internal()
 			except ConnectionRefusedError:
-				self.log.warning("RPC Remote appears to not be listening!")
+				self.log.warning("(ConnectionRefusedError) RPC Remote appears to not be listening!")
+				time.sleep(1)
+			except socket.timeout:
+				self.log.warning("(socket.timeout) RPC Remote appears to not be listening!")
 				time.sleep(1)
 			except Exception as e:
-				# with open("error - {}.txt".format(time.time()), "w") as fp:
-				# 	fp.write("Wat? Exception!\n\n")
-				# 	fp.write(traceback.format_exc())
+				with open("error %s - %s.txt" % ('job_consumer', time.time()), "w") as fp:
+					fp.write("Manager crashed?\n")
+					fp.write(traceback.format_exc())
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 
@@ -215,7 +220,15 @@ class RpcJobConsumerInternal(RpcBase):
 		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.system_state['active_jobs'], self.run_flag.value)
 		self.log.info("Job queue fetcher halted.")
 
+	def run(self):
+		try:
+			self.consume()
 
+		except Exception:
+			with open("error %s - %s.txt" % ('job_consumer', time.time()), "w") as fp:
+				fp.write("Manager crashed?\n")
+				fp.write(traceback.format_exc())
+			raise
 
 
 class RpcJobDispatcherInternal(RpcBase):
@@ -367,7 +380,7 @@ class RpcJobDispatcherInternal(RpcBase):
 		if 'drain' in sys.argv:
 			return
 
-		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS:
+		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < MAX_IN_FLIGHT_JOBS:
 			old = self.system_state['active_jobs']
 			num_new  = self._get_task_internal()
 			num_new += self._get_deferred_internal()
@@ -416,9 +429,16 @@ class RpcJobDispatcherInternal(RpcBase):
 
 				self.__queue_fillter_internal()
 			except ConnectionRefusedError:
-				self.log.warning("RPC Remote appears to not be listening!")
+				self.log.warning("(ConnectionRefusedError) RPC Remote appears to not be listening!")
+				time.sleep(1)
+			except socket.timeout:
+				self.log.warning("(socket.timeout) RPC Remote appears to not be listening!")
 				time.sleep(1)
 			except Exception as e:
+
+				with open("error %s - %s.txt" % (self.jq_mode, time.time()), "w") as fp:
+					fp.write("Manager crashed?\n")
+					fp.write(traceback.format_exc())
 				# with open("error - {}.txt".format(time.time()), "w") as fp:
 				# 	fp.write("Wat? Exception!\n\n")
 				# 	fp.write(traceback.format_exc())
@@ -460,8 +480,6 @@ class RpcJobDispatcherInternal(RpcBase):
 				            web_pages.state = 'new'
 				        AND
 				            normal_fetch_mode = true
-				        AND
-				            web_pages.fetchtime IS NULL
 				        AND
 				            web_pages.distance < 1000000
 				        AND
@@ -585,8 +603,13 @@ class RpcJobDispatcherInternal(RpcBase):
 
 
 	def run(self):
-
-		self.queue_filler_proc()
+		try:
+			self.queue_filler_proc()
+		except Exception:
+			with open("error %s - %s.txt" % (self.jq_mode, time.time()), "w") as fp:
+				fp.write("Manager crashed?\n")
+				fp.write(traceback.format_exc())
+			raise
 
 
 class MultiRpcRunner(LogBase.LoggerMixin):
@@ -605,6 +628,7 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 			'active_jobs' : 0,
 			'jobs_out'    : 0,
 			'jobs_in'     : 0,
+			'qsize'       : 0,
 			'lock'        : threading.Lock()
 		}
 
@@ -625,7 +649,12 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 
 		self.log.info("MultiRpcRunner threads started")
 		while self.run_flag.value == 1:
-			time.sleep(1)
+			for x in range(10):
+				time.sleep(1)
+				if not self.run_flag.value:
+					break
+			self.log.info("Active jobs: %s", [tmp.is_alive() for tmp in threads])
+
 
 		self.log.info("MultiRpcRunner exit flag seen. Joining on threads")
 		for thread in threads:
@@ -644,6 +673,9 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 			print("Error!")
 			print("Error!")
 			traceback.print_exc()
+			with open("error %s - %s.txt" % ("multijobmanager", time.time()), "w") as fp:
+				fp.write("Manager crashed?\n")
+				fp.write(traceback.format_exc())
 			raise
 
 
