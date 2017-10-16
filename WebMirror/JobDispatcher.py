@@ -6,6 +6,7 @@ import traceback
 import queue
 import random
 import datetime
+import threading
 import signal
 
 # import sqlalchemy.exc
@@ -62,21 +63,172 @@ else:
 	MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
 
+class RpcBase(LogBase.LoggerMixin):
+
+	def check_open_rpc_interface(self):
+		if not hasattr(self, "rpc_interface"):
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+		try:
+			if self.rpc_interface.check_ok():
+				return
 
 
-class RpcJobManagerInternal(LogBase.LoggerMixin):
+		except Exception:
+			self.log.error("Failure when probing RPC interface")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
+			try:
+				self.rpc_interface.close()
+				self.log.info("Closed interface due to connection exception.")
+			except Exception:
+				self.log.error("Failure when closing errored RPC interface")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
-	loggerPath = "Main.JobManager"
 
-	def __init__(self, job_queue, run_flag):
+class RpcJobConsumerInternal(RpcBase):
+	loggerPath = "Main.JobConsumer"
+
+	def __init__(self, job_queue, run_flag, system_state):
 		# print("Job __init__()")
 		super().__init__()
 
-		self.last_rx = datetime.datetime.now()
-		self.active_jobs = 0
-		self.jobs_out = 0
-		self.jobs_in = 0
 
+		self.normal_out_queue = job_queue
+		self.run_flag         = run_flag
+		self.system_state     = system_state
+
+
+		self.last_rx = datetime.datetime.now()
+
+		self.print_mod = 0
+
+
+	def __blocking_put_response(self, item):
+		while self.run_flag.value == 1:
+			try:
+				self.normal_out_queue.put_nowait(item)
+				return
+			except queue.Full:
+				self.log.warning("Response queue full (%s items). Sleeping", self.normal_out_queue.qsize())
+				time.sleep(1)
+
+	def process_responses(self):
+		while 1:
+
+			# Something in the RPC stuff is resulting in a typeerror I don't quite
+			# understand the source of. anyways, if that happens, just reset the RPC interface.
+			try:
+				tmp = self.rpc_interface.get_job()
+			except queue.Empty:
+				return
+
+			except TypeError:
+				self.check_open_rpc_interface()
+				return
+			except KeyError:
+				self.check_open_rpc_interface()
+				return
+
+			except bsonrpc.exceptions.ResponseTimeout:
+				self.check_open_rpc_interface()
+				return
+
+
+			if tmp:
+				with self.system_state['lock']:
+					self.system_state['active_jobs']     -= 1
+					self.system_state['jobs_in']         += 1
+					self.system_state['active_jobs']      = max(self.system_state['active_jobs'], 0)
+
+				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
+				self.last_rx = datetime.datetime.now()
+
+				self.__blocking_put_response(tmp)
+			else:
+				self.print_mod += 1
+				if self.print_mod > 20:
+					self.log.info("No job responses available.")
+					self.print_mod = 0
+				time.sleep(1)
+				break
+
+		# If we haven't had a received job in 10 minutes, reset the job counter because we might
+		# have leaked the jobs away somehow.
+		if (self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES)) < datetime.datetime.now():
+			if self.normal_out_queue.qsize() > MAX_IN_FLIGHT_JOBS:
+				self.log.warn("Long latency since last received job, but received job queue contains lots of jobs. Huh? (Jobqueue size: %s)", self.normal_out_queue.qsize())
+			else:
+				self.log.error("Timeout since last job seen. Resetting active job counter. (lastJob: %s)", self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES))
+
+				with self.system_state['lock']:
+					self.system_state['active_jobs']     = 0
+
+				self.last_rx = datetime.datetime.now()
+
+	def __queue_consumer_internal(self):
+
+		self.check_open_rpc_interface()
+
+		self.log.info("Job queue consumer starting.")
+
+		for _ in range(100):
+			if not self.run_flag.value == 1:
+				break
+			self.process_responses()
+
+			time.sleep(0.5)
+			self.log.info("Job queue consumer process. Current job queue size: %s (out: %s, in: %s). Runstate: %s",
+				self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.run_flag.value)
+
+		self.log.info("Job queue consumer saw exit flag. Halting.")
+		self.rpc_interface.close()
+		gc.collect()
+
+
+	def run(self):
+
+
+		while self.run_flag.value == 1:
+			print("Queue consumer looping!")
+			try:
+
+				self.__queue_consumer_internal()
+			except ConnectionRefusedError:
+				self.log.warning("RPC Remote appears to not be listening!")
+				time.sleep(1)
+			except Exception as e:
+				# with open("error - {}.txt".format(time.time()), "w") as fp:
+				# 	fp.write("Wat? Exception!\n\n")
+				# 	fp.write(traceback.format_exc())
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+
+		# Consume the remaining items in the output queue so it shuts down cleanly.
+		try:
+			while 1:
+				self.normal_out_queue.get_nowait()
+		except queue.Empty:
+			pass
+
+		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.system_state['active_jobs'], self.run_flag.value)
+		self.log.info("Job queue fetcher halted.")
+
+
+
+
+class RpcJobDispatcherInternal(RpcBase):
+
+	loggerPath = "Main.JobDispatcher"
+
+	def __init__(self, mode, run_flag, system_state):
+		# print("Job __init__()")
+		self.loggerPath = "Main.JobDispatcher(%s)" % mode
+
+		super().__init__()
+
+		self.last_rx = datetime.datetime.now()
 
 
 		self.db_interface = psycopg2.connect(
@@ -86,21 +238,15 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 				host     = settings.DATABASE_IP,
 			)
 
-		self.normal_out_queue = job_queue
-		self.run_flag = run_flag
+		self.system_state = system_state
+		self.jq_mode      = mode
+		self.run_flag     = run_flag
 
 		self.ruleset        = WebMirror.rules.load_rules()
 		self.specialcase    = WebMirror.rules.load_special_case_sites()
 		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
 		self.print_mod = 0
 
-
-	def run(self):
-
-		self.queue_filler_proc()
-
-	def get_queues(self):
-		return self.normal_out_queue
 
 	def join_proc(self):
 		self.log.info("Setting exit flag on processor.")
@@ -115,9 +261,11 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 		while 1:
 			try:
 				self.rpc_interface.put_job(raw_job)
-				self.active_jobs += 1
-				self.log.info("Dispatched new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
-				self.jobs_out += 1
+				with self.system_state['lock']:
+						self.system_state['active_jobs'] += 1
+						self.system_state['jobs_out'] += 1
+
+				self.log.info("Dispatched new job (active jobs: %s of %s)", self.system_state['active_jobs'], MAX_IN_FLIGHT_JOBS)
 				return
 			except TypeError:
 				self.check_open_rpc_interface()
@@ -219,17 +367,12 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 		if 'drain' in sys.argv:
 			return
 
-		while self.active_jobs < MAX_IN_FLIGHT_JOBS and self.normal_out_queue.qsize() < MAX_IN_FLIGHT_JOBS:
-			old = self.active_jobs
+		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS:
+			old = self.system_state['active_jobs']
 			num_new  = self._get_task_internal()
 			num_new += self._get_deferred_internal()
-			self.log.info("Need to add jobs to the job queue (%s active, %s added, queue: %s)!", self.active_jobs, self.active_jobs-old, self.normal_out_queue.qsize())
+			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.system_state['active_jobs'], self.system_state['active_jobs']-old)
 
-
-
-			# We have to handle job responses here too, or the response queue can bloat horribly
-			# while we're waiting for the output job queue to fill.
-			self.process_responses()
 			if runStatus.run_state.value != 1:
 				return
 
@@ -237,84 +380,6 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 			if num_new == 0:
 				break
 
-		# If we haven't had a received job in 10 minutes, reset the job counter because we might
-		# have leaked the jobs away somehow.
-		if (self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES)) < datetime.datetime.now():
-			if self.normal_out_queue.qsize() > MAX_IN_FLIGHT_JOBS:
-				self.log.warn("Long latency since last received job, but received job queue contains lots of jobs. Huh? (Jobqueue size: %s)", self.normal_out_queue.qsize())
-			else:
-				self.log.error("Timeout since last job seen. Resetting active job counter. (lastJob: %s)", self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES))
-				self.active_jobs = 0
-				self.last_rx = datetime.datetime.now()
-
-	def __blocking_put(self, item):
-		while runStatus.job_run_state.value == 1:
-			try:
-				self.normal_out_queue.put_nowait(item)
-				return
-			except queue.Full:
-				self.log.warning("Response queue full (%s items). Sleeping", self.normal_out_queue.qsize())
-				time.sleep(1)
-
-	def process_responses(self):
-		while 1:
-
-			# Something in the RPC stuff is resulting in a typeerror I don't quite
-			# understand the source of. anyways, if that happens, just reset the RPC interface.
-			try:
-				tmp = self.rpc_interface.get_job()
-			except queue.Empty:
-				return
-
-			except TypeError:
-				self.check_open_rpc_interface()
-				return
-			except KeyError:
-				self.check_open_rpc_interface()
-				return
-
-			except bsonrpc.exceptions.ResponseTimeout:
-				self.check_open_rpc_interface()
-				return
-
-
-			if tmp:
-				self.active_jobs -= 1
-				self.jobs_in += 1
-				if self.active_jobs < 0:
-					self.active_jobs = 0
-				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.active_jobs, self.normal_out_queue.qsize())
-				self.last_rx = datetime.datetime.now()
-
-				self.__blocking_put(tmp)
-			else:
-				self.print_mod += 1
-				if self.print_mod > 20:
-					self.log.info("No job responses available.")
-					self.print_mod = 0
-				time.sleep(1)
-				break
-
-	def check_open_rpc_interface(self):
-		if not hasattr(self, "rpc_interface"):
-			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
-		try:
-			if self.rpc_interface.check_ok():
-				return
-
-
-		except Exception:
-			self.log.error("Failure when probing RPC interface")
-			for line in traceback.format_exc().split("\n"):
-				self.log.error(line)
-			try:
-				self.rpc_interface.close()
-				self.log.info("Closed interface due to connection exception.")
-			except Exception:
-				self.log.error("Failure when closing errored RPC interface")
-				for line in traceback.format_exc().split("\n"):
-					self.log.error(line)
-			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 
 	def __queue_fillter_internal(self):
 		# try:
@@ -328,14 +393,14 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 
 		self.log.info("Job queue fetcher starting.")
 
-		for x in range(1000):
+		for _ in range(1000):
 			if not runStatus.job_run_state.value == 1:
 				break
 			self.fill_jobs()
-			self.process_responses()
 
-			time.sleep(2.5)
-			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.job_run_state.value==1)
+			time.sleep(0.5)
+			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s",
+				self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.run_flag.value)
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
@@ -360,24 +425,16 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 
-		# Consume the remaining items in the output queue so it shuts down cleanly.
-		try:
-			while 1:
-				self.normal_out_queue.get_nowait()
-		except queue.Empty:
-			pass
-
-		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.active_jobs, runStatus.job_run_state.value==1)
-
+		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.system_state['active_jobs'], self.run_flag.value)
 		self.log.info("Job queue fetcher halted.")
 
 	def _get_deferred_internal(self):
-		rid, joburl, netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
+		rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 		newcnt = 0
 		while rid:
 			self.put_fetch_job(rid, joburl)
 			newcnt += 1
-			rid, joburl, netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
+			rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 
 		return newcnt
 
@@ -464,12 +521,16 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 
 		while runStatus.run_state.value == 1:
 			try:
-				cursor.execute(raw_query_never_fetched)
-				rids_1 = cursor.fetchall()
-				cursor.execute(raw_query_ordered)
-				rids_2 = cursor.fetchall()
+				if self.jq_mode == 'priority':
+					cursor.execute(raw_query_ordered)
+					rids = cursor.fetchall()
+				elif self.jq_mode == 'new_fetch':
+					cursor.execute(raw_query_never_fetched)
+					rids = cursor.fetchall()
+				else:
+					self.log.error("Unknown job queue dispatcher mode: %s", self.jq_mode)
+					rids = []
 
-				rids = rids_1 + rids_2
 
 				cursor.execute("COMMIT;")
 				break
@@ -522,26 +583,85 @@ class RpcJobManagerInternal(LogBase.LoggerMixin):
 
 		return len(rids)
 
-def run_shim(job_queue, run_flag):
-	try:
-		instance = RpcJobManagerInternal(job_queue, run_flag)
-		instance.run()
-	except Exception:
-		print("Error!")
-		print("Error!")
-		print("Error!")
-		print("Error!")
-		traceback.print_exc()
-		raise
+
+	def run(self):
+
+		self.queue_filler_proc()
 
 
-class RpcJobManagerWrapper():
+class MultiRpcRunner(LogBase.LoggerMixin):
+	loggerPath = "Main.MultiRpcRunner"
+
+	def __init__(self, job_queue, run_flag):
+		super().__init__()
+
+		self.log.info("MultiRpcRunner creating RPC feeder/consumer threads")
+		self.job_queue = job_queue
+		self.run_flag  = run_flag
+
+	def run(self):
+
+		system_state = {
+			'active_jobs' : 0,
+			'jobs_out'    : 0,
+			'jobs_in'     : 0,
+			'lock'        : threading.Lock()
+		}
+
+		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.run_flag, system_state)
+		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.run_flag, system_state)
+		job_consumer_proc   = RpcJobConsumerInternal(self.job_queue, self.run_flag, system_state)
+
+
+		threads = [
+			threading.Thread(target=new_fetch_proc.run),
+			threading.Thread(target=priority_fetch_proc.run),
+			threading.Thread(target=job_consumer_proc.run),
+		]
+
+		self.log.info("MultiRpcRunner starting RPC feeder/consumer threads")
+		for thread in threads:
+			thread.start()
+
+		self.log.info("MultiRpcRunner threads started")
+		while self.run_flag.value == 1:
+			time.sleep(1)
+
+		self.log.info("MultiRpcRunner exit flag seen. Joining on threads")
+		for thread in threads:
+			thread.join()
+		self.log.info("MultiRpcRunner joined all threads. Exiting")
+
+
+	@classmethod
+	def run_shim(cls, job_queue, run_flag):
+		try:
+			instance = cls(job_queue, run_flag)
+			instance.run()
+		except Exception:
+			print("Error!")
+			print("Error!")
+			print("Error!")
+			print("Error!")
+			traceback.print_exc()
+			raise
+
+
+
+class RpcJobManagerWrapper(LogBase.LoggerMixin):
+	loggerPath = "Main.RpcInterfaceManager"
+
+
 	def __init__(self, start_worker=True):
+		super().__init__()
+
+		self.log.info("Launching job-dispatching RPC system")
+
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
-		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS)
+		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
 		self.run_flag = multiprocessing.Value("b", 1)
 		if start_worker:
-			self.main_job_agg = multiprocessing.Process(target=run_shim, args=(self.normal_out_queue, self.run_flag))
+			self.main_job_agg = multiprocessing.Process(target=MultiRpcRunner.run_shim, args=(self.normal_out_queue, self.run_flag))
 			self.main_job_agg.start()
 		else:
 			self.main_job_agg = None
@@ -551,36 +671,10 @@ class RpcJobManagerWrapper():
 		return self.normal_out_queue
 
 	def join_proc(self):
+		self.log.info("Requesting job-dispatching RPC system to halt.")
 		self.run_flag.value = 0
 
 		if self.main_job_agg:
 			self.main_job_agg.join()
-
-
-
-def test2():
-	import logSetup
-	import pprint
-	logSetup.initLogging()
-
-	specialcase = WebMirror.rules.load_special_case_sites()
-	WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/1", "www.novelupdates.com")
-	WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/2", "www.novelupdates.com")
-
-
-
-	for x in range(30):
-		print("Sleeping, ", x)
-		time.sleep(1)
-		ret = WebMirror.SpecialCase.getSpecialCase(specialcase)
-		print("Return: ", ret)
-		if x == 15:
-			WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/3", "www.novelupdates.com")
-			WebMirror.SpecialCase.pushSpecialCase(specialcase, 0, "http://www.novelupdates.com/4", "www.novelupdates.com")
-
-	print("Done!")
-
-if __name__ == "__main__":
-	test2()
 
 
