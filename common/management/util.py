@@ -6,7 +6,6 @@ if __name__ == "__main__":
 
 import common.database as db
 
-import WebMirror.TimedTriggers.QueueTriggers
 import pickle
 import urllib.parse
 import pprint

@@ -8,8 +8,9 @@ import traceback
 import urllib.parse
 import sqlalchemy.exc
 import common.database as db
+import common.LogBase
 
-class TriggerBaseClass(metaclass=abc.ABCMeta):
+class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 	# Abstract class (must be subclassed)
 	__metaclass__ = abc.ABCMeta
@@ -19,19 +20,13 @@ class TriggerBaseClass(metaclass=abc.ABCMeta):
 		return None
 
 	@abc.abstractmethod
-	def loggerPath(self):
-		return None
-
-	@abc.abstractmethod
 	def go(self):
 		return None
 
 
 	def __init__(self):
-
+		super().__init__()
 		self.db = db
-
-		self.log = logging.getLogger("Main.Trigger."+self.loggerPath)
 		self.log.info("Loading %s Runner", self.pluginName)
 
 

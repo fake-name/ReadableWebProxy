@@ -11,13 +11,14 @@ import WebMirror.JobDispatcher
 
 
 
-class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
+class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, WebMirror.JobDispatcher.RpcMixin):
 
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.instance = WebMirror.JobDispatcher.JobAggregatorInternal(None, None)
-		self.instance.check_open_rpc_interface()
+		# self.instance = WebMirror.JobDispatcher.RpcJobDispatcherInternal(None, None)
+		self.check_open_rpc_interface()
+
 		self.sess = self.db.get_db_session()
 
 
@@ -51,10 +52,19 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 		job = self.get_create_job(url)
 		job.state = 'fetching'
 		self.sess.commit()
-		print("Job: ", job, job.state)
 
-		self.instance.put_fetch_job(job.id, job.url)
+		raw_job = WebMirror.JobUtils.buildjob(
+			module         = 'WebRequest',
+			call           = 'getItem',
+			dispatchKey    = "fetcher",
+			jobid          = job.id,
+			args           = [job.url],
+			kwargs         = {},
+			additionalData = {'mode' : 'fetch'},
+			postDelay      = 0
+		)
 
+		self.rpc_interface.put_job(raw_job)
 
 	def go(self):
 		for url in self.get_urls():

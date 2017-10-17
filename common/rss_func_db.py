@@ -134,9 +134,13 @@ class FeedPostMeta(common.db_base.Base):
 ##########################################################################################
 ##########################################################################################
 
+META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 
 def get_feed_article_meta(feedid):
-	sess = get_db_session()
+	if feedid in META_CACHE:
+		return META_CACHE[feedid]
+
+	sess = get_db_session(flask_sess_if_possible=False)
 	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
 	if have:
 		ret = have.meta
@@ -145,10 +149,18 @@ def get_feed_article_meta(feedid):
 
 	sess.commit()
 
+
+	META_CACHE[feedid] = ret
+
 	return ret
 
 def set_feed_article_meta(feedid, new_data):
-	sess = get_db_session()
+
+	if feedid in META_CACHE:
+		if META_CACHE[feedid] == new_data:
+			return
+
+	sess = get_db_session(flask_sess_if_possible=False)
 	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
 	if have:
 		print("Updating item: ", have, have.contentid, have.meta, new_data)
@@ -162,6 +174,8 @@ def set_feed_article_meta(feedid, new_data):
 		sess.add(new)
 
 	sess.commit()
+
+	META_CACHE[feedid] = new_data
 
 	return
 

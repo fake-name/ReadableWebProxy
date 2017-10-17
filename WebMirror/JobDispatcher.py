@@ -64,15 +64,13 @@ else:
 	MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
 
-class RpcBase(LogBase.LoggerMixin):
-
+class RpcMixin():
 	def check_open_rpc_interface(self):
 		if not hasattr(self, "rpc_interface"):
 			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
 		try:
 			if self.rpc_interface.check_ok():
 				return
-
 
 		except Exception:
 			self.log.error("Failure when probing RPC interface")
@@ -92,7 +90,7 @@ class RpcBase(LogBase.LoggerMixin):
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 
-class RpcJobConsumerInternal(RpcBase):
+class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 	loggerPath = "Main.JobConsumer"
 
 	def __init__(self, job_queue, run_flag, system_state):
@@ -153,6 +151,10 @@ class RpcJobConsumerInternal(RpcBase):
 
 				self.__blocking_put_response(tmp)
 			else:
+
+				with self.system_state['lock']:
+					self.system_state['qsize']            = self.normal_out_queue.qsize()
+
 				self.print_mod += 1
 				if self.print_mod > 20:
 					self.log.info("No job responses available.")
@@ -235,7 +237,7 @@ class RpcJobConsumerInternal(RpcBase):
 			raise
 
 
-class RpcJobDispatcherInternal(RpcBase):
+class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 
 	loggerPath = "Main.JobDispatcher"
 
@@ -384,7 +386,7 @@ class RpcJobDispatcherInternal(RpcBase):
 		if 'drain' in sys.argv:
 			return
 
-		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < MAX_IN_FLIGHT_JOBS:
+		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < 100:
 			old = self.system_state['active_jobs']
 			num_new  = self._get_task_internal()
 			num_new += self._get_deferred_internal()
@@ -416,8 +418,8 @@ class RpcJobDispatcherInternal(RpcBase):
 			self.fill_jobs()
 
 			time.sleep(0.5)
-			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s",
-				self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.run_flag.value)
+			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s, pq: %s). Runstate: %s",
+				self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'], self.run_flag.value)
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
@@ -449,7 +451,7 @@ class RpcJobDispatcherInternal(RpcBase):
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 
-		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.system_state['active_jobs'], self.run_flag.value)
+		self.log.info("Job queue filler process halting. Current job queue size: %s. Runstate: %s", self.system_state['active_jobs'], self.run_flag.value)
 		self.log.info("Job queue fetcher halted.")
 
 	def _get_deferred_internal(self):
@@ -591,6 +593,8 @@ class RpcJobDispatcherInternal(RpcBase):
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		deleted = 0
+
+
 		for rid, netloc, joburl in rids:
 			if "booksie" in netloc:
 				continue
@@ -602,6 +606,10 @@ class RpcJobDispatcherInternal(RpcBase):
 				self.put_fetch_job(rid, joburl)
 
 		cursor.close()
+
+		if len(rids) == 0:
+			self.log.warning("No jobs to dispatch in query response!?")
+
 
 		return len(rids)
 

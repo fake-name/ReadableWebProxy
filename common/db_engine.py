@@ -80,8 +80,8 @@ def release_session(session):
 
 
 
-def get_db_session(postfix=""):
-	if flags.IS_FLASK:
+def get_db_session(postfix="", flask_sess_if_possible=True):
+	if flags.IS_FLASK and flask_sess_if_possible:
 		return g.session
 
 

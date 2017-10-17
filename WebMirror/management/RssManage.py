@@ -33,7 +33,6 @@ import pprint
 import config
 from config import C_RAW_RESOURCE_DIR
 
-import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.OutputFilters.rss.FeedDataParser
 
 import WebMirror.OutputFilters.util.feedNameLut

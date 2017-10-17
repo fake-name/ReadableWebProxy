@@ -1,4 +1,6 @@
 
+import concurrent.futures
+
 from flask import g
 from flask import render_template
 from flask import flash
@@ -10,7 +12,6 @@ from flask import jsonify
 # from flask.ext.babel import gettext
 # from guess_language import guess_language
 from app import app
-
 
 import WebMirror.API
 from sqlalchemy import desc
@@ -121,6 +122,9 @@ def renderFeedEntry(postid):
 						   )
 
 
+def process_release(dp, proc_tmp, titlestr):
+	proc_tmp['vcfp']      = extractVolChapterFragmentPostfix(titlestr)
+	return dp.dispatchReleaseDbBacked(proc_tmp)
 
 def proto_process_releases(feed_releases):
 	ret_dict = {
@@ -140,24 +144,28 @@ def proto_process_releases(feed_releases):
 			type=None,
 			)
 
-	for item in feed_releases:
-		proc_tmp = {}
-		proc_tmp['feedtype']  = item.type
-		proc_tmp['title']     = item.title
-		proc_tmp['guid']      = item.contentid
-		proc_tmp['linkUrl']   = item.contenturl
-		proc_tmp['updated']   = item.updated
-		proc_tmp['published'] = item.published
-		proc_tmp['contents']  = item.contents
-		proc_tmp['tags']      = item.tags
-		proc_tmp['authors']   = item.author
-		proc_tmp['srcname']   = item.feed_entry.feed_name
-		proc_tmp['feed_id']   = item.feed_entry.id
+	futures = []
+	with concurrent.futures.ThreadPoolExecutor(max_workers=8) as tpe:
+		for item in feed_releases:
+			proc_tmp = {}
+			proc_tmp['feedtype']  = item.type
+			proc_tmp['title']     = item.title
+			proc_tmp['guid']      = item.contentid
+			proc_tmp['linkUrl']   = item.contenturl
+			proc_tmp['updated']   = item.updated
+			proc_tmp['published'] = item.published
+			proc_tmp['contents']  = item.contents
+			proc_tmp['tags']      = item.tags
+			proc_tmp['authors']   = item.author
+			proc_tmp['srcname']   = item.feed_entry.feed_name
+			proc_tmp['feed_id']   = item.feed_entry.id
 
-		proc_tmp['vcfp']      = extractVolChapterFragmentPostfix(item.title)
+			# proc_tmp['vcfp']      = extractVolChapterFragmentPostfix(item.title)
+			future_tbd = tpe.submit(process_release, dp, proc_tmp, str(item.title))
+			futures.append((future_tbd, proc_tmp))
 
-		ret = dp.dispatchReleaseDbBacked(proc_tmp)
-
+	for res_proxy, proc_tmp in futures:
+		ret = res_proxy.result()
 		# False means not caught. None means intentionally ignored.
 		if ret:
 			ret_dict["successful"].append((ret, proc_tmp))
