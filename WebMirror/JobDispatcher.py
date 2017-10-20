@@ -66,29 +66,34 @@ else:
 
 class RpcMixin():
 	def check_open_rpc_interface(self):
-		if not hasattr(self, "rpc_interface"):
-			self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
-		try:
-			if self.rpc_interface.check_ok():
-				return
+		for _ in range(5):
+			try:
 
-		except Exception:
-			self.log.error("Failure when probing RPC interface")
-			for line in traceback.format_exc().split("\n"):
-				self.log.error(line)
-			try:
-				self.rpc_interface.close()
-				self.log.info("Closed interface due to connection exception.")
+				if not hasattr(self, "rpc_interface"):
+					self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+
+				if self.rpc_interface.check_ok():
+					return
+				else:
+					self.log.error("RPC Interface not OK?")
 			except Exception:
-				self.log.error("Failure when closing errored RPC interface")
+
+				self.log.error("Failure when probing RPC interface")
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
-			try:
-				del self.rpc_interface
-			except Exception:
-				self.log.error("Failure when deleting errored RPC interface")
-				for line in traceback.format_exc().split("\n"):
-					self.log.error(line)
+
+				try:
+					self.rpc_interface.close()
+					self.log.info("Closed interface due to connection exception.")
+				except Exception:
+					self.log.error("Failure when closing errored RPC interface")
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
+
+				self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+				self.rpc_interface.check_ok()
+
+		raise RuntimeError("RPC interface appears to not be active. Nothing to do?")
 
 class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 	loggerPath = "Main.JobConsumer"

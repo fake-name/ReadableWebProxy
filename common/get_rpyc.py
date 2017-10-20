@@ -41,7 +41,10 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 
 	def __del__(self):
 		if hasattr(self, 'rpc_client'):
-			self.rpc_client.close() # Closes the socket 's' also
+			try:
+				self.rpc_client.close() # Closes the socket 's' also
+			except AttributeError:
+				pass
 
 	def get_job(self):
 		try:
@@ -73,6 +76,8 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		ret, bstr = self.rpc_client.call('checkOk')
 		assert ret is True
 		assert len(bstr) > 0
+
+		return ret
 
 	def close(self):
 		self.rpc_client.close()
