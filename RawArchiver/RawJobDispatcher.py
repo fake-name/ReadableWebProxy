@@ -42,10 +42,10 @@ largv = [tmp.lower() for tmp in sys.argv]
 if "twoprocess" in largv or "oneprocess" in largv:
 	MAX_IN_FLIGHT_JOBS = 2
 else:
-	MAX_IN_FLIGHT_JOBS = 50
+	# MAX_IN_FLIGHT_JOBS = 50
 	# MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 250
-	# MAX_IN_FLIGHT_JOBS = 500
+	MAX_IN_FLIGHT_JOBS = 500
 	# MAX_IN_FLIGHT_JOBS = 1000
 	# MAX_IN_FLIGHT_JOBS = 3000
 

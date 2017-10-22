@@ -12,6 +12,7 @@ import WebMirror.rules
 import WebMirror.Runner
 import WebMirror.UrlUpserter
 import RawArchiver.RawRunner
+import RawArchiver.UrlUtils
 import common.stuck
 
 from settings import NO_PROCESSES
@@ -34,11 +35,11 @@ def go():
 		print("RAW Scrape!")
 		if not "noreset" in largv:
 			print("Resetting any in-progress downloads.")
-			RawArchiver.UrlUpserter.resetRawInProgress()
+			RawArchiver.UrlUtils.resetRawInProgress()
 		else:
 			print("Not resetting in-progress downloads.")
 
-		RawArchiver.UrlUpserter.initializeRawStartUrls()
+		RawArchiver.UrlUtils.initializeRawStartUrls()
 		runner.run_raw()
 	else:
 
