@@ -21,10 +21,8 @@ import os
 import settings
 import common.global_constants
 import common.util.urlFuncs
-# import common.database as db
 import common.LogBase as LogBase
 import WebMirror.rules
-# import WebMirror.OutputFilters.AmqpInterface
 import common.get_rpyc
 import runStatus
 import WebMirror.SpecialCase
@@ -228,7 +226,6 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 		except queue.Empty:
 			pass
 
-		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.system_state['active_jobs'], self.run_flag.value)
 		self.log.info("Job queue fetcher halted.")
 
 	def run(self):
@@ -390,19 +387,23 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 	def fill_jobs(self):
 		if 'drain' in sys.argv:
 			return
-
+		total_new = 0
 		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < 100:
 			old = self.system_state['active_jobs']
-			num_new  = self._get_task_internal()
+			num_new = self._get_task_internal()
 			num_new += self._get_deferred_internal()
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.system_state['active_jobs'], self.system_state['active_jobs']-old)
 
 			if runStatus.run_state.value != 1:
 				return
 
+			total_new += num_new
+
 			# If there weren't any new items, stop looping because we're not going anywhere.
 			if num_new == 0:
 				break
+
+		return total_new
 
 
 	def __queue_fillter_internal(self):
@@ -420,11 +421,11 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		for _ in range(1000):
 			if not runStatus.job_run_state.value == 1:
 				break
-			self.fill_jobs()
+			newj = self.fill_jobs()
 
 			time.sleep(0.5)
-			self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s, pq: %s). Runstate: %s",
-				self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'], self.run_flag.value)
+			self.log.info("Job queue filler process. Added %s, active jobs: %s (out: %s, in: %s, pq: %s). Runstate: %s",
+				newj, self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'], self.run_flag.value)
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
