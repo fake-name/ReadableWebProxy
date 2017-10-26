@@ -504,6 +504,31 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				    web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
+		raw_query_any = '''
+				UPDATE
+				    web_pages
+				SET
+				    state = 'fetching'
+				WHERE
+				    web_pages.id IN (
+				        SELECT
+				            web_pages.id
+				        FROM
+				            web_pages
+				        WHERE
+				            web_pages.state = 'new'
+				        AND
+				            normal_fetch_mode = true
+				        AND
+				            web_pages.distance < 1000000
+				        LIMIT {in_flight}
+				    )
+				AND
+				    web_pages.state = 'new'
+				RETURNING
+				    web_pages.id, web_pages.netloc, web_pages.url;
+			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
+
 		raw_query_ordered = '''
 				UPDATE
 				    web_pages
@@ -556,6 +581,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 					rids = cursor.fetchall()
 				elif self.jq_mode == 'new_fetch':
 					cursor.execute(raw_query_never_fetched)
+					rids = cursor.fetchall()
+				elif self.jq_mode == 'random':
+					cursor.execute(raw_query_any)
 					rids = cursor.fetchall()
 				else:
 					self.log.error("Unknown job queue dispatcher mode: %s", self.jq_mode)
@@ -652,12 +680,14 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 
 		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.run_flag, system_state)
 		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.run_flag, system_state)
+		random_fetch_proc   = RpcJobDispatcherInternal('random',  self.run_flag, system_state)
 		job_consumer_proc   = RpcJobConsumerInternal(self.job_queue, self.run_flag, system_state)
 
 
 		threads = [
 			threading.Thread(target=new_fetch_proc.run),
 			threading.Thread(target=priority_fetch_proc.run),
+			threading.Thread(target=random_fetch_proc.run),
 			threading.Thread(target=job_consumer_proc.run),
 		]
 

@@ -222,6 +222,8 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/time-traveler&q=comic/time-traveler&q=comic/',
 
 		'/preventative-measures&q=comic/preventative-measures&q=comic/',
+		'/topic/ubc&q=comic/topic/',
+		'/topic/games&q=comic/topic/',
 
 	]
 

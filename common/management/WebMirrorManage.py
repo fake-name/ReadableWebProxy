@@ -691,7 +691,7 @@ def exposed_drop_priorities():
 
 				processed  = idx - start
 				total_todo = stop - start
-				print('%10i, %10i, %7.4f, %6i' % (idx, stop, processed/total_todo * 100, have.rowcount))
+				print('\r%10i, %10i, %7.4f, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount), end="", flush=True)
 				changed += have.rowcount
 				if changed > step:
 					print("Committing (%s changed rows)...." % changed, end=' ')

@@ -120,9 +120,9 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 						have = db.NuReleaseItem(
 								validated        = False,
 								reviewed         = 'unverified',
-								seriesname       = item['seriesname'],
-								releaseinfo      = item['releaseinfo'],
-								groupinfo        = item['groupinfo'],
+								seriesname       = item['seriesname'].strip(),
+								releaseinfo      = item['releaseinfo'].strip(),
+								groupinfo        = item['groupinfo'].strip(),
 								referrer         = item['referrer'],
 								outbound_wrapper = item['outbound_wrapper'],
 								first_seen       = datetime.datetime.now(),

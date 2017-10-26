@@ -124,6 +124,9 @@ class NuHeader(LogBase.LoggerMixin):
 
 		haveset = random.sample(haveset, min(put, len(haveset)))
 
+		put = 0
+		active = set()
+
 		for have in haveset:
 			if len(list(have.resolved)) >= 3:
 				raise RuntimeError("Overresolved item that's not valid.")
@@ -142,6 +145,9 @@ class NuHeader(LogBase.LoggerMixin):
 				self.log.error("Id: %s", have.id)
 				continue
 
+			if have.outbound_wrapper in active:
+				continue
+			active.add(have.outbound_wrapper)
 
 			have.fetch_attempts += 1
 			self.db_sess.commit()
@@ -203,12 +209,16 @@ class NuHeader(LogBase.LoggerMixin):
 
 
 			self.rpc.put_job(raw_job)
+			put += 1
+
+		return put
 
 	def process_avail(self):
-
+		received = 0
 		while self.process_single_avail():
+			received += 1
 			self.log.info("Processing response!")
-
+		return received
 
 	def check_open_rpc_interface(self):
 		try:
@@ -413,7 +423,7 @@ class NuHeader(LogBase.LoggerMixin):
 		if not row.actual_target:
 			return
 
-		self.log.info("Release for series: %s -> %s -> %s", row.seriesname, row.releaseinfo, row.actual_target)
+		self.log.info("Release for series: %s -> %s -> %s", row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
 
 
 		vol, chap, frag, postfix = extractVolChapterFragmentPostfix(row.releaseinfo)
@@ -550,41 +560,55 @@ class NuHeader(LogBase.LoggerMixin):
 			self.check_probable_validate(row)
 
 		self.db_sess.commit()
+	def block_for_n_responses(self, resp_cnt):
+
+		received = 0
+		loops = 0
+		while 1:
+			received += self.process_avail()
+			for x in range(5):
+				print("\r`fetch_and_flush` sleeping for {} more responses ({} of {}, loop {})\r".format(resp_cnt - received, received, resp_cnt, loops), end='', flush=True)
+				loops += 1
+				time.sleep(1)
+			if received >= resp_cnt:
+				return
+
+
+
+	def run(self):
+
+		while 1:
+			self.process_avail()
+
+			self.validate_from_new()
+			self.timestamp_validated()
+			self.fix_names()
+
+			self.validate_probable_ok()
+
+			ago = datetime.datetime.now() - datetime.timedelta(days=3)
+			self.transmit_since(ago)
+
+
+
+			self.validate_from_new()
+			self.timestamp_validated()
+			active_jobs = self.put_job(put=100)
+			self.block_for_n_responses(active_jobs)
+
+			self.validate_from_new()
+			self.timestamp_validated()
+			self.fix_names()
+
+			self.validate_probable_ok()
+
+			ago = datetime.datetime.now() - datetime.timedelta(days=3)
+			self.transmit_since(ago)
+
 
 def fetch_and_flush():
 	hd = NuHeader()
-	hd.process_avail()
-
-	hd.validate_from_new()
-	hd.timestamp_validated()
-	hd.fix_names()
-
-	hd.validate_probable_ok()
-
-	ago = datetime.datetime.now() - datetime.timedelta(days=3)
-	hd.transmit_since(ago)
-
-
-
-	hd.validate_from_new()
-	hd.timestamp_validated()
-	hd.put_job(put=100)
-	mins = 10
-	for x in range(mins):
-		hd.process_avail()
-		for y in range(60):
-			time.sleep(1)
-			print("\r`fetch_and_flush` sleeping for {}\r".format(str((mins * 60) - (x * 60 + y)).rjust(4)), end='')
-
-	hd.validate_from_new()
-	hd.timestamp_validated()
-	hd.fix_names()
-
-	hd.validate_probable_ok()
-
-	ago = datetime.datetime.now() - datetime.timedelta(days=3)
-	hd.transmit_since(ago)
-
+	hd.run()
 
 def schedule_next_exec(scheduler, at_time):
 	# NU Sync system has to run with a memory jobstore, and a process pool executor,
@@ -627,6 +651,7 @@ if __name__ == '__main__':
 	logSetup.initLogging()
 
 	hdl = NuHeader()
+	hdl.run()
 	hdl.validate_probable_ok()
 
 	ago = datetime.datetime.now() - datetime.timedelta(days=3)
