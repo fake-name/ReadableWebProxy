@@ -1,4 +1,7 @@
 
+if __name__ == "__main__":
+	import logSetup
+	logSetup.initLogging()
 
 import inspect
 import sys
@@ -18,9 +21,6 @@ import WebMirror.management.RssManage
 # Moar
 import WebMirror.management.FeedDbManage
 
-if __name__ == "__main__":
-	import logSetup
-	logSetup.initLogging()
 
 func_prefix = "exposed_"
 

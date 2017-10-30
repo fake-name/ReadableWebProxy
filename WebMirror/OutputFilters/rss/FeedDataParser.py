@@ -39,8 +39,15 @@ def %s(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
-	if "WATTT" in item['tags']:
-		return buildReleaseMessage(item, "WATTT", vol, chp, frag=frag, postfix=postfix)
+	tagmap = [
+		('PRC',       'PRC',                      'translated'),
+		('Loiterous', 'Loiterous',                'oel'),
+	]
+
+	for tagname, name, tl_type in tagmap:
+		if tagname in item['tags']:
+			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
 
 	return False
 	"""

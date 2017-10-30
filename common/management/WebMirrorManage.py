@@ -90,12 +90,19 @@ def exposed_fetch(url, debug=True, rss_debug=False):
 	# except RuntimeError:  # Fetcher already started
 	# 	pass
 
+	specialcase_data    = WebMirror.rules.load_special_case_sites()
+
+
 	if rss_debug:
 		print("Debugging RSS")
 		flags.RSS_DEBUG = True
 
 	parsed = urllib.parse.urlparse(url)
 	root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+
+	if WebMirror.SpecialCase.haveSpecialCase(specialcase_data, url, parsed.netloc):
+		WebMirror.SpecialCase.pushSpecialCase(specialcase_data, -1, url, parsed.netloc, None)
+		return
 
 	new = db.WebPages(
 		url       = url,

@@ -14,6 +14,7 @@ from common.rss_func_db import Author
 from common.rss_func_db import RssFeedPost
 from common.rss_func_db import RssFeedUrlMapper
 from common.rss_func_db import RssFeedEntry
+from common.rss_func_db import FeedPostMeta
 
 from common.cookie_db import WebCookieDb
 

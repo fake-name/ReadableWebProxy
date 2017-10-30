@@ -158,6 +158,7 @@ def set_feed_article_meta(feedid, new_data):
 
 	if feedid in META_CACHE:
 		if META_CACHE[feedid] == new_data:
+			print("Item already updated. Nothing to do.")
 			return
 
 	sess = get_db_session(flask_sess_if_possible=False)

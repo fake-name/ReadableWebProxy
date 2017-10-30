@@ -6,11 +6,14 @@ if __name__ == '__main__':
 import logging
 import datetime
 import random
-import common.database as db
 import multiprocessing
 import traceback
 import time
 import queue
+
+from sqlalchemy import desc
+import common.database as db
+
 
 import WebMirror.JobUtils
 
@@ -62,10 +65,42 @@ def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance
 
 	job_aggregator_instance.put_assembled_job(raw_job)
 
+def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
+	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
+
+
+	sess = db.get_db_session(flask_sess_if_possible=False)
+	have = sess.query(db.FeedPostMeta).order_by(desc(db.FeedPostMeta.id)).limit(500).all()
+
+	meta_dict = {}
+	for row in have:
+		meta_dict[row.contentid] = row.meta
+
+	sess.commit()
+
+
+	raw_job = WebMirror.JobUtils.buildjob(
+		module         = 'PreprocessFetch',
+		call           = 'qidianSmartFeedFetch',
+		dispatchKey    = "fetcher",
+		jobid          = rid,
+		args           = [joburl],
+		kwargs         = {'meta' : meta_dict},
+		additionalData = {},
+		postDelay      = 0,
+		serialize      = True,
+	)
+
+	print("Raw job:")
+	print(raw_job)
+
+	# job_aggregator_instance.put_assembled_job(raw_job)
+
 
 dispatchers = {
 	'rate_limit'            : handleRateLimiting,
 	'chrome_render_fetch'   : handleRemoteRenderFetch,
+	'qudian_feed_forward'   : qidianSmartFeedFetch,
 }
 
 
@@ -101,9 +136,15 @@ def pushSpecialCase(specialcase, rid, joburl, netloc, job_aggregator_instance):
 	Return true if there was a queue responseto handle, false if there was not.
 	'''
 
-	assert netloc in specialcase
 
-	commands = specialcase[netloc]
+	if netloc in specialcase:
+		commands = specialcase[netloc]
+	elif joburl in specialcase:
+		commands = specialcase[joburl]
+	else:
+		raise ValueError("SpecialCase handler called for URL (%s, %s) without handler!" % (joburl, netloc))
+
+
 	op, params = commands[0], commands[1:]
 
 	if op in dispatchers:
@@ -123,6 +164,9 @@ def haveSpecialCase(specialcase, joburl, netloc):
 
 	if netloc in specialcase:
 		# No special case for netloc
+		return True
+
+	if joburl in specialcase:
 		return True
 
 

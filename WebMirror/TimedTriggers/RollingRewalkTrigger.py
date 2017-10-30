@@ -23,11 +23,12 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 	pluginName = "RollingRewalk Trigger"
 
-	loggerPath = 'RollingRewalk'
+	loggerPath = 'Main.RollingRewalk'
 
 
 	def retrigger_netloc(self, netloc, ago):
-
+		self.log.info("Retrigging for netloc: %s", netloc)
+		self.log.info("Fetching IDs requiring retriggering.")
 		sess = self.db.get_db_session()
 		q = sess.query(self.db.WebPages.id)                    \
 					.filter(
@@ -121,6 +122,8 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 	def go(self):
 
+		print("Startup?")
+
 		rules = WebMirror.rules.load_rules()
 		self.log.info("Rolling re-trigger of starting URLs.")
 
@@ -134,7 +137,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 				else:
 					interval = ruleset['rewalk_interval_days']
 				nl = urllib.parse.urlsplit(starturl).netloc
-				print("Interval: %s, netloc: %s" % (interval, nl))
+				self.log.info("Interval: %s, netloc: %s", interval, nl)
 				starturls.append((interval, nl))
 
 		starturls = set(starturls)
@@ -152,7 +155,6 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 			# "+2" is to (hopefully) allow the normal rewalk system to catch the site.
 			ago = datetime.datetime.now() - datetime.timedelta(days=(interval + 2))
-
 			self.retrigger_netloc(nl, ago)
 
 			# def conditional_check(row):
@@ -165,6 +167,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 			# self.retriggerUrl(url, conditional=conditional_check)
 
+		self.log.info("Now retriggering all old items.")
 		self.retrigger_other()
 		self.log.info("Old files retrigger complete.")
 
