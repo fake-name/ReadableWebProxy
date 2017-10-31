@@ -36,7 +36,6 @@ import WebMirror.processor.HtmlProcessor
 
 
 
-
 class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 

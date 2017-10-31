@@ -275,7 +275,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		self.log.info("Joining on worker thread.")
 
 
-	def put_assembled_job(self, raw_job):
+	def put_job(self, raw_job):
 
 		# Recycle the rpc interface if it ded
 		errors = 0
@@ -316,7 +316,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			postDelay      = 0
 		)
 
-		self.put_assembled_job(raw_job)
+		self.put_job(raw_job)
 
 	def generalLinkClean(self, link, badwords, badcompounds):
 		if link.startswith("data:"):

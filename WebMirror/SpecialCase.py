@@ -63,7 +63,7 @@ def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance
 	)
 
 
-	job_aggregator_instance.put_assembled_job(raw_job)
+	job_aggregator_instance.put_job(raw_job)
 
 def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
@@ -91,10 +91,11 @@ def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 		serialize      = True,
 	)
 
-	print("Raw job:")
-	print(raw_job)
+	# print("Raw job:")
+	# print(raw_job)
+	# return raw_job
 
-	# job_aggregator_instance.put_assembled_job(raw_job)
+	job_aggregator_instance.put_job(raw_job)
 
 
 dispatchers = {

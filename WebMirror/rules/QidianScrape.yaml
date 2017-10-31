@@ -82,6 +82,6 @@ stripTitle: ["| Krytyk's translations"]
 
 
 special_case_filters : {
-	# "https://www.webnovel.com/feed/" : ["qudian_feed_forward", ],
+	"https://www.webnovel.com/feed/" : ["qudian_feed_forward", ],
 }
 
