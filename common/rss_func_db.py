@@ -29,6 +29,7 @@ import common.db_types
 import code
 import ast
 import re
+import json
 import datetime
 import cachetools
 
@@ -238,6 +239,7 @@ def str_to_function(instr, name):
 		"extractChapterVolFragment"        : extractChapterVolFragment,
 		"extractVolChapterFragmentPostfix" : extractVolChapterFragmentPostfix,
 		"re"                               : re,
+		"json"                             : json,
 	}
 	popkeys = set(scope.keys())
 	popkeys.add("__builtins__")

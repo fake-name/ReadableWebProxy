@@ -154,7 +154,6 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 		ret = []
 
 		for entry in entries:
-
 			if entry['title'].startswith('User:'):
 				# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
 				continue
@@ -197,6 +196,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 			if 'content' in entry:
+				item['content'] = entry['content']
 				item['contents'] = self.extractFeedContents(feedUrl, entry['content'])
 			elif 'summary' in entry:
 				item['contents'] = self.extractFeedContents(feedUrl, entry['summary'])

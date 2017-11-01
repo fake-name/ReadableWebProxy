@@ -305,10 +305,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# # transferred content (e.g. is it an image/html page/binary file)
 	def fetch(self, preretrieved):
 
-		print("Fetch call with preretrieved")
-		print(len(preretrieved))
-		print(type(preretrieved))
-
+		
 		if not preretrieved:
 			self.target_url = url_util.urlClean(self.target_url)
 			content, fName, mimeType = self.getItem(self.target_url)

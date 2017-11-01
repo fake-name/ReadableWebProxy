@@ -1868,7 +1868,7 @@ def exposed_test_qidian_fetch():
 
 	print("Dispatching job engine")
 
-	# WebMirror.SpecialCase.qidianSmartFeedFetch(None, -1, 'https://www.webnovel.com/feed/', None, job_aggregator_instance=rpc_interface)
+	WebMirror.SpecialCase.qidianSmartFeedFetch(None, -1, 'https://www.webnovel.com/feed/', None, job_aggregator_instance=rpc_interface)
 
 	for x in range(60 * 15):
 
@@ -1894,22 +1894,23 @@ def process_response(resp, sess):
 
 	if 'ret' in resp:
 
-
 		c_lok = cookie_lock = multiprocessing.Lock()
 		engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok, new_job_queue=None, db_interface=sess)
+		print("Dispatching resp ret")
 		engine.dispatchRequest(testJobFromUrl('https://www.webnovel.com/feed/'), resp['ret'])
 
 
 
 def exposed_test_qidian_feed_proc(dpath):
+	sess = common.database.get_db_session()
 	with open(dpath) as fp:
 		content = fp.read()
 
-	feed = feedparser.parse(content)
-
-	for item in feed['entries']:
-		pprint.pprint(item)
-		print(item['content'][0]['value'])
+	resp = (content, "",  'application/rss+xml')
+	c_lok = cookie_lock = multiprocessing.Lock()
+	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok, new_job_queue=None, db_interface=sess)
+	print("Dispatching resp ret")
+	engine.dispatchRequest(testJobFromUrl('https://www.webnovel.com/feed/'), resp)
 
 
 
