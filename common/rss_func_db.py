@@ -157,16 +157,18 @@ def get_feed_article_meta(feedid):
 
 def set_feed_article_meta(feedid, new_data):
 
-	if feedid in META_CACHE:
-		if META_CACHE[feedid] == new_data:
-			print("Item already updated. Nothing to do.")
-			return
+	# if feedid in META_CACHE:
+	# 	if META_CACHE[feedid] == new_data:
+	# 		return
 
 	sess = get_db_session(flask_sess_if_possible=False)
 	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
 	if have:
-		print("Updating item: ", have, have.contentid, have.meta, new_data)
-		have.meta = new_data
+		if have.meta != new_data:
+			print("Updating item: ", have, have.contentid, have.meta, new_data)
+			have.meta = new_data
+		else:
+			print("Item has not changed. Nothing to do!")
 	else:
 		print("New item: ", feedid, new_data)
 		new = FeedPostMeta(
