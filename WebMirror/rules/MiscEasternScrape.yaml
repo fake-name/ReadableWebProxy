@@ -1,7 +1,7 @@
 type: eastern
 
 
-rewalk_interval_days: 15
+rewalk_interval_days: 30
 
 send_raw_feed: True
 
@@ -71,6 +71,8 @@ baseUrl: [
 
 		'http://www.wiseclock.ca',
 		'http://girlyboysalliance.mozello.com',
+
+		'https://asianhobbyist.com',
 
 
 	]

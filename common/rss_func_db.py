@@ -165,7 +165,9 @@ def set_feed_article_meta(feedid, new_data):
 	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
 	if have:
 		if have.meta != new_data:
-			print("Updating item: ", have, have.contentid, have.meta, new_data)
+			print("Updating item: ", have, have.contentid)
+			print("	old -> ", have.meta)
+			print("	new -> ", new_data)
 			have.meta = new_data
 		else:
 			print("Item has not changed. Nothing to do!")

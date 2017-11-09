@@ -1,6 +1,8 @@
 import time
 import queue
 import pprint
+import sys
+import random
 
 import datetime
 import common.database
@@ -113,6 +115,7 @@ def _get_unqualified_urls():
 	print(feed)
 	print(feed.feed_name)
 	releases = list(feed.releases)
+	random.shuffle(releases)
 	print("Have %s releases" % len(releases))
 
 
@@ -124,15 +127,15 @@ def _get_unqualified_urls():
 			print(release, release.contenturl, meta, release.contentid,)
 			ret.append(release.contenturl)
 			guid_url_map[release.contenturl] = release.contentid
-			if len(ret) > 100:
+			if len(ret) > 250:
 				return ret, guid_url_map
 
+	print("Terminated with less then the target number of items (%s)" % len(ret))
 	return ret, guid_url_map
 
-def exposed_process_unqualified_qidian_feed_items():
+def exposed_process_unqualified_qidian_feed_items(wat=None):
 
 	urls, guid_url_map = _get_unqualified_urls()
-	print(urls)
 
 
 	rpc_interface = common.get_rpyc.RemoteJobInterface("Test_Interface!")
@@ -141,7 +144,6 @@ def exposed_process_unqualified_qidian_feed_items():
 
 	raw_job = _build_qidian_resolver_job(urls, extradat=guid_url_map)
 
-	print(raw_job)
 
 	rpc_interface.put_job(raw_job)
 
@@ -152,6 +154,8 @@ def exposed_process_unqualified_qidian_feed_items():
 			if tmp:
 				print("response!")
 				process_resolver_response(tmp)
+				if 'onefetch' in sys.argv:
+					return
 			else:
 				print("No tmp:", tmp, x)
 				time.sleep(1)

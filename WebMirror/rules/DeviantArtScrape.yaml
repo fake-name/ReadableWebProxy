@@ -1,22 +1,13 @@
-type: western
+type: eastern
 
 
 rewalk_interval_days: 30
 
-send_raw_feed: False
+send_raw_feed: True
 
 baseUrl: [
+		'https://darksilencer.deviantart.com',
 
-		# WHRY No rss? Sadface
-		'http://www.silversrise.com',
-
-	]
-
-feeds: [
-
-]
-
-extraStartUrls: [
 	]
 
 badwords: [
@@ -45,25 +36,23 @@ badwords: [
 			'/images/css/images/',
 
 			'/search.php?',
+
 			]
 
 
 
 decomposeBefore: [
-	{'class'      :'comments-area'},
+	{'class'      : 'comments-area'},
 ]
 
 decompose: [
+	{'id'     : 'popup'},
+	{'id'     : 'errorb'},
+	{'id'     : 'header-menu'},
+	{'id'     : 'header-logo'},
+	{'id'     : 'header-submenu'},
+	{'class'  : 'tools'},
 
-
-	{'class'  : 'main-nav'},
-	{'class'  : 'inside-right-sidebar'},
-	{'class'  : 'screen-reader-text'},
-	{'class'  : 'site-footer'},
-	{'class'  : 'menu-toggle'},
-	{'class'  : 'site-header'},
-	{'class'  : 'paging-navigation'},
-	{'class'  : 'comments-area'},
 ]
 
 stripTitle: [

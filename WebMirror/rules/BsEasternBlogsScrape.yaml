@@ -8,7 +8,7 @@ FOLLOW_GOOGLE_LINKS: True
 
 send_raw_feed: True
 
-rewalk_interval_days: 15
+rewalk_interval_days: 30
 
 baseUrl: [
 
@@ -180,6 +180,8 @@ baseUrl: [
 	'https://legendarygomo.blogspot.com',
 	'https://otakutls.blogspot.com',
 	'http://novelasian.blogspot.ae',
+	'https://novustreasures.blogspot.sg',
+	'https://hainemakorutranslations.blogspot.com',
 
 	# Dead:
 	# 'http://hereticlnt.blogspot.com',

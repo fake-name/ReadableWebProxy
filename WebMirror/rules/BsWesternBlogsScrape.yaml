@@ -2,7 +2,7 @@
 # Grab all images, ignoring host domain
 allImages: True
 
-rewalk_interval_days: 15
+rewalk_interval_days: 30
 
 FOLLOW_GOOGLE_LINKS: True
 

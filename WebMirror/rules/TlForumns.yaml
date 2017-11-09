@@ -1,7 +1,7 @@
 type: eastern
 
 
-rewalk_interval_days: 20
+rewalk_interval_days: 30
 
 send_raw_feed: False
 

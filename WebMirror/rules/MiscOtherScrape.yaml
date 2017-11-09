@@ -1,19 +1,17 @@
-type: western
+type: unknown
 
 
-rewalk_interval_days: 30
+rewalk_interval_days: 45
 
-send_raw_feed: False
+send_raw_feed: True
 
 baseUrl: [
+		'http://www.kapitbisig.com',
 
-		# WHRY No rss? Sadface
-		'http://www.silversrise.com',
 
 	]
 
 feeds: [
-
 ]
 
 extraStartUrls: [
@@ -45,16 +43,32 @@ badwords: [
 			'/images/css/images/',
 
 			'/search.php?',
+
+			# I think I can conclude basically 85% of people who hand-roll
+			# their own HTML are completely incapable.
+			'www.eugenewoodbury.com/feeds/posts/',
+			'www.eugenewoodbury.com/kasho/paradise/',
+			'www.eugenewoodbury.com/wind/image/',
+
+
+			# Stupid dreamwidth commenting garbage.
+			'?replyto=',
+
+			'&reverse-paginate=true&',
+			'?like_comment=',
+
+			# Block mobile garbage.
+			'm.xianxiaworld.net',
 			]
 
 
 
 decomposeBefore: [
 	{'class'      :'comments-area'},
+	{'class' : "adsbygoogle"},
 ]
 
 decompose: [
-
 
 	{'class'  : 'main-nav'},
 	{'class'  : 'inside-right-sidebar'},
@@ -62,6 +76,7 @@ decompose: [
 	{'class'  : 'site-footer'},
 	{'class'  : 'menu-toggle'},
 	{'class'  : 'site-header'},
+	{'class'  : 'blog-sidebar'},
 	{'class'  : 'paging-navigation'},
 	{'class'  : 'comments-area'},
 ]

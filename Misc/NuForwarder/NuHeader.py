@@ -422,6 +422,9 @@ class NuHeader(LogBase.LoggerMixin):
 			return
 		if not row.actual_target:
 			return
+			
+		if "www.webnovel.com" in row.actual_target and "/rssbook/" in row.actual_target:
+			return
 
 		self.log.info("Release for series: %s -> %s -> %s", row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
 

@@ -3,7 +3,7 @@ type: eastern
 
 send_raw_feed: True
 
-rewalk_interval_days: 15
+rewalk_interval_days: 30
 
 baseUrl: [
 
@@ -1343,6 +1343,14 @@ baseUrl: [
 	# Private:
 	# 'koongkoongtranslations.com',
 
+	'http://blog.onehallyu.com',
+	'http://elpiscreation.com',
+	'http://novelyy.com',
+	'http://shmtranslations.com',
+	'https://www.asianhobbyist.com',
+	'https://www.blobtranslations.com',
+	'https://www.paradoxnovels.com',
+
 	'https://arftranslations.wordpress.com',
 	'https://badgrammartranslations.wordpress.com',
 	'https://binbogami.wordpress.com',
@@ -1358,6 +1366,32 @@ baseUrl: [
 	'https://sugardarkthetranslation.wordpress.com',
 	'https://unhingedtranslation.wordpress.com',
 	'http://www.world-three.org',
+
+	'https://drztranslation.wordpress.com',
+	'https://kainantranslations.wordpress.com',
+	'https://komirrutranslations.wordpress.com',
+	'https://shenhuatranslations.wordpress.com',
+	'https://sofluffytranslations.wordpress.com',
+	'https://strangelyinterestingstory.wordpress.com',
+	'http://rabbitcultivation.com',
+	'https://www.sakuranovels.com',
+
+	'https://hyaenasblog.wordpress.com',
+	'https://cerphistranslation.wordpress.com',
+	'https://dmtranslationscn.wordpress.com',
+	'https://fabledforest.wordpress.com',
+	'https://hirowtranslation.wordpress.com',
+	'https://horobinomichi.wordpress.com',
+	'https://nanming.wordpress.com',
+	'https://novelexpress.wordpress.com',
+	'https://paperpetalsweb.wordpress.com',
+	'https://silvenetranslation.wordpress.com',
+	'https://tsukimochisite.wordpress.com',
+	'https://tynkerd.wordpress.com',
+	'https://webnoveltranslation.wordpress.com',
+	'https://wysteriats.wordpress.com',
+	'https://xueversity.wordpress.com',
+	'https://zettaidametl.wordpress.com',
 
 	]
 
