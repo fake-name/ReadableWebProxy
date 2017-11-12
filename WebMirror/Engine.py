@@ -445,7 +445,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			return None
 
 		if any([all([badword in linkl for badword in badcompound]) for badcompound in badcompounds]):
-			print("Compound Filtered:", link, [badword for badword in badwords if badword in linkl ])
+			# print("Compound Filtered:", link, [badword for badword in badwords if badword in linkl ])
 			return None
 
 		return link
@@ -469,22 +469,28 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	# Todo: FIXME
-	def filterContentLinks(self, job, links, badwords, badcompounds):
+	def filterContentLinks(self, job, links, badwords, badcompounds, debug=False):
 		ret = set()
 		for link in links:
 			link = self.generalLinkClean(link, badwords, badcompounds)
 			if not link:
+				if debug:
+					self.log.info("Link collapsed to empty after cleaning")
 				continue
 			if self.haveBadPathSegments(link):
 				continue
 
 			netloc = urllib.parse.urlsplit(link).netloc
 			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
-				# print("Valid content link: ", link)
 				ret.add(link)
+			else:
+				if debug:
+					self.log.info("Bad letloc: %s -> %s (netloc in self.ctnt_filters: %s, job.netloc in self.ctnt_filters[netloc]: %s)",
+						netloc, job.netloc, netloc in self.ctnt_filters, job.netloc in self.ctnt_filters[netloc])
+					self.log.info("Wat: %s", self.ctnt_filters[netloc])
 		return ret
 
-	def filterResourceLinks(self, job, links, badwords, badcompounds):
+	def filterResourceLinks(self, job, links, badwords, badcompounds, debug=False):
 		ret = set()
 		for link in links:
 			link = self.generalLinkClean(link, badwords, badcompounds)
@@ -519,28 +525,33 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def getMaxPriority(self, netloc):
 		return max(rules['maximum_priority'] for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs'])
 
-	def upsertResponseLinks(self, job, plain=[], resource=[]):
+	def upsertResponseLinks(self, job, plain=[], resource=[], debug=False):
 		self.log.info("Processing response links.")
 		plain    = set(plain)
 		resource = set(resource)
+
+		# print("Plain links: ")
+		# pprint.pprint(plain)
+		# print("Resource links: ")
+		# pprint.pprint(resource)
 
 		unfiltered = len(plain)+len(resource)
 
 		badwords, badcompounds = self.getBadWords(job)
 
-		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds)
-		resource = self.filterResourceLinks(job, resource, badwords, badcompounds)
+		if debug:
+			self.log.info("Have %s plain, %s resource links before filtering", len(plain), len(resource))
+		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds, debug=debug)
+		resource = self.filterResourceLinks(job, resource, badwords, badcompounds, debug=debug)
 
 		filtered = len(plain)+len(resource)
-		self.log.info("Found %s links (%s filtered)" % (filtered, unfiltered))
+		self.log.info("Found %s links (%s before filtering)" % (filtered, unfiltered))
 
 		items = []
 		[items.append((link, True))  for link in plain]
 		[items.append((link, False)) for link in resource]
 
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
-
-
 
 		new_starturl = job.starturl
 

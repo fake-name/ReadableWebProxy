@@ -20,6 +20,8 @@ def dump_response(resp):
 
 def exposed_test_chromium_fetch():
 	'''
+	Run a test-fetch with the chromium remote
+	rendering system
 
 	'''
 	print("Chromium Test")

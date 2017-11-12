@@ -1,5 +1,6 @@
 
 import time
+import multiprocessing
 import urllib.parse
 import pprint
 import json
@@ -245,15 +246,10 @@ class DbFlattener(object):
 
 		remaining = len(end)
 		for batched in batch(end, 50):
-			for count, url in batched:
 
-				with db.session_context() as temp_sess:
-					while 1:
-						try:
-							self.truncate_url_history(temp_sess, url)
-							break
-						except sqlalchemy.exc.OperationalError:
-							temp_sess.rollback()
+			p = multiprocessing.Process(target=incremental_history_consolidate, args=(batched, ))
+			p.start()
+			p.join()
 
 			remaining = remaining - len(batched)
 			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
@@ -263,7 +259,16 @@ class DbFlattener(object):
 			print(growth)
 
 
+	def incremental_consolidate(self, batched):
 
+		for count, url in batched:
+			with db.session_context() as temp_sess:
+				while 1:
+					try:
+						self.truncate_url_history(temp_sess, url)
+						break
+					except sqlalchemy.exc.OperationalError:
+						temp_sess.rollback()
 
 	def tickle_rows(self, sess, urlset):
 		jobs = []
@@ -364,6 +369,10 @@ class DbFlattener(object):
 	def _go(self):
 		self.consolidate_history()
 		self.fix_missing_history()
+
+def incremental_history_consolidate(batched):
+	proc = DbFlattener()
+	proc.incremental_consolidate(batched)
 
 def consolidate_history():
 	proc = DbFlattener()

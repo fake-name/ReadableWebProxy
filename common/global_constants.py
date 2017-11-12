@@ -53,6 +53,8 @@ GLOBAL_BAD_URLS = [
 			'/wp-content/themes/',
 			'/wp-json/oembed/',
 
+			'tracking.feedpress.it',
+
 			# At least one site (booksie) is serving the favicon with a mime-type
 			# of "text/plain", which then confuses the absolute crap out of the
 			# mime-type dispatcher.

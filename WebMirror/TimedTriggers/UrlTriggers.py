@@ -96,7 +96,7 @@ class HourlyPageTrigger(PageTriggerBase):
 		'https://twitter.com/Nano_Desu_Yo',
 
 		# Fetch the new NovelUpdates stuff.
-		'https://www.novelupdates.com/',
+		'http://www.novelupdates.com/',
 	]
 
 
