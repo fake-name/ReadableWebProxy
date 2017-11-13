@@ -44,6 +44,8 @@ badwords: [
 			'/css/css/',
 			'/images/css/images/',
 
+			'/images/misc/css.php',
+
 			'forum.wuxiaworld.com/profile/',
 
 			# IDGAF about tv shows and shit.

@@ -430,7 +430,12 @@ def exposed_rss_month():
 
 def exposed_process_qidian_feeds():
 	'''
+	Scan the qidian feed items, and extract the book url segments which are not
+	in the feedparser url-seg -> title map.
 
+	Given those segments, then do a HTTP fetch, and pull out the page title.
+	Finally, print that information in a nice table for updating the
+	scraper func.
 	'''
 
 	with db.session_context() as sess:

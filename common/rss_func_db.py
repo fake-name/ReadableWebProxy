@@ -150,8 +150,13 @@ def get_feed_article_meta(feedid):
 
 	sess.commit()
 
+	try:
+		META_CACHE[feedid] = ret
+	except KeyError:
+		global META_CACHE
+		META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+		META_CACHE[feedid] = ret
 
-	META_CACHE[feedid] = ret
 
 	return ret
 
@@ -181,7 +186,12 @@ def set_feed_article_meta(feedid, new_data):
 
 	sess.commit()
 
-	META_CACHE[feedid] = new_data
+	try:
+		META_CACHE[feedid] = new_data
+	except KeyError:
+		global META_CACHE
+		META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+		META_CACHE[feedid] = new_data
 
 	return
 
