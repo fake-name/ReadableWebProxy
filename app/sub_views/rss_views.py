@@ -24,6 +24,7 @@ import astor
 
 from app.utilities import paginate
 import app.sub_views.content_views as content_views
+import common.global_constants
 import common.database as db
 import common.rss_func_db as rfdb
 
@@ -246,6 +247,9 @@ def feedFiltersRoot():
 			'noveltoread.com',
 			'wuxiasociety.freeforums.net',
 		]
+		for item in common.global_constants.RSS_SKIP_FILTER:
+			skip_missing.append(item)
+
 		for feed in feeds_in:
 			if feed.feed_name in [tmp.feed_netloc for tmp in feed.urls]:
 				if feed.feed_name not in skip_missing:

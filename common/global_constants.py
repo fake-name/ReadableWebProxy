@@ -100,6 +100,7 @@ GLOBAL_BAD_URLS = [
 			'ref=dp_brlad_entry',
 			'https:/www.',
 			'tumblr.com/oembed/1.0?',
+			'/wp-includes/js/',
 	]
 
 
@@ -139,6 +140,13 @@ RSS_SKIP_FILTER = [
 
 
 
+	# WTF is this even from?
+	'www.miforcampuspolice.com',
+
+	'tracking.feedpress.it',
+	'en.blog.wordpress.com',
+
+
 ]
 
 
@@ -152,7 +160,7 @@ RSS_TITLE_FILTER = [
 
 # Goooooo FUCK YOURSELF
 GLOBAL_INLINE_BULLSHIT = [
-
+			"Property of Fantasy-Books.live | outside of it, it is stolen.",
 			"This translation is property of Infinite Novel Translations.",
 			"This translation is property of Infinite NovelTranslations.",
 			"If you read this anywhere but at Infinite Novel Translations, you are reading a stolen translation.",

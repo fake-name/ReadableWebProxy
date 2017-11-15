@@ -21,6 +21,7 @@ import WebMirror.management.Testing
 
 # Moar
 import WebMirror.management.FeedDbManage
+import WebMirror.management.UrlManage
 
 
 func_prefix = "exposed_"
@@ -39,6 +40,7 @@ SCANNED_MODULES = [
 
 	WebMirror.management.FeedDbManage,
 	WebMirror.management.RssManage,
+	WebMirror.management.UrlManage,
 	WebMirror.management.Testing,
 ]
 

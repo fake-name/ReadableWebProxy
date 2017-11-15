@@ -60,8 +60,8 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if cls.match_re.search(url):
 			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
 			return True
-		else:
-			print("RRLSeriesPageProcessor doesn't want url: '%s'" % url)
+		# else:
+		# 	print("RRLSeriesPageProcessor doesn't want url: '%s'" % url)
 
 		return False
 

@@ -13,6 +13,7 @@ import socket
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
 
+import cachetools
 import psycopg2
 import bsonrpc.exceptions
 import sys
@@ -148,6 +149,8 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 					self.system_state['jobs_in']         += 1
 					self.system_state['active_jobs']      = max(self.system_state['active_jobs'], 0)
 					self.system_state['qsize']            = self.normal_out_queue.qsize()
+
+
 
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
@@ -303,7 +306,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 						self.log.warning(line)
 
 
-	def put_fetch_job(self, jobid, joburl):
+	def put_fetch_job(self, jobid, joburl, netloc):
 		# module='WebRequest', call='getItem'
 		raw_job = WebMirror.JobUtils.buildjob(
 			module         = 'WebRequest',
@@ -312,7 +315,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			jobid          = jobid,
 			args           = [joburl],
 			kwargs         = {},
-			additionalData = {'mode' : 'fetch'},
+			additionalData = {'mode' : 'fetch', 'netloc' : netloc},
 			postDelay      = 0
 		)
 
@@ -461,10 +464,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		self.log.info("Job queue fetcher halted.")
 
 	def _get_deferred_internal(self):
-		rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
+		rid, joburl, netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 		newcnt = 0
 		while rid:
-			self.put_fetch_job(rid, joburl)
+			self.put_fetch_job(rid, joburl, netloc)
 			newcnt += 1
 			rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 
@@ -637,7 +640,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
 				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc, self)
 			else:
-				self.put_fetch_job(rid, joburl)
+				self.put_fetch_job(rid, joburl, netloc)
 
 		cursor.close()
 
@@ -675,12 +678,14 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 			'jobs_out'    : 0,
 			'jobs_in'     : 0,
 			'qsize'       : 0,
+			'fetch_fails' : cachetools.TTLCache(maxsize=5000, ttl=60 * 60 * 6),
+
 			'lock'        : threading.Lock()
 		}
 
 		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.run_flag, system_state)
 		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.run_flag, system_state)
-		random_fetch_proc   = RpcJobDispatcherInternal('random',  self.run_flag, system_state)
+		random_fetch_proc   = RpcJobDispatcherInternal('random',     self.run_flag, system_state)
 		job_consumer_proc   = RpcJobConsumerInternal(self.job_queue, self.run_flag, system_state)
 
 
