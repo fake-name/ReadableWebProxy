@@ -20,6 +20,7 @@ import sys
 import os
 
 import settings
+import common.NetlocThrottler
 import common.global_constants
 import common.util.urlFuncs
 import common.LogBase as LogBase
@@ -144,13 +145,24 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 
 
 			if tmp:
+
+				nl = None
+				if 'extradat' in tmp and 'netloc' in tmp['extradat']:
+					nl = tmp['extradat']['netloc']
+
 				with self.system_state['lock']:
 					self.system_state['active_jobs']     -= 1
 					self.system_state['jobs_in']         += 1
 					self.system_state['active_jobs']      = max(self.system_state['active_jobs'], 0)
 					self.system_state['qsize']            = self.normal_out_queue.qsize()
 
-
+					if nl:
+						if 'success' in tmp and tmp['success']:
+							self.system_state['ratelimiter'].netloc_ok(nl)
+						else:
+							self.system_state['ratelimiter'].netloc_error(nl)
+					else:
+						self.log.warning("Missing netloc in response extradat!")
 
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
@@ -306,7 +318,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 						self.log.warning(line)
 
 
-	def put_fetch_job(self, jobid, joburl, netloc):
+	def put_fetch_job(self, jobid, joburl, netloc=None):
 		# module='WebRequest', call='getItem'
 		raw_job = WebMirror.JobUtils.buildjob(
 			module         = 'WebRequest',
@@ -471,6 +483,13 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			newcnt += 1
 			rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 
+		with self.system_state['lock']:
+			new_j_l =self.system_state['ratelimiter'].get_available_jobs()
+
+		for rid, joburl, netloc in new_j_l:
+			self.put_fetch_job(rid, joburl, netloc)
+			newcnt += 1
+
 		return newcnt
 
 	def _get_task_internal(self):
@@ -631,7 +650,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		deleted = 0
 
-
+		defer = []
 		for rid, netloc, joburl in rids:
 			if "booksie" in netloc:
 				continue
@@ -640,7 +659,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
 				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc, self)
 			else:
-				self.put_fetch_job(rid, joburl, netloc)
+				defer.append((rid, joburl, netloc))
+				# self.put_fetch_job(rid, joburl, netloc)
+
+		with self.system_state['lock']:
+			for rid_d, joburl_d, netloc_d in defer:
+				self.system_state['ratelimiter'].put_job(rid_d, joburl_d, netloc_d)
 
 		cursor.close()
 
@@ -678,7 +702,7 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 			'jobs_out'    : 0,
 			'jobs_in'     : 0,
 			'qsize'       : 0,
-			'fetch_fails' : cachetools.TTLCache(maxsize=5000, ttl=60 * 60 * 6),
+			'ratelimiter' : common.NetlocThrottler.NetlockThrottler(),
 
 			'lock'        : threading.Lock()
 		}

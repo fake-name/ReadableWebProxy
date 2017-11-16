@@ -108,11 +108,11 @@ dispatchers = {
 def getSpecialCase(specialcase):
 	log.info("Special case handler checking for deferred fetches.")
 	with FETCH_LOCK:
-		print()
-		print("RATE_LIMIT_ITEMS")
-		for key, value in RATE_LIMIT_ITEMS.items():
-			print("	%s -> %s (%s)" % (key, value['queue'].qsize(), value))
-		print()
+		# print()
+		# print("RATE_LIMIT_ITEMS")
+		# for key, value in RATE_LIMIT_ITEMS.items():
+		# 	print("	%s -> %s (%s)" % (key, value['queue'].qsize(), value))
+		# print()
 		for key in RATE_LIMIT_ITEMS.keys():
 			if RATE_LIMIT_ITEMS[key]['ntime'] < time.time():
 				try:
@@ -152,7 +152,7 @@ def pushSpecialCase(specialcase, rid, joburl, netloc, job_aggregator_instance):
 		return dispatchers[op](params, rid, joburl, netloc, job_aggregator_instance)
 	else:
 		log.error("Error! Unknown special-case filter!")
-		print("Filter name: '%s', parameters: '%s', job conf: '%s'", op, params, (rid, joburl, netloc))
+		log.error("Filter name: '%s', parameters: '%s', job conf: '%s'", op, params, (rid, joburl, netloc))
 
 
 
