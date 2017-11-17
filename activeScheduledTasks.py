@@ -1,4 +1,5 @@
 
+#pylint: disable=C0413,C0412
 
 # Convenience functions to make intervals clearer.
 def days(num):
@@ -7,7 +8,6 @@ def hours(num):
 	return 60*60*num
 def minutes(num):
 	return 60*num
-
 
 # Plugins in this dictionary are the active plugins. Comment out a plugin to disable it.
 # plugin keys specify when plugins will start, and cannot be duplicates.
@@ -32,6 +32,7 @@ scrapePlugins = {
 
 	# 5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                            hours(12)),
 	7  : (WebMirror.management.FeedDbManage.RssFunctionSaver,                        hours(12)),
+	8  : (Misc.HistoryAggregator.Consolidate.TransactionTruncator,                   hours(12)),
 
 }
 
@@ -44,4 +45,5 @@ autoscheduler_plugins = {
 }
 
 print("Trigger plugins: %s, autoscheduler plugins: %s" % (len(scrapePlugins), len(autoscheduler_plugins)))
+
 

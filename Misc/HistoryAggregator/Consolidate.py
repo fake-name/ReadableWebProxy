@@ -46,12 +46,33 @@ def batch(iterable, n=1):
 	for ndx in range(0, l, n):
 		yield iterable[ndx:min(ndx + n, l)]
 
+class TransactionTruncator(object):
+
+
+	def __init__(self):
+		self.log = logging.getLogger("Main.DbVersioning.TransactionTruncator")
+		self.qlog = logging.getLogger("Main.DbVersioning.TransactionTruncator.Query")
+
+	def truncate_transaction_table(self):
+		with db.session_context() as sess:
+			self.qlog.info("Deleting items in transaction table")
+			sess.execute("""
+				DELETE FROM transaction;
+				""")
+			sess.execute("COMMIT;")
+
+
+	def _go(self):
+		self.truncate_transaction_table()
+
+
+
 class DbFlattener(object):
 
 
 	def __init__(self):
 		self.log = logging.getLogger("Main.DbVersioning.Cleaner")
-		self.qlog = logging.getLogger("Main.DbVersioning.Query")
+		self.qlog = logging.getLogger("Main.DbVersioning.Cleaner.Query")
 
 		self.snap_times = self.generate_snap_times()
 

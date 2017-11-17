@@ -27,7 +27,6 @@ class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 		super().__init__()
 		# print()
 
-
 		self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
 
 		# if config.C_DO_RABBIT:
