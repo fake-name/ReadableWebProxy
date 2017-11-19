@@ -439,8 +439,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			newj = self.fill_jobs()
 
 			time.sleep(0.5)
-			self.log.info("Job queue filler process. Added %s, active jobs: %s (out: %s, in: %s, pq: %s). Runstate: %s",
-				newj, self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'], self.run_flag.value)
+			self.log.info("Job queue filler process. Added %s, active jobs: %s (out: %s, in: %s, pq: %s, deferred: %s). Runstate: %s",
+				newj, self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'],
+				self.system_state['ratelimiter'].get_in_queues(), self.run_flag.value)
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
@@ -725,12 +726,26 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 			thread.start()
 
 		self.log.info("MultiRpcRunner threads started")
+
+		last_reduce = 0
+
 		while self.run_flag.value == 1:
 			for x in range(10):
 				time.sleep(1)
 				if not self.run_flag.value:
 					break
 			self.log.info("Active jobs: %s", [tmp.is_alive() for tmp in threads])
+
+
+
+			# Every 90 seconds, we deincrement the active jobs counts.
+			last_reduce += 1
+
+			if last_reduce > 10:
+				last_reduce = 0
+				with system_state['lock']:
+					system_state['ratelimiter'].job_reduce()
+
 
 
 		self.log.info("MultiRpcRunner exit flag seen. Joining on threads")

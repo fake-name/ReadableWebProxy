@@ -283,6 +283,9 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 			for link in linkas:
 				bad = any([tmp in masked_classes for tmp in link['class']])
 				if not bad:
+					linkfq = link['href']
+					if linkfq.startswith("//"):
+						linkfq = "https:"+linkfq
 
 					upsertNuItem(self.raw_cur,
 						{
@@ -290,7 +293,7 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 							'releaseinfo'      : release_info,
 							'groupinfo'        : group_name,
 							'referrer'         : seriesPageUrl,
-							'outbound_wrapper' : link['href'],
+							'outbound_wrapper' : linkfq,
 							'first_seen'       : reldate,
 						})
 

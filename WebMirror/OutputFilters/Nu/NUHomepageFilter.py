@@ -185,12 +185,17 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 						if not bad:
 							self.log.info("Using %s for referrer for %s -> %s -> %s, %s, %s", referrer, sname, gname, link.get_text().strip(), link['class'], bad)
 							self.log.info("Intermediate URL: %s", link['href'])
+
+							linkfq = link['href']
+							if linkfq.startswith("//"):
+								linkfq = "https:"+linkfq
+
 							release = {
 								'seriesname'       : sname,
 								'releaseinfo'      : link.get_text().strip(),
 								'groupinfo'        : gname,
 								'referrer'         : referrer,
-								'outbound_wrapper' : link['href'],
+								'outbound_wrapper' : linkfq,
 								'actual_target'    : None,
 							}
 							# print("Link: ", link['href'])

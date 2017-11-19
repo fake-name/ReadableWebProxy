@@ -264,6 +264,15 @@ class RabbitQueueHandler(object):
 				except queue.Empty:
 					break
 
+
+	def __check_have_queue(self, queuename):
+		if not queuename in self.mdict['outq']:
+			self.log.warning("Need to create queues for client name: %s", queuename)
+			with self.mdict['qlock']:
+				self.mdict[self.settings['taskq_name']][queuename] = queue.Queue()
+				self.mdict[self.settings['respq_name']][queuename] = queue.Queue()
+
+
 	def process_retreived(self):
 		while True:
 			new = self.get_job()
@@ -297,10 +306,7 @@ class RabbitQueueHandler(object):
 				self.log.error("Response meta: %s", new['jobmeta'])
 				continue
 
-			if not qname in self.mdict[self.settings['respq_name']]:
-				self.log.error("Job response queue missing?")
-				self.log.error("Queue name: '%s'", qname)
-				continue
+			self.__check_have_queue(qname)
 
 			self.mdict[self.settings['respq_name']][qname].put(new)
 
