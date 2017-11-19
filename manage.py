@@ -10,6 +10,8 @@ import common.management.RawMirrorManage
 import common.management.Misc
 import common.management.Testing
 
+import common.Tools.WebFictionGuide
+
 import WebMirror.OfflineFilters.offline_filters
 import WebMirror.TimedTriggers.TriggerManage
 
@@ -32,6 +34,8 @@ SCANNED_MODULES = [
 	common.management.Misc,
 	common.management.Testing,
 
+	common.Tools.WebFictionGuide,
+
 	WebMirror.OfflineFilters.offline_filters,
 	WebMirror.TimedTriggers.TriggerManage,
 
@@ -42,6 +46,7 @@ SCANNED_MODULES = [
 	WebMirror.management.RssManage,
 	WebMirror.management.UrlManage,
 	WebMirror.management.Testing,
+
 ]
 
 def load_functions():
