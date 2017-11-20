@@ -231,7 +231,7 @@ decompose: [
 	{'class'  : 'comments-area'},
 	{'class'  : 'ads'},
 
-	{'class'  : 'b-sidebar'},
+	# {'class'  : 'b-sidebar'},
 	{'class'  : 'b-footer'},
 ]
 
