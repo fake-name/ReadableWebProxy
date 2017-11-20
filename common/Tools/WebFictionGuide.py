@@ -24,7 +24,10 @@ class WFGSeriesScraper(common.LogBase.LoggerMixin):
 		for idx in itertools.count():
 
 			url = "http://webfictionguide.com/online-novels/page/{page_num}/".format(page_num=idx)
-			soup = self.wg.getSoup(url)
+			try:
+				soup = self.wg.getSoup(url)
+			except common.util.WebRequest.FetchFailureError:
+				continue
 
 			content_div = soup.find("div", class_="listings")
 			sdivs = content_div.find_all("div", class_="summary")
@@ -44,10 +47,19 @@ class WFGSeriesScraper(common.LogBase.LoggerMixin):
 	def resolve_actual_urls(self, s_page_url, s_title):
 		self.log.info("Fetching actual URL for %s -> %s", s_title, s_page_url)
 
-		soup = self.wg.getSoup(s_page_url)
-		linkdiv = soup.find("div", class_="center")
 
-		return s_title, common.management.util.get_page_title(self.wg, linkdiv.a.get("href"))
+		try:
+			soup = self.wg.getSoup(s_page_url)
+		except common.util.WebRequest.FetchFailureError:
+			return None
+
+		linkdiv = soup.find("div", class_="center")
+		actual_url = linkdiv.a.get("href")
+
+		param = common.management.util.get_page_title(self.wg, actual_url)
+		param['url'] = actual_url
+		param.setdefault("is-wp", False)
+		return s_title, param
 
 
 	def get_series(self):
