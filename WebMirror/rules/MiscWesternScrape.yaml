@@ -10,6 +10,47 @@ baseUrl: [
 		# WHRY No rss? Sadface
 		'http://www.silversrise.com',
 
+		'http://www.williammyrl.com',
+		'http://stardancer.org',
+
+		'http://thecityofroses.com',
+		'http://stefangagne.com',
+		'http://www.billyandhoward.com',
+		'http://www.duumvirate.net',
+		'https://nimja.com',
+		'http://www.crescendocove.com',
+		'http://crystal.raelifin.com',
+		'http://www.yesterdayshoroscope.com',
+		'http://www.kandyfangs.com',
+		'http://www.wastedproductions.com',
+		'http://www.p-synd.com',
+		'http://mst.firstagent.net',
+		'http://www.riafritz.com',
+		'http://www.vjchambers.com',
+		'http://www.daisytannenbaum.com',
+		'http://www.richardphilliphoffman.com',
+		'http://www.kaleblynnthomas.com',
+		'https://qntm.org',
+		'http://www.sagaofsoul.com',
+		'http://scarymary.sahunter.net',
+		'http://teresagarciaserials.weebly.com',
+		'http://shroudofgossamer.com',
+		'http://cheeseburgerbrown.com',
+		'http://smalltownravaging.weebly.com',
+		'http://stalkingshadows.sahunter.net',
+		'http://www.sybernika.com',
+		'http://ratmessiah.com',
+		'http://www.spearfishlaketales.com',
+		'http://arfer.net',
+		'http://pixelnyx.com',
+		'http://www.jimdunavant.com',
+		'http://hfy-archive.org',
+		# Garbage drupal thing
+		'http://www.meilinmiranda.com',
+
+		# Needs more checking.
+		# 'https://www.eviscerati.org'
+
 	]
 
 feeds: [
