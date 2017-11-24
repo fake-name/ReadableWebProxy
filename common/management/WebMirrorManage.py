@@ -617,6 +617,128 @@ def exposed_find_dead_netlocs():
 	'''
 	pass
 
+def _update_feed_name(sess, netloc, oldname, newname):
+
+	have = sess.query(db.RssFeedUrlMapper)            \
+		.filter(db.RssFeedUrlMapper.feed_netloc == netloc) \
+		.scalar()
+
+	if not have:
+		print("Missing: ", have)
+		return
+
+
+
+	print("Have: ", have, have.feed_entry, have.feed_entry.feed_name)
+
+	if have.feed_entry.feed_name == netloc:
+		print("Updating feed name to ", newname)
+		have.feed_entry.feed_name = newname
+		sess.commit()
+
+def exposed_load_feed_names_from_file(json_file):
+	'''
+	Given a json file containing a set of 'netloc'->'title' mappings,
+	update the feed for each netloc to be 'title'.
+	'''
+
+	with open(json_file) as fp:
+		df = json.load(fp)
+
+
+	for url, title in df.items():
+		with db.session_context() as sess:
+			fname = WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, url, debug=True)
+			bad = not fname or (fname and fname in url)
+			netloc = urllib.parse.urlparse(url).netloc
+			if bad:
+
+				_update_feed_name(sess, netloc, netloc, title)
+				print((url, title, fname, bad))
+
+
+
+def exposed_unfuck_dropped_feed_name_lut():
+	'''
+	Remove derp
+	'''
+	bad_function_content = '''
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol) or "preview" in item['title'].lower():
+		return None
+
+	tagmap = [
+		('PRC',       'PRC',                      'translated'),
+		('Loiterous', 'Loiterous',                'oel'),
+	]
+
+	for tagname, name, tl_type in tagmap:
+		if tagname in item['tags']:
+			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+
+	return False
+	'''
+
+	with db.session_context() as sess:
+
+		feed_mappers = sess.query(db.RssFeedUrlMapper).order_by(db.RssFeedUrlMapper.id).all()
+		netlocs = [tmp.feed_netloc for tmp in feed_mappers]
+		assert len(netlocs) == len(set(netlocs))
+		feed_mappers = {tmp.feed_netloc : {'id' : tmp.id, 'feed_id' : tmp.feed_id} for tmp in feed_mappers}
+		# print(feed_mappers)
+
+		have = sess.query(db.RssFeedEntry).all()
+		for item in have:
+
+			urls = [tmp.contenturl for tmp in item.releases if tmp.contenturl]
+			netlocs = [urllib.parse.urlparse(url).netloc for url in urls]
+			netlocs = list(set(netlocs))
+
+
+
+			should_remove = bad_function_content in item.func
+
+			urls = item.urls
+
+			if not should_remove:
+				pass
+				# for nl in netlocs:
+				# 	nls = sess.query(db.RssFeedUrlMapper).filter(db.RssFeedUrlMapper.feed_netloc == nl).all()
+				# 	if nls and any([tmp.feed_id != item.id for tmp in nls]):
+				# 		print(item.feed_name, [(nl, nl in feed_mappers) for nl in netlocs])
+				# 		print("Nls: ", nls)
+				# 		nls = sess.query(db.RssFeedUrlMapper)               \
+				# 			.filter(db.RssFeedUrlMapper.feed_netloc == nl)  \
+				# 			.filter(db.RssFeedUrlMapper.feed_id != item.id) \
+				# 			.update({'feed_id': item.id})
+
+				# 	elif nl in feed_mappers:
+				# 		pass
+				# 	else:
+				# 		print(item.feed_name, [(nl, nl in feed_mappers) for nl in netlocs])
+				# 		print("Needs to add:", nl)
+				# 		new = db.RssFeedUrlMapper(
+				# 				feed_netloc = nl,
+				# 				feed_id     = item.id,
+				# 			)
+				# 		sess.add(new)
+
+				# sess.commit()
+			else:
+				if item.feed_name.endswith(".com") or item.feed_name.endswith(".net") or item.feed_name.endswith(".org"):
+					if not urls:
+						print("Should delete:", item.feed_name, item, should_remove, urls)
+						for rel in item.releases:
+							sess.delete(rel)
+						sess.delete(item)
+						sess.commit()
+				else:
+
+					print("Unknown delete:", item.feed_name, item, should_remove, urls)
+
+
+
 
 def exposed_fetch_other_feed_sources():
 	'''

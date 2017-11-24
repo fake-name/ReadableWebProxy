@@ -88,17 +88,21 @@
 											{%- for markedup_titles, markedup_name, row_item in new -%}
 												<tr class='release-row'>
 													<td>
-														<form class='row-state' data-series-name='{{row_item.seriesname}}' data-row-id="[{{row_item.id}}]" data-original-value="{{row_item.reviewed}}">
+														<form class='row-state'
+																data-series-name='{{row_item.seriesname}}'
+																data-row-id="[{{row_item.id}}]"
+																data-resolved-url="{{row_item.actual_target}}"
+																data-original-value="{{row_item.reviewed}}">
 															<input type="radio" name="review-state" value="valid" {{'checked="true"' if row_item.reviewed == "valid" else ''}}> ✔<br>
 															<input type="radio" name="review-state" value="rejected" {{'checked="true"' if row_item.reviewed == "rejected" else ''}}> ✖
-														</form>
 
+														</form>
 													</td>
 													<td>{{terse_ago(row_item.first_seen)}}<br>{{terse_ago(row_item.validated_on)}}</td>
 													<td>{{row_item.groupinfo}}</td>
 													<td>{{row_item.seriesname}}</td>
 													<td>{{row_item.releaseinfo}}</td>
-													<td>
+													<td class='title-td'>
 														<a href='{{row_item.actual_target}}'>{{markedup_name | safe}}</a>
 														{% if markedup_titles %}
 															<br>
@@ -246,17 +250,45 @@
 		function check_rows()
 		{
 			console.log("Wat?")
-			var rows = $(".row-state");
+			var rows = $(".release-row");
 			console.log(rows)
 			rows.each(function( index, value ) {
-				var itm = $(this);
-				console.log()
-				console.log( itm.data(), itm.find("input[name=review-state]:checked").val(), itm.data().rowId.length, itm.data().seriesName );
+				var row = $(this);
+				var itm = $(this).find(".row-state");
+
+				// console.log()
+				// console.log( itm.data(), itm.find("input[name=review-state]:checked").val(), itm.data().rowId.length, itm.data().seriesName );
+
+				var title_td = row.find(".title-td")
+
+				console.log(title_td)
 
 				var set = itm.find("input[name=review-state]:checked").length != 0
 
-				if (!itm.data().seriesName.endsWith('...') && !set)
+				if (itm.data().seriesName.endsWith('...'))
+				{
+
+				}
+				else if (itm.data().resolvedUrl.includes('www.webnovel.com/rssbook/'))
+				{
+					itm.find("input[value=rejected]").prop( "checked", true );
+				}
+				else if (set)
+				{
+
+				}
+				else if (title_td.first().text().includes("page not found") && title_td.first().text().includes("gravity tales"))
+				{
+					itm.find("input[value=rejected]").prop( "checked", true );
+				}
+				else if (title_td.first().text().includes("page not found"))
+				{
+
+				}
+				else
+				{
 					itm.find("input[value=valid]").prop( "checked", true );
+				}
 			});
 		}
 

@@ -66,24 +66,87 @@ def initializeStartUrls(rules):
 	sess.close()
 	db.delete_db_session()
 
+# def resetInProgress():
+# 	print("Resetting any stalled downloads from the previous session.")
+
+# 	sess = db.get_db_session()
+# 	sess.query(db.WebPages) \
+# 		.filter(
+# 				(db.WebPages.state == "fetching")           |
+# 				(db.WebPages.state == "processing")         |
+# 				(db.WebPages.state == "specialty_deferred") |
+# 				(db.WebPages.state == "specialty_ready")
+# 				)   \
+# 		.update({db.WebPages.state : "new"})
+# 	sess.commit()
+# 	sess.close()
+# 	db.delete_db_session()
+
+
+
 def resetInProgress():
-	print("Resetting any stalled downloads from the previous session.")
 
 	sess = db.get_db_session()
-	sess.query(db.WebPages) \
-		.filter(
-				(db.WebPages.state == "fetching")           |
-				(db.WebPages.state == "processing")         |
-				(db.WebPages.state == "specialty_deferred") |
-				(db.WebPages.state == "specialty_ready")
-				)   \
-		.update({db.WebPages.state : "new"})
-	sess.commit()
-	sess.close()
+
+	commit_interval =  50000
+	step            = 250000
+
+	with db.session_context() as sess:
+		print("Getting minimum row in need or update..")
+		start = sess.execute("""SELECT min(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		start = list(start)[0][0]
+		print("Minimum row ID: ", start, "getting maximum row...")
+		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		stop = list(stop)[0][0]
+		print("Maximum row ID: ", stop)
+
+		if not start:
+			print("No null rows to fix!")
+			return
+
+		print("Need to fix rows from %s to %s" % (start, stop))
+		start = start - (start % step)
+
+		changed = 0
+		tot_changed = 0
+		for idx in range(start, stop, step):
+			try:
+				# SQL String munging! I'm a bad person!
+				# Only done because I can't easily find how to make sqlalchemy
+				# bind parameters ignore the postgres specific cast
+				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+				have = sess.execute("""UPDATE
+											web_pages
+										SET
+											state = 'new'
+										WHERE
+											(state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready')
+										AND
+											id > {}
+										AND
+											id <= {};""".format(idx, idx+step))
+				# print()
+
+				processed  = idx - start
+				total_todo = stop - start
+				print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
+				changed += have.rowcount
+				tot_changed += have.rowcount
+				if changed > commit_interval:
+					print("Committing (%s changed rows)...." % changed, end=' ')
+					sess.commit()
+					print("done")
+					changed = 0
+
+			except sqlalchemy.exc.OperationalError:
+				sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				sess.rollback()
+
+
+		sess.commit()
+
 	db.delete_db_session()
-
-
-
 
 
 def do_link_batch_update(logger, link_batch):

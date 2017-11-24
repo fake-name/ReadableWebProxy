@@ -210,6 +210,8 @@ class RssFeedUrlMapper(common.db_base.Base):
 	feed_url          = Column(Text, nullable = True, index = True)
 	feed_id           = Column(BigInteger, ForeignKey('rss_parser_funcs.id'), nullable = False, index = True)
 
+
+
 	__table_args__ = (
 		UniqueConstraint('feed_netloc', 'feed_id'),
 		)

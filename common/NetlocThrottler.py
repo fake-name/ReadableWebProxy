@@ -12,8 +12,8 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 	def __init__(self):
 		super().__init__()
 
-		self.accumulator_min = -10
-		self.accumulator_max =  250
+		self.accumulator_min = 1
+		self.accumulator_max =  500
 		self.url_throttler = {}
 
 		self.total_queued = 0
@@ -25,13 +25,17 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		if not netloc in self.url_throttler:
 			self.url_throttler[netloc] = {
 				'active_fetches'     : 0,
-				'status_accumulator' : 5,
+				'status_accumulator' : 10,
 				'job_queue'          : queue.Queue(),
 			}
 
 	def put_job(self, row_id, job_url, job_netloc):
 		self.__check_init_nl(job_netloc)
-		self.log.info("Putting limited job for netloc %s", job_netloc)
+		self.log.info("Putting limited job for netloc %s (%s items, score: %s, active: %s)",
+			job_netloc,
+			self.url_throttler[job_netloc]['job_queue'].qsize(),
+			self.url_throttler[job_netloc]['status_accumulator'],
+			self.url_throttler[job_netloc]['active_fetches'])
 
 		self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
 

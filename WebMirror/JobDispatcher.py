@@ -160,6 +160,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 						if 'success' in tmp and tmp['success']:
 							self.system_state['ratelimiter'].netloc_ok(nl)
 						else:
+							print("Success val: ", 'success' in tmp, list(tmp.keys()))
 							self.system_state['ratelimiter'].netloc_error(nl)
 					else:
 						self.log.warning("Missing netloc in response extradat!")
@@ -727,10 +728,11 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 
 		self.log.info("MultiRpcRunner threads started")
 
-		last_reduce = 0
+		last_reduce     =  0
+		reduce_interval = 3
 
 		while self.run_flag.value == 1:
-			for x in range(10):
+			for _ in range(10):
 				time.sleep(1)
 				if not self.run_flag.value:
 					break
@@ -741,9 +743,11 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 			# Every 90 seconds, we deincrement the active jobs counts.
 			last_reduce += 1
 
-			if last_reduce > 10:
+			self.log.info("Job reduce step: %s of %s.", last_reduce, reduce_interval)
+			if last_reduce > reduce_interval:
 				last_reduce = 0
 				with system_state['lock']:
+					self.log.info("Calling job reducer!")
 					system_state['ratelimiter'].job_reduce()
 
 
