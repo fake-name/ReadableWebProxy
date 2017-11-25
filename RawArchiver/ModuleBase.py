@@ -1,6 +1,7 @@
 
 import abc
 import pathlib
+import settings
 import urllib.parse
 
 def duplicate_path_fragments(url, dup_max=3):
@@ -48,7 +49,7 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 
 	'''
 
-	rewalk_interval = 90
+	rewalk_interval = settings.RAW_REWALK_INTERVAL_DAYS
 
 	@abc.abstractproperty
 	def module_name(self):

@@ -46,7 +46,26 @@ def isFiltered(link, badwords, badcompounds):
 	return False
 
 def get_random_url_group(num_items):
-	dat = g.session.execute('''SELECT url FROM web_pages TABLESAMPLE SYSTEM(:percentage);''', {'percentage' : num_items})
+	dat = g.session.execute('''SELECT url FROM web_pages TABLESAMPLE SYSTEM(:percentage) ORDER BY url;''', {'percentage' : num_items})
+	dat = list(dat)
+
+	ruleset = rules.load_rules(override=True)
+
+	ret = []
+	for linkurl, in dat:
+		nl = urllib.parse.urlparse(linkurl).netloc
+
+		badwords, badcompounds = getBadWords(ruleset, nl)
+		filtered = isFiltered(linkurl, badwords, badcompounds)
+
+		ret.append((linkurl, filtered))
+
+
+	return ret
+
+
+def get_random_raw_url_group(num_items):
+	dat = g.session.execute('''SELECT url FROM raw_web_pages TABLESAMPLE SYSTEM(:percentage) ORDER BY url;''', {'percentage' : num_items})
 	dat = list(dat)
 
 	ruleset = rules.load_rules(override=True)
@@ -66,7 +85,16 @@ def get_random_url_group(num_items):
 
 @app.route('/random-urls/', methods=['GET'])
 def random_urls_view():
-	entries = get_random_url_group(0.003)
+	entries = get_random_url_group(0.007)
+
+	return render_template('misc/random-urls.html',
+		header    = "Random URL Subset",
+						   results   = entries,
+						   )
+
+@app.route('/random-raw-urls/', methods=['GET'])
+def random_raw_urls_view():
+	entries = get_random_raw_url_group(0.01)
 
 	return render_template('misc/random-urls.html',
 		header    = "Random URL Subset",

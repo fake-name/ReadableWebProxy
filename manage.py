@@ -25,6 +25,8 @@ import WebMirror.management.Testing
 import WebMirror.management.FeedDbManage
 import WebMirror.management.UrlManage
 
+import RawArchiver.TimedTriggers.TriggerManage
+
 
 func_prefix = "exposed_"
 
@@ -46,6 +48,8 @@ SCANNED_MODULES = [
 	WebMirror.management.RssManage,
 	WebMirror.management.UrlManage,
 	WebMirror.management.Testing,
+
+	RawArchiver.TimedTriggers.TriggerManage,
 
 ]
 

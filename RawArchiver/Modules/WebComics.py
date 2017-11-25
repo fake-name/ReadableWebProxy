@@ -224,7 +224,22 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/preventative-measures&q=comic/preventative-measures&q=comic/',
 		'/topic/ubc&q=comic/topic/',
 		'/topic/games&q=comic/topic/',
-
+		'/preventative-measures&q=comic/preventative-measures&q=comic/',
+		'&_debug=1&_debug=1&_debug=1&',
+		'/news&q=blog/topic/news&q=blog/',
+		'/ftw&q=comic/ftw&q=comic/',
+		'/hey-good-lookin&q=comic/hey-good-lookin&q=comic/',
+		'/styling-secrets&q=comic/styling-secrets&q=comic/',
+		'/technically-speaking&q=comic/technically-speaking&q=comic/',
+		'/lost-omens&q=forum/lost-omens&q=forum/',
+		'/topic/news&q=blog/topic/',
+		'/ftw&q=comic/ftw&q=comic/',
+		'/hey-good-lookin&q=comic/hey-good-lookin&q=comic/',
+		'/styling-secrets&q=comic/styling-secrets&q=comic/',
+		'/technically-speaking&q=comic/technically-speaking&q=comic/',
+		'/games&q=comic/topic/games&q=comic/topic/',
+		'/general&q=forum/general&q=forum/',
+		'/lost-omens&q=forum/lost-omens&q=forum/',
 	]
 
 	@classmethod

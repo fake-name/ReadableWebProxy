@@ -242,6 +242,9 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			if not link:
 				continue
 
+			if common.util.urlFuncs.hasDuplicatePathSegments(link):
+				continue
+
 			ret.add(link)
 		return ret
 

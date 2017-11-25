@@ -200,6 +200,9 @@ def extractUrls(soup, pageUrl, truncate_fragment=False):
 			except KeyError:
 				pass
 			else:
+
+				if url.startswith("javascript"):
+					continue
 				fixed = rebaseUrl(url, pageUrl)
 				assert fixed.startswith("http"), "Wat?: '%s', '%s', '%s'" % (url, pageUrl, fixed)
 				urls.add(fixed)

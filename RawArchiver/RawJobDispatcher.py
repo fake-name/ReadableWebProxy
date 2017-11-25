@@ -15,6 +15,7 @@ import psycopg2
 import sys
 
 import settings
+import common.NetlocThrottler
 import common.LogBase as LogBase
 # import WebMirror.OutputFilters.AmqpInterface
 import RawArchiver.misc
@@ -89,6 +90,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.jobs_out = 0
 		self.jobs_in = 0
 
+		self.ratelimiter = common.NetlocThrottler.NetlockThrottler()
 
 		self.db_interface = psycopg2.connect(
 				database = settings.DATABASE_DB_NAME,
@@ -126,7 +128,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.j_fetch_proc.join(0)
 
 
-	def put_outbound_job(self, jobid, joburl):
+	def put_outbound_job(self, jobid, joburl, netloc=None):
 		self.active_jobs += 1
 		self.log.info("Dispatching new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
 		self.jobs_out += 1
@@ -137,7 +139,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			jobid          = jobid,
 			args           = [joburl],
 			kwargs         = {},
-			additionalData = {'mode' : 'fetch'},
+			additionalData = {'mode' : 'fetch', 'netloc' : netloc},
 			postDelay      = 0
 		)
 
@@ -156,8 +158,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		if 'drain' in sys.argv:
 			return
-
-		while self.active_jobs < MAX_IN_FLIGHT_JOBS:
+		escape_count = 0
+		while self.active_jobs < MAX_IN_FLIGHT_JOBS and escape_count < 25:
 			old = self.normal_out_queue.qsize()
 			num_new = self._get_task_internal()
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
@@ -165,9 +167,18 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			if runStatus.run_state.value != 1:
 				return
 
+			new_j_l =self.ratelimiter.get_available_jobs()
+
+			for rid, joburl, netloc in new_j_l:
+				self.put_outbound_job(rid, joburl, netloc)
+
 			# If there weren't any new items, stop looping because we're not going anywhere.
 			if num_new == 0:
 				break
+
+			escape_count += 1
+
+			self.process_responses()
 
 	def open_rpc_interface(self):
 		try:
@@ -197,6 +208,24 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				return
 
 			if tmp:
+
+
+
+				nl = None
+				if 'extradat' in tmp and 'netloc' in tmp['extradat']:
+					nl = tmp['extradat']['netloc']
+
+				if nl:
+					if 'success' in tmp and tmp['success']:
+						self.ratelimiter.netloc_ok(nl)
+					else:
+						print("Success val: ", 'success' in tmp, list(tmp.keys()))
+						self.ratelimiter.netloc_error(nl)
+				else:
+					self.log.warning("Missing netloc in response extradat!")
+
+
+
 				self.active_jobs -= 1
 				self.jobs_in += 1
 				if self.active_jobs < 0:
@@ -233,6 +262,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			if msg_loop > 250:
 				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.raw_job_run_state.value==1)
 				msg_loop = 0
+				self.ratelimiter.job_reduce()
+
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
@@ -291,7 +322,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				    raw_web_pages.state = 'new'
 				RETURNING
 				    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
-			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 50)))
+			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
 
 
 		start = time.time()
@@ -346,7 +377,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				if not self.outbound_job_wanted(netloc, joburl):
 					self.delete_job(rid, joburl)
 				elif threadn is True:
-					self.put_outbound_job(rid, joburl)
+					self.ratelimiter.put_job(rid, joburl, netloc)
+					# self.put_outbound_job(rid, joburl, netloc=netloc)
 				else:
 					self.normal_out_queue.put(("unfetched", rid))
 			except RawArchiver.misc.UnwantedUrlError:
