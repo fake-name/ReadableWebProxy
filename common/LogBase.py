@@ -12,6 +12,9 @@ class LoggerMixin(metaclass=abc.ABCMeta):
 
 	@property
 	def log(self):
+
+		assert self.loggerPath.startswith("Main."), "Logging path (%s) doesn't start with log prefix!" % self.loggerPath
+
 		if not hasattr(self, 'loggers'):
 			self.loggers = {}
 		if not hasattr(self, 'lastLoggerIndex'):

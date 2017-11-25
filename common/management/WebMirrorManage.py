@@ -647,14 +647,17 @@ def exposed_load_feed_names_from_file(json_file):
 
 
 	for url, title in df.items():
-		with db.session_context() as sess:
-			fname = WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, url, debug=True)
-			bad = not fname or (fname and fname in url)
-			netloc = urllib.parse.urlparse(url).netloc
-			if bad:
-
-				_update_feed_name(sess, netloc, netloc, title)
-				print((url, title, fname, bad))
+		try:
+			with db.session_context() as sess:
+				fname = WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, url, debug=True)
+				bad = not fname or (fname and fname in url)
+				netloc = urllib.parse.urlparse(url).netloc
+				if bad:
+					_update_feed_name(sess, netloc, netloc, title)
+					print((url, title, fname, bad))
+		except Exception as e:
+			print("Wat?")
+			print(e)
 
 
 
@@ -694,8 +697,6 @@ def exposed_unfuck_dropped_feed_name_lut():
 			urls = [tmp.contenturl for tmp in item.releases if tmp.contenturl]
 			netlocs = [urllib.parse.urlparse(url).netloc for url in urls]
 			netlocs = list(set(netlocs))
-
-
 
 			should_remove = bad_function_content in item.func
 

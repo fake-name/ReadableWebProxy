@@ -273,6 +273,9 @@ def initLogging(logLevel=logging.INFO):
 	# Install override for excepthook, to catch all errors
 	sys.excepthook = exceptHook
 
+	logtst = logging.getLogger("Main.Test")
+	logtst.info("Logging Active")
+
 	print("done")
 
 

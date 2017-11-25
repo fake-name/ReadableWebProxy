@@ -26,6 +26,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 	def __init__(self):
 		super().__init__()
+		self.loggerPath = "Main.Trigger.%s" % self.loggerPath
 		self.db = db
 		self.log.info("Loading %s Runner", self.pluginName)
 

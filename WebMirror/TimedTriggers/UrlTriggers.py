@@ -33,6 +33,7 @@ class RssTriggerBase(UrlTrigger):
 
 
 	def retriggerRssFeeds(self, feedurls):
+		self.log.info("Retriggering RSS feed URLs")
 		sess = self.db.get_db_session()
 
 		self.retriggerUrlList(feedurls)
@@ -115,9 +116,11 @@ class EveryOtherDayPageTrigger(PageTriggerBase):
 
 if __name__ == "__main__":
 	import logSetup
-	logSetup.initLogging()
-	run = HourlyPageTrigger()
-	run._go()
-	run2 = EveryOtherDayPageTrigger()
+	logSetup.initLogging(1)
+	run1 = RssTriggerBase()
+	run1._go()
+	run2 = HourlyPageTrigger()
 	run2._go()
+	run3 = EveryOtherDayPageTrigger()
+	run3._go()
 
