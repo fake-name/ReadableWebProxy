@@ -7139,9 +7139,17 @@
   "\ndef extractDocsGoogleCom(item):\n\t'''\n\tParser for 'docs.google.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
   "2017-03-23T05:27:55.110597"
  ],
+ "dthoursonpalmer.com": [
+  "\ndef extractDthoursonpalmerCom(item):\n\t'''\n\tParser for 'dthoursonpalmer.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2017-11-25T00:30:48.212358"
+ ],
  "egscans.com": [
   "\ndef extractEgscansCom(item):\n\t'''\n\tParser for 'egscans.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
   "2017-03-23T05:27:53.790978"
+ ],
+ "elpiscreation.com": [
+  "\ndef extractElpiscreationCom(item):\n\t'''\n\tParser for 'elpiscreation.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2017-11-25T00:32:03.630399"
  ],
  "elwiki.net": [
   "\ndef extractElwikiNet(item):\n\t'''\n\tParser for 'elwiki.net'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
@@ -7206,6 +7214,10 @@
  "leonardpetracci": [
   "\ndef extractLeonardpetracciCom(item):\n\t'''\n\tParser for 'leonardpetracci.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2017-11-20T02:27:19.131570"
+ ],
+ "lightaspnovel.com": [
+  "\ndef extractLightaspnovelCom(item):\n\t'''\n\tParser for 'lightaspnovel.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2017-11-25T00:31:05.273895"
  ],
  "madsnail.ru": [
   "\ndef extractMadsnailRu(item):\n\t'''\n\tParser for 'madsnail.ru'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",

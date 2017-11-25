@@ -79,8 +79,13 @@ def exposed_do_nu_head_cycle():
 	'''
 	Misc.NuForwarder.NuHeader.fetch_and_flush()
 
+def exposed_fetch_no_special_case(url, debug=True):
+	'''
+	Do a normal fetch() operation, but skip any special case filters.
+	'''
+	exposed_fetch(url, debug, special_case_enabled=False)
 
-def exposed_fetch(url, debug=True, rss_debug=False):
+def exposed_fetch(url, debug=True, rss_debug=False, special_case_enabled=True):
 	'''
 	Do a synchronous fetch of content from url `url`.
 	'''
@@ -92,7 +97,7 @@ def exposed_fetch(url, debug=True, rss_debug=False):
 
 	specialcase_data    = WebMirror.rules.load_special_case_sites()
 
-
+	print("Debug: %s, rss_debug: %s" % (debug, rss_debug))
 	if rss_debug:
 		print("Debugging RSS")
 		flags.RSS_DEBUG = True
@@ -100,7 +105,7 @@ def exposed_fetch(url, debug=True, rss_debug=False):
 	parsed = urllib.parse.urlparse(url)
 	root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
 
-	if WebMirror.SpecialCase.haveSpecialCase(specialcase_data, url, parsed.netloc):
+	if WebMirror.SpecialCase.haveSpecialCase(specialcase_data, url, parsed.netloc) and special_case_enabled:
 		WebMirror.SpecialCase.pushSpecialCase(specialcase_data, -1, url, parsed.netloc, None)
 		return
 

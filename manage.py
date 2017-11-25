@@ -130,6 +130,9 @@ def call_func(args):
 	if not fname in farr:
 		return False
 
+	print("Function signature: '%s'" % (inspect.getsourcelines(farr[fname])[0][0].strip(), ))
+	print("Found function %s, from file %s, line %s" % (farr[fname], inspect.getsourcefile(farr[fname]), inspect.findsource(farr[fname])[1]))
+
 	return try_call(farr[fname], args[1:])
 
 
