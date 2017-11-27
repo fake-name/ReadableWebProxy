@@ -282,6 +282,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		self.ruleset        = WebMirror.rules.load_rules()
 		self.specialcase    = WebMirror.rules.load_special_case_sites()
 		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
+
+		self.feed_urls = []
+		[self.feed_urls.extend(tmp['feedurls']) for tmp in self.ruleset if 'feedurls' in tmp and tmp['feedurls']]
+
 		self.print_mod = 0
 
 
@@ -661,8 +665,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
 				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc, self)
 			else:
-				defer.append((rid, joburl, netloc))
-				# self.put_fetch_job(rid, joburl, netloc)
+				# Do not route the rss fetches through the rate-limiting system.
+				if joburl in self.feed_urls:
+					self.log.info("Skipping fetch limiter due to feed URL")
+					self.put_fetch_job(rid, joburl, netloc)
+				else:
+					defer.append((rid, joburl, netloc))
 
 		with self.system_state['lock']:
 			for rid_d, joburl_d, netloc_d in defer:

@@ -63,7 +63,7 @@ def exposed_test_qidian_fetch():
 				process_fetch_response(tmp, sess)
 				return
 			else:
-				print("No tmp:", tmp, x)
+				print("No tmp:", tmp, x, end="\r")
 				time.sleep(1)
 		except queue.Empty:
 			time.sleep(1)

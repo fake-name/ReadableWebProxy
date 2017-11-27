@@ -82,6 +82,21 @@ badwords: [
 			'royalroadl.com/New-Used-Textbooks-Books/',
 			'royalroadl.com/Giftcards-Giftvouchers-Vouchers-Birthday-Gifts/',
 			'royalroadl.com/Kindle-Store/',
+			'/ref=sin_tw_HQ/',
+			'royalroadl.com/gp/seller-account/',
+			'royalroadl.com/b/ref=amb_link_',
+			'royalroadl.com/ca-digital-text/b/',
+			'royalroadl.com/ebooks-kindle/',
+			'royalroadl.com/dp/',
+			'royalroadl.com/ca-digital-text/',
+			'royalroadl.com/gp/angebote/',
+			'royalroadl.com/gp/customer-preferences/',
+			'royalroadl.com/gp/customer-reviews/',
+			'royalroadl.com/gp/goldbox/',
+			'royalroadl.com/gp/profile/',
+			'royalroadl.com/gp/yourstore/',
+			'royalroadl.com/Kindle-',
+
 			]
 
 # Content Stripping needs to be determined.

@@ -102,6 +102,10 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		header   = soup.find("div", class_='fic-title')
+		if not header:
+			self.log.warning("Series page %s contains no releases. Is this series removed?", seriesPageUrl)
+			return []
+
 		titletg  = header.find("h1")
 		authortg = header.find("h4")
 		authortg.find("span").decompose()
