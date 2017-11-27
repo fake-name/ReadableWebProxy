@@ -326,9 +326,18 @@ class RabbitQueueHandler(object):
 		self.mdict['amqp_runstate'] = True
 
 		while self.mdict['amqp_runstate']:
-			time.sleep(1)
-			self.dispatch_outgoing()
-			self.process_retreived()
+			try:
+				time.sleep(1)
+				self.dispatch_outgoing()
+				self.process_retreived()
+			except Exception:
+				self.log.error("Exception in RabbitQueueHandler!")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+
+				with open("RabbitQueueHandler error %s.txt" % time.time(), 'w') as fp:
+					fp.write("Error!\n\n")
+					fp.write(traceback.format_exc())
 
 		self.log.info("Saw exit flag. Closing interface")
 		self.close()
@@ -470,9 +479,19 @@ class PlainRabbitQueueHandler(object):
 		self.mdict['amqp_runstate'] = True
 
 		while self.mdict['amqp_runstate']:
-			time.sleep(1)
-			self.dispatch_outgoing()
-			self.process_retreived()
+			try:
+				time.sleep(1)
+				self.dispatch_outgoing()
+				self.process_retreived()
+
+			except Exception:
+				self.log.error("Exception in RabbitQueueHandler!")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+
+				with open("RabbitQueueHandler error %s.txt" % time.time(), 'w') as fp:
+					fp.write("Error!\n\n")
+					fp.write(traceback.format_exc())
 
 		self.log.info("Saw exit flag. Closing interface")
 		self.close()
