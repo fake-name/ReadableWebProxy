@@ -296,11 +296,12 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 							'outbound_wrapper' : linkfq,
 							'first_seen'       : reldate,
 						})
+					self.log.info("Upserting outbound wrapper url %s.", linkfq)
 
 
 			valid_releases += 1
 
-
+		self.log.info("Found %s releases on page!", valid_releases)
 		self.log.info("Committing!")
 		self.raw_cur.execute("COMMIT;")
 		self.log.info("Committed!")

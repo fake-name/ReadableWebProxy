@@ -1,12 +1,10 @@
 
 
-import WebMirror.rules
 import abc
-import WebMirror.TimedTriggers.TriggerBase
 
-import urllib.parse
-import datetime
-import sqlalchemy.exc
+import WebMirror.rules
+import WebMirror.TimedTriggers.TriggerBase
+import common.util.WebRequest as WebRequest
 
 class UrlTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
@@ -82,10 +80,11 @@ class PageTriggerBase(UrlTrigger):
 class HourlyPageTrigger(PageTriggerBase):
 	pages = [
 		# RoyalRoadL
-		'https://royalroadl.com/fictions/new-releases',
-		'https://royalroadl.com/fictions/weekly-popular',
-		'https://royalroadl.com/fictions/latest-updates',
-		'https://royalroadl.com/fictions/active-popular',
+
+		'https://www.royalroadl.com/fictions/new-releases',
+		'https://www.royalroadl.com/fictions/weekly-popular',
+		'https://www.royalroadl.com/fictions/latest-updates',
+		'https://www.royalroadl.com/fictions/active-popular',
 		# 'http://royalroadl.com/fictions/best-rated/',
 
 		# Japtem bits
@@ -110,17 +109,57 @@ class EverySixHoursPageTrigger(PageTriggerBase):
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):
-	rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(13000)]
-	japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(800)]
-	pages = rrl_pages + japtem_pages
+
+	pages = []
+
+	def _rrlExtractSeriesReleases(self, soup):
+
+		containers = soup.find_all('div', class_='fiction-list-item')
+		# print(soup)
+		# print("container: ", containers)
+		if not containers:
+			return []
+		urls = []
+		for item in containers:
+			div = item.find('h2', class_='fiction-title')
+			a = div.find("a")
+			if a:
+				sections = a['href'].split("/")
+				try:
+					sec_int = int(sections[2])
+					urls.append(sec_int)
+				except ValueError:
+					self.log.error("Section isn't an int: '%s'?", sections)
+				except IndexError:
+					self.log.error("Series URL doesn't appear to be in the expected format: '%s'?", a['href'])
+			else:
+				self.log.error("No series in container: %s", item)
+
+		return set(urls)
+
+
+	def get_pages(self):
+		wg = WebRequest.WebGetRobust()
+		soup = wg.getSoup('https://www.royalroadl.com/fictions/new-releases')
+		rrl_max = self._rrlExtractSeriesReleases(soup)
+
+		rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(max(rrl_max))]
+		japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(800)]
+		return rrl_pages + japtem_pages
+
+	def go(self):
+		self.pages = self.get_pages()
+		self.log.info("Retriggering %s pages.", len(self.pages))
+		self.retriggerPages()
+
 
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging(1)
-	run1 = RssTriggerBase()
-	run1._go()
-	run2 = HourlyPageTrigger()
-	run2._go()
+	# run1 = RssTriggerBase()
+	# run1._go()
+	# run2 = HourlyPageTrigger()
+	# run2._go()
 	run3 = EveryOtherDayPageTrigger()
 	run3._go()
 

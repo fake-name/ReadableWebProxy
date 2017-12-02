@@ -51,55 +51,35 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	@staticmethod
 	def wantsUrl(url):
-		want = [
+		want = set([
 			'http://royalroadl.com/fictions/active-popular',
 			'http://royalroadl.com/fictions/active-top-50',
-			'http://royalroadl.com/fictions/active-top-50/',
 			'http://royalroadl.com/fictions/best-rated',
-			'http://royalroadl.com/fictions/best-rated/',
 			'http://royalroadl.com/fictions/latest-updates',
-			'http://royalroadl.com/fictions/latest-updates/',
 			'http://royalroadl.com/fictions/new-releases',
-			'http://royalroadl.com/fictions/new-releases/',
 			'http://royalroadl.com/fictions/weekly-popular',
 			'http://royalroadl.com/fictions/weekly-views-top-50',
-			'http://royalroadl.com/fictions/weekly-views-top-50/',
 			'http://www.royalroadl.com/fictions/active-top-50',
-			'http://www.royalroadl.com/fictions/active-top-50/',
 			'http://www.royalroadl.com/fictions/best-rated',
-			'http://www.royalroadl.com/fictions/best-rated/',
 			'http://www.royalroadl.com/fictions/latest-updates',
-			'http://www.royalroadl.com/fictions/latest-updates/',
 			'http://www.royalroadl.com/fictions/new-releases',
-			'http://www.royalroadl.com/fictions/new-releases/',
 			'http://www.royalroadl.com/fictions/weekly-views-top-50',
-			'http://www.royalroadl.com/fictions/weekly-views-top-50/',
 
 			'https://royalroadl.com/fictions/active-popular',
 			'https://royalroadl.com/fictions/active-top-50',
-			'https://royalroadl.com/fictions/active-top-50/',
 			'https://royalroadl.com/fictions/best-rated',
-			'https://royalroadl.com/fictions/best-rated/',
 			'https://royalroadl.com/fictions/latest-updates',
-			'https://royalroadl.com/fictions/latest-updates/',
 			'https://royalroadl.com/fictions/new-releases',
-			'https://royalroadl.com/fictions/new-releases/',
 			'https://royalroadl.com/fictions/weekly-popular',
 			'https://royalroadl.com/fictions/weekly-views-top-50',
-			'https://royalroadl.com/fictions/weekly-views-top-50/',
 			'https://www.royalroadl.com/fictions/active-top-50',
-			'https://www.royalroadl.com/fictions/active-top-50/',
 			'https://www.royalroadl.com/fictions/best-rated',
-			'https://www.royalroadl.com/fictions/best-rated/',
 			'https://www.royalroadl.com/fictions/latest-updates',
-			'https://www.royalroadl.com/fictions/latest-updates/',
 			'https://www.royalroadl.com/fictions/new-releases',
-			'https://www.royalroadl.com/fictions/new-releases/',
 			'https://www.royalroadl.com/fictions/weekly-views-top-50',
-			'https://www.royalroadl.com/fictions/weekly-views-top-50/',
-		]
-
-		if url in want:
+		])
+		url = url.lower()
+		if any([url.startswith(tmp) for tmp in want]):
 
 			print("RRLSeriesUpdateFilter Wants url: '%s'" % url)
 			return True

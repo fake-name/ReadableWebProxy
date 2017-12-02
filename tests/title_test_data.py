@@ -5,6 +5,20 @@
 
 data = [
 
+	("A Different World Scenery View From the Tower – C10-10", (None, 10.0, 10.0, '')),
+	("A Different World Scenery View From the Tower – C10-9", (None, 10.0, 9.0, '')),
+	("A Different World Scenery View From the Tower – C10-8", (None, 10.0, 8.0, '')),
+	("A Different World Scenery View From the Tower – C10-7", (None, 10.0, 7.0, '')),
+	("A Different World Scenery View From the Tower – C10-6", (None, 10.0, 6.0, '')),
+	("A Different World Scenery View From the Tower – C10-5", (None, 10.0, 5.0, '')),
+	("A Different World Scenery View From the Tower – C10-4", (None, 10.0, 4.0, '')),
+	("A Different World Scenery View From the Tower – C10-3", (None, 10.0, 3.0, '')),
+	("A Different World Scenery View From the Tower – C10-2", (None, 10.0, 2.0, '')),
+	("A Different World Scenery View From the Tower – C10-1", (None, 10.0, 1.0, '')),
+	("A Different World Scenery View From the Tower – C9-11", (None, 9.0, 11, '')),
+	("A Different World Scenery View From the Tower – C9-10", (None, 9.0, 10, '')),
+
+
 	("(Announcement) and Chapter 21 - Zeshald's Request", (None, 21.0, None, '')),
 	("50 Degrees Fahrenheit:- A Client's Seduction", (None, 50.0, None, '')),
 	("5656! -Knights' Strange Night- Episode 4", (None, 4.0, None, '')),

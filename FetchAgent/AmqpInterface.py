@@ -395,7 +395,8 @@ class PlainRabbitQueueHandler(object):
 
 
 		self.log.info("Connected AMQP Interface: %s", self.connector)
-		self.log.info("Connection parameters: %s, %s, %s, %s", settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
+		self.log.info("Connection parameters: %s, %s, %s, %s",
+			settings["RABBIT_LOGIN"], settings["RABBIT_PASWD"], settings["RABBIT_SRVER"], settings["RABBIT_VHOST"])
 
 
 		self.log.info("Setting up stats reporter")
