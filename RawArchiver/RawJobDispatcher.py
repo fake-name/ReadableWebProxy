@@ -22,6 +22,8 @@ import RawArchiver.misc
 import common.get_rpyc
 import runStatus
 
+import WebMirror.JobUtils
+
 ########################################################################################################################
 #
 #	##     ##    ###    #### ##    ##     ######  ##          ###     ######   ######
@@ -49,31 +51,6 @@ else:
 	MAX_IN_FLIGHT_JOBS = 500
 	# MAX_IN_FLIGHT_JOBS = 1000
 	# MAX_IN_FLIGHT_JOBS = 3000
-
-def buildjob(
-			module,
-			call,
-			dispatchKey,
-			jobid,
-			args           = [],
-			kwargs         = {},
-			additionalData = None,
-			postDelay      = 0,
-			serialize      = False,
-		):
-
-	job = {
-			'call'         : call,
-			'module'       : module,
-			'args'         : args,
-			'kwargs'       : kwargs,
-			'extradat'     : additionalData,
-			'jobid'        : jobid,
-			'dispatch_key' : dispatchKey,
-			'postDelay'    : postDelay,
-			'serialize'    : serialize,
-		}
-	return job
 
 
 
@@ -132,7 +109,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.active_jobs += 1
 		self.log.info("Dispatching new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
 		self.jobs_out += 1
-		raw_job = buildjob(
+		raw_job = WebMirror.JobUtils.buildjob(
 			module         = 'WebRequest',
 			call           = 'getItem',
 			dispatchKey    = "fetcher",

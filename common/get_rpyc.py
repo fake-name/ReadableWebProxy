@@ -90,14 +90,15 @@ def main():
 	logSetup.initLogging()
 
 	raw_job = buildjob(
-		module         = 'WebRequest',
-		call           = 'getItem',
-		dispatchKey    = "fetcher",
-		jobid          = -1,
-		args           = ['http://www.google.com'],
-		kwargs         = {},
-		additionalData = {'mode' : 'fetch'},
-		postDelay      = 0
+		module                 = 'WebRequest',
+		call                   = 'getItem',
+		dispatchKey            = "fetcher",
+		jobid                  = -1,
+		args                   = ['http://www.google.com'],
+		kwargs                 = {},
+		additionalData         = {'mode' : 'fetch'},
+		postDelay              = 0,
+		response_routing_key   = 'response',
 	)
 
 	rint = RemoteJobInterface("wat")

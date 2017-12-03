@@ -240,6 +240,19 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/games&q=comic/topic/games&q=comic/topic/',
 		'/general&q=forum/general&q=forum/',
 		'/lost-omens&q=forum/lost-omens&q=forum/',
+		'/news?q=blog/topic/news&q=blog/',
+		'/jam&q=character/jam&q=character/',
+		'www.wastedtalent.ca/forum/',
+		'/lucky?q=character/lucky&q=character/',
+		'/red?q=character/red&q=character/',
+		'/trevor?q=character/trevor&q=character/',
+		'/dystopian-fashionista?q=comic/dystopian-fashionista&q=comic/',
+		'/topic/art?q=comic/topic/art&q=comic/',
+		'/topic/engineering?q=comic/topic/engineering&q=comic/',
+		'/topic/vancouver?q=comic/topic/vancouver&q=comic/',
+		'/general?q=forum/general&q=forum/general&q=forum/',
+		'/lost-omens?q=forum/lost-omens&q=forum/',
+		'/office-life?q=tags/office-life&q=tags/',
 	]
 
 	@classmethod

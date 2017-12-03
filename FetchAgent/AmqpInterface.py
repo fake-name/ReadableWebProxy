@@ -54,26 +54,27 @@ class RabbitQueueHandler(object):
 			self.log.info("Creating worker %s", threadno)
 			self.connectors.append(
 				AmqpConnector.Connector(
-													userid                 = settings["RABBIT_LOGIN"],
-													password               = settings["RABBIT_PASWD"],
-													host                   = settings["RABBIT_SRVER"],
-													virtual_host           = settings["RABBIT_VHOST"],
-													ssl                    = sslopts,
-													master                 = settings['master'],
-													synchronous            = settings['synchronous'],
-													flush_queues           = settings['flush_queues'],
-													prefetch               = settings['prefetch'],
-													durable                = settings['durable'],
-													heartbeat              = settings['heartbeat'],
-													task_exchange_type     = settings['task_exchange_type'],
-													poll_rate              = settings['poll_rate'],
-													task_queue             = settings["taskq_task"],
-													response_queue         = settings["taskq_response"],
-													response_exchange_type = settings['response_exchange_type'],
-													task_exchange          = settings["task_exchange"],
-													response_exchange      = settings["response_exchange"],
-													socket_timeout         = settings["socket_timeout"],
-													ack_rx                 = settings["ack_rx"],
+													userid                         = settings["RABBIT_LOGIN"],
+													password                       = settings["RABBIT_PASWD"],
+													host                           = settings["RABBIT_SRVER"],
+													virtual_host                   = settings["RABBIT_VHOST"],
+													ssl                            = sslopts,
+													master                         = settings['master'],
+													synchronous                    = settings['synchronous'],
+													flush_queues                   = settings['flush_queues'],
+													prefetch                       = settings['prefetch'],
+													durable                        = settings['durable'],
+													heartbeat                      = settings['heartbeat'],
+													task_exchange_type             = settings['task_exchange_type'],
+													poll_rate                      = settings['poll_rate'],
+													task_queue                     = settings["taskq_task"],
+													response_queue                 = settings["taskq_response"],
+													response_exchange_type         = settings['response_exchange_type'],
+													task_exchange                  = settings["task_exchange"],
+													response_exchange              = settings["response_exchange"],
+													response_exchange_routing      = settings["response_exchange_routing"],
+													socket_timeout                 = settings["socket_timeout"],
+													ack_rx                         = settings["ack_rx"],
 
 													external_task_queue     = self.ext_taskq,
 													external_response_queue = self.ext_repq,
@@ -82,7 +83,36 @@ class RabbitQueueHandler(object):
 			# We spread out the socket creation along the timeout interval, so
 			# that all the connectors don't function in apparent lockstep
 			# time.sleep(settings['socket_timeout'] / settings['consumer_threads'])
+		for threadno in range(settings['lowrate_consumer_threads']):
+			self.log.info("Creating lowrate worker %s", threadno)
+			self.connectors.append(
+				AmqpConnector.Connector(
+													userid                         = settings["RABBIT_LOGIN"],
+													password                       = settings["RABBIT_PASWD"],
+													host                           = settings["RABBIT_SRVER"],
+													virtual_host                   = settings["RABBIT_VHOST"],
+													ssl                            = sslopts,
+													master                         = settings['master'],
+													synchronous                    = settings['synchronous'],
+													flush_queues                   = settings['flush_queues'],
+													prefetch                       = settings['prefetch'],
+													durable                        = settings['durable'],
+													heartbeat                      = settings['heartbeat'],
+													task_exchange_type             = settings['task_exchange_type'],
+													poll_rate                      = settings['poll_rate'],
+													task_queue                     = settings["taskq_task"],
+													response_queue                 = settings["lowrate_taskq_response"],
+													response_exchange_type         = settings['response_exchange_type'],
+													task_exchange                  = settings["task_exchange"],
+													response_exchange              = settings["response_exchange"],
+													response_exchange_routing      = settings["lowrate_response_exchange_routing"],
+													socket_timeout                 = settings["socket_timeout"],
+													ack_rx                         = settings["ack_rx"],
 
+													external_task_queue     = self.ext_taskq,
+													external_response_queue = self.ext_repq,
+													)
+				)
 
 		# The chunk structure is slightly annoying, so just limit to 200 partial messages.
 		self.chunks     = cachetools.LRUCache(maxsize=200)
@@ -517,41 +547,47 @@ def monitor(manager):
 # Note:
 def startup_interface(manager):
 	rpc_amqp_settings = {
-		'consumer_threads'        : 4,
+		'consumer_threads'                     : 5,
+		'lowrate_consumer_threads'             : 2,
 
-		'RABBIT_LOGIN'            : settings_file.RPC_RABBIT_LOGIN,
-		'RABBIT_PASWD'            : settings_file.RPC_RABBIT_PASWD,
-		'RABBIT_SRVER'            : settings_file.RPC_RABBIT_SRVER,
-		'RABBIT_VHOST'            : settings_file.RPC_RABBIT_VHOST,
-		'master'                  : True,
-		'prefetch'                : 25,
-		# 'prefetch'                : 5,
-		'task_exchange_type'      : 'direct',
-		'response_exchange_type'  : 'direct',
+		'RABBIT_LOGIN'                         : settings_file.RPC_RABBIT_LOGIN,
+		'RABBIT_PASWD'                         : settings_file.RPC_RABBIT_PASWD,
+		'RABBIT_SRVER'                         : settings_file.RPC_RABBIT_SRVER,
+		'RABBIT_VHOST'                         : settings_file.RPC_RABBIT_VHOST,
+		'master'                               : True,
+		'prefetch'                             : 25,
+		# 'prefetch'                             : 5,
+		'task_exchange_type'                   : 'direct',
+		'response_exchange_type'               : 'direct',
 
-		'taskq_task'              : 'task.q',
-		'taskq_response'          : 'response.q',
+		'taskq_task'                           : 'task.q',
+		'taskq_response'                       : 'response.q',
 
-		"poll_rate"               : 1/100,
+		"poll_rate"                            : 1/100,
 
-		'heartbeat'               :  45,
-		'socket_timeout'          :  90,
+		'heartbeat'                            :  45,
+		'socket_timeout'                       :  90,
 
-		'flush_queues'            : False,
-		'durable'                 : True,
+		'flush_queues'                         : False,
+		'durable'                              : True,
 
-		'taskq_name'              : 'outq',
-		'respq_name'              : 'inq',
+		'taskq_name'                           : 'outq',
+		'respq_name'                           : 'inq',
 
-		'GRAPHITE_DB_IP'          : settings_file.GRAPHITE_DB_IP,
+		'GRAPHITE_DB_IP'                       : settings_file.GRAPHITE_DB_IP,
 
-		'synchronous'             : False,
+		'synchronous'                          : False,
 
-		'task_exchange'           : 'tasks.e',
-		'response_exchange'       : 'resps.e',
+		'task_exchange'                        : 'tasks.e',
+		'response_exchange'                    : 'resps.e',
+		'response_exchange_routing'            : 'resps',
 
-		'ack_rx'                  : True
+		'lowrate_taskq_response'               : 'lowrate_response.q',
+		'lowrate_response_exchange_routing'    : 'lowrate_resps',
+
+		'ack_rx'                               : True
 	}
+
 
 	feed_amqp_settings = {
 		'RABBIT_LOGIN'            : settings_file.RABBIT_LOGIN,

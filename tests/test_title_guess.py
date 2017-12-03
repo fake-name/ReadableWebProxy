@@ -2,7 +2,7 @@ import traceback
 
 # from FeedScrape.FeedDataParser import extractChapterVol
 from tests.title_test_data import data as test_data
-from WebMirror.util.titleParse import TitleParser
+from WebMirror.OutputFilters.util.TitleParsers import TitleParser
 
 def test():
 	count = 0
@@ -52,8 +52,6 @@ def test():
 		except Exception:
 			mismatch += 1
 			traceback.print_exc()
-
-
 
 		# if len(value) == 2:
 		# 	assert value == extractChapterVol(key), "Wat? Values: '{}', '{}', '{}'".format(key, value, extractChapterVol(key))
