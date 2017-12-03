@@ -58,6 +58,17 @@ CHAPTER_KEYS_GLOBAL  = [
 		'c',
 	]
 
+COMPOUND_CHAPTER_KEYS_GLOBAL  = [
+		r'chp\.',
+		r'chp',
+		r'ch\.',
+		r'ch',
+		r'c\.',
+		r'c',
+	]
+
+
+
 POSTFIX_SPLITS = [
 		'-',
 		'–',  # FUCK YOU UNICODE
@@ -849,6 +860,57 @@ class FractionGlobber(GlobBase):
 		return before, target, after
 
 
+class PrefixCompoundChapterGlobber(GlobBase):
+	'''
+	Bind to '{chapter_prefix}{number(int)}-{number(int)}'
+	'''
+
+	COMPOUND_CHAPTER_KEYS = COMPOUND_CHAPTER_KEYS_GLOBAL
+
+	def attach_token(self, before, target, after):
+		# if len(after) == 3:
+		# 	target = before[-1] + target
+		# 	before = before[:-1]
+
+		# print("Getting text preceding '%s' (%s)" % (target, type(target)))
+
+		before, prec, intervening = self.get_preceeding_text(before)
+
+		if target == " ":
+			if prec:
+				before.append(prec)
+			if intervening:
+				before.append(intervening)
+
+		elif isinstance(target, str):
+			# print("AttachToken: b: '%s', t: '%s', a: '%s'" % (before, target, after))
+
+			for chapter_prefix in self.COMPOUND_CHAPTER_KEYS:
+				restr = r'^%s([\d\.]+)(-)([\d\.]+)' % chapter_prefix
+				match = re.search(restr, target, re.IGNORECASE)
+				if match:
+					break
+			# print("Match:", match)
+			if match:
+				# print("CompoundChapterGlobber: ", target)
+				p1, divider, p2 = match.groups()
+				# target = DateTextToken(target)
+				target = CompoundChapterFragmentToken(prec, intervening, p1, divider, p2 )
+			else:
+				if prec:
+					before.append(prec)
+				if intervening:
+					before.append(intervening)
+		else:
+			if prec:
+				before.append(prec)
+			if intervening:
+				before.append(intervening)
+
+		# print("target:", (prec, target))
+		# print((before, prec, intervening, target, after))
+		return before, target, after
+
 class CompoundChapterGlobber(GlobBase):
 
 	CHAPTER_KEYS = CHAPTER_KEYS_GLOBAL
@@ -1015,6 +1077,7 @@ class TitleParser(object):
 		CommaSplitter,
 		DateGlobber,
 		R18Globber,
+		PrefixCompoundChapterGlobber,
 		LetterNumberSplitter,
 		VolumeChapterFragGlobber,
 		CompoundChapterGlobber,
