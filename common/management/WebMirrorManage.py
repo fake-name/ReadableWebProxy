@@ -593,6 +593,9 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 			"www1.faktranslations.com",  # Bought by a domain squatter
 			"ww1.steadytranslation.com", # ditto
 			'box479.bluehost.com',       # Site error thing.
+
+			'jianghuwanderer.com',
+			'www.failtranslations.xyz',
 		]
 
 		missing = 0

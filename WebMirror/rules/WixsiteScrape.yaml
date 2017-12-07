@@ -9,6 +9,10 @@ baseUrl: [
 		'https://catatopatch.wixsite.com/catatopatch/',
 		'https://www.catatopatch.com',
 
+		'https://raindax.wixsite.com',
+		'http://springkrane.wixsite.com',
+		'http://tachibanachinatsu.wixsite.com',
+
 	]
 
 feeds: []

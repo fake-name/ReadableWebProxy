@@ -97,6 +97,12 @@ badwords: [
 			'royalroadl.com/gp/yourstore/',
 			'royalroadl.com/Kindle-',
 
+			'http://royalroadl.com/b/ref=sv_kstore_',
+			'ref=amb_link_',
+			'royalroadl.com/Editors-Picks-Kindle-eBooks/',
+			'royalroadl.com/fantasy-futuristic-ghost-romance-ebooks/',
+			'royalroadl.com/gp/',
+			'royalroadl.com/photos/home/',
 			]
 
 # Content Stripping needs to be determined.
@@ -115,6 +121,11 @@ rewalk_interval_days : 30
 
 rewriteAttrs: [
 	{"name" : "table", "class" : ['tborder', 'tfixed'], "out_attr" : {"border" : 0}}
+]
+
+skip_filters : [
+	['royalroadl.com',     'royalroadl\.com/fiction/\d+?(?:/[a-z\-\d]+?/?)?$', True],
+	['www.royalroadl.com', 'royalroadl\.com/fiction/\d+?(?:/[a-z\-\d]+?/?)?$', True],
 ]
 
 decompose: [

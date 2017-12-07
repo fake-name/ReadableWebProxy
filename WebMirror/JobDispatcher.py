@@ -283,8 +283,19 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		self.specialcase    = WebMirror.rules.load_special_case_sites()
 		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
 
-		self.feed_urls = []
-		[self.feed_urls.extend(tmp['feedurls']) for tmp in self.ruleset if 'feedurls' in tmp and tmp['feedurls']]
+		self.feed_urls_list = []
+		[self.feed_urls_list.extend(tmp['feedurls']) for tmp in self.ruleset if 'feedurls' in tmp and tmp['feedurls']]
+
+		self.feed_urls = set(self.feed_urls_list)
+
+		self.rate_limit_skip = {}
+		for rules in self.ruleset:
+			for key, regex in rules['skip_filters']:
+				assert key not in self.rate_limit_skip, "Multiple definition of skip filter for netloc '%s'" % key
+				self.rate_limit_skip[key] = regex
+
+		self.log.info("Have %s RSS feed URLS", len(self.feed_urls))
+		self.log.info("Have %s netloc-filtered skip-limit regexes.", len(self.rate_limit_skip))
 
 		self.print_mod = 0
 
@@ -654,7 +665,6 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			self.log.warn("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
-		deleted = 0
 
 		defer = []
 		for rid, netloc, joburl in rids:
@@ -668,6 +678,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				# Do not route the rss fetches through the rate-limiting system.
 				if joburl in self.feed_urls:
 					self.log.info("Skipping fetch limiter due to feed URL")
+					self.put_fetch_job(rid, joburl, netloc)
+				elif netloc in self.rate_limit_skip and self.rate_limit_skip[netloc].search(joburl):
+					self.log.info("Skipping fetch limiter due to rate_limit_skip for URL: '%s'", joburl)
 					self.put_fetch_job(rid, joburl, netloc)
 				else:
 					defer.append((rid, joburl, netloc))

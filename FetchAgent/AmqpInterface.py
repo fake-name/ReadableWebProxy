@@ -548,7 +548,7 @@ def monitor(manager):
 def startup_interface(manager):
 	rpc_amqp_settings = {
 		'consumer_threads'                     : 5,
-		'lowrate_consumer_threads'             : 2,
+		'lowrate_consumer_threads'             : 4,
 
 		'RABBIT_LOGIN'                         : settings_file.RPC_RABBIT_LOGIN,
 		'RABBIT_PASWD'                         : settings_file.RPC_RABBIT_PASWD,

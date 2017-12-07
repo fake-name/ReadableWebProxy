@@ -2,6 +2,7 @@
 import traceback
 import os
 import sys
+import re
 import os.path
 import yaml
 import flags
@@ -237,11 +238,19 @@ def getSpecialFilters(ruleset):
 			ret[netloc] = params
 	return ret
 
+def getSkipFilters(ruleset):
+	ret = []
+	if "skip_filters" in ruleset:
+		for netloc, regex, ignorecase in ruleset['skip_filters']:
+			comp = re.compile(regex, re.I if ignorecase else None)
+			ret.append((netloc, comp))
+	return ret
+
 def getAttributeRewriteRules(ruleset):
 	if not 'rewriteAttrs' in ruleset:
 		return False
 	return ruleset['rewriteAttrs']
-	
+
 def getDecomposeSvg(ruleset):
 	if not 'decompose_svg' in ruleset:
 		return False
@@ -304,6 +313,7 @@ def validateRuleKeys(dat, fname):
 		'rewriteAttrs',
 		'rewalk_interval_days',
 		'disallow_duplicate_path_segments',
+		'skip_filters',
 
 		# Not currently implemented, but useful
 		'titleTweakLut',
@@ -339,10 +349,11 @@ def load_validate_rules(fname, dat):
 	rules['destyle']                           = getDestyles(dat)
 	rules['preserveAttrs']                     = getPreserveAttrs(dat)
 	rules['decompose_svg']                     = getDecomposeSvg(dat)
-	
+
 	rules['rewalk_interval_days']              = getRewalkIntervalDays(dat)
 	rules['disallow_duplicate_path_segments']  = getDisallowDuplicatePathComponents(dat)
 	rules['maximum_priority']                  = getMaximumFetchPriority(dat)
+	rules['skip_filters']                      = getSkipFilters(dat)
 
 	rules['trigger']                           = getTrigger(dat)
 	if not rules['trigger']:
