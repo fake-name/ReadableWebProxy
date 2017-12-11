@@ -7,6 +7,7 @@ runStatus.preloadDicts = False
 import WebMirror.PreProcessors.PreProcessorBase
 import urllib.parse
 import bs4
+import re
 
 
 
@@ -45,6 +46,39 @@ class LiteroticaFavouritePreprocessor(WebMirror.PreProcessors.PreProcessorBase.C
 		return soup.prettify()
 
 
+	def _fix_stupid_overuse_of_div_tags(self, content, url):
+
+		soup = bs4.BeautifulSoup(content, "lxml")
+
+		bad_div_containers = soup.find_all("div", class_=re.compile("(StoryCardComponent__story__footer___|StoryCardComponent__story__content___)"))
+		for bad_div_container in bad_div_containers:
+			for bad_div in bad_div_container.find_all("div"):
+				bad_div.name = 'span'
+
+		rating_i = soup.find_all("i", class_=re.compile("StoryCardComponent__story__content___"))
+		reads_i = soup.find_all("i", class_=re.compile("StatsStory__diagram___"))
+		favourites_i = soup.find_all("i", class_=re.compile("StatsStory__heart___"))
+		comments_i = soup.find_all("i", class_=re.compile("StatsStory__comment___"))
+		lists_i = soup.find_all("i", class_=re.compile("StatsStory__stories-icon___"))
+
+
+		for tmp in rating_i:
+			tmp.name='span'
+			tmp.string = ", ★"
+		for tmp in reads_i:
+			tmp.name='span'
+			tmp.string = ", 📊"
+		for tmp in favourites_i:
+			tmp.name='span'
+			tmp.string = ", ❤"
+		for tmp in comments_i:
+			tmp.name='span'
+			tmp.string = ", 💬"
+		for tmp in lists_i:
+			tmp.name='span'
+			tmp.string = ", ☵"
+		return soup.prettify()
+
 	def preprocessContent(self, url, mimetype, contentstr):
 		if not isinstance(contentstr, str):
 			return contentstr
@@ -53,6 +87,8 @@ class LiteroticaFavouritePreprocessor(WebMirror.PreProcessors.PreProcessorBase.C
 			self.log.info("Flattening favourites!")
 			contentstr = self.unwrap_favourites(contentstr, url)
 			self.log.info("Converted favourite dialog for series.")
+		if "//tags.literotica.com/" in url:
+			contentstr = self._fix_stupid_overuse_of_div_tags(contentstr, url)
 		return contentstr
 
 	@staticmethod

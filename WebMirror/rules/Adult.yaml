@@ -231,6 +231,9 @@ decompose: [
 	{'class'  : 'comments-area'},
 	{'class'  : 'ads'},
 
+	# Obnoxious literotica SVG bullshit.
+	{'class'  : 'logo'},
+
 	# {'class'  : 'b-sidebar'},
 	{'class'  : 'b-footer'},
 ]
