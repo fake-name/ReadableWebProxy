@@ -319,6 +319,9 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 	Similar in functionality to `clear_bad`, except it results in many fewer queryies,
 	and is therefore likely much more performant.
 	'''
+
+	print("Purge invalid URLs called with netloc param: '%s'" % selected_netloc)
+	found_ruleset = False
 	with db.session_context() as sess:
 		for ruleset in WebMirror.rules.load_rules():
 
@@ -331,7 +334,7 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 							(selected_netloc != None and selected_netloc in ruleset['netlocs'])
 						)
 					):
-
+				found_ruleset = True
 				agg_bad = [tmp for tmp in ruleset['badwords']]
 				agg_bad.extend(common.global_constants.GLOBAL_BAD_URLS)
 
@@ -383,6 +386,10 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 				ids = [tmp[0] for tmp in ids]
 				delete_internal(sess, ids, selected_netloc if selected_netloc else ruleset['netlocs'], agg_bad)
 
+
+	if not found_ruleset:
+		print("ERROR!")
+		print("Selected netloc (%s) not found in rulesets!" % selected_netloc)
 
 def exposed_purge_invalid_url_history():
 	'''

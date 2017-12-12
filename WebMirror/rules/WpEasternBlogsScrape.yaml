@@ -1556,6 +1556,9 @@ badwords: [
 		'worldofwatermelons.com/?',
 		'littleshanks.net/?',
 
+
+		'/?profiletab=',
+		'/login?_next=',
 	]
 
 compound_badwords: [
