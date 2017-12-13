@@ -77,6 +77,10 @@ class LiteroticaFavouritePreprocessor(WebMirror.PreProcessors.PreProcessorBase.C
 		for tmp in lists_i:
 			tmp.name='span'
 			tmp.string = ", ☵"
+		
+		for bad in soup.find_all("svg"):
+			bad.decompose()
+			
 		return soup.prettify()
 
 	def preprocessContent(self, url, mimetype, contentstr):

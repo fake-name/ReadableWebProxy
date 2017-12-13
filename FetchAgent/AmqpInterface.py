@@ -78,7 +78,7 @@ class RabbitQueueHandler(object):
 
 													external_task_queue     = self.ext_taskq,
 													external_response_queue = self.ext_repq,
-													)
+										)
 				)
 			# We spread out the socket creation along the timeout interval, so
 			# that all the connectors don't function in apparent lockstep
@@ -111,11 +111,11 @@ class RabbitQueueHandler(object):
 
 													external_task_queue     = self.ext_taskq,
 													external_response_queue = self.ext_repq,
-													)
+										)
 				)
 
-		# The chunk structure is slightly annoying, so just limit to 200 partial messages.
-		self.chunks     = cachetools.LRUCache(maxsize=200)
+		# The chunk structure is slightly annoying, so just limit to 10 partial message keys.
+		self.chunks     = cachetools.LRUCache(maxsize=10)
 		self.chunk_lock = threading.Lock()
 
 		self.log.info("Connected AMQP Interface: %s", self.connectors)
@@ -151,7 +151,6 @@ class RabbitQueueHandler(object):
 				"keyfile"  : keyf,
 				"certfile"  : cert,
 			}
-		print("Certificate config: ", ret)
 
 		return ret
 
@@ -357,7 +356,7 @@ class RabbitQueueHandler(object):
 
 		while self.mdict['amqp_runstate']:
 			try:
-				time.sleep(1)
+				time.sleep(0.1)
 				self.dispatch_outgoing()
 				self.process_retreived()
 			except Exception:
@@ -458,7 +457,6 @@ class PlainRabbitQueueHandler(object):
 				"keyfile"  : keyf,
 				"certfile"  : cert,
 			}
-		print("Certificate config: ", ret)
 
 		return ret
 
@@ -511,7 +509,7 @@ class PlainRabbitQueueHandler(object):
 
 		while self.mdict['amqp_runstate']:
 			try:
-				time.sleep(1)
+				time.sleep(0.1)
 				self.dispatch_outgoing()
 				self.process_retreived()
 
@@ -520,7 +518,7 @@ class PlainRabbitQueueHandler(object):
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 
-				with open("RabbitQueueHandler error %s.txt" % time.time(), 'w') as fp:
+				with open("PlainRabbitQueueHandler error %s.txt" % time.time(), 'w') as fp:
 					fp.write("Error!\n\n")
 					fp.write(traceback.format_exc())
 
@@ -536,12 +534,22 @@ class PlainRabbitQueueHandler(object):
 STATE = {}
 
 def monitor(manager):
-	while manager['amqp_runstate']:
-		for connector in STATE['rpc_instance'].connectors:
-			connector.checkLaunchThread()
-		STATE['feed_instance'].connector.checkLaunchThread()
-		time.sleep(1)
-		print("Monitor looping!")
+	try:
+		while manager['amqp_runstate']:
+			for connector in STATE['rpc_instance'].connectors:
+				connector.checkLaunchThread()
+			STATE['feed_instance'].connector.checkLaunchThread()
+			time.sleep(1)
+			print("Monitor looping!")
+
+	except Exception:
+		print("Exception in Rabbit Manager!")
+		for line in traceback.format_exc().split("\n"):
+			print(line)
+
+		with open("Rabbit Manager error %s.txt" % time.time(), 'w') as fp:
+			fp.write("Error!\n\n")
+			fp.write(traceback.format_exc())
 
 
 # Note:
