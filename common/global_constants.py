@@ -82,8 +82,10 @@ GLOBAL_BAD_URLS = [
 
 			# NFI where /this/ came from
 			'www.miforcampuspolice.com',
-			'tracking.feedpress.it',
+			'attorneyking.pro',
 
+
+			'tracking.feedpress.it',
 			'www.quantcast.com',
 
 			'mailto:',
@@ -101,6 +103,9 @@ GLOBAL_BAD_URLS = [
 			'https:/www.',
 			'tumblr.com/oembed/1.0?',
 			'/wp-includes/js/',
+
+			# Bought by asshole squatters
+			'ww12.circustranslations.com'
 	]
 
 

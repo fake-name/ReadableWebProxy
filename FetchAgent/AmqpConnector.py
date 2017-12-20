@@ -568,6 +568,7 @@ class Connector:
 
 		self.thread = None
 		self.__config = config
+		self.__launch_lock = multiprocessing.Lock()
 		self.checkLaunchThread()
 
 	def checkLaunchThread(self):
@@ -575,15 +576,16 @@ class Connector:
 
 		if self.thread and self.thread.isAlive() and not queue_overfull:
 			return
-		if queue_overfull:
-			self.runstate.value = 0
-			for dummy_x in range(30):
-				if self.thread.isAlive():
-					time.sleep(1)
-				else:
-					self.thread.join()
-					self.thread = None
-					break
+		with self.__launch_lock:
+			if queue_overfull:
+				self.runstate.value = 0
+				for dummy_x in range(30):
+					if self.thread.isAlive():
+						time.sleep(1)
+					else:
+						self.thread.join()
+						self.thread = None
+						break
 
 
 

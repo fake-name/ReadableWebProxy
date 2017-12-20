@@ -12,7 +12,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 	def __init__(self):
 		super().__init__()
 
-		self.accumulator_min = 1
+		self.accumulator_min = 5
 		self.accumulator_max =  500
 		self.url_throttler = {}
 
