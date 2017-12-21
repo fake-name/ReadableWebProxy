@@ -578,6 +578,7 @@ class Connector:
 			return
 		with self.__launch_lock:
 			if queue_overfull:
+				# Tell thread to terminate
 				self.runstate.value = 0
 				for dummy_x in range(30):
 					if self.thread.isAlive():
@@ -588,24 +589,30 @@ class Connector:
 						break
 
 
+			# If the thread exists, and has died, or hasn't been created
+			if (self.thread and not self.thread.isAlive()) or not self.thread:
+				if self.thread and not self.thread.isAlive():
+					self.thread.join()
+					self.log.error("")
+					self.log.error("")
+					self.log.error("")
+					self.log.error("Thread has died!")
+					self.log.error("")
+					self.log.error("")
+					self.log.error("")
+				self.log.info("Creating thread.")
+				self.thread = threading.Thread(
+					target=ConnectorManager.run_fetcher,
+					args=(self.__config, self.runstate, self.taskQueue, self.responseQueue),
+					daemon=True,
+					name="RMQ: {}".format(self.__config['virtual_host']))
+				self.thread.start()
 
-		if self.thread and not self.thread.isAlive():
-			self.thread.join()
-			self.log.error("")
-			self.log.error("")
-			self.log.error("")
-			self.log.error("Thread has died!")
-			self.log.error("")
-			self.log.error("")
-			self.log.error("")
-
-		self.thread = threading.Thread(
-			target=ConnectorManager.run_fetcher,
-			args=(self.__config, self.runstate, self.taskQueue, self.responseQueue),
-			daemon=True,
-			name="RMQ: {}".format(self.__config['virtual_host']))
-		self.thread.start()
-
+				start_cnt = 0
+				while not self.thread.ident:
+					self.log.info("Waiting for thread to start (%s)", start_cnt)
+					start_cnt += 1
+					time.sleep(1)
 
 
 
