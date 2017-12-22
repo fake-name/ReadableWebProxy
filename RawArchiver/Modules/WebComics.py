@@ -8,6 +8,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 	# TODO: Support cloudfront resources
 	target_urls = [
+		'http://pbfcomics.com',
 		'http://somethingpositive.net',
 		'http://www.girlgeniusonline.com',
 		'http://www.agirlandherfed.com',
