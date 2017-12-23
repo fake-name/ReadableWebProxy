@@ -95,14 +95,14 @@ def resetInProgress():
 		print("Getting minimum row in need or update..")
 		start = sess.execute("""SELECT min(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
 		start = list(start)[0][0]
+		if start is None:
+			print("No rows to reset!")
+			return
 		print("Minimum row ID: ", start, "getting maximum row...")
 		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
 		stop = list(stop)[0][0]
 		print("Maximum row ID: ", stop)
 
-		if not start:
-			print("No null rows to fix!")
-			return
 
 		print("Need to fix rows from %s to %s" % (start, stop))
 		start = start - (start % step)

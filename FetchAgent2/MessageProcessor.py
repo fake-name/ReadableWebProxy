@@ -44,7 +44,7 @@ class MessageProcessor(object):
 			'outgoing_q'   : queue.Queue(),
 			'incoming_q'   : queue.Queue(),
 			'workers'      : [],
-			'dispatch_map' : {},
+			'dispatch_map' : cachetools.LRUCache(maxsize=25000),
 
 			# The chunk structure is slightly annoying, so just limit to 10 partial message keys.
 			'chunk_cache'  : cachetools.LRUCache(maxsize=5),
@@ -102,10 +102,11 @@ class MessageProcessor(object):
 							assert isinstance(new_job, dict), "Jobs must be of type dict, passed type '%s'" % type(new_job)
 
 							# Attach tracking data to the job
-							jkey = uuid.uuid1().hex
+							jkey = str(uuid.uuid1().hex)
 							meta = {
-								'sort_key' : jkey,
-								'qname'    : queue_name,
+								'sort_key'   : jkey,
+								'qname'      : queue_name,
+								'started_at' : time.time(),
 								}
 							new_job['jobmeta'] = meta
 							self.worker_pools[worker_name]['dispatch_map'][jkey] = (queue_name, time.time())
@@ -227,6 +228,10 @@ class MessageProcessor(object):
 			self.log.error("No sort key or queue name in response!")
 			self.log.error("Response meta: %s", job_data['jobmeta'])
 			return
+
+		# Why bother caching here?
+		if not started_at and 'started_at' in job_data['jobmeta']:
+			started_at = job_data['jobmeta']['started_at']
 
 		self.__check_have_interface_queue(worker_name, qname)
 

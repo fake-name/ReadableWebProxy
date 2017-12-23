@@ -89,6 +89,9 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		if joburl.startswith("data:"):
 			self.log.warn("Data URL: '%s' - %s", joburl, netloc)
 			return None
+		if not joburl.startswith("http"):
+			self.log.warn("Non HTTP URL: '%s' - %s", joburl, netloc)
+			return None
 		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
 			if module.cares_about_url(joburl):
 				return True
