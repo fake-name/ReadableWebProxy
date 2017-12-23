@@ -817,6 +817,9 @@ def exposed_drop_priorities():
 		print("Getting minimum row in need or update..")
 		start = sess.execute("""SELECT min(id) FROM web_pages WHERE priority != 500000""")
 		start = list(start)[0][0]
+		if start is None:
+			print("No rows to reset!")
+			return
 		print("Minimum row ID: ", start, "getting maximum row...")
 		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE priority != 500000""")
 		stop = list(stop)[0][0]

@@ -366,7 +366,7 @@ class ConnectorManager:
 				self.had_exception.value = 1
 
 
-		if (self.last_message_received + (self.config['heartbeat'] * 8) < now or
+		if (self.last_message_received + (self.config['heartbeat'] * 8) < now and
 			self.last_heartbeat_received + (self.config['heartbeat'] * 8) < now):
 			# Attempt recover if we've been idle for a while.
 			self.log.info("Reconnect retrigger seems to have not fixed the issue?")

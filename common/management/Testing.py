@@ -9,6 +9,7 @@ import queue
 import pprint
 import common.get_rpyc
 import WebMirror.JobDispatcher
+from WebMirror.JobUtils import buildjob
 
 def dump_response(resp):
 	pprint.pprint(resp)
@@ -32,7 +33,7 @@ def exposed_test_chromium_fetch():
 
 	print("Dispatching job engine")
 
-	raw_job_1 = WebMirror.JobDispatcher.buildjob(
+	raw_job_1 = buildjob(
 		module         = 'NUWebRequest',
 		call           = 'getHeadTitlePhantomJS',
 		dispatchKey    = "lolwattttt",
@@ -42,7 +43,7 @@ def exposed_test_chromium_fetch():
 		additionalData = {'herp' : 'derp'},
 		postDelay      = 0
 	)
-	raw_job_2 = WebMirror.JobDispatcher.buildjob(
+	raw_job_2 = buildjob(
 		module         = 'WebRequest',
 		call           = 'getHeadTitleChromium',
 		dispatchKey    = "lolwattttt",
@@ -53,8 +54,32 @@ def exposed_test_chromium_fetch():
 		postDelay      = 0
 	)
 
-	rpc_interface.put_job(raw_job_1)
-	rpc_interface.put_job(raw_job_2)
+	raw_job_3 = buildjob(
+		module         = 'WebRequest',
+		call           = 'getItemChromium',
+		dispatchKey    = "lolwattttt",
+		jobid          = "lolwat",
+		args           = [],
+		kwargs         = {'itemUrl' : 'http://www.google.com'},
+		additionalData = {'herp' : 'derp'},
+		postDelay      = 0
+	)
+
+	raw_job_4 = buildjob(
+		module         = 'WebRequest',
+		call           = 'getItem',
+		dispatchKey    = "lolwattttt",
+		jobid          = "lolwat",
+		args           = [],
+		kwargs         = {'itemUrl' : 'http://imgsv.imaging.nikon.com/lineup/dslr/d600/img/sample01/img_01_l.jpg'},
+		additionalData = {'herp' : 'derp'},
+		postDelay      = 0
+	)
+
+	# rpc_interface.put_job(raw_job_1)
+	# rpc_interface.put_job(raw_job_2)
+	rpc_interface.put_job(raw_job_3)
+	rpc_interface.put_job(raw_job_4)
 
 	for _ in range(60 * 15):
 

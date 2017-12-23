@@ -34,15 +34,15 @@ RPC_AMQP_SETTINGS = {
 		'password'                               : settings_file.RPC_RABBIT_PASWD,
 		'host'                                   : settings_file.RPC_RABBIT_SRVER,
 		'virtual_host'                           : settings_file.RPC_RABBIT_VHOST,
-		'ssl'                                    : getSslOpts(),
+		'sslopts'                                : getSslOpts(),
 		'master'                                 : True,
 		'prefetch'                               : 25,
 		# 'prefetch'                             : 5,
 		'task_exchange_type'                     : 'direct',
 		'response_exchange_type'                 : 'direct',
 
-		'task_queue'                             : 'task.q',
-		'response_queue'                         : 'response.q',
+		'task_queue_name'                        : 'task.q',
+		'response_queue_name'                    : 'response.q',
 
 		'heartbeat'                              :  45,
 		'socket_timeout'                         :  90,
@@ -63,14 +63,15 @@ LOWRATE_RPC_AMQP_SETTINGS = {
 		'password'                               : settings_file.RPC_RABBIT_PASWD,
 		'host'                                   : settings_file.RPC_RABBIT_SRVER,
 		'virtual_host'                           : settings_file.RPC_RABBIT_VHOST,
-		'ssl'                                    : getSslOpts(),
+		'sslopts'                                : getSslOpts(),
 		'master'                                 : True,
 		'prefetch'                               : 25,
 		# 'prefetch'                             : 5,
 		'task_exchange_type'                     : 'direct',
 		'response_exchange_type'                 : 'direct',
 
-		'task_queue'                             : 'task.q',
+		'task_queue_name'                        : 'task.q',
+		'response_queue_name'                    : 'lowrate_response.q',
 
 		'heartbeat'                              :  45,
 		'socket_timeout'                         :  90,
@@ -81,7 +82,6 @@ LOWRATE_RPC_AMQP_SETTINGS = {
 		'task_exchange'                          : 'tasks.e',
 		'response_exchange'                      : 'resps.e',
 
-		'response_queue'                         : 'lowrate_response.q',
 		'response_exchange_routing'              : 'lowrate_resps',
 	}
 
@@ -93,13 +93,13 @@ FEED_AMQP_SETTINGS = {
 		'password'                               : settings_file.RABBIT_PASWD,
 		'host'                                   : settings_file.RABBIT_SRVER,
 		'virtual_host'                           : settings_file.RABBIT_VHOST,
-		'ssl'                                    : getSslOpts(),
+		'sslopts'                                : getSslOpts(),
 		'master'                                 : True,
 		'prefetch'                               : 25,
 		# 'prefetch'                             : 5,
 		'task_exchange_type'                     : 'fanout',
-		'task_queue'                             : 'task.q',
-		'response_queue'                         : 'response.q',
+		'task_queue_name'                        : 'task.q',
+		'response_queue_name'                    : 'response.q',
 		'response_exchange_type'                 : 'direct',
 
 		'heartbeat'                              :  45,

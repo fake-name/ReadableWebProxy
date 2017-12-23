@@ -418,7 +418,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 			# print(feedentry['contents'])
 			# print(feedentry['published'])
 
-
 			while 1:
 				try:
 					self.insertRssItem(feedentry, feedurl)

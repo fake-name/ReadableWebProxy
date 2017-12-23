@@ -12,7 +12,7 @@ import uuid
 import statsd
 import cachetools
 
-from settings import settings as settings_file
+import settings as settings_file
 from . import InterfaceConsumer
 from . import MessageSettings
 
@@ -33,7 +33,7 @@ class MessageProcessor(object):
 		self.interface_dict = interface_dict
 
 		self.mon_con = statsd.StatsClient(
-				host = settings_file['GRAPHITE_DB_IP'],
+				host = settings_file.GRAPHITE_DB_IP,
 				port = 8125,
 				prefix = 'ReadableWebProxy.FetchAgent',
 				)
@@ -81,30 +81,49 @@ class MessageProcessor(object):
 			outq_n = worker_settings['taskq_name']
 			if not outq_n in self.interface_dict:
 				raise RuntimeError("Setting outbound queue '%s' doesn't exist!" % outq_n)
+
+			assert isinstance(self.interface_dict[outq_n], dict), "Interface dict member '%s' is not also a dict. Actual type: %s" % (
+					outq_n, type(self.interface_dict[outq_n]))
+
 			for queue_name, outq in self.interface_dict[outq_n].items():
+				qsz = outq.qsize()
+				if qsz:
+					self.log.info("Polling interface dict queue: '%s' -> '%s' (%s items)", outq_n, queue_name, qsz)
 				try:
 					while True:
 						new_job = outq.get_nowait()
+						if isinstance(new_job, str):
+							self.log.info("Sending string job!")
+							self.worker_pools[worker_name]['outgoing_q'].put(new_job)
+						elif isinstance(new_job, bytes):
+							self.log.info("Sending bytes job!")
+							self.worker_pools[worker_name]['outgoing_q'].put(new_job)
+						elif isinstance(new_job, dict):
+							assert isinstance(new_job, dict), "Jobs must be of type dict, passed type '%s'" % type(new_job)
 
-						# Attach tracking data to the job
-						jkey = uuid.uuid1().hex
-						new_job['jobmeta'] = {
-							'sort_key' : jkey,
-							'qname'    : queue_name,
-							}
-						self.worker_pools[worker_name]['dispatch_map'][jkey] = (queue_name, time.time())
+							# Attach tracking data to the job
+							jkey = uuid.uuid1().hex
+							meta = {
+								'sort_key' : jkey,
+								'qname'    : queue_name,
+								}
+							new_job['jobmeta'] = meta
+							self.worker_pools[worker_name]['dispatch_map'][jkey] = (queue_name, time.time())
 
-						assert 'module'       in new_job
-						assert 'call'         in new_job
-						assert 'dispatch_key' in new_job
-						assert 'jobid'        in new_job
-						assert new_job['jobid'] != None
-						assert 'jobmeta'     in new_job
+							assert 'module'       in new_job
+							assert 'call'         in new_job
+							assert 'dispatch_key' in new_job
+							assert 'jobid'        in new_job
+							assert new_job['jobid'] != None
+							assert 'jobmeta'     in new_job
 
-						# Make sure we have a returned data list for the added job.
+							# Make sure we have a returned data list for the added job.
 
-						packed_job = msgpack.packb(new_job, use_bin_type=True)
-						self.worker_pools[worker_name]['outgoing_q'].put(packed_job)
+							packed_job = msgpack.packb(new_job, use_bin_type=True)
+							self.worker_pools[worker_name]['outgoing_q'].put(packed_job)
+						else:
+							raise AssertionError("Unknown outbound job type: '%s'" % type(new_job))
+
 						self.mon_con.incr("Fetch.Resp.{}".format(queue_name), 1)
 
 				except queue.Empty:
@@ -246,3 +265,17 @@ class MessageProcessor(object):
 		self.__check_workers()
 		self.__forward_outgoing()
 		self.__process_incoming()
+
+	def __terminate_pool(self, worker_name, worker_settings):
+		self.log.info("Joining on workers for pool %s", worker_name)
+		for worker in self.worker_pools[worker_name]['workers']:
+			worker.signal_stop()
+		for worker in self.worker_pools[worker_name]['workers']:
+			worker.join()
+
+	def terminate(self):
+		for worker_name, worker_settings in WORKER_CONFS.items():
+			if not worker_name in self.worker_pools:
+				self.__init_pool(worker_name)
+			self.__terminate_pool(worker_name, worker_settings)
+

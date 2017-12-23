@@ -40,9 +40,9 @@ def init_yappi():
 
 		print('[YAPPI OUT]')
 
-if "grpc" in sys.argv:
-	import FetchAgent.server_grpc
-	FetchAgent.server_grpc.main()
+if "new" in sys.argv:
+	import FetchAgent2.server
+	FetchAgent2.server.main()
 else:
 	import FetchAgent.server
 	# init_yappi()

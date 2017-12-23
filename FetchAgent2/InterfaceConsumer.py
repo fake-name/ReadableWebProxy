@@ -19,6 +19,7 @@ class Message_Publish_Exception(Exception):
 class ThreadDieException(Exception):
 	pass
 
+GLOBAL_THREAD_NO = 1
 
 def validate_config(config):
 		assert 'host'                     in config
@@ -42,7 +43,7 @@ class SingleAmqpConnection(object):
 		validate_config(config)
 		self.config             = config
 
-		self.log = logging.getLogger("Main.Connector.Internal(%s)" % config['virtual_host'])
+		self.log = logging.getLogger("Main.Connector.Internal")
 
 		self.task_queue              = task_queue
 		self.response_queue          = response_queue
@@ -60,8 +61,6 @@ class SingleAmqpConnection(object):
 
 		self.exit_signaled           = multiprocessing.Value("i", 0)
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
-
-		self.__connect()
 
 		self.__launch_thread()
 
@@ -289,7 +288,7 @@ class SingleAmqpConnection(object):
 			raise ThreadDieException("Timed out! Dying!")
 
 
-		if (self.last_message_received + (self.config['heartbeat'] * 8) < now or
+		if (self.last_message_received + (self.config['heartbeat'] * 8) < now and
 			self.last_heartbeat_received + (self.config['heartbeat'] * 8) < now):
 			# Attempt recover if we've been idle for a while.
 			self.log.info("Reconnect retrigger seems to have not fixed the issue?")
@@ -297,6 +296,7 @@ class SingleAmqpConnection(object):
 
 
 	def __run(self):
+		self.__connect()
 
 		while self.exit_signaled.value == 0:
 			try:
@@ -339,9 +339,12 @@ class SingleAmqpConnection(object):
 	def __launch_thread(self):
 		self.__worker = threading.Thread(
 					target=self.__run,
-					name="RMQ Consumer: {}".format(self.config['virtual_host'])
+					name="RMQ Consumer {}: {}".format(GLOBAL_THREAD_NO, self.config['virtual_host'])
 				)
 		self.__worker.start()
+
+		global GLOBAL_THREAD_NO
+		GLOBAL_THREAD_NO += 1
 
 	def get_thread(self):
 		return self.__worker
@@ -351,6 +354,9 @@ class SingleAmqpConnection(object):
 
 	def signal_stop(self):
 		self.exit_signaled.value = 1
+
+	def join(self):
+		self.__worker.join()
 
 	def __del__(self):
 		self.shutdown()
