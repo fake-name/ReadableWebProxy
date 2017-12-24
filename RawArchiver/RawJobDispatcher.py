@@ -86,12 +86,17 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	def outbound_job_wanted(self, netloc, joburl):
 
+		bad = common.util.urlFuncs.hasDuplicatePathSegments(joburl)
+		if bad:
+			self.log.warn("Unwanted URL (pathchunks): '%s' - %s", joburl, bad)
+			return False
+
 		if joburl.startswith("data:"):
 			self.log.warn("Data URL: '%s' - %s", joburl, netloc)
-			return None
+			return False
 		if not joburl.startswith("http"):
 			self.log.warn("Non HTTP URL: '%s' - %s", joburl, netloc)
-			return None
+			return False
 		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
 			if module.cares_about_url(joburl):
 				return True

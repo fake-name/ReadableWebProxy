@@ -254,6 +254,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/general?q=forum/general&q=forum/general&q=forum/',
 		'/lost-omens?q=forum/lost-omens&q=forum/',
 		'/office-life?q=tags/office-life&q=tags/',
+		'/handbasketd&q=comic/handbasketd&q=comic/',
 	]
 
 	@classmethod

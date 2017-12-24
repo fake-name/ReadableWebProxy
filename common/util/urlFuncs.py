@@ -230,6 +230,8 @@ def hasDuplicatePathSegments(url):
 
 		pathchunks = parsed.path.split("/")
 		pathchunks = [chunk for chunk in pathchunks if chunk]
+		querychunks = parsed.path.split("/")
+		querychunks = [chunk for chunk in querychunks if chunk]
 
 		# http://www.spcnet.tv/forums/showthread.php/21185-mobile-suit-gundam-the-second-century-(part-2-the-second-century)/images/icons/images/misc/showthread.php/21185-Mobile-Suit-Gundam-The-Second-Century-(Part-2-The-Second-Century)/page10
 		if netloc == 'www.spcnet.tv' or netloc == 'www.eugenewoodbury.com':
@@ -268,17 +270,17 @@ def hasDuplicatePathSegments(url):
 			if sum([pathchunks.count(i) for i in disalow_several]) > 1:
 				return True
 
-
-
-
-
 		if len(set(pathchunks)) == len(pathchunks):
 			return False
 
 		duplicates = list(set([(i, pathchunks.count(i)) for i in pathchunks if pathchunks.count(i) > 1]))
+		qduplicates = list(set([(i, querychunks.count(i)) for i in querychunks if querychunks.count(i) > 1]))
 
 		if any([cnt > 3 for (item, cnt) in duplicates]):
 			print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+			return True
+		if any([cnt > 3 for (item, cnt) in qduplicates]):
+			print("Query chunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
 			return True
 		if len(duplicates) > 3:
 			print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))

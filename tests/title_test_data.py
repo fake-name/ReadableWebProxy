@@ -5,6 +5,21 @@
 
 data = [
 
+	("HIHEZL: 1.他是支理大人",            (None, 1.0, None, '')),
+	("HIHEZL: 10.我们之间",               (None, 10.0, None, '')),
+	("HIHEZL: 2.原来是如此",              (None, 2.0, None, '')),
+	("HIHEZL: Chapter 3.军训还是野营？",  (None, 3.0, None, '')),
+
+	('Chapter: Thirty Three!', (None, None, None, '')),
+
+	("ROW: Yora Chronicles 6B, 6C", (None, 6.0, 2.0, '')),
+	("ROW: Yora Chronicles A1 C2 B", (1.0, 2.0, 2.0, '')),
+	("ROW: Yora Chronicles A1 C2 A", (1.0, 2.0, 1.0, '')),
+	("ROW: Yora Chronicles A1 C1 C", (1.0, 1.0, 3.0, '')),
+	("ROW: Yora Chronicles Arc 1 Knighthood 1", (1.0, 1.0, None, '')),
+	("ROW: Yora Chronicles Arc 1 Disciple 1", (1.0, 1.0, None, '')),
+
+	("A Different World Scenery View From the Tower – C10-10", (None, 10.0, 10.0, '')),
 	("A Different World Scenery View From the Tower – C10-10", (None, 10.0, 10.0, '')),
 	("A Different World Scenery View From the Tower – C10-9", (None, 10.0, 9.0, '')),
 	("A Different World Scenery View From the Tower – C10-8", (None, 10.0, 8.0, '')),
@@ -17,6 +32,12 @@ data = [
 	("A Different World Scenery View From the Tower – C10-1", (None, 10.0, 1.0, '')),
 	("A Different World Scenery View From the Tower – C9-11", (None, 9.0, 11, '')),
 	("A Different World Scenery View From the Tower – C9-10", (None, 9.0, 10, '')),
+
+	('Bk 6, Cr 22', (6.0, 22.0, None, '')),
+	('Invincible Saint V1C1-4', (1.0, 1.0, 4.0, '')),
+
+	('Yakushoku Distpiari - Gesellschaft Blume - vol1a - Spin Off Vol 1', (1.0, 1.0, 4.0, '')),
+	('Yakushoku Distpiari - Gesellschaft Blume - 4-6 - 4-6 Hand of Truth', (1.0, 1.0, 4.0, '')),
 
 
 	("(Announcement) and Chapter 21 - Zeshald's Request", (None, 21.0, None, '')),
@@ -5788,7 +5809,6 @@ data = [
 	('Bit of news for Soap', (None, None, None, '')),
 	('Bitch and Dicking: Bitchy Fun at the Beach', (None, None, None, '')),
 	('Bizarre Terrors Vol 1 Complete', (1.0, None, None, '')),
-	('Bk 6, Cr 22', (None, 6.0, None, '')),
 	('Bla bla bla Stuff', (None, None, None, '')),
 	('Blablabablabla', (None, None, None, '')),
 	('Black Bean Sauce got red pocket money', (None, None, None, '')),
@@ -54887,10 +54907,6 @@ data = [
 	("Chapter 44: I want to explore!",                                     (None,   44, None, "")),
 	("Chapter 45: Bandits",                                                (None,   45, None, "")),
 	("Not a Chapter but a poll!",                                          (None, None, None, "")),
-
-####################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
-
-	# ('Chapter: Thirty Three!', (None, None, None, '')),
 
 
 ]
