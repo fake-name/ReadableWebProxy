@@ -270,6 +270,18 @@ def hasDuplicatePathSegments(url):
 			if sum([pathchunks.count(i) for i in disalow_several]) > 1:
 				return True
 
+		if 'www.wastedtalent.ca' in url:
+			bulkchunks = url.split("/")
+			bulkchunks = [chunk for chunk in bulkchunks if chunk]
+			bduplicates = list(set([(i, bulkchunks.count(i)) for i in bulkchunks if bulkchunks.count(i) > 1]))
+
+			if any([cnt > 3 for (item, cnt) in bduplicates]):
+				print("Bulk duplicates issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+				return True
+
+
+
+
 		if len(set(pathchunks)) == len(pathchunks):
 			return False
 

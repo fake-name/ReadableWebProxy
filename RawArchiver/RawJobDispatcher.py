@@ -23,6 +23,7 @@ import common.get_rpyc
 import runStatus
 
 import WebMirror.JobUtils
+import common.util.urlFuncs
 
 ########################################################################################################################
 #
@@ -58,7 +59,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	loggerPath = "Main.RawJobFetcher"
 
-	def __init__(self):
+	def __init__(self, start_thread=True):
 		# print("Job __init__()")
 		super().__init__()
 
@@ -78,9 +79,9 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
 		self.normal_out_queue  = multiprocessing.Queue()
-
-		self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
-		self.j_fetch_proc.start()
+		if start_thread:
+			self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
+			self.j_fetch_proc.start()
 
 		self.print_mod = 0
 
@@ -355,17 +356,20 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		for rid, netloc, joburl in rids:
 			try:
-				threadn = RawArchiver.misc.thread_affinity(joburl, 1)
 
 				# If we don't have a thread affinity, do distributed fetch.
 				# If we /do/ have a thread affinity, fetch locally.
 				if not self.outbound_job_wanted(netloc, joburl):
 					self.delete_job(rid, joburl)
-				elif threadn is True:
+					continue
+
+				threadn = RawArchiver.misc.thread_affinity(joburl, 1)
+				if threadn is True:
 					self.ratelimiter.put_job(rid, joburl, netloc)
 					# self.put_outbound_job(rid, joburl, netloc=netloc)
 				else:
 					self.normal_out_queue.put(("unfetched", rid))
+
 			except RawArchiver.misc.UnwantedUrlError:
 				self.log.warning("Unwanted url in database? Url: '%s'", joburl)
 				self.log.warning("Deleting entry.")
@@ -380,7 +384,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 	def delete_job(self, rid, joburl):
 		self.log.warning("Deleting job for url: '%s'", joburl)
 		cursor = self.db_interface.cursor()
-		cursor.execute("""DELETE FROM web_pages WHERE web_pages.id = %s AND web_pages.url = %s;""", (rid, joburl))
+		cursor.execute("""DELETE FROM raw_web_pages WHERE raw_web_pages.id = %s AND raw_web_pages.url = %s;""", (rid, joburl))
 		self.db_interface.commit()
 
 
