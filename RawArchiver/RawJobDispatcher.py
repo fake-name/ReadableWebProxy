@@ -7,6 +7,7 @@ import queue
 import random
 import datetime
 import signal
+import socket
 
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
@@ -138,7 +139,10 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				self.open_rpc_interface()
 			except KeyError:
 				self.open_rpc_interface()
-
+			except socket.timeout:
+				self.open_rpc_interface()
+			except ConnectionRefusedError:
+				self.open_rpc_interface()
 
 	def fill_jobs(self):
 
@@ -190,6 +194,12 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				self.open_rpc_interface()
 				return
 			except KeyError:
+				self.open_rpc_interface()
+				return
+			except socket.timeout:
+				self.open_rpc_interface()
+				return
+			except ConnectionRefusedError:
 				self.open_rpc_interface()
 				return
 

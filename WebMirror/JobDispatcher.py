@@ -83,8 +83,9 @@ class RpcMixin():
 					self.log.error(line)
 
 				try:
-					self.rpc_interface.close()
-					self.log.info("Closed interface due to connection exception.")
+					if hasattr(self, "rpc_interface"):
+						self.rpc_interface.close()
+						self.log.info("Closed interface due to connection exception.")
 				except Exception:
 					self.log.error("Failure when closing errored RPC interface")
 					for line in traceback.format_exc().split("\n"):
@@ -138,11 +139,9 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 			except KeyError:
 				self.check_open_rpc_interface()
 				return
-
-			except bsonrpc.exceptions.ResponseTimeout:
+			except socket.timeout:
 				self.check_open_rpc_interface()
 				return
-
 
 			if tmp:
 
@@ -323,16 +322,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				self.check_open_rpc_interface()
 			except KeyError:
 				self.check_open_rpc_interface()
-			except bsonrpc.exceptions.BsonRpcError as e:
-				errors += 1
+			except socket.timeout:
 				self.check_open_rpc_interface()
-				if errors > 3:
-					raise e
-				else:
-					self.log.warning("Exception in RPC request:")
-					for line in traceback.format_exc().split("\n"):
-						self.log.warning(line)
-
+			except ConnectionRefusedError:
+				self.check_open_rpc_interface()
 
 	def put_fetch_job(self, jobid, joburl, netloc=None):
 		# module='WebRequest', call='getItem'

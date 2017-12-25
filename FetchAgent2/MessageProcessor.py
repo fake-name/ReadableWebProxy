@@ -38,6 +38,9 @@ class MessageProcessor(object):
 				prefix = 'ReadableWebProxy.FetchAgent',
 				)
 
+		self.debug_interval = 10
+		self.last_debug = time.time() - self.debug_interval
+
 
 	def __init_pool(self, pool_name):
 		self.worker_pools[pool_name] = {
@@ -46,8 +49,8 @@ class MessageProcessor(object):
 			'workers'      : [],
 			'dispatch_map' : cachetools.LRUCache(maxsize=25000),
 
-			# The chunk structure is slightly annoying, so just limit to 10 partial message keys.
-			'chunk_cache'  : cachetools.LRUCache(maxsize=5),
+			# The chunk structure is slightly annoying, so just limit to 50 partial message keys.
+			'chunk_cache'  : cachetools.LRUCache(maxsize=50),
 			'chunk_lock'   : threading.Lock(),
 		}
 
@@ -181,7 +184,7 @@ class MessageProcessor(object):
 				self.log.info("Have %s/%s items for chunk, %s different partial messages in queue.",
 					len(self.worker_pools[worker_name]['chunk_cache'][merge_key]['chunks']),
 					total_chunks,
-					len(self.worker_pools[worker_name]['chunk_cache']))
+					self.worker_pools[worker_name]['chunk_cache'].currsize)
 				return None
 
 	def __unchunk(self, new_message, worker_name):
@@ -214,7 +217,7 @@ class MessageProcessor(object):
 			return
 
 		if 'sort_key' in job_data['jobmeta'] and job_data['jobmeta']['sort_key'] in self.worker_pools[worker_name]['dispatch_map']:
-			qname, started_at = self.worker_pools[worker_name]['dispatch_map'][job_data['jobmeta']['sort_key']]
+			qname, started_at = self.worker_pools[worker_name]['dispatch_map'].pop(job_data['jobmeta']['sort_key'])
 		elif 'qname' in job_data['jobmeta']:
 			qname = job_data['jobmeta']['qname']
 			started_at = None
@@ -264,12 +267,31 @@ class MessageProcessor(object):
 						self.__dispatch_response(resp, worker_name)
 			except queue.Empty:
 				pass
+	def __status_debug(self):
+		if time.time() < self.last_debug + self.debug_interval:
+			return
+
+		self.last_debug += self.debug_interval
+
+		self.log.info("Debugging RPC State")
+		for worker_name, worker_conf in self.worker_pools.items():
+			self.log.info("	Queue for %s -> %s/%s, pool: %s, chunk_cache: %s %s",
+				worker_name.ljust(30), worker_conf['outgoing_q'].qsize(), worker_conf['incoming_q'].qsize(),
+				len(worker_conf['dispatch_map']), len(worker_conf['chunk_cache']), [len(list(tmp.values())) for tmp in worker_conf['chunk_cache'].values()])
+
+		for interface_group, queue_dict in self.interface_dict.items():
+			if isinstance(queue_dict, dict):
+				for queue_name, queue_item in queue_dict.items():
+					self.log.info("	Queue: %s->%s: %s", queue_name.ljust(20), interface_group.ljust(4), queue_item.qsize())
+			else:
+				self.log.info("	Item: %s -> %s", interface_group, queue_dict)
 
 
 	def run(self):
 		self.__check_workers()
 		self.__forward_outgoing()
 		self.__process_incoming()
+		self.__status_debug()
 
 	def __terminate_pool(self, worker_name, worker_settings):
 		self.log.info("Joining on workers for pool %s", worker_name)
