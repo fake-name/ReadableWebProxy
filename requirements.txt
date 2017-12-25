@@ -15,6 +15,7 @@ cssutils
 tinycss2
 fontTools
 semantic
+fdict
 cachetools
 bleach
 Jinja2

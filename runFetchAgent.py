@@ -40,10 +40,8 @@ def init_yappi():
 
 		print('[YAPPI OUT]')
 
-if "new" in sys.argv:
-	import FetchAgent2.server
-	FetchAgent2.server.main()
-else:
+if __name__ == '__main__':
+
 	import FetchAgent.server
 	# init_yappi()
 	FetchAgent.server.main()

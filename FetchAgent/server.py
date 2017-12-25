@@ -10,7 +10,8 @@ import queue
 import os
 import signal
 from gevent.server import StreamServer
-import FetchAgent.AmqpInterface
+import FetchAgent2.MessageProcessor
+import traceback
 import logSetup
 import mprpc
 import gevent.monkey
@@ -30,8 +31,7 @@ import time
 
 
 
-INTERRUPTS_1 = 0
-INTERRUPTS_2 = 0
+INTERRUPTS = 0
 
 TO_EXIT = []
 
@@ -41,10 +41,10 @@ def build_mprpc_handler(server):
 	TO_EXIT.append(server)
 
 	def handler(signum=-1, frame=None):
-		global INTERRUPTS_2
-		INTERRUPTS_2 += 1
-		print('Signal handler called with signal %s for the %s time' % (signum, INTERRUPTS_2))
-		if INTERRUPTS_2 > 2:
+		global INTERRUPTS
+		INTERRUPTS += 1
+		print('Signal handler called with signal %s for the %s time' % (signum, INTERRUPTS))
+		if INTERRUPTS > 2:
 			print("Raising due to repeat interrupts")
 			raise KeyboardInterrupt
 		for server in TO_EXIT:
@@ -77,6 +77,12 @@ class FetchInterfaceClass(mprpc.RPCServer):
 				self.mdict['outq'][queuename] = queue.Queue()
 				self.mdict['inq'][queuename] = queue.Queue()
 
+	def __check_rss_queue(self, queuename):
+		if not queuename in self.mdict['feed_outq']:
+			with self.mdict['qlock']:
+				self.mdict['feed_outq'][queuename] = queue.Queue()
+				self.mdict['feed_inq'][queuename] = queue.Queue()
+
 	def putJob(self, queuename, job):
 		self.__check_have_queue(queuename)
 		self.log.info("Putting item in queue %s with size: %s (Queue size: %s)!", queuename, len(job), self.mdict['outq'][queuename].qsize())
@@ -100,18 +106,24 @@ class FetchInterfaceClass(mprpc.RPCServer):
 			return None
 
 	def putRss(self, message):
-		self.log.info("Putting rss item with size: %s (qsize: %s)!", len(message), self.mdict['feed_outq'].qsize())
-		self.mdict['feed_outq'].put(message)
+		feed_q_name = 'rss_queue'
+		self.__check_rss_queue(feed_q_name)
+		self.log.info("Putting rss item with size: %s (qsize: %s)!", len(message), self.mdict['feed_outq'][feed_q_name].qsize())
+		self.mdict['feed_outq'][feed_q_name].put(message)
 
 	def putManyRss(self, messages):
+		feed_q_name = 'rss_queue'
+		self.__check_rss_queue(feed_q_name)
 		for message in messages:
 			self.log.info("Putting rss item with size: %s!", len(message))
-			self.mdict['feed_outq'].put(message)
+			self.mdict['feed_outq'][feed_q_name].put(message)
 
 	def getRss(self):
-		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'].qsize())
+		feed_q_name = 'rss_queue'
+		self.__check_rss_queue(feed_q_name)
+		self.log.info("Get job call for rss queue -> %s", self.mdict['feed_inq'][feed_q_name].qsize())
 		try:
-			ret = self.mdict['feed_inq'].get_nowait()
+			ret = self.mdict['feed_inq'][feed_q_name].get_nowait()
 			return ret
 		except queue.Empty:
 			return None
@@ -143,8 +155,8 @@ def initialize_manager(interface_dict):
 	interface_dict['outq'] = {}
 	interface_dict['inq'] = {}
 
-	interface_dict['feed_outq'] = queue.Queue()
-	interface_dict['feed_inq'] = queue.Queue()
+	interface_dict['feed_outq'] = {}
+	interface_dict['feed_inq'] = {}
 
 
 def run():
@@ -161,7 +173,7 @@ def run():
 			raise
 
 	initialize_manager(interface_dict)
-	FetchAgent.AmqpInterface.startup_interface(interface_dict)
+	amqp_interface = FetchAgent2.MessageProcessor.MessageProcessor(interface_dict)
 
 	print("AMQP Interfaces have started. Launching RPC threads.")
 
@@ -170,20 +182,32 @@ def run():
 	t2.start()
 
 	try:
-		while 1:
-			time.sleep(1)
+		while INTERRUPTS == 0:
+			amqp_interface.run()
+			time.sleep(0.1)
+	except AssertionError:
+		print("Main worker encountered assertion failure!")
+		traceback.print_exc()
+		base_abort()
 	except KeyboardInterrupt:
 		print("Main worker abort")
 		base_abort()
+
+	except Exception:
+		print("Wat?")
+		traceback.print_exc()
+		with open("Manager error %s.txt" % time.time(), "w") as fp:
+			fp.write("Manager crashed?\n")
+			fp.write(traceback.format_exc())
+
 
 	print("Joining on worker threads")
 
 	t2.join()
 
 	print("Terminating AMQP interface.")
-	FetchAgent.AmqpInterface.shutdown_interface(interface_dict)
+	amqp_interface.terminate()
 
-	os.unlink(sock_path)
 
 def main():
 	print("Preloading cache directories")

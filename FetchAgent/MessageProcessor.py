@@ -11,6 +11,7 @@ import ssl
 import uuid
 import statsd
 import cachetools
+import fdict
 
 import settings as settings_file
 from . import InterfaceConsumer
@@ -39,8 +40,11 @@ class MessageProcessor(object):
 				)
 
 		self.debug_interval = 10
+		self.chunk_flush_interval = 10
 		self.last_debug = time.time() - self.debug_interval
+		self.last_chunk_flush = time.time() - self.chunk_flush_interval
 
+		os.makedirs(settings_file.CHUNK_CACHE_DIR, exist_ok=True)
 
 	def __init_pool(self, pool_name):
 		self.worker_pools[pool_name] = {
@@ -50,7 +54,8 @@ class MessageProcessor(object):
 			'dispatch_map' : cachetools.LRUCache(maxsize=25000),
 
 			# The chunk structure is slightly annoying, so just limit to 50 partial message keys.
-			'chunk_cache'  : cachetools.LRUCache(maxsize=50),
+			# 'chunk_cache'  : fdict.sfdict(filename=os.path.join(settings_file.CHUNK_CACHE_DIR, "chunk_cache_{}.db".format(pool_name.lower()))),
+			'chunk_cache'   : cachetools.LRUCache(maxsize=50),
 			'chunk_lock'   : threading.Lock(),
 		}
 
@@ -173,7 +178,10 @@ class MessageProcessor(object):
 				packed_message = b''.join([part[1] for part in components])
 				ret = msgpack.unpackb(packed_message, encoding='utf-8', use_list=False)
 
+				self.worker_pools[worker_name]['chunk_cache'][merge_key] = None
 				del self.worker_pools[worker_name]['chunk_cache'][merge_key]
+
+				# self.worker_pools[worker_name]['chunk_cache'].sync()
 
 				self.log.info("Received all chunks for key %s! Decoded size: %0.3fk from %s chunks. Active partial chunked messages: %s.",
 					merge_key, len(packed_message) / 1024, len(components), len(self.worker_pools[worker_name]['chunk_cache']))
@@ -184,7 +192,12 @@ class MessageProcessor(object):
 				self.log.info("Have %s/%s items for chunk, %s different partial messages in queue.",
 					len(self.worker_pools[worker_name]['chunk_cache'][merge_key]['chunks']),
 					total_chunks,
-					self.worker_pools[worker_name]['chunk_cache'].currsize)
+					len(self.worker_pools[worker_name]['chunk_cache']))
+
+				# if time.time() > self.last_chunk_flush + self.chunk_flush_interval:
+				# 	self.last_chunk_flush += self.chunk_flush_interval
+				# 	self.worker_pools[worker_name]['chunk_cache'].sync()
+
 				return None
 
 	def __unchunk(self, new_message, worker_name):
@@ -267,6 +280,16 @@ class MessageProcessor(object):
 						self.__dispatch_response(resp, worker_name)
 			except queue.Empty:
 				pass
+			except MemoryError:
+				# shit has asploded. Drop the chunk cache on the floor to avoid dying completely.
+				for pool in self.worker_pools.values():
+					pool['chunk_cache'] = cachetools.LRUCache(maxsize=50)
+					# pool['chunk_cache'] = fdict.sfdict(filename=os.path.join(settings_file.CHUNK_CACHE_DIR, "chunk_cache_{}.db".format(pool_name.lower()))),
+
+				with open("Manager Memory Error %s.txt" % time.time(), "w") as fp:
+					fp.write("Manager ran out of memory!\n")
+					fp.write(traceback.format_exc())
+
 	def __status_debug(self):
 		if time.time() < self.last_debug + self.debug_interval:
 			return
@@ -277,7 +300,7 @@ class MessageProcessor(object):
 		for worker_name, worker_conf in self.worker_pools.items():
 			self.log.info("	Queue for %s -> %s/%s, pool: %s, chunk_cache: %s %s",
 				worker_name.ljust(30), worker_conf['outgoing_q'].qsize(), worker_conf['incoming_q'].qsize(),
-				len(worker_conf['dispatch_map']), len(worker_conf['chunk_cache']), [len(list(tmp.values())) for tmp in worker_conf['chunk_cache'].values()])
+				len(worker_conf['dispatch_map']), len(worker_conf['chunk_cache']), [len(list(tmp.values())) for tmp in worker_conf['chunk_cache'].values() if tmp])
 
 		for interface_group, queue_dict in self.interface_dict.items():
 			if isinstance(queue_dict, dict):
