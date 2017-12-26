@@ -9,6 +9,8 @@ from WebMirror.OutputFilters.util.TitleParsers import TitleParser
 def create_data_file(prefix, outdir, bin_cont):
 	print("Bin for {} has {} items".format(prefix, len(bin_cont)))
 
+	bin_cont.sort()
+
 	p_str = ord(prefix) if len(prefix) == 1 and prefix not in string.ascii_lowercase+string.digits else prefix
 	mod_name = "data_{}_set".format(p_str)
 	fpath = os.path.join(outdir, "{}.py".format(mod_name))
@@ -28,6 +30,8 @@ def create_data_file(prefix, outdir, bin_cont):
 def create__init__file(outdir, mod_list):
 	fpath = os.path.join(outdir, "__init__.py")
 
+	mod_list.sort()
+
 	with open(fpath, "w") as fp:
 		fp.write("\n\n")
 		for mod in mod_list:
@@ -44,12 +48,10 @@ def test_load():
 	from .title_data import data_map
 	print("Loaded source OK")
 	print("Found %s keys" % len(data_map))
-
+	print("Total data items: %s" % sum([len(tmp) for tmp in data_map.values()]))
 
 
 def test():
-	count = 0
-	mismatch = 0
 	dataset = []
 	for key, value in test_data:
 		if len(value) == 2:
