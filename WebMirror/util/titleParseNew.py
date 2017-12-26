@@ -18,6 +18,7 @@ ONE_WORD_POSTFIX_KEYS = [
 		'extra',
 		'illustrations',
 	]
+
 MULTI_WORD_POSTFIX_KEYS = [
 		'side story',
 	]
@@ -886,7 +887,7 @@ class PrefixCompoundChapterGlobber(GlobBase):
 			# print("AttachToken: b: '%s', t: '%s', a: '%s'" % (before, target, after))
 
 			for chapter_prefix in self.COMPOUND_CHAPTER_KEYS:
-				restr = r'^%s([\d\.]+)(-)([\d\.]+)' % chapter_prefix
+				restr = r'^%s([\d\.]+)(-|–)([\d\.]+)' % chapter_prefix
 				match = re.search(restr, target, re.IGNORECASE)
 				if match:
 					break
@@ -934,7 +935,7 @@ class CompoundChapterGlobber(GlobBase):
 
 		elif isinstance(target, str):
 
-			match = re.search(r'([\d\.]+)(-)([\d\.]+)', target)
+			match = re.search(r'([\d\.]+)(-|–)([\d\.]+)', target)
 			if prec and prec.lower() in self.CHAPTER_KEYS and match:
 				# print("CompoundChapterGlobber: ", target)
 				p1, divider, p2 = match.groups()
@@ -950,6 +951,35 @@ class CompoundChapterGlobber(GlobBase):
 				before.append(prec)
 			if intervening:
 				before.append(intervening)
+
+		# print("target:", (prec, target))
+		# print((before, prec, intervening, target, after))
+		return before, target, after
+
+class FreeCompoundGlobber(GlobBase):
+	'''
+	Bind to free hyphenated numbers, with the assumption that they
+	can be coerced to "<chapter>-<fragment>"
+	'''
+
+	def attach_token(self, before, target, after):
+		# print("AttachToken: ", (before, target, after))
+		# if len(after) == 3:
+		# 	target = before[-1] + target
+		# 	before = before[:-1]
+
+		# print("Getting text preceding '%s' (%s)" % (target, type(target)))
+
+		# before, prec, intervening = self.get_preceeding_text(before)
+
+		if isinstance(target, str):
+
+			match = re.search(r'([\d\.]+)(-|–)([\d\.]+)', target)
+			if match:
+				# print("CompoundChapterGlobber: ", target)
+				p1, divider, p2 = match.groups()
+				# target = DateTextToken(target)
+				target = CompoundChapterFragmentToken("", "", p1, divider, p2 )
 
 		# print("target:", (prec, target))
 		# print((before, prec, intervening, target, after))
@@ -1079,6 +1109,7 @@ class TitleParser(object):
 		R18Globber,
 		PrefixCompoundChapterGlobber,
 		LetterNumberSplitter,
+		PrefixCompoundChapterGlobber,
 		VolumeChapterFragGlobber,
 		CompoundChapterGlobber,
 		AsciiDecimalSplitter,
@@ -1088,6 +1119,7 @@ class TitleParser(object):
 		CharSplitter,
 		LetterNumberSplitter,
 		MiscLetterSplitter,
+		FreeCompoundGlobber,
 		HyphenatedLetterSplitter,
 		NonNumericDecimalSplitter,
 		LetterNumberSplitter,

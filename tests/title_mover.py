@@ -40,7 +40,10 @@ def create__init__file(outdir, mod_list):
 		fp.write("}\n\n")
 
 def test_load():
+	print("attempting to import generated source")
 	from .title_data import data_map
+	print("Loaded source OK")
+	print("Found %s keys" % len(data_map))
 
 
 
