@@ -104,6 +104,9 @@ GLOBAL_BAD_URLS = [
 			'tumblr.com/oembed/1.0?',
 			'/wp-includes/js/',
 
+			# Oh god fuck discord so much.
+			'discord1-1494780898_lrg.png',
+
 			# Bought by asshole squatters
 			'ww12.circustranslations.com'
 	]

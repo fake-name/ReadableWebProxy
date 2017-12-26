@@ -5,16 +5,11 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-# This HAS to be included before the app, to prevent circular dependencies.
-# import WebMirror.runtime_engines
-# WebMirror.runtime_engines.init_engines()
-
 from app import app
 import threading
 import time
 import calendar
 
-# import FeedFeeder.FeedFeeder
 import flags
 
 

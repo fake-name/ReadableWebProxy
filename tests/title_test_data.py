@@ -10,7 +10,9 @@ data = [
 	("HIHEZL: 2.原来是如此",              (None, 2.0, None, '')),
 	("HIHEZL: Chapter 3.军训还是野营？",  (None, 3.0, None, '')),
 
-	('Chapter: Thirty Three!', (None, None, None, '')),
+	('13 – 32', (None, 13.0, 32.0, '')),
+	('Uprising 29-09', (None, 29.0, 9.0, '')),
+	('Chapter: Thirty Three!', (None, 33.0, None, '')),
 
 	("ROW: Yora Chronicles 6B, 6C", (None, 6.0, 2.0, '')),
 	("ROW: Yora Chronicles A1 C2 B", (1.0, 2.0, 2.0, '')),
