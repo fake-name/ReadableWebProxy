@@ -10,7 +10,7 @@ import queue
 import os
 import signal
 from gevent.server import StreamServer
-import FetchAgent2.MessageProcessor
+import FetchAgent.MessageProcessor
 import traceback
 import logSetup
 import mprpc
@@ -173,7 +173,7 @@ def run():
 			raise
 
 	initialize_manager(interface_dict)
-	amqp_interface = FetchAgent2.MessageProcessor.MessageProcessor(interface_dict)
+	amqp_interface = FetchAgent.MessageProcessor.MessageProcessor(interface_dict)
 
 	print("AMQP Interfaces have started. Launching RPC threads.")
 

@@ -295,6 +295,12 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/lost-omens?q=forum/lost-omens&q=forum/',
 		'/office-life?q=tags/office-life&q=tags/',
 		'/handbasketd&q=comic/handbasketd&q=comic/',
+
+		'/printthread.php?',
+		'/forums/newreply.php',
+		'?do=newreply&',
+		'/forums/showsinglepost.php',
+		'&_debug=1&_debug=1&',
 	]
 
 	@classmethod

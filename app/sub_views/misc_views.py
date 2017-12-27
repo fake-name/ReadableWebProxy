@@ -11,6 +11,7 @@ import WebMirror.rules
 
 from WebMirror import rules
 import common.global_constants
+import RawArchiver.RawActiveModules
 
 
 def getBadWords(ruleset, netloc):
@@ -63,19 +64,23 @@ def get_random_url_group(num_items):
 
 	return ret
 
+def raw_url_filtered(url):
+
+	for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+		if module.cares_about_url(url):
+			return False
+	return True
+
+
 
 def get_random_raw_url_group(num_items):
 	dat = g.session.execute('''SELECT url FROM raw_web_pages TABLESAMPLE SYSTEM(:percentage) ORDER BY url;''', {'percentage' : num_items})
 	dat = list(dat)
 
-	ruleset = rules.load_rules(override=True)
 
 	ret = []
 	for linkurl, in dat:
-		nl = urllib.parse.urlparse(linkurl).netloc
-
-		badwords, badcompounds = getBadWords(ruleset, nl)
-		filtered = isFiltered(linkurl, badwords, badcompounds)
+		filtered = raw_url_filtered(linkurl)
 
 		ret.append((linkurl, filtered))
 
