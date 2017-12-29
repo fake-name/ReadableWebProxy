@@ -41,7 +41,7 @@ Flask-Login
 Flask-Babel
 selenium
 webcolors
-pyparsing
+pyparsing==2.2.0
 feedparser
 
 Flask-SQLAlchemy
