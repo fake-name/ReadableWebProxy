@@ -38,7 +38,7 @@ lxml
 Flask
 Flask-DebugToolbar
 Flask-Login
-Flask-Babel
+Flask-Babel==0.11.2
 selenium
 webcolors==1.7
 pyparsing
