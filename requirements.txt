@@ -8,7 +8,7 @@ chardet
 pymysql
 mem_top
 statsd
-xxhash
+xxhash==1.0.1
 objgraph
 zerorpc
 cssutils
