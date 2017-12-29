@@ -7,7 +7,7 @@ git+https://github.com/berkerpeksag/astor.git
 chardet
 pymysql
 mem_top
-statsd
+statsd==3.2.2
 xxhash
 objgraph
 zerorpc
