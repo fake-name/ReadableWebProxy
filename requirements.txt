@@ -51,7 +51,7 @@ apscheduler
 ## semantic
 ## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
 git+https://github.com/kvesteri/sqlalchemy-continuum.git
-sqlalchemy_searchable
+sqlalchemy_searchable==0.10.6
 
 BeautifulSoup4==4.6.0
 
