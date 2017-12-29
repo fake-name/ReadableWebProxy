@@ -42,7 +42,7 @@ Flask-Babel
 selenium
 webcolors
 pyparsing
-feedparser
+feedparser==5.2.1
 
 Flask-SQLAlchemy
 flask-paginate
