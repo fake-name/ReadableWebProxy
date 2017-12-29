@@ -12,7 +12,7 @@ xxhash==1.0.1
 objgraph
 zerorpc==0.6.1
 cssutils
-tinycss2
+tinycss2==0.6.1
 fontTools==3.21.0
 semantic
 fdict==0.8.1
