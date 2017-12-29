@@ -24,7 +24,7 @@ SQLAlchemy
 sqlalchemy-citext
 
 PySocks
-msgpack-python
+msgpack-python==0.4.8
 python-dateutil
 bbcode
 pympler
