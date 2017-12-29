@@ -13,7 +13,7 @@ objgraph
 zerorpc
 cssutils
 tinycss2
-fontTools
+fontTools==3.21.0
 semantic
 fdict
 cachetools
