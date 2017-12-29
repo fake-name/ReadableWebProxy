@@ -21,7 +21,7 @@ bleach
 Jinja2
 psycopg2
 SQLAlchemy
-sqlalchemy-citext
+sqlalchemy-citext==1.3-0
 
 PySocks
 msgpack-python
