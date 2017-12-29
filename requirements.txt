@@ -30,7 +30,7 @@ bbcode
 pympler
 
 colorama
-pyyaml
+pyyaml==3.12
 natsort
 mdx_linkify
 ftfy
