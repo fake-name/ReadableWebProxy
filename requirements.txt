@@ -44,7 +44,7 @@ webcolors
 pyparsing
 feedparser
 
-Flask-SQLAlchemy
+Flask-SQLAlchemy==2.3.2
 flask-paginate
 Flask-WTF
 apscheduler
