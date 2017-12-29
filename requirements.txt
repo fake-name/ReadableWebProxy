@@ -35,7 +35,7 @@ natsort
 mdx_linkify
 ftfy
 lxml
-Flask
+Flask==0.12.2
 Flask-DebugToolbar
 Flask-Login
 Flask-Babel==0.11.2
