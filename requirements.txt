@@ -29,7 +29,7 @@ python-dateutil
 bbcode==1.0.27
 pympler
 
-colorama
+colorama==0.3.9
 pyyaml==3.12
 natsort
 mdx_linkify==1.0
