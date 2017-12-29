@@ -10,7 +10,7 @@ mem_top
 statsd
 xxhash
 objgraph
-zerorpc
+zerorpc==0.6.1
 cssutils
 tinycss2
 fontTools
