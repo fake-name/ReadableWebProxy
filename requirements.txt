@@ -26,7 +26,7 @@ sqlalchemy-citext
 PySocks
 msgpack-python==0.4.8
 python-dateutil
-bbcode
+bbcode==1.0.27
 pympler
 
 colorama
