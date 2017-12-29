@@ -10,7 +10,7 @@ mem_top==0.1.6
 statsd
 xxhash==1.0.1
 objgraph
-zerorpc
+zerorpc==0.6.1
 cssutils
 tinycss2
 fontTools==3.21.0
