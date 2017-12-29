@@ -12,7 +12,7 @@ xxhash
 objgraph
 zerorpc
 cssutils
-tinycss2
+tinycss2==0.6.1
 fontTools
 semantic
 fdict
