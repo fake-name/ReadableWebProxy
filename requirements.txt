@@ -40,7 +40,7 @@ Flask-DebugToolbar
 Flask-Login
 Flask-Babel
 selenium
-webcolors
+webcolors==1.7
 pyparsing
 feedparser
 
