@@ -9,7 +9,7 @@ pymysql
 mem_top
 statsd
 xxhash
-objgraph
+objgraph==3.3.0
 zerorpc
 cssutils
 tinycss2
