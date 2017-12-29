@@ -53,7 +53,7 @@ apscheduler
 git+https://github.com/kvesteri/sqlalchemy-continuum.git
 sqlalchemy_searchable
 
-BeautifulSoup4
+BeautifulSoup4==4.6.0
 
 ## alembic
 ## Babel
