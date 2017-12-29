@@ -27,7 +27,7 @@ PySocks
 msgpack-python==0.4.8
 python-dateutil
 bbcode
-pympler
+pympler==0.5
 
 colorama
 pyyaml==3.12
