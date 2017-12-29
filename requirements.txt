@@ -17,7 +17,7 @@ fontTools==3.21.0
 semantic
 fdict
 cachetools
-bleach
+bleach==2.1.2
 Jinja2
 psycopg2
 SQLAlchemy
