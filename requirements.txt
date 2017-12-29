@@ -4,7 +4,7 @@ git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
 
-chardet
+chardet==3.0.4
 pymysql
 mem_top==0.1.6
 statsd
