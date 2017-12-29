@@ -14,7 +14,7 @@ zerorpc==0.6.1
 cssutils
 tinycss2
 fontTools==3.21.0
-semantic
+semantic==1.0.3
 fdict==0.8.1
 cachetools
 bleach
