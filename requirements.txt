@@ -37,7 +37,7 @@ ftfy
 lxml==4.1.1
 Flask
 Flask-DebugToolbar==0.10.1
-Flask-Login
+Flask-Login==0.4.1
 Flask-Babel==0.11.2
 selenium
 webcolors==1.7
