@@ -45,7 +45,7 @@ pyparsing
 feedparser
 
 Flask-SQLAlchemy
-flask-paginate
+flask-paginate==0.5.1
 Flask-WTF
 apscheduler==3.5.0
 ## semantic
