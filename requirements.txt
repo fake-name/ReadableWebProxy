@@ -31,7 +31,7 @@ pympler
 
 colorama
 pyyaml
-natsort
+natsort==5.1.1
 mdx_linkify
 ftfy
 lxml==4.1.1
