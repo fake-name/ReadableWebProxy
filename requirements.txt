@@ -16,7 +16,7 @@ tinycss2
 fontTools==3.21.0
 semantic
 fdict
-cachetools
+cachetools==2.0.1
 bleach
 Jinja2==2.10
 psycopg2
