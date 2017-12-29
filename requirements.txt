@@ -34,7 +34,7 @@ pyyaml
 natsort
 mdx_linkify
 ftfy
-lxml
+lxml==4.1.1
 Flask
 Flask-DebugToolbar==0.10.1
 Flask-Login
