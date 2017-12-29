@@ -47,7 +47,7 @@ feedparser
 Flask-SQLAlchemy
 flask-paginate
 Flask-WTF
-apscheduler
+apscheduler==3.5.0
 ## semantic
 ## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
 git+https://github.com/kvesteri/sqlalchemy-continuum.git
