@@ -23,7 +23,7 @@ psycopg2
 SQLAlchemy
 sqlalchemy-citext
 
-PySocks
+PySocks==1.6.8
 msgpack-python
 python-dateutil
 bbcode
