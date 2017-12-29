@@ -32,7 +32,7 @@ pympler
 colorama
 pyyaml
 natsort
-mdx_linkify
+mdx_linkify==1.0
 ftfy
 lxml==4.1.1
 Flask
