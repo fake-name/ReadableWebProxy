@@ -5,7 +5,7 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
 
 chardet
-pymysql
+pymysql==0.8.0
 mem_top==0.1.6
 statsd
 xxhash
