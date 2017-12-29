@@ -39,7 +39,7 @@ Flask
 Flask-DebugToolbar
 Flask-Login
 Flask-Babel
-selenium
+selenium==3.8.0
 webcolors
 pyparsing
 feedparser
