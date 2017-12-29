@@ -1,4 +1,4 @@
-requests
+requests==2.18.4
 git+https://github.com/fake-name/amqpstorm.git
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
