@@ -203,6 +203,12 @@ def extractUrls(soup, pageUrl, truncate_fragment=False):
 
 				if url.startswith("javascript"):
 					continue
+				if url.startswith("data:"):
+					continue
+				if url.startswith("clsid:"):
+					continue
+				if url.startswith("mailto:"):
+					continue
 				fixed = rebaseUrl(url, pageUrl)
 				assert fixed.startswith("http"), "Wat?: '%s', '%s', '%s'" % (url, pageUrl, fixed)
 				urls.add(fixed)

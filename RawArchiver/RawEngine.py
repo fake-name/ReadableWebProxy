@@ -227,6 +227,8 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			return None
 		if link.startswith("clsid:"):
 			return None
+		if link.startswith("mailto:"):
+			return None
 		linkl = link.lower()
 		if any([badword in linkl for badword in common.global_constants.GLOBAL_BAD_URLS]):
 			return None

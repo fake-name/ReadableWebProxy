@@ -96,6 +96,9 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		if joburl.startswith("data:"):
 			self.log.warn("Data URL: '%s' - %s", joburl, netloc)
 			return False
+		if joburl.startswith("mailto:"):
+			self.log.warn("Email URL: '%s' - %s", joburl, netloc)
+			return False
 		if not joburl.startswith("http"):
 			self.log.warn("Non HTTP URL: '%s' - %s", joburl, netloc)
 			return False

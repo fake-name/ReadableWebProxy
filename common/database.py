@@ -1,5 +1,9 @@
 
 
+
+from sqlalchemy_continuum import make_versioned
+make_versioned(user_cls=None)
+
 # Import the DB things.
 from common.main_archive_db import WebPages
 from common.main_archive_db import WebFiles
@@ -37,3 +41,6 @@ from common.db_base import Base
 
 import sqlalchemy as sa
 sa.orm.configure_mappers()
+
+from sqlalchemy_searchable import make_searchable
+make_searchable()
