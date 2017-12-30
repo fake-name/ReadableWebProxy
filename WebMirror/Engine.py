@@ -439,6 +439,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def generalLinkClean(self, link, badwords, badcompounds):
 		if link.startswith("data:"):
 			return None
+		if link.startswith("clsid:"):
+			return None
 		linkl = link.lower()
 		if any([badword in linkl for badword in badwords]):
 			return None

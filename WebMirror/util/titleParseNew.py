@@ -343,6 +343,9 @@ class NumericToken(TokenBase):
 
 		if not tok_text:
 			raise NumberConversionException("Failed to convert '%s' to a number!" % (tok_text, ))
+		if not isinstance(tok_text, str):
+			raise NumberConversionException("Passed a token, rather then a string: '%s'!" % (tok_text, ))
+
 		# Handle strings with multiple decimal points, e.g. '01.05.15'
 		if tok_text.count(".") > 1:
 			raise NumberConversionException("Failed to convert '%s' to a number! Too many decimal points" % (tok_text, ))
@@ -1162,15 +1165,12 @@ class TitleParser(object):
 
 		for do_ascii in [False, True]:
 			for item in self.chunks:
-				# if do_print:
-				# 	print(item, tok_cls, isinstance(item, tok_cls))
+				if do_print:
+					print(item, tok_cls, isinstance(item, tok_cls))
 				if isinstance(item, tok_cls):
 					if getattr(item, tok_func[0])(parse_ascii=do_ascii):
 						return getattr(item, tok_func[1])(parse_ascii=do_ascii)
 		return None
-
-
-
 
 
 	def getVolume(self):

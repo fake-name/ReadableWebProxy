@@ -270,7 +270,7 @@ class WebGetPjsMixin(object):
 
 		self._syncOutOfPjsWebDriver()
 
-		self.__syncCookiesFromFile()
+		self._syncCookiesFromFile()
 
 		return success
 

@@ -301,6 +301,8 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'?do=newreply&',
 		'/forums/showsinglepost.php',
 		'&_debug=1&_debug=1&',
+		'www.giantitp.com/forums/',
+		'www.giantitp.com/cgi-bin/',
 	]
 
 	@classmethod

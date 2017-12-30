@@ -26,6 +26,9 @@ WORKER_CONFS = {
 }
 
 
+def hours(num):
+	return 60*60*num
+
 class MessageProcessor(object):
 	def __init__(self, interface_dict):
 		self.log = logging.getLogger('Main.Feeds.RPC')
@@ -53,9 +56,10 @@ class MessageProcessor(object):
 			'workers'      : [],
 			'dispatch_map' : cachetools.LRUCache(maxsize=25000),
 
-			# The chunk structure is slightly annoying, so just limit to 50 partial message keys.
+			# The chunk structure is slightly annoying, so just limit to 50 partial message keys, and
+			# a TTL of 3 hours.
 			# 'chunk_cache'  : fdict.sfdict(filename=os.path.join(settings_file.CHUNK_CACHE_DIR, "chunk_cache_{}.db".format(pool_name.lower()))),
-			'chunk_cache'   : cachetools.LRUCache(maxsize=50),
+			'chunk_cache'   : cachetools.TTLCache(maxsize=50, ttl=hours(3)),
 			'chunk_lock'   : threading.Lock(),
 		}
 
@@ -299,8 +303,12 @@ class MessageProcessor(object):
 		self.log.info("Debugging RPC State")
 		for worker_name, worker_conf in self.worker_pools.items():
 			self.log.info("	Queue for %s -> %s/%s, pool: %s, chunk_cache: %s %s",
-				worker_name.ljust(30), worker_conf['outgoing_q'].qsize(), worker_conf['incoming_q'].qsize(),
-				len(worker_conf['dispatch_map']), len(worker_conf['chunk_cache']), [len(list(tmp.values())) for tmp in worker_conf['chunk_cache'].values() if tmp])
+				worker_name.ljust(30),
+				worker_conf['outgoing_q'].qsize(),
+				worker_conf['incoming_q'].qsize(),
+				len(worker_conf['dispatch_map']),
+				len(worker_conf['chunk_cache']),
+				[(len(tmp['chunks']), tmp['chunk-count']) for tmp in worker_conf['chunk_cache'].values() if tmp and 'chunks' in tmp and 'chunk-count' in tmp])
 
 		for interface_group, queue_dict in self.interface_dict.items():
 			if isinstance(queue_dict, dict):

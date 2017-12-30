@@ -5,6 +5,7 @@ import shutil
 import os.path
 import os
 import sys
+from tqdm import tqdm
 
 import common.database as db
 
@@ -54,14 +55,17 @@ def sync_raw_with_filesystem():
 	sess = db.get_db_session()
 
 	print("Loading files from database...")
-	spinner1 = Spinner()
+	est = sess.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages';")
+	res = est.scalar()
+	print("Estimated row-count: %s" % res)
+
 	in_db = []
-	for row in sess.query(db.RawWebPages).yield_per(1000):
-		if row.fspath:
-			in_db.append(row.fspath)
-			spinner1.next(vlen=len(row.fspath))
-		else:
-			spinner1.next(star=True)
+	with tqdm(total=res) as pbar:
+
+		for row in sess.query(db.RawWebPages).yield_per(5000):
+			if row.fspath:
+				in_db.append(row.fspath)
+			pbar.update(n=1)
 
 	in_db = set(in_db)
 
@@ -70,21 +74,24 @@ def sync_raw_with_filesystem():
 	print("Enumerating files from disk...")
 	agg_files = []
 	have_files = []
-	spinner2 = Spinner()
-	for root, dirs, files in os.walk(tgtpath):
-		for filen in files:
-			fqpath = os.path.join(root, filen)
-			fpath = fqpath[len(tgtpath)+1:]
+	with tqdm(total=len(in_db)) as pbar:
 
-			if fpath in in_db:
-				spinner2.next(star=True, vlen=0)
-				have_files.append(fpath)
-			else:
-				spinner2.next(vlen=1)
-				agg_files.append(fpath)
-				fqpath = os.path.join(tgtpath, fpath)
-				os.unlink(fqpath)
-				print("\rDeleting: %s  " % fqpath)
+		for root, dirs, files in os.walk(tgtpath):
+			for filen in files:
+				fqpath = os.path.join(root, filen)
+				fpath = fqpath[len(tgtpath)+1:]
+
+				if fpath in in_db:
+
+					have_files.append(fpath)
+				else:
+
+					agg_files.append(fpath)
+					fqpath = os.path.join(tgtpath, fpath)
+					os.unlink(fqpath)
+					print("\rDeleting: %s  " % fqpath)
+				pbar.update(n=1)
+
 
 	print()
 	print("Found %s files (%s unique)" % (len(agg_files), len(set(agg_files))))
@@ -107,16 +114,24 @@ def sync_filtered_with_filesystem():
 	sess = db.get_db_session()
 
 	print("Loading files from database...")
-	spinner1 = Spinner()
+	# spinner1 = Spinner()
+
+	est = sess.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages';")
+	res = est.scalar()
+	print("Estimated row-count: %s" % res)
+
 	in_db = []
 	chunk_cnt = 0
-	for row in sess.query(db.WebFiles).yield_per(10000):
-		chunk_cnt += 1
-		if row.fspath:
-			in_db.append(row.fspath)
-			spinner1.next(vlen=len(row.fspath), output=(chunk_cnt == 10))
-			if chunk_cnt == 40:
-				chunk_cnt = 0
+	with tqdm(total=res) as pbar:
+		for row in sess.query(db.WebFiles).yield_per(10000):
+			chunk_cnt += 1
+			if row.fspath:
+				in_db.append(row.fspath)
+				# spinner1.next(vlen=len(row.fspath), output=(chunk_cnt == 10))
+				pbar.update(n=1)
+
+				if chunk_cnt == 40:
+					chunk_cnt = 0
 
 	origl = len(in_db)
 	in_db = set(in_db)
@@ -126,21 +141,25 @@ def sync_filtered_with_filesystem():
 	print("Enumerating files from disk...")
 	agg_files = []
 	have_files = []
-	spinner2 = Spinner()
-	for root, dirs, files in os.walk(tgtpath):
-		for filen in files:
-			fqpath = os.path.join(root, filen)
-			fpath = fqpath[len(tgtpath)+1:]
+	# spinner2 = Spinner()
 
-			if fpath in in_db:
-				spinner2.next(star=True, vlen=0)
-				have_files.append(fpath)
-			else:
-				spinner2.next(vlen=1)
-				agg_files.append(fpath)
-				fqpath = os.path.join(tgtpath, fpath)
-				# os.unlink(fqpath)
-				print("\rDeleting: %s  " % fqpath)
+	with tqdm(total=len(in_db)) as pbar:
+		for root, dirs, files in os.walk(tgtpath):
+			for filen in files:
+				fqpath = os.path.join(root, filen)
+				fpath = fqpath[len(tgtpath)+1:]
+
+				if fpath in in_db:
+					pbar.update(n=1)
+					# spinner2.next(star=True, vlen=0)
+					have_files.append(fpath)
+				else:
+					pbar.update(n=1)
+					# spinner2.next(vlen=1)
+					agg_files.append(fpath)
+					fqpath = os.path.join(tgtpath, fpath)
+					# os.unlink(fqpath)
+					print("\rDeleting: %s  " % fqpath)
 
 	# print()
 	# print("Found %s files (%s unique)" % (len(agg_files), len(set(agg_files))))

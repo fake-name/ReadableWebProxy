@@ -2,6 +2,7 @@
 import os
 import os.path
 import shutil
+from tqdm import tqdm
 
 if __name__ == "__main__":
 	import logSetup
@@ -27,16 +28,36 @@ def exposed_purge_raw_invalid_urls():
 
 	sess = db.get_db_session()
 
-	bad = 0
-	for row in sess.query(db.RawWebPages).yield_per(1000).all():
-		if not any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
-			print("Unwanted: ", row.url)
-			sess.delete(row)
-			bad += 1
-		if bad > 5000:
-			print("Committing!")
-			bad = 0
-			sess.commit()
+	print("Loading files from database...")
+	# spinner1 = Spinner()
+
+	est = sess.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages';")
+	res = est.scalar()
+	print("Estimated row-count: %s" % res)
+
+	last_bad = ""
+	deleted = 0
+	maxlen = 0
+	with tqdm(total=res) as pbar:
+		bad = 0
+		for row in sess.query(db.RawWebPages).yield_per(1000):
+			if not any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
+				last_bad = row.netloc
+				# print("Unwanted: ", row.url)
+				sess.delete(row)
+				bad += 1
+				deleted += 1
+			if bad > 5000:
+				# print("Committing!")
+				bad = 0
+				sess.commit()
+				pbar.set_description("Doing Commit", refresh=True)
+			else:
+				msg = "Deleted: %s, last_bad: '%s'" % (deleted, last_bad)
+				maxlen = max(len(msg), maxlen)
+				pbar.set_description(msg.ljust(maxlen), refresh=False)
+			pbar.update(n=1)
+
 	sess.commit()
 
 
@@ -57,7 +78,7 @@ def exposed_reset_raw_missing():
 	sess = db.get_db_session()
 
 	bad = 0
-	for row in sess.query(db.RawWebPages).yield_per(1000).all():
+	for row in sess.query(db.RawWebPages).yield_per(1000):
 		if row.fspath:
 
 
@@ -105,15 +126,6 @@ def exposed_delete_unattached_raw_files():
 	Load the local content files from the raw archiver, and compare them
 	against the database. Extra files that are not in the database will then
 	be deleted.
+	This also resets the dlstate of for addresses where the file is missing.
 	'''
 	common.management.file_cleanup.sync_raw_with_filesystem()
-
-def exposed_delete_unattached_filtered_files():
-	'''
-	Basically another version of delete_unattached_raw_files
-	I don't remember why there are two versions.
-
-	'''
-	common.management.file_cleanup.sync_filtered_with_filesystem()
-
-

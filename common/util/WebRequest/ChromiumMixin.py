@@ -247,6 +247,6 @@ class WebGetCrMixin(object):
 	# 		self.addSeleniumCookie(cookie)
 	# 		#print cookie[u"value"]
 
-	# 	self.__syncCookiesFromFile()
+	# 	self._syncCookiesFromFile()
 
 	# 	return success

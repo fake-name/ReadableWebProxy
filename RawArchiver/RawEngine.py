@@ -225,6 +225,8 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	def generalLinkClean(self, link):
 		if link.startswith("data:"):
 			return None
+		if link.startswith("clsid:"):
+			return None
 		linkl = link.lower()
 		if any([badword in linkl for badword in common.global_constants.GLOBAL_BAD_URLS]):
 			return None

@@ -731,7 +731,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 			self.log.debug(cookie)
 			#print cookie
 
-	def __syncCookiesFromFile(self):
+	def _syncCookiesFromFile(self):
 		# self.log.info("Synchronizing cookies with cookieFile.")
 		if os.path.isfile(self.COOKIEFILE):
 			self.cj.save("cookietemp.lwp")
@@ -764,7 +764,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 			# self.log.info("Trying to save cookies!")
 			if self.cj is not None:							# If cookies were used
 
-				self.__syncCookiesFromFile()
+				self._syncCookiesFromFile()
 
 				# self.log.info("Have cookies to save")
 				for cookie in self.cj:
@@ -792,7 +792,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 
 		# print("Have %d cookies after saving cookiejar" % len(self.cj))
 		if not halting:
-			self.__syncCookiesFromFile()
+			self._syncCookiesFromFile()
 		# print "Have %d cookies after reloading cookiejar" % len(self.cj)
 
 	def getCookies(self):
@@ -804,7 +804,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 		try:
 			# self.log.info("Trying to save cookies!")
 			if self.cj is not None:							# If cookies were used
-				self.__syncCookiesFromFile()
+				self._syncCookiesFromFile()
 		finally:
 			self.cookie_lock.release()
 
