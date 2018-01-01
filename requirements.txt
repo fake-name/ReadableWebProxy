@@ -6,7 +6,7 @@ git+https://github.com/berkerpeksag/astor.git
 git+https://github.com/fake-name/ChromeController.git
 
 mprpc
-tqdm
+tqdm==4.19.5
 chardet==3.0.4
 pymysql==0.8.0
 mem_top==0.1.6
