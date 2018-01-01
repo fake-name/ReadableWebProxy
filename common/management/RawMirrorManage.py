@@ -17,6 +17,7 @@ import common.Exceptions
 import common.management.file_cleanup
 
 from config import C_RAW_RESOURCE_DIR
+from sqlalchemy_continuum.utils import version_table
 
 
 
@@ -26,39 +27,111 @@ def exposed_purge_raw_invalid_urls():
 	attached to a archiver module.
 	'''
 
-	sess = db.get_db_session()
+	sess1 = db.get_db_session(postfix='iter_sess')
+	sess2 = db.get_db_session(postfix='delete_sess')
 
 	print("Loading files from database...")
 	# spinner1 = Spinner()
 
-	est = sess.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages';")
+	est = sess1.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages';")
+	res = est.scalar()
+	print("Estimated row-count: %s" % res)
+
+	last_bad = ""
+	last_commit = 0
+	deleted = 0
+	maxlen = 0
+	changed_rows = 0
+	total_rows = 0
+	with tqdm(total=res) as pbar:
+		bad = 0
+		for row in sess1.query(db.RawWebPages).yield_per(1000):
+			if not any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
+				last_bad = row.netloc
+				# print("Unwanted: ", row.url)
+				# sess1.delete(row)
+
+				changed_rows = sess2.query(db.RawWebPages) \
+					.filter(db.RawWebPages.url == row.url) \
+					.delete(synchronize_session=False)
+
+				bad += 1
+				deleted += 1
+
+			total_rows += 1
+			if bad > 5000:
+				# print("Committing!")
+				bad = 0
+				last_commit = deleted
+				sess2.commit()
+			else:
+				msg = "Deleted: %s, since commit: %s, last_bad: '%s' (%s, %s%%)" % \
+					(deleted, deleted-last_commit, last_bad, changed_rows, 100.0*(deleted / total_rows))
+
+				maxlen = max(len(msg), maxlen)
+				pbar.set_description(msg.ljust(maxlen), refresh=False)
+			pbar.update(n=1)
+
+	sess1.commit()
+	sess2.commit()
+
+def exposed_purge_raw_invalid_urls_from_history():
+	'''
+	Delete all raw-archiver rows that aren't
+	attached to a archiver module.
+	'''
+
+	sess1 = db.get_db_session(postfix='iter_sess')
+	sess2 = db.get_db_session(postfix='delete_sess')
+
+	ctbl = version_table(db.RawWebPages)
+
+	print("Loading files from database...")
+	# spinner1 = Spinner()
+
+	est = sess1.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages_version';")
 	res = est.scalar()
 	print("Estimated row-count: %s" % res)
 
 	last_bad = ""
 	deleted = 0
+	total_rows = 0
+	last_commit = 0
 	maxlen = 0
+	changed_rows = 0
 	with tqdm(total=res) as pbar:
 		bad = 0
-		for row in sess.query(db.RawWebPages).yield_per(1000):
-			if not any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
-				last_bad = row.netloc
-				# print("Unwanted: ", row.url)
-				sess.delete(row)
+
+		for rurl, rnetloc in sess1.query(ctbl.c.url, ctbl.c.netloc).yield_per(1000):
+			if not any([mod.cares_about_url(rurl) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
+				last_bad = rnetloc
+				# print("Unwanted: ", rurl)
+
+				changed_rows = sess2.query(ctbl) \
+					.filter(ctbl.c.url == rurl) \
+					.delete(synchronize_session=False)
+
 				bad += 1
 				deleted += 1
+			total_rows += 1
+
 			if bad > 5000:
 				# print("Committing!")
 				bad = 0
-				sess.commit()
-				pbar.set_description("Doing Commit", refresh=True)
+				last_commit = deleted
+				sess2.commit()
+				# pbar.set_description("Doing Commit", refresh=True)
 			else:
-				msg = "Deleted: %s, last_bad: '%s'" % (deleted, last_bad)
+				msg = "Deleted: %s, since commit: %s, last_bad: '%s' (%s, %s%%)" % \
+					(deleted, deleted-last_commit, last_bad, changed_rows, 100.0*(deleted / total_rows))
 				maxlen = max(len(msg), maxlen)
 				pbar.set_description(msg.ljust(maxlen), refresh=False)
+
+
 			pbar.update(n=1)
 
-	sess.commit()
+	sess1.commit()
+	sess2.commit()
 
 
 def to_locpath(fqpath):

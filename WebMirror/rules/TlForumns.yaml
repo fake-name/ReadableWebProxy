@@ -39,6 +39,7 @@ badwords: [
 			'/images/assets/css/images/',
 			'/assets/js/images/',
 			'/index/index/',
+			'/tagged/rss/',
 
 			'/css/images/css/',
 			'/css/css/',

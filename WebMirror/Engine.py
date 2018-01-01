@@ -229,6 +229,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# transferred content (e.g. is it an image/html page/binary file)
 	def dispatchRequest(self, job, preretrieved=None):
 		response = self.fetch(job, preretrieved=preretrieved)
+		# pprint.pprint(response)
 		self.log.info("Dispatching job: %s, url: %s", job, job.url)
 		self.processResponse(job, response)
 

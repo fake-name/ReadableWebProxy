@@ -8,6 +8,7 @@ import sys
 from tqdm import tqdm
 
 import common.database as db
+from sqlalchemy_continuum.utils import version_table
 
 
 
@@ -62,9 +63,9 @@ def sync_raw_with_filesystem():
 	in_db = []
 	with tqdm(total=res) as pbar:
 
-		for row in sess.query(db.RawWebPages).yield_per(5000):
-			if row.fspath:
-				in_db.append(row.fspath)
+		for fspath,  in sess.query(db.RawWebPages.fspath).yield_per(5000):
+			if fspath:
+				in_db.append(fspath)
 			pbar.update(n=1)
 
 	in_db = set(in_db)
@@ -88,7 +89,7 @@ def sync_raw_with_filesystem():
 
 					agg_files.append(fpath)
 					fqpath = os.path.join(tgtpath, fpath)
-					os.unlink(fqpath)
+					# os.unlink(fqpath)
 					print("\rDeleting: %s  " % fqpath)
 				pbar.update(n=1)
 
@@ -110,6 +111,7 @@ def sync_raw_with_filesystem():
 
 def sync_filtered_with_filesystem():
 	tgtpath = settings.RESOURCE_DIR
+	ctbl = version_table(db.RawWebPages)
 
 	sess = db.get_db_session()
 
@@ -118,33 +120,46 @@ def sync_filtered_with_filesystem():
 
 	est = sess.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages';")
 	res = est.scalar()
-	print("Estimated row-count: %s" % res)
 
-	in_db = []
-	chunk_cnt = 0
+	vest = sess.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='raw_web_pages_version';")
+	vres = vest.scalar()
+
+	print("Estimated row-count: %s, version table: %s" % (res, vres))
+
+	in_main_db = []
 	with tqdm(total=res) as pbar:
 		for row in sess.query(db.WebFiles).yield_per(10000):
-			chunk_cnt += 1
 			if row.fspath:
-				in_db.append(row.fspath)
-				# spinner1.next(vlen=len(row.fspath), output=(chunk_cnt == 10))
+				in_main_db.append(row.fspath)
 				pbar.update(n=1)
 
-				if chunk_cnt == 40:
-					chunk_cnt = 0
 
-	origl = len(in_db)
-	in_db = set(in_db)
+
+	in_history_db = []
+
+	with tqdm(total=vres) as pbar:
+		for rfspath, in sess.query(ctbl.c.fspath).yield_per(1000):
+			if rfspath:
+				in_history_db.append(rfspath)
+				pbar.update(n=1)
+
+
+	origl_main = len(in_main_db)
+	origl_hist = len(in_history_db)
+	in_db_main = set(in_main_db)
+	in_db_hist = set(in_history_db)
+
+	in_db = in_db_main + in_db_hist
 
 	print("")
-	print("%s files, %s unique" % (origl, len(in_db)))
+	print("%s files, %s unique" % ((origl_main, origl_hist), (len(in_db_main), len(in_db_hist))))
 	print("Enumerating files from disk...")
 	agg_files = []
 	have_files = []
 	# spinner2 = Spinner()
 
 	with tqdm(total=len(in_db)) as pbar:
-		for root, dirs, files in os.walk(tgtpath):
+		for root, _, files in os.walk(tgtpath):
 			for filen in files:
 				fqpath = os.path.join(root, filen)
 				fpath = fqpath[len(tgtpath)+1:]
@@ -161,15 +176,3 @@ def sync_filtered_with_filesystem():
 					# os.unlink(fqpath)
 					print("\rDeleting: %s  " % fqpath)
 
-	# print()
-	# print("Found %s files (%s unique)" % (len(agg_files), len(set(agg_files))))
-
-	# missing_files = set(in_db) - set(have_files)
-
-	# for filen in agg_files:
-	# 	print("Should delete: '%s'" % filen)
-	# for filen in missing_files:
-	# 	print("Missing: '%s'" % filen)
-
-	# 	sess.query(db.WebPages).filter(db.WebPages.fspath == filen).update({"state" : "new", "fspath" : None})
-	# 	sess.commit()

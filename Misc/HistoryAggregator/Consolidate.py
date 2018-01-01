@@ -256,7 +256,7 @@ class DbFlattener(object):
 						url
 					HAVING
 						COUNT(*) > 10
-					ORDER BY url
+					ORDER BY COUNT(*) DESC
 
 				""")
 			end = list(end)

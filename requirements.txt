@@ -3,7 +3,10 @@ requests==2.18.4
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
+git+https://github.com/fake-name/ChromeController.git
 
+mprpc
+tqdm
 chardet==3.0.4
 pymysql==0.8.0
 mem_top==0.1.6

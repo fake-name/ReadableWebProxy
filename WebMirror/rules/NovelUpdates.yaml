@@ -6,7 +6,7 @@ allImages: False
 type: "eastern"
 
 baseUrl: [
-	"http://www.novelupdates.com",
+	"https://www.novelupdates.com",
 	]
 
 send_raw_feed: False
@@ -63,3 +63,9 @@ special_case_filters : {
 	# So I can test against someone less bot-sensitive
 	"www.google.com" : ["rate_limit", 20],
 }
+
+
+skip_filters : [
+	['www.novelupdates.com', "^https?://www\\.novelupdates\\.com(?:/series/[a-zA-Z0-9\\-]+/|/)?$", True],
+]
+

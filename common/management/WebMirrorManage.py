@@ -1,12 +1,12 @@
 
-import calendar
 import datetime
 import json
 import os
 import os.path
 import datetime
+import pprint
+import time
 import traceback
-from concurrent.futures import ThreadPoolExecutor
 
 import urllib.error
 import urllib.parse
@@ -15,7 +15,6 @@ from sqlalchemy import and_
 from sqlalchemy import desc
 from sqlalchemy import or_
 from sqlalchemy.sql import func
-from sqlalchemy.orm import outerjoin
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
 from sqlalchemy_continuum.utils import version_table
@@ -25,7 +24,7 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 
 from WebMirror.Engine import SiteArchiver
-import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
+import WebMirror.OutputFilters.util.feedNameLut
 import WebMirror.rules
 import WebMirror.SiteSync.fetch
 import WebMirror.SpecialCase
@@ -44,14 +43,24 @@ import common.util.WebRequest as WebRequest
 import Misc.HistoryAggregator.Consolidate
 import Misc.NuForwarder.NuHeader
 import flags
-import config
-from config import C_RAW_RESOURCE_DIR
 
 
 import WebMirror.TimedTriggers.RollingRewalkTrigger
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.SiteSync.fetch
 import WebMirror.OutputFilters.rss.FeedDataParser
+
+class TestQueueTrigger(WebMirror.TimedTriggers.QueueTriggers.QueueTrigger):
+
+	loggerPath = 'TestTrigger'
+	pluginName = 'TestTrigger'
+	rpc_queue_name = 'TestInterface'
+
+	def get_urls(self):
+		return []
+
+
+
 
 
 
@@ -65,6 +74,28 @@ def exposed_remote_fetch_enqueue(url):
 	print("Enqueueing ")
 	trig = WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger()
 	trig.enqueue_url(url)
+
+def exposed_remote_fetch_test(url):
+	'''
+	Place a normal fetch request for url `url` into the remote fetch queue,
+	and then wait for the response.
+
+	Requires the FetchAgent service to be running.
+	'''
+
+	print("Enqueueing ")
+	trig = TestQueueTrigger()
+	print(trig)
+	# trig.enqueue_url(url)
+
+	for timeout in range(60 * 60):
+		resp = trig.rpc_interface.get_job_nowait()
+		print("\rLoop %s\r" % timeout, end='', flush=True)
+		if resp:
+			pprint.pprint(resp)
+			return
+		time.sleep(1)
+
 
 def exposed_trigger_nu_homepage_fetch():
 	'''

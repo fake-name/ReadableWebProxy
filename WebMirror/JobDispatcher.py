@@ -65,12 +65,22 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 3000
 
 class RpcMixin():
+
+	def __init__(self, *args, **kwargs):
+
+		if not hasattr(self, "rpc_queue_name"):
+			self.rpc_queue_name = 'ProcessedMirror'
+
+		super().__init__(*args, **kwargs)
+
+
 	def check_open_rpc_interface(self):
 		for _ in range(5):
 			try:
 
 				if not hasattr(self, "rpc_interface"):
-					self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+					self.log.info("Connecting using RPC queue name: '%s'", self.rpc_queue_name)
+					self.rpc_interface = common.get_rpyc.RemoteJobInterface(self.rpc_queue_name)
 
 				if self.rpc_interface.check_ok():
 					return
@@ -91,7 +101,7 @@ class RpcMixin():
 					for line in traceback.format_exc().split("\n"):
 						self.log.error(line)
 
-				self.rpc_interface = common.get_rpyc.RemoteJobInterface("ProcessedMirror")
+				self.rpc_interface = common.get_rpyc.RemoteJobInterface(self.rpc_queue_name)
 				self.rpc_interface.check_ok()
 
 		raise RuntimeError("RPC interface appears to not be active. Nothing to do?")

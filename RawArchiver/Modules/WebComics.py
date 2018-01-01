@@ -303,6 +303,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'&_debug=1&_debug=1&',
 		'www.giantitp.com/forums/',
 		'www.giantitp.com/cgi-bin/',
+		'www.finderskeepers.gcgstudios.com/blog/',
 	]
 
 	@classmethod
