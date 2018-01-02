@@ -14,7 +14,7 @@ pymysql==0.8.0
 mem_top==0.1.6
 statsd
 xxhash==1.0.1
-objgraph
+objgraph==3.3.0
 zerorpc==0.6.1
 cssutils==1.0.2
 tinycss2==0.6.1
