@@ -37,7 +37,7 @@ pympler==0.5
 
 colorama==0.3.9
 pyyaml==3.12
-natsort
+natsort==5.1.1
 mdx_linkify==1.0
 ftfy
 lxml==4.1.1
