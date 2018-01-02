@@ -311,6 +311,10 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'www.giantitp.com/forums/',
 		'www.giantitp.com/cgi-bin/',
 		'www.finderskeepers.gcgstudios.com/blog/',
+		'/comic/chap6/story/images/comic/',
+		'?p=comic&',
+		'/comic/chap6/story/donator/',
+		'/story/donator/',
 	]
 
 	@classmethod
