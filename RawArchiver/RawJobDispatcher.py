@@ -12,7 +12,11 @@ import socket
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
 
-import psycopg2
+if '__pypy__' in sys.builtin_module_names:
+	import psycopg2cffi as psycopg2
+else:
+	import psycopg2
+
 import sys
 
 import settings

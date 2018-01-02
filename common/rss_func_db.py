@@ -134,10 +134,11 @@ class FeedPostMeta(common.db_base.Base):
 ##########################################################################################
 ##########################################################################################
 ##########################################################################################
-
+global META_CACHE
 META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 
 def get_feed_article_meta(feedid):
+	global META_CACHE
 	if feedid in META_CACHE:
 		return META_CACHE[feedid]
 
@@ -153,7 +154,6 @@ def get_feed_article_meta(feedid):
 	try:
 		META_CACHE[feedid] = ret
 	except KeyError:
-		global META_CACHE
 		META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 		META_CACHE[feedid] = ret
 
@@ -162,6 +162,7 @@ def get_feed_article_meta(feedid):
 
 def set_feed_article_meta(feedid, new_data):
 
+	global META_CACHE
 	# if feedid in META_CACHE:
 	# 	if META_CACHE[feedid] == new_data:
 	# 		return
@@ -189,7 +190,6 @@ def set_feed_article_meta(feedid, new_data):
 	try:
 		META_CACHE[feedid] = new_data
 	except KeyError:
-		global META_CACHE
 		META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 		META_CACHE[feedid] = new_data
 

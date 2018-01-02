@@ -3,7 +3,7 @@
 import logging
 import abc
 import datetime
-import psycopg2
+
 import traceback
 import urllib.parse
 import sqlalchemy.exc

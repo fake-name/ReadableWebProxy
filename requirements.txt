@@ -5,6 +5,8 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
 git+https://github.com/fake-name/ChromeController.git
 
+pillow
+
 mprpc==0.1.16
 tqdm==4.19.5
 chardet==3.0.4
@@ -22,7 +24,8 @@ fdict==0.8.1
 cachetools
 bleach==2.1.2
 Jinja2==2.10
-psycopg2
+## psycopg2
+psycopg2cffi
 SQLAlchemy==1.2.0
 sqlalchemy-citext==1.3-0
 

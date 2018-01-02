@@ -25,7 +25,11 @@ import common.util.urlFuncs
 import urllib.parse
 import traceback
 import datetime
-import psycopg2
+
+if '__pypy__' in sys.builtin_module_names:
+	import psycopg2cffi as psycopg2
+else:
+	import psycopg2
 
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func

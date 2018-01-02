@@ -14,7 +14,13 @@ import socket
 # from sqlalchemy.sql import text
 
 import cachetools
-import psycopg2
+
+
+if '__pypy__' in sys.builtin_module_names:
+	import psycopg2cffi as psycopg2
+else:
+	import psycopg2
+
 import bsonrpc.exceptions
 import sys
 import os
@@ -31,7 +37,7 @@ import WebMirror.SpecialCase
 import WebMirror.JobUtils
 
 import mem_top
-from pympler.tracker import SummaryTracker
+# from pympler.tracker import SummaryTracker
 
 ########################################################################################################################
 #

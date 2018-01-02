@@ -3,7 +3,13 @@
 import logging
 import abc
 import datetime
-import psycopg2
+
+import sys
+if '__pypy__' in sys.builtin_module_names:
+	import psycopg2cffi as psycopg2
+else:
+	import psycopg2
+
 import traceback
 import urllib.parse
 import sqlalchemy.exc

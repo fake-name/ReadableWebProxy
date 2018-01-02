@@ -11,7 +11,7 @@ import os.path
 import json
 import calendar
 
-from pympler import tracker
+# from pympler import tracker
 import objgraph
 import code
 

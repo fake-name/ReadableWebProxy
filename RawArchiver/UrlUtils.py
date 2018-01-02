@@ -20,7 +20,7 @@ import cachetools
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
-import psycopg2
+
 
 import config
 import runStatus
