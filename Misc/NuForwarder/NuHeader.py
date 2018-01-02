@@ -20,7 +20,6 @@ import common.get_rpyc
 import common.LogBase as LogBase
 import common.StatsdMixin as StatsdMixin
 import random
-import bsonrpc.exceptions
 
 from WebMirror.OutputFilters.util.MessageConstructors import fix_string
 from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
@@ -265,15 +264,6 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				self.check_open_rpc_interface()
 			except KeyError:
 				self.check_open_rpc_interface()
-			except bsonrpc.exceptions.BsonRpcError as e:
-				errors += 1
-				self.check_open_rpc_interface()
-				if errors > 3:
-					raise e
-				else:
-					self.log.warning("Exception in RPC request:")
-					for line in traceback.format_exc().split("\n"):
-						self.log.warning(line)
 
 
 

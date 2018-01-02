@@ -21,7 +21,6 @@ if '__pypy__' in sys.builtin_module_names:
 else:
 	import psycopg2
 
-import bsonrpc.exceptions
 import sys
 import os
 
