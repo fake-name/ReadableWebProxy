@@ -18,6 +18,7 @@ import common.database as db
 
 import common.get_rpyc
 import common.LogBase as LogBase
+import common.StatsdMixin as StatsdMixin
 import random
 import bsonrpc.exceptions
 
@@ -44,7 +45,7 @@ def load_lut():
 	lut = json.loads(jctnt)
 	return lut
 
-class NuHeader(LogBase.LoggerMixin):
+class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	'''
 		NU Updates are batched and only forwarded to the output periodically,
 		to make timing attacks somewhat more difficult.
@@ -68,8 +69,8 @@ class NuHeader(LogBase.LoggerMixin):
 			}
 	'''
 
-	loggerPath = "Main.Neader.Nu"
-
+	loggerPath = "Main.Header.Nu"
+	statsd_prefix = 'ReadableWebProxy.Nu.Header'
 
 	def __init__(self, connect=True):
 		super().__init__()
@@ -79,6 +80,7 @@ class NuHeader(LogBase.LoggerMixin):
 
 		if connect:
 			self.check_open_rpc_interface()
+
 
 	def put_job(self, put=3):
 		self.log.info("Loading rows to fetch...")
@@ -331,6 +333,8 @@ class NuHeader(LogBase.LoggerMixin):
 
 				have.resolved.append(new)
 				self.db_sess.commit()
+
+				self.mon_con.incr('head-received', 1)
 				return True
 			except sqlalchemy.exc.InvalidRequestError:
 				self.db_sess.rollback()
@@ -341,6 +345,7 @@ class NuHeader(LogBase.LoggerMixin):
 
 
 			except Exception:
+				self.mon_con.incr('head-failed', 1)
 				self.log.error("Error when processing job response!")
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
@@ -373,6 +378,7 @@ class NuHeader(LogBase.LoggerMixin):
 					if not valid.seriesname.endswith("..."):
 						new_items.append((valid.seriesname, valid.actual_target))
 						valid.validated = True
+						self.mon_con.incr('validated', 1)
 
 				else:
 					self.log.error("Invalid or not-matching URL set for wrapper!")
@@ -392,6 +398,8 @@ class NuHeader(LogBase.LoggerMixin):
 						self.log.info("Deleting row with ID: %s", oldest_row.id)
 						self.db_sess.delete(oldest_row)
 
+
+					self.mon_con.incr('invalidated', 1)
 
 		self.db_sess.commit()
 		self.log.info("Added validated series: %s", len(new_items))
@@ -422,7 +430,7 @@ class NuHeader(LogBase.LoggerMixin):
 			return
 		if not row.actual_target:
 			return
-			
+
 		if "www.webnovel.com" in row.actual_target and "/rssbook/" in row.actual_target:
 			return
 
@@ -539,6 +547,8 @@ class NuHeader(LogBase.LoggerMixin):
 			return
 
 		row.reviewed = 'valid'
+
+		self.mon_con.incr('reviewed', 1)
 
 	def validate_probable_ok(self):
 		self.log.info("Doing optional validation")

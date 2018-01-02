@@ -1,16 +1,4 @@
 
-
-import runStatus
-runStatus.preloadDicts = False
-
-import WebMirror.OutputFilters.FilterBase
-
-import common.database as db
-
-import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
-from WebMirror.OutputFilters.util.TitleParsers import extractTitle
-
-import sqlalchemy.exc
 import bs4
 import re
 import calendar
@@ -19,6 +7,20 @@ import datetime
 import time
 import json
 import cssutils
+
+import sqlalchemy.exc
+
+import runStatus
+runStatus.preloadDicts = False
+
+import common.StatsdMixin as StatsdMixin
+import WebMirror.OutputFilters.FilterBase
+
+import common.database as db
+
+import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
+from WebMirror.OutputFilters.util.TitleParsers import extractTitle
+
 
 ########################################################################################################################
 #
@@ -35,7 +37,7 @@ import cssutils
 
 
 
-class NuBaseFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
+class NuBaseFilter(WebMirror.OutputFilters.FilterBase.FilterBase, StatsdMixin.StatsdMixin):
 
 
 	def getMaskedClasses(self, soup):

@@ -46,6 +46,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 	want_priority    = 95
 
 	loggerPath = "Main.Text.NUHpProc"
+	statsd_prefix = 'ReadableWebProxy.Nu.PageProcessor'
 
 
 	@staticmethod
@@ -132,6 +133,9 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 						new_count += 1
 						if commit_each:
 							self.db_sess.commit()
+
+						self.mon_con.incr('new-urls', 1)
+
 				self.db_sess.commit()
 				break
 

@@ -123,6 +123,8 @@ class MiscRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		"~Russian",
 		"~Brazilian",
 
+		'scp-wiki.net/search:site/',
+
 	]
 
 	@classmethod

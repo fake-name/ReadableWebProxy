@@ -72,6 +72,7 @@ def upsertNuItem(raw_cur, itemparams):
 		}
 
 	raw_cur.execute(cmd, data)
+	return raw_cur.rowcount
 
 
 class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
@@ -84,7 +85,7 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 	want_priority    = 90
 
 	loggerPath = "Main.Filter.NoveUpdates.Page"
-
+	statsd_prefix = 'ReadableWebProxy.Nu.PageProcessor'
 
 	@staticmethod
 	def wantsUrl(url):
@@ -287,7 +288,7 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 					if linkfq.startswith("//"):
 						linkfq = "https:"+linkfq
 
-					upsertNuItem(self.raw_cur,
+					changed = upsertNuItem(self.raw_cur,
 						{
 							'seriesname'       : title,
 							'releaseinfo'      : release_info,
@@ -296,8 +297,10 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 							'outbound_wrapper' : linkfq,
 							'first_seen'       : reldate,
 						})
-					self.log.info("Upserting outbound wrapper url %s.", linkfq)
+					self.log.info("Upserting outbound wrapper url %s, changed %s rows.", linkfq, changed)
 
+					if changed:
+						self.mon_con.incr('new-urls', 1)
 
 			valid_releases += 1
 

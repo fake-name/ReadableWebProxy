@@ -211,6 +211,12 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
 
 	badwords = [
+		'/characters/characters/',
+		'/comic/chap4/comic/',
+		'/comic/chap4/donator/',
+		'/comic/chap4/images/comic/chapters/',
+		'&destination=blog%',
+		'&destination=archive%',
 		'search.php',
 		"&replytocom=",
 		"/viewtopic.php",
@@ -295,7 +301,8 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/lost-omens?q=forum/lost-omens&q=forum/',
 		'/office-life?q=tags/office-life&q=tags/',
 		'/handbasketd&q=comic/handbasketd&q=comic/',
-
+		'/stop-asking&q=comic/stop-asking&q=comic/',
+		'www.comedity.com/ColorMe/v2.0/images/www.comedity.com/',
 		'/printthread.php?',
 		'/forums/newreply.php',
 		'?do=newreply&',
