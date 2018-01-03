@@ -289,7 +289,8 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 					linkfq = link['href']
 					if linkfq.startswith("//"):
 						linkfq = "https:"+linkfq
-
+					if "http://" in linkfq:
+						linkfq = linkfq.split("http://")[0]
 					changed = upsertNuItem(self.raw_cur,
 						{
 							'seriesname'       : title,

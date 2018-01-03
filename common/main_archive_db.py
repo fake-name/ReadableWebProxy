@@ -135,7 +135,7 @@ class NuResolvedOutbound(common.db_base.Base):
 	id               = Column(BigInteger, primary_key=True)
 
 	# Foreign key to the files table if needed.
-	parent              = Column(BigInteger, ForeignKey('nu_release_item.id'), index=True, nullable=False)
+	parent           = Column(BigInteger, ForeignKey('nu_release_item.id'), index=True, nullable=False)
 
 	client_id        = Column(Text, nullable=False, index=True)
 	client_key       = Column(Text, nullable=False, index=True)
@@ -145,7 +145,7 @@ class NuResolvedOutbound(common.db_base.Base):
 
 	fetched_on       = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 
-
+	# disabled         = Column(Boolean)
 
 	__table_args__ = (
 		UniqueConstraint('parent', 'client_id', 'client_key', 'actual_target'),
