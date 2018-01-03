@@ -118,7 +118,8 @@ class NuReleaseItem(common.db_base.Base):
 	referrer         = Column(Text, nullable=False)
 	outbound_wrapper = Column(Text, nullable=False, unique=True)
 
-	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+	release_date     = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.min)
 	validated_on     = Column(DateTime, index=True)
 
 	fetch_attempts   = Column(Integer,  index=True, default=0, nullable=False)

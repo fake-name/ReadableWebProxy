@@ -42,6 +42,7 @@ def upsertNuItem(raw_cur, itemparams):
 		'referrer',
 		'outbound_wrapper',
 		'first_seen',
+		'release_date',
 		]
 
 	assert all([key in itemparams for key in required_args])
@@ -52,9 +53,9 @@ def upsertNuItem(raw_cur, itemparams):
 	cmd = """
 			INSERT INTO
 				nu_release_item
-				(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, validated, fetch_attempts)
+				(seriesname, releaseinfo, groupinfo, referrer, outbound_wrapper, first_seen, release_date, validated, fetch_attempts)
 			VALUES
-				(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(validated)s, %(fetch_attempts)s)
+				(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(release_date)s, %(validated)s, %(fetch_attempts)s)
 			ON CONFLICT (outbound_wrapper) DO NOTHING
 				;
 			""".replace("	", " ").replace("\n", " ")
@@ -66,6 +67,7 @@ def upsertNuItem(raw_cur, itemparams):
 			'groupinfo'        : itemparams['groupinfo'],
 			'referrer'         : itemparams['referrer'],
 			'outbound_wrapper' : itemparams['outbound_wrapper'],
+			'release_date'     : itemparams['release_date'],
 			'first_seen'       : itemparams['first_seen'],
 			'validated'        : False,
 			'fetch_attempts'   : 0,
@@ -295,7 +297,8 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 							'groupinfo'        : group_name,
 							'referrer'         : seriesPageUrl,
 							'outbound_wrapper' : linkfq,
-							'first_seen'       : reldate,
+							'release_date'     : reldate,
+							'first_seen'       : datetime.datetime.min,
 						})
 					self.log.info("Upserting outbound wrapper url %s, changed %s rows.", linkfq, changed)
 

@@ -315,6 +315,27 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'?p=comic&',
 		'/comic/chap6/story/donator/',
 		'/story/donator/',
+		'/comic/chap1/characters/images/',
+		'/comic/chap1/characters/world/',
+		'/comic/chap1/images/comic/',
+		'/comic/chap3/images/comic/',
+		'/comic/chap3/images/story/',
+		'/comic/chap4/images/comic/',
+		'/comic/chap5/comic/chap5/',
+		'/comic/chap5/images/comic/',
+		'/comic/chap6/comic/chap3/',
+		'/comic/chap6/images/comic/',
+		'/comic/chap6/images/donator/',
+		'/comic/chap6/mrc/characters/',
+		'/comic/chap6/mrc/comic/',
+		'/comic/chap6/mrc/images/',
+		'/comic/chap6/mrc/mrc/',
+		'/comic/chap6/mrc/world/',
+		'/comic/chap6/story/images/',
+		'/comic/chap3/images/mrc/',
+		'www.userfriendly.org/cgi-bin/',
+		'www.gpf-comics.com/wikix/',
+		'www.samandfuzzy.com/forum/',
 	]
 
 	@classmethod
@@ -324,7 +345,16 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 		if RawArchiver.ModuleBase.duplicate_path_fragments(url):
 			return False
-		return urllib.parse.urlparse(url).netloc in cls.target_tlds
+
+		nl = urllib.parse.urlparse(url).netloc
+
+		if (nl == 'finderskeepers.gcgstudios.com' or nl == 'www.finderskeepers.gcgstudios.com'):
+			if "?" in url:
+				return False
+			if len(url.split("/")) >= 6:
+				return False
+
+		return nl in cls.target_tlds
 
 	@classmethod
 	def get_start_urls(cls):

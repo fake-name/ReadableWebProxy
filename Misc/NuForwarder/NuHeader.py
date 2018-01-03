@@ -171,7 +171,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					},
 				postDelay      = 0,
 				unique_id      = have.outbound_wrapper,
-				serialize      = True,
+				serialize      = 'Nu-Header',
 			)
 
 			# rval = random.random()
