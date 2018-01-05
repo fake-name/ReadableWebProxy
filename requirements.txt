@@ -25,7 +25,7 @@ cachetools==2.0.1
 bleach==2.1.2
 Jinja2==2.10
 
-pystuck
+pystuck==0.8.5
 cherrypy
 
 psycopg2cffi==2.7.7 ; platform.python_implementation == 'PyPy'
