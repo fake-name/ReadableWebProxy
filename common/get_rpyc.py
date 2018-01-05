@@ -9,6 +9,7 @@ import common.LogBase as LogBase
 import runStatus
 
 import mprpc
+import settings
 
 
 
@@ -24,7 +25,7 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 			try:
 				self.log.info("Creating rpc_client")
 				mp_conf = {"use_bin_type":True}
-				self.rpc_client = mprpc.RPCClient('127.0.0.1', 4315, pack_params=mp_conf)
+				self.rpc_client = mprpc.RPCClient(settings.RPC_AGENT_HOST, 4315, pack_params=mp_conf)
 				self.log.info("Validating RPC connection")
 
 				# self.rpc_client = self.rpc.get_peer_proxy(timeout=10)

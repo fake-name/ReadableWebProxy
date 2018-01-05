@@ -399,7 +399,12 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 			if pghandle != None:
 				self.log.info("Request for URL: %s succeeded at %s On Attempt %s. Recieving...", pgreq.get_full_url(), time.ctime(time.time()), retryCount)
 				pgctnt = self.__retreiveContent(pgreq, pghandle, callBack)
-
+				
+				if "sucuri_cloudproxy_js=" in pgctnt:
+					self.stepThroughCloudFlare(requestedUrl, titleNotContains="You are being redirected...")
+					pgctnt = False
+					# retryCount = retryCount - 1
+				
 				# if __retreiveContent did not return false, it managed to fetch valid results, so break
 				if pgctnt != False:
 					break
