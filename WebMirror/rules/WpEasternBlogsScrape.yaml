@@ -6,7 +6,7 @@ send_raw_feed: True
 rewalk_interval_days: 30
 
 baseUrl: [
-
+	'https://chuunihime.wordpress.com',
 	'https://12superlatives.wordpress.com',
 	'https://50centtranslations.wordpress.com',
 	'https://7daystrial.wordpress.com',
