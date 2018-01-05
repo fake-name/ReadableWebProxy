@@ -205,6 +205,8 @@ def extractUrls(soup, pageUrl, truncate_fragment=False):
 					continue
 				if url.startswith("data:"):
 					continue
+				if url.startswith("ios-app:"):
+					continue
 				if url.startswith("clsid:"):
 					continue
 				if url.startswith("mailto:"):

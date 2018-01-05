@@ -1,6 +1,7 @@
 
 import time
 import traceback
+import platform
 
 # from FeedScrape.FeedDataParser import extractChapterVol
 from tests.title_test_data import data as test_data
@@ -9,6 +10,7 @@ from WebMirror.OutputFilters.util.TitleParsers import TitleParser
 def test():
 	count = 0
 	mismatch = 0
+	print("Running %s title tests. Please wait." % len(test_data))
 	start = time.time()
 	for key, value in test_data:
 		try:
@@ -69,7 +71,10 @@ def test():
 
 	delta = stop - start
 
-	print("Total time: {}, time per title: {}".format(delta, delta / len(test_data)))
+	print("Platform: {} - Total time: {}, time per title: {}".format(
+		platform.python_implementation(),
+		delta,
+		delta / len(test_data)))
 
 	print("{} Items with parsed output".format(count))
 	print("{} Items mismatch in new parser".format(mismatch))
