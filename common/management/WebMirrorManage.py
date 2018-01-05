@@ -297,7 +297,7 @@ def delete_internal(sess, ids, netloc, badwords):
 		chunk = ids[chunk_idx:chunk_idx+chunk_size]
 		while 1:
 			try:
-				ctbl = version_table(db.WebPages)
+				ctbl = version_table(db.WebPages.__table__)
 
 				# Allow ids that only exist in the history table by falling back to a
 				# history-table query if the main table doesn't have the ID.
@@ -431,7 +431,7 @@ def exposed_purge_invalid_url_history():
 	'''
 
 	with db.session_context() as sess:
-		ctbl = version_table(db.WebPages)
+		ctbl = version_table(db.WebPages.__table__)
 		for ruleset in WebMirror.rules.load_rules():
 
 			if ruleset['netlocs'] and ruleset['badwords']:

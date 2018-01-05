@@ -66,7 +66,7 @@ def view():
 
 def do_history_delete(versions, version, delete_id, delete):
 
-	ctbl = version_table(db.WebPages)
+	ctbl = version_table(db.WebPages.__table__)
 
 	if delete != "True":
 		return render_template('error.html', title = 'Error when deleting!', message = "Delete param not true?")
@@ -130,7 +130,7 @@ def view_history():
 
 	versions = []
 
-	ctbl = version_table(db.WebPages)
+	ctbl = version_table(db.WebPages.__table__)
 
 
 	versions = g.session.query(ctbl.c.id, ctbl.c.state, ctbl.c.fetchtime, ctbl.c.transaction_id) \
@@ -201,7 +201,7 @@ def render():
 
 		print("Historical row id: ", rid, tid)
 
-		ctbl = version_table(db.WebPages)
+		ctbl = version_table(db.WebPages.__table__)
 
 		rows = g.session.query(ctbl.c.title, ctbl.c.content) \
 			.filter(ctbl.c.id == rid)                        \

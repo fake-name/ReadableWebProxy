@@ -111,7 +111,7 @@ def sync_raw_with_filesystem():
 
 def sync_filtered_with_filesystem():
 	tgtpath = settings.RESOURCE_DIR
-	ctbl = version_table(db.RawWebPages)
+	ctbl = version_table(db.RawWebPages.__table__)
 
 	sess = db.get_db_session()
 

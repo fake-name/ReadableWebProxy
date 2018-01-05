@@ -22,7 +22,7 @@ from sqlalchemy_continuum.utils import version_table
 
 
 # # # Do the delete from the versioning table now.
-# ctbl = version_table(db.WebPages)
+# ctbl = version_table(db.WebPages.__table__)
 # loc2 = and_(
 # 		ctbl.c.netloc.in_(ruleset['netlocs']),
 # 		or_(*(ctbl.c.url.like("%{}%".format(badword)) for badword in ruleset['badwords']))
@@ -151,7 +151,7 @@ class DbFlattener(object):
 		id of the next transaction, so the history linked list works correctly.
 		'''
 
-		ctbl = version_table(db.WebPages)
+		ctbl = version_table(db.WebPages.__table__)
 
 		rows.sort(reverse=True, key=lambda x: (x.id, x.transaction_id, x.end_transaction_id))
 		end_transaction_id = None
@@ -171,7 +171,7 @@ class DbFlattener(object):
 
 
 	def truncate_url_history(self, sess, url):
-		ctbl = version_table(db.WebPages)
+		ctbl = version_table(db.WebPages.__table__)
 
 		items = sess.query(ctbl) \
 			.filter(ctbl.c.url == url) \

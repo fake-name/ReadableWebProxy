@@ -25,7 +25,6 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import outerjoin
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
-from sqlalchemy_continuum.utils import version_table
 
 
 

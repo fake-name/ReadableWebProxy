@@ -254,7 +254,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if not settings.DO_VERSIONING:
 			return 99
 
-		ctbl = version_table(db.WebPages)
+		ctbl = version_table(db.WebPages.__table__)
 
 		count = self.db_sess.query(ctbl) \
 			.filter(ctbl.c.url == url)   \

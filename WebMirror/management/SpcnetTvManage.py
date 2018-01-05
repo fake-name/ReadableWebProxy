@@ -43,7 +43,7 @@ def delete_internal(sess, ids):
 		print("No rows needing deletion.")
 		return
 
-	ctbl = version_table(db.WebPages)
+	ctbl = version_table(db.WebPages.__table__)
 	chunk_size = 5000
 	for chunk_idx in range(0, len(ids), chunk_size):
 		chunk = ids[chunk_idx:chunk_idx+chunk_size]
@@ -93,7 +93,7 @@ def exposed_delete_spcnet_invalid_url_pages():
 	sess = db.get_db_session()
 	tables = [
 		db.WebPages.__table__,
-		version_table(db.WebPages)
+		version_table(db.WebPages.__table__)
 	]
 
 	for ctbl in tables:

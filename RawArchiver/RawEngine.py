@@ -191,7 +191,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		return pgctnt, outname+newext, mime if mime else "application/octet-stream"
 
 	def checkHaveHistory(self, url):
-		ctbl = version_table(self.db.RawWebPages)
+		ctbl = version_table(self.db.RawWebPages.__table__)
 
 		count = self.db_sess.query(ctbl) \
 			.filter(ctbl.c.url == url)   \

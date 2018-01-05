@@ -84,7 +84,7 @@ def exposed_purge_raw_invalid_urls_from_history():
 	sess1 = db.get_db_session(postfix='iter_sess')
 	sess2 = db.get_db_session(postfix='delete_sess')
 
-	ctbl = version_table(db.RawWebPages)
+	ctbl = version_table(db.RawWebPages.__table__)
 
 	print("Loading files from database...")
 	# spinner1 = Spinner()

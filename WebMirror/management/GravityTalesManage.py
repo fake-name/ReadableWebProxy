@@ -42,7 +42,7 @@ def exposed_delete_gravitytales_bot_blocked_pages():
 	sess = db.get_db_session()
 	tables = [
 		db.WebPages.__table__,
-		version_table(db.WebPages)
+		version_table(db.WebPages.__table__)
 	]
 
 	for ctbl in tables:

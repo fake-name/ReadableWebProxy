@@ -14,7 +14,6 @@ import urllib.parse
 from sqlalchemy import and_
 from sqlalchemy import or_
 import sqlalchemy.exc
-from sqlalchemy_continuum.utils import version_table
 
 if __name__ == "__main__":
 	import logSetup
