@@ -364,7 +364,8 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 					errcontent = e.read()
 					if b'This process is automatic. Your browser will redirect to your requested content shortly.' in errcontent:
 						self.log.warning("Cloudflare failure! Doing automatic step-through.")
-						self.stepThroughCloudFlare(requestedUrl, titleNotContains="Just a moment...")
+						raise exceptions.CloudFlareWrapper("WAF Shit")
+
 			except UnicodeEncodeError:
 				self.log.critical("Unrecoverable Unicode issue retreiving page - %s", requestedUrl)
 				for line in traceback.format_exc().split("\n"):
@@ -399,12 +400,8 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 			if pghandle != None:
 				self.log.info("Request for URL: %s succeeded at %s On Attempt %s. Recieving...", pgreq.get_full_url(), time.ctime(time.time()), retryCount)
 				pgctnt = self.__retreiveContent(pgreq, pghandle, callBack)
-				
-				if "sucuri_cloudproxy_js=" in pgctnt:
-					self.stepThroughCloudFlare(requestedUrl, titleNotContains="You are being redirected...")
-					pgctnt = False
-					# retryCount = retryCount - 1
-				
+
+
 				# if __retreiveContent did not return false, it managed to fetch valid results, so break
 				if pgctnt != False:
 					break
@@ -427,13 +424,20 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 
 		try:
 			content, handle = self.getpage(itemUrl, returnMultiple=True)
-		except:
+		except exceptions.CloudFlareWrapper:
 			print("Failure?")
 			if self.rules['cloudflare']:
 				if not self.stepThroughCloudFlare(itemUrl, titleNotContains='Just a moment...'):
 					raise Exceptions.FetchFailureError("Could not step through cloudflare!")
 				# Cloudflare cookie set, retrieve again
 				content, handle = self.getpage(itemUrl, returnMultiple=True)
+
+		except exceptions.SucuriWrapper:
+			if self.rules['cloudflare']:
+				if not self.stepThroughCloudFlare(itemUrl, titleNotContains="You are being redirected..."):
+					raise Exceptions.FetchFailureError("Could not step through Sucuri WAF bullshit!")
+				content, handle = self.getpage(itemUrl, returnMultiple=True)
+
 			else:
 				raise
 
@@ -662,6 +666,8 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 			else:
 				self.log.info("Compression type = %s. Content Size compressed = %0.3fK. Decompressed = %0.3fK. File type: %s.", compType, preDecompSize, decompSize, cType)
 
+			if b"sucuri_cloudproxy_js=" in pgctnt:
+				raise exceptions.SucuriWrapper("WAF Shit")
 			pgctnt = self.__decodeTextContent(pgctnt, cType)
 
 			return pgctnt

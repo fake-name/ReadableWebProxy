@@ -108,7 +108,7 @@ class TestChromium(unittest.TestCase):
 		self.mock_server.shutdown()
 
 		# Hacky force-close of the chromium interface
-		self.wg.close_chromium()
+		# self.wg.close_chromium()
 		del self.wg
 
 	def test_fetch_1(self):
