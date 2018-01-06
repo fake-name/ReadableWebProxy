@@ -260,7 +260,7 @@ class WebGetPjsMixin(object):
 
 
 		try:
-			WebDriverWait(self.pjs_driver, 20).until(condition)
+			WebDriverWait(self.pjs_driver, 45).until(condition)
 			success = True
 			self.log.info("Successfully accessed main page!")
 		except TimeoutException:

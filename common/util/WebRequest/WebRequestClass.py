@@ -122,7 +122,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 
 	# creds is a list of 3-tuples that gets inserted into the password manager.
 	# it is structured [(top_level_url1, username1, password1), (top_level_url2, username2, password2)]
-	def __init__(self, creds=None, logPath="Main.WebRequest", cookie_lock=None,  cloudflare=False, use_socks=False, alt_cookiejar=None):
+	def __init__(self, creds=None, logPath="Main.WebRequest", cookie_lock=None,  cloudflare=True, use_socks=False, alt_cookiejar=None):
 		super().__init__()
 
 		self.rules = {}
@@ -284,7 +284,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 
 		return pgctnt, hName, mime
 
-	def getpage(self, requestedUrl, **kwargs):
+	def __getpage(self, requestedUrl, **kwargs):
 		self.log.info("Fetching content at URL: %s", requestedUrl)
 
 		# strip trailing and leading spaces.
@@ -341,6 +341,10 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 				pghandle = self.opener.open(pgreq, timeout=30)					# Get Webpage
 				# print("Gotpage")
 
+			except Exceptions.GarbageSiteWrapper as e:
+				print("garbage site:")
+				raise e
+				
 			except urllib.error.HTTPError as e:								# Lotta logging
 				self.log.warning("Error opening page: %s at %s On Attempt %s.", pgreq.get_full_url(), time.ctime(time.time()), retryCount)
 				self.log.warning("Error Code: %s", e)
@@ -364,7 +368,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 					errcontent = e.read()
 					if b'This process is automatic. Your browser will redirect to your requested content shortly.' in errcontent:
 						self.log.warning("Cloudflare failure! Doing automatic step-through.")
-						raise exceptions.CloudFlareWrapper("WAF Shit")
+						raise Exceptions.CloudFlareWrapper("WAF Shit")
 
 			except UnicodeEncodeError:
 				self.log.critical("Unrecoverable Unicode issue retreiving page - %s", requestedUrl)
@@ -377,7 +381,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 				self.log.critical("	binaryForm:   '%s'", binaryForm)
 
 				break
-
+				
 			except Exception:
 				errored = True
 				#traceback.print_exc()
@@ -420,26 +424,33 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 		else:
 			return pgctnt
 
-	def getItem(self, itemUrl):
-
+	def getpage(self, requestedUrl, *args, **kwargs):
 		try:
-			content, handle = self.getpage(itemUrl, returnMultiple=True)
-		except exceptions.CloudFlareWrapper:
+			return self.__getpage(requestedUrl, *args, **kwargs)
+			
+		except Exceptions.CloudFlareWrapper:
 			print("Failure?")
 			if self.rules['cloudflare']:
-				if not self.stepThroughCloudFlare(itemUrl, titleNotContains='Just a moment...'):
+				if not self.stepThroughCloudFlare(requestedUrl, titleNotContains='Just a moment...'):
 					raise Exceptions.FetchFailureError("Could not step through cloudflare!")
 				# Cloudflare cookie set, retrieve again
-				content, handle = self.getpage(itemUrl, returnMultiple=True)
-
-		except exceptions.SucuriWrapper:
-			if self.rules['cloudflare']:
-				if not self.stepThroughCloudFlare(itemUrl, titleNotContains="You are being redirected..."):
-					raise Exceptions.FetchFailureError("Could not step through Sucuri WAF bullshit!")
-				content, handle = self.getpage(itemUrl, returnMultiple=True)
-
+				return self.__getpage(requestedUrl, *args, **kwargs)
+				
 			else:
 				raise
+
+		except Exceptions.SucuriWrapper:
+			if self.rules['cloudflare']:
+				if not self.stepThroughCloudFlare(requestedUrl, titleNotContains="You are being redirected..."):
+					raise Exceptions.FetchFailureError("Could not step through Sucuri WAF bullshit!")
+				return self.__getpage(requestedUrl, *args, **kwargs)
+			else:
+				print("not handled?")
+				raise
+
+	def getItem(self, itemUrl):
+
+		content, handle = self.getpage(itemUrl, returnMultiple=True)
 
 		if not content or not handle:
 			raise urllib.error.URLError("Failed to retreive file from page '%s'!" % itemUrl)
@@ -667,13 +678,18 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 				self.log.info("Compression type = %s. Content Size compressed = %0.3fK. Decompressed = %0.3fK. File type: %s.", compType, preDecompSize, decompSize, cType)
 
 			if b"sucuri_cloudproxy_js=" in pgctnt:
-				raise exceptions.SucuriWrapper("WAF Shit")
+				raise Exceptions.SucuriWrapper("WAF Shit")
 			pgctnt = self.__decodeTextContent(pgctnt, cType)
 
 			return pgctnt
 
+
+		except Exceptions.SucuriWrapper:
+			print("garbage site:")
+			raise 
+				
+
 		except:
-			print("pghandle = ", pghandle)
 
 			self.log.error(sys.exc_info())
 			traceback.print_exc()
@@ -684,7 +700,6 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 				self.log.critical("Exiting")
 			except:
 				self.log.critical("And the URL could not be printed due to an encoding error")
-			print()
 			self.log.error(pghandle)
 			time.sleep(self.retryDelay)
 
@@ -839,6 +854,6 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 	def stepThroughCloudFlare(self, *args, **kwargs):
 		# Shim to the underlying web browser of choice
 
-		self.stepThroughCloudFlare_pjs(*args, **kwargs)
+		return self.stepThroughCloudFlare_pjs(*args, **kwargs)
 
 
