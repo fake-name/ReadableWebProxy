@@ -145,7 +145,7 @@ class NuResolvedOutbound(common.db_base.Base):
 
 	fetched_on       = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 
-	# disabled         = Column(Boolean)
+	disabled         = Column(Boolean, default=False)
 
 	__table_args__ = (
 		UniqueConstraint('parent', 'client_id', 'client_key', 'actual_target'),

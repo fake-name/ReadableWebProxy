@@ -30,9 +30,9 @@ scrapePlugins = {
 	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                      minutes(10)),
 	6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                    minutes(60)),
 
-	5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                            days(7)),
+	5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                              days(7)),
 	7  : (WebMirror.management.FeedDbManage.RssFunctionSaver,                        hours(12)),
-	8  : (Misc.HistoryAggregator.Consolidate.TransactionTruncator,                   hours(12)),
+	8  : (Misc.HistoryAggregator.Consolidate.TransactionTruncator,                 minutes(20)),
 
 }
 

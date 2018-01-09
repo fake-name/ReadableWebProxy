@@ -25,6 +25,9 @@ from WebMirror.OutputFilters.util.MessageConstructors import fix_string
 from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
+BAD_RESOLVES = [
+	'doubleclick.net'
+]
 
 
 # Remove blogspot garbage subdomains from the TLD (if present)
@@ -302,6 +305,9 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				if "novelupdates" in netloc:
 					self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
 					return True
+				if any([tmp in respurl for tmp in BAD_RESOLVES]):
+					self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)
+					return True
 
 
 				have = self.db_sess.query(db.NuReleaseItem)                                    \
@@ -360,7 +366,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		for valid in have.all():
 			if valid.validated is False:
 				assert len(list(valid.resolved)) >= 3
-				matches = urls_the_same([tmp.actual_target for tmp in valid.resolved])
+				matches = urls_the_same([tmp.actual_target for tmp in valid.resolved if not tmp.disabled])
 				if matches:
 					# Since all the URLs match, just use one of them.
 					valid.actual_target = valid.resolved[0].actual_target
@@ -386,7 +392,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 							oldest_time = lookup.fetched_on
 					if oldest_row:
 						self.log.info("Deleting row with ID: %s", oldest_row.id)
-						self.db_sess.delete(oldest_row)
+						oldest_row.disabled = True
 
 
 					self.mon_con.incr('invalidated', 1)

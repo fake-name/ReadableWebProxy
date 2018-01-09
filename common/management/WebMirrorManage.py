@@ -805,6 +805,15 @@ def exposed_fix_missing_history():
 	'''
 	Misc.HistoryAggregator.Consolidate.fix_missing_history()
 
+def exposed_truncate_transaction_table():
+	'''
+	Truncate the db versioning table.
+	'''
+	trunc = Misc.HistoryAggregator.Consolidate.TransactionTruncator()
+	print("Truncator: ", trunc)
+	trunc.truncate_transaction_table()
+
+
 def exposed_flatten_history():
 	'''
 	Flatten the page change history.

@@ -56,11 +56,12 @@ class TransactionTruncator(object):
 	def truncate_transaction_table(self):
 		with db.session_context() as sess:
 			self.qlog.info("Deleting items in transaction table")
-			sess.execute("""
-				DELETE FROM transaction;
-				""")
+			sess.execute("""TRUNCATE transaction;""")
 			sess.execute("COMMIT;")
-
+			self.qlog.info("Vacuuming table")
+			sess.execute("""VACUUM VERBOSE transaction;""")
+			sess.execute("COMMIT;")
+			self.qlog.info("Table truncated!")
 
 	def _go(self):
 		self.truncate_transaction_table()

@@ -74,6 +74,7 @@ def upgrade():
 
 	print("Setting value for new column")
 	sess.query(NuReleaseItem).update({"first_seen" : datetime.datetime.min})
+	sess.commit()
 
 	print("Setting nullability")
 	op.alter_column('nu_release_item', 'first_seen',
