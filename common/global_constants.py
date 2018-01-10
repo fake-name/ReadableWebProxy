@@ -42,6 +42,7 @@ GLOBAL_BAD_URLS = [
 			'www.tumblr.com/reblog/',
 
 			'www.paypalobjects.com',
+			'attorneyking.pro',    # Wat
 
 			# Tumblr can seriously go fuck itself with a rusty stake
 			'tumblr.com/widgets/',
@@ -146,7 +147,12 @@ RSS_SKIP_FILTER = [
 	'#comment-',
 	'?showComment=',
 
-
+	# Spanish retranslators.
+	'inmortallegends.blogspot.com.es',
+	'dollstranslations.blogspot.com.es',
+	'slaverod.com'
+	'spanishtraslation.wordpress.com',
+	'noveligeras.wordpress.com',
 
 	# WTF is this even from?
 	'www.miforcampuspolice.com',

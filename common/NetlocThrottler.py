@@ -12,7 +12,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 	def __init__(self):
 		super().__init__()
 
-		self.accumulator_min = 5
+		self.accumulator_min = 3
 		self.accumulator_max =  500
 		self.url_throttler = {}
 
@@ -76,7 +76,9 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		ret = []
 		for item in self.url_throttler.values():
 			try:
-				while item['active_fetches'] <= item['status_accumulator']:
+				# Allow unlimited fetching if the site isn't erroring at all
+				while (item['active_fetches'] <= item['status_accumulator'] or 
+						item['status_accumulator'] == self.accumulator_max - 1):
 					ret.append(item['job_queue'].get(block=False))
 					item['active_fetches'] += 1
 					self.total_queued -= 1

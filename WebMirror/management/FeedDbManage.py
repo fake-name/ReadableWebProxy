@@ -80,6 +80,7 @@ def update_func(sess, feed_name, fcont):
 
 		print("	Func: ", res.get_func())
 	else:
+		assert feed_name, "Null feed names not allowed."
 		new = db.RssFeedEntry(
 				version      = 1,
 				feed_name    = feed_name,
