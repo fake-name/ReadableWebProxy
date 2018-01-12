@@ -78,7 +78,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 			try:
 				# Allow unlimited fetching if the site isn't erroring at all
 				while (item['active_fetches'] <= item['status_accumulator'] or 
-						item['status_accumulator'] == self.accumulator_max - 1):
+						item['status_accumulator'] >= self.accumulator_max - 2):
 					ret.append(item['job_queue'].get(block=False))
 					item['active_fetches'] += 1
 					self.total_queued -= 1

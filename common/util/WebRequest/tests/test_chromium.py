@@ -125,7 +125,7 @@ class TestChromium(unittest.TestCase):
 	def test_fetch_chromium_2(self):
 		page, fname, mtype = self.wg.getItemChromium("http://localhost:{}/raw-txt".format(self.mock_server_port))
 		self.assertEqual(fname, 'raw-txt')
-		self.assertEqual(mtype, 'text/html')  # I'm not properly retreiving the mimetype from chromium
+		self.assertEqual(mtype, 'text/html')  # I'm not properly retrieving the mimetype from chromium
 		self.assertEqual(page, 'Root OK?')
 
 	def test_fetch_chromium_3(self):

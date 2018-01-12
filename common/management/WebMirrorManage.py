@@ -794,7 +794,7 @@ def exposed_unfuck_dropped_feed_name_lut():
 def exposed_fetch_other_feed_sources():
 	'''
 	Walk the listed pages for both AhoUpdates and NovelUpdates,
-	retreiving a list of the translators from each.
+	retrieving a list of the translators from each.
 	'''
 	WebMirror.SiteSync.fetch.fetch_other_sites()
 
@@ -873,6 +873,7 @@ def exposed_drop_priorities():
 		start = start - (start % step)
 
 		changed = 0
+		changed_tot = 0
 		for idx in range(start, stop, step):
 			try:
 				# SQL String munging! I'm a bad person!
@@ -884,8 +885,9 @@ def exposed_drop_priorities():
 
 				processed  = idx - start
 				total_todo = stop - start
-				print('\r%10i, %10i, %7.4f, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount), end="", flush=True)
+				print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
 				changed += have.rowcount
+				changed_tot += have.rowcount
 				if changed > step:
 					print("Committing (%s changed rows)...." % changed, end=' ')
 					sess.commit()

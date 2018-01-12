@@ -99,14 +99,14 @@ class GDocExtractor(object):
 		try:
 			arch, fName = self.wg.getFileAndName(self.url, addlHeaders={'Referer': self.refererUrl})
 		except IndexError:
-			print("ERROR: Failure retreiving page!")
+			print("ERROR: Failure retrieving page!")
 			return None, []
 
 		baseName = fName.split(".")[0]
 
 		if not isinstance(arch, bytes):
 			if 'You need permission' in arch or 'Sign in to continue to Docs':
-				self.log.critical("Retreiving zip archive failed?")
+				self.log.critical("Retrieving zip archive failed?")
 				self.log.critical("Retreived content type: '%s'", type(arch))
 				raise TypeError("Cannot access document? Is it protected?")
 			else:
@@ -196,7 +196,7 @@ class GFileExtractor(object):
 		try:
 			content = self.wg.getpage(self.url)
 		except IndexError:
-			print("ERROR: Failure retreiving page!")
+			print("ERROR: Failure retrieving page!")
 			return None, None, None
 
 
@@ -223,7 +223,7 @@ class GFileExtractor(object):
 		try:
 			file, fName, mType = self.getItem(fileUrl, addlHeaders={'Referer': self.refererUrl})
 		except IndexError:
-			self.log.error("ERROR: Failure retreiving page!")
+			self.log.error("ERROR: Failure retrieving page!")
 			return None, None, None
 
 		if title not in fName:

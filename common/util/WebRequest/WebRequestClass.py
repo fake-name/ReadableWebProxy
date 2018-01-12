@@ -220,7 +220,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 			except ValueError:
 				if attempts < 1:
 					attempts += 1
-					self.log.error("JSON Parsing issue retreiving content from page!")
+					self.log.error("JSON Parsing issue retrieving content from page!")
 					for line in traceback.format_exc().split("\n"):
 						self.log.error("%s", line.rstrip())
 					self.log.error("Retrying!")
@@ -344,7 +344,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 			except Exceptions.GarbageSiteWrapper as e:
 				print("garbage site:")
 				raise e
-				
+
 			except urllib.error.HTTPError as e:								# Lotta logging
 				self.log.warning("Error opening page: %s at %s On Attempt %s.", pgreq.get_full_url(), time.ctime(time.time()), retryCount)
 				self.log.warning("Error Code: %s", e)
@@ -371,7 +371,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 						raise Exceptions.CloudFlareWrapper("WAF Shit")
 
 			except UnicodeEncodeError:
-				self.log.critical("Unrecoverable Unicode issue retreiving page - %s", requestedUrl)
+				self.log.critical("Unrecoverable Unicode issue retrieving page - %s", requestedUrl)
 				for line in traceback.format_exc().split("\n"):
 					self.log.critical("%s", line.rstrip())
 				self.log.critical("Parameters:")
@@ -381,7 +381,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 				self.log.critical("	binaryForm:   '%s'", binaryForm)
 
 				break
-				
+
 			except Exception:
 				errored = True
 				#traceback.print_exc()
@@ -427,7 +427,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 	def getpage(self, requestedUrl, *args, **kwargs):
 		try:
 			return self.__getpage(requestedUrl, *args, **kwargs)
-			
+
 		except Exceptions.CloudFlareWrapper:
 			print("Failure?")
 			if self.rules['cloudflare']:
@@ -435,7 +435,7 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 					raise Exceptions.FetchFailureError("Could not step through cloudflare!")
 				# Cloudflare cookie set, retrieve again
 				return self.__getpage(requestedUrl, *args, **kwargs)
-				
+
 			else:
 				raise
 
@@ -686,8 +686,8 @@ class WebGetRobust(PhantomJSMixin.WebGetPjsMixin, ChromiumMixin.WebGetCrMixin):
 
 		except Exceptions.SucuriWrapper:
 			print("garbage site:")
-			raise 
-				
+			raise
+
 
 		except:
 
