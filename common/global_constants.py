@@ -153,6 +153,7 @@ RSS_SKIP_FILTER = [
 	'slaverod.com'
 	'spanishtraslation.wordpress.com',
 	'noveligeras.wordpress.com',
+	'odiseafinal.blogspot.com',
 
 	# WTF is this even from?
 	'www.miforcampuspolice.com',

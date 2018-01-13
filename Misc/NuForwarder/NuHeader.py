@@ -26,7 +26,8 @@ from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
 BAD_RESOLVES = [
-	'doubleclick.net'
+	'doubleclick.net',
+	'm.wuxiaworld.com',  # Fucking mobile sites
 ]
 
 
@@ -37,7 +38,18 @@ def urls_the_same(url_list):
 		p = urllib.parse.urlparse(url)
 		f = (p[0], p[1].split(".blogspot.")[0], p[2], p[3], p[4])
 		fixed = urllib.parse.urlunsplit(f)
+
+		# Feedburner is a bunch of fucktards, and really REALLY want to know
+		# who you are and where you came from. Fuck that.
+		fixed = fixed.split('?utm_source=feedburner')[0]
+		fixed = fixed.split('#utm_source=feedburner')[0]
+
+		# Ignore http/https differences
+		fixed = fixed.replace("http://", 'https://')
+
 		fixed_urls.append(fixed)
+
+	pprint.pprint(fixed_urls)
 
 	return all([fixed_urls[0] == tmp for tmp in fixed_urls])
 
@@ -305,9 +317,16 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				if "novelupdates" in netloc:
 					self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
 					return True
+
 				if any([tmp in respurl for tmp in BAD_RESOLVES]):
 					self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)
 					return True
+
+				if 'm.wuxiaworld.com' in respurl:
+					respurl = respurl.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
+
+				if '/?utm_source=feedburner' in respurl:
+					respurl = respurl.split('/?utm_source=feedburner')[0] + "/"
 
 
 				have = self.db_sess.query(db.NuReleaseItem)                                    \
@@ -315,6 +334,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
 					.filter(db.NuReleaseItem.referrer==new['extradat']['referrer'])            \
 					.scalar()
+
 				if not have:
 					self.log.error("Base row deleted from resolve?")
 					return
@@ -655,13 +675,31 @@ def do_schedule(scheduler):
 	exec_at = datetime.datetime.now() + datetime.timedelta(seconds=5)
 	schedule_next_exec(scheduler, exec_at)
 
+def test_all_the_same():
+	set1 = [
+			'http://jigglypuffsdiary.com/gk/goblin-kingdom-volume-3-the-age-of-warlords-chapter-158-maneuvering-1-2/',
+			'http://jigglypuffsdiary.com/gk/goblin-kingdom-volume-3-the-age-of-warlords-chapter-158-maneuvering-1-2/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+JigglypuffsDiary+%28Jigglypuff%27s+Diary%29',
+			'http://jigglypuffsdiary.com/gk/goblin-kingdom-volume-3-the-age-of-warlords-chapter-158-maneuvering-1-2/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+JigglypuffsDiary+%28Jigglypuff%27s+Diary%29',
+		]
+
+	set2 = [
+			'http://jigglypuffsdiary.com/gk/goblin-kingdom-volume-3-the-age-of-warlords-chapter-158-confrontation-2-2/',
+			'http://jigglypuffsdiary.com/gk/goblin-kingdom-volume-3-the-age-of-warlords-chapter-158-confrontation-2-2/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+JigglypuffsDiary+%28Jigglypuff%27s+Diary%29',
+			'http://jigglypuffsdiary.com/gk/goblin-kingdom-volume-3-the-age-of-warlords-chapter-158-confrontation-2-2/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+JigglypuffsDiary+%28Jigglypuff%27s+Diary%29',
+		]
+	print("Set 1: ", urls_the_same(set1))
+	print("Set 2: ", urls_the_same(set2))
+
+
 if __name__ == '__main__':
 	import logSetup
 	logSetup.initLogging()
 
-	hdl = NuHeader()
-	hdl.run()
-	hdl.validate_probable_ok()
+	test_all_the_same()
 
-	ago = datetime.datetime.now() - datetime.timedelta(days=3)
-	hdl.transmit_since(ago)
+	# hdl = NuHeader()
+	# hdl.run()
+	# hdl.validate_probable_ok()
+
+	# ago = datetime.datetime.now() - datetime.timedelta(days=3)
+	# hdl.transmit_since(ago)
