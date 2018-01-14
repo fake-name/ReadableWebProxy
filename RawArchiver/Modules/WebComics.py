@@ -295,6 +295,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/trevor?q=character/trevor&q=character/',
 		'/dystopian-fashionista?q=comic/dystopian-fashionista&q=comic/',
 		'/topic/art?q=comic/topic/art&q=comic/',
+		'/length-matters&q=comic/length-matters&q=comic/',
 		'/topic/engineering?q=comic/topic/engineering&q=comic/',
 		'/topic/vancouver?q=comic/topic/vancouver&q=comic/',
 		'/general?q=forum/general&q=forum/general&q=forum/',
@@ -335,7 +336,13 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/comic/chap3/images/mrc/',
 		'www.userfriendly.org/cgi-bin/',
 		'www.gpf-comics.com/wikix/',
+
+		# Fucking forumns ruin everything.
+		'.keenspot.com/forum/',
+		'www.comedity.com/forums/',
 		'www.samandfuzzy.com/forum/',
+
+		'www.comedity.com/www.comedity.com/',
 	]
 
 	@classmethod
@@ -345,6 +352,12 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
 		if RawArchiver.ModuleBase.duplicate_path_fragments(url):
 			return False
+		if 'www.wastedtalent.ca' in url:
+			urlsplit = url.split("/")
+			if len(urlsplit) - len(set(urlsplit)) >= 2:
+				return False
+			if '?destination=' in url:
+				return False
 
 		nl = urllib.parse.urlparse(url).netloc
 

@@ -54,7 +54,8 @@ class MessageProcessor(object):
 			'outgoing_q'   : queue.Queue(),
 			'incoming_q'   : queue.Queue(),
 			'workers'      : [],
-			'dispatch_map' : cachetools.LRUCache(maxsize=25000),
+
+			'dispatch_map' : cachetools.TTLCache(maxsize=10000, ttl=hours(24)),
 
 			# The chunk structure is slightly annoying, so just limit to 50 partial message keys, and
 			# a TTL of 3 hours.
@@ -235,9 +236,13 @@ class MessageProcessor(object):
 
 		if 'sort_key' in job_data['jobmeta'] and job_data['jobmeta']['sort_key'] in self.worker_pools[worker_name]['dispatch_map']:
 			qname, started_at = self.worker_pools[worker_name]['dispatch_map'].pop(job_data['jobmeta']['sort_key'])
+			self.worker_pools[worker_name]['dispatch_map'][job_data['jobmeta']['sort_key']] = None
+			del self.worker_pools[worker_name]['dispatch_map'][job_data['jobmeta']['sort_key']]
+
 		elif 'qname' in job_data['jobmeta']:
 			qname = job_data['jobmeta']['qname']
 			started_at = None
+			self.log.warning("Missing sort key in jobmeta!")
 
 		elif 'sort_key' in job_data['jobmeta'] and not job_data['jobmeta']['sort_key'] in self.worker_pools[worker_name]['dispatch_map']:
 			self.log.error("Job sort key not in known table! Does the job predate the current execution session?")
@@ -302,13 +307,15 @@ class MessageProcessor(object):
 
 		self.log.info("Debugging RPC State")
 		for worker_name, worker_conf in self.worker_pools.items():
-			self.log.info("	Queue for %s -> %s/%s, pool: %s, chunk_cache: %s %s",
-				worker_name.ljust(30),
-				worker_conf['outgoing_q'].qsize(),
-				worker_conf['incoming_q'].qsize(),
-				len(worker_conf['dispatch_map']),
-				len(worker_conf['chunk_cache']),
-				[(len(tmp['chunks']), tmp['chunk-count']) for tmp in worker_conf['chunk_cache'].values() if tmp and 'chunks' in tmp and 'chunk-count' in tmp])
+			self.log.info("	Queue for {qname} -> {q_outgoing}/{q_incoming}, pool: {dispatch_map_sz}, chunk_cache: {chunks} {state_per_chunk}".format(
+						qname           = worker_name.ljust(30),
+						q_outgoing      = worker_conf['outgoing_q'].qsize(),
+						q_incoming      = worker_conf['incoming_q'].qsize(),
+						dispatch_map_sz = len(worker_conf['dispatch_map']),
+						chunks          = len(worker_conf['chunk_cache']),
+						state_per_chunk = [(len(tmp['chunks']), tmp['chunk-count']) for tmp in worker_conf['chunk_cache'].values() if tmp and 'chunks' in tmp and 'chunk-count' in tmp]
+					)
+				)
 
 		for interface_group, queue_dict in self.interface_dict.items():
 			if isinstance(queue_dict, dict):
