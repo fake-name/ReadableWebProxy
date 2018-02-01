@@ -5,6 +5,8 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
 git+https://github.com/fake-name/ChromeController.git
 
+webrequest
+
 pillow==5.0.0
 
 mprpc==0.1.16
