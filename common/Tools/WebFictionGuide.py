@@ -3,7 +3,7 @@ import itertools
 import pprint
 
 import common.LogBase
-import common.util.WebRequest
+import WebRequest
 import common.management.util
 
 
@@ -16,7 +16,7 @@ class WFGSeriesScraper(common.LogBase.LoggerMixin):
 	def __init__(self):
 		super().__init__()
 
-		self.wg = common.util.WebRequest.WebGetRobust()
+		self.wg = WebRequest.WebGetRobust()
 
 	def get_intermediate_listing(self):
 		ret = []
@@ -26,7 +26,7 @@ class WFGSeriesScraper(common.LogBase.LoggerMixin):
 			url = "http://webfictionguide.com/online-novels/page/{page_num}/".format(page_num=idx)
 			try:
 				soup = self.wg.getSoup(url)
-			except common.util.WebRequest.FetchFailureError:
+			except WebRequest.FetchFailureError:
 				continue
 
 			content_div = soup.find("div", class_="listings")
@@ -50,7 +50,7 @@ class WFGSeriesScraper(common.LogBase.LoggerMixin):
 
 		try:
 			soup = self.wg.getSoup(s_page_url)
-		except common.util.WebRequest.FetchFailureError:
+		except WebRequest.FetchFailureError:
 			return None
 
 		linkdiv = soup.find("div", class_="center")

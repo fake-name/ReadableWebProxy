@@ -7,7 +7,7 @@ import webcolors
 import urllib.parse
 import markdown
 import tinycss2
-import common.util.WebRequest
+import WebRequest
 import common.global_constants
 
 import common.util.urlFuncs as urlFuncs
@@ -314,7 +314,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		]
 
 		for item in hascss:
-			if item['style']:
+			if 'tony-yon-ka.blogspot.com' in self.pageUrl:
+					item['style'] = ""
+
+			elif item['style']:
 
 				try:
 					parsed_style = tinycss2.parse_declaration_list(item['style'])
@@ -455,7 +458,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 				continue
 
 			formatted = markdown.markdown(contentstr, extensions=["linkify"])
-			formatted = common.util.WebRequest.as_soup(formatted)
+			formatted = WebRequest.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()
 				formatted.body.unwrap()
@@ -492,9 +495,9 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			self.content = self.content[len(badxmlprefix):]
 
 
-		soup = common.util.WebRequest.as_soup(self.content)
+		soup = WebRequest.as_soup(self.content)
 		# try:
-		# 	soup = common.util.WebRequest.as_soup(self.content)
+		# 	soup = WebRequest.as_soup(self.content)
 		# except AttributeError as e:
 		# 	with open("badpage %s.html" % time.time(), "w") as fp:
 		# 		fp.write(self.content)

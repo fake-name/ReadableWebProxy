@@ -7,7 +7,7 @@ import io
 import logging
 
 import zipfile
-import common.util.WebRequest
+import WebRequest
 import mimetypes
 import urllib.parse
 import urllib.error
@@ -19,7 +19,7 @@ import common.util.urlFuncs as urlFuncs
 class GDocExtractor(object):
 
 	log = logging.getLogger("Main.Text.GDoc")
-	wg = common.util.WebRequest.WebGetRobust(logPath="Main.GDoc.Web")
+	wg = WebRequest.WebGetRobust(logPath="Main.GDoc.Web")
 
 	def __init__(self, targetUrl):
 
@@ -40,7 +40,7 @@ class GDocExtractor(object):
 		ctnt, handle = cls.wg.getpage(url, returnMultiple=True)
 
 		# Pull out the title for the disambiguation page.
-		soup = common.util.WebRequest.as_soup(ctnt)
+		soup = WebRequest.as_soup(ctnt)
 		title = soup.title.string
 
 		# Google drive supports a `read?{google doc path} mode. As such, we look at the actual URL,
@@ -145,7 +145,7 @@ class GDocExtractor(object):
 class GFileExtractor(object):
 
 	log = logging.getLogger("Main.Text.GFile")
-	wg = common.util.WebRequest.WebGetRobust(logPath="Main.GFile.Web")
+	wg = WebRequest.WebGetRobust(logPath="Main.GFile.Web")
 
 	def __init__(self, targetUrl):
 
@@ -237,7 +237,7 @@ class GFileExtractor(object):
 
 def makeDriveDisambiguation(urls, pageHeader):
 
-	soup = common.util.WebRequest.as_soup("")
+	soup = WebRequest.as_soup("")
 
 	tag = soup.new_tag('h3')
 	tag.string = 'Google Drive directory: %s' % pageHeader
@@ -252,8 +252,8 @@ def makeDriveDisambiguation(urls, pageHeader):
 
 
 def test():
-	import common.util.WebRequest
-	wg = common.util.WebRequest.WebGetRobust()
+	import WebRequest
+	wg = WebRequest.WebGetRobust()
 
 	# url = 'https://docs.google.com/document/d/1ljoXDy-ti5N7ZYPbzDsj5kvYFl3lEWaJ1l3Lzv1cuuM/preview'
 	# url = 'https://docs.google.com/document/d/17__cAhkFCT2rjOrJN1fK2lBdpQDSO0XtZBEvCzN5jH8/preview'

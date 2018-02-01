@@ -12,7 +12,7 @@ import traceback
 
 import common.util.urlFuncs as url_util
 import urllib.parse
-import common.util.WebRequest as WebRequest
+import WebRequest
 import bs4
 
 import WebMirror.processor.ProcessorBase
@@ -305,7 +305,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# # transferred content (e.g. is it an image/html page/binary file)
 	def fetch(self, preretrieved):
 
-		
+
 		if not preretrieved:
 			self.target_url = url_util.urlClean(self.target_url)
 			content, fName, mimeType = self.getItem(self.target_url)

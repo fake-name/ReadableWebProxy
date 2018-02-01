@@ -70,13 +70,10 @@ class RunInstance(object):
 			# This is because with 50 workers with a sleep-time of 5 seconds on job-miss,
 			# it was causing 100% CPU usage on the DB just for the getjob queries. (I think)
 			if not hadjob:
-				sleeptime = 10
-				self.log.info("Nothing for thread %s to do. Sleeping %s seconds.", self.num, sleeptime)
-				for _x in range(sleeptime):
-					time.sleep(1)
-					if runStatus.run_state.value != 1:
-						self.log.info("Thread %s saw exit flag while waiting for jobs. Runstate: %s", self.num, runStatus.run_state.value)
-						return
+				time.sleep(1)
+				if runStatus.run_state.value != 1:
+					self.log.info("Thread %s saw exit flag while waiting for jobs. Runstate: %s", self.num, runStatus.run_state.value)
+					return
 
 		if runStatus.run_state.value:
 			self.log.info("Thread %s restarting. Runstate: %s", self.num, runStatus.run_state.value)

@@ -13,7 +13,7 @@ import bs4
 import re
 import calendar
 import unshortenit
-import common.util.WebRequest
+import WebRequest
 import time
 import urllib.parse
 import json
@@ -204,7 +204,7 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		return msg
 
 	def processPage(self, content):
-		soup = common.util.WebRequest.as_soup(self.content)
+		soup = WebRequest.as_soup(self.content)
 
 		releases = []
 		for tweet in soup.find_all('li', attrs={"data-item-type":"tweet"}):
@@ -278,7 +278,7 @@ def test():
 	engine.dispatchRequest(testJobFromUrl('https://twitter.com/Baka_Tsuki'))
 
 
-	# import common.util.WebRequest as webfunc
+	# import WebRequest as webfunc
 
 	# wg = webfunc.WebGetRobust()
 	# proc = JapTemSeriesPageProcessor(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)

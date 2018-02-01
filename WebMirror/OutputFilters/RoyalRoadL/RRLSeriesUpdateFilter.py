@@ -18,7 +18,7 @@ import traceback
 import datetime
 import time
 import json
-import common.util.WebRequest
+import WebRequest
 import common.util.urlFuncs
 MIN_RATING = 5
 
@@ -138,7 +138,7 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, url, content):
 		print("processPage() call")
-		soup = common.util.WebRequest.as_soup(self.content)
+		soup = WebRequest.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.retrigger_pages(releases)

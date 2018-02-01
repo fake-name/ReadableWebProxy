@@ -7,7 +7,7 @@ runStatus.preloadDicts = False
 import WebMirror.PreProcessors.PreProcessorBase
 import urllib.parse
 import bs4
-import common.util.WebRequest
+import WebRequest
 
 
 
@@ -16,7 +16,7 @@ class JsRendererPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPre
 	loggerPath = "Main.Preprocessor.JsRenderer"
 
 	def preprocessContent(self, url, mimetype, contentstr):
-		soup = common.util.WebRequest.as_soup(contentstr)
+		soup = WebRequest.as_soup(contentstr)
 		text = soup.body.get_text(strip=True).strip()
 
 		if len(text) < 100 or True:

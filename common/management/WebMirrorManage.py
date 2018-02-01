@@ -38,7 +38,7 @@ import common.Exceptions
 import common.management.file_cleanup
 import common.management.util
 import common.global_constants
-import common.util.WebRequest as WebRequest
+import WebRequest
 
 import Misc.HistoryAggregator.Consolidate
 import Misc.NuForwarder.NuHeader

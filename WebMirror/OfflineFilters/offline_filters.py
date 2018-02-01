@@ -12,7 +12,7 @@ import runStatus
 import common.database as db
 import common.RunManager
 import common.get_rpyc
-import common.util.WebRequest
+import WebRequest
 from WebMirror.JobUtils import buildjob
 from WebMirror.OutputFilters.Nu import NuSeriesPageFilter
 
@@ -176,7 +176,7 @@ def exposed_process_nu_pages(transmit=True):
 	'''
 
 
-	wg = common.util.WebRequest.WebGetRobust()
+	wg = WebRequest.WebGetRobust()
 	sess = db.get_db_session()
 
 	if transmit == True:

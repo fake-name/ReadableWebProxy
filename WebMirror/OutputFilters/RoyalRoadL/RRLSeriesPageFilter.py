@@ -15,7 +15,7 @@ import calendar
 import datetime
 import time
 import json
-import common.util.WebRequest
+import WebRequest
 import os.path
 import bleach
 
@@ -275,7 +275,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if "<title>Not Found | RoyalRoadL</title>" in content:
 			return
 
-		soup = common.util.WebRequest.as_soup(self.content)
+		soup = WebRequest.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.sendReleases(releases)

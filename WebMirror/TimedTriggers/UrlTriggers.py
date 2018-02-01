@@ -4,7 +4,7 @@ import abc
 
 import WebMirror.rules
 import WebMirror.TimedTriggers.TriggerBase
-import common.util.WebRequest as WebRequest
+import WebRequest
 
 class UrlTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 

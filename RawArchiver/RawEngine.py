@@ -33,7 +33,7 @@ else:
 
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
-import common.util.WebRequest as WebRequest
+import WebRequest
 import common.util.DbCookieJar as dbCj
 
 import hashlib

@@ -14,7 +14,7 @@ import hashlib
 import os.path
 
 import traceback
-import common.util.WebRequest
+import WebRequest
 
 from WebMirror.processor.ProcessorBase import PageProcessor
 # import TextScrape.SiteArchiver
@@ -231,7 +231,7 @@ class GdocPageProcessor(PageProcessor):
 
 	def processGdocPage(self, url, content):
 		dummy_fName, content = content
-		soup = common.util.WebRequest.as_soup(content)
+		soup = WebRequest.as_soup(content)
 		urlFuncs.canonizeUrls(soup, url)
 
 		pgTitle, soup = self.cleanGdocPage(soup, url)

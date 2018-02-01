@@ -2,7 +2,7 @@
 import urllib.parse
 import urllib.error
 
-import common.util.WebRequest
+import WebRequest
 import common.LogBase
 import WebMirror.rules
 
@@ -11,7 +11,7 @@ class SiteSyncFetch(common.LogBase.LoggerMixin):
 
 	def __init__(self):
 		super().__init__()
-		self.wg = common.util.WebRequest.WebGetRobust()
+		self.wg = WebRequest.WebGetRobust()
 		self.log.info("Startup!")
 
 

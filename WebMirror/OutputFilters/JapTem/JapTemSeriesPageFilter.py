@@ -13,7 +13,7 @@ import bs4
 import re
 import calendar
 import datetime
-import common.util.WebRequest
+import WebRequest
 import time
 import urllib.parse
 import json
@@ -209,7 +209,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processPage(self, content):
 
-		soup = common.util.WebRequest.as_soup(self.content)
+		soup = WebRequest.as_soup(self.content)
 
 		for chunk in soup.find_all('li', class_='fanfic_title'):
 			try:
@@ -266,7 +266,7 @@ def test():
 	engine.dispatchRequest(testJobFromUrl('http://japtem.com/fanfic.php'))
 
 
-	# import common.util.WebRequest as webfunc
+	# import WebRequest as webfunc
 
 	# wg = webfunc.WebGetRobust()
 	# proc = JapTemSeriesPageProcessor(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)

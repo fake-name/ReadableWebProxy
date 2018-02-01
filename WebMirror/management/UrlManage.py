@@ -36,7 +36,7 @@ from config import C_RAW_RESOURCE_DIR
 import WebMirror.OutputFilters.rss.FeedDataParser
 
 import WebMirror.OutputFilters.util.feedNameLut
-import common.util.WebRequest
+import WebRequest
 
 
 
@@ -83,7 +83,7 @@ def exposed_fix_lndb_urls():
 		# 	root, _ = url.rsplit("/", 1)
 		# 	urls[root] = url
 
-		# wg = common.util.WebRequest.WebGetRobust()
+		# wg = WebRequest.WebGetRobust()
 
 		# lines = []
 		# for root, url in urls.items():
