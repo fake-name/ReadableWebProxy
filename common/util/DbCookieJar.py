@@ -144,7 +144,7 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 		self.__load_cookies()
 		self.__save_cookies()
-
+		self.session.commit()
 
 	def save(self, filename=None, ignore_discard=False, ignore_expires=False):
 		self.sync_cookies()

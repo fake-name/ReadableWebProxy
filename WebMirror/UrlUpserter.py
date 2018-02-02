@@ -13,6 +13,7 @@ import sys
 import queue
 
 import cachetools
+import tqdm
 
 # from pympler.tracker import SummaryTracker, summary, muppy
 # import tracemalloc
@@ -95,7 +96,7 @@ def resetInProgress():
 	sess = db.get_db_session()
 
 	commit_interval =  50000
-	step            = 250000
+	step            =  50000
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")
@@ -115,7 +116,7 @@ def resetInProgress():
 
 		changed = 0
 		tot_changed = 0
-		for idx in range(start, stop, step):
+		for idx in tqdm.tqdm(range(start, stop, step)):
 			try:
 				# SQL String munging! I'm a bad person!
 				# Only done because I can't easily find how to make sqlalchemy
@@ -133,9 +134,9 @@ def resetInProgress():
 											id <= {};""".format(idx, idx+step))
 				# print()
 
-				processed  = idx - start
-				total_todo = stop - start
-				print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
+				# processed  = idx - start
+				# total_todo = stop - start
+				# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
 				changed += have.rowcount
 				tot_changed += have.rowcount
 				if changed > commit_interval:

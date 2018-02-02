@@ -1,13 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
-import WebMirror.OutputFilters.FilterBase
-
-import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
-from WebMirror.OutputFilters.util.TitleParsers import extractTitle
 
 import bs4
 import re
@@ -15,9 +8,16 @@ import calendar
 import datetime
 import time
 import json
-import WebRequest
 import os.path
 import bleach
+
+import WebRequest
+
+import common.util.urlFuncs
+
+import WebMirror.OutputFilters.FilterBase
+import WebMirror.OutputFilters.util.TitleParsers as titleParsers
+import WebMirror.OutputFilters.util.MessageConstructors as msgpackers
 
 MIN_RATING = 2.5
 
@@ -216,7 +216,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 			chp_title = cname.get_text().strip()
 			# print("Chp title: '{}'".format(chp_title))
-			vol, chp, frag, post = extractTitle(chp_title + " " + title)
+			vol, chp, frag, _ = titleParsers.extractTitle(chp_title + " " + title)
 
 			raw_item = {}
 			raw_item['srcname']   = "RoyalRoadL"
@@ -234,7 +234,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			if not (item['vol'] or item['chp']):
 				missing_chap += 1
 
-		if len(raw_retval):
+		if raw_retval:
 			unnumbered = (missing_chap/len(raw_retval)) * 100
 			if (len(raw_retval) >= 5 and unnumbered > 80) or must_renumber:
 				if must_renumber:

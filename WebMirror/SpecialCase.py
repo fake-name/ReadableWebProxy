@@ -88,7 +88,7 @@ def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 		kwargs         = {'meta' : meta_dict},
 		additionalData = {},
 		postDelay      = 0,
-		serialize      = True,
+		serialize      = "QidianModule",
 	)
 
 	# print("Raw job:")
