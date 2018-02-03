@@ -525,7 +525,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 								raise
 
 						else:
-							self.new_job_queue.put(jobid)
+							self.new_job_queue.put((mode, jobid))
 							time.sleep(0.01)
 				except queue.Empty:
 					time.sleep(1)

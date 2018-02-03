@@ -18,6 +18,7 @@ badwords: [
 			'/comments/',
 			'/history/',
 			'lndb.info/javascript/',
+			'lndb.info/style/',
 			]
 
 

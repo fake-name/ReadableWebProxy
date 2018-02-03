@@ -61,6 +61,10 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 		pass
 
 	@classmethod
+	def is_disabled(cls, netloc, url):
+		return False
+
+	@classmethod
 	@abc.abstractmethod
 	def get_start_urls(cls):
 		pass

@@ -114,6 +114,15 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		return False
 
+	def outbound_job_disabled(self, netloc, joburl):
+
+		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+			if module.cares_about_url(joburl):
+				if module.is_disabled(netloc, joburl):
+					self.log.warn("Disabled fetching for URL: '%s' - %s", joburl, netloc)
+					return True
+		return False
+
 	def get_queue(self):
 		return self.normal_out_queue
 
@@ -376,8 +385,12 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 				# If we don't have a thread affinity, do distributed fetch.
 				# If we /do/ have a thread affinity, fetch locally.
+
 				if not self.outbound_job_wanted(netloc, joburl):
 					self.delete_job(rid, joburl)
+					continue
+				if self.outbound_job_disabled(netloc, joburl):
+					self.disable_job(rid, joburl)
 					continue
 
 				threadn = RawArchiver.misc.thread_affinity(joburl, 1)
@@ -402,6 +415,13 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.log.warning("Deleting job for url: '%s'", joburl)
 		cursor = self.db_interface.cursor()
 		cursor.execute("""DELETE FROM raw_web_pages WHERE raw_web_pages.id = %s AND raw_web_pages.url = %s;""", (rid, joburl))
+		self.db_interface.commit()
+
+
+	def disable_job(self, rid, joburl):
+		self.log.warning("Deleting job for url: '%s'", joburl)
+		cursor = self.db_interface.cursor()
+		cursor.execute("""UPDATE raw_web_pages SET state = %s WHERE raw_web_pages.id = %s AND raw_web_pages.url = %s;""", ('disabled', rid, joburl))
 		self.db_interface.commit()
 
 

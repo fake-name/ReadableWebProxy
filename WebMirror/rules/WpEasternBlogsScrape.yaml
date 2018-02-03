@@ -1603,6 +1603,8 @@ badwords: [
 
 		'/?profiletab=',
 		'/login?_next=',
+		'lightnovelstranslations.com/forum/ratethread.php',
+		'r.search.yahoo.com',
 	]
 
 compound_badwords: [

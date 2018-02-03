@@ -95,7 +95,7 @@ GLOBAL_BAD_URLS = [
 			'en.blog.wordpress.com',
 
 			'counter.yadro.ru',
-
+			'box5315.temp.domains',
 
 			'/js/js/',
 			'/css/css/',
