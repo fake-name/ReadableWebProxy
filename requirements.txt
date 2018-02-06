@@ -20,7 +20,7 @@ objgraph==3.3.0
 zerorpc==0.6.1
 cssutils==1.0.2
 tinycss2==0.6.1
-fontTools==3.21.2
+fontTools==3.22.0
 semantic==1.0.3
 fdict==0.8.1
 cachetools==2.0.1
@@ -28,7 +28,7 @@ bleach==2.1.2
 Jinja2==2.10
 
 pystuck==0.8.5
-cherrypy==13.1.0
+cherrypy==14.0.0
 
 psycopg2cffi==2.7.7 ; platform.python_implementation == 'PyPy'
 psycopg2==2.7.3.2; platform.python_implementation == 'CPython'
@@ -52,7 +52,7 @@ Flask==0.12.2
 Flask-DebugToolbar==0.10.1
 Flask-Login==0.4.1
 Flask-Babel==0.11.2
-selenium==3.8.1
+selenium==3.9.0
 webcolors==1.7
 pyparsing==2.2.0
 feedparser==5.2.1
