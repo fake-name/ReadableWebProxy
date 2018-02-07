@@ -49,7 +49,7 @@ def urls_the_same(url_list):
 
 		fixed_urls.append(fixed)
 
-	pprint.pprint(fixed_urls)
+	# pprint.pprint(fixed_urls)
 
 	return all([fixed_urls[0] == tmp for tmp in fixed_urls])
 
@@ -124,11 +124,9 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		self.log.info("Have %s recent items, %s long-term items to fetch", len(recentset), len(bulkset))
 		haveset   = bulkset + recentset
-		# haveset   = recentset
-
-
-
-		# haveset += moar
+		filtered = {tmp.id : tmp for tmp in haveset}
+		haveset = list(filtered.values())
+		self.log.info("Total items after filtering for uniqueness %s", len(haveset))
 
 		if not haveset:
 			self.log.info("No jobs to remote HEAD.")
