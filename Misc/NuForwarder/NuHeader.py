@@ -28,6 +28,7 @@ from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentP
 BAD_RESOLVES = [
 	'doubleclick.net',
 	'm.wuxiaworld.com',  # Fucking mobile sites
+	'www.webnovel.com/sw.js',
 ]
 
 
@@ -46,6 +47,9 @@ def urls_the_same(url_list):
 
 		# Ignore http/https differences
 		fixed = fixed.replace("http://", 'https://')
+
+		# And missing www.
+		fixed = fixed.replace("://www.", '://')
 
 		fixed_urls.append(fixed)
 
@@ -316,12 +320,16 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
 					return True
 
+				if 'm.wuxiaworld.com' in respurl:
+					respurl = respurl.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
+
+				if 'tseirptranslations.blogspot.com' in respurl:
+					respurl = respurl.replace('tseirptranslations.blogspot.com', 'tseirptranslations.com')
+
 				if any([tmp in respurl for tmp in BAD_RESOLVES]):
 					self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)
 					return True
 
-				if 'm.wuxiaworld.com' in respurl:
-					respurl = respurl.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
 
 				if '/?utm_source=feedburner' in respurl:
 					respurl = respurl.split('/?utm_source=feedburner')[0] + "/"
@@ -336,6 +344,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				if not have:
 					self.log.error("Base row deleted from resolve?")
 					return
+
 
 				new = db.NuResolvedOutbound(
 						client_id      = new['user'],
