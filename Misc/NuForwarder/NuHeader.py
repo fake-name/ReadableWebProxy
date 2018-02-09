@@ -418,7 +418,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 							oldest_row = lookup
 							oldest_time = lookup.fetched_on
 					if oldest_row:
-						self.log.info("Deleting row with ID: %s", oldest_row.id)
+						self.log.info("Deleting row with ID: %s (%s)", oldest_row.id, oldest_row.actual_target)
 						oldest_row.disabled = True
 
 
