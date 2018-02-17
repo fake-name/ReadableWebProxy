@@ -242,7 +242,7 @@ class MessageProcessor(object):
 		elif 'qname' in job_data['jobmeta']:
 			qname = job_data['jobmeta']['qname']
 			started_at = None
-			self.log.warning("Missing sort key in jobmeta!")
+			self.log.warning("Missing sort key in jobmeta. Have queue override: %s!", qname)
 
 		elif 'sort_key' in job_data['jobmeta'] and not job_data['jobmeta']['sort_key'] in self.worker_pools[worker_name]['dispatch_map']:
 			self.log.error("Job sort key not in known table! Does the job predate the current execution session?")

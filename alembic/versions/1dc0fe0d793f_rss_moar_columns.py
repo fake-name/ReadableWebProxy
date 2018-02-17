@@ -31,8 +31,6 @@ import sqlalchemy as sa
 from sqlalchemy import event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session as BaseSession, relationship
-from sqlalchemy.orm import joinedload
-
 
 from sqlalchemy import Table
 

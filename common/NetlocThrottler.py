@@ -9,14 +9,15 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 
 	loggerPath = "Main.RateLimiter"
 
-	def __init__(self):
+	def __init__(self, fifo_limit=None):
 		super().__init__()
 
+		self.fifo_limit      = fifo_limit
 		self.accumulator_min = 3
-		self.accumulator_max =  500
-		self.url_throttler = {}
+		self.accumulator_max = 500
+		self.url_throttler   = {}
 
-		self.total_queued = 0
+		self.total_queued    = 0
 
 		self.jobl = []
 
@@ -37,7 +38,11 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 			self.url_throttler[job_netloc]['status_accumulator'],
 			self.url_throttler[job_netloc]['active_fetches'])
 
-		self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
+		if self.fifo_limit is None or self.url_throttler[job_netloc]['job_queue'].qsize() < self.fifo_limit:
+			self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
+
+
+
 
 		self.total_queued += 1
 

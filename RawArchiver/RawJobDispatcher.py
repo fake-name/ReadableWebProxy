@@ -73,7 +73,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.jobs_out = 0
 		self.jobs_in = 0
 
-		self.ratelimiter = common.NetlocThrottler.NetlockThrottler()
+		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(fifo_limit = 1000 * 100)
 
 		self.db_interface = psycopg2.connect(
 				database = settings.DATABASE_DB_NAME,

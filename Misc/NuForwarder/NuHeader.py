@@ -108,20 +108,22 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			.filter(db.NuReleaseItem.validated == False)              \
 			.filter(db.NuReleaseItem.first_seen >= recent_d)          \
 			.filter(db.NuReleaseItem.fetch_attempts < 3)              \
+			.options(joinedload('resolved'))                          \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put*3))
+			.limit(max(100, put*10))
 
 
 		bulkq = self.db_sess.query(db.NuReleaseItem)                  \
 			.outerjoin(db.NuResolvedOutbound)                         \
 			.filter(db.NuReleaseItem.validated == False)              \
 			.filter(db.NuReleaseItem.fetch_attempts < 3)              \
+			.options(joinedload('resolved'))                          \
 			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 			.order_by(desc(db.NuReleaseItem.first_seen))              \
 			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put))
+			.limit(max(100, put*6))
 
 		bulkset   = bulkq.all()
 		recentset = recentq.all()
@@ -139,8 +141,18 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		# We pick a large number of items, and randomly choose one of them.
 		# This lets us weight the fetch preferentially to the recent items, but still
 		# have some variability.
+		# We prefer to fetch items that'll resolve as fast as possible.
+		preferred_2 = [tmp for tmp in haveset if len(tmp.resolved) == 2]
+		preferred_1 = [tmp for tmp in haveset if len(tmp.resolved) == 1]
+		fallback    = [tmp for tmp in haveset if len(tmp.resolved) == 0]
 
-		haveset = random.sample(haveset, min(put, len(haveset)))
+
+		haveset = random.sample(preferred_2, min(put, len(preferred_2)))
+		if len(haveset) < put:
+			haveset.extend(random.sample(preferred_1, min(put-len(haveset), len(preferred_1))))
+		if len(haveset) < put:
+			haveset.extend(random.sample(fallback, min(put-len(haveset), len(fallback))))
+
 
 		put = 0
 		active = set()
@@ -170,7 +182,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			have.fetch_attempts += 1
 			self.db_sess.commit()
 
-			self.log.info("Putting job for url '%s'", have.outbound_wrapper)
+			self.log.info("Putting job for url '%s', with %s resolves so far", have.outbound_wrapper, len(have.resolved))
 			self.log.info("Referring page '%s'", have.referrer)
 
 
@@ -190,40 +202,6 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				unique_id      = have.outbound_wrapper,
 				serialize      = 'Nu-Header',
 			)
-
-			# rval = random.random()
-			# if rval >= 0.5:
-			# 	raw_job = buildjob(
-			# 		module         = 'NUWebRequest',
-			# 		call           = 'getHeadTitlePhantomJS',
-			# 		dispatchKey    = "fetcher",
-			# 		jobid          = -1,
-			# 		args           = [have.outbound_wrapper, have.referrer],
-			# 		kwargs         = {},
-			# 		additionalData = {
-			# 			'mode'        : 'fetch',
-			# 			'wrapper_url' : have.outbound_wrapper,
-			# 			'referrer'    : have.referrer
-			# 			},
-			# 		postDelay      = 0,
-			# 		unique_id      = have.outbound_wrapper
-			# 	)
-			# else:
-			# 	raw_job = buildjob(
-			# 		module         = 'WebRequest',
-			# 		call           = 'getHeadTitleChromium',
-			# 		dispatchKey    = "fetcher",
-			# 		jobid          = -1,
-			# 		args           = [have.outbound_wrapper, have.referrer],
-			# 		kwargs         = {},
-			# 		additionalData = {
-			# 			'mode'        : 'fetch',
-			# 			'wrapper_url' : have.outbound_wrapper,
-			# 			'referrer'    : have.referrer
-			# 			},
-			# 		postDelay      = 0,
-			# 		unique_id      = have.outbound_wrapper
-			# 	)
 
 
 			self.rpc.put_job(raw_job)
@@ -271,8 +249,6 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		'''
 		self.check_open_rpc_interface()
 
-
-		errors = 0
 		while 1:
 			try:
 				new = self.rpc.get_job()
@@ -397,11 +373,9 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				if matches:
 					# Since all the URLs match, just use one of them.
 					valid.actual_target = valid.resolved[0].actual_target
-
-					if not valid.seriesname.endswith("..."):
-						new_items.append((valid.seriesname, valid.actual_target))
-						valid.validated = True
-						self.mon_con.incr('validated', 1)
+					new_items.append((valid.seriesname, valid.actual_target))
+					valid.validated = True
+					self.mon_con.incr('validated', 1)
 
 				else:
 					self.log.error("Invalid or not-matching URL set for wrapper!")
@@ -541,7 +515,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		self.db_sess.commit()
 
-	def check_probable_validate(self, row):
+	def review_probable_validated_row(self, row):
 		titles = [tmp.resolved_title for tmp in row.resolved]
 		tgts   = [tmp.actual_target for tmp in row.resolved]
 		if not all(titles):
@@ -573,7 +547,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		self.mon_con.incr('reviewed', 1)
 
-	def validate_probable_ok(self):
+	def review_probable_validated(self):
 		self.log.info("Doing optional validation")
 
 		new_items = self.db_sess.query(db.NuReleaseItem)           \
@@ -593,7 +567,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		self.log.info("%s items needing checking", unverified)
 
 		for row in new_items:
-			self.check_probable_validate(row)
+			self.review_probable_validated_row(row)
 
 		self.db_sess.commit()
 	def block_for_n_responses(self, resp_cnt):
@@ -620,7 +594,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			self.timestamp_validated()
 			self.fix_names()
 
-			self.validate_probable_ok()
+			self.review_probable_validated()
 
 			ago = datetime.datetime.now() - datetime.timedelta(days=3)
 			self.transmit_since(ago)
@@ -636,7 +610,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			self.timestamp_validated()
 			self.fix_names()
 
-			self.validate_probable_ok()
+			self.review_probable_validated()
 
 			ago = datetime.datetime.now() - datetime.timedelta(days=3)
 			self.transmit_since(ago)
@@ -706,7 +680,7 @@ if __name__ == '__main__':
 
 	# hdl = NuHeader()
 	# hdl.run()
-	# hdl.validate_probable_ok()
+	# hdl.review_probable_validated()
 
 	# ago = datetime.datetime.now() - datetime.timedelta(days=3)
 	# hdl.transmit_since(ago)

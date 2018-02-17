@@ -90,7 +90,7 @@ def utility_processor():
 		if then is None or then is False:
 			return "Never"
 
-		print("Then: ", then)
+		# print("Then: ", then)
 		now = datetime.datetime.now()
 		delta = now - then
 

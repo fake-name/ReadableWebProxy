@@ -536,9 +536,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 		resource = set(resource)
 
 		# print("Plain links: ")
-		# pprint.pprint(plain)
+		# print(plain)
 		# print("Resource links: ")
-		# pprint.pprint(resource)
+		# print(resource)
 
 		unfiltered = len(plain)+len(resource)
 
@@ -548,6 +548,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.log.info("Have %s plain, %s resource links before filtering", len(plain), len(resource))
 		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds, debug=debug)
 		resource = self.filterResourceLinks(job, resource, badwords, badcompounds, debug=debug)
+
+
+		# print("Filtered Plain links: ")
+		# print(plain)
+		# print("Filtered Resource links: ")
+		# print(resource)
 
 		filtered = len(plain)+len(resource)
 		self.log.info("Found %s links (%s before filtering)" % (filtered, unfiltered))

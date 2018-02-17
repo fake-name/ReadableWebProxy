@@ -28,6 +28,7 @@ from tzlocal import get_localzone
 import WebMirror.API
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
+from sqlalchemy.orm import joinedload
 
 
 
@@ -93,7 +94,12 @@ def get_nu_items(sess, selector):
 	new_items = new_items.order_by(desc(db.NuReleaseItem.first_seen))
 	new_items = new_items.limit(200).all()
 
-
+	have_dots = [tmp.seriesname for tmp in new_items if '...' in tmp.seriesname]
+	if have_dots:
+		print("Have dots:")
+		print()
+		print(have_dots)
+		print()
 	return new_items
 
 def toggle_row(sess, rid, oldv, newv):
@@ -201,6 +207,46 @@ def nu_view():
 	session.commit()
 	session.expire_all()
 	return response
+
+
+@app.route('/nu_heads/', methods=['GET'])
+def nu_heads():
+
+
+	g.session.expire_all()
+	g.session.commit()
+	g.session.expire_all()
+
+
+	new_items_q = g.session.query(db.NuReleaseItem)                  \
+			.filter(db.NuReleaseItem.reviewed == 'unverified')       \
+			.order_by(desc(db.NuReleaseItem.first_seen))             \
+
+	new_items_q = new_items_q.options(joinedload('resolved'))
+
+	print("Fetching items")
+	new_items = new_items_q.all()
+	print("Fetched %s items" % len(new_items))
+
+	new_items = [tmp for tmp in new_items if len(tmp.resolved)]
+	print("Fetched %s items with resolves" % len(new_items))
+
+	g.session.commit()
+
+	print("Rendering")
+	response = make_response(render_template('nu_heads.html', new_items = new_items))
+	print("Rendered")
+	g.session.expire_all()
+	g.session.commit()
+	g.session.expire_all()
+
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"] = "no-cache"
+	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+
+	return response
+
 
 @app.route('/nu_api/', methods=['GET', 'POST'])
 def nu_api():
