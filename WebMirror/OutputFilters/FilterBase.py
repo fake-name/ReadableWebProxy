@@ -59,6 +59,26 @@ class FilterBase(PageProcessor):
 				}
 			self.kwargs['message_q'].put(("new_link", new))
 
+	def trigger_immediate_if_new(self, link):
+		# self.log.info("trigger_immediate_if_new for url: %s", link)
+		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None and False:
+			start = urllib.parse.urlsplit(link).netloc
+
+			assert link.startswith("http")
+			assert start
+			new = {
+				'url'       : link,
+				'starturl'  : self.kwargs['job'].starturl,
+				'netloc'    : start,
+				'distance'  : self.kwargs['job'].distance+1,
+				'is_text'   : True,
+				'priority'  : self.kwargs['job'].priority,
+				'type'      : self.kwargs['job'].type,
+				'state'     : "new",
+				'fetchtime' : datetime.datetime.now(),
+				}
+			self.kwargs['message_q'].put(("new_link", new))
+
 
 	def amqp_put_many(self, items):
 

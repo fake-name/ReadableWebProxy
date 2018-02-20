@@ -1,0 +1,301 @@
+<!-- extend base layout -->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		{%- if title -%}
+			<title>ReadProxy - {{ title }}</title>
+		{%- else -%}
+			<title>ReadProxy</title>
+		{%- endif -%}
+
+		<!-- Base template header -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<!-- Sub template header -->
+
+		<style>
+			#segment_container
+			{
+				max-width: none !important;
+			}
+			body
+			{
+				max-width: none !important;
+			}
+			table, th, td {
+			    border: 1px solid black !important;
+			}
+			th, td
+			{
+				padding : 2px !important;
+			}
+		</style>
+		<!-- template header end -->
+	</head>
+	<body>
+		<div id='segment_container'>
+			<div id='segment_body'>
+				<div class="container-fluid">
+					<div class="row" style='display: flex;'>
+						<div  style='width:180px !important'>
+							{%- include '_block_nav.html' -%}
+						</div>
+						<div style='flex-grow: 1;'>
+
+							{% include '_block_flash.html' %}
+							<div class="well">
+
+
+								<h2>NU Items</h2>
+
+								<div class="well">
+									<div class="pull-right">
+										<a href='/nu_releases/?view=all'>All</a>
+										<a href='/nu_releases/?view=unverified'>Unverified</a>
+										<a href='/nu_releases/?view=verified'>Verified</a>
+										<a href='/nu_releases/?view=rejected'>Rejected</a>
+										<a href='/nu_releases/?view=raw'>Raw</a>
+									</div>
+									<h4 class="pull-left">
+										Releases: {{release_selector}} ({{new_items | length}})
+									</h4>
+									<div class="clearfix"></div>
+									<button onclick="apply_changes()">Apply changes</button>
+									<button onclick="check_rows()">Check rows</button>
+									<div class="clearfix"></div>
+
+									<div>
+										<table class='table-striped' style='width:100%'>
+											<colgroup>
+												<col style='width: 50px;'>
+												<col style='width: 75px;'>
+												<col>
+												<col>
+												<col>
+												<col>
+												<col>
+											</colgroup>
+											<tr>
+												<th>OK</th>
+												<th>Ago</th>
+												<th>TL Group</th>
+												<th>Series</th>
+												<th>Chapter</th>
+												<th>Target URL</th>
+
+											</tr>
+											{%- for row_item in new_items -%}
+												<tr class='release-row'>
+													<td>
+														<form class='row-state'
+																data-series-name='{{row_item.seriesname}}'
+																data-row-id="[{{row_item.id}}]"
+																data-resolved-url="{{row_item.actual_target}}"
+																data-original-value="{{row_item.reviewed}}">
+															<input type="radio" name="review-state" value="valid" {{'checked="true"' if row_item.reviewed == "valid" else ''}}> ✔<br>
+															<input type="radio" name="review-state" value="rejected" {{'checked="true"' if row_item.reviewed == "rejected" else ''}}> ✖
+
+														</form>
+													</td>
+													<td>{{terse_ago(row_item.first_seen)}}<br>{{terse_ago(row_item.validated_on)}}</td>
+													<td>{{row_item.groupinfo}}</td>
+													<td>{{row_item.seriesname}}</td>
+													<td>{{row_item.releaseinfo}}</td>
+													<td class='title-td'>
+														<a href='{{row_item.actual_target}}'>{{actual_target | safe}}</a>
+														{% if row_item.resolved %}
+															<br>
+															{% for resolved in row_item.resolved %}Title: {{resolved.resolved_title | safe}}{% if not loop.last %}<br>{% endif %}{% endfor %}
+														{%- endif -%}
+													</td>
+
+												</tr>
+											{%- endfor -%}
+										</table>
+									</div>
+									<button onclick="apply_changes()">Apply changes</button>
+									<button onclick="check_rows()">Check rows</button>
+									<div class="clearfix"></div>
+
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+
+
+	</body>
+
+	<!-- Base template footer -->
+	<link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/static/css/custom.css" rel="stylesheet" media="screen">
+	<script src="/static/js/jquery-latest.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script>
+
+		var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				console.log("Ajax setup!", csrftoken);
+				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken)
+				}
+			}
+		})
+
+		function content_load_cb(data, textStatus, jqXHR)
+		{
+			console.log("Response: ", data)
+			if (data['error'] == false)
+				location.reload();
+			else
+				alert("Non-False error response!\nError: " + textStatus + "\nStatus text: " + data);
+		};
+
+		function content_load_fail(jqXHR, textStatus, errorThrown)
+		{
+			alert("Failed to fetch content!\nError: " + errorThrown + "\nStatus text: " + textStatus);
+		}
+
+
+		function apply_changes()
+		{
+			var rows = $(".row-state");
+
+			var changes = [];
+			rows.each(function( index, value ) {
+				var itm = $(this);
+				var current = itm.find("input[name=review-state]:checked").val()
+				if (current == undefined)
+					current = "unverified"
+
+				if ( itm.data('originalValue') != current)
+				{
+					console.log( itm.data('originalValue'), current );
+					for (var idx in itm.data().rowId)
+					{
+						changes.push({
+							'id'  : itm.data().rowId[idx],
+							'old' : itm.data().originalValue,
+							'new' : current,
+						});
+					}
+				}
+			});
+			console.log("Changes:", changes.length, changes)
+
+
+			if (changes.length)
+			{
+				console.log("Making request")
+				$.ajax({
+					url         : '/nu_api/',
+					data        : JSON.stringify({'op' : 'nu release validity update', 'data' : changes}),
+					success     : content_load_cb,
+					error       : content_load_fail,
+					method      : "POST",
+					dataType    : 'json',
+					contentType : "application/json;",
+
+				})
+			}
+
+		}
+
+		// function delete_changes()
+		// {
+		// 	var rows = $(".release-row");
+
+		// 	var changes = [];
+		// 	rows.each(function( index, value ) {
+		// 		var itm = $(this);
+
+		// 		if (itm.is(':checked'))
+		// 		{
+		// 			for (var idx in itm.data().rowId)
+		// 			{
+		// 				changes.push({
+		// 					'del_id'  : itm.data().rowId[idx],
+		// 				});
+		// 			}
+		// 		}
+		// 	});
+		// 	console.log("Changes:", changes.length, changes)
+
+
+		// 	if (changes.length)
+		// 	{
+		// 		console.log("Making request")
+		// 		$.ajax({
+		// 			url         : '/nu_api/',
+		// 			data        : JSON.stringify({'op' : 'nu release delete', 'data' : changes}),
+		// 			success     : content_load_cb,
+		// 			error       : content_load_fail,
+		// 			method      : "POST",
+		// 			dataType    : 'json',
+		// 			contentType : "application/json;",
+
+		// 		})
+		// 	}
+
+		// }
+
+		function check_rows()
+		{
+			console.log("Wat?")
+			var rows = $(".release-row");
+			console.log(rows)
+			rows.each(function( index, value ) {
+				var row = $(this);
+				var itm = $(this).find(".row-state");
+
+				// console.log()
+				// console.log( itm.data(), itm.find("input[name=review-state]:checked").val(), itm.data().rowId.length, itm.data().seriesName );
+
+				var title_td = row.find(".title-td")
+
+				console.log(title_td)
+
+				var set = itm.find("input[name=review-state]:checked").length != 0
+
+				if (itm.data().seriesName.endsWith('...'))
+				{
+
+				}
+				else if (itm.data().resolvedUrl.includes('www.webnovel.com/rssbook/'))
+				{
+					itm.find("input[value=rejected]").prop( "checked", true );
+				}
+				else if (set)
+				{
+
+				}
+				else if (title_td.first().text().includes("page not found") && title_td.first().text().includes("gravity tales"))
+				{
+					itm.find("input[value=rejected]").prop( "checked", true );
+				}
+				else if (title_td.first().text().includes("page not found"))
+				{
+
+				}
+				else
+				{
+					itm.find("input[value=valid]").prop( "checked", true );
+				}
+			});
+		}
+
+
+
+	</script>
+	<!-- Template footer end -->
+</html>
+
+

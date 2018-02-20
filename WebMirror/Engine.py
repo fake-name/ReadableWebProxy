@@ -530,6 +530,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	def getMaxPriority(self, netloc):
 		return max(rules['maximum_priority'] for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs'])
 
+
 	def upsertResponseLinks(self, job, plain=[], resource=[], debug=False):
 		self.log.info("Processing response links.")
 		plain    = set(plain)

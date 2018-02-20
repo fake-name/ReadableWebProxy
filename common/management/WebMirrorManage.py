@@ -616,7 +616,7 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 			# Fucking mobile shit.
 			'm.wuxiaworld.com',
 			'm.xianxiaworld.net',
-
+			'm.webnovel.com',
 
 			# In the LUT already
 			'catatopatch.wixsite.com',

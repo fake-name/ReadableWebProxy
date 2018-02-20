@@ -169,6 +169,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 
 		release_tables = container.find_all('table', class_='tablesorter')
 
+		ref_pages = set()
 		releases = []
 		for table_div in release_tables:
 			for item in table_div.find_all("tr"):
@@ -207,6 +208,10 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 							}
 							# print("Link: ", link['href'])
 							releases.append(release)
+							ref_pages.add(referrer)
+
+		for spage in ref_pages:
+			self.trigger_immediate_if_new(spage)
 
 		return releases
 

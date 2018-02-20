@@ -454,6 +454,35 @@ class UpdateAggregator(object):
 			if len(self.batched_links) >= 500:
 				self.dispatch_update()
 
+	def do_immediate_link(self, linkdict):
+
+		assert 'url'              in linkdict
+		assert 'starturl'         in linkdict
+		assert 'netloc'           in linkdict
+		assert 'distance'         in linkdict
+		assert 'is_text'          in linkdict
+		assert 'priority'         in linkdict
+		assert 'type'             in linkdict
+		assert 'state'            in linkdict
+		assert 'addtime'          in linkdict
+		assert 'ignoreuntiltime'  in linkdict
+		assert 'maximum_priority' in linkdict
+
+		url = linkdict['url']
+
+		# Only allow items through if they're not in the LRU cache, or have not been upserted
+		# in the last 6 hours
+		if url not in self.seen:
+			self.link_count += 1
+
+			# Fucking huzzah for ON CONFLICT!
+			self.batched_links.append(linkdict)
+			# Kick item up to the top of the LRU list
+			self.seen[url] = True
+
+			if len(self.batched_links) >= 500:
+				self.dispatch_update()
+
 	def do_task(self):
 
 		target, value = self.response_queue.get_nowait()
@@ -469,6 +498,9 @@ class UpdateAggregator(object):
 				self.do_amqp(value)
 		elif target == "new_link":
 			self.do_link(value)
+		elif target == "trigger_immediate_if_new":
+			print("Trigger immediate if new", value)
+			self.do_immediate_link(value)
 		else:
 			print("Todo", target, value)
 
