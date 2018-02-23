@@ -127,7 +127,7 @@ def process_release(dp, proc_tmp, titlestr):
 	proc_tmp['vcfp']      = extractVolChapterFragmentPostfix(titlestr)
 	return dp.dispatchReleaseDbBacked(proc_tmp)
 
-def proto_process_releases(feed_releases):
+def proto_process_releases(feed_releases, disable_range_limit=False):
 	ret_dict = {
 			"successful" : [],
 			"missed"     : [],
@@ -137,6 +137,17 @@ def proto_process_releases(feed_releases):
 	feed_releases = list(feed_releases)
 	feed_releases.sort(key=lambda x: x.published, reverse=True)
 
+	min_by = datetime.datetime.now() - datetime.timedelta(days=30)
+
+	if "disable-range" in request.args or disable_range_limit:
+		pass
+	else:
+		if len(feed_releases) > 500:
+			feed_releases = [tmp for tmp in feed_releases if tmp.published > min_by]
+			feed_releases = feed_releases[:500]
+
+
+	print("Found %s feed releases" % len(feed_releases))
 	dp = RssProcessor(
 			db_sess=g.session,
 			loggerPath="Main.WebProto",
@@ -332,7 +343,7 @@ def feedFiltersRecent():
 		.filter(db.RssFeedPost.published > item_scope_limit) \
 		.all()
 
-	items = proto_process_releases(feeds)
+	items = proto_process_releases(feeds, disable_range_limit=True)
 
 	release_count = len(feeds)
 	missed_count  = len(items['missed'])

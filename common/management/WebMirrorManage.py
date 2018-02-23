@@ -3,9 +3,10 @@ import datetime
 import json
 import os
 import os.path
-import datetime
+import sys
 import pprint
 import time
+import tqdm
 import traceback
 
 import urllib.error
@@ -49,6 +50,8 @@ import WebMirror.TimedTriggers.RollingRewalkTrigger
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.SiteSync.fetch
 import WebMirror.OutputFilters.rss.FeedDataParser
+
+
 
 class TestQueueTrigger(WebMirror.TimedTriggers.QueueTriggers.QueueTrigger):
 
@@ -582,68 +585,10 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 		mapdict = {WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(row.actual_target).netloc) : row.actual_target for row in nu_items}
 		print("Nu outbound items: ", len(mapdict))
 
-		# Some sites have gone down or are now squatters.
-		# Mask them off.
-		mask_netlocs = [
-			'endofdays42.ph.tn',
-			'endofdays42.000webhostapp.com',
-			'host307.hostmonster.com',
-			'plus.google.com',
-
-			'thundertranslations.com',
-			'ww1.thundertranslations.com',
-			'ww12.thundertranslations.com',
-			'ww2.thundertranslations.com',
-
-			'hugginglovetranslations.heliohost.org',
-			'suspendeddomain.org',
-			'www.facebook.com',
-			'www.testing.wuxiaworld.com',
-
-			'www.patreon.com',
-			'wordpress.com',
-			'forum.gravitytales.com',
-			'www.wangkaiinternational.com',    # Some garbage korean soap opera actor's website?
-
-			'drive.google.com',
-			'gakno.com.mx',          # Mexican food manufacturer?
-
-			'kitakamiooi.com',   # Redirects to www.kitakamiooi.com
-			'kanojo.eu',
-
-			'www.tumblr.com',
-
-			# Fucking mobile shit.
-			'm.wuxiaworld.com',
-			'm.xianxiaworld.net',
-			'm.webnovel.com',
-
-			# In the LUT already
-			'catatopatch.wixsite.com',
-			'kitsune.club',   # Also failing DNS resolution
-			'uncommittedtranslations.bravesites.com',
-
-			'www.optranslations.net',  # Ded
-			'steadytranslation.com',
-			'translatinotaku.ml',
-			'www.worldofwatermelons.com',
-			'ww5.worldofwatermelons.com',
-
-			# Manga site?
-			'ckmscans.halofight.com',
-
-			"www1.faktranslations.com",  # Bought by a domain squatter
-			"ww1.steadytranslation.com", # ditto
-			'box479.bluehost.com',       # Site error thing.
-
-			'jianghuwanderer.com',
-			'www.failtranslations.xyz',
-		]
-
 		missing = 0
 		for netloc, tgturl in mapdict.items():
 
-			if netloc in mask_netlocs:
+			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
 				continue
 
 			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, None, netloc):
@@ -1106,4 +1051,82 @@ def exposed_nu_retrigger_series_pages():
 				changed = 0
 		sess.commit()
 
+
+
+
+
+
+def exposed_new_from_wln_releases(fetch_title=False):
+	'''
+
+	'''
+	import settings
+
+	if '__pypy__' in sys.builtin_module_names:
+		import psycopg2cffi as psycopg2
+	else:
+		import psycopg2
+
+	conn = psycopg2.connect(
+			host     = settings.WLN_DB_DATABASE_IP,
+			dbname   = settings.WLN_DB_DATABASE_DB_NAME,
+			user     = settings.WLN_DB_DATABASE_USER,
+			password = settings.WLN_DB_DATABASE_PASS,
+		)
+
+	print("Conn:", conn)
+	cur = conn.cursor()
+
+	print("Fetching rows")
+	cur.execute("""
+		SELECT DISTINCT(srcurl) FROM releaseschanges;
+		""")
+	rows_1 = cur.fetchall()
+	print("Fetching rows 2")
+	cur.execute("""
+		SELECT DISTINCT(srcurl) FROM releases;
+		""")
+
+	rows_2 = cur.fetchall()
+	print("Received %s, %s distinct URLs" % (len(rows_1), len(rows_2)))
+
+	nlfilter = {}
+	for url, in tqdm.tqdm(rows_1 + rows_2):
+		if url:
+			if isinstance(url, bytes):
+				url = url.decode("utf-8")
+			parsed = urllib.parse.urlparse(url)
+			nlfilter.setdefault(parsed.netloc, set())
+			nlfilter[parsed.netloc].add(url)
+
+	print("Distinct netlocs: %s" % len(nlfilter))
+
+	rules = WebMirror.rules.load_rules()
+	urls = [item['starturls'] if item['starturls'] else [] + item['feedurls'] if item['feedurls'] else [] for item in rules]
+	urls = [item for sublist in urls for item in sublist]
+
+	wg = WebRequest.WebGetRobust()
+	starturldict = {WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(url).netloc) : url for url in urls}
+
+	missing = 0
+	with db.session_context() as sess:
+		for netloc, tgturls in nlfilter.items():
+			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
+				continue
+
+			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, None, netloc):
+				continue
+
+			if netloc in starturldict:
+				continue
+
+
+			WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, None, netloc)
+			title = netloc
+			tgturl = tgturls.pop()
+			if fetch_title:
+				title = common.management.util.get_page_title(wg, tgturl)
+			print("Missing: ", (netloc, title, tgturl))
+			missing += 1
+		print("Nu outbound items: ", len(nlfilter), "missing:", missing)
 

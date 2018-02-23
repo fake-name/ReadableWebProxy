@@ -43,6 +43,7 @@ GLOBAL_BAD_URLS = [
 
 			'www.paypalobjects.com',
 			'attorneyking.pro',    # Wat
+			'.temp.domains',
 
 			# Tumblr can seriously go fuck itself with a rusty stake
 			'tumblr.com/widgets/',
@@ -163,6 +164,66 @@ RSS_SKIP_FILTER = [
 
 
 ]
+
+
+# Some sites have gone down or are now squatters.
+# Mask them off.
+NU_NEW_MASK_NETLOCS = [
+			'endofdays42.ph.tn',
+			'endofdays42.000webhostapp.com',
+			'host307.hostmonster.com',
+			'plus.google.com',
+
+			'thundertranslations.com',
+			'ww1.thundertranslations.com',
+			'ww12.thundertranslations.com',
+			'ww2.thundertranslations.com',
+
+			'hugginglovetranslations.heliohost.org',
+			'suspendeddomain.org',
+			'www.facebook.com',
+			'www.testing.wuxiaworld.com',
+
+			'www.patreon.com',
+			'wordpress.com',
+			'forum.gravitytales.com',
+			'www.wangkaiinternational.com',    # Some garbage korean soap opera actor's website?
+
+			'drive.google.com',
+			'gakno.com.mx',          # Mexican food manufacturer?
+
+			'kitakamiooi.com',   # Redirects to www.kitakamiooi.com
+			'kanojo.eu',
+
+			'www.tumblr.com',
+
+			# Fucking mobile shit.
+			'm.wuxiaworld.com',
+			'm.xianxiaworld.net',
+			'm.webnovel.com',
+
+			# In the LUT already
+			'catatopatch.wixsite.com',
+			'kitsune.club',   # Also failing DNS resolution
+			'uncommittedtranslations.bravesites.com',
+
+			'www.optranslations.net',  # Ded
+			'steadytranslation.com',
+			'translatinotaku.ml',
+			'www.worldofwatermelons.com',
+			'ww5.worldofwatermelons.com',
+
+			# Manga site?
+			'ckmscans.halofight.com',
+
+			"www1.faktranslations.com",  # Bought by a domain squatter
+			"ww1.steadytranslation.com", # ditto
+			'box479.bluehost.com',       # Site error thing.
+
+			'jianghuwanderer.com',
+			'www.failtranslations.xyz',
+		]
+
 
 
 RSS_TITLE_FILTER = [
