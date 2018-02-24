@@ -20,6 +20,6 @@ def get_page_title(wg, url):
 		if soup.title:
 			ret['title'] = soup.title.get_text().strip()
 	except Exception:
-		pass
+		ret['failed'] = True
 
 	return ret

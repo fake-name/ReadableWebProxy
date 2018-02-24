@@ -162,6 +162,12 @@ RSS_SKIP_FILTER = [
 	'tracking.feedpress.it',
 	'en.blog.wordpress.com',
 
+	'youkojitsu.wordpress.com',  # Gone
+
+	# The irony of a writing fiction about the bible is apparently
+	# lost on this guy.
+	'whathasjesusdone.wordpress.com',
+
 
 ]
 

@@ -260,6 +260,10 @@ def feedFiltersRoot():
 		]
 		for item in common.global_constants.RSS_SKIP_FILTER:
 			skip_missing.append(item)
+		for item in common.global_constants.GLOBAL_BAD_URLS:
+			skip_missing.append(item)
+		for item in common.global_constants.NU_NEW_MASK_NETLOCS:
+			skip_missing.append(item)
 
 		for feed in feeds_in:
 			if feed.feed_name in [tmp.feed_netloc for tmp in feed.urls]:
