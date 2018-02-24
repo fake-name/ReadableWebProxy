@@ -47,6 +47,7 @@ baseUrl: [
 		'http://hfy-archive.org',
 		# Garbage drupal thing
 		'http://www.meilinmiranda.com',
+		'https://fiction.live',
 
 		# Needs more checking.
 		# 'https://www.eviscerati.org'
