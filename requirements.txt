@@ -20,7 +20,7 @@ objgraph==3.4.0
 zerorpc==0.6.1
 cssutils==1.0.2
 tinycss2==0.6.1
-fontTools==3.24.0
+fontTools==3.24.1
 semantic==1.0.3
 fdict==0.8.1
 cachetools==2.0.1
