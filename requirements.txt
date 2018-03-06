@@ -52,7 +52,7 @@ Flask==0.12.2
 Flask-DebugToolbar==0.10.1
 Flask-Login==0.4.1
 Flask-Babel==0.11.2
-selenium==3.9.0
+selenium==3.10.0
 webcolors==1.8.1
 pyparsing==2.2.0
 feedparser==5.2.1
