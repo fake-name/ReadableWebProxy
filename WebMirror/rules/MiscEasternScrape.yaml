@@ -79,6 +79,11 @@ baseUrl: [
 		'http://enln.generasi.net',
 		'http://lyzo.eu',
 
+		'http://wuxiaworld.com',
+		'http://www.wuxiaworld.com',
+
+
+
 	]
 
 feeds: [
@@ -105,6 +110,7 @@ feeds: [
 	'http://www.novellatranslation.com/feed',
 	'http://www.lionmask.pro/feeds/posts/default',
 	'http://girlyboysalliance.mozello.com/blog/rss/',
+	'http://www.wuxiaworld.com/feed/chapters',
 ]
 
 extraStartUrls: [
@@ -152,7 +158,8 @@ badwords: [
 
 			# Block mobile garbage.
 			'm.xianxiaworld.net',
-			]
+			'm.wuxiaworld.com',
+		]
 
 
 

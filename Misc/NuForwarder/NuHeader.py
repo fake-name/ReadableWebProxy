@@ -29,6 +29,8 @@ BAD_RESOLVES = [
 	'doubleclick.net',
 	'm.wuxiaworld.com',  # Fucking mobile sites
 	'www.webnovel.com/sw.js',
+	'novelsnao.com/?reqp=1&reqr=',
+	'data:application/javascript',
 ]
 
 
@@ -50,6 +52,9 @@ def urls_the_same(url_list):
 
 		# And missing www.
 		fixed = fixed.replace("://www.", '://')
+
+		if fixed.endswith("?m=1"):
+			fixed = fixed[:-len("?m=1")]
 
 		fixed_urls.append(fixed)
 
@@ -298,9 +303,12 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 				if 'm.wuxiaworld.com' in respurl:
 					respurl = respurl.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
-
 				if 'tseirptranslations.blogspot.com' in respurl:
 					respurl = respurl.replace('tseirptranslations.blogspot.com', 'tseirptranslations.com')
+				if 'm.xianxiaworld.net' in respurl:
+					respurl = respurl.replace('m.xianxiaworld.net', 'www.xianxiaworld.net')
+				if 'shikkakutranslations.wordpress.com' in respurl:
+					respurl = respurl.replace('shikkakutranslations.wordpress.com', 'shikkakutranslations.com')
 
 				if any([tmp in respurl for tmp in BAD_RESOLVES]):
 					self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)

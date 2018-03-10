@@ -203,7 +203,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 			else:
 				self.log.error('Empty item in feed?')
 				self.log.error('Feed url: %s', feedUrl)
-				continue
+				item['contents'] = ""
 
 
 			# print("Keys: ", list(item.keys()))

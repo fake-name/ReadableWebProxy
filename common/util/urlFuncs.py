@@ -2,7 +2,6 @@
 import re
 import urllib.parse
 import unshortenit
-from common.Exceptions import CannotAccessGDocException
 
 # All tags you need to look into to do link canonization
 # source: http://stackoverflow.com/q/2725156/414272

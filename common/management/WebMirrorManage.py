@@ -89,7 +89,7 @@ def exposed_remote_fetch_test(url):
 	print("Enqueueing ")
 	trig = TestQueueTrigger()
 	print(trig)
-	# trig.enqueue_url(url)
+	trig.enqueue_url(url)
 
 	for timeout in range(60 * 60):
 		resp = trig.rpc_interface.get_job_nowait()

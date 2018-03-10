@@ -1014,7 +1014,6 @@ baseUrl: [
 	'http://worldofwatermelons.com',
 	'http://wuxianation.com',
 	'http://wuxiasociety.com',
-	'http://wuxiaworld.com',
 	'http://www.aihristdreamtranslations.com',
 	'http://www.ainushi.com',
 	'http://www.ameryedge.com',
@@ -1076,7 +1075,6 @@ baseUrl: [
 	'http://www.worldofwatermelons.com',
 	'http://www.wuxiaheroes.com',
 	'http://www.wuxiatranslations.com',
-	'http://www.wuxiaworld.com',
 	'http://www.yorasutranslations.com',
 	'http://www.zeonic-republic.net',
 	'http://xianforeigners.tk',
@@ -1661,7 +1659,6 @@ badwords: [
 		'http:/totobro.com',
 
 		# Block mobile garbage
-		'm.wuxiaworld.com',
 		'worldofwatermelons.com/?',
 		'littleshanks.net/?',
 
@@ -1669,6 +1666,7 @@ badwords: [
 		'/?profiletab=',
 		'/login?_next=',
 		'lightnovelstranslations.com/forum/ratethread.php',
+		'/?blackhole=',
 		'r.search.yahoo.com',
 	]
 
