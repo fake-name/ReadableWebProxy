@@ -47,7 +47,7 @@ pyyaml==3.12
 natsort==5.2.0
 mdx_linkify==1.1
 ftfy==5.3.0
-lxml==4.1.1
+lxml==4.2.0
 Flask==0.12.2
 Flask-DebugToolbar==0.10.1
 Flask-Login==0.4.1
