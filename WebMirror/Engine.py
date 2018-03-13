@@ -898,18 +898,39 @@ class SiteArchiver(LogBase.LoggerMixin):
 				preretrieved = rpcresp['ret']
 				self.dispatchRequest(job, preretrieved)
 			else:
+				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
+				job.state = 'error'
+				job.errno = -4
+
 				content = "DOWNLOAD FAILED"
 				content += "<br>"
 				if 'traceback' in rpcresp:
 					content += "<pre>"
 					content += "<br>".join(rpcresp['traceback'])
 					content += "</pre>"
+
+					log_func = self.log.error
+
+					if '<FetchFailureError 410 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+						log_func = self.log.warning
+					elif '<FetchFailureError 404 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+						log_func = self.log.warning
+					elif '<FetchFailureError 403 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
+					else:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=14)
+
+					max_len_trunc = 450
+
 					for line in rpcresp['traceback']:
-						self.log.error("Remote traceback: %s", line)
-				# job.raw_content = content
-				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
-				job.state = 'error'
-				job.errno = -4
+						if len(line) > max_len_trunc:
+							log_func("Remote traceback: %s [...snip...]", line[:max_len_trunc])
+						else:
+							log_func("Remote traceback: %s", line)
+
+				job.content = content
 				self.db_sess.commit()
 				self.log.error("Error in remote fetch.")
 

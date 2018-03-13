@@ -92,9 +92,9 @@ def get_nu_items(sess, selector):
 		new_items = new_items.filter(db.NuReleaseItem.actual_target != None)
 
 	new_items = new_items.order_by(desc(db.NuReleaseItem.first_seen))
-	new_items = new_items.limit(200).all()
+	new_items = new_items.limit(500).all()
 
-	have_dots = [tmp.seriesname for tmp in new_items if '...' in tmp.seriesname]
+	have_dots = set([tmp.seriesname for tmp in new_items if '...' in tmp.seriesname])
 	if have_dots:
 		print("Have dots:")
 		print()

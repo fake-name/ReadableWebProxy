@@ -265,11 +265,12 @@
 
 				var set = itm.find("input[name=review-state]:checked").length != 0
 
-				if (itm.data().seriesName.endsWith('...'))
+				if (itm.data().seriesName && itm.data().seriesName.endsWith && itm.data().seriesName.endsWith('...'))
 				{
 
 				}
-				else if (itm.data().resolvedUrl.includes('www.webnovel.com/rssbook/'))
+				else if (itm.data().resolvedUrl.includes('www.webnovel.com/rssbook/')
+					|| itm.data().resolvedUrl.includes('tyrantseyetranslations.wordpress.com'))
 				{
 					itm.find("input[value=rejected]").prop( "checked", true );
 				}
@@ -281,8 +282,12 @@
 				{
 					itm.find("input[value=rejected]").prop( "checked", true );
 				}
-				else if (title_td.first().text().includes("page not found"))
+				else if (title_td.first().text().includes("not found - wuxiaworld")
+					|| title_td.first().text().includes("page not found")
+					|| title_td.first().text().includes("Title: blog not found")
+					|| title_td.first().text().includes("Title: wordpress.com"))
 				{
+					itm.find("input[value=rejected]").prop( "checked", true );
 
 				}
 				else
