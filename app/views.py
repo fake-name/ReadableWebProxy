@@ -43,7 +43,10 @@ def before_request():
 
 @app.teardown_request
 def teardown_request(response):
-	g.session.commit()
+	try:
+		g.session.commit()
+	except Exception:
+		g.session.rollback()
 	database.release_session(g.session)
 
 
