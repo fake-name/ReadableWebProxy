@@ -110,7 +110,19 @@ GLOBAL_BAD_URLS = [
 			'discord1-1494780898_lrg.png',
 
 			# Bought by asshole squatters
-			'ww12.circustranslations.com'
+			'ww12.circustranslations.com',
+			'ww1.circustranslations.com',
+			'ww12.circustranslations.com',
+			'ww1.absurdtl.com',
+			'www1.trungtnguyen123.org',
+			'www.google.com',
+			'www.reddit.com',
+			'www.fictionpress.com',
+			'www.wattpad.com',
+			'pastebin.com',
+
+			# Spanish. I don't want to waste disk space on this.
+			'novelasymangasjpo.blogspot.com',
 	]
 
 
