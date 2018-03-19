@@ -582,13 +582,15 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		received = 0
 		loops = 0
+		max_loop_time = 60 * 60
 		while 1:
 			received += self.process_avail()
-			for x in range(5):
-				print("\r`fetch_and_flush` sleeping for {} more responses ({} of {}, loop {})\r".format(resp_cnt - received, received, resp_cnt, loops), end='', flush=True)
-				loops += 1
-				time.sleep(1)
+			print("\r`fetch_and_flush` sleeping for {} more responses ({} of {}, loop {} of {})\r".format(resp_cnt - received, received, resp_cnt, loops, max_loop_time), end='', flush=True)
+			loops += 1
+			time.sleep(1)
 			if received >= resp_cnt:
+				return
+			if loops > max_loop_time:
 				return
 
 
