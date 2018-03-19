@@ -6,13 +6,8 @@ send_raw_feed: True
 
 baseUrl: [
 
-		'https://catatopatch.wixsite.com/catatopatch/',
 		'https://www.catatopatch.com',
 
-		'https://raindax.wixsite.com',
-		'http://springkrane.wixsite.com',
-		'http://tachibanachinatsu.wixsite.com',
-		'https://ohdamndone.wixsite.com',
 	]
 
 feeds: []

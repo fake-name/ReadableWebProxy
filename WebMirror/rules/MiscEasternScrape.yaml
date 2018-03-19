@@ -6,7 +6,6 @@ rewalk_interval_days: 30
 send_raw_feed: True
 
 baseUrl: [
-		'http://www.xianxiaworld.net',
 		'https://www.lightnovelbastion.com',
 		#'https://lightnovelbastion.com',
 		'http://www.ultimaguil.org',
@@ -17,14 +16,10 @@ baseUrl: [
 		'https://justblthings.weebly.com',
 		'https://earlandfairy.weebly.com',
 
-		'http://transtranstrans.hatenablog.com',
 
 		'http://www.gundamwingtales.com',
-		'http://www.endeta.com',
 
 		# Dickish blocking garbage shit.
-		'https://nepustation.com',
-		'https://www.nepustation.com',
 		'https://nepustation.wordpress.com',
 
 		# No rss, apparently. Sadface
@@ -37,16 +32,12 @@ baseUrl: [
 
 		# On blogger
 		'http://www.hasutsuki.com',
-		'http://www.pegasusfarts.com',
 		'http://novel.oddsquad.org',
-		'https://www.sabishiidesu.com',
 		'http://www.comegatranslations.com',
 		'http://www.karasunovels.com',
 		'http://www.karasunovels.com',
 		'http://www.comegatranslations.com',
 
-		# Uses blogger JS. Is juncafe part of blogger?
-		'http://blog.juncafe.com',
 
 		# Dreamwidth seems OK with the default rules
 		"https://duelnoir.dreamwidth.org",
@@ -75,8 +66,6 @@ baseUrl: [
 		'https://asianhobbyist.com',
 
 		'https://www.fuyuneko.org',
-		'http://blcxtranslations.github.io/blcx/',
-		'http://enln.generasi.net',
 		'http://lyzo.eu',
 
 		'http://wuxiaworld.com',
@@ -87,7 +76,6 @@ baseUrl: [
 	]
 
 feeds: [
-	'http://www.xianxiaworld.net/feed/',
 	'https://www.lightnovelbastion.com/rss.php',
 	'https://lightnovelbastion.com/rss.php',
 	'http://www.ultimaguil.org/base/novelupdates_rss.xml',
@@ -96,10 +84,7 @@ feeds: [
 	'http://hakushakutoyousei.weebly.com/1/feed',
 	'http://fleetingphoenix.weebly.com/1/feed',
 
-	'http://transtranstrans.hatenablog.com/rss',
 	'http://www.hasutsuki.com/feeds/posts/default',
-	'https://www.sabishiidesu.com/feeds/posts/default',
-	'http://www.pegasusfarts.com/feeds/posts/default',
 	'http://novel.oddsquad.org/feeds/posts/default',
 	'http://www.heavenlyenchantress.com/feeds/posts/default',
 

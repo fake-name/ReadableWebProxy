@@ -6,7 +6,6 @@ type: "western"
 baseUrl: [
 	# This is going ot need a lot of babysitting to get working, I think
 	# too much garbage ajax crap
-	"http://www.jukepop.com",
 ]
 
 
