@@ -635,6 +635,41 @@ def exposed_find_dead_netlocs():
 		cont = json.dumps(res, indent=4)
 		fp.write(cont)
 
+def exposed_dump_netlocs():
+	'''
+	Dump the urls to a cache file for comparison purposes.
+	'''
+
+	rules = WebMirror.rules.load_rules()
+	urls = [item['starturls'] if item['starturls'] else [] for item in rules]
+	urls = [item for sublist in urls for item in sublist]
+	urls_c = list(set(urls))
+	print("Found %s netlocs, %s after filtering for uniqueness." % (len(urls), len(urls_c)))
+
+	with open("url_list.json", "w") as fp:
+		cont = json.dumps(urls_c, indent=4)
+		fp.write(cont)
+
+
+def exposed_compare_netlocs():
+	'''
+	Dump the urls to a cache file for comparison purposes.
+	'''
+	with open("url_list.json", "r") as fp:
+		items = json.load(fp)
+
+	rules = WebMirror.rules.load_rules()
+	urls = [item['starturls'] if item['starturls'] else [] for item in rules]
+	urls = [item for sublist in urls for item in sublist]
+	urls_c = list(set(urls))
+	print("Found %s netlocs, %s after filtering for uniqueness." % (len(urls), len(urls_c)))
+
+	for item in items:
+		if item not in urls_c:
+			print("Missing: %s" % item)
+
+
+
 def exposed_process_dead_netlocs():
 	'''
 	Process the dead-netlocs json file for output
