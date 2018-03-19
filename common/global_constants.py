@@ -120,6 +120,10 @@ GLOBAL_BAD_URLS = [
 			'www.fictionpress.com',
 			'www.wattpad.com',
 			'pastebin.com',
+			'ww1.absurdtl.com',
+			'ww1.circustranslations.com',
+			'ww12.circustranslations.com',
+			'www1.trungtnguyen123.org',
 			'.temp.domains',
 
 			# Spanish. I don't want to waste disk space on this.

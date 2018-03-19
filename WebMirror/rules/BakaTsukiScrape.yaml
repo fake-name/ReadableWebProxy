@@ -1,6 +1,9 @@
 type: eastern
 
-baseUrl:  ['http://www.baka-tsuki.org/']
+baseUrl:  [
+	'http://www.baka-tsuki.org/',
+	'https://baka-tsuki.org',
+]
 
 send_raw_feed: False
 
