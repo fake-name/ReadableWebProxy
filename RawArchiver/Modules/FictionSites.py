@@ -1,39 +1,124 @@
 
-# This appears to be hosted by the same people as FictionPress.
-# The website sure looks to be the same codebase, in any event.
+import urllib.parse
+import RawArchiver.ModuleBase
 
+class BooksieRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
-FOLLOW_GOOGLE_LINKS: False
-allImages: False
+	module_name = "BooksieRawModule"
 
-type: "western"
-
-baseUrl: [
-	"https://www.fanfiction.net/",
-	"http://www.fanfiction.net/",
+	target_urls = [
+		'http://www.booksie.com/',
 	]
 
-send_raw_feed: False
-trigger: False
+	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
+
+	badwords = [
+			"/poetry",
+			"/poetry/",
+			"/users/",
+			"/rss/",
+			"/writers",
+			"/pdf/",
+
+			'/bookshelf-recommended/',
+			'/member/connect?',
+			'_USER_PROFILE__',
+			'_MEDIA_IMAGE__120x120.',
+			# Booksie tags can apparently nest arbitrarily, so
+			# they basically take over the scraper if left unchecked.
+			"/tags/",
+
+	]
+
+	@classmethod
+	def cares_about_url(cls, url):
+		if any([badword in url for badword in cls.badwords]):
+			return False
+
+		if RawArchiver.ModuleBase.duplicate_path_fragments(url):
+			return False
+		return urllib.parse.urlparse(url).netloc in cls.target_tlds
+
+	@classmethod
+	def get_start_urls(cls):
+		return [tmp for tmp in cls.target_urls]
+
+class WattPadRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
+
+	module_name = "WattPadRawModule"
+
+	target_urls = [
+		'http://www.wattpad.com/',
+	]
+
+	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
+
+	badwords = [
+			"/poetry",
+			"/poetry/",
+			"/users/",
+			"/rss/",
+			"/writers",
+			"/pdf/",
+
+			'/bookshelf-recommended/',
+			'/member/connect?',
+			'_USER_PROFILE__',
+			'_MEDIA_IMAGE__120x120.',
+			# Booksie tags can apparently nest arbitrarily, so
+			# they basically take over the scraper if left unchecked.
+			"/tags/",
+			# People's fucked up markup leading to loops
+			'tranquility_files/tranquility_files/tranquility_files',
+			'nikita_files/nikita_files/nikita_files/nikita_files/nikita_files',
+			'i ask myself_files/i ask myself_files/I ask myself_files',
+			'what is the meaning of life_files/What is the meaning of life_files',
+			'dawn of the hero 3_files/dawn of the hero 3_files/Dawn of the hero 3_files',
+			'The Difference Between Right and Wrong_files/The Difference Between Right and Wrong_files',
+
+	]
+
+	@classmethod
+	def cares_about_url(cls, url):
+		if any([badword in url for badword in cls.badwords]):
+			return False
+
+		if RawArchiver.ModuleBase.duplicate_path_fragments(url):
+			return False
+		return urllib.parse.urlparse(url).netloc in cls.target_tlds
+
+	@classmethod
+	def get_start_urls(cls):
+		return [tmp for tmp in cls.target_urls]
 
 
-extraStartUrls: []
+class FictionPressRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 
-badwords: [
-			"/about/",
-			"/join-us/",
-			"/chat/",
-			'&format=pdf',
-			'?format=pdf',
-			'?replytocom=',
-			"/forum/",
-			"/forum",
-			"/forums/",
-			"/forums",
-			'/atom/',
-			"/games/",
-			"/betareaders/",
-			"/poetry/", # Really?
+	module_name = "FictionPressRawModule"
+
+	target_urls = [
+		"http://www.fictionpress.com/",
+		"https://www.fanfiction.net/",
+		"http://www.fanfiction.net/",
+	]
+
+	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]
+
+	badwords = [
+			"/poetry",
+			"/poetry/",
+			"/users/",
+			"/rss/",
+			"/writers",
+			"/pdf/",
+
+			'/bookshelf-recommended/',
+			'/member/connect?',
+			'_USER_PROFILE__',
+			'_MEDIA_IMAGE__120x120.',
+			# FictionPress tags can apparently nest arbitrarily, so
+			# they basically take over the scraper if left unchecked.
+			"/tags/",
 
 			"/post.php?",
 			"/author.php?",
@@ -304,39 +389,18 @@ badwords: [
 			"/www.friendster.com/",
 			"/yushepi_files/",
 
+	]
 
-			]
+	@classmethod
+	def cares_about_url(cls, url):
+		if any([badword in url for badword in cls.badwords]):
+			return False
 
-# Content Stripping needs to be determined.
-decomposeBefore: [
+		if RawArchiver.ModuleBase.duplicate_path_fragments(url):
+			return False
+		return urllib.parse.urlparse(url).netloc in cls.target_tlds
 
-]
-
-decompose: [
-	{'id' : "top"},
-	{'id' : "p_footer"},
-	{'id' : "profile_top"},
-	{'id' : "review"},
-	{'class' : "zmenu"},
-	{'class' : "lc-wrapper"},
-]
-
-stripTitle: []
-
-disallow_duplicate_path_segments: True
-
-
-destyle : [
-	["div",  {}],
-	["span", {}],
-]
-
-
-preserveAttrs : [
-	["button", 'id'],
-	["button", 'onclick'],
-	["button", 'type'],
-	["button", 'btn'],
-	["select", ''],
-]
+	@classmethod
+	def get_start_urls(cls):
+		return [tmp for tmp in cls.target_urls]
 
