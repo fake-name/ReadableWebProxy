@@ -120,6 +120,7 @@ GLOBAL_BAD_URLS = [
 			'www.fictionpress.com',
 			'www.wattpad.com',
 			'pastebin.com',
+			'.temp.domains',
 
 			# Spanish. I don't want to waste disk space on this.
 			'novelasymangasjpo.blogspot.com',

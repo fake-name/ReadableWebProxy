@@ -80,6 +80,12 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 					sess.rollback()
 
 	def retrigger_other(self):
+
+		# Don't retrigger the URLs marked as not-rewalkable
+		rules = WebMirror.rules.load_rules()
+		urls = [tmp['starturls'] for tmp in rules if (tmp and tmp['starturls'] and tmp['rewalk_disabled'] == True)]
+		urls = [item for sub in urls for item in sub]
+
 		sess = self.db.get_db_session()
 		ago = datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS + 2)
 
@@ -99,6 +105,10 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 						.filter(self.db.WebPages.fetchtime < ago)         \
 						.filter(self.db.WebPages.id < (chunk + chunk_size)) \
 						.filter(self.db.WebPages.id >= chunk)
+
+					for url in urls:
+						nl = urllib.parse.urlsplit(url).netloc
+						q = q.filter(self.db.WebPages.netloc != nl)
 
 					affected_rows = q.update({"state" : "new"})
 					affected += affected_rows
@@ -130,7 +140,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 
 		starturls = []
-		for ruleset in [tmp for tmp in rules if (tmp and tmp['starturls'])]:
+		for ruleset in [tmp for tmp in rules if (tmp and tmp['starturls'] and tmp['rewalk_disabled'] == False)]:
 			for starturl in ruleset['starturls']:
 				if not ruleset['rewalk_interval_days']:
 					interval = settings.REWALK_INTERVAL_DAYS

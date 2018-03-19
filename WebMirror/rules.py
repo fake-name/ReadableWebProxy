@@ -209,6 +209,11 @@ def getRefetch(ruleset):
 		return True
 	return ruleset['normal_fetch_mode']
 
+def getDisableRewalk(ruleset):
+	if not 'rewalk_disabled' in ruleset:
+		return False
+	return ruleset['rewalk_disabled']
+
 def getDisallowDuplicatePathComponents(ruleset):
 	if not 'disallow_duplicate_path_segments' in ruleset:
 		return True
@@ -307,6 +312,7 @@ def validateRuleKeys(dat, fname):
 		'decompose_svg',
 
 		'normal_fetch_mode',
+		'rewalk_disabled',
 		'send_raw_feed',
 		'special_case_filters',
 
@@ -360,6 +366,7 @@ def load_validate_rules(fname, dat):
 		rules['starturls']                     = []
 
 	rules['normal_fetch_mode']                 = getRefetch(dat)
+	rules['rewalk_disabled']                   = getDisableRewalk(dat)
 
 	rules['filename']                          = fname
 	special = getSpecialFilters(dat)

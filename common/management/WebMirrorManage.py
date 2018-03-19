@@ -8,6 +8,8 @@ import pprint
 import time
 import tqdm
 import traceback
+from concurrent.futures import ThreadPoolExecutor
+
 
 import urllib.error
 import urllib.parse
@@ -610,7 +612,57 @@ def exposed_find_dead_netlocs():
 	'''
 	Try to fetch each URL in the available netlocs and see if they're valid.
 	'''
-	pass
+
+	rules = WebMirror.rules.load_rules()
+	urls = [item['starturls'] if item['starturls'] else [] + item['feedurls'] if item['feedurls'] else [] for item in rules if not item['rewalk_disabled']]
+	urls = [item for sublist in urls for item in sublist]
+
+	urls = list(set([urllib.parse.urlunsplit(urllib.parse.urlsplit(url)[:2] + ("", "", "")) for url in urls]))
+
+
+	res = {}
+
+
+	wg = WebRequest.WebGetRobust()
+	with ThreadPoolExecutor(max_workers=32) as exc:
+		for url in urls:
+			res[url] = exc.submit(common.management.util.get_page_title, wg, url)
+
+		for url in urls:
+			res[url] = res[url].result()
+
+	with open("bad_urls.json", "w") as fp:
+		cont = json.dumps(res, indent=4)
+		fp.write(cont)
+
+def exposed_process_dead_netlocs():
+	'''
+	Process the dead-netlocs json file for output
+	'''
+
+	with open("bad_urls.json", "r") as fp:
+		cont = json.loads(fp.read())
+
+	for item, value in cont.items():
+		if 'err' in value:
+			value.pop('err')
+			print((item, value))
+
+
+def exposed_count_netlocs():
+	'''
+	Process the dead-netlocs json file for output
+	'''
+
+	rules = WebMirror.rules.load_rules()
+	urls = [item['starturls'] if item['starturls'] else [] for item in rules if not item['rewalk_disabled']]
+	urls = [item for sublist in urls for item in sublist]
+
+	durls = [item['starturls'] if item['starturls'] else [] for item in rules if item['rewalk_disabled']]
+	durls = [item for sublist in durls for item in sublist]
+
+	print("Have %s start urls. %s disabled URLs" % (len(urls), len(durls)))
+
 
 def _update_feed_name(sess, netloc, oldname, newname):
 
