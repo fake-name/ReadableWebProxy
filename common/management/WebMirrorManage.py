@@ -4,6 +4,7 @@ import json
 import os
 import os.path
 import sys
+import tqdm
 import pprint
 import time
 import tqdm
@@ -906,7 +907,8 @@ def exposed_drop_priorities():
 
 		changed = 0
 		changed_tot = 0
-		for idx in range(start, stop, step):
+		pb = tqdm.tqdm(range(start, stop, step))
+		for idx in pb:
 			try:
 				# SQL String munging! I'm a bad person!
 				# Only done because I can't easily find how to make sqlalchemy
@@ -915,9 +917,12 @@ def exposed_drop_priorities():
 				have = sess.execute("""update web_pages set priority = 500000 where priority != 500000 AND id > {} AND id <= {};""".format(idx, idx+step))
 				# print()
 
-				processed  = idx - start
-				total_todo = stop - start
-				print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
+				# processed  = idx - start
+				# total_todo = stop - start
+				desc = '%6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
+				pb.set_description(desc)
+
+				# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
 				changed += have.rowcount
 				changed_tot += have.rowcount
 				if changed > step:
