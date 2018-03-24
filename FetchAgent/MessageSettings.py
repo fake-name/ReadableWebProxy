@@ -28,7 +28,7 @@ def getSslOpts():
 
 
 RPC_AMQP_SETTINGS = {
-		'worker_threads'                         : 5,
+		'worker_threads'                         : 8,
 
 		'userid'                                 : settings_file.RPC_RABBIT_LOGIN,
 		'password'                               : settings_file.RPC_RABBIT_PASWD,
@@ -57,7 +57,7 @@ RPC_AMQP_SETTINGS = {
 	}
 
 LOWRATE_RPC_AMQP_SETTINGS = {
-		'worker_threads'                         : 4,
+		'worker_threads'                         : 8,
 
 		'userid'                                 : settings_file.RPC_RABBIT_LOGIN,
 		'password'                               : settings_file.RPC_RABBIT_PASWD,
@@ -87,7 +87,7 @@ LOWRATE_RPC_AMQP_SETTINGS = {
 
 
 FEED_AMQP_SETTINGS = {
-		'worker_threads'                         : 2,
+		'worker_threads'                         : 3,
 
 		'userid'                                 : settings_file.RABBIT_LOGIN,
 		'password'                               : settings_file.RABBIT_PASWD,

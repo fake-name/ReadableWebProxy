@@ -4,7 +4,7 @@ type: unknown
 send_raw_feed: False
 rewalk_disabled: True
 
-rewalk_interval_days: 9999999
+rewalk_interval_days: 50000
 
 baseUrl: [
 	'http://www.thecrank.wordpress.com',

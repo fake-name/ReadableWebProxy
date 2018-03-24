@@ -29,7 +29,8 @@ RATE_LIMIT_ITEMS = {}
 
 log = logging.getLogger("Main.Web.SpecialCaseHandler")
 
-
+class SpecialCaseFilterMissing(RuntimeError):
+	pass
 
 def handleRateLimiting(params, rid, joburl, netloc, job_aggregator_instance):
 	log.info("Special case handler pushing item for url %s into delay queue!", joburl)
@@ -153,7 +154,8 @@ def pushSpecialCase(specialcase, rid, joburl, netloc, job_aggregator_instance):
 	else:
 		log.error("Error! Unknown special-case filter!")
 		log.error("Filter name: '%s', parameters: '%s', job conf: '%s'", op, params, (rid, joburl, netloc))
-
+		err_msg = "Unknown special-case filter! Filter name: '%s', parameters: '%s', job conf: '%s'", op, params, (rid, joburl, netloc)
+		raise SpecialCaseFilterMissing(err_msg)
 
 
 def haveSpecialCase(specialcase, joburl, netloc):

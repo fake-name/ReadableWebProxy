@@ -5,12 +5,14 @@ import urllib.parse
 import datetime
 import traceback
 import time
+import tqdm
 import zlib
 import settings
 import datetime
 import sqlalchemy.exc
 from sqlalchemy import or_
 from sqlalchemy import and_
+from sqlalchemy import not_
 from sqlalchemy import func
 import common.database as dbm
 
@@ -85,6 +87,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		rules = WebMirror.rules.load_rules()
 		urls = [tmp['starturls'] for tmp in rules if (tmp and tmp['starturls'] and tmp['rewalk_disabled'] == True)]
 		urls = [item for sub in urls for item in sub]
+		nls = list(set([urllib.parse.urlsplit(url).netloc for url in urls]))
 
 		sess = self.db.get_db_session()
 		ago = datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS + 2)
@@ -96,38 +99,54 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		chunk_size = 50000
 		ids_tot = maxid - minid
 		affected = 0
-		for chunk in range(minid, maxid, chunk_size):
+		for chunk in tqdm.tqdm(range(minid, maxid, chunk_size)):
 			while 1:
 				try:
-					self.log.info("Doing general unspecified netloc retrigger.")
-					q = sess.query(self.db.WebPages)                      \
-						.filter(self.db.WebPages.state != 'new')     \
-						.filter(self.db.WebPages.fetchtime < ago)         \
-						.filter(self.db.WebPages.id < (chunk + chunk_size)) \
-						.filter(self.db.WebPages.id >= chunk)
+					q = sess.query(self.db.WebPages)                            \
+						.filter(self.db.WebPages.state != 'new')                \
+						.filter(self.db.WebPages.state != 'error')              \
+						.filter(self.db.WebPages.state != 'removed')            \
+						.filter(self.db.WebPages.state != 'disabled')           \
+						.filter(self.db.WebPages.state != 'specialty_blocked')  \
+						.filter(self.db.WebPages.state != 'specialty_deferred') \
+						.filter(self.db.WebPages.fetchtime < ago)               \
+						.filter(self.db.WebPages.id < (chunk + chunk_size))     \
+						.filter(self.db.WebPages.id >= chunk)                   \
+						.filter(not_(self.db.WebPages.netloc.in_(nls)))
 
-					for url in urls:
-						nl = urllib.parse.urlsplit(url).netloc
-						q = q.filter(self.db.WebPages.netloc != nl)
-
-					affected_rows = q.update({"state" : "new"})
+					affected_rows = q.update({"state" : "new"}, synchronize_session=False)
 					affected += affected_rows
 					sess.commit()
-					self.log.info("Updated for all unspecified netlocs - %s rows (%s total), Id: %s, %f%% done.",
-						affected_rows, affected, chunk, ((chunk - minid) / ids_tot) * 100)
+					# self.log.info("Updated for all unspecified netlocs - %s rows (%s total), Id: %s, %f%% done.",
+					# 	affected_rows, affected, chunk, ((chunk - minid) / ids_tot) * 100)
 					break
 				except sqlalchemy.exc.InternalError:
-					self.log.info("Transaction error. Retrying.")
 					sess.rollback()
+					self.log.warning("InternalError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
 				except sqlalchemy.exc.OperationalError:
-					self.log.info("Transaction error. Retrying.")
 					sess.rollback()
+					self.log.warning("OperationalError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
 				except sqlalchemy.exc.IntegrityError:
-					self.log.info("Transaction error. Retrying.")
 					sess.rollback()
+					self.log.warning("IntegrityError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
 				except sqlalchemy.exc.InvalidRequestError:
-					self.log.info("Transaction error. Retrying.")
 					sess.rollback()
+					self.log.warning("InvalidRequestError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
+					raise
+
+				except RecursionError:
+					self.log.info("Recursion error!")
+
+					sess.rollback()
+					print(q)
 
 
 	def go(self):

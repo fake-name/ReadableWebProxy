@@ -124,7 +124,7 @@ class NuReleaseItem(common.db_base.Base):
 
 	fetch_attempts   = Column(Integer,  index=True, default=0, nullable=False)
 
-	resolved         = relationship("NuResolvedOutbound")
+	resolved         = relationship("NuResolvedOutbound", backref='release')
 
 	__table_args__ = (
 		UniqueConstraint('seriesname', 'releaseinfo', 'groupinfo', 'outbound_wrapper'),

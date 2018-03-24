@@ -424,6 +424,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		cursor.execute("""DELETE FROM web_pages_version WHERE web_pages_version.id = %s AND web_pages_version.url = %s;""", (rid, joburl))
 		self.db_interface.commit()
 
+	def set_special_case_blocked(self, rid, joburl):
+		self.log.warning("Deleting job for url: '%s'", joburl)
+		cursor = self.db_interface.cursor()
+		cursor.execute("""UPDATE web_pages         SET state='specialty_blocked' WHERE web_pages.id = %s         AND web_pages.url = %s;""", (rid, joburl))
+		self.db_interface.commit()
+
 	def fill_jobs(self):
 		if 'drain' in sys.argv:
 			return
@@ -682,7 +688,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			if not self.outbound_job_wanted(netloc, joburl):
 				self.delete_job(rid, joburl)
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
-				WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc, self)
+				try:
+					WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc, self)
+				except WebMirror.SpecialCase.SpecialCaseFilterMissing:
+					self.set_special_case_blocked(rid, joburl)
 			else:
 				# Do not route the rss fetches through the rate-limiting system.
 				if joburl in self.feed_urls:

@@ -32,6 +32,9 @@ BAD_RESOLVES = [
 	'novelsnao.com/?reqp=1&reqr=',
 	'data:application/javascript',
 ]
+GONE_RESOLVES = [
+	'www1.trungtnguyen123.org',
+]
 
 
 # Remove blogspot garbage subdomains from the TLD (if present)
@@ -291,6 +294,9 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				else:
 					raise RuntimeError("Response to unknown call: %s!" % new)
 
+				if respurl.endswith("?m=1"):
+					respurl = respurl[:-len("?m=1")]
+
 				self.log.info("Processing remote head response: %s", new)
 				self.log.info("Resolved job to URL: %s", respurl)
 				self.log.info("Page title: %s", title)
@@ -386,10 +392,25 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					self.mon_con.incr('validated', 1)
 
 				else:
+					bad = []
+
+					# If the item resolves out to a url that indicates a squatter,
+					# drop it immediately
+					for resolve in valid.resolved:
+						bad.append(any([tmp in resolve.actual_target for tmp in GONE_RESOLVES]))
+					if any(bad):
+						self.log.warning("Domain appears to now be gone. Disabling.")
+						have.reviewed = 'rejected'
+						have.validated = True
+						return
+
+
 					self.log.error("Invalid or not-matching URL set for wrapper!")
 
 					for lookup in valid.resolved:
 						self.log.error("	Resolved URL: %s", lookup.actual_target)
+
+
 
 					self.log.info("Deleting oldest value.")
 					oldest_time = datetime.datetime.max
