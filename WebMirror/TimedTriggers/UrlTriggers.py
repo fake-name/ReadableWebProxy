@@ -82,9 +82,9 @@ class HourlyPageTrigger(PageTriggerBase):
 		# RoyalRoadL
 
 		'https://www.royalroadl.com/fictions/new-releases',
-		'https://www.royalroadl.com/fictions/weekly-popular',
+		# 'https://www.royalroadl.com/fictions/weekly-popular',
 		'https://www.royalroadl.com/fictions/latest-updates',
-		'https://www.royalroadl.com/fictions/active-popular',
+		# 'https://www.royalroadl.com/fictions/active-popular',
 		# 'http://royalroadl.com/fictions/best-rated/',
 
 		# Japtem bits

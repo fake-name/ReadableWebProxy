@@ -18,6 +18,7 @@ import common.management.file_cleanup
 
 from config import C_RAW_RESOURCE_DIR
 from sqlalchemy_continuum.utils import version_table
+import common.global_constants
 
 
 
@@ -46,9 +47,11 @@ def exposed_purge_raw_invalid_urls():
 	with tqdm(total=res) as pbar:
 		bad = 0
 		for row in sess1.query(db.RawWebPages).yield_per(1000):
-			if not any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
+			modules_wants_url = any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES])
+			has_badwords      = any([badword in row.url for badword in common.global_constants.GLOBAL_BAD_URLS])
+			if not modules_wants_url or has_badwords:
 				last_bad = row.netloc
-				# print("Unwanted: ", row.url)
+				print("Unwanted: ", row.url)
 				# sess1.delete(row)
 
 				changed_rows = sess2.query(db.RawWebPages) \
@@ -103,7 +106,9 @@ def exposed_purge_raw_invalid_urls_from_history():
 		bad = 0
 
 		for rurl, rnetloc in sess1.query(ctbl.c.url, ctbl.c.netloc).yield_per(1000):
-			if not any([mod.cares_about_url(rurl) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES]):
+			modules_wants_url = any([mod.cares_about_url(rurl) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES])
+			has_badwords      = any([badword in rurl for badword in common.global_constants.GLOBAL_BAD_URLS])
+			if not modules_wants_url or has_badwords:
 				last_bad = rnetloc
 				# print("Unwanted: ", rurl)
 

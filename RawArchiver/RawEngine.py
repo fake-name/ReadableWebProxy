@@ -241,6 +241,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			if module.cares_about_url(link):
 				return link
 
+
 		return None
 
 	def filterLinks(self, links):

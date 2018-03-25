@@ -125,9 +125,15 @@ GLOBAL_BAD_URLS = [
 			'ww12.circustranslations.com',
 			'www1.trungtnguyen123.org',
 			'.temp.domains',
+			'https:/68.media.tumblr.com',
+			'https%3A/68.media.tumblr.com',
+			'/68.media.tumblr.com',
 
 			# Spanish. I don't want to waste disk space on this.
 			'novelasymangasjpo.blogspot.com',
+
+			# Lawl
+			'/<?php',
 	]
 
 
