@@ -1,4 +1,4 @@
-Copyright (c) 2016, Connor Wolf
+Copyright (c) 2016-2018, Connor Wolf
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
