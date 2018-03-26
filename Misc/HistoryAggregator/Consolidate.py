@@ -268,9 +268,23 @@ class DbFlattener(object):
 			sess.expire_all()
 
 		worker_count = 4
-		with concurrent.futures.ProcessPoolExecutor(max_workers = worker_count) as executor:
-			executor.map(incremental_history_consolidate, batch(end, 50))
-			executor.shutdown()
+
+		res = []
+		executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+		for paramset in batch(end, 50):
+			future = executor.submit(incremental_history_consolidate, paramset)
+			res.append(future)
+
+			# After pushing 100 param sets, consume the responses.
+			if len(res) > 100:
+				self.log.info("Processing results incrementally.")
+				while res:
+					res.pop().result()
+				executor.shutdown()
+				del executor
+				executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+
+		executor.shutdown()
 
 			# for res in batch_res:
 			# 	self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
