@@ -14,6 +14,7 @@ import calendar
 # from pympler import tracker
 import objgraph
 import code
+import concurrent.futures
 
 import sqlalchemy.exc
 
@@ -266,19 +267,13 @@ class DbFlattener(object):
 			sess.flush()
 			sess.expire_all()
 
-		remaining = len(end)
-		for batched in batch(end, 50):
+		worker_count = 4
+		with concurrent.futures.ProcessPoolExecutor(max_workers = worker_count) as executor:
+			executor.map(incremental_history_consolidate, batch(end, 50))
+			executor.shutdown()
 
-			p = multiprocessing.Process(target=incremental_history_consolidate, args=(batched, ))
-			p.start()
-			p.join()
-
-			remaining = remaining - len(batched)
-			self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
-
-			print("Growth:")
-			growth = objgraph.show_growth(limit=10)
-			print(growth)
+			# for res in batch_res:
+			# 	self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
 
 
 	def incremental_consolidate(self, batched):

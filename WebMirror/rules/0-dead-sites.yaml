@@ -223,13 +223,13 @@ baseUrl: [
 	'http://www.watashiwasugoidesu.wordpress.com',
 
 	# Squatters
-	'http://ww1.absurdtl.com/',
-	'http://ww1.circustranslations.com/',
-	'http://ww12.circustranslations.com/',',
+	'http://ww1.absurdtl.com',
+	'http://ww1.circustranslations.com',
+	'http://ww12.circustranslations.com',
 	'http://www1.trungtnguyen123.org',
 
 	# Lol, idiots can't type.
-	'foruwww.wuxiaworld.com',
+	'http://foruwww.wuxiaworld.com',
 	]
 
 
