@@ -60,8 +60,8 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 			chunk = ids[chunk:chunk+chunk_size]
 			while 1:
 				try:
-					q = sess.query(self.db.WebPages)                     \
-						.filter(self.db.WebPages.id.in_(chunk))
+					q = sess.query(self.db.WebPages)
+					q = q.filter(self.db.RawWebPages.id.in_(chunk))
 
 					affected_rows = q.update({"state" : "new", "ignoreuntiltime" : datetime.datetime.min}, synchronize_session=False)
 					sess.commit()
@@ -102,17 +102,17 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		for chunk in tqdm.tqdm(range(minid, maxid, chunk_size)):
 			while 1:
 				try:
-					q = sess.query(self.db.WebPages)                            \
-						.filter(self.db.WebPages.state != 'new')                \
-						.filter(self.db.WebPages.state != 'error')              \
-						.filter(self.db.WebPages.state != 'removed')            \
-						.filter(self.db.WebPages.state != 'disabled')           \
-						.filter(self.db.WebPages.state != 'specialty_blocked')  \
-						.filter(self.db.WebPages.state != 'specialty_deferred') \
-						.filter(self.db.WebPages.fetchtime < ago)               \
-						.filter(self.db.WebPages.id < (chunk + chunk_size))     \
-						.filter(self.db.WebPages.id >= chunk)                   \
-						.filter(not_(self.db.WebPages.netloc.in_(nls)))
+					q = sess.query(self.db.WebPages)
+					q = q.filter(self.db.WebPages.state != 'new')
+					q = q.filter(self.db.WebPages.state != 'error')
+					q = q.filter(self.db.WebPages.state != 'removed')
+					q = q.filter(self.db.WebPages.state != 'disabled')
+					q = q.filter(self.db.WebPages.state != 'specialty_blocked')
+					q = q.filter(self.db.WebPages.state != 'specialty_deferred')
+					q = q.filter(self.db.WebPages.fetchtime < ago)
+					q = q.filter(self.db.WebPages.id < (chunk + chunk_size))
+					q = q.filter(self.db.WebPages.id >= chunk)
+					q = q.filter(not_(self.db.WebPages.netloc.in_(nls)))
 
 					affected_rows = q.update({"state" : "new"}, synchronize_session=False)
 					affected += affected_rows

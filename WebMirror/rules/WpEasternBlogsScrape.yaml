@@ -1318,8 +1318,6 @@ baseUrl: [
 	'http://nippleless.nl',
 	'http://www.raisminetranslations.com',
 	'http://xaiomoge.com',
-	'https://ytnb01.pressbooks.com',
-	'https://ytnb06.pressbooks.com',
 
 
 
@@ -1469,6 +1467,7 @@ baseUrl: [
 	'https://yomigaerutranslation.wordpress.com',
 	'https://ytnb03.pressbooks.com',
 	'https://yukigatokeru.wordpress.com',
+	'https://3dmumnovellovers.wordpress.com',
 
 	'https://nononosanctuary.xyz',
 	'https://shosetsu.ninja',
@@ -1482,6 +1481,25 @@ baseUrl: [
 	'http://tiffybook.wordpress.com/',
 	'https://tttranslations.wordpress.com/',
 	'http://www.novelsground.wordpress.com/',
+
+	'http://brotakus.com',
+	'https://bakakashira.wordpress.com',
+	'https://idlebearkun.wordpress.com',
+	'https://lonelytreetranslation.wordpress.com',
+	'https://oniichancorner.wordpress.com',
+	'https://pipaweboo.wordpress.com',
+	'https://sakurasouthetranslation.wordpress.com',
+	'https://supertranslation225613631.wordpress.com',
+	'https://zettairyouikitrans.wordpress.com',
+
+
+	'https://ytnb01.pressbooks.com',
+	'https://ytnb02.pressbooks.com',
+	'https://ytnb03.pressbooks.com',
+	'https://ytnb04.pressbooks.com',
+	'https://ytnb05.pressbooks.com',
+	'https://ytnb06.pressbooks.com',
+
 	]
 
 

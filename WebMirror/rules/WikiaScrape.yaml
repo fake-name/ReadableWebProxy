@@ -13,6 +13,11 @@ baseUrl: [
 		"http://re-monster.wikia.com/",
 
 		"http://mahou-shoujo-ikusei-keikaku.wikia.com/",
+
+		'http://the-legendary-moonlight-sculptor.wikia.com',
+		'http://strikewitches.wikia.com',
+		'http://artonelico.wikia.com',
+
 	]
 
 

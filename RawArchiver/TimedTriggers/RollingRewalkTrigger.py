@@ -57,8 +57,8 @@ class RollingRewalkTriggerBase(RawArchiver.TimedTriggers.TriggerBase.TriggerBase
 			chunk = ids[chunk:chunk+chunk_size]
 			while 1:
 				try:
-					q = sess.query(self.db.RawWebPages)                     \
-						.filter(self.db.RawWebPages.id.in_(chunk))
+					q = sess.query(self.db.RawWebPages)
+					q = q.filter(self.db.RawWebPages.id.in_(chunk))
 
 					affected_rows = q.update({"state" : "new", "ignoreuntiltime" : datetime.datetime.min}, synchronize_session=False)
 					sess.commit()
@@ -93,11 +93,11 @@ class RollingRewalkTriggerBase(RawArchiver.TimedTriggers.TriggerBase.TriggerBase
 			while 1:
 				try:
 					self.log.info("Doing general unspecified netloc retrigger.")
-					q = sess.query(self.db.RawWebPages)                      \
-						.filter(self.db.RawWebPages.state != 'new')     \
-						.filter(self.db.RawWebPages.fetchtime < ago)         \
-						.filter(self.db.RawWebPages.id < (chunk + chunk_size)) \
-						.filter(self.db.RawWebPages.id >= chunk)
+					q = sess.query(self.db.RawWebPages)
+					q = q.filter(self.db.RawWebPages.state != 'new')
+					q = q.filter(self.db.RawWebPages.fetchtime < ago)
+					q = q.filter(self.db.RawWebPages.id < (chunk + chunk_size))
+					q = q.filter(self.db.RawWebPages.id >= chunk)
 
 					affected_rows = q.update({"state" : "new"})
 					affected += affected_rows

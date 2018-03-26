@@ -1,0 +1,67 @@
+
+# This is a particularly garbage site that is ENTIRELY rendered in javascript bullshit.
+
+type: eastern
+
+
+send_raw_feed: False
+
+baseUrl: [
+		'https://www.eanovel.com/',
+
+	]
+
+special_case_filters : {
+	"www.eanovel.com" : ["chrome_render_fetch"],
+}
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			'/assets/css/assets/',
+			'/js/assets/js/',
+			'/assets/js/assets/',
+			'/js/assets/js/images/',
+			'/js/images/assets/',
+			'cms/download.php?auth=',
+			'/<cms:show k_page_link',
+
+			'/images/images/',
+			'/css/images/assets/',
+			'/images/images/',
+			'/images/assets/css/images/',
+			'/assets/js/images/',
+
+			'/css/images/css/',
+			'/css/css/',
+			'/images/css/images/',
+
+			'/search.php?',
+
+			]
+
+
+
+decomposeBefore: [
+	{'class'      : 'comments-area'},
+]
+
+decompose: [
+	{'id'     : 'popup'},
+	{'id'     : 'errorb'},
+	{'id'     : 'header-menu'},
+	{'id'     : 'header-logo'},
+	{'id'     : 'header-submenu'},
+	{'class'  : 'tools'},
+
+]
+
+stripTitle: [
+]
+
+
+
