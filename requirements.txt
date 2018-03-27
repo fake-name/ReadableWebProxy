@@ -10,7 +10,7 @@ webrequest==0.0.20
 pillow==5.0.0
 
 mprpc==0.1.16
-tqdm==4.19.7
+tqdm==4.19.9
 chardet==3.0.4
 pymysql==0.8.0
 mem_top==0.1.7
