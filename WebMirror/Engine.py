@@ -781,7 +781,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 	########################################################################################################################
 
 
-	def getRpcResp(self):
+	def get_job_item(self):
 		'''
 		Get a job row item from the database.
 
@@ -858,7 +858,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 			}
 
 		Response on error:
-
 			{
 			 'cancontinue': True,
 			 'error': 'unknown',
@@ -948,16 +947,19 @@ class SiteArchiver(LogBase.LoggerMixin):
 		try:
 
 			while runStatus.run_state.value == 1:
-				rpcresp = self.getRpcResp()
-				if not rpcresp:
+				job_item = self.get_job_item()
+				if not job_item:
 					return False
-				self.process_rpc_response(rpcresp)
 
-			# if job.netloc in self.specialty_handlers:
-			# 	self.log.info("Job %s for url %s has a specialty handler!", job, job.url)
-			# 	self.special_case_handle(job)
-			# else:
-			# 	if job:
+				mode = job_item.get("mode", "Unknown")
+
+				if mode == 'remote_fetch':
+					self.process_rpc_response(job_item)
+				elif mode == 'local_fetch':
+					self.synchronousJobRequest(job_item['joburl'], force=False)
+				else:
+					raise RuntimeError("Unknown job item!")
+
 
 		except Exception:
 			# err_f = os.path.join("./logs", "error - {}.txt".format(time.time()))
@@ -1069,13 +1071,16 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 
-	def synchronousJobRequest(self, url, ignore_cache=False):
+	def synchronousJobRequest(self, url, ignore_cache=False, force=True):
 		"""
 		trigger an immediate, synchronous dispatch of a job for url `url`,
 		and return the fetched row upon completion
 
 		"""
-		self.log.info("Manually initiated request for content at '%s'", url)
+		if force:
+			self.log.info("Manually initiated request for content at '%s'", url)
+		else:
+			self.log.info("Local fetch override for content at '%s'", url)
 
 		row = self.get_row(url)
 
@@ -1097,8 +1102,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 				self.log.info("Item has exceeded cache time by text: %s, rsc: %s. (fetchtime: %s) Re-acquiring.", thresh_text_ago, thresh_bin_ago, row.fetchtime)
 
 		row.state     = 'new'
-		row.distance  = self.db.MAX_DISTANCE-2
-		row.priority  = self.db.DB_REALTIME_PRIORITY
+		if force:
+			row.distance  = self.db.MAX_DISTANCE-2
+			row.priority  = self.db.DB_REALTIME_PRIORITY
 
 		# dispatchRequest modifies the row contents directly.
 		self.dispatchRequest(row)
@@ -1136,9 +1142,9 @@ def test():
 	# print("Doneself. Ret:")
 	# print(ins)
 	# print(archiver.resetDlstate())
-	print(archiver.getRpcResp())
-	# print(archiver.getRpcResp())
-	# print(archiver.getRpcResp())
+	print(archiver.get_job_item())
+	# print(archiver.get_job_item())
+	# print(archiver.get_job_item())
 	# print(archiver.taskProcess())
 	pass
 

@@ -48,6 +48,7 @@ def handleRateLimiting(params, rid, joburl, netloc, job_aggregator_instance):
 				RATE_LIMIT_ITEMS[netloc]['ntime'] = time.time()
 			RATE_LIMIT_ITEMS[netloc]['queue'].put((rid, joburl, netloc))
 
+
 def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
 
@@ -98,11 +99,21 @@ def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 
 	job_aggregator_instance.put_job(raw_job)
 
+def localContentFetch(params, rid, joburl, netloc, job_aggregator_instance):
+	log.info("Special case handler for locally fetched content: %s!", joburl)
+	job_aggregator_instance.blocking_put_response(
+		{
+			'mode' : 'local_fetch',
+			'joburl' : joburl,
+			'jobid' : rid
+		}
+	)
 
 dispatchers = {
 	'rate_limit'            : handleRateLimiting,
 	'chrome_render_fetch'   : handleRemoteRenderFetch,
 	'qudian_feed_forward'   : qidianSmartFeedFetch,
+	'local_fetch'           : localContentFetch,
 }
 
 
@@ -138,19 +149,27 @@ def pushSpecialCase(specialcase, rid, joburl, netloc, job_aggregator_instance):
 	Return true if there was a queue responseto handle, false if there was not.
 	'''
 
-
 	if netloc in specialcase:
 		commands = specialcase[netloc]
-	elif joburl in specialcase:
-		commands = specialcase[joburl]
 	else:
-		raise ValueError("SpecialCase handler called for URL (%s, %s) without handler!" % (joburl, netloc))
+		matching_keys = [joburl in tmp for tmp in specialcase.keys()]
+		if matching_keys:
+			assert all([specialcase[matching_keys[0]] == specialcase[match_key] for match_key in matching_keys]), "Multiple keys can only match if all the " + \
+				'special_case handlers for the keys are the same: %s, %s' % (matching_keys, [specialcase[match_key] for match_key in matching_keys])
+			commands = specialcase[matching_keys[0]]
+		else:
+			raise ValueError("SpecialCase handler called for URL (%s, %s) without handler!" % (joburl, netloc))
 
 
 	op, params = commands[0], commands[1:]
 
 	if op in dispatchers:
-		return dispatchers[op](params, rid, joburl, netloc, job_aggregator_instance)
+		return dispatchers[op](
+			params                  = params,
+			rid                     = rid,
+			joburl                  = joburl,
+			netloc                  = netloc,
+			job_aggregator_instance = job_aggregator_instance)
 	else:
 		log.error("Error! Unknown special-case filter!")
 		log.error("Filter name: '%s', parameters: '%s', job conf: '%s'", op, params, (rid, joburl, netloc))

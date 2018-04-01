@@ -132,6 +132,13 @@ skip_filters : [
 							https://www\\.royalroadl\\.com/fictions/active\\-popular$", True],
 ]
 
+special_case_filters : {
+	"royalroadl.com/api/" : ["local_fetch", ],
+	# "royalroadl.com" : ["local_fetch", ],
+	# "www.royalroadl.com" : ["local_fetch", ],
+}
+
+
 
 decompose: [
 	{"class" : "tgrpmainheader"},

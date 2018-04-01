@@ -130,7 +130,8 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 		self.print_mod = 0
 
 
-	def __blocking_put_response(self, item):
+	def blocking_put_response(self, item):
+		assert 'mode' in item, "Response items must have a mode key!"
 		while self.run_flag.value == 1:
 			try:
 				self.normal_out_queue.put_nowait(item)
@@ -160,6 +161,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 				return
 
 			if tmp:
+				assert 'mode' not in tmp, "No mode key allowed in rpc response!"
 
 				nl = None
 				if 'extradat' in tmp and 'netloc' in tmp['extradat']:
@@ -183,7 +185,8 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
 
-				self.__blocking_put_response(tmp)
+				tmp['mode'] = 'remote_fetch'
+				self.blocking_put_response(tmp)
 			else:
 
 				with self.system_state['lock']:
@@ -274,11 +277,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 
 	loggerPath = "Main.JobDispatcher"
 
-	def __init__(self, mode, run_flag, system_state):
+	def __init__(self, mode, job_queue, run_flag, system_state):
 		# print("Job __init__()")
 		self.loggerPath = "Main.JobDispatcher(%s)" % mode
 
 		super().__init__()
+
 
 		self.last_rx = datetime.datetime.now()
 
@@ -289,6 +293,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				password = settings.DATABASE_PASS,
 				host     = settings.DATABASE_IP,
 			)
+
+		# We need the job queue because the special case system can skip the rpc stuff entirely.
+		self.normal_out_queue = job_queue
 
 		self.system_state = system_state
 		self.jq_mode      = mode
@@ -313,6 +320,17 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		self.log.info("Have %s netloc-filtered skip-limit regexes.", len(self.rate_limit_skip))
 
 		self.print_mod = 0
+
+
+	def blocking_put_response(self, item):
+		assert 'mode' in item, "Response items must have a mode key!"
+		while self.run_flag.value == 1:
+			try:
+				self.normal_out_queue.put_nowait(item)
+				return
+			except queue.Full:
+				self.log.warning("Response queue full (%s items). Sleeping", self.normal_out_queue.qsize())
+				time.sleep(1)
 
 
 	def join_proc(self):
@@ -748,9 +766,9 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 			'lock'        : threading.Lock()
 		}
 
-		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.run_flag, system_state)
-		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.run_flag, system_state)
-		random_fetch_proc   = RpcJobDispatcherInternal('random',     self.run_flag, system_state)
+		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state)
+		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state)
+		random_fetch_proc   = RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state)
 		job_consumer_proc   = RpcJobConsumerInternal(self.job_queue, self.run_flag, system_state)
 
 

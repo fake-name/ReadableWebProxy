@@ -46,7 +46,7 @@ import common.get_rpyc
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
 	sess = db.get_db_session()
-	for ruleset in [rset for rset in rules if rset['starturls']]:
+	for ruleset in [rset for rset in rules if rset['starturls'] and rset['rewalk_disabled'] is False]:
 		for starturl in ruleset['starturls']:
 			have = sess.query(db.WebPages) \
 				.filter(db.WebPages.url == starturl)   \

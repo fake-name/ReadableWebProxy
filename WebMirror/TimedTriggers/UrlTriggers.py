@@ -5,6 +5,7 @@ import abc
 import WebMirror.rules
 import WebMirror.TimedTriggers.TriggerBase
 import WebRequest
+import settings
 
 class UrlTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
@@ -80,6 +81,9 @@ class PageTriggerBase(UrlTrigger):
 class HourlyPageTrigger(PageTriggerBase):
 	pages = [
 		# RoyalRoadL
+
+		'https://royalroadl.com/api/fiction/updates?apiKey='     + settings.RRL_API_KEY,
+		'https://royalroadl.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
 
 		'https://www.royalroadl.com/fictions/new-releases',
 		# 'https://www.royalroadl.com/fictions/weekly-popular',
