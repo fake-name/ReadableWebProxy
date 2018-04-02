@@ -14,6 +14,7 @@ from sqlalchemy import or_
 from sqlalchemy import and_
 from sqlalchemy import not_
 from sqlalchemy import func
+from sqlalchemy import text
 import common.database as dbm
 
 import WebMirror.rules
@@ -89,37 +90,55 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		urls = [item for sub in urls for item in sub]
 		nls = list(set([urllib.parse.urlsplit(url).netloc for url in urls]))
 
+		# Disallow nulls.
+		nls = tuple([tmp for tmp in nls if tmp])
+
 		sess = self.db.get_db_session()
 		ago = datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS + 2)
 
 		minid = sess.query(func.min(self.db.WebPages.id)).scalar()
 		maxid = sess.query(func.max(self.db.WebPages.id)).scalar()
 
-		print(minid, maxid)
+		update_query = text("""
+			UPDATE
+				web_pages
+			SET
+				state = 'new'
+			WHERE
+					state IN ('new', 'error', 'removed', 'disabled', 'specialty_blocked', 'specialty_deferred')
+				AND
+					fetchtime < :fetch_time_ago
+				AND
+					id <  :max_rid
+				AND
+					id >= :min_rid
+				AND
+					netloc NOT IN :netloc_list
+			""")
+
+		self.log.info("Have to process from ID %s to %s", minid, maxid)
 		chunk_size = 50000
-		ids_tot = maxid - minid
 		affected = 0
-		for chunk in tqdm.tqdm(range(minid, maxid, chunk_size)):
+		pbar = tqdm.tqdm(range(minid, maxid, chunk_size))
+		for chunk in pbar:
 			while 1:
 				try:
-					q = sess.query(self.db.WebPages)
-					q = q.filter(self.db.WebPages.state != 'new')
-					q = q.filter(self.db.WebPages.state != 'error')
-					q = q.filter(self.db.WebPages.state != 'removed')
-					q = q.filter(self.db.WebPages.state != 'disabled')
-					q = q.filter(self.db.WebPages.state != 'specialty_blocked')
-					q = q.filter(self.db.WebPages.state != 'specialty_deferred')
-					q = q.filter(self.db.WebPages.fetchtime < ago)
-					q = q.filter(self.db.WebPages.id < (chunk + chunk_size))
-					q = q.filter(self.db.WebPages.id >= chunk)
-					q = q.filter(not_(self.db.WebPages.netloc.in_(nls)))
+					ret = sess.execute(update_query,
+							{
+								'fetch_time_ago' : ago,
+								'max_rid'        : chunk + chunk_size,
+								'min_rid'        : chunk,
+								'netloc_list'    : nls,
+							}
+						)
 
-					affected_rows = q.update({"state" : "new"}, synchronize_session=False)
-					affected += affected_rows
+					affected += ret.rowcount
 					sess.commit()
-					# self.log.info("Updated for all unspecified netlocs - %s rows (%s total), Id: %s, %f%% done.",
-					# 	affected_rows, affected, chunk, ((chunk - minid) / ids_tot) * 100)
+					desc = 'Changed: %10i' % (affected, )
+					pbar.set_description(desc)
+
 					break
+
 				except sqlalchemy.exc.InternalError:
 					sess.rollback()
 					self.log.warning("InternalError error. Retrying.")
@@ -144,9 +163,7 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 				except RecursionError:
 					self.log.info("Recursion error!")
-
 					sess.rollback()
-					print(q)
 
 
 	def go(self):

@@ -3328,8 +3328,8 @@
   "2018-03-22T05:11:41.468268"
  ],
  "Kaede-san 721": [
-  "\ndef extractKaedesan721TumblrCom(item):\n\t'''\n\tParser for 'kaedesan721.tumblr.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
-  "2018-03-16T21:53:34.084710"
+  "def extractKaedesan721TumblrCom(item):\n\t'''\n\tParser for 'kaedesan721.tumblr.com'\n\t'''\n\t\n\tbad_tags = ['FanArt', \"htr asks\", 'Spanish translations', 'htr anime','my thoughts', 'Cats', 'answered', 'ask meme']\n\t\n\tif any([bad in item['tags'] for bad in bad_tags]):\n\t\treturn None\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False",
+  "2018-04-01T05:15:59.788919"
  ],
  "Kaelpie": [
   "def extractKaelpieWordpressCom(item):\n\t'''\n\tParser for 'kaelpie.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('Magi\\'s Grandson',       'Magi\\'s Grandson',                      'translated'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False",

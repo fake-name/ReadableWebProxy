@@ -300,5 +300,8 @@ GLOBAL_INLINE_BULLSHIT = [
 			"Read The Lazy Swordmaster on Lightnovelbastion.com",
 
 			"Property of © Fantasy-Books.live; outside of it, it is stolen.",
+			'This is translated at nakimushitl.wordpress.com, please don’t post elsewhere.',
+			'Please don’t post elsewhere.',
+			'translated at nakimushitl.wordpress.com',
 
 ]

@@ -152,10 +152,14 @@ def pushSpecialCase(specialcase, rid, joburl, netloc, job_aggregator_instance):
 	if netloc in specialcase:
 		commands = specialcase[netloc]
 	else:
-		matching_keys = [joburl in tmp for tmp in specialcase.keys()]
+		matching_keys = [joburl for tmp in specialcase.keys() if joburl in tmp]
 		if matching_keys:
-			assert all([specialcase[matching_keys[0]] == specialcase[match_key] for match_key in matching_keys]), "Multiple keys can only match if all the " + \
-				'special_case handlers for the keys are the same: %s, %s' % (matching_keys, [specialcase[match_key] for match_key in matching_keys])
+			if not all([specialcase[matching_keys[0]] == specialcase[match_key] for match_key in matching_keys]):
+				errstr = "Multiple keys can only match if all the special_case handlers for the keys are the same: %s, %s (%s)" % (
+					matching_keys,
+					[specialcase[match_key] for match_key in matching_keys if match_key in specialcase],
+					(rid, joburl, netloc))
+				assert True, errstr
 			commands = specialcase[matching_keys[0]]
 		else:
 			raise ValueError("SpecialCase handler called for URL (%s, %s) without handler!" % (joburl, netloc))

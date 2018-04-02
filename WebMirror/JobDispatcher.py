@@ -699,13 +699,20 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
+		special_case = 0
+		defer_count = 0
+		del_count = 0
+		immediate = 0
 		defer = []
 		for rid, netloc, joburl in rids:
 			if "booksie" in netloc:
 				continue
 			if not self.outbound_job_wanted(netloc, joburl):
+				del_count += 1
 				self.delete_job(rid, joburl)
+
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
+				special_case += 1
 				try:
 					WebMirror.SpecialCase.pushSpecialCase(self.specialcase, rid, joburl, netloc, self)
 				except WebMirror.SpecialCase.SpecialCaseFilterMissing:
@@ -713,13 +720,19 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			else:
 				# Do not route the rss fetches through the rate-limiting system.
 				if joburl in self.feed_urls:
+					immediate += 1
 					self.log.info("Skipping fetch limiter due to feed URL")
 					self.put_fetch_job(rid, joburl, netloc)
 				elif netloc in self.rate_limit_skip and self.rate_limit_skip[netloc].search(joburl):
+					immediate += 1
 					self.log.info("Skipping fetch limiter due to rate_limit_skip for URL: '%s'", joburl)
 					self.put_fetch_job(rid, joburl, netloc)
 				else:
+					defer_count += 1
 					defer.append((rid, joburl, netloc))
+
+		self.log.info("Of %s job IDs, %s were special-case, %s were rate-limited, %s were immediately dispatched, %s deleted.",
+				len(rids), special_case, defer_count, immediate, del_count)
 
 		with self.system_state['lock']:
 			for rid_d, joburl_d, netloc_d in defer:
