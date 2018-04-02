@@ -7,7 +7,7 @@ git+https://github.com/fake-name/ChromeController.git
 
 webrequest==0.0.20
 
-pillow==5.0.0
+pillow==5.1.0
 
 mprpc==0.1.16
 tqdm==4.19.9
