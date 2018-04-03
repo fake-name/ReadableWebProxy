@@ -206,8 +206,11 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 								'outbound_wrapper' : linkfq,
 								'actual_target'    : None,
 							}
-							# print("Link: ", link['href'])
-							releases.append(release)
+
+							# Don't bother triggering qidian stuff, I track that better externally.
+							if 'Qidian International' not in gname:
+								releases.append(release)
+
 							ref_pages.add(referrer)
 
 		for spage in ref_pages:

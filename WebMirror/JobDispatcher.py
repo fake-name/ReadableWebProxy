@@ -561,17 +561,21 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				        FROM
 				            web_pages
 				        WHERE
-				            web_pages.state = 'new'
+				            web_pages.state = 'new'::dlstate_enum
 				        AND
 				            normal_fetch_mode = true
 				        AND
 				            web_pages.distance < 1000000
 				        AND
+				            web_pages.file IS NULL
+				        AND
+				            web_pages.content IS NULL
+				        AND
 				            web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 				        LIMIT {in_flight}
 				    )
 				AND
-				    web_pages.state = 'new'
+				    web_pages.state = 'new'::dlstate_enum
 				RETURNING
 				    web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
@@ -588,7 +592,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				        FROM
 				            web_pages
 				        WHERE
-				            web_pages.state = 'new'
+				            web_pages.state = 'new'::dlstate_enum
 				        AND
 				            normal_fetch_mode = true
 				        AND
@@ -596,7 +600,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				        LIMIT {in_flight}
 				    )
 				AND
-				    web_pages.state = 'new'
+				    web_pages.state = 'new'::dlstate_enum
 				RETURNING
 				    web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
@@ -613,13 +617,13 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				        FROM
 				            web_pages
 				        WHERE
-				            web_pages.state = 'new'
+				            web_pages.state = 'new'::dlstate_enum
 				        AND
 				            normal_fetch_mode = true
 				        AND
-				            web_pages.priority = (
+				            web_pages.priority < (
 				               SELECT
-				                    min(priority)
+				                    min(priority) + 10
 				                FROM
 				                    web_pages
 				                WHERE
@@ -638,7 +642,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				        LIMIT {in_flight}
 				    )
 				AND
-				    web_pages.state = 'new'
+				    web_pages.state = 'new'::dlstate_enum
 				RETURNING
 				    web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
@@ -699,13 +703,18 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
+		processed = 0
 		special_case = 0
+		booksie = 0
 		defer_count = 0
 		del_count = 0
 		immediate = 0
 		defer = []
 		for rid, netloc, joburl in rids:
-			if "booksie" in netloc:
+			processed += 1
+			if "booksie.com" in netloc:
+				booksie += 1
+				print(netloc)
 				continue
 			if not self.outbound_job_wanted(netloc, joburl):
 				del_count += 1
@@ -731,8 +740,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 					defer_count += 1
 					defer.append((rid, joburl, netloc))
 
-		self.log.info("Of %s job IDs, %s were special-case, %s were rate-limited, %s were immediately dispatched, %s deleted.",
-				len(rids), special_case, defer_count, immediate, del_count)
+		self.log.info("Of %s job IDs, %s were special-case, %s were rate-limited, %s were immediately dispatched, %s deleted, %s booksie (%s proc).",
+				len(rids), special_case, defer_count, immediate, del_count, booksie, processed)
 
 		with self.system_state['lock']:
 			for rid_d, joburl_d, netloc_d in defer:

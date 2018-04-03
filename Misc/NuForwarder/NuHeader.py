@@ -34,6 +34,8 @@ BAD_RESOLVES = [
 ]
 GONE_RESOLVES = [
 	'www1.trungtnguyen123.org',
+	'www1.faktranslations.com',
+	'faktranslations.com',
 ]
 
 
@@ -102,118 +104,123 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		super().__init__()
 
 		self.name_lut, self.group_lut = load_lut()
-		self.db_sess = db.get_db_session(postfix='nu_header')
+		# db_sess = db.get_db_session(postfix='nu_header')
 
 		if connect:
 			self.check_open_rpc_interface()
 
 
 	def put_job(self, put=3):
-		self.log.info("Loading rows to fetch...")
-		recent_d = datetime.datetime.now() - datetime.timedelta(hours=72)
-		recentq = self.db_sess.query(db.NuReleaseItem)                \
-			.outerjoin(db.NuResolvedOutbound)                         \
-			.filter(db.NuReleaseItem.validated == False)              \
-			.filter(db.NuReleaseItem.first_seen >= recent_d)          \
-			.filter(db.NuReleaseItem.fetch_attempts < 3)              \
-			.options(joinedload('resolved'))                          \
-			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
-			.order_by(desc(db.NuReleaseItem.first_seen))              \
-			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put*10))
+		with db.session_context() as db_sess:
+			self.log.info("Loading rows to fetch...")
+			recent_d = datetime.datetime.now() - datetime.timedelta(hours=72)
+			recentq = db_sess.query(db.NuReleaseItem)                \
+				.outerjoin(db.NuResolvedOutbound)                         \
+				.filter(db.NuReleaseItem.validated == False)              \
+				.filter(db.NuReleaseItem.first_seen >= recent_d)          \
+				.filter(db.NuReleaseItem.fetch_attempts < 3)              \
+				.options(joinedload('resolved'))                          \
+				.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
+				.order_by(desc(db.NuReleaseItem.first_seen))              \
+				.group_by(db.NuReleaseItem.id)                            \
+				.limit(max(100, put*10))
 
 
-		bulkq = self.db_sess.query(db.NuReleaseItem)                  \
-			.outerjoin(db.NuResolvedOutbound)                         \
-			.filter(db.NuReleaseItem.validated == False)              \
-			.filter(db.NuReleaseItem.fetch_attempts < 3)              \
-			.options(joinedload('resolved'))                          \
-			.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
-			.order_by(desc(db.NuReleaseItem.first_seen))              \
-			.group_by(db.NuReleaseItem.id)                            \
-			.limit(max(100, put*6))
+			bulkq = db_sess.query(db.NuReleaseItem)                  \
+				.outerjoin(db.NuResolvedOutbound)                         \
+				.filter(db.NuReleaseItem.validated == False)              \
+				.filter(db.NuReleaseItem.fetch_attempts < 3)              \
+				.options(joinedload('resolved'))                          \
+				.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
+				.order_by(desc(db.NuReleaseItem.first_seen))              \
+				.group_by(db.NuReleaseItem.id)                            \
+				.limit(max(100, put*6))
 
-		bulkset   = bulkq.all()
-		recentset = recentq.all()
+			bulkset   = bulkq.all()
+			recentset = recentq.all()
 
-		self.log.info("Have %s recent items, %s long-term items to fetch", len(recentset), len(bulkset))
-		haveset   = bulkset + recentset
-		filtered = {tmp.id : tmp for tmp in haveset}
-		haveset = list(filtered.values())
-		self.log.info("Total items after filtering for uniqueness %s", len(haveset))
+			self.log.info("Have %s recent items, %s long-term items to fetch", len(recentset), len(bulkset))
+			haveset   = bulkset + recentset
+			filtered = {tmp.id : tmp for tmp in haveset}
+			haveset = list(filtered.values())
+			self.log.info("Total items after filtering for uniqueness %s", len(haveset))
 
-		if not haveset:
-			self.log.info("No jobs to remote HEAD.")
-			return
+			if not haveset:
+				self.log.info("No jobs to remote HEAD.")
+				return
 
-		# We pick a large number of items, and randomly choose one of them.
-		# This lets us weight the fetch preferentially to the recent items, but still
-		# have some variability.
-		# We prefer to fetch items that'll resolve as fast as possible.
-		preferred_2 = [tmp for tmp in haveset if len(tmp.resolved) == 2]
-		preferred_1 = [tmp for tmp in haveset if len(tmp.resolved) == 1]
-		fallback    = [tmp for tmp in haveset if len(tmp.resolved) == 0]
-
-
-		haveset = random.sample(preferred_2, min(put, len(preferred_2)))
-		if len(haveset) < put:
-			haveset.extend(random.sample(preferred_1, min(put-len(haveset), len(preferred_1))))
-		if len(haveset) < put:
-			haveset.extend(random.sample(fallback, min(put-len(haveset), len(fallback))))
+			# We pick a large number of items, and randomly choose one of them.
+			# This lets us weight the fetch preferentially to the recent items, but still
+			# have some variability.
+			# We prefer to fetch items that'll resolve as fast as possible.
+			preferred_2 = [tmp for tmp in haveset if len(tmp.resolved) == 2]
+			preferred_1 = [tmp for tmp in haveset if len(tmp.resolved) == 1]
+			fallback    = [tmp for tmp in haveset if len(tmp.resolved) == 0]
 
 
-		put = 0
-		active = set()
-
-		for have in haveset:
-			if len(list(have.resolved)) >= 3:
-				raise RuntimeError("Overresolved item that's not valid.")
-
-			if (have.referrer == "http://www.novelupdates.com" or
-				have.referrer == "https://www.novelupdates.com" or
-				have.referrer == "https://www.novelupdates.com/" or
-				have.referrer == "http://www.novelupdates.com/"):
-				self.log.error("Wat?")
-				self.log.error("Bad Referrer URL got into the input queue!")
-				self.log.error("Id: %s", have.id)
-				continue
-			if have.fetch_attempts >= 3:
-				self.log.error("Wat?")
-				self.log.error("Item fetched too many times!")
-				self.log.error("Id: %s", have.id)
-				continue
-
-			if have.outbound_wrapper in active:
-				continue
-			active.add(have.outbound_wrapper)
-
-			have.fetch_attempts += 1
-			self.db_sess.commit()
-
-			self.log.info("Putting job for url '%s', with %s resolves so far", have.outbound_wrapper, len(have.resolved))
-			self.log.info("Referring page '%s'", have.referrer)
+			haveset = random.sample(preferred_2, min(put, len(preferred_2)))
+			if len(haveset) < put:
+				haveset.extend(random.sample(preferred_1, min(put-len(haveset), len(preferred_1))))
+			if len(haveset) < put:
+				haveset.extend(random.sample(fallback, min(put-len(haveset), len(fallback))))
 
 
-			raw_job = buildjob(
-				module         = 'WebRequest',
-				call           = 'getHeadTitleChromium',
-				dispatchKey    = "fetcher",
-				jobid          = -1,
-				args           = [have.outbound_wrapper, have.referrer],
-				kwargs         = {},
-				additionalData = {
-					'mode'        : 'fetch',
-					'wrapper_url' : have.outbound_wrapper,
-					'referrer'    : have.referrer
-					},
-				postDelay      = 0,
-				unique_id      = have.outbound_wrapper,
-				serialize      = 'Nu-Header',
-			)
+			put = 0
+			active = set()
+
+			for have in haveset:
+				if len(list(have.resolved)) >= 3:
+					raise RuntimeError("Overresolved item that's not valid.")
+
+				if (have.referrer == "http://www.novelupdates.com" or
+					have.referrer == "https://www.novelupdates.com" or
+					have.referrer == "https://www.novelupdates.com/" or
+					have.referrer == "http://www.novelupdates.com/"):
+					self.log.error("Wat?")
+					self.log.error("Bad Referrer URL got into the input queue!")
+					self.log.error("Id: %s, ref: %s", have.id, have.referrer)
+					for bad_resolve in have.resolved:
+						db_sess.delete(bad_resolve)
+					db_sess.delete(have)
+					db_sess.commit()
+					continue
+				if have.fetch_attempts >= 3:
+					self.log.error("Wat?")
+					self.log.error("Item fetched too many times!")
+					self.log.error("Id: %s", have.id)
+					continue
+
+				if have.outbound_wrapper in active:
+					continue
+				active.add(have.outbound_wrapper)
+
+				have.fetch_attempts += 1
+				db_sess.commit()
+
+				self.log.info("Putting job for url '%s', with %s resolves so far", have.outbound_wrapper, len(have.resolved))
+				self.log.info("Referring page '%s'", have.referrer)
 
 
-			self.rpc.put_job(raw_job)
-			put += 1
+				raw_job = buildjob(
+					module         = 'WebRequest',
+					call           = 'getHeadTitleChromium',
+					dispatchKey    = "fetcher",
+					jobid          = -1,
+					args           = [have.outbound_wrapper, have.referrer],
+					kwargs         = {},
+					additionalData = {
+						'mode'        : 'fetch',
+						'wrapper_url' : have.outbound_wrapper,
+						'referrer'    : have.referrer
+						},
+					postDelay      = 0,
+					unique_id      = have.outbound_wrapper,
+					serialize      = 'Nu-Header',
+				)
+
+
+				self.rpc.put_job(raw_job)
+				put += 1
 
 		return put
 
@@ -274,176 +281,183 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			self.log.info("No NU Head responses!")
 			return False
 		while True:
-			try:
-				assert all([key in new for key in expected_keys])
+			with db.session_context() as db_sess:
+				try:
+					assert all([key in new for key in expected_keys])
 
-				assert 'referrer'    in new['extradat']
-				assert 'wrapper_url' in new['extradat']
+					assert 'referrer'    in new['extradat']
+					assert 'wrapper_url' in new['extradat']
 
-				if new['call'] == 'getHeadPhantomJS':
-					respurl, title = new['ret'], ""
-				elif new['call'] == 'getHeadTitlePhantomJS' or new['call'] == 'getHeadTitleChromium':
-					if isinstance(new['ret'], (tuple, list)):
-						respurl, title = new['ret']
-					elif isinstance(new['ret'], dict):
-						respurl = new['ret']['url']
-						title   = new['ret']['title']
+					if new['call'] == 'getHeadPhantomJS':
+						respurl, title = new['ret'], ""
+					elif new['call'] == 'getHeadTitlePhantomJS' or new['call'] == 'getHeadTitleChromium':
+						if isinstance(new['ret'], (tuple, list)):
+							respurl, title = new['ret']
+						elif isinstance(new['ret'], dict):
+							respurl = new['ret']['url']
+							title   = new['ret']['title']
+						else:
+							raise RuntimeError("Don't know what the return type of `getHeadTitlePhantomJS` is! Type: %s" % type(new['ret']))
+
 					else:
-						raise RuntimeError("Don't know what the return type of `getHeadTitlePhantomJS` is! Type: %s" % type(new['ret']))
+						raise RuntimeError("Response to unknown call: %s!" % new)
 
-				else:
-					raise RuntimeError("Response to unknown call: %s!" % new)
+					if respurl.endswith("?m=1"):
+						respurl = respurl[:-len("?m=1")]
 
-				if respurl.endswith("?m=1"):
-					respurl = respurl[:-len("?m=1")]
+					self.log.info("Processing remote head response: %s", new)
+					self.log.info("Resolved job to URL: %s", respurl)
+					self.log.info("Page title: %s", title)
 
-				self.log.info("Processing remote head response: %s", new)
-				self.log.info("Resolved job to URL: %s", respurl)
-				self.log.info("Page title: %s", title)
+					# Handle the 301/2 not resolving properly.
+					netloc = urllib.parse.urlsplit(respurl).netloc
+					if "novelupdates" in netloc:
+						self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
+						return True
 
-				# Handle the 301/2 not resolving properly.
-				netloc = urllib.parse.urlsplit(respurl).netloc
-				if "novelupdates" in netloc:
-					self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
-					return True
+					if 'm.wuxiaworld.com' in respurl:
+						respurl = respurl.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
+					if 'tseirptranslations.blogspot.com' in respurl:
+						respurl = respurl.replace('tseirptranslations.blogspot.com', 'tseirptranslations.com')
+					if 'm.xianxiaworld.net' in respurl:
+						respurl = respurl.replace('m.xianxiaworld.net', 'www.xianxiaworld.net')
+					if 'shikkakutranslations.wordpress.com' in respurl:
+						respurl = respurl.replace('shikkakutranslations.wordpress.com', 'shikkakutranslations.com')
 
-				if 'm.wuxiaworld.com' in respurl:
-					respurl = respurl.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
-				if 'tseirptranslations.blogspot.com' in respurl:
-					respurl = respurl.replace('tseirptranslations.blogspot.com', 'tseirptranslations.com')
-				if 'm.xianxiaworld.net' in respurl:
-					respurl = respurl.replace('m.xianxiaworld.net', 'www.xianxiaworld.net')
-				if 'shikkakutranslations.wordpress.com' in respurl:
-					respurl = respurl.replace('shikkakutranslations.wordpress.com', 'shikkakutranslations.com')
-
-				if any([tmp in respurl for tmp in BAD_RESOLVES]):
-					self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)
-					return True
+					if any([tmp in respurl for tmp in BAD_RESOLVES]):
+						self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)
+						return True
 
 
-				if '/?utm_source=feedburner' in respurl:
-					respurl = respurl.split('/?utm_source=feedburner')[0] + "/"
+					if '/?utm_source=feedburner' in respurl:
+						respurl = respurl.split('/?utm_source=feedburner')[0] + "/"
 
 
-				have = self.db_sess.query(db.NuReleaseItem)                                    \
-					.options(joinedload('resolved'))                                           \
-					.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
-					.filter(db.NuReleaseItem.referrer==new['extradat']['referrer'])            \
-					.scalar()
+					have = db_sess.query(db.NuReleaseItem)                                    \
+						.options(joinedload('resolved'))                                           \
+						.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
+						.filter(db.NuReleaseItem.referrer==new['extradat']['referrer'])            \
+						.scalar()
 
-				if not have:
-					self.log.error("Base row deleted from resolve?")
-					return
-
-
-				new = db.NuResolvedOutbound(
-						client_id      = new['user'],
-						client_key     = new['user_uuid'],
-						actual_target  = respurl,
-						resolved_title = title,
-						fetched_on     = datetime.datetime.now(),
-					)
-
-				have.resolved.append(new)
-				self.db_sess.commit()
-
-				self.mon_con.incr('head-received', 1)
-				return True
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.IntegrityError:
-				self.db_sess.rollback()
-
-
-			except Exception:
-				self.mon_con.incr('head-failed', 1)
-				self.log.error("Error when processing job response!")
-				for line in traceback.format_exc().split("\n"):
-					self.log.error(line)
-
-				self.log.error("Contents of head response:")
-
-				for line in pprint.pformat(new).split("\n"):
-					self.log.error(line)
-				return True
-		return False
-
-
-	def validate_from_new(self):
-		have = self.db_sess.query(db.NuReleaseItem)                \
-			.outerjoin(db.NuResolvedOutbound)                      \
-			.filter(db.NuReleaseItem.validated == False)           \
-			.having(func.count(db.NuResolvedOutbound.parent) >= 3) \
-			.group_by(db.NuReleaseItem.id)
-
-		new_items = []
-
-		for valid in have.all():
-			if valid.validated is False:
-				assert len(list(valid.resolved)) >= 3
-				matches = urls_the_same([tmp.actual_target for tmp in valid.resolved if not tmp.disabled])
-				if matches:
-					# Since all the URLs match, just use one of them.
-					valid.actual_target = valid.resolved[0].actual_target
-					new_items.append((valid.seriesname, valid.actual_target))
-					valid.validated = True
-					self.mon_con.incr('validated', 1)
-
-				else:
-					bad = []
-
-					# If the item resolves out to a url that indicates a squatter,
-					# drop it immediately
-					for resolve in valid.resolved:
-						bad.append(any([tmp in resolve.actual_target for tmp in GONE_RESOLVES]))
-					if any(bad):
-						self.log.warning("Domain appears to now be gone. Disabling.")
-						have.reviewed = 'rejected'
-						have.validated = True
+					if not have:
+						self.log.error("Base row deleted from resolve?")
 						return
 
 
-					self.log.error("Invalid or not-matching URL set for wrapper!")
+					new = db.NuResolvedOutbound(
+							client_id      = new['user'],
+							client_key     = new['user_uuid'],
+							actual_target  = respurl,
+							resolved_title = title,
+							fetched_on     = datetime.datetime.now(),
+						)
 
-					for lookup in valid.resolved:
-						self.log.error("	Resolved URL: %s", lookup.actual_target)
+					have.resolved.append(new)
+					db_sess.commit()
+
+					self.mon_con.incr('head-received', 1)
+					return True
+				except sqlalchemy.exc.InvalidRequestError:
+					db_sess.rollback()
+				except sqlalchemy.exc.OperationalError:
+					db_sess.rollback()
+				except sqlalchemy.exc.IntegrityError:
+					db_sess.rollback()
+
+
+				except Exception:
+					self.mon_con.incr('head-failed', 1)
+					self.log.error("Error when processing job response!")
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
+
+					self.log.error("Contents of head response:")
+
+					for line in pprint.pformat(new).split("\n"):
+						self.log.error(line)
+					return True
+			return False
+
+
+	def validate_from_new(self):
+		with db.session_context() as db_sess:
+
+			have = db_sess.query(db.NuReleaseItem)                \
+				.outerjoin(db.NuResolvedOutbound)                      \
+				.filter(db.NuReleaseItem.validated == False)           \
+				.having(func.count(db.NuResolvedOutbound.parent) >= 3) \
+				.group_by(db.NuReleaseItem.id)
+
+			new_items = []
+
+			for valid in have.all():
+				if valid.validated is False:
+					assert len(list(valid.resolved)) >= 3
+					matches = urls_the_same([tmp.actual_target for tmp in valid.resolved if not tmp.disabled])
+					if matches:
+						# Since all the URLs match, just use one of them.
+						valid.actual_target = valid.resolved[0].actual_target
+						new_items.append((valid.seriesname, valid.actual_target))
+						valid.validated = True
+						self.mon_con.incr('validated', 1)
+
+					else:
+						bad = []
+
+						# If the item resolves out to a url that indicates a squatter,
+						# drop it immediately
+						for resolve in valid.resolved:
+							bad.append(any([tmp in resolve.actual_target for tmp in GONE_RESOLVES]))
+						if any(bad):
+							self.log.warning("Domain appears to now be gone. Disabling.")
+							have.reviewed = 'rejected'
+							have.validated = True
+							db_sess.commit()
+							return
+
+
+						self.log.error("Invalid or not-matching URL set for wrapper!")
+
+						for lookup in valid.resolved:
+							self.log.error("	Resolved URL: %s", lookup.actual_target)
 
 
 
-					self.log.info("Deleting oldest value.")
-					oldest_time = datetime.datetime.max
-					oldest_row  = None
+						self.log.info("Masking oldest value.")
+						oldest_time = datetime.datetime.max
+						oldest_row  = None
 
-					for lookup in valid.resolved:
-						if lookup.fetched_on < oldest_time:
-							oldest_row = lookup
-							oldest_time = lookup.fetched_on
-					if oldest_row:
-						self.log.info("Deleting row with ID: %s (%s)", oldest_row.id, oldest_row.actual_target)
-						oldest_row.disabled = True
+						for lookup in valid.resolved:
+							if lookup.fetched_on < oldest_time:
+								oldest_row = lookup
+								oldest_time = lookup.fetched_on
+						if oldest_row:
+							self.log.info("Deleting row with ID: %s (%s)", oldest_row.id, oldest_row.actual_target)
+							oldest_row.disabled = True
 
 
-					self.mon_con.incr('invalidated', 1)
+							db_sess.commit()
 
-		self.db_sess.commit()
-		self.log.info("Added validated series: %s", len(new_items))
-		for new in new_items:
-			self.log.info("	Series: %s", new)
+						self.mon_con.incr('invalidated', 1)
+
+			db_sess.commit()
+			self.log.info("Added validated series: %s", len(new_items))
+			for new in new_items:
+				self.log.info("	Series: %s", new)
 
 	def timestamp_validated(self):
 		self.log.info("Applying a timestamp to all newly validated rows!")
-		unstamped = self.db_sess.query(db.NuReleaseItem)      \
-			.filter(db.NuReleaseItem.validated == True) \
-			.filter(db.NuReleaseItem.validated_on == None) \
-			.all()
+		with db.session_context() as db_sess:
+			unstamped = db_sess.query(db.NuReleaseItem)      \
+				.filter(db.NuReleaseItem.validated == True) \
+				.filter(db.NuReleaseItem.validated_on == None) \
+				.all()
 
-		for item in unstamped:
-			item.validated_on = datetime.datetime.now()
+			for item in unstamped:
+				item.validated_on = datetime.datetime.now()
 
 
-		self.db_sess.commit()
+			db_sess.commit()
 
 
 
@@ -490,59 +504,60 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	def transmit_since(self, earliest=None):
 		if not earliest:
 			earliest = datetime.datetime.min
+		with db.session_context() as db_sess:
+			validated = db_sess.query(db.NuReleaseItem)      \
+				.filter(db.NuReleaseItem.reviewed == 'valid')        \
+				.filter(db.NuReleaseItem.validated == True)       \
+				.filter(db.NuReleaseItem.validated_on > earliest) \
+				.all()
 
-		validated = self.db_sess.query(db.NuReleaseItem)      \
-			.filter(db.NuReleaseItem.reviewed == 'valid')        \
-			.filter(db.NuReleaseItem.validated == True)       \
-			.filter(db.NuReleaseItem.validated_on > earliest) \
-			.all()
+			# print("validated:")
+			# print(len(list(validated)))
 
-		# print("validated:")
-		# print(len(list(validated)))
+			for row in validated:
+				self.do_release(row)
 
-		for row in validated:
-			self.do_release(row)
-
-		self.db_sess.commit()
+		db_sess.commit()
 
 	def fix_names(self):
-		for old, new in self.name_lut.items():
-			have = self.db_sess.query(db.NuReleaseItem)         \
-				.filter(db.NuReleaseItem.seriesname     == old) \
-				.all()
-			for row in have:
-				try:
-					assert row.seriesname == old
-					row.seriesname = new
-					self.log.info("Fixing name row: %s -> %s", old, row.seriesname)
+		with db.session_context() as db_sess:
+			for old, new in self.name_lut.items():
+				have = db_sess.query(db.NuReleaseItem)         \
+					.filter(db.NuReleaseItem.seriesname     == old) \
+					.all()
+				for row in have:
+					try:
+						assert row.seriesname == old
+						row.seriesname = new
+						self.log.info("Fixing name row: %s -> %s", old, row.seriesname)
 
-					self.db_sess.commit()
-				except sqlalchemy.exc.IntegrityError:
-					self.log.error("Failure")
-					traceback.print_exc()
-					self.db_sess.rollback()
-					self.db_sess.delete(row)
-					self.db_sess.commit()
+						db_sess.commit()
+					except sqlalchemy.exc.IntegrityError:
+						self.log.error("Failure")
+						traceback.print_exc()
+						db_sess.rollback()
+						db_sess.delete(row)
+						db_sess.commit()
 
-		for old, new in self.group_lut.items():
-			have = self.db_sess.query(db.NuReleaseItem)         \
-				.filter(db.NuReleaseItem.groupinfo     == old) \
-				.all()
-			for row in have:
-				try:
-					assert row.groupinfo == old
-					row.groupinfo = new
-					self.log.info("Fixing group row: %s -> %s", old, row.groupinfo)
+			for old, new in self.group_lut.items():
+				have = db_sess.query(db.NuReleaseItem)         \
+					.filter(db.NuReleaseItem.groupinfo     == old) \
+					.all()
+				for row in have:
+					try:
+						assert row.groupinfo == old
+						row.groupinfo = new
+						self.log.info("Fixing group row: %s -> %s", old, row.groupinfo)
 
-					self.db_sess.commit()
-				except sqlalchemy.exc.IntegrityError:
-					self.log.error("Failure")
-					traceback.print_exc()
-					self.db_sess.rollback()
-					self.db_sess.delete(row)
-					self.db_sess.commit()
+						db_sess.commit()
+					except sqlalchemy.exc.IntegrityError:
+						self.log.error("Failure")
+						traceback.print_exc()
+						db_sess.rollback()
+						db_sess.delete(row)
+						db_sess.commit()
 
-		self.db_sess.commit()
+			db_sess.commit()
 
 	def review_probable_validated_row(self, row):
 		titles = [tmp.resolved_title for tmp in row.resolved]
@@ -578,27 +593,27 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 	def review_probable_validated(self):
 		self.log.info("Doing optional validation")
+		with db.session_context() as db_sess:
+			new_items = db_sess.query(db.NuReleaseItem)           \
+					.filter(db.NuReleaseItem.validated == True)        \
+					.filter(db.NuReleaseItem.reviewed == 'unverified') \
+					.filter(db.NuReleaseItem.actual_target != None)    \
+					.order_by(desc(db.NuReleaseItem.first_seen))       \
+					.all()
 
-		new_items = self.db_sess.query(db.NuReleaseItem)           \
-				.filter(db.NuReleaseItem.validated == True)        \
-				.filter(db.NuReleaseItem.reviewed == 'unverified') \
-				.filter(db.NuReleaseItem.actual_target != None)    \
-				.order_by(desc(db.NuReleaseItem.first_seen))       \
-				.all()
 
+			unverified = db_sess.query(db.NuReleaseItem)           \
+					.filter(db.NuReleaseItem.validated == False)        \
+					.filter(db.NuReleaseItem.actual_target != None)    \
+					.count()
 
-		unverified = self.db_sess.query(db.NuReleaseItem)           \
-				.filter(db.NuReleaseItem.validated == False)        \
-				.filter(db.NuReleaseItem.actual_target != None)    \
-				.count()
+			self.log.info("Have %s items to do validity checks on", len(new_items))
+			self.log.info("%s items needing checking", unverified)
 
-		self.log.info("Have %s items to do validity checks on", len(new_items))
-		self.log.info("%s items needing checking", unverified)
+			for row in new_items:
+				self.review_probable_validated_row(row)
 
-		for row in new_items:
-			self.review_probable_validated_row(row)
-
-		self.db_sess.commit()
+			db_sess.commit()
 	def block_for_n_responses(self, resp_cnt):
 
 		received = 0

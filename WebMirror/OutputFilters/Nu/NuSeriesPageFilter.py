@@ -45,6 +45,7 @@ def upsertNuItem(raw_cur, itemparams):
 		'release_date',
 		]
 
+
 	assert all([key in itemparams for key in required_args])
 	assert itemparams['referrer'] != 'http://www.novelupdates.com/'
 	assert itemparams['referrer'] != 'http://www.novelupdates.com'
@@ -291,20 +292,25 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 						linkfq = "https:"+linkfq
 					if "http://" in linkfq:
 						linkfq = linkfq.split("http://")[0]
-					changed = upsertNuItem(self.raw_cur,
-						{
-							'seriesname'       : title,
-							'releaseinfo'      : release_info,
-							'groupinfo'        : group_name,
-							'referrer'         : seriesPageUrl,
-							'outbound_wrapper' : linkfq,
-							'release_date'     : reldate,
-							'first_seen'       : datetime.datetime.min,
-						})
-					self.log.info("Upserting outbound wrapper url %s, changed %s rows.", linkfq, changed)
 
-					if changed:
-						self.mon_con.incr('new-urls', 1)
+					if group_name == 'Qidian International':
+						self.log.info("Qidian item. Skipping.")
+					else:
+
+						changed = upsertNuItem(self.raw_cur,
+							{
+								'seriesname'       : title,
+								'releaseinfo'      : release_info,
+								'groupinfo'        : group_name,
+								'referrer'         : seriesPageUrl,
+								'outbound_wrapper' : linkfq,
+								'release_date'     : reldate,
+								'first_seen'       : datetime.datetime.min,
+							})
+						self.log.info("Upserting outbound wrapper url %s, changed %s rows.", linkfq, changed)
+
+						if changed:
+							self.mon_con.incr('new-urls', 1)
 
 			valid_releases += 1
 
