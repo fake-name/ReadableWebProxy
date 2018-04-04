@@ -679,6 +679,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			return 0
 
 		if not rids:
+			self.log.warning("Query in mode %s returned no rows!", self.jq_mode)
 			return 0
 
 		rids = list(rids)

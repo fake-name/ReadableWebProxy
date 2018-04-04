@@ -17,7 +17,7 @@ import common.database as dbm
 import RawArchiver.TimedTriggers.TriggerBase
 
 
-class RollingRewalkTriggerBase(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseClass):
+class RollingRawRewalkTriggerBase(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 
 	pluginName = "RollingRewalk Trigger"
@@ -168,7 +168,7 @@ class RollingRewalkTriggerBase(RawArchiver.TimedTriggers.TriggerBase.TriggerBase
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
-	run = RollingRewalkTriggerBase()
+	run = RollingRawRewalkTriggerBase()
 	run.retrigger_other()
 	# run._go()
 
