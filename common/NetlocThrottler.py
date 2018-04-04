@@ -13,7 +13,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		super().__init__()
 
 		self.fifo_limit      = fifo_limit
-		self.accumulator_min = 3
+		self.accumulator_min = 10
 		self.accumulator_max = 500
 		self.url_throttler   = {}
 
