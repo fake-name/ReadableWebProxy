@@ -10,7 +10,7 @@ webrequest==0.0.20
 pillow==5.1.0
 
 mprpc==0.1.16
-tqdm==4.19.9
+tqdm==4.20.0
 chardet==3.0.4
 pymysql==0.8.0
 mem_top==0.1.7
@@ -20,7 +20,7 @@ objgraph==3.4.0
 zerorpc==0.6.1
 cssutils==1.0.2
 tinycss2==0.6.1
-fontTools==3.24.1
+fontTools==3.25.0
 semantic==1.0.3
 fdict==0.8.1
 cachetools==2.0.1
