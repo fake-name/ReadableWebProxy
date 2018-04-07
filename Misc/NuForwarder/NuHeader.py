@@ -649,7 +649,30 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			if loops > max_loop_time:
 				return
 
+	def trigger_all_urls(self):
 
+		release_urls = []
+		with db.session_context() as db_sess:
+			validated = db_sess.query(db.NuReleaseItem)      \
+				.filter(db.NuReleaseItem.reviewed == 'valid')        \
+				.filter(db.NuReleaseItem.validated == True)       \
+				.all()
+
+			# print("validated:")
+			# print(len(list(validated)))
+
+
+			for row in validated:
+				if not row.releaseinfo:
+					continue
+				if not row.actual_target:
+					continue
+
+				release_urls.append(row.actual_target)
+
+		self.log.info("Found %s URLs", len(release_urls))
+
+		self.retriggerUrlList(release_urls)
 
 	def run(self):
 
@@ -745,7 +768,8 @@ if __name__ == '__main__':
 	# test_all_the_same()
 
 	hdl = NuHeader()
-	hdl.run()
+	hdl.trigger_all_urls()
+	# hdl.run()
 	# hdl.review_probable_validated()
 
 	# ago = datetime.datetime.now() - datetime.timedelta(days=3)
