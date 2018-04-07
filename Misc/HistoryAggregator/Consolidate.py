@@ -269,20 +269,19 @@ class DbFlattener(object):
 
 		worker_count = 4
 
-		res = []
 		executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
-		for paramset in batch(end, 50):
-			future = executor.submit(incremental_history_consolidate, paramset)
-			res.append(future)
+		for batchset in batch(list(batch(end, 50)), 50):
+			executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+			res = []
+			for paramset in batchset:
 
-			# After pushing 100 param sets, consume the responses.
-			if len(res) > 100:
-				self.log.info("Processing results incrementally.")
-				while res:
-					res.pop().result()
-				executor.shutdown()
-				del executor
-				executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+				future = executor.submit(incremental_history_consolidate, paramset)
+				res.append(future)
+
+				if len(res) > 10:
+					self.log.info("Processing results incrementally.")
+					while res:
+						res.pop().result()
 
 		executor.shutdown()
 

@@ -10,13 +10,13 @@ import sqlalchemy.exc
 import common.database as db
 
 
-import RawArchiver.TimedTriggers.RollingRewalkTrigger
+import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
 
 def exposed_raw_rewalk_old():
 	'''
 	Trigger the rewalking system on the rawarchiver
 	'''
 
-	run = RawArchiver.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase()
+	run = RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRewalkTriggerBase()
 	run.go()
 

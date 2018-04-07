@@ -99,19 +99,6 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 		minid = sess.query(func.min(self.db.WebPages.id)).scalar()
 		maxid = sess.query(func.max(self.db.WebPages.id)).scalar()
 
-		# Was:
-		# q = sess.query(self.db.WebPages)
-		# q = q.filter(self.db.WebPages.state != 'new')
-		# q = q.filter(self.db.WebPages.state != 'error')
-		# q = q.filter(self.db.WebPages.state != 'removed')
-		# q = q.filter(self.db.WebPages.state != 'disabled')
-		# q = q.filter(self.db.WebPages.state != 'specialty_blocked')
-		# q = q.filter(self.db.WebPages.state != 'specialty_deferred')
-		# q = q.filter(self.db.WebPages.fetchtime < ago)
-		# q = q.filter(self.db.WebPages.id < (chunk + chunk_size))
-		# q = q.filter(self.db.WebPages.id >= chunk)
-		# q = q.filter(not_(self.db.WebPages.netloc.in_(nls)))
-
 		update_query = text("""
 			UPDATE
 				web_pages

@@ -49,7 +49,7 @@ import Misc.NuForwarder.NuHeader
 import flags
 
 
-import WebMirror.TimedTriggers.RollingRewalkTrigger
+import WebMirror.TimedTriggers.RollingRewalkTriggers
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.SiteSync.fetch
 import WebMirror.OutputFilters.rss.FeedDataParser
@@ -1096,13 +1096,13 @@ def exposed_delete_netlocs():
 
 def exposed_rolling_rewalk():
 
-	run = WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase()
+	run = WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggerBase()
 	run._go()
 
 
 def exposed_rewalk_all_old():
 
-	run = WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase()
+	run = WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggerBase()
 	run.retrigger_other()
 
 

@@ -14,7 +14,7 @@ def minutes(num):
 # All they do is specify the order in which plugins
 # are run, initially, starting after 1-minue*{key} intervals
 
-import WebMirror.TimedTriggers.RollingRewalkTrigger
+import WebMirror.TimedTriggers.RollingRewalkTriggers
 import WebMirror.TimedTriggers.UrlTriggers
 import WebMirror.TimedTriggers.QueueTriggers
 import Misc.HistoryAggregator.Consolidate
@@ -23,7 +23,7 @@ import WebMirror.management.FeedDbManage
 
 scrapePlugins = {
 	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                      minutes(15)),
-	1  : (WebMirror.TimedTriggers.RollingRewalkTrigger.RollingRewalkTriggerBase,     hours(8)),
+	1  : (WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggerBase,     hours(8)),
 	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                   minutes(45)),
 	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,               hours(4)),
 	# 4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                days(3)),

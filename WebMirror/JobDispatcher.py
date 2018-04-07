@@ -570,8 +570,6 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 				            web_pages.file IS NULL
 				        AND
 				            web_pages.content IS NULL
-				        AND
-				            web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 				        LIMIT {in_flight}
 				    )
 				AND

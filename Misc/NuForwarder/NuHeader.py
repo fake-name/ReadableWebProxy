@@ -615,6 +615,9 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 			db_sess.commit()
 	def block_for_n_responses(self, resp_cnt):
+		if not resp_cnt:
+			self.log.info("No head requests! Nothing to do!")
+			return
 
 		received = 0
 		loops = 0
@@ -633,33 +636,33 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 	def run(self):
 
-		while 1:
-			self.process_avail()
 
-			self.validate_from_new()
-			self.timestamp_validated()
-			self.fix_names()
+		self.process_avail()
 
-			self.review_probable_validated()
+		self.validate_from_new()
+		self.timestamp_validated()
+		self.fix_names()
 
-			ago = datetime.datetime.now() - datetime.timedelta(days=3)
-			self.transmit_since(ago)
+		self.review_probable_validated()
+
+		ago = datetime.datetime.now() - datetime.timedelta(days=3)
+		self.transmit_since(ago)
 
 
 
-			self.validate_from_new()
-			self.timestamp_validated()
-			active_jobs = self.put_job(put=100)
-			self.block_for_n_responses(active_jobs)
+		self.validate_from_new()
+		self.timestamp_validated()
+		active_jobs = self.put_job(put=100)
+		self.block_for_n_responses(active_jobs)
 
-			self.validate_from_new()
-			self.timestamp_validated()
-			self.fix_names()
+		self.validate_from_new()
+		self.timestamp_validated()
+		self.fix_names()
 
-			self.review_probable_validated()
+		self.review_probable_validated()
 
-			ago = datetime.datetime.now() - datetime.timedelta(days=3)
-			self.transmit_since(ago)
+		ago = datetime.datetime.now() - datetime.timedelta(days=3)
+		self.transmit_since(ago)
 
 
 def fetch_and_flush():

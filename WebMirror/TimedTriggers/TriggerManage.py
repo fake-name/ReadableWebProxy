@@ -11,7 +11,7 @@ import common.database as db
 
 
 import WebMirror.TimedTriggers.UrlTriggers
-import WebMirror.TimedTriggers.RollingRewalkTrigger
+import WebMirror.TimedTriggers.RollingRewalkTriggers
 
 def exposed_rss_trigger():
 	'''
