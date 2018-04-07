@@ -31,6 +31,7 @@ BAD_RESOLVES = [
 	'www.webnovel.com/sw.js',
 	'novelsnao.com/?reqp=1&reqr=',
 	'data:application/javascript',
+	'offer.alibaba.com',
 ]
 GONE_RESOLVES = [
 	'www1.trungtnguyen123.org',

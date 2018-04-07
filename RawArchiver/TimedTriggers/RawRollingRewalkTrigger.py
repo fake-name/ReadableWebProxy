@@ -17,12 +17,12 @@ import common.database as dbm
 import RawArchiver.TimedTriggers.TriggerBase
 
 
-class RollingRawRewalkTriggerBase(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseClass):
+class RollingRawRewalkTriggersBase(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 
 	pluginName = "RollingRewalk Trigger"
 
-	loggerPath = 'Main.RollingRewalk'
+	loggerPath = 'Main.RollingRawRewalker'
 
 
 	def retrigger_netloc(self, netloc, ago):

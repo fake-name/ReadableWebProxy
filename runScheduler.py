@@ -33,7 +33,7 @@ import activeScheduledTasks
 
 CALLABLE_LUT = {}
 for item, dummy_interval in activeScheduledTasks.scrapePlugins.values():
-	print("Plugin: ", item.__name__)
+	print("Plugin: %s -> %s" % (item.__name__, item))
 	assert item.__name__ not in CALLABLE_LUT, "Plugin appears twice in call lookup table (%s)?" % item.__name__
 	CALLABLE_LUT[item.__name__] = item
 
@@ -51,6 +51,8 @@ class JobCaller(LogBase.LoggerMixin):
 			raise JobNameException("Callable '%s' is not in the class lookup table: '%s'!" % (job_name, CALLABLE_LUT))
 		self.runModule = CALLABLE_LUT[job_name]
 		self.job_name = job_name
+
+		self.log.info("Invoking class %s as scheduled job", self.runModule)
 
 
 		session = db.get_db_session()

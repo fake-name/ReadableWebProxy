@@ -21,12 +21,12 @@ import WebMirror.rules
 import WebMirror.TimedTriggers.TriggerBase
 
 
-class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
+class RollingRewalkTriggersBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 
 
 	pluginName = "RollingRewalk Trigger"
 
-	loggerPath = 'Main.RollingRewalk'
+	loggerPath = 'Main.RollingRewalker'
 
 
 	def retrigger_netloc(self, netloc, ago):
@@ -168,11 +168,13 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 	def go(self):
 
-		print("Startup?")
-
-		rules = WebMirror.rules.load_rules()
 		self.log.info("Rolling re-trigger of starting URLs.")
 
+		self.log.info("Now retriggering all old items.")
+		self.retrigger_other()
+
+		self.log.info("Retriggering all main items.")
+		rules = WebMirror.rules.load_rules()
 
 
 		starturls = []
@@ -213,15 +215,13 @@ class RollingRewalkTriggerBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCl
 
 			# self.retriggerUrl(url, conditional=conditional_check)
 
-		self.log.info("Now retriggering all old items.")
-		self.retrigger_other()
 		self.log.info("Old files retrigger complete.")
 
 
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
-	run = RollingRewalkTriggerBase()
+	run = RollingRewalkTriggersBase()
 	run.retrigger_other()
 	# run._go()
 

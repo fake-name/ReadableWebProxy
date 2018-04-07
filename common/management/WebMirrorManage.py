@@ -1096,13 +1096,13 @@ def exposed_delete_netlocs():
 
 def exposed_rolling_rewalk():
 
-	run = WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggerBase()
+	run = WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggersBase()
 	run._go()
 
 
 def exposed_rewalk_all_old():
 
-	run = WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggerBase()
+	run = WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggersBase()
 	run.retrigger_other()
 
 
