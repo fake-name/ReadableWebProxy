@@ -105,6 +105,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 	def retriggerUrlList(self, urlList):
 
+		self.log.info("Triggering %s URLs from list", len(urlList))
+
 		sess = self.db.get_db_session()
 
 		raw_cur = sess.connection().connection.cursor()

@@ -21,6 +21,7 @@ import common.LogBase as LogBase
 import common.StatsdMixin as StatsdMixin
 import random
 
+import WebMirror.TimedTriggers.TriggerBase
 from WebMirror.OutputFilters.util.MessageConstructors import fix_string
 from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
@@ -74,7 +75,7 @@ def load_lut():
 	lut = json.loads(jctnt)
 	return lut
 
-class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
+class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin.StatsdMixin):
 	'''
 		NU Updates are batched and only forwarded to the output periodically,
 		to make timing attacks somewhat more difficult.
@@ -98,8 +99,13 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			}
 	'''
 
+	pluginName = "Nu Header"
+
+
 	loggerPath = "Main.Header.Nu"
 	statsd_prefix = 'ReadableWebProxy.Nu.Header'
+
+	go = None
 
 	def __init__(self, connect=True):
 		super().__init__()
@@ -502,9 +508,13 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		# print("Packed release:", release)
 		self.rpc.put_feed_job(release)
 
+		return row.actual_target
+
 	def transmit_since(self, earliest=None):
 		if not earliest:
 			earliest = datetime.datetime.min
+
+		release_urls = []
 		with db.session_context() as db_sess:
 			validated = db_sess.query(db.NuReleaseItem)      \
 				.filter(db.NuReleaseItem.reviewed == 'valid')        \
@@ -515,10 +525,15 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			# print("validated:")
 			# print(len(list(validated)))
 
+
 			for row in validated:
-				self.do_release(row)
+				relurl = self.do_release(row)
+				if relurl:
+					release_urls.append(relurl)
 
 		db_sess.commit()
+
+		self.retriggerUrlList(release_urls)
 
 	def fix_names(self):
 		with db.session_context() as db_sess:
@@ -615,6 +630,7 @@ class NuHeader(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				self.review_probable_validated_row(row)
 
 			db_sess.commit()
+
 	def block_for_n_responses(self, resp_cnt):
 		if not resp_cnt:
 			self.log.info("No head requests! Nothing to do!")
@@ -726,10 +742,10 @@ if __name__ == '__main__':
 	import logSetup
 	logSetup.initLogging()
 
-	test_all_the_same()
+	# test_all_the_same()
 
-	# hdl = NuHeader()
-	# hdl.run()
+	hdl = NuHeader()
+	hdl.run()
 	# hdl.review_probable_validated()
 
 	# ago = datetime.datetime.now() - datetime.timedelta(days=3)

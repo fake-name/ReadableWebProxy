@@ -40,7 +40,7 @@ scrapePlugins = {
 import Misc.NuForwarder.NuHeader
 
 autoscheduler_plugins = {
-	# Misc.NuForwarder.NuHeader.do_schedule,
+	Misc.NuForwarder.NuHeader.do_schedule,
 
 }
 
