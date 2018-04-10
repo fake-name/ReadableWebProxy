@@ -1,25 +1,13 @@
 
-
-
-import runStatus
-runStatus.preloadDicts = False
+import pprint
+import bs4
+import json
 
 import WebMirror.OutputFilters.FilterBase
 
+import common.util.urlFuncs
 import common.database as db
 
-import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
-from WebMirror.OutputFilters.util.TitleParsers import extractTitle
-
-import bs4
-import re
-import calendar
-import traceback
-import datetime
-import time
-import json
-import WebRequest
-import common.util.urlFuncs
 MIN_RATING = 5
 
 ########################################################################################################################
@@ -41,7 +29,9 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 
 
 	wanted_mimetypes = [
+							'text/xml',
 							'application/xml',
+							'text/json',
 							'application/json',
 						]
 	want_priority    = 50
@@ -73,8 +63,10 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		self.pageUrl    = kwargs['pageUrl']
 
 		self.content    = kwargs['pgContent']
-		self.type       = kwargs['type']
+		self.mtype      = kwargs['mimeType']
 		self.db_sess    = kwargs['db_sess']
+
+		print(kwargs.keys())
 
 		self.log.info("Processing RoyalRoadL Json/XML Item")
 		super().__init__(**kwargs)
@@ -111,14 +103,25 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		for release_url in releases:
 			self.retrigger_page(release_url)
 
+	def dispatch_xml(self):
+		procContent = bs4.BeautifulSoup(self.content, "xml")
+		print(procContent.prettify())
+
+	def dispatch_json(self):
+		loaded = json.loads(self.content)
+		pprint.pprint(loaded)
 
 
 	def processPage(self, url, content):
-		print("processPage() call")
-		# soup = WebRequest.as_soup(self.content)
-		# releases = self.extractSeriesReleases(self.pageUrl, soup)
-		# if releases:
-		# 	self.retrigger_pages(releases)
+		self.log.info("processPage() call: %s, %s", self.mtype, self.pageUrl)
+
+		if self.mtype in ['text/xml', 'application/xml']:
+			self.dispatch_xml()
+		elif self.mtype in ['text/json', 'application/json']:
+			self.dispatch_json()
+
+		else:
+			self.log.error("Unknown content type (%s)!", self.mtype)
 
 
 ##################################################################################################################################

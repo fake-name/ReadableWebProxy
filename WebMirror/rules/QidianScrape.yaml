@@ -58,6 +58,7 @@ decompose: [
 	{'class' : 'g_header'},
 	{'class' : '_link_row'},
 	{'class' : '_score'},
+	{'class' : 'j_books_you_also_like'},
 	{'class' : 'j_getApp'},
 	{'class' : 'bit'},
 	{'class' : 'comments-link'},
