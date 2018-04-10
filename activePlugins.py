@@ -35,6 +35,7 @@ PREPROCESSORS = [
 
 import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter
 import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter
+import WebMirror.OutputFilters.RoyalRoadL.RRLJsonXmlSeriesUpdateFilter
 import WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter
 import WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter
 import WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter
@@ -48,6 +49,7 @@ import WebMirror.OutputFilters.Nu.NuSeriesPageFilter
 FILTERS = [
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter.RRLSeriesUpdateFilter,
+	WebMirror.OutputFilters.RoyalRoadL.RRLJsonXmlSeriesUpdateFilter.RRLJsonXmlSeriesUpdateFilter,
 
 	WebMirror.OutputFilters.Nu.NUHomepageFilter.NuHomepageFilter,
 	WebMirror.OutputFilters.Nu.NuSeriesPageFilter.NUSeriesPageProcessor,
@@ -66,10 +68,13 @@ import WebMirror.processor.GDriveDirProcessor
 import WebMirror.processor.GDocProcessor
 import WebMirror.processor.MarkdownProcessor
 import WebMirror.processor.BinaryProcessor
+import WebMirror.processor.JsonProcessor
+import WebMirror.processor.XmlProcessor
 import WebMirror.processor.RssProcessor
 import WebMirror.processor.WattPadJsonProcessor
 import WebMirror.processor.RoyalRoadLChapterPageProcessor
 import WebMirror.processor.RoyalRoadLSeriesPageProcessor
+
 import WebMirror.processor.NuProcessor
 import WebMirror.processor.FontRemapProcessors
 import WebMirror.processor.GarbageInlineProcessors
@@ -81,9 +86,12 @@ PLUGINS = [
 	WebMirror.processor.GDocProcessor.GdocPageProcessor,
 	WebMirror.processor.MarkdownProcessor.MarkdownProcessor,
 	WebMirror.processor.BinaryProcessor.BinaryResourceProcessor,
+	WebMirror.processor.JsonProcessor.JsonProcessor,
+	WebMirror.processor.XmlProcessor.XmlProcessor,
 	WebMirror.processor.RssProcessor.RssProcessor,
 	WebMirror.processor.WattPadJsonProcessor.WattPadJsonProcessor,
 	WebMirror.processor.RoyalRoadLChapterPageProcessor.RoyalRoadLChapterPageProcessor,
+	WebMirror.processor.RoyalRoadLSeriesPageProcessor.RoyalRoadLSeriesPageProcessor,
 	WebMirror.processor.RoyalRoadLSeriesPageProcessor.RoyalRoadLSeriesPageProcessor,
 	#WebMirror.processor.FontRemapProcessors.KobatoChanDaiSukiPageProcessor,
 	WebMirror.processor.FontRemapProcessors.NepustationPageProcessor,

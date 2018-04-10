@@ -46,7 +46,6 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
-
 							'text/html',
 						]
 	want_priority    = 55
