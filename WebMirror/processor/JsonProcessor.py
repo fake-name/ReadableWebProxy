@@ -3,7 +3,7 @@
 
 from . import ProcessorBase
 
-import bs4
+import json2html
 
 
 class JsonProcessor(ProcessorBase.PageProcessor):
@@ -29,18 +29,16 @@ class JsonProcessor(ProcessorBase.PageProcessor):
 
 
 	# Methods to allow the child-class to modify the content at various points.
-	def extractTitle(self, content, url):
-		return "XML Blob"
+	def extractMarkdownTitle(self, content, url):
+		return "Json Blob"
 
 
 	# Process a Google-Doc resource page.
 	# This call does a set of operations to permute and clean a google doc page.
 	def extractContent(self):
 
-		title = self.extractTitle(self.content, self.pageUrl)
-
-		procContent = bs4.BeautifulSoup(self.content, "xml")
-		procContent =  "<pre>" + procContent.prettify() + "</pre>"
+		title = self.extractMarkdownTitle(self.content, self.pageUrl)
+		procContent = json2html.json2html.convert(json = self.content, table_attributes='id="info-table" class="table table-bordered table-hover"')
 
 		self.log.info("Processed title: '%s'", title)
 		ret = {}
@@ -51,6 +49,7 @@ class JsonProcessor(ProcessorBase.PageProcessor):
 		ret['contents']   = procContent
 
 		return ret
+
 
 
 def test():
