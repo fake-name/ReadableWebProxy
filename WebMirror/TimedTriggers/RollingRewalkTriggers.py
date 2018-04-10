@@ -62,7 +62,7 @@ class RollingRewalkTriggersBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseC
 			while 1:
 				try:
 					q = sess.query(self.db.WebPages)
-					q = q.filter(self.db.RawWebPages.id.in_(chunk))
+					q = q.filter(self.db.WebPages.id.in_(chunk))
 
 					affected_rows = q.update({"state" : "new", "ignoreuntiltime" : datetime.datetime.min}, synchronize_session=False)
 					sess.commit()

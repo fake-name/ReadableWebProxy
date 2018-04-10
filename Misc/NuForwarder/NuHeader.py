@@ -40,6 +40,8 @@ GONE_RESOLVES = [
 	'faktranslations.com',
 ]
 
+MAX_TOTAL_FETCH_ATTEMPTS = 7
+
 
 # Remove blogspot garbage subdomains from the TLD (if present)
 def urls_the_same(url_list):
@@ -125,9 +127,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				.outerjoin(db.NuResolvedOutbound)                         \
 				.filter(db.NuReleaseItem.validated == False)              \
 				.filter(db.NuReleaseItem.first_seen >= recent_d)          \
-				.filter(db.NuReleaseItem.fetch_attempts < 3)              \
 				.options(joinedload('resolved'))                          \
-				.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 				.order_by(desc(db.NuReleaseItem.first_seen))              \
 				.group_by(db.NuReleaseItem.id)                            \
 				.limit(max(100, put*10))
@@ -136,9 +136,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			bulkq = db_sess.query(db.NuReleaseItem)                  \
 				.outerjoin(db.NuResolvedOutbound)                         \
 				.filter(db.NuReleaseItem.validated == False)              \
-				.filter(db.NuReleaseItem.fetch_attempts < 3)              \
 				.options(joinedload('resolved'))                          \
-				.having(func.count(db.NuResolvedOutbound.parent) < 3)     \
 				.order_by(desc(db.NuReleaseItem.first_seen))              \
 				.group_by(db.NuReleaseItem.id)                            \
 				.limit(max(100, put*6))
@@ -191,7 +189,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 					db_sess.delete(have)
 					db_sess.commit()
 					continue
-				if have.fetch_attempts >= 3:
+				if have.fetch_attempts > MAX_TOTAL_FETCH_ATTEMPTS:
 					self.log.error("Wat?")
 					self.log.error("Item fetched too many times!")
 					self.log.error("Id: %s", have.id)
@@ -400,7 +398,8 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			for valid in have.all():
 				if valid.validated is False:
 					assert len(list(valid.resolved)) >= 3
-					matches = urls_the_same([tmp.actual_target for tmp in valid.resolved if not tmp.disabled])
+					not_disabled = [tmp for tmp in valid.resolved if not tmp.disabled]
+					matches = urls_the_same([tmp.actual_target for tmp in not_disabled])
 					if matches:
 						# Since all the URLs match, just use one of them.
 						valid.actual_target = valid.resolved[0].actual_target
@@ -417,16 +416,23 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 							bad.append(any([tmp in resolve.actual_target for tmp in GONE_RESOLVES]))
 						if any(bad):
 							self.log.warning("Domain appears to now be gone. Disabling.")
-							have.reviewed = 'rejected'
-							have.validated = True
+							valid.reviewed = 'rejected'
+							valid.validated = True
+							db_sess.commit()
+							return
+
+						if len(valid.resolved) >= MAX_TOTAL_FETCH_ATTEMPTS:
+							self.log.warning("Attempted more then 10 resolves. Disabling.")
+							valid.reviewed = 'rejected'
+							valid.validated = True
 							db_sess.commit()
 							return
 
 
-						self.log.error("Invalid or not-matching URL set for wrapper!")
+						self.log.error("Invalid or not-matching URL set for wrapper %s!", valid.id)
 
-						for lookup in valid.resolved:
-							self.log.error("	Resolved URL: %s", lookup.actual_target)
+						for lookup in not_disabled:
+							self.log.error("	Resolved URL: %s->%s (%s)", lookup.id, lookup.actual_target, lookup.disabled)
 
 
 
@@ -434,15 +440,13 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 						oldest_time = datetime.datetime.max
 						oldest_row  = None
 
-						for lookup in valid.resolved:
+						for lookup in not_disabled:
 							if lookup.fetched_on < oldest_time:
 								oldest_row = lookup
 								oldest_time = lookup.fetched_on
 						if oldest_row:
-							self.log.info("Deleting row with ID: %s (%s)", oldest_row.id, oldest_row.actual_target)
+							self.log.info("Disabling row with ID: %s (%s) Total resolves = %s", oldest_row.id, oldest_row.actual_target, len(valid.resolved))
 							oldest_row.disabled = True
-
-
 							db_sess.commit()
 
 						self.mon_con.incr('invalidated', 1)
