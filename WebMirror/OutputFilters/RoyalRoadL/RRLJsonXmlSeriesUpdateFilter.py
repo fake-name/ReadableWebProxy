@@ -1,8 +1,13 @@
 
 import pprint
+import re
 import bs4
+import collections
+import datetime
 import json
 
+import xml.etree.ElementTree as et
+import xmljson
 import WebMirror.OutputFilters.FilterBase
 
 import common.util.urlFuncs
@@ -22,8 +27,19 @@ MIN_RATING = 5
 #
 ########################################################################################################################
 
+def clean_parsed_data(d):
+	d = dict(d)
+	for key in list(d.keys()):
+		if isinstance(d[key], (dict, collections.OrderedDict)):
+			d[key] = clean_parsed_data(d[key])
+		elif isinstance(d[key], (list, tuple)):
+			d[key] = [clean_parsed_data(tmp) for tmp in d[key]]
+		elif isinstance(d[key], str):
+			d[key] = d[key].strip()
 
-
+		if key in ['FirstUpdate', 'LastUpdate', 'Date']:
+			d[key] = datetime.datetime.utcfromtimestamp(d[key])
+	return d
 
 class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
@@ -103,25 +119,35 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		for release_url in releases:
 			self.retrigger_page(release_url)
 
-	def dispatch_xml(self):
-		procContent = bs4.BeautifulSoup(self.content, "xml")
-		print(procContent.prettify())
+	def load_xml(self):
+		xmlstring = re.sub(' xmlns="[^"]+"', '', self.content, count=1)
+		tree = et.fromstring(xmlstring)
+		data = xmljson.parker.data(tree)
+		data = clean_parsed_data(data)
 
-	def dispatch_json(self):
+		print(data)
+
+	def load_json(self):
 		loaded = json.loads(self.content)
-		pprint.pprint(loaded)
+		content = {'ApiFictionInfoWithChapters' : loaded}
+		content = clean_parsed_data(content)
+		print(content)
+
+	def processParsedData(self, loaded):
+		print(loaded)
 
 
 	def processPage(self, url, content):
 		self.log.info("processPage() call: %s, %s", self.mtype, self.pageUrl)
 
 		if self.mtype in ['text/xml', 'application/xml']:
-			self.dispatch_xml()
+			loaded = self.load_xml()
 		elif self.mtype in ['text/json', 'application/json']:
-			self.dispatch_json()
-
+			loaded = self.load_json()
 		else:
 			self.log.error("Unknown content type (%s)!", self.mtype)
+
+		self.processParsedData(loaded)
 
 
 ##################################################################################################################################
@@ -147,17 +173,31 @@ def test():
 	logSetup.initLogging()
 
 
-	urls = [
-			'https://royalroadl.com/api/fiction/updates?apiKey=' + settings.RRL_API_KEY,
-			# 'https://royalroadl.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
-	]
+	# urls = [
+	# 		'https://royalroadl.com/api/fiction/updates?apiKey=' + settings.RRL_API_KEY,
+	# 		# 'https://royalroadl.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
+	# ]
 
-	for url in urls:
-		with db.session_context() as sess:
-			archiver = SiteArchiver(None, sess, None)
-			archiver.synchronousJobRequest(url, ignore_cache=True)
+	# for url in urls:
+	# 	with db.session_context() as sess:
+	# 		archiver = SiteArchiver(None, sess, None)
+	# 		archiver.synchronousJobRequest(url, ignore_cache=True)
 
+	with open("fiction_updates.xml", "r") as fp:
+		content = fp.read()
 
+	instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content, mimeType="application/xml", db_sess=None)
+	print(instance)
+	extracted = instance.extractContent()
+	print("Extracted:", extracted)
+
+	with open("json_reenc.json", "r") as fp:
+		content2 = fp.read()
+
+	instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content2, mimeType="application/json", db_sess=None)
+	print(instance)
+	extracted = instance.extractContent()
+	print("Extracted:", extracted)
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ fdict==0.8.1
 cachetools==2.0.1
 bleach==2.1.3
 Jinja2==2.10
-
+xmljson 
 pystuck==0.8.5
 cherrypy==14.0.1
 
