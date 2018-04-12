@@ -28,17 +28,26 @@ MIN_RATING = 5
 ########################################################################################################################
 
 def clean_parsed_data(d):
-	d = dict(d)
-	for key in list(d.keys()):
-		if isinstance(d[key], (dict, collections.OrderedDict)):
-			d[key] = clean_parsed_data(d[key])
-		elif isinstance(d[key], (list, tuple)):
-			d[key] = [clean_parsed_data(tmp) for tmp in d[key]]
-		elif isinstance(d[key], str):
-			d[key] = d[key].strip()
+	if isinstance(d, (dict, collections.OrderedDict)):
+		d = dict(d)
+		if 'ApiChapterList' in d:
+			d = clean_parsed_data(d['ApiChapterList'])
 
-		if key in ['FirstUpdate', 'LastUpdate', 'Date']:
-			d[key] = datetime.datetime.utcfromtimestamp(d[key])
+			# So XML is annoying, and lists with a single item basically get implicitly unwrapped
+			# Anyways, we know this *should* be a list, so if it's not, wrap it into a list manually
+			if isinstance(d, dict):
+				d = [d]
+		else:
+			for key in list(d.keys()):
+				d[key] = clean_parsed_data(d[key])
+				if key in ['FirstUpdate', 'LastUpdate', 'Date']:
+					d[key] = datetime.datetime.utcfromtimestamp(d[key])
+
+	elif isinstance(d, (list, tuple)):
+		d = [clean_parsed_data(tmp) for tmp in d]
+	elif isinstance(d, str):
+		d = d.strip()
+
 	return d
 
 class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
@@ -122,19 +131,23 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 	def load_xml(self):
 		xmlstring = re.sub(' xmlns="[^"]+"', '', self.content, count=1)
 		tree = et.fromstring(xmlstring)
-		data = xmljson.parker.data(tree)
-		data = clean_parsed_data(data)
+		loaded = xmljson.parker.data(tree)
+		loaded = clean_parsed_data(loaded)
 
-		print(data)
+		loaded['ApiFictionInfoWithChapters'].sort(key=lambda x: x['LastUpdate'])
+
+		return loaded
 
 	def load_json(self):
 		loaded = json.loads(self.content)
+		loaded.sort(key=lambda x: x['LastUpdate'])
 		content = {'ApiFictionInfoWithChapters' : loaded}
 		content = clean_parsed_data(content)
-		print(content)
+		return content
 
 	def processParsedData(self, loaded):
-		print(loaded)
+		# print(loaded)
+		pass
 
 
 	def processPage(self, url, content):
@@ -148,6 +161,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			self.log.error("Unknown content type (%s)!", self.mtype)
 
 		self.processParsedData(loaded)
+		return loaded
 
 
 ##################################################################################################################################
@@ -160,7 +174,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		# print("Call to extract!")
 		# print(self.amqpint)
 
-		self.processPage(self.pageUrl, self.content)
+		return self.processPage(self.pageUrl, self.content)
 
 
 
@@ -188,17 +202,20 @@ def test():
 
 	instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content, mimeType="application/xml", db_sess=None)
 	print(instance)
-	extracted = instance.extractContent()
-	print("Extracted:", extracted)
+	extracted1 = instance.extractContent()
 
 	with open("json_reenc.json", "r") as fp:
 		content2 = fp.read()
 
 	instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content2, mimeType="application/json", db_sess=None)
 	print(instance)
-	extracted = instance.extractContent()
-	print("Extracted:", extracted)
-
+	extracted2 = instance.extractContent()
+	# print("Extracted:", extracted1)
+	# print("Extracted:", extracted2)
+	with open("F1.txt", "w") as fp:
+		fp.write(pprint.pformat(extracted1))
+	with open("F2.txt", "w") as fp:
+		fp.write(pprint.pformat(extracted2))
 
 if __name__ == "__main__":
 	test()
