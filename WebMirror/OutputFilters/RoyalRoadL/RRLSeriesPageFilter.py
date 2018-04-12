@@ -125,7 +125,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		# print("Float rating: ", rating)
 
-		if not rating >= MIN_RATING and rating != 0.0:
+		if rating < MIN_RATING:
 			self.log.error("Item rating below upload threshold: %s", rating)
 			return []
 

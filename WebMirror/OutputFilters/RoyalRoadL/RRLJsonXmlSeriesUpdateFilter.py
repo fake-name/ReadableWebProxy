@@ -6,9 +6,14 @@ import collections
 import datetime
 import json
 
-import xml.etree.ElementTree as et
 import xmljson
+import WebRequest
+import xml.etree.ElementTree as et
+
+import settings
 import WebMirror.OutputFilters.FilterBase
+import WebMirror.OutputFilters.util.TitleParsers as titleParsers
+import WebMirror.OutputFilters.util.MessageConstructors as msgpackers
 
 import common.util.urlFuncs
 import common.database as db
@@ -84,7 +89,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 
 		self.kwargs     = kwargs
 
-
+		self.wg = WebRequest.WebGetRobust()
 		self.pageUrl    = kwargs['pageUrl']
 
 		self.content    = kwargs['pgContent']
@@ -95,6 +100,54 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 
 		self.log.info("Processing RoyalRoadL Json/XML Item")
 		super().__init__(**kwargs)
+
+
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+
+	def validate_sdata(self, sinfo):
+		pass
+	def validate_cdata(self, cinfo):
+		if not isinstance(cinfo, list):
+			return False
+
+
+		return True
+
+
+	def process_series(self, series):
+		expected_keys = ['Chapters', 'Cover', 'Description', 'FirstUpdate', 'Id', 'LastUpdate', 'Tags', 'Title']
+		if not all([tmp in series for tmp in expected_keys]):
+			self.log.error("Missing key(s) %s from chapter. Cannot continue", [tmp for tmp in expected_keys if not tmp in series])
+			return
+		print("Series", series['Title'])
+
+		accept_override = {'Accept' : 'application/json,*/*'}
+
+		sinfo = self.wg.getJson("https://royalroadl.com/api/fiction/info/{sid}?apikey={key}".format(sid=series['Id'], key=settings.RRL_API_KEY), addlHeaders=accept_override)
+		cinfo = self.wg.getJson("https://royalroadl.com/api/fiction/chapters/{sid}?apikey={key}".format(sid=series['Id'], key=settings.RRL_API_KEY), addlHeaders=accept_override)
+
+		if not self.validate_sdata(sinfo):
+			return
+		if not self.validate_cdata(cinfo):
+			return
+
+		print(sinfo)
+		print(cinfo)
+
+
+
+		# seriesmeta = {}
+
+		# seriesmeta['title']       = msgpackers.fix_string(title)
+		# seriesmeta['author']      = msgpackers.fix_string(author)
+		# seriesmeta['tags']        = tags
+		# seriesmeta['homepage']    = seriesPageUrl
+		# seriesmeta['desc']        = "\r\n".join(desc)
+		# seriesmeta['tl_type']     = 'oel'
+		# seriesmeta['sourcesite']  = 'RoyalRoadL'
+		# seriesmeta['create_tags'] = True
 
 
 ##################################################################################################################################
@@ -131,24 +184,22 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 	def load_xml(self):
 		xmlstring = re.sub(' xmlns="[^"]+"', '', self.content, count=1)
 		tree = et.fromstring(xmlstring)
-		loaded = xmljson.parker.data(tree)
-		loaded = clean_parsed_data(loaded)
+		data = xmljson.parker.data(tree)
 
-		loaded['ApiFictionInfoWithChapters'].sort(key=lambda x: x['LastUpdate'])
+		loaded = clean_parsed_data(data['ApiFictionInfoWithChapters'])
+		loaded.sort(key=lambda x: x['LastUpdate'])
 
 		return loaded
 
 	def load_json(self):
 		loaded = json.loads(self.content)
 		loaded.sort(key=lambda x: x['LastUpdate'])
-		content = {'ApiFictionInfoWithChapters' : loaded}
-		content = clean_parsed_data(content)
+		content = clean_parsed_data(loaded)
 		return content
 
 	def processParsedData(self, loaded):
-		# print(loaded)
-		pass
-
+		for series in loaded:
+			self.process_series(series)
 
 	def processPage(self, url, content):
 		self.log.info("processPage() call: %s, %s", self.mtype, self.pageUrl)
@@ -161,7 +212,6 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			self.log.error("Unknown content type (%s)!", self.mtype)
 
 		self.processParsedData(loaded)
-		return loaded
 
 
 ##################################################################################################################################
@@ -210,12 +260,7 @@ def test():
 	instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content2, mimeType="application/json", db_sess=None)
 	print(instance)
 	extracted2 = instance.extractContent()
-	# print("Extracted:", extracted1)
-	# print("Extracted:", extracted2)
-	with open("F1.txt", "w") as fp:
-		fp.write(pprint.pformat(extracted1))
-	with open("F2.txt", "w") as fp:
-		fp.write(pprint.pformat(extracted2))
+
 
 if __name__ == "__main__":
 	test()
