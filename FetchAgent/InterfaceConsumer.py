@@ -319,8 +319,14 @@ class SingleAmqpConnection(object):
 
 	def disconnect(self):
 		self.prefetch_extended = False
-		self.storm_channel.close()
-		self.storm_connection.close()
+		try:
+			self.storm_channel.close()
+		except Exception:
+			pass
+		try:
+			self.storm_connection.close()
+		except Exception:
+			pass
 		raise ThreadDieException("Exiting")
 
 	def shutdown(self):
