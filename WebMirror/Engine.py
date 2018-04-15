@@ -17,6 +17,7 @@ import sqlalchemy.exc
 import random
 import settings
 import pprint
+import tqdm
 
 import Misc.diff_match_patch as dmp
 from sqlalchemy import desc
@@ -474,25 +475,34 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 	# Todo: FIXME
-	def filterContentLinks(self, job, links, badwords, badcompounds, debug=False):
+	def filterContentLinks(self, job, links, badwords, badcompounds, debug=False, interactive=False):
 		ret = set()
-		for link in links:
+
+		if interactive:
+			iterator = tqdm.tqdm(links)
+		else:
+			iterator = links
+
+		for link in iterator:
 			link = self.generalLinkClean(link, badwords, badcompounds)
 			if not link:
-				if debug:
-					self.log.info("Link collapsed to empty after cleaning")
+				# if debug:
+				# 	self.log.info("Link collapsed to empty after cleaning")
 				continue
 			if self.haveBadPathSegments(link):
 				continue
 
 			netloc = urllib.parse.urlsplit(link).netloc
-			if netloc in self.ctnt_filters and job.netloc in self.ctnt_filters[netloc]:
+			if netloc in self.ctnt_filters:
 				ret.add(link)
 			else:
 				if debug:
-					self.log.info("Bad letloc: %s -> %s (netloc in self.ctnt_filters: %s, job.netloc in self.ctnt_filters[netloc]: %s)",
-						netloc, job.netloc, netloc in self.ctnt_filters, job.netloc in self.ctnt_filters[netloc])
-					self.log.info("Wat: %s", self.ctnt_filters[netloc])
+					self.log.info("Bad netloc: %s -> %s (netloc in self.ctnt_filters: %s, job.netloc in self.ctnt_filters[netloc]: %s)",
+						netloc,
+						job.netloc,
+						netloc in self.ctnt_filters,
+						job.netloc in self.ctnt_filters[netloc] if netloc in self.ctnt_filters else "None")
+					# self.log.info("Wat: %s", self.ctnt_filters[netloc])
 		return ret
 
 	def filterResourceLinks(self, job, links, badwords, badcompounds, debug=False):
@@ -531,8 +541,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 		return max(rules['maximum_priority'] for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs'])
 
 
-	def upsertResponseLinks(self, job, plain=[], resource=[], debug=False):
-		self.log.info("Processing response links.")
+	def upsertResponseLinks(self, job, plain=[], resource=[], debug=False, interactive=False):
+		self.log.info("Processing %s, %s response links.", len(plain), len(resource))
 		plain    = set(plain)
 		resource = set(resource)
 
@@ -547,7 +557,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		if debug:
 			self.log.info("Have %s plain, %s resource links before filtering", len(plain), len(resource))
-		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds, debug=debug)
+		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds, debug=debug, interactive=interactive)
 		resource = self.filterResourceLinks(job, resource, badwords, badcompounds, debug=debug)
 
 
@@ -652,7 +662,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 			# Only commit per-URL if we're tried to do the update in batch, and failed.
 			commit_each = False
-			for link, istext in items:
+
+			if interactive:
+				iterator = tqdm.tqdm(items)
+			else:
+				iterator = items
+
+
+			for link, istext in iterator:
 				while 1:
 					try:
 						start = urllib.parse.urlsplit(link).netloc

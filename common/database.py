@@ -42,5 +42,5 @@ from common.db_base import Base
 import sqlalchemy as sa
 sa.orm.configure_mappers()
 
-from sqlalchemy_searchable import make_searchable
-make_searchable()
+# from sqlalchemy_searchable import make_searchable
+# make_searchable()

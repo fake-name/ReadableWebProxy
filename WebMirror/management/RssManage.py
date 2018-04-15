@@ -5,11 +5,14 @@ import json
 import os
 import os.path
 import shutil
+import tqdm
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 
 import urllib.error
 import urllib.parse
+
+import WebRequest
 
 from sqlalchemy import and_
 from sqlalchemy import or_
@@ -32,10 +35,11 @@ import pprint
 import config
 from config import C_RAW_RESOURCE_DIR
 
+from WebMirror.Engine import SiteArchiver
 import WebMirror.OutputFilters.rss.FeedDataParser
-
 import WebMirror.OutputFilters.util.feedNameLut
-import WebRequest
+import common.util.urlFuncs as urlFuncs
+
 
 def exposed_sort_json(json_name):
 	'''
@@ -231,8 +235,6 @@ def delete_bad_rss_by_url():
 		sess.commit()
 
 def delete_bad_by_check():
-
-
 	with db.session_context() as sess:
 		print("Fetching all rows to scan")
 		all_bad = sess.query(db.RssFeedPost).all()
@@ -491,3 +493,96 @@ def exposed_process_qidian_feeds():
 
 		for outstr in lines:
 			print(outstr)
+
+def exposed_retrigger_feed_urls():
+	'''
+	Retrigger the content urls from each feed item.
+	'''
+
+	# RssFeedPost attributes:
+	# 	id
+	# 	type
+	# 	feed_id
+	# 	contenturl
+	# 	contentid
+	# 	title
+	# 	contents
+	# 	updated
+	# 	published
+	# 	tag_rel
+	# 	author_rel
+	# 	tags
+	# 	author
+
+
+
+
+	urls = set()
+	with db.session_context() as sess:
+		processor = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
+																pageUrl     = 'http://www.example.org',
+																pgContent   = '',
+																type        = 'application/atom+xml',
+																transfer    = False,
+																debug_print = True,
+																db_sess     = sess,
+																write_debug = False)
+
+		print("Loading posts....")
+		items = sess.query(db.RssFeedPost).all()
+		print("Loaded %s rows" % len(items))
+		have_content = [tmp for tmp in items if tmp.contents]
+		print("%s rows have content" % len(have_content))
+
+		for post in tqdm.tqdm(items):
+			if post.contenturl.startswith("tag:blogger.com"):
+				continue
+
+			if post.contenturl and not '#comment_' in post.contenturl:
+				urls.add(post.contenturl)
+
+			if post.contents and post.contents != 'Disabled?' and post.contents != 'wat':
+				soup = WebRequest.as_soup(post.contents)
+				print(post.contents)
+				# Make all the page URLs fully qualified, so they're unambiguous
+				soup = urlFuncs.canonizeUrls(soup, post.contenturl)
+
+				# pull out the page content and enqueue it. Filtering is
+				# done in the parent.
+				plainLinks = processor.extractLinks(soup, post.contenturl)
+				imageLinks = processor.extractImages(soup, post.contenturl)
+
+				if plainLinks or imageLinks:
+					print((len(plainLinks), len(imageLinks)))
+
+
+		print("Extracted %s unique links" % len(urls))
+
+	rules = WebMirror.rules.load_rules()
+
+	feeds = [item['feedurls'] for item in rules]
+	feeds = [item for sublist in feeds for item in sublist]
+
+	url = feeds[0]
+	parsed = urllib.parse.urlparse(url)
+	root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+
+	print("Using feed url %s for job base" % url)
+
+	job = db.WebPages(
+		url       = url,
+		starturl  = root,
+		netloc    = parsed.netloc,
+		distance  = 0,
+		is_text   = True,
+		priority  = 500000,
+		type      = 'unknown',
+		fetchtime = datetime.datetime.now(),
+		)
+	try:
+		with db.session_context() as sess:
+			archiver = SiteArchiver(None, sess, None)
+			archiver.upsertResponseLinks(job, plain=urls, resource=[], debug=True, interactive=True)
+
+	except Exception as e:
+		traceback.print_exc()
