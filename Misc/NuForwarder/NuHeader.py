@@ -193,6 +193,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 					self.log.error("Wat?")
 					self.log.error("Item fetched too many times!")
 					self.log.error("Id: %s", have.id)
+					self.log.error("Attempted more then %s resolves. Disabling.", MAX_TOTAL_FETCH_ATTEMPTS)
+					have.reviewed = 'rejected'
+					have.validated = True
+					db_sess.commit()
 					continue
 
 				if have.outbound_wrapper in active:

@@ -1,6 +1,7 @@
 
 
 import logging
+import tqdm
 import abc
 import datetime
 
@@ -46,7 +47,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 	def __raw_retrigger_with_cursor(self, url, cursor):
 
-		self.log.info("Retriggering fetch for URL: %s", url)
+		# self.log.info("Retriggering fetch for URL: %s", url)
 
 		#  Fucking huzzah for ON CONFLICT!
 		cmd = """
@@ -113,7 +114,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		while 1:
 			loopcnt = 0
 			try:
-				for url in urlList:
+				for url in tqdm.tqdm(urlList):
 					loopcnt += 1
 					self.__raw_retrigger_with_cursor(url, raw_cur)
 					if commit_each or (loopcnt % 250) == 0:

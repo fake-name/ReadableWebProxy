@@ -17,7 +17,9 @@ def get_page_title(wg, url):
 
 	try:
 		soup = wg.getSoup(url)
-		ret['is-wp'] = "/wp-content/" in str(soup)
+		soupstr = str(soup)
+		ret['is-wp'] = "/wp-content/" in soupstr
+		ret['is-orig'] = '<strong class="pa t0 r0 z1">original</strong>' in soupstr
 		if soup.title:
 			ret['title'] = soup.title.get_text().strip()
 	except WebRequest.FetchFailureError as err:

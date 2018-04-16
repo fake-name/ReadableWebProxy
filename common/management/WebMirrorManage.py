@@ -549,7 +549,7 @@ def exposed_fetch_titles(url_file):
 		url = url.strip()
 		meta = common.management.util.get_page_title(wg, url)
 		print('Missing: "%s" %s: "%s",' % (url, " " * (50 - len(url)), meta))
-		print("('%s',                                                                             '%s',    'translated')," % (meta['title'], url))
+		print("('%s',                                                                             '%s',    '%s')," % (meta['title'], url, 'oel' if meta['is-orig'] else 'translated'))
 
 	print(content)
 
