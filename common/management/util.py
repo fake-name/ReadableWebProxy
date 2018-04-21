@@ -32,4 +32,7 @@ def get_page_title(wg, url):
 		ret['failed'] = True
 		ret['err'] = err
 
+	if 'title' in ret and 'https://www.webnovel.com' in url:
+		ret['title_orig'] = ret['title']
+		ret['title'] = ret['title'].rsplit("-", 3)[0]
 	return ret

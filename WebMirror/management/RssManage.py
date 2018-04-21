@@ -16,6 +16,7 @@ import WebRequest
 
 from sqlalchemy import and_
 from sqlalchemy import or_
+from sqlalchemy.orm import joinedload
 import sqlalchemy.exc
 
 if __name__ == "__main__":
@@ -28,7 +29,6 @@ import common.management.util
 import common.management.file_cleanup
 import common.management.WebMirrorManage
 
-
 import WebMirror.processor.RssProcessor
 import flags
 import pprint
@@ -40,6 +40,7 @@ import WebMirror.OutputFilters.rss.FeedDataParser
 import WebMirror.OutputFilters.util.feedNameLut
 import common.util.urlFuncs as urlFuncs
 
+from app.sub_views.rss_views import proto_process_releases
 
 def exposed_sort_json(json_name):
 	'''
@@ -493,6 +494,39 @@ def exposed_process_qidian_feeds():
 
 		for outstr in lines:
 			print(outstr)
+
+def exposed_fetch_unmapped_qidian_items():
+	'''
+	'''
+	from app import app
+	from flask import g
+
+	# with app.app_context():
+	with app.test_request_context(""):
+		app.preprocess_request()
+
+		print("Querying for rss feed items.")
+		feed = g.session.query(db.RssFeedEntry)   \
+			.filter(db.RssFeedEntry.id == 2578) \
+			.options(joinedload('releases'))  \
+			.scalar()
+
+		print("Processing items")
+		items = proto_process_releases(feed.releases)
+		print("Processing resulted in %s feed items" % len(items['missed']))
+
+		feed_urls = [tmp[1]['linkUrl'] for tmp in items['missed']]
+		trimmed = ["/".join(tmp.split("/")[:5])+"/" for tmp in feed_urls]
+
+		new_series_urls = list(set(trimmed))
+		print("Releases consolidated to %s distinct series" % len(new_series_urls))
+
+
+	wg = WebRequest.WebGetRobust()
+	for url in new_series_urls:
+		meta = common.management.util.get_page_title(wg, url)
+		print('Missing: "%s" %s: "%s",' % (url, " " * (50 - len(url)), meta))
+		print("('%s',                                                                             '%s',    '%s')," % (meta['title'], url, 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
 
 def exposed_retrigger_feed_urls():
 	'''

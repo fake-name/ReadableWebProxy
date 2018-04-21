@@ -39,15 +39,20 @@ import app.sub_views.nu_views      as nu_views
 def before_request():
 	g.locale = 'en'
 	g.session = database.checkout_session()
+	print("Checked out session")
 
 
 @app.teardown_request
 def teardown_request(response):
 	try:
-		g.session.commit()
+		try:
+			g.session.commit()
+		except Exception:
+			g.session.rollback()
+		database.release_session(g.session)
 	except Exception:
-		g.session.rollback()
-	database.release_session(g.session)
+		print("Failure in teardown_request()!")
+		traceback.print_exc()
 
 
 @app.errorhandler(404)
