@@ -72,7 +72,8 @@ baseUrl: [
 		'http://www.wuxiaworld.com',
 		'http://www.xiainovel.com',
 
-
+		'http://www.justreads.net',
+		'https://www.stuffiliketodo.net',
 	]
 
 feeds: [

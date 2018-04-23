@@ -521,12 +521,17 @@ def exposed_fetch_unmapped_qidian_items():
 		new_series_urls = list(set(trimmed))
 		print("Releases consolidated to %s distinct series" % len(new_series_urls))
 
-
+	bad_names = [
+		'12testett11223355',
+		'webnovel test003',
+		'www.webnovel.com',
+	]
 	wg = WebRequest.WebGetRobust()
 	for url in new_series_urls:
 		meta = common.management.util.get_page_title(wg, url)
-		print('Missing: "%s" %s: "%s",' % (url, " " * (50 - len(url)), meta))
-		print("('%s',                                                                             '%s',    '%s')," % (meta['title'], url, 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
+		if not any([tmp in meta['title'] for tmp in bad_names]):
+			print('Missing: "%s" %s: "%s",' % (url, " " * (50 - len(url)), meta))
+			print("('%s',                                                                             '%s',    '%s')," % (meta['title'].strip(), url, 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
 
 def exposed_retrigger_feed_urls():
 	'''

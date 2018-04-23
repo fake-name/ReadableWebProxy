@@ -194,7 +194,7 @@ baseUrl: [
 	'http://soratranslations.com',
 
 
-
+	'http://pegasusfarts.com',
 	'http://www.pegasusfarts.com',
 	'http://enln.generasi.net',
 	'http://transtranstrans.hatenablog.com',
@@ -217,7 +217,7 @@ baseUrl: [
 	'https://shikkakutranslations.com',
 	'http://www.noobtrans.ml',
 	'http://minashiro.co.vu',
-
+	'http://hiirowing.egloos.com',
 
 	# This redirects to http://watashiwasugoidesu.wordpress.com
 	'http://www.watashiwasugoidesu.wordpress.com',
@@ -230,6 +230,10 @@ baseUrl: [
 
 	# Lol, idiots can't type.
 	'http://foruwww.wuxiaworld.com',
+
+	# NFI what this ever was.
+	'http://www.egloos.com',
+
 	]
 
 
