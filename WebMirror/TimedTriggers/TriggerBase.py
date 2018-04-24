@@ -110,18 +110,28 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		raw_cur = sess.connection().connection.cursor()
 		commit_each = False
-
 		while 1:
 			loopcnt = 0
 			try:
-				for url in tqdm.tqdm(urlList):
-					loopcnt += 1
-					self.__raw_retrigger_with_cursor(url, raw_cur)
-					if commit_each or (loopcnt % 250) == 0:
-						self.log.info("Committing!")
-						raw_cur.execute("COMMIT;")
-				raw_cur.execute("COMMIT;")
-				break
+				try:
+					for url in tqdm.tqdm(urlList):
+						loopcnt += 1
+						self.__raw_retrigger_with_cursor(url, raw_cur)
+						if commit_each or (loopcnt % 250) == 0:
+							self.log.info("Committing!")
+							raw_cur.execute("COMMIT;")
+					raw_cur.execute("COMMIT;")
+					break
+				except AttributeError:
+					self.log.warning("TQDM Issue. Siiiiiiigh")
+					for url in urlList:
+						loopcnt += 1
+						self.__raw_retrigger_with_cursor(url, raw_cur)
+						if commit_each or (loopcnt % 250) == 0:
+							self.log.info("Committing!")
+							raw_cur.execute("COMMIT;")
+					raw_cur.execute("COMMIT;")
+					break
 
 			except psycopg2.Error:
 				if commit_each is False:
