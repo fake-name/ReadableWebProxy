@@ -1,4 +1,3 @@
-777
 type: eastern
 
 send_raw_feed: True
@@ -1502,7 +1501,7 @@ baseUrl: [
 	'https://coldlovetranslations.wordpress.com',
 	'https://destinytranslations007.wordpress.com',
 	'https://drymass.wordpress.com',
-	'http://ehmed.xyz/almighty-student/almighty-student-chapter-6/')
+	'http://ehmed.xyz',
 	'https://ehmedtranslations.wordpress.com',
 	'https://fourtranslations.wordpress.com',
 	'https://gardenoftranslations.com',
