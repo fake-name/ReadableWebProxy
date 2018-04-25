@@ -10,7 +10,7 @@ webrequest==0.0.20
 pillow==5.1.0
 json2html==1.2.1
 mprpc==0.1.16
-tqdm==4.22.0
+tqdm==4.23.1
 chardet==3.0.4
 pymysql==0.8.0
 statsd==3.2.2
