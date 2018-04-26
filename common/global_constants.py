@@ -118,7 +118,11 @@ GLOBAL_BAD_URLS = [
 			'ww1.grimdarkztranslations.com',
 			'ww12.nepustation.com',
 			'ww3.grimdarkztranslations.com',
+			'ww3.grimdarkztranslations.com',
 			'ww4.grimdarkztranslations.com',
+			'ww4.grimdarkztranslations.com',
+			'ww1.grimdarkztranslations.com',
+			'ww12.nepustation.com',
 			'www.hugedomains.com',
 			'install.shopping-day.com',
 			'www.dropcatch.com',
@@ -135,6 +139,9 @@ GLOBAL_BAD_URLS = [
 			'https:/68.media.tumblr.com',
 			'https%3A/68.media.tumblr.com',
 			'/68.media.tumblr.com',
+
+
+			'install.shopping-day.com',
 
 			# Spanish. I don't want to waste disk space on this.
 			'novelasymangasjpo.blogspot.com',

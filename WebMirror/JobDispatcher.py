@@ -443,7 +443,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		self.db_interface.commit()
 
 	def set_special_case_blocked(self, rid, joburl):
-		self.log.warning("Deleting job for url: '%s'", joburl)
+		self.log.warning("Setting job status to blocked for url: '%s'", joburl)
 		cursor = self.db_interface.cursor()
 		cursor.execute("""UPDATE web_pages         SET state='specialty_blocked' WHERE web_pages.id = %s         AND web_pages.url = %s;""", (rid, joburl))
 		self.db_interface.commit()

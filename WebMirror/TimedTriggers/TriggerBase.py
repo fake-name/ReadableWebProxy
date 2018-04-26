@@ -117,7 +117,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 					for url in tqdm.tqdm(urlList):
 						loopcnt += 1
 						self.__raw_retrigger_with_cursor(url, raw_cur)
-						if commit_each or (loopcnt % 250) == 0:
+						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
 							self.log.info("Committing!")
 							raw_cur.execute("COMMIT;")
 					raw_cur.execute("COMMIT;")
@@ -127,7 +127,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 					for url in urlList:
 						loopcnt += 1
 						self.__raw_retrigger_with_cursor(url, raw_cur)
-						if commit_each or (loopcnt % 250) == 0:
+						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
 							self.log.info("Committing!")
 							raw_cur.execute("COMMIT;")
 					raw_cur.execute("COMMIT;")
