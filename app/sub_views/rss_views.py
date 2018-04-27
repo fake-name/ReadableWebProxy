@@ -17,6 +17,7 @@ import WebMirror.API
 from sqlalchemy import desc
 
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import subqueryload
 import traceback
 import datetime
 import collections
@@ -193,16 +194,20 @@ def proto_process_releases(feed_releases, disable_range_limit=False):
 @app.route('/feed-filters/feedid-process-results/<int:feedid>')
 def feedLoadFilteredData(feedid):
 
-	feed = g.session.query(db.RssFeedEntry)   \
-		.filter(db.RssFeedEntry.id == feedid) \
-		.options(joinedload('releases'))  \
-		.scalar()
+	print("Loading data")
+	releases = g.session.query(db.RssFeedPost)                                                       \
+		.filter(db.RssFeedPost.feed_id == feedid)                                                 \
+		.all()
 
-	items = proto_process_releases(feed.releases)
+	# .filter(db.RssFeedPost.published > datetime.datetime.now() - datetime.timedelta(days=30)) \
+	# .join(db.RssFeedEntry.releases)                                                          \
+
+	print("Loaded. Procesing.")
+	items = proto_process_releases(releases)
 
 	return render_template('rss-pages/feed_items_processed_block.html',
 						   items         = items,
-						   release_count = len(feed.releases),
+						   release_count = len(releases),
 						   )
 
 
