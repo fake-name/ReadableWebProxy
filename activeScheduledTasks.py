@@ -21,22 +21,22 @@ import Misc.HistoryAggregator.Consolidate
 import WebMirror.util.StatusUpdater.Updater
 import WebMirror.management.FeedDbManage
 
-import RawArchiver.TimedTriggers
+import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
 
 
 scrapePlugins = {
-	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                       minutes(15)),
-	1  : (WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggersBase,     hours(4)),
-	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                   minutes(45)),
-	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,               hours(4)),
-	# 4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                days(3)),
-	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                      minutes(10)),
-	6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                    minutes(60)),
+	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                             minutes(15)),
+	1  : (WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggersBase,           hours(4)),
+	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                         minutes(45)),
+	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,                     hours(4)),
+	# 4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                      days(3)),
+	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                            minutes(10)),
+	6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                          minutes(60)),
 
-	5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                              days(3)),
-	7  : (WebMirror.management.FeedDbManage.RssFunctionSaver,                        hours(12)),
-	8  : (Misc.HistoryAggregator.Consolidate.TransactionTruncator,                 minutes(20)),
-	9  : (RawArchiver.TimedTriggers.RawRollingRewalkTrigger,                         hours(12)),
+	5  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                                    days(3)),
+	7  : (WebMirror.management.FeedDbManage.RssFunctionSaver,                              hours(12)),
+	8  : (Misc.HistoryAggregator.Consolidate.TransactionTruncator,                       minutes(20)),
+	9  : (RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRawRewalkTrigger,       hours(12)),
 
 }
 

@@ -17,6 +17,6 @@ def exposed_raw_rewalk_old():
 	Trigger the rewalking system on the rawarchiver
 	'''
 
-	run = RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRawRewalkTriggersBase()
+	run = RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRawRewalkTrigger()
 	run.go()
 
