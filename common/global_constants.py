@@ -135,16 +135,29 @@ GLOBAL_BAD_URLS = [
 			'ww1.circustranslations.com',
 			'ww12.circustranslations.com',
 			'www1.trungtnguyen123.org',
+			'ww1.grimdarkztranslations.com',
+			'ww12.nepustation.com',
+			'ww12.pegasusfarts.com',
+			'ww3.grimdarkztranslations.com',
+			'ww4.grimdarkztranslations.com',
+
+
+
 			'.temp.domains',
 			'https:/68.media.tumblr.com',
 			'https%3A/68.media.tumblr.com',
 			'/68.media.tumblr.com',
 
+			# Wat
+			'fierydragonbreath.tumblr.com',
 
 			'install.shopping-day.com',
 
 			# Spanish. I don't want to waste disk space on this.
 			'novelasymangasjpo.blogspot.com',
+
+			# Seems to be just anime images.
+			'trashbunny.tumblr.com',
 
 			# Lawl
 			'/<?php',
