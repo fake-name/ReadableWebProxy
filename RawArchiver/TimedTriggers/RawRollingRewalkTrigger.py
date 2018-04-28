@@ -5,6 +5,7 @@ import urllib.parse
 import datetime
 import traceback
 import time
+import tqdm
 import zlib
 import settings
 import datetime
@@ -12,6 +13,7 @@ import sqlalchemy.exc
 from sqlalchemy import or_
 from sqlalchemy import and_
 from sqlalchemy import func
+from sqlalchemy import text
 import common.database as dbm
 
 import RawArchiver.TimedTriggers.TriggerBase
@@ -85,37 +87,73 @@ class RollingRawRewalkTriggersBase(RawArchiver.TimedTriggers.TriggerBase.Trigger
 		minid = sess.query(func.min(self.db.RawWebPages.id)).scalar()
 		maxid = sess.query(func.max(self.db.RawWebPages.id)).scalar()
 
-		print(minid, maxid)
+		nls = []
+
+
+		update_query = text("""
+			UPDATE
+				raw_web_pages
+			SET
+				state = 'new'
+			WHERE
+					state NOT IN ('new', 'error', 'removed', 'disabled', 'specialty_blocked', 'specialty_deferred')
+				AND
+					fetchtime < :fetch_time_ago
+				AND
+					id <  :max_rid
+				AND
+					id >= :min_rid
+				-- AND
+				-- 	netloc NOT IN :netloc_list
+			""")
+
+		self.log.info("Have to process from ID %s to %s", minid, maxid)
 		chunk_size = 50000
-		ids_tot = maxid - minid
 		affected = 0
-		for chunk in range(minid, maxid, chunk_size):
+		pbar = tqdm.tqdm(range(minid, maxid, chunk_size))
+		for chunk in pbar:
 			while 1:
 				try:
-					self.log.info("Doing general unspecified netloc retrigger.")
-					q = sess.query(self.db.RawWebPages)
-					q = q.filter(self.db.RawWebPages.state != 'new')
-					q = q.filter(self.db.RawWebPages.fetchtime < ago)
-					q = q.filter(self.db.RawWebPages.id < (chunk + chunk_size))
-					q = q.filter(self.db.RawWebPages.id >= chunk)
+					ret = sess.execute(update_query,
+							{
+								'fetch_time_ago' : ago,
+								'max_rid'        : chunk + chunk_size,
+								'min_rid'        : chunk,
+								'netloc_list'    : nls,
+							}
+						)
 
-					affected_rows = q.update({"state" : "new"})
-					affected += affected_rows
+					affected += ret.rowcount
 					sess.commit()
-					self.log.info("Updated for all unspecified netlocs - %s rows (%s total), Id: %s, %f%% done.",
-						affected_rows, affected, chunk, ((chunk - minid) / ids_tot) * 100)
+					desc = 'Changed: %10i' % (affected, )
+					pbar.set_description(desc)
+
 					break
+
 				except sqlalchemy.exc.InternalError:
-					self.log.info("Transaction error. Retrying.")
 					sess.rollback()
+					self.log.warning("InternalError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
 				except sqlalchemy.exc.OperationalError:
-					self.log.info("Transaction error. Retrying.")
 					sess.rollback()
+					self.log.warning("OperationalError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
 				except sqlalchemy.exc.IntegrityError:
-					self.log.info("Transaction error. Retrying.")
 					sess.rollback()
+					self.log.warning("IntegrityError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
 				except sqlalchemy.exc.InvalidRequestError:
-					self.log.info("Transaction error. Retrying.")
+					sess.rollback()
+					self.log.warning("InvalidRequestError error. Retrying.")
+					for line in traceback.format_exc().split("\n"):
+						self.log.warning(line)
+					raise
+
+				except RecursionError:
+					self.log.info("Recursion error!")
 					sess.rollback()
 
 
@@ -168,7 +206,7 @@ class RollingRawRewalkTriggersBase(RawArchiver.TimedTriggers.TriggerBase.Trigger
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
-	run = RollingRawRewalkTriggerBase()
+	run = RollingRawRewalkTriggersBase()
 	run.retrigger_other()
 	# run._go()
 
