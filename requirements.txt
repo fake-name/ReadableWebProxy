@@ -5,12 +5,12 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
 git+https://github.com/fake-name/ChromeController.git
 
-webrequest==0.0.20
+webrequest==0.0.21
 
 pillow==5.1.0
 json2html==1.2.1
 mprpc==0.1.16
-tqdm==4.23.1
+tqdm==4.23.2
 chardet==3.0.4
 pymysql==0.8.0
 statsd==3.2.2
@@ -47,7 +47,7 @@ natsort==5.3.0
 mdx_linkify==1.1
 ftfy==5.3.0
 lxml==4.2.1
-Flask==1.0
+Flask==1.0.2
 Flask-DebugToolbar==0.10.1
 Flask-Login==0.4.1
 Flask-Babel==0.11.2
