@@ -489,7 +489,7 @@ def exposed_process_qidian_feeds():
 			urlfrag = root.split("www")[-1]
 			meta = common.management.util.get_page_title(wg, url)
 			title =  meta['title']
-			outstr = "		('www{}/', '{}', 'translated'),".format(urlfrag, title)
+			outstr = "		('www{}/', '{}', '?'),".format(urlfrag, title)
 			lines.append(outstr)
 
 		for outstr in lines:
@@ -506,13 +506,32 @@ def exposed_fetch_unmapped_qidian_items():
 		app.preprocess_request()
 
 		print("Querying for rss feed items.")
-		feed = g.session.query(db.RssFeedEntry)   \
-			.filter(db.RssFeedEntry.id == 2578) \
-			.options(joinedload('releases'))  \
-			.scalar()
+		# Hard coded for my database. Because fuk u \
+		releases = g.session.query(db.RssFeedPost)   \
+			.filter(db.RssFeedPost.feed_id == 2578)   \
+			.all()
 
 		print("Processing items")
-		items = proto_process_releases(feed.releases)
+		urls = [item.contenturl for item in releases]
+
+		relmap = {}
+		for release in releases:
+			if "/rssbook/" in release.contenturl:
+				continue
+			trimmed = "/".join(release.contenturl.split("/")[:5])+"/"
+			relmap.setdefault(trimmed, [])
+			relmap[trimmed].append(release)
+
+		print("Fetched %s urls, %s distinct series" % (len(urls), len(relmap)))
+
+		for itemlist in relmap.values():
+			itemlist.sort(key=lambda x: x.id)
+
+		truncated_releases = [tmp[0] for tmp in relmap.values()]
+
+		print("Truncated releases: %s" % len(truncated_releases))
+
+		items = proto_process_releases(truncated_releases)
 		print("Processing resulted in %s feed items" % len(items['missed']))
 
 		feed_urls = [tmp[1]['linkUrl'] for tmp in items['missed']]
@@ -531,7 +550,10 @@ def exposed_fetch_unmapped_qidian_items():
 		meta = common.management.util.get_page_title(wg, url)
 		if not any([tmp in meta['title'] for tmp in bad_names]):
 			print('Missing: "%s" %s: "%s",' % (url, " " * (50 - len(url)), meta))
-			print("('%s',                                                                             '%s',    '%s')," % (meta['title'].strip(), url, 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
+			itemid = url.split("/")
+			itemid = [tmp for tmp in itemid if tmpthe]
+			itemid = itemid[-1]
+			print("'/%s/' : ('%s',                                                                     '%s')," % (itemid, meta['title'].strip(), 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
 
 def exposed_retrigger_feed_urls():
 	'''

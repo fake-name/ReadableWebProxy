@@ -419,7 +419,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 
 	def disable_job(self, rid, joburl):
-		self.log.warning("Deleting job for url: '%s'", joburl)
+		self.log.warning("Disabling job for url: '%s'", joburl)
 		cursor = self.db_interface.cursor()
 		cursor.execute("""UPDATE raw_web_pages SET state = %s WHERE raw_web_pages.id = %s AND raw_web_pages.url = %s;""", ('disabled', rid, joburl))
 		self.db_interface.commit()

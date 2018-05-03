@@ -375,10 +375,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 					updated    = datetime.datetime.fromtimestamp(entry['updated']),
 					published  = datetime.datetime.fromtimestamp(entry['published'])
 				)
-
-			self.db_sess.add(new)
-			self.db_sess.commit()
-
+			try:
+				self.db_sess.add(new)
+				self.db_sess.commit()
+			except sqlalchemy.exc.InvalidRequestError:
+				local_object = self.db_sess.merge(new)
+				self.db_sess.add(local_object)
+				self.db_sess.commit()
 
 
 

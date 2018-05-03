@@ -16,6 +16,7 @@ from sqlalchemy import func
 from sqlalchemy import text
 import common.database as dbm
 
+import RawArchiver.RawActiveModules
 import RawArchiver.TimedTriggers.TriggerBase
 
 
@@ -207,6 +208,6 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 	run = RollingRawRewalkTrigger()
-	run.retrigger_other()
+	run.go()
 	# run._go()
 

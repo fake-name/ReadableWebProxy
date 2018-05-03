@@ -70,8 +70,8 @@ baseUrl: [
 
 		'https://elwiki.net',
 
-		'http://wuxiaworld.com',
-		'http://www.wuxiaworld.com',
+		'https://wuxiaworld.com',
+		'https://www.wuxiaworld.com',
 		'http://www.xiainovel.com',
 		'http://xiainovel.com',
 		'http://www.justreads.net',
@@ -99,7 +99,8 @@ feeds: [
 	'http://www.novellatranslation.com/feed',
 	'http://www.lionmask.pro/feeds/posts/default',
 	'http://girlyboysalliance.mozello.com/blog/rss/',
-	'http://www.wuxiaworld.com/feed/chapters',
+	'https://www.wuxiaworld.com/feed/chapters',
+	'https://www.wuxiaworld.com/feed',
 ]
 
 extraStartUrls: [

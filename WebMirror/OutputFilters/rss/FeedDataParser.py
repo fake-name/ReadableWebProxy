@@ -280,17 +280,18 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def processFeedData(self, session, feedDat, tx_raw=True, tx_parse=True):
 
 		if any([item in feedDat['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
-			# print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
 			return
 
 		if any([feedDat['title'].lower().startswith(item) for item in common.global_constants.RSS_TITLE_FILTER]):
-			# print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
+			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
 			return
 
 
 		# print("Feed item title: ", feedDat['title'], feedDat)
 
 		if feedDat['title'].lower().startswith("by: "):
+			self.log.warning("Skipping due to title: '%s'", feedDat['title'])
 			return
 
 
@@ -302,6 +303,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		feedDat['srcname'] = nicename
 
 		if should_ignore_feed_post(feedDat):
+			self.log.warning("Skipping due to should_ignore_feed_post")
 			return
 
 		# print("ProcessFeedData! ", netloc)
