@@ -551,9 +551,9 @@ def exposed_fetch_unmapped_qidian_items():
 		if not any([tmp in meta['title'] for tmp in bad_names]):
 			print('Missing: "%s" %s: "%s",' % (url, " " * (50 - len(url)), meta))
 			itemid = url.split("/")
-			itemid = [tmp for tmp in itemid if tmpthe]
+			itemid = [tmp for tmp in itemid if tmp]
 			itemid = itemid[-1]
-			print("'/%s/' : ('%s',                                                                     '%s')," % (itemid, meta['title'].strip(), 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
+			print("'%s' : ('%s',                                                                     '%s')," % (itemid, meta['title'].strip(), 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
 
 def exposed_retrigger_feed_urls():
 	'''

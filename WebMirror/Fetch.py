@@ -243,6 +243,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 		# Anyways, fix that.
 		if '%2F' in  mType:
 			mType = mType.replace('%2F', '/')
+			
+		self.wg.cj.save()
 
 		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
 		return content, fileN, mType

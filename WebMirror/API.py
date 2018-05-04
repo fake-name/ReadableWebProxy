@@ -3,7 +3,7 @@ import datetime
 import os.path
 import contextlib
 import logging
-
+import random
 import common.database
 import Misc.txt_to_img
 import WebMirror.Engine
@@ -13,6 +13,7 @@ from flask import g
 from app import app
 from app import utilities
 
+import WebRequest.Constants as wr_constants
 
 def td_format(td_object):
 		seconds = int(td_object.total_seconds())
@@ -35,6 +36,8 @@ def td_format(td_object):
 
 		return ", ".join(retstr)
 
+UA_POOL = [wr_constants.getUserAgent() for x in range(3)]
+
 class RemoteContentObject(object):
 	def __init__(self, url, db_session = None):
 		self.log = logging.getLogger("Main.RemoteContentObject")
@@ -49,7 +52,12 @@ class RemoteContentObject(object):
 
 		# print("RemoteContentObject instantiated. Available fetchers: %s" % WebMirror.runtime_engines.fetchers.qsize())
 		# self.archiver = WebMirror.runtime_engines.fetchers.get()
-		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False, run_filters=False, new_job_queue=None, db_interface=self.db_sess)
+		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False, 
+			run_filters=False, 
+			new_job_queue=None, 
+			db_interface=self.db_sess, 
+			ua_override=random.choice(UA_POOL)
+			)
 
 
 	def fetch(self, ignore_cache=False, version=None):

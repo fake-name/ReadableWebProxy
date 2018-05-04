@@ -24,6 +24,10 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		self.session = session
 
 	def init_agent(self, new_headers):
+		self.log.info("Cookiejar inited with headers:")
+		for key, value in new_headers:
+			self.log.info("	%s -> %s", key, value)
+		
 		self.headers = dict(new_headers)
 		self.sync_cookies()
 
@@ -34,26 +38,20 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 			.filter(db.WebCookieDb.ua_accept_language   == self.headers['Accept-Language']) \
 			.filter(db.WebCookieDb.ua_accept            == self.headers['Accept'])          \
 			.filter(db.WebCookieDb.ua_accept_encoding   == self.headers['Accept-Encoding']) \
-			.filter(db.WebCookieDb.c_version            == cookie.version)                  \
 			.filter(db.WebCookieDb.c_name               == cookie.name)                     \
-			.filter(db.WebCookieDb.c_value              == cookie.value)                    \
-			.filter(db.WebCookieDb.c_port               == cookie.port)                     \
-			.filter(db.WebCookieDb.c_port_specified     == cookie.port_specified)           \
 			.filter(db.WebCookieDb.c_domain             == cookie.domain)                   \
-			.filter(db.WebCookieDb.c_domain_specified   == cookie.domain_specified)         \
-			.filter(db.WebCookieDb.c_domain_initial_dot == cookie.domain_initial_dot)       \
 			.filter(db.WebCookieDb.c_path               == cookie.path)                     \
-			.filter(db.WebCookieDb.c_path_specified     == cookie.path_specified)           \
-			.filter(db.WebCookieDb.c_secure             == cookie.secure)                   \
-			.filter(db.WebCookieDb.c_expires            == cookie.expires)                  \
-			.filter(db.WebCookieDb.c_discard            == cookie.discard)                  \
-			.filter(db.WebCookieDb.c_comment            == cookie.comment)                  \
-			.filter(db.WebCookieDb.c_comment_url        == cookie.comment_url)              \
-			.filter(db.WebCookieDb.c_rfc2109            == cookie.rfc2109)                  \
-			.filter(db.WebCookieDb.c_rest               == json.dumps(cookie._rest))        \
-			.count()
+			.scalar()
 
 		if have:
+		
+			have.c_value              = cookie.value
+			have.c_expires            = cookie.expires
+			have.c_discard            = cookie.discard
+			have.c_comment            = cookie.comment
+			have.c_comment_url        = cookie.comment_url
+			have.c_rfc2109            = cookie.rfc2109
+			have.c_rest               = json.dumps(cookie._rest, sort_keys=True)
 			# Already saved cookie, no need to do anything.
 			return
 
@@ -86,6 +84,7 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 	def __save_cookies(self):
 
+		self.log.info("Saving %s cookies......", len(list(self)))
 		while 1:
 			try:
 				for cookie in self:
@@ -103,7 +102,11 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 					self.log.error("%s", line.rstrip())
 				raise e
 
+		distinct = set(((c.name, c.domain, c.path) for c in self))
 
+		# print(distinct)
+
+		self.log.info("Saved %s cookies to db (%s distinct).", len(list(self)), len(distinct))
 
 
 	def __load_cookies(self):
@@ -136,21 +139,27 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				rfc2109            = cookie.c_rfc2109,
 				)
 			self.set_cookie(new_ck)
+			
+		self.log.info("Loaded %s cookies from db.", len(have))
 
 		self.session.commit()
 
 	def sync_cookies(self):
 		assert self.headers != None
 
-		self.__load_cookies()
 		self.__save_cookies()
+		self.__load_cookies()
 		self.session.commit()
 
 	def save(self, filename=None, ignore_discard=False, ignore_expires=False):
-		self.sync_cookies()
+		assert self.headers != None
+		self.__save_cookies()
+		self.session.commit()
 
 	def load(self, filename=None, ignore_discard=False, ignore_expires=False):
-		self.sync_cookies()
+		assert self.headers != None
+		self.__load_cookies()
+		self.session.commit()
 
 	def revert(self, filename=None, ignore_discard=False, ignore_expires=False):
 		self.sync_cookies()

@@ -146,7 +146,15 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, cookie_lock, db_interface, new_job_queue, run_filters=True, response_queue=None, use_socks=False):
+	def __init__(self, 
+			cookie_lock, 
+			db_interface, 
+			new_job_queue, 
+			run_filters=True, 
+			response_queue=None, 
+			use_socks=False, 
+			ua_override=None):
+			
 		# print("SiteArchiver __init__()")
 		super().__init__()
 
@@ -164,7 +172,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 		alt_cj = dbCj.DatabaseCookieJar(db=db, session=common.database.get_db_session(postfix="_cookie_interface"))
-		self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
+		self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj, custom_ua=ua_override)
 
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
