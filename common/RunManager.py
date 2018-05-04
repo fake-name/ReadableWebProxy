@@ -87,8 +87,14 @@ class MultiJobManager(object):
 				with logSetup.stdout_lock:
 					proc = multiprocessing.Process(target=self.target, args=args, kwargs=kwargs)
 					# proc = threading.Thread(target=self.target, args=(self.procno, ) + self.target_args, kwargs=self.target_kwargs)
-					self.tasklist[x] = proc
 					proc.start()
+					while not (                          # Wait until
+								proc.is_alive()          # the process is running
+							or  proc.exitcode != None):  # or has exited
+						time.sleep(0.25)
+						self.log.info("Waiting for process to start!")
+
+					self.tasklist[x] = proc
 					self.procno += 1
 
 
@@ -109,7 +115,7 @@ class MultiJobManager(object):
 			living = sum([task and task.is_alive() for task in self.tasklist.values()])
 			self.log.info("Living processes: '%s'", living)
 
-			for task in self.tasklist.values():
+			for task in living:
 				task.join(3.0/(living+1))
 
 			for job_queue in flushqueues:
