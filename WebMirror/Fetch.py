@@ -203,6 +203,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		error = None
 		try:
+			itemUrl = itemUrl.strip()
+			itemUrl = itemUrl.replace(" ", "%20")
+
 			content, handle = self.wg.getpage(itemUrl, returnMultiple=True)
 		except WebRequest.FetchFailureError:
 			self.log.error("Failed to fetch page!")
@@ -243,7 +246,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		# Anyways, fix that.
 		if '%2F' in  mType:
 			mType = mType.replace('%2F', '/')
-			
+
 		self.wg.cj.save()
 
 		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
