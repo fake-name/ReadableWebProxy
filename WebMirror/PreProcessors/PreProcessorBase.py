@@ -11,9 +11,9 @@ import abc
 
 class ContentPreprocessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
-	def __init__(self, webgetter):
+	def __init__(self, wg_proxy):
 		super().__init__()
-		self.wg = webgetter
+		self.wg_proxy = wg_proxy
 
 	@abc.abstractmethod
 	def preprocessContent(self, url, mimetype, contentstr):
@@ -27,6 +27,6 @@ class ContentPreprocessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 	# Proxy call for enforcing call-correctness
 	@classmethod
-	def preprocess(cls, url, mimeType, content, wg):
-		instance = cls(wg)
+	def preprocess(cls, url, mimeType, content, wg_proxy):
+		instance = cls(wg_proxy)
 		return instance.preprocessContent(url, mimeType, content)

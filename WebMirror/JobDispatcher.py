@@ -71,7 +71,8 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 1000
 	# MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
-	MAX_IN_FLIGHT_JOBS = 8000
+	MAX_IN_FLIGHT_JOBS = 5000
+	# MAX_IN_FLIGHT_JOBS = 8000
 
 class RpcMixin():
 
@@ -460,7 +461,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		if 'drain' in sys.argv:
 			return
 		total_new = 0
-		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < 100:
+		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < MAX_IN_FLIGHT_JOBS:
 			old = self.system_state['active_jobs']
 			with self.mon_con.pipeline() as pipe:
 				with pipe.timer("get_task"):

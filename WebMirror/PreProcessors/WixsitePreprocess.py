@@ -21,7 +21,7 @@ class JsRendererPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPre
 
 		if len(text) < 100 or True:
 			self.log.info("Page has little or no body. Trying to refetch and render using chromium.")
-			contentstr, dummy_fileN, dummy_mType = self.wg.chromiumGetRenderedItem(url)
+			contentstr, dummy_fileN, dummy_mType = self.wg_proxy().chromiumGetRenderedItem(url)
 		else:
 			self.log.info("Page has %s char body, no re-fetch & render needed.", len(text))
 

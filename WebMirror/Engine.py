@@ -151,10 +151,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 	@property
 	def wg(self):
 		if getattr(self, '__wg', None) is None:
+			alt_cj = dbCj.DatabaseCookieJar(db=self.db, session=common.database.get_db_session(postfix="_cookie_interface"))
 			self.__wg = WebRequest.WebGetRobust(
 					cookie_lock   = self.__wr_cookie_lock,
 					use_socks     = self.__wr_use_socks,
-					alt_cookiejar = self.__wr_alt_cj,
+					alt_cookiejar = alt_cj,
 					custom_ua     = self.__wr_ua_override,
 				)
 		return self.__wg
@@ -183,11 +184,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.fetcher = WebMirror.Fetch.ItemFetcher
 
 
-		alt_cj = dbCj.DatabaseCookieJar(db=db, session=common.database.get_db_session(postfix="_cookie_interface"))
-
 		self.__wr_cookie_lock = cookie_lock
 		self.__wr_use_socks   = use_socks
-		self.__wr_alt_cj      = alt_cj
 		self.__wr_ua_override = ua_override
 
 
@@ -239,6 +237,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 	#	   ##    ##     ##  ######  ##    ##    ########  ####  ######  ##        ##     ##    ##     ######  ##     ## ######## ##     ##
 	#
 	########################################################################################################################
+	def wg_proxy(self):
+		return self.wg
 
 	# Minimal proxy because I want to be able to call the fetcher without affecting the DB.
 	def fetch(self, job, preretrieved=None):
@@ -246,7 +246,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 							target_url     = job.url,
 							start_url      = job.starturl,
 							job            = job,
-							wg_handle      = self.wg,
+							wg_proxy       = self.wg_proxy,
 							response_queue = self.resp_q,
 							db_sess        = self.db_sess)
 		response = fetcher.fetch(preretrieved = preretrieved)
@@ -957,11 +957,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 					if '<FetchFailureError 410 -> ' in content:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
 						log_func = self.log.warning
+						job.errno = 410
 					elif '<FetchFailureError 404 -> ' in content:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
 						log_func = self.log.warning
+						job.errno = 404
 					elif '<FetchFailureError 403 -> ' in content:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
+						job.errno = 403
 					else:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=14)
 
@@ -1106,7 +1109,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 								target_url     = url,
 								start_url      = parentjob.starturl,
 								job            = row,
-								wg_handle      = self.wg,
+								wg_proxy       = self.wg_proxy,
 								response_queue = self.resp_q,
 								db_sess        = self.db_sess)
 		ret = fetcher.dispatchContent(content, filename, mimetype)

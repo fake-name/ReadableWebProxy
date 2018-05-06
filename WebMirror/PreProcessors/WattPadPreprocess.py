@@ -17,7 +17,7 @@ class WattPadPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPrepro
 
 
 	def check_logged_in(self):
-		soup = self.wg.getSoup("https://www.wattpad.com/home")
+		soup = self.wg_proxy().getSoup("https://www.wattpad.com/home")
 		uname = soup.find("span", class_='username')
 		if uname and WATTPAD_AUTH_CREDS['username'] in uname.get_text():
 			return True
@@ -31,7 +31,7 @@ class WattPadPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPrepro
 
 		target = "https://www.wattpad.com/login?%s" % urllib.parse.urlencode({"nextUrl" : url})
 
-		content = self.wg.getpage(target, postData=auth)
+		content = self.wg_proxy().getpage(target, postData=auth)
 
 		now_logged_in = self.check_logged_in()
 		if not now_logged_in:

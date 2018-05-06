@@ -369,7 +369,7 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'decompose_svg',
 			'message_q',
 			'job',
-			'wg',
+			'wg_proxy',
 		]
 
 		assert len(params) == len(expected), "Incorrect number of passed plugin parameters?"

@@ -24,10 +24,10 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		self.session = session
 
 	def init_agent(self, new_headers):
-		self.log.info("Cookiejar inited with headers:")
-		for key, value in new_headers:
-			self.log.info("	%s -> %s", key, value)
-		
+		# self.log.info("Cookiejar inited with headers:")
+		# for key, value in new_headers:
+		# 	self.log.info("	%s -> %s", key, value)
+
 		self.headers = dict(new_headers)
 		self.sync_cookies()
 
@@ -44,7 +44,7 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 			.scalar()
 
 		if have:
-		
+
 			have.c_value              = cookie.value
 			have.c_expires            = cookie.expires
 			have.c_discard            = cookie.discard
@@ -83,7 +83,8 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		self.session.add(new)
 
 	def __save_cookies(self):
-
+		if not len(list(self)):
+			return
 		self.log.info("Saving %s cookies......", len(list(self)))
 		while 1:
 			try:
@@ -139,7 +140,7 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				rfc2109            = cookie.c_rfc2109,
 				)
 			self.set_cookie(new_ck)
-			
+
 		self.log.info("Loaded %s cookies from db.", len(have))
 
 		self.session.commit()

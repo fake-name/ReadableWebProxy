@@ -23,7 +23,7 @@ class RedditPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 			"over18" : "yes",
 		}
 
-		new = self.wg.getpage(target, postData=form_args)
+		new = self.wg_proxy().getpage(target, postData=form_args)
 		assert '<title>reddit.com: over 18?</title>' not in new
 		return new
 

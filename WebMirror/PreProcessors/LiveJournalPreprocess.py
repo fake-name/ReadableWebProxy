@@ -28,7 +28,7 @@ class LJPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreprocesso
 			bounce['name'] : bounce['value'],
 		}
 
-		new = self.wg.getpage(target, postData=form_args)
+		new = self.wg_proxy().getpage(target, postData=form_args)
 		assert '<form method="POST" action="http://www.livejournal.com/misc/adult_explicit.bml">' not in new
 		return new
 

@@ -23,7 +23,7 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 	loggerPath = "Main.Preprocessor.Qidian"
 
 	def get_csrf_tok(self):
-		for cookie in self.wg.cj:
+		for cookie in self.wg_proxy().cj:
 			if cookie.name == '_csrfToken':
 				return cookie.value
 		return None
@@ -32,7 +32,7 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 		csrf_tok = self.get_csrf_tok()
 		if not csrf_tok:
 			self.log.info("Forward-rendering page table-of-contents.")
-			self.wg.getpage(url, returnMultiple=True)
+			self.wg_proxy().getpage(url, returnMultiple=True)
 
 			csrf_tok = self.get_csrf_tok()
 
@@ -43,7 +43,7 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 		}
 		toc_url = "https://www.webnovel.com/apiajax/chapter/GetChapterList?{}".format(urllib.parse.urlencode(params))
 
-		toc_container = self.wg.getJson(toc_url)
+		toc_container = self.wg_proxy().getJson(toc_url)
 
 		if (not 'msg' in toc_container
 			or not 'data' in toc_container

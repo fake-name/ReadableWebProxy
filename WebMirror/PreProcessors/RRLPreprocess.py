@@ -151,7 +151,7 @@ class RRLListPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPr
 	def build_proper_page(self, url, contentstr):
 		posts = []
 		for x in range(3):
-			ctnt = self.wg.getJson(self.URL_AJAX_KEYS[url].format(pagenum = x))
+			ctnt = self.wg_proxy().getJson(self.URL_AJAX_KEYS[url].format(pagenum = x))
 			posts.extend(ctnt)
 
 		soup = bs4.BeautifulSoup(contentstr, "lxml")
@@ -220,8 +220,8 @@ class RRLSeriesPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.Content
 
 		fid = url.split("/")[-1]
 
-		release_info = self.wg.getJson("http://api.royalroadl.com/fictions.php?fid={fid}".format(fid = fid))
-		volume_json      = self.wg.getJson("http://api.royalroadl.com/chapters.php?action=volumes&fid={fid}".format(fid = fid))
+		release_info = self.wg_proxy().getJson("http://api.royalroadl.com/fictions.php?fid={fid}".format(fid = fid))
+		volume_json      = self.wg_proxy().getJson("http://api.royalroadl.com/chapters.php?action=volumes&fid={fid}".format(fid = fid))
 
 
 		postlist = soup.new_tag("div")
@@ -234,7 +234,7 @@ class RRLSeriesPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.Content
 			]
 		volumes.extend(self.get_volume_tuples(volume_json))
 		for vid, volname in volumes:
-			chapters = self.wg.getJson("http://api.royalroadl.com/chapters.php?action=volumeChapters&volume={vid}&fid={fid}".format(fid = fid, vid=vid))
+			chapters = self.wg_proxy().getJson("http://api.royalroadl.com/chapters.php?action=volumeChapters&volume={vid}&fid={fid}".format(fid = fid, vid=vid))
 			chapters = self.build_chapter_list(chapters, release_info['forum_id'])
 			if volname:
 
@@ -328,8 +328,8 @@ class RRLChapterPagePreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 	def build_proper_page(self, dummy_url, fid, sid):
 		soup = bs4.BeautifulSoup("", "lxml")
 
-		release_info  = self.wg.getJson("http://api.royalroadl.com/fiction_chapters.php?fid={fid}&tid={sid}".format(fid=fid, sid=sid))
-		adjacent_info = self.wg.getJson("http://api.royalroadl.com/fiction_chapters.php?action=getNavChapter&tid={sid}".format(fid=fid, sid=sid))
+		release_info  = self.wg_proxy().getJson("http://api.royalroadl.com/fiction_chapters.php?fid={fid}&tid={sid}".format(fid=fid, sid=sid))
+		adjacent_info = self.wg_proxy().getJson("http://api.royalroadl.com/fiction_chapters.php?action=getNavChapter&tid={sid}".format(fid=fid, sid=sid))
 
 		postlist = soup.new_tag("div")
 

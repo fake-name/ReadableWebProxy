@@ -38,6 +38,7 @@ import time
 #
 ########################################################################################################################
 
+
 class ItemFetcher(LogBase.LoggerMixin):
 
 
@@ -50,7 +51,12 @@ class ItemFetcher(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, rules, target_url, db_sess, start_url, job, cookie_lock=None, wg_handle=None, response_queue=None):
+	def sync_wg_proxy(self):
+		if getattr(self, '__wg', None) is None:
+			self.__wg = WebRequest.WebGetRobust()
+		return self.__wg
+
+	def __init__(self, rules, target_url, db_sess, start_url, job, cookie_lock=None, wg_proxy=None, response_queue=None):
 		# print("Fetcher init()")
 		super().__init__()
 
@@ -58,11 +64,10 @@ class ItemFetcher(LogBase.LoggerMixin):
 		self.job            = job
 		self.db_sess        = db_sess
 
-		if wg_handle:
-			self.wg = wg_handle
+		if wg_proxy:
+			self.wg_proxy = wg_proxy
 		else:
-			self.log.warning("No WebRequest instance for ItemFetcher()")
-			self.wg = WebRequest.WebGetRobust()
+			self.wg_proxy = self.sync_wg_proxy
 
 		# Validate the plugins implement the proper interface
 		for item in PLUGINS:
@@ -181,7 +186,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 									'type'            : self.rules['type'],
 									'message_q'       : self.response_queue,
 									'job'             : self.job,
-									'wg'              : self.wg,
+									'wg_proxy'        : self.wg_proxy,
 		}
 
 		ret = plugin.process(params)
@@ -205,7 +210,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 			itemUrl = itemUrl.strip()
 			itemUrl = itemUrl.replace(" ", "%20")
 
-			content, handle = self.wg.getpage(itemUrl, returnMultiple=True)
+			content, handle = self.wg_proxy().getpage(itemUrl, returnMultiple=True)
 		except WebRequest.FetchFailureError:
 			self.log.error("Failed to fetch page!")
 			for line in traceback.format_exc().split("\n"):
@@ -216,10 +221,10 @@ class ItemFetcher(LogBase.LoggerMixin):
 		except:
 			print("Failure?")
 			if self.rules['cloudflare']:
-				if not self.wg.stepThroughCloudFlare(itemUrl, titleNotContains='Just a moment...'):
+				if not self.wg_proxy().stepThroughCloudFlare(itemUrl, titleNotContains='Just a moment...'):
 					raise ValueError("Could not step through cloudflare!")
 				# Cloudflare cookie set, retrieve again
-				content, handle = self.wg.getpage(itemUrl, returnMultiple=True)
+				content, handle = self.wg_proxy().getpage(itemUrl, returnMultiple=True)
 			else:
 				raise
 
@@ -246,7 +251,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		if '%2F' in  mType:
 			mType = mType.replace('%2F', '/')
 
-		self.wg.cj.save()
+		self.wg_proxy().cj.save()
 
 		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
 		return content, fileN, mType
@@ -260,7 +265,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		preprocess_counts = 0
 		for filter_plg in self.preprocessor_modules:
 			if filter_plg.wantsUrl(self.target_url):
-				content = filter_plg.preprocess(self.target_url, mimeType, content, self.wg)
+				content = filter_plg.preprocess(self.target_url, mimeType, content, wg_proxy=self.wg_proxy)
 				preprocess_counts += 1
 
 		if preprocess_counts > 1:

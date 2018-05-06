@@ -23,8 +23,8 @@ class TgStoryTimePreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPr
 			return content
 		newloc = newloc.a['href']
 		tgt = urllib.parse.urljoin(url, newloc)
-		new = self.wg.getpage(tgt)
-		new = self.wg.getpage(url)
+		new = self.wg_proxy().getpage(tgt)
+		new = self.wg_proxy().getpage(url)
 
 		assert 'This story has explicit content.' not in new
 		return new
