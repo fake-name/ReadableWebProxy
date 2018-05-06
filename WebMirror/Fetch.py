@@ -60,9 +60,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		if wg_handle:
 			self.wg = wg_handle
-		elif cookie_lock:
-			self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock)
 		else:
+			self.log.warning("No WebRequest instance for ItemFetcher()")
 			self.wg = WebRequest.WebGetRobust()
 
 		# Validate the plugins implement the proper interface

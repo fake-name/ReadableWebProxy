@@ -146,15 +146,27 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, 
-			cookie_lock, 
-			db_interface, 
-			new_job_queue, 
-			run_filters=True, 
-			response_queue=None, 
-			use_socks=False, 
+
+
+	@property
+	def wg(self):
+		if getattr(self, '__wg', None) is None:
+			self.__wg = WebRequest.WebGetRobust(
+					cookie_lock   = self.__wr_cookie_lock,
+					use_socks     = self.__wr_use_socks,
+					alt_cookiejar = self.__wr_alt_cj,
+					custom_ua     = self.__wr_ua_override,
+				)
+		return self.__wg
+
+	def __init__(self,
+			cookie_lock,
+			db_interface,
+			new_job_queue,
+			response_queue=None,
+			use_socks=False,
 			ua_override=None):
-			
+
 		# print("SiteArchiver __init__()")
 		super().__init__()
 
@@ -172,7 +184,12 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 
 		alt_cj = dbCj.DatabaseCookieJar(db=db, session=common.database.get_db_session(postfix="_cookie_interface"))
-		self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj, custom_ua=ua_override)
+
+		self.__wr_cookie_lock = cookie_lock
+		self.__wr_use_socks   = use_socks
+		self.__wr_alt_cj      = alt_cj
+		self.__wr_ua_override = ua_override
+
 
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
@@ -228,7 +245,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		fetcher = self.fetcher(rules       = self.ruleset,
 							target_url     = job.url,
 							start_url      = job.starturl,
-							cookie_lock    = self.cookie_lock,
 							job            = job,
 							wg_handle      = self.wg,
 							response_queue = self.resp_q,
@@ -892,23 +908,23 @@ class SiteArchiver(LogBase.LoggerMixin):
 			 'jobid': 570102816,
 			 'success': False,
 			 'traceback': 'Traceback (most recent call last):\n'
-			              '  File "/root/AutoTriever/client.py", line 85, in _process\n'
-			              '    ret = self.process(body)\n'
-			              '  File "/root/AutoTriever/dispatcher.py", line 99, in '
-			              'process\n'
-			              "    ret = self.doCall(command['module'], command['call'], "
-			              'args, kwargs)\n'
-			              '  File "/root/AutoTriever/dispatcher.py", line 60, in doCall\n'
-			              '    return self.classCache[module].calls[call](*call_args, '
-			              '**call_kwargs)\n'
-			              '  File "/root/AutoTriever/util/WebRequest.py", line 543, in '
-			              'getItem\n'
-			              '    raise urllib.error.URLError("Failed to retreive file from '
-			              'page \'%s\'!" % itemUrl)\n'
-			              'urllib.error.URLError: <urlopen error Failed to retreive file '
-			              'from page '
-			              "'http://dandeliontrail.livejournal.com/data/rss?tag=once "
-			              "promised'!>\n",
+						  '  File "/root/AutoTriever/client.py", line 85, in _process\n'
+						  '    ret = self.process(body)\n'
+						  '  File "/root/AutoTriever/dispatcher.py", line 99, in '
+						  'process\n'
+						  "    ret = self.doCall(command['module'], command['call'], "
+						  'args, kwargs)\n'
+						  '  File "/root/AutoTriever/dispatcher.py", line 60, in doCall\n'
+						  '    return self.classCache[module].calls[call](*call_args, '
+						  '**call_kwargs)\n'
+						  '  File "/root/AutoTriever/util/WebRequest.py", line 543, in '
+						  'getItem\n'
+						  '    raise urllib.error.URLError("Failed to retreive file from '
+						  'page \'%s\'!" % itemUrl)\n'
+						  'urllib.error.URLError: <urlopen error Failed to retreive file '
+						  'from page '
+						  "'http://dandeliontrail.livejournal.com/data/rss?tag=once "
+						  "promised'!>\n",
 			 'user': 'client_1'
 			}
 
@@ -1090,7 +1106,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 								target_url     = url,
 								start_url      = parentjob.starturl,
 								job            = row,
-								cookie_lock    = None,
 								wg_handle      = self.wg,
 								response_queue = self.resp_q,
 								db_sess        = self.db_sess)

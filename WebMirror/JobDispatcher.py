@@ -25,15 +25,18 @@ import sys
 import os
 
 import settings
-import common.NetlocThrottler
-import common.global_constants
-import common.util.urlFuncs
-import common.LogBase as LogBase
 import WebMirror.rules
 import common.get_rpyc
 import runStatus
 import WebMirror.SpecialCase
 import WebMirror.JobUtils
+
+import common.NetlocThrottler
+import common.global_constants
+import common.util.urlFuncs
+
+import common.LogBase as LogBase
+import common.StatsdMixin as StatsdMixin
 
 # import mem_top
 # from pympler.tracker import SummaryTracker
@@ -68,7 +71,7 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 1000
 	# MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
-	MAX_IN_FLIGHT_JOBS = 5000
+	MAX_IN_FLIGHT_JOBS = 8000
 
 class RpcMixin():
 
@@ -273,14 +276,18 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 			raise
 
 
-class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 
+class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, RpcMixin):
+
+	statsd_prefix = 'ReadableWebProxy.Proc.JobDispatcher'
 	loggerPath = "Main.JobDispatcher"
+
+
 
 	def __init__(self, mode, job_queue, run_flag, system_state):
 		# print("Job __init__()")
 		self.loggerPath = "Main.JobDispatcher(%s)" % mode
-
+		self.statsd_prefix = self.statsd_prefix + "." + mode
 		super().__init__()
 
 
@@ -448,14 +455,18 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 		cursor.execute("""UPDATE web_pages         SET state='specialty_blocked' WHERE web_pages.id = %s         AND web_pages.url = %s;""", (rid, joburl))
 		self.db_interface.commit()
 
+
 	def fill_jobs(self):
 		if 'drain' in sys.argv:
 			return
 		total_new = 0
 		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < 100:
 			old = self.system_state['active_jobs']
-			num_new = self._get_task_internal()
-			num_new += self._get_deferred_internal()
+			with self.mon_con.pipeline() as pipe:
+				with pipe.timer("get_task"):
+					num_new = self._get_task_internal()
+				with pipe.timer("get_deferred"):
+					num_new += self._get_deferred_internal()
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.system_state['active_jobs'], self.system_state['active_jobs']-old)
 
 			if runStatus.run_state.value != 1:
@@ -765,8 +776,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, RpcMixin):
 			raise
 
 
-class MultiRpcRunner(LogBase.LoggerMixin):
+class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	loggerPath = "Main.MultiRpcRunner"
+	statsd_prefix = 'ReadableWebProxy.Proc.DispatcherManager'
+
 
 	def __init__(self, job_queue, run_flag):
 		super().__init__()
@@ -774,6 +787,15 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 		self.log.info("MultiRpcRunner creating RPC feeder/consumer threads")
 		self.job_queue = job_queue
 		self.run_flag  = run_flag
+
+	def update_stats(self, statedict):
+		with self.mon_con.pipeline() as pipe:
+			with statedict['lock']:
+				pipe.gauge('active_jobs', statedict['active_jobs'])
+				pipe.gauge('jobs_out',    statedict['jobs_out'   ])
+				pipe.gauge('jobs_in',     statedict['jobs_in'    ])
+				pipe.gauge('qsize',       statedict['qsize'      ])
+
 
 	def run(self):
 
@@ -811,6 +833,7 @@ class MultiRpcRunner(LogBase.LoggerMixin):
 
 		while self.run_flag.value == 1:
 			for _ in range(10):
+				self.update_stats(system_state)
 				time.sleep(1)
 				if not self.run_flag.value:
 					break
