@@ -9,6 +9,7 @@ import WebMirror.SpecialCase
 import common.LogBase as LogBase
 import runStatus
 import queue
+import cachetools
 import time
 import os.path
 import os
@@ -225,6 +226,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		# self.log.info("Content filter size: %s. Resource filter size %s.", len(self.ctnt_filters), len(self.rsc_filters))
 		# print("SiteArchiver initializer complete")
+
+
+		# URL Cache to keep stupid dupes out.
+		self.seen = cachetools.LRUCache(maxsize=10 * 1000)
 
 	########################################################################################################################
 	#
@@ -573,11 +578,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		plain    = set(plain)
 		resource = set(resource)
 
-		# print("Plain links: ")
-		# print(plain)
-		# print("Resource links: ")
-		# print(resource)
-
 		unfiltered = len(plain)+len(resource)
 
 		badwords, badcompounds = self.getBadWords(job)
@@ -586,12 +586,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.log.info("Have %s plain, %s resource links before filtering", len(plain), len(resource))
 		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds, debug=debug, interactive=interactive)
 		resource = self.filterResourceLinks(job, resource, badwords, badcompounds, debug=debug)
-
-
-		# print("Filtered Plain links: ")
-		# print(plain)
-		# print("Filtered Resource links: ")
-		# print(resource)
 
 		filtered = len(plain)+len(resource)
 		self.log.info("Found %s links (%s before filtering)" % (filtered, unfiltered))
@@ -610,43 +604,46 @@ class SiteArchiver(LogBase.LoggerMixin):
 		new_priority = job.priority
 		new_type     = job.type
 
-		raw_cur = self.db_sess.connection().connection.cursor()
 		full_printer = 100
+
 		if self.resp_q != None:
 			for link, istext in items:
-				start = urllib.parse.urlsplit(link).netloc
+				if link not in self.seen:
+					self.seen[link] = True
+					start = urllib.parse.urlsplit(link).netloc
 
-				assert link.startswith("http")
-				assert start
-				new = {
-						'url'              : link,
-						'starturl'         : new_starturl,
-						'netloc'           : start,
-						'distance'         : new_distance,
-						'is_text'          : istext,
-						'priority'         : new_priority,
-						'type'             : new_type,
-						'state'            : "new",
-						'addtime'          : datetime.datetime.now(),
+					assert link.startswith("http")
+					assert start
+					new = {
+							'url'              : link,
+							'starturl'         : new_starturl,
+							'netloc'           : start,
+							'distance'         : new_distance,
+							'is_text'          : istext,
+							'priority'         : new_priority,
+							'type'             : new_type,
+							'state'            : "new",
+							'addtime'          : datetime.datetime.now(),
 
-						# Don't retrigger unless the ignore time has elaped.
-						'ignoreuntiltime'  : datetime.datetime.now(),
+							# Don't retrigger unless the ignore time has elaped.
+							'ignoreuntiltime'  : datetime.datetime.now(),
 
-						'maximum_priority' : self.getMaxPriority(start),
+							'maximum_priority' : self.getMaxPriority(start),
 
-					}
-				self.resp_q.put(("new_link", new))
+						}
+					self.resp_q.put(("new_link", new))
 
-				while self.resp_q.qsize() > 10000:
-					time.sleep(0.1)
-					full_printer -= 1
-					if full_printer <= 0:
-						self.log.error("NewLinkQueue seems to have too many URLs in it (%s). Sleeping until it drains.", self.resp_q.qsize())
-						full_printer = 25
+					while self.resp_q.qsize() > 10000:
+						time.sleep(0.1)
+						full_printer -= 1
+						if full_printer <= 0:
+							self.log.error("NewLinkQueue seems to have too many URLs in it (%s). Sleeping until it drains.", self.resp_q.qsize())
+							full_printer = 25
 
 			self.log.info("Links placed into queue. Items in processing queue: %s", self.resp_q.qsize())
 		else:
 			self.log.info("Doing local link upsert in engine thread!")
+			raw_cur = self.db_sess.connection().connection.cursor()
 
 			#  Fucking huzzah for ON CONFLICT!
 			#  Priority is smaller = higher, so go with the smallest priority in most cases
@@ -677,15 +674,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 						;
 					""".replace("	", " ").replace("\n", " ")
 
-			# cmd = text("""
-			# 		INSERT INTO
-			# 			web_pages
-			# 			(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-			# 		VALUES
-			# 			(:url, :starturl, :netloc, :distance, :is_text, :priority, :type, :addtime, :state)
-			# 		ON CONFLICT DO NOTHING
-			# 			;
-			# 		""".replace("	", " ").replace("\n", " "))
 
 			# Only commit per-URL if we're tried to do the update in batch, and failed.
 			commit_each = False

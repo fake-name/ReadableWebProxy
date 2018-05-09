@@ -337,7 +337,7 @@ class UpdateAggregator(object):
 		self.pending_upserts = []
 
 		self.db_int = db_interface
-		self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
+		self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
 
 		self.check_init_func()
 
