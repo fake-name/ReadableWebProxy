@@ -115,7 +115,7 @@ class MultiJobManager(object):
 			living = sum([task and task.is_alive() for task in self.tasklist.values()])
 			self.log.info("Living processes: '%s'", living)
 
-			for task in living:
+			for task in self.tasklist:
 				task.join(3.0/(living+1))
 
 			for job_queue in flushqueues:
@@ -125,6 +125,7 @@ class MultiJobManager(object):
 					except queue.Empty:
 						pass
 
+			living = sum([task and task.is_alive() for task in self.tasklist.values()])
 			if living == 0:
 				break
 

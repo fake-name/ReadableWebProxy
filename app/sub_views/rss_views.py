@@ -145,7 +145,6 @@ def proto_process_releases(feed_releases, disable_range_limit=False):
 	else:
 		if len(feed_releases) > 500:
 			feed_releases = [tmp for tmp in feed_releases if tmp.published > min_by]
-			# feed_releases = feed_releases[:500]
 
 
 	print("Found %s feed releases" % len(feed_releases))
@@ -197,9 +196,9 @@ def feedLoadFilteredData(feedid):
 	print("Loading data")
 	releases = g.session.query(db.RssFeedPost)                                                       \
 		.filter(db.RssFeedPost.feed_id == feedid)                                                 \
+		.filter(db.RssFeedPost.published > datetime.datetime.now() - datetime.timedelta(days=30)) \
 		.all()
 
-	# .filter(db.RssFeedPost.published > datetime.datetime.now() - datetime.timedelta(days=30)) \
 	# .join(db.RssFeedEntry.releases)                                                          \
 
 	print("Loaded. Procesing.")
