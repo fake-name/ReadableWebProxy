@@ -10,9 +10,9 @@ webrequest==0.0.22
 pillow==5.1.0
 json2html==1.2.1
 mprpc==0.1.16
-tqdm==4.23.2
+tqdm==4.23.3
 chardet==3.0.4
-pymysql==0.8.0
+pymysql==0.8.1
 statsd==3.2.2
 xxhash==1.0.1
 objgraph==3.4.0
@@ -51,7 +51,7 @@ Flask==1.0.2
 Flask-DebugToolbar==0.10.1
 Flask-Login==0.4.1
 Flask-Babel==0.11.2
-selenium==3.11.0
+selenium==3.12.0
 webcolors==1.8.1
 pyparsing==2.2.0
 feedparser==5.2.1
