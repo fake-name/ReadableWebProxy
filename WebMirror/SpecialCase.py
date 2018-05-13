@@ -72,7 +72,7 @@ def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 
 
 	sess = db.get_db_session(flask_sess_if_possible=False)
-	have = sess.query(db.FeedPostMeta).order_by(desc(db.FeedPostMeta.id)).limit(500).all()
+	have = sess.query(db.QidianFeedPostMeta).order_by(desc(db.QidianFeedPostMeta.id)).limit(500).all()
 
 	meta_dict = {}
 	for row in have:

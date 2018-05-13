@@ -15,7 +15,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSONB
 
 # from  sqlalchemy.sql.expression import func
 # from citext import CIText
@@ -121,29 +121,108 @@ class RssFeedPost(common.db_base.Base):
 	tags          = association_proxy('tag_rel',      'tag',       creator=tag_creator)
 	author        = association_proxy('author_rel',   'author',    creator=author_creator)
 
-class FeedPostMeta(common.db_base.Base):
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+
+
+
+
+class KeyValueStore(common.db_base.Base):
+	__tablename__ = 'key_value_store'
+
+	id          = Column(BigInteger, primary_key=True)
+
+	key    = Column(Text, nullable=False, index=True, unique=True)
+	value  = Column(JSONB)
+
+KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+
+def get_from_db_key_value_store(key):
+	global KV_META_CACHE
+	print("Getting %s from kv store" % (key, ))
+	if key in KV_META_CACHE:
+		return KV_META_CACHE[key]
+
+	sess = get_db_session(flask_sess_if_possible=False)
+	have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
+	if have:
+		print("KV store had entry")
+		ret = have.value
+	else:
+		print("KV store did not have entry")
+		ret = {}
+
+	sess.commit()
+
+	try:
+		KV_META_CACHE[key] = ret
+	except KeyError:
+		KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+		KV_META_CACHE[key] = ret
+
+
+	return ret
+
+def set_in_db_key_value_store(key, new_data):
+	global KV_META_CACHE
+	print("Setting kv key %s to %s" % (key, new_data))
+	if key in KV_META_CACHE:
+		if KV_META_CACHE[key] == new_data:
+			return
+
+	sess = get_db_session(flask_sess_if_possible=False)
+	have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
+	if have:
+		if have.value != new_data:
+			print("Updating item: ", have, have.key)
+			print("	old -> ", have.value)
+			print("	new -> ", new_data)
+			have.value = new_data
+		else:
+			print("Item has not changed. Nothing to do!")
+	else:
+		print("New item: ", key, new_data)
+		new = KeyValueStore(
+			key   = key,
+			value = new_data,
+			)
+		sess.add(new)
+
+	sess.commit()
+
+	try:
+		KV_META_CACHE[key] = new_data
+	except KeyError:
+		KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+		KV_META_CACHE[key] = new_data
+
+
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+
+class QidianFeedPostMeta(common.db_base.Base):
 	__tablename__ = 'feed_post_meta'
 
 	id          = Column(BigInteger, primary_key=True)
 
 	contentid    = Column(Text, nullable=False, index=True, unique=True)
-	meta         = Column(JSON)
+	meta         = Column(JSONB)
 
-
-##########################################################################################
-##########################################################################################
-##########################################################################################
-##########################################################################################
-global META_CACHE
-META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+QIDIAN_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 
 def get_feed_article_meta(feedid):
-	global META_CACHE
-	if feedid in META_CACHE:
-		return META_CACHE[feedid]
+	global QIDIAN_META_CACHE
+	if feedid in QIDIAN_META_CACHE:
+		return QIDIAN_META_CACHE[feedid]
 
 	sess = get_db_session(flask_sess_if_possible=False)
-	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
+	have = sess.query(QidianFeedPostMeta).filter(QidianFeedPostMeta.contentid == feedid).scalar()
 	if have:
 		ret = have.meta
 	else:
@@ -152,23 +231,22 @@ def get_feed_article_meta(feedid):
 	sess.commit()
 
 	try:
-		META_CACHE[feedid] = ret
+		QIDIAN_META_CACHE[feedid] = ret
 	except KeyError:
-		META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
-		META_CACHE[feedid] = ret
+		QIDIAN_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+		QIDIAN_META_CACHE[feedid] = ret
 
 
 	return ret
 
 def set_feed_article_meta(feedid, new_data):
-
-	global META_CACHE
-	# if feedid in META_CACHE:
-	# 	if META_CACHE[feedid] == new_data:
+	global QIDIAN_META_CACHE
+	# if feedid in QIDIAN_META_CACHE:
+	# 	if QIDIAN_META_CACHE[feedid] == new_data:
 	# 		return
 
 	sess = get_db_session(flask_sess_if_possible=False)
-	have = sess.query(FeedPostMeta).filter(FeedPostMeta.contentid == feedid).scalar()
+	have = sess.query(QidianFeedPostMeta).filter(QidianFeedPostMeta.contentid == feedid).scalar()
 	if have:
 		if have.meta != new_data:
 			print("Updating item: ", have, have.contentid)
@@ -179,7 +257,7 @@ def set_feed_article_meta(feedid, new_data):
 			print("Item has not changed. Nothing to do!")
 	else:
 		print("New item: ", feedid, new_data)
-		new = FeedPostMeta(
+		new = QidianFeedPostMeta(
 			contentid = feedid,
 			meta      = new_data,
 			)
@@ -188,14 +266,18 @@ def set_feed_article_meta(feedid, new_data):
 	sess.commit()
 
 	try:
-		META_CACHE[feedid] = new_data
+		QIDIAN_META_CACHE[feedid] = new_data
 	except KeyError:
-		META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
-		META_CACHE[feedid] = new_data
+		QIDIAN_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
+		QIDIAN_META_CACHE[feedid] = new_data
 
 	return
 
 
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
 
 class RssFeedUrlMapper(common.db_base.Base):
 	__versioned__ = {}

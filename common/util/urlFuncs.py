@@ -3,6 +3,8 @@ import re
 import urllib.parse
 import unshortenit
 
+import common.database as db
+
 # All tags you need to look into to do link canonization
 # source: http://stackoverflow.com/q/2725156/414272
 # "These aren't necessarily simple URLs ..."
@@ -43,8 +45,6 @@ urlContainingTargets = [
 	(True,  'img',        'src'),
 	(True,  'img',        'usemap'),
 ]
-
-
 
 
 def trimGDocUrl(rawUrl):
@@ -150,16 +150,45 @@ def isGFileUrl(url):
 ##############################################################################################################
 ##############################################################################################################
 
+class CacheObject():
+	def __setitem__(self, key, item):
+		db.set_in_db_key_value_store(key, item)
 
-def cleanUrl(url):
+	def __getitem__(self, key):
+		return db.get_from_db_key_value_store(key)
+
+	def __delitem__(self, key):
+		db.set_in_db_key_value_store(key, {})
+
+	def get(self, key, default="super_sekrit_not_specified_value"):
+		ret = db.get_from_db_key_value_store(key)
+		if ret:
+			return ret
+		if default != "super_sekrit_not_specified_value":
+			return default
+		raise KeyError("Key %s not found in CacheObject backing store!" % (key, ))
+
+	def clear(self):
+		raise ValueError("Cannot clear a CacheObject")
+
+	def copy(self):
+		raise ValueError("Cannot copy a CacheObject")
+
+	def has_key(self, k):
+		return db.get_from_db_key_value_store(k) != {}
+
+
+def cleanUrl(urlin):
 	# Fucking tumblr redirects.
-	if url.startswith("https://www.tumblr.com/login"):
+	if urlin.startswith("https://www.tumblr.com/login"):
+		return None
+	try:
+		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=False)
+		return url
+	except (unshortenit.NotFound, unshortenit.UnshortenFailed):
 		return None
 
-	url, status = unshortenit.unshorten_only(url)
-	#assert (status == 200)
-
-	return url
+	return urlin
 
 
 ##############################################################################################################

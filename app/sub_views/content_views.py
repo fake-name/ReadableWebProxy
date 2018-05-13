@@ -243,10 +243,10 @@ def render_resource():
 	if mimetype == 'image/webp':
 		img = Image.open(io.BytesIO(content))
 		out = io.BytesIO()
-		img.save(out, format="jpeg")
+		img.save(out, format="png")
 		content = out.getvalue()
-		mimetype = 'img/jpeg'
-		fname = fname + ".jpeg"
+		mimetype = 'img/png'
+		fname = fname + ".png"
 
 	response = make_response(content)
 	response.headers['Content-Type'] = mimetype

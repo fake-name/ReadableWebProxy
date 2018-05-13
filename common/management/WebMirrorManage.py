@@ -585,16 +585,18 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 			.filter(db.NuReleaseItem.actual_target != None) \
 			.all()
 
-		mapdict = {WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(row.actual_target).netloc) : row.actual_target for row in nu_items}
+		mapdict = {
+			WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(row.actual_target).netloc) : row.actual_target for row in nu_items}
 		print("Nu outbound items: ", len(mapdict))
 
 		missing = 0
 		for netloc, tgturl in mapdict.items():
-
+			if not netloc:
+				continue
 			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
 				continue
 
-			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, None, netloc):
+			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc):
 				continue
 
 			if netloc in starturldict:

@@ -951,10 +951,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 						log_func = self.log.warning
 						job.errno = 404
 					elif '<FetchFailureError 403 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
 						job.errno = 403
+					elif '<FetchFailureError 500 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
+						job.errno = 500
 					else:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=14)
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
 
 					max_len_trunc = 450
 

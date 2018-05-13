@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 FEED_LOOKUP_CACHE     = cachetools.LRUCache(maxsize=200)
 
 def patch_blogspot(innetloc):
+	assert isinstance(innetloc, str), "Expected str, recieved %s" % type(innetloc)
 	# Blogspot domains are coerced to ".com" since they seem to localize their TLD,
 	# and somehow it all points to the same place in the end.
 	if ".blogspot." in innetloc and not innetloc.endswith(".blogspot.com"):
@@ -42,9 +43,13 @@ def get_name_for_netloc_db(db_sess, netloc):
 
 def getNiceName(session, srcurl, netloc=None, debug=False):
 	if netloc:
+		assert isinstance(netloc, str), "Expected str, recieved %s" % type(netloc)
 		srcnetloc = netloc
-	else:
+	elif srcurl:
+		assert isinstance(srcurl, str), "Expected str, recieved %s" % type(srcurl)
 		srcnetloc = urllib.parse.urlparse(srcurl).netloc
+	else:
+		raise RuntimeError("You need to at least pass a srcurl or netloc!")
 
 	srcnetloc = patch_blogspot(srcnetloc)
 

@@ -93,8 +93,10 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				self.session.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
+				print("Operational error")
 				self.session.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
+				print("InvalidRequestError")
 				self.session.rollback()
 
 			except Exception as e:

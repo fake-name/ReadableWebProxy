@@ -215,9 +215,7 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 				itemtxt = content.get_text()
 
 				itemurl = content.a['data-expanded-url']
-				itemurl, status = unshortenit.unshorten(itemurl)
-				if status != 200:
-					continue
+				itemurl = unshortenit.UnshortenIt().unshorten(itemurl)
 
 				urlnl = urllib.parse.urlsplit(itemurl).netloc.lower()
 				if urlnl == 'www.baka-tsuki.org':

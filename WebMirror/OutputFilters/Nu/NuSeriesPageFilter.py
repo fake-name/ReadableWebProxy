@@ -106,7 +106,6 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
-		self.wg         = kwargs['wg']
 
 		self.log.info("Processing NovelUpdates series page")
 		super().__init__(**kwargs)

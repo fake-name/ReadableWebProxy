@@ -18,7 +18,11 @@ from common.rss_func_db import Author
 from common.rss_func_db import RssFeedPost
 from common.rss_func_db import RssFeedUrlMapper
 from common.rss_func_db import RssFeedEntry
-from common.rss_func_db import FeedPostMeta
+from common.rss_func_db import QidianFeedPostMeta
+from common.rss_func_db import KeyValueStore
+
+from common.rss_func_db import get_from_db_key_value_store
+from common.rss_func_db import set_in_db_key_value_store
 
 from common.cookie_db import WebCookieDb
 

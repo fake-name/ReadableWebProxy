@@ -26,6 +26,7 @@ import queue
 import datetime
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import TSVECTOR
 ischema_names['citext'] = citext.CIText
 
