@@ -797,6 +797,13 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				pipe.gauge('jobs_in',     statedict['jobs_in'    ])
 				pipe.gauge('qsize',       statedict['qsize'      ])
 
+				msg = "Queue stats: active: %s, out: %s, in: %s, qsize: %s" % (
+						statedict['active_jobs'],
+						statedict['jobs_out'   ],
+						statedict['jobs_in'    ],
+						statedict['qsize'      ],
+					)
+		self.log.info(msg)
 
 	def run(self):
 
@@ -838,7 +845,7 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				time.sleep(1)
 				if not self.run_flag.value:
 					break
-			self.log.info("Active jobs: %s", [tmp.is_alive() for tmp in threads])
+			self.log.info("Active dispatchers: %s", [tmp.is_alive() for tmp in threads])
 
 
 
@@ -855,9 +862,11 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 
 		self.log.info("MultiRpcRunner exit flag seen. Joining on threads")
-		for thread in threads:
-			thread.join()
+		while any([tmp.is_alive() for tmp in threads]):
+			for thread in [tmp for tmp in threads if tmp.is_alive()]:
+				thread.join(timeout=1)
 		self.log.info("MultiRpcRunner joined all threads. Exiting")
+
 
 
 	@classmethod
@@ -907,4 +916,10 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 		if self.main_job_agg:
 			self.main_job_agg.join()
 
+	def get_status(self):
+		if self.main_job_agg:
+			return "Worker: %s, alive: %s, exit-code: %s" % (
+				self.main_job_agg.pid, self.main_job_agg.is_alive(), self.main_job_agg.exitcode)
+
+		return "Worker is none! Error!"
 

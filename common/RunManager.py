@@ -241,6 +241,7 @@ class Crawler(object):
 
 					self.log.info("Living processes: %s (Cookie lock acquired: %s, queue sizes: %s, exiting: %s)",
 						living, not clok_locked, [q.qsize() for q in drain_queues], runStatus.run_state.value == 0)
+					self.log.info("Job Queue Fillers: %s ", self.main_job_fetcher.get_status())
 
 
 			except KeyboardInterrupt:
