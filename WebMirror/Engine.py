@@ -137,6 +137,11 @@ def build_rewalk_time_lut(rules):
 #
 ########################################################################################################################
 
+class FakeLock():
+	def acquire(self, *args, **kwargs):
+		pass
+	def release(self, *args, **kwargs):
+		pass
 
 class SiteArchiver(LogBase.LoggerMixin):
 
@@ -154,7 +159,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 		if getattr(self, '__wg', None) is None:
 			alt_cj = dbCj.DatabaseCookieJar(db=self.db, session=common.database.get_db_session(postfix="_cookie_interface"))
 			self.__wg = WebRequest.WebGetRobust(
-					cookie_lock   = self.__wr_cookie_lock,
+					# The database is intrinsically thread-safe, no need for explicit locking.
+					# We do need a lock-like object, because the webrequest object will use it's
+					# own internal global serialization lock if one is not specified.
+					# I should probably change that at some point.
+					cookie_lock   = FakeLock(),
 					use_socks     = self.__wr_use_socks,
 					alt_cookiejar = alt_cj,
 					custom_ua     = self.__wr_ua_override,

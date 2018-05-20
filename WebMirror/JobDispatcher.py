@@ -8,6 +8,7 @@ import random
 import datetime
 import threading
 import signal
+import contextlib
 import socket
 
 # import sqlalchemy.exc
@@ -53,7 +54,12 @@ import common.StatsdMixin as StatsdMixin
 #
 ########################################################################################################################
 
-
+@contextlib.contextmanager
+def acquire_timeout(lock, timeout):
+	result = lock.acquire(timeout=timeout)
+	yield result
+	if result:
+		lock.release()
 
 NO_JOB_TIMEOUT_MINUTES = 15
 
@@ -171,20 +177,23 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 				if 'extradat' in tmp and 'netloc' in tmp['extradat']:
 					nl = tmp['extradat']['netloc']
 
-				with self.system_state['lock']:
-					self.system_state['active_jobs']     -= 1
-					self.system_state['jobs_in']         += 1
-					self.system_state['active_jobs']      = max(self.system_state['active_jobs'], 0)
-					self.system_state['qsize']            = self.normal_out_queue.qsize()
 
-					if nl:
-						if 'success' in tmp and tmp['success']:
-							self.system_state['ratelimiter'].netloc_ok(nl)
+				with acquire_timeout(self.system_state['lock'], 10) as acquired:
+					if acquired:
+						self.system_state['active_jobs']     -= 1
+						self.system_state['jobs_in']         += 1
+						self.system_state['active_jobs']      = max(self.system_state['active_jobs'], 0)
+						self.system_state['qsize']            = self.normal_out_queue.qsize()
+						if nl:
+							if 'success' in tmp and tmp['success']:
+								self.system_state['ratelimiter'].netloc_ok(nl)
+							else:
+								print("Success val: ", 'success' in tmp, list(tmp.keys()))
+								self.system_state['ratelimiter'].netloc_error(nl)
 						else:
-							print("Success val: ", 'success' in tmp, list(tmp.keys()))
-							self.system_state['ratelimiter'].netloc_error(nl)
+							self.log.warning("Missing netloc in response extradat!")
 					else:
-						self.log.warning("Missing netloc in response extradat!")
+						self.log.error("Failure acquiring lock when handling job response!")
 
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
@@ -193,8 +202,9 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 				self.blocking_put_response(tmp)
 			else:
 
-				with self.system_state['lock']:
-					self.system_state['qsize']            = self.normal_out_queue.qsize()
+				with acquire_timeout(self.system_state['lock'], 2) as acquired:
+					if acquired:
+						self.system_state['qsize']            = self.normal_out_queue.qsize()
 
 				self.print_mod += 1
 				if self.print_mod > 20:
@@ -211,8 +221,11 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 			else:
 				self.log.error("Timeout since last job seen. Resetting active job counter. (lastJob: %s)", self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES))
 
-				with self.system_state['lock']:
-					self.system_state['active_jobs']     = 0
+				with acquire_timeout(self.system_state['lock'], 10) as acquired:
+					if acquired:
+						self.system_state['active_jobs']     = 0
+					else:
+						self.log.error("Failure when resetting active jobs!")
 
 				self.last_rx = datetime.datetime.now()
 
@@ -354,9 +367,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		while 1:
 			try:
 				self.rpc_interface.put_job(raw_job)
-				with self.system_state['lock']:
+				with acquire_timeout(self.system_state['lock'], 10) as acquired:
+					if acquired:
 						self.system_state['active_jobs'] += 1
 						self.system_state['jobs_out'] += 1
+					else:
+						self.log.error("Failure when updating active job counters!")
 
 				self.log.info("Dispatched new job (active jobs: %s of %s)", self.system_state['active_jobs'], MAX_IN_FLIGHT_JOBS)
 				return
@@ -545,8 +561,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			newcnt += 1
 			rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 
-		with self.system_state['lock']:
-			new_j_l =self.system_state['ratelimiter'].get_available_jobs()
+		new_j_l = []
+		with acquire_timeout(self.system_state['lock'], 2) as acquired:
+			if acquired:
+				new_j_l =self.system_state['ratelimiter'].get_available_jobs()
+			else:
+				self.log.error("Failure when extracting jobs from rate-limiting system!")
 
 		for rid, joburl, netloc in new_j_l:
 			self.put_fetch_job(rid, joburl, netloc)
@@ -563,98 +583,98 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		# the 10 ms query will suddenly take 10 seconds!
 		raw_query_never_fetched = '''
 				UPDATE
-				    web_pages
+					web_pages
 				SET
-				    state = 'fetching'
+					state = 'fetching'
 				WHERE
-				    web_pages.id IN (
-				        SELECT
-				            web_pages.id
-				        FROM
-				            web_pages
-				        WHERE
-				            web_pages.state = 'new'::dlstate_enum
-				        AND
-				            normal_fetch_mode = true
-				        AND
-				            web_pages.distance < 1000000
-				        AND
-				            web_pages.file IS NULL
-				        AND
-				            web_pages.content IS NULL
-				        LIMIT {in_flight}
-				    )
+					web_pages.id IN (
+						SELECT
+							web_pages.id
+						FROM
+							web_pages
+						WHERE
+							web_pages.state = 'new'::dlstate_enum
+						AND
+							normal_fetch_mode = true
+						AND
+							web_pages.distance < 1000000
+						AND
+							web_pages.file IS NULL
+						AND
+							web_pages.content IS NULL
+						LIMIT {in_flight}
+					)
 				AND
-				    web_pages.state = 'new'::dlstate_enum
+					web_pages.state = 'new'::dlstate_enum
 				RETURNING
-				    web_pages.id, web_pages.netloc, web_pages.url;
+					web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 		raw_query_any = '''
 				UPDATE
-				    web_pages
+					web_pages
 				SET
-				    state = 'fetching'
+					state = 'fetching'
 				WHERE
-				    web_pages.id IN (
-				        SELECT
-				            web_pages.id
-				        FROM
-				            web_pages
-				        WHERE
-				            web_pages.state = 'new'::dlstate_enum
-				        AND
-				            normal_fetch_mode = true
-				        AND
-				            web_pages.distance < 1000000
-				        LIMIT {in_flight}
-				    )
+					web_pages.id IN (
+						SELECT
+							web_pages.id
+						FROM
+							web_pages
+						WHERE
+							web_pages.state = 'new'::dlstate_enum
+						AND
+							normal_fetch_mode = true
+						AND
+							web_pages.distance < 1000000
+						LIMIT {in_flight}
+					)
 				AND
-				    web_pages.state = 'new'::dlstate_enum
+					web_pages.state = 'new'::dlstate_enum
 				RETURNING
-				    web_pages.id, web_pages.netloc, web_pages.url;
+					web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 		raw_query_ordered = '''
 				UPDATE
-				    web_pages
+					web_pages
 				SET
-				    state = 'fetching'
+					state = 'fetching'
 				WHERE
-				    web_pages.id IN (
-				        SELECT
-				            web_pages.id
-				        FROM
-				            web_pages
-				        WHERE
-				            web_pages.state = 'new'::dlstate_enum
-				        AND
-				            normal_fetch_mode = true
-				        AND
-				            web_pages.priority < (
-				               SELECT
-				                    min(priority) + 10
-				                FROM
-				                    web_pages
-				                WHERE
-				                    state = 'new'::dlstate_enum
-				                AND
-				                    distance < 1000000
-				                AND
-				                    normal_fetch_mode = true
-				                AND
-				                    web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				            )
-				        AND
-				            web_pages.distance < 1000000
-				        AND
-				            web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				        LIMIT {in_flight}
-				    )
+					web_pages.id IN (
+						SELECT
+							web_pages.id
+						FROM
+							web_pages
+						WHERE
+							web_pages.state = 'new'::dlstate_enum
+						AND
+							normal_fetch_mode = true
+						AND
+							web_pages.priority < (
+							   SELECT
+									min(priority) + 10
+								FROM
+									web_pages
+								WHERE
+									state = 'new'::dlstate_enum
+								AND
+									distance < 1000000
+								AND
+									normal_fetch_mode = true
+								AND
+									web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+							)
+						AND
+							web_pages.distance < 1000000
+						AND
+							web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+						LIMIT {in_flight}
+					)
 				AND
-				    web_pages.state = 'new'::dlstate_enum
+					web_pages.state = 'new'::dlstate_enum
 				RETURNING
-				    web_pages.id, web_pages.netloc, web_pages.url;
+					web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 
@@ -754,10 +774,13 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.log.info("Of %s job IDs, %s were special-case, %s were rate-limited, %s were immediately dispatched, %s deleted, %s booksie (%s proc).",
 				len(rids), special_case, defer_count, immediate, del_count, booksie, processed)
 
-		with self.system_state['lock']:
-			for rid_d, joburl_d, netloc_d in defer:
-				self.system_state['ratelimiter'].put_job(rid_d, joburl_d, netloc_d)
 
+		with acquire_timeout(self.system_state['lock'], 10) as acquired:
+			if acquired:
+				for rid_d, joburl_d, netloc_d in defer:
+					self.system_state['ratelimiter'].put_job(rid_d, joburl_d, netloc_d)
+			else:
+				self.log.error("Failed to acquire rate-limiter synchronization lock!")
 		cursor.close()
 
 		if len(rids) == 0:
