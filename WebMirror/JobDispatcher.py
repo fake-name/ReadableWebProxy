@@ -11,6 +11,9 @@ import signal
 import contextlib
 import socket
 
+
+import common.stuck
+
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
 
@@ -125,7 +128,7 @@ class RpcMixin():
 class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 	loggerPath = "Main.JobConsumer"
 
-	def __init__(self, job_queue, run_flag, system_state):
+	def __init__(self, job_queue, run_flag, system_state, state_lock, test_mode):
 		# print("Job __init__()")
 		super().__init__()
 
@@ -133,6 +136,8 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 		self.normal_out_queue = job_queue
 		self.run_flag         = run_flag
 		self.system_state     = system_state
+		self.state_lock       = state_lock
+		self.test_mode        = test_mode
 
 
 		self.last_rx = datetime.datetime.now()
@@ -178,7 +183,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 					nl = tmp['extradat']['netloc']
 
 
-				with acquire_timeout(self.system_state['lock'], 10) as acquired:
+				with acquire_timeout(self.state_lock, 10) as acquired:
 					if acquired:
 						self.system_state['active_jobs']     -= 1
 						self.system_state['jobs_in']         += 1
@@ -202,7 +207,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 				self.blocking_put_response(tmp)
 			else:
 
-				with acquire_timeout(self.system_state['lock'], 2) as acquired:
+				with acquire_timeout(self.state_lock, 2) as acquired:
 					if acquired:
 						self.system_state['qsize']            = self.normal_out_queue.qsize()
 
@@ -221,7 +226,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 			else:
 				self.log.error("Timeout since last job seen. Resetting active job counter. (lastJob: %s)", self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES))
 
-				with acquire_timeout(self.system_state['lock'], 10) as acquired:
+				with acquire_timeout(self.state_lock, 10) as acquired:
 					if acquired:
 						self.system_state['active_jobs']     = 0
 					else:
@@ -253,22 +258,34 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 
 
 		while self.run_flag.value == 1:
-			print("Queue consumer looping!")
-			try:
+			if self.test_mode:
+				time.sleep(1)
 
-				self.__queue_consumer_internal()
-			except ConnectionRefusedError:
-				self.log.warning("(ConnectionRefusedError) RPC Remote appears to not be listening!")
-				time.sleep(1)
-			except socket.timeout:
-				self.log.warning("(socket.timeout) RPC Remote appears to not be listening!")
-				time.sleep(1)
-			except Exception as e:
-				with open("error %s - %s.txt" % ('job_consumer', time.time()), "w") as fp:
-					fp.write("Manager crashed?\n")
-					fp.write(traceback.format_exc())
-				for line in traceback.format_exc().split("\n"):
-					self.log.error(line)
+				with acquire_timeout(self.state_lock, 10) as acquired:
+					if acquired:
+						self.system_state['active_jobs']      = 1
+						self.system_state['jobs_in']         += 1
+						self.system_state['active_jobs']      = 1
+						self.system_state['qsize']            = 1
+						self.system_state['ratelimiter'].clear_active_counts(override_status=500)
+
+			else:
+				print("Queue consumer looping!")
+				try:
+
+					self.__queue_consumer_internal()
+				except ConnectionRefusedError:
+					self.log.warning("(ConnectionRefusedError) RPC Remote appears to not be listening!")
+					time.sleep(1)
+				except socket.timeout:
+					self.log.warning("(socket.timeout) RPC Remote appears to not be listening!")
+					time.sleep(1)
+				except Exception as e:
+					with open("error %s - %s.txt" % ('job_consumer', time.time()), "w") as fp:
+						fp.write("Manager crashed?\n")
+						fp.write(traceback.format_exc())
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
 
 		# Consume the remaining items in the output queue so it shuts down cleanly.
 		try:
@@ -298,7 +315,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 
 
-	def __init__(self, mode, job_queue, run_flag, system_state):
+	def __init__(self, mode, job_queue, run_flag, system_state, state_lock, test_mode):
 		# print("Job __init__()")
 		self.loggerPath = "Main.JobDispatcher(%s)" % mode
 		self.statsd_prefix = self.statsd_prefix + "." + mode
@@ -321,6 +338,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.system_state = system_state
 		self.jq_mode      = mode
 		self.run_flag     = run_flag
+		self.state_lock   = state_lock
+		self.test_mode    = test_mode
 
 		self.ruleset        = WebMirror.rules.load_rules()
 		self.specialcase    = WebMirror.rules.load_special_case_sites()
@@ -356,18 +375,19 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 	def join_proc(self):
 		self.log.info("Setting exit flag on processor.")
-		runStatus.job_run_state.value = 0
+		self.run_flag.value = 0
 		self.log.info("Joining on worker thread.")
 
 
 	def put_job(self, raw_job):
+		if self.test_mode:
+			return
 
 		# Recycle the rpc interface if it ded
-		errors = 0
 		while 1:
 			try:
 				self.rpc_interface.put_job(raw_job)
-				with acquire_timeout(self.system_state['lock'], 10) as acquired:
+				with acquire_timeout(self.state_lock, 10) as acquired:
 					if acquired:
 						self.system_state['active_jobs'] += 1
 						self.system_state['jobs_out'] += 1
@@ -475,7 +495,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 	def fill_jobs(self):
 		if 'drain' in sys.argv:
-			return
+			return 0
 		total_new = 0
 		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < MAX_IN_FLIGHT_JOBS:
 			old = self.system_state['active_jobs']
@@ -486,8 +506,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 					num_new += self._get_deferred_internal()
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.system_state['active_jobs'], self.system_state['active_jobs']-old)
 
-			if runStatus.run_state.value != 1:
-				return
+			if self.run_flag.value != 1:
+				return 0
 
 			total_new += num_new
 
@@ -506,12 +526,13 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		# 	for line in traceback.format_exc().split("\n"):
 		# 		self.log.warning(line)
 
-		self.check_open_rpc_interface()
+		if not self.test_mode:
+			self.check_open_rpc_interface()
 
 		self.log.info("Job queue fetcher starting.")
 
 		for _ in range(1000):
-			if not runStatus.job_run_state.value == 1:
+			if not self.run_flag.value == 1:
 				break
 			newj = self.fill_jobs()
 
@@ -540,7 +561,6 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				self.log.warning("(socket.timeout) RPC Remote appears to not be listening!")
 				time.sleep(1)
 			except Exception as e:
-
 				with open("error %s - %s.txt" % (self.jq_mode, time.time()), "w") as fp:
 					fp.write("Manager crashed?\n")
 					fp.write(traceback.format_exc())
@@ -562,7 +582,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 
 		new_j_l = []
-		with acquire_timeout(self.system_state['lock'], 2) as acquired:
+		with acquire_timeout(self.state_lock, 2) as acquired:
 			if acquired:
 				new_j_l =self.system_state['ratelimiter'].get_available_jobs()
 			else:
@@ -680,7 +700,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		start = time.time()
 
-		while runStatus.run_state.value == 1:
+		while self.run_flag.value == 1:
 			try:
 				if self.jq_mode == 'priority':
 					cursor.execute(raw_query_ordered)
@@ -705,7 +725,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				time.sleep(delay)
 				cursor.execute("ROLLBACK;")
 
-		if runStatus.run_state.value != 1:
+		if self.run_flag.value != 1:
 			return 0
 
 		if not rids:
@@ -715,7 +735,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		rids = list(rids)
 		# If we broke because a user-interrupt, we may not have a
 		# valid rids at this point.
-		if runStatus.run_state.value != 1:
+		if self.run_flag.value != 1:
 			return 0
 
 		xqtim = time.time() - start
@@ -723,7 +743,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		if len(rids) == 0:
 			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
 			for dummy_x in range(5):
-				if runStatus.run_state.value == 1:
+				if self.run_flag.value == 1:
 					time.sleep(1)
 			return 0
 
@@ -775,7 +795,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				len(rids), special_case, defer_count, immediate, del_count, booksie, processed)
 
 
-		with acquire_timeout(self.system_state['lock'], 10) as acquired:
+		with acquire_timeout(self.state_lock, 10) as acquired:
 			if acquired:
 				for rid_d, joburl_d, netloc_d in defer:
 					self.system_state['ratelimiter'].put_job(rid_d, joburl_d, netloc_d)
@@ -805,28 +825,41 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	statsd_prefix = 'ReadableWebProxy.Proc.DispatcherManager'
 
 
-	def __init__(self, job_queue, run_flag):
+	def __init__(self, job_queue, run_flag, test_mode):
 		super().__init__()
 
 		self.log.info("MultiRpcRunner creating RPC feeder/consumer threads")
 		self.job_queue = job_queue
 		self.run_flag  = run_flag
+		self.test_mode = test_mode
 
-	def update_stats(self, statedict):
+		self.state_lock = threading.Lock()
+
+	def update_stats(self, statedict, threads):
 		with self.mon_con.pipeline() as pipe:
-			with statedict['lock']:
-				pipe.gauge('active_jobs', statedict['active_jobs'])
-				pipe.gauge('jobs_out',    statedict['jobs_out'   ])
-				pipe.gauge('jobs_in',     statedict['jobs_in'    ])
-				pipe.gauge('qsize',       statedict['qsize'      ])
+			with acquire_timeout(self.state_lock, 10) as acquired:
+				if acquired:
+					pipe.gauge('active_jobs', statedict['active_jobs'])
+					pipe.gauge('jobs_out',    statedict['jobs_out'   ])
+					pipe.gauge('jobs_in',     statedict['jobs_in'    ])
+					pipe.gauge('qsize',       statedict['qsize'      ])
 
-				msg = "Queue stats: active: %s, out: %s, in: %s, qsize: %s" % (
-						statedict['active_jobs'],
-						statedict['jobs_out'   ],
-						statedict['jobs_in'    ],
-						statedict['qsize'      ],
-					)
-		self.log.info(msg)
+
+
+		self.log.info("Queue stats: active: %s, out: %s, in: %s, qsize: %s",
+				statedict['active_jobs'],
+				statedict['jobs_out'   ],
+				statedict['jobs_in'    ],
+				statedict['qsize'      ]
+			)
+
+		self.log.info("Thread States: %s",
+				{
+					int(thread.ident) : thread.is_alive()
+					for thread in threads
+				}
+			)
+
 
 	def run(self):
 
@@ -837,13 +870,12 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			'qsize'       : 0,
 			'ratelimiter' : common.NetlocThrottler.NetlockThrottler(),
 
-			'lock'        : threading.Lock()
 		}
 
-		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state)
-		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state)
-		random_fetch_proc   = RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state)
-		job_consumer_proc   = RpcJobConsumerInternal(self.job_queue, self.run_flag, system_state)
+		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
+		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
+		random_fetch_proc   = RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
+		job_consumer_proc   = RpcJobConsumerInternal(self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
 
 
 		threads = [
@@ -864,7 +896,8 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		while self.run_flag.value == 1:
 			for _ in range(10):
-				self.update_stats(system_state)
+				if not self.test_mode:
+					self.update_stats(system_state, threads)
 				time.sleep(1)
 				if not self.run_flag.value:
 					break
@@ -878,9 +911,10 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			self.log.info("Job reduce step: %s of %s.", last_reduce, reduce_interval)
 			if last_reduce > reduce_interval:
 				last_reduce = 0
-				with system_state['lock']:
-					self.log.info("Calling job reducer!")
-					system_state['ratelimiter'].job_reduce()
+				with acquire_timeout(self.state_lock, 10) as acquired:
+					if acquired:
+						self.log.info("Calling job reducer!")
+						system_state['ratelimiter'].job_reduce()
 
 
 
@@ -893,9 +927,11 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 
 	@classmethod
-	def run_shim(cls, job_queue, run_flag):
+	def run_shim(cls, job_queue, run_flag, test_mode):
+
+		common.stuck.install_pystuck()
 		try:
-			instance = cls(job_queue, run_flag)
+			instance = cls(job_queue, run_flag, test_mode=test_mode)
 			instance.run()
 		except Exception:
 			print("Error!")
@@ -914,7 +950,7 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 	loggerPath = "Main.RpcInterfaceManager"
 
 
-	def __init__(self, start_worker=True):
+	def __init__(self, start_worker=True, test_mode=False):
 		super().__init__()
 
 		self.log.info("Launching job-dispatching RPC system")
@@ -923,7 +959,7 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
 		self.run_flag = multiprocessing.Value("b", 1)
 		if start_worker:
-			self.main_job_agg = multiprocessing.Process(target=MultiRpcRunner.run_shim, args=(self.normal_out_queue, self.run_flag))
+			self.main_job_agg = multiprocessing.Process(target=MultiRpcRunner.run_shim, args=(self.normal_out_queue, self.run_flag), kwargs={"test_mode" : test_mode})
 			self.main_job_agg.start()
 		else:
 			self.main_job_agg = None
@@ -945,4 +981,23 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 				self.main_job_agg.pid, self.main_job_agg.is_alive(), self.main_job_agg.exitcode)
 
 		return "Worker is none! Error!"
+
+
+def test():
+	print("Wat?")
+
+	import logSetup
+	logSetup.initLogging()
+
+	common.stuck.install_pystuck()
+
+	tester = RpcJobManagerWrapper(test_mode=True)
+
+	while True:
+		time.sleep(1)
+
+
+
+if __name__ == "__main__":
+	test()
 

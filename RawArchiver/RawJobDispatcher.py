@@ -25,7 +25,6 @@ import common.LogBase as LogBase
 # import WebMirror.OutputFilters.AmqpInterface
 import RawArchiver.misc
 import common.get_rpyc
-import runStatus
 
 import WebMirror.JobUtils
 import common.util.urlFuncs
@@ -72,6 +71,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.active_jobs = 0
 		self.jobs_out = 0
 		self.jobs_in = 0
+
+		self.run_flag = multiprocessing.Value("b", 1)
 
 		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(fifo_limit = 1000 * 100)
 
@@ -127,7 +128,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		return self.normal_out_queue
 
 	def join_proc(self):
-		runStatus.raw_job_run_state.value = 0
+		self.run_flag.value = 0
 		self.j_fetch_proc.join(0)
 
 
@@ -265,14 +266,14 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.log.info("Job queue fetcher starting.")
 
 		msg_loop = 0
-		while runStatus.raw_job_run_state.value == 1:
+		while self.run_flag.value == 1:
 			self.fill_jobs()
 			self.process_responses()
 
 			msg_loop += 1
 			time.sleep(0.2)
 			if msg_loop > 250:
-				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, runStatus.raw_job_run_state.value==1)
+				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, self.run_flag.value==1)
 				msg_loop = 0
 				self.ratelimiter.job_reduce()
 

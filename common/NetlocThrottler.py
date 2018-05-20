@@ -41,9 +41,6 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		if self.fifo_limit is None or self.url_throttler[job_netloc]['job_queue'].qsize() < self.fifo_limit:
 			self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
 
-
-
-
 		self.total_queued += 1
 
 	def netloc_error(self, netloc):
@@ -73,6 +70,13 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		self.url_throttler[netloc]['active_fetches'] -= 1
 		self.url_throttler[netloc]['active_fetches'] = max(
 			self.url_throttler[netloc]['active_fetches'], 0)
+
+	def clear_active_counts(self, override_status=False):
+		for value in self.url_throttler.values():
+			value['active_fetches'] = 0
+			if override_status:
+				value['status_accumulator'] = override_status
+
 
 	def get_in_queues(self):
 		return self.total_queued
