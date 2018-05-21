@@ -8,13 +8,12 @@ preloadDicts = False
 
 # Global run control value. Only used to stop running processes.
 import multiprocessing
-run_state         = multiprocessing.Value('i', 1)
-agg_run_state     = multiprocessing.Value('i', 1)
-job_run_state     = multiprocessing.Value('i', 1)
-raw_job_run_state = multiprocessing.Value('i', 1)
+run_state         = multiprocessing.Value('i', 1, lock=False)
+agg_run_state     = multiprocessing.Value('i', 1, lock=False)
+job_run_state     = multiprocessing.Value('i', 1, lock=False)
+raw_job_run_state = multiprocessing.Value('i', 1, lock=False)
 
 
-db_imp_lock = multiprocessing.Lock()
 
 
 # For synchronizing saving cookies to disk

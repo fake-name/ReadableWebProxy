@@ -59,7 +59,7 @@ class SingleAmqpConnection(object):
 		self.prefetch_extended       = False
 
 
-		self.exit_signaled           = multiprocessing.Value("i", 0)
+		self.exit_signaled           = multiprocessing.Value("i", 0, lock=False)
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
 
 		self.__launch_thread()

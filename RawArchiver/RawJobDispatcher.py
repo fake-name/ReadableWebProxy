@@ -72,7 +72,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.jobs_out = 0
 		self.jobs_in = 0
 
-		self.run_flag = multiprocessing.Value("b", 1)
+		self.run_flag = multiprocessing.Value("b", 1, lock=False)
 
 		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(fifo_limit = 1000 * 100)
 

@@ -97,6 +97,7 @@ GLOBAL_BAD_URLS = [
 
 			'counter.yadro.ru',
 			'box5315.temp.domains',
+			'seen-on-screen.thewhizmarketing.com',
 
 			'/js/js/',
 			'/css/css/',
@@ -162,6 +163,23 @@ GLOBAL_BAD_URLS = [
 			'https:/68.media.tumblr.com',
 			'https%3A/68.media.tumblr.com',
 			'/68.media.tumblr.com',
+
+			'ww1.avertranslation.org',
+			'ww1.catingham-palace.com',
+			'ww1.chiakunloong.com',
+			'ww1.grimdarkztranslations.com',
+			'ww1.helidwarf.com',
+			'ww1.kudalakorn.com',
+			'ww12.nepustation.com',
+			'ww12.pegasusfarts.com',
+			'ww12.shomotsu.com',
+			'ww12.steadytranslation.com',
+			'ww3.grimdarkztranslations.com',
+			'ww38.asuratales.com',
+			'ww4.grimdarkztranslations.com',
+
+			'app3.letitbefaster.world',
+			'app4.letitbefaster.world',
 
 			# Wat
 			'fierydragonbreath.tumblr.com',

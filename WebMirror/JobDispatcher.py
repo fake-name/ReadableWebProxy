@@ -899,7 +899,7 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				if not self.test_mode:
 					self.update_stats(system_state, threads)
 				time.sleep(1)
-				if not self.run_flag.value:
+				if not self.run_flag.value == 1:
 					break
 			self.log.info("Active dispatchers: %s", [tmp.is_alive() for tmp in threads])
 
@@ -957,7 +957,9 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
 		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
-		self.run_flag = multiprocessing.Value("b", 1)
+
+		self.run_flag = multiprocessing.Value("i", 1, lock=False)
+
 		if start_worker:
 			self.main_job_agg = multiprocessing.Process(target=MultiRpcRunner.run_shim, args=(self.normal_out_queue, self.run_flag), kwargs={"test_mode" : test_mode})
 			self.main_job_agg.start()

@@ -807,6 +807,23 @@ baseUrl: [
 	'https://trackest.wordpress.com',
 
 
+	'https://ancientheartloss.wordpress.com',
+	'https://experimentaltranslations.wordpress.com',
+	'https://godleveldemontranslation.wordpress.com',
+	'https://jinxcharllet.wordpress.com',
+	'https://libraryoftime.wordpress.com',
+	'https://nevmikutranslations.wordpress.com',
+	'https://newbietranslators.wordpress.com',
+	'https://rabbitcultivation.wordpress.com',
+	'http://riceballicious.info',
+	'https://sinpathy976389827.wordpress.com',
+	'https://sodatranslations.wordpress.com',
+	'https://strawberrytranslates.wordpress.com',
+	'https://theotherturret.wordpress.com',
+	'http://translations.gocreateme.com',
+	'https://www.vmnovels.com',
+
+
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	# This is WP, but it uses an custom theme I haven't tested against.
