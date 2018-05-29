@@ -1979,40 +1979,9 @@ titleTweakLut:  [
 		'add'    : 'Douluo Dalu',
 	}
 	]
-#   # Methods to allow the child-class to modify the content at various points.
-#   def extractTitle(self, srcSoup, doc, url):
-#       title = doc.title()
-
-#       if not title:
-#           title = srcSoup.title.get_text().strip()
-
-#       content = str(srcSoup).lower()
-#       for tweakDict in self.titleTweakLut:
-
-#           # print()
-#           # print(tweakDict)
-#           # print()
-
-#           # print('contain', any([item.lower() in content.lower() for item in tweakDict['contain']]))
-#           # print('badUrl', not any([item in url for item in tweakDict['badUrl']]))
-#           # print('url', tweakDict['url'] in url)
-
-#           if any([item in content for item in tweakDict['contain']]) and \
-#               (not any([item in url for item in tweakDict['badUrl']])) and \
-#               tweakDict['url'] in url:
-
-#               self.log.info("Need to tweak title for url '%s', adding '%s'", url, tweakDict['add'])
-#               title = tweakDict['add'] + title
-
-#       return title
-
-#   def postprocessBody(self, soup):
-#       for style_tag in soup.find_all('style'):
-#           style_tag.decompose()
-#       for mid_span in soup.find_all("span", _class="c3"):
-#           mid_span.unwrap()
-#       return soup
 
 
-
-
+special_case_filters : {
+	"mistycloudtranslations.com" : ["chrome_render_fetch"],
+	"www.mistycloudtranslations.com" : ["chrome_render_fetch"],
+}

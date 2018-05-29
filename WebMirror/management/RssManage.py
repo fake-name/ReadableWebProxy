@@ -393,7 +393,8 @@ def exposed_rss_db_sync(target = None, days=False, silent=False):
 			ctnt['contents']  = 'wat'
 
 			try:
-				parser.processFeedData(sess, ctnt, tx_raw=False, tx_parse=not bool(days))
+				ret = parser.processFeedData(sess, ctnt, tx_raw=False, tx_parse=not bool(days))
+				print(ret)
 			except ValueError:
 				pass
 			# print(ctnt)
@@ -595,7 +596,7 @@ def exposed_retrigger_feed_urls():
 		have_content = [tmp for tmp in items if tmp.contents]
 		print("%s rows have content" % len(have_content))
 
-		for post in tqdm.tqdm(items):
+		for post in tqdm.tqdm(items, desc="Retriggering RSS URLs"):
 			if post.contenturl.startswith("tag:blogger.com"):
 				continue
 

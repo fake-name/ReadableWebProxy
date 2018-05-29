@@ -128,7 +128,7 @@ def exposed_fix_nu_duplicate_url_segments():
 
 	count = 0
 	with db.session_context() as sess:
-		for dbid, url in tqdm.tqdm(fix_list):
+		for dbid, url in tqdm.tqdm(fix_list, desc="Fixing duplicate NU urls."):
 			actual_url, _ = url.split("http://")
 
 			if actual_url in urlmap:

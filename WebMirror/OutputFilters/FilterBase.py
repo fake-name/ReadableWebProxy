@@ -9,6 +9,7 @@ import urllib.parse
 import datetime
 import time
 import common.database as db
+import WebMirror.UrlUpserter
 from WebMirror.processor.ProcessorBase import PageProcessor
 
 class FilterBase(PageProcessor):
@@ -24,6 +25,8 @@ class FilterBase(PageProcessor):
 
 		self.kwargs = kwargs
 		self.db_sess = kwargs['db_sess']
+
+
 
 	# Lazy-load the remote interface construction.
 	def __getattr__(self, name):
@@ -41,43 +44,62 @@ class FilterBase(PageProcessor):
 
 
 	def put_page_link(self, link):
-		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None and False:
-			start = urllib.parse.urlsplit(link).netloc
+		if not 'job' in self.kwargs:
+			self.log.warning("Cannot upsert URL due to no job passed to filters!")
+			return
 
-			assert link.startswith("http")
-			assert start
-			new = {
-				'url'       : link,
-				'starturl'  : self.kwargs['job'].starturl,
-				'netloc'    : start,
-				'distance'  : self.kwargs['job'].distance+1,
-				'is_text'   : True,
-				'priority'  : self.kwargs['job'].priority,
-				'type'      : self.kwargs['job'].type,
-				'state'     : "new",
-				'fetchtime' : datetime.datetime.now(),
-				}
+		start = urllib.parse.urlsplit(link).netloc
+
+		assert link.startswith("http")
+		assert start
+		new = {
+			'url'               : link,
+			'starturl'          : self.kwargs['job'].starturl,
+			'netloc'            : start,
+			'distance'          : self.kwargs['job'].distance+1,
+			'is_text'           : True,
+			'priority'          : self.kwargs['job'].priority,
+			'maximum_priority'  : db.DB_IDLE_PRIORITY,
+			'type'              : self.kwargs['job'].type,
+			'state'             : "new",
+			'addtime'           : datetime.datetime.now(),
+			'ignoreuntiltime'   : datetime.datetime.min,
+			}
+		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None:
 			self.kwargs['message_q'].put(("new_link", new))
+		else:
+			# Local upsert
+			WebMirror.UrlUpserter.do_link_batch_update(self.log, [new, ])
 
-	def trigger_immediate_if_new(self, link):
-		# self.log.info("trigger_immediate_if_new for url: %s", link)
-		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None and False:
-			start = urllib.parse.urlsplit(link).netloc
+	def high_priority_link_trigger(self, link):
+		if not 'job' in self.kwargs:
+			self.log.warning("Cannot upsert URL due to no job passed to filters!")
+			return
 
-			assert link.startswith("http")
-			assert start
-			new = {
-				'url'       : link,
-				'starturl'  : self.kwargs['job'].starturl,
-				'netloc'    : start,
-				'distance'  : self.kwargs['job'].distance+1,
-				'is_text'   : True,
-				'priority'  : self.kwargs['job'].priority,
-				'type'      : self.kwargs['job'].type,
-				'state'     : "new",
-				'fetchtime' : datetime.datetime.now(),
-				}
-			self.kwargs['message_q'].put(("new_link", new))
+		start = urllib.parse.urlsplit(link).netloc
+
+
+		assert link.startswith("http")
+		assert start
+		new = {
+			'url'               : link,
+			'starturl'          : self.kwargs['job'].starturl,
+			'netloc'            : start,
+			'distance'          : self.kwargs['job'].distance+1,
+			'is_text'           : True,
+			'priority'          : self.kwargs['job'].priority,
+			'maximum_priority'  : db.DB_HIGH_PRIORITY,
+			'type'              : self.kwargs['job'].type,
+			'state'             : "new",
+			'addtime'           : datetime.datetime.now(),
+			'ignoreuntiltime'   : datetime.datetime.min,
+			}
+
+		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None:
+			self.kwargs['message_q'].put(("high_priority_link_trigger", new))
+		else:
+			# Local upsert
+			WebMirror.UrlUpserter.do_link_batch_update(self.log, [new, ])
 
 
 	def amqp_put_many(self, items):

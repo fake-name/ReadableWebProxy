@@ -8,6 +8,7 @@ import logging
 import logSetup
 import cProfile
 import traceback
+import pprint
 import threading
 import sys
 import queue
@@ -33,14 +34,9 @@ import config
 import runStatus
 import concurrent.futures
 
-import WebMirror.Engine
-import WebMirror.rules
 import common.util.urlFuncs as urlFuncs
 import common.database as db
-import WebMirror.JobDispatcher as njq
-
 import common.stuck
-
 import common.get_rpyc
 
 def initializeStartUrls(rules):
@@ -118,7 +114,7 @@ def resetInProgress():
 
 		changed = 0
 		tot_changed = 0
-		for idx in tqdm.tqdm(range(start, stop, step)):
+		for idx in tqdm.tqdm(range(start, stop, step), desc="Resetting DlStates"):
 			try:
 				# SQL String munging! I'm a bad person!
 				# Only done because I can't easily find how to make sqlalchemy
@@ -129,7 +125,7 @@ def resetInProgress():
 										SET
 											state = 'new'
 										WHERE
-											(state = 'fetching' OR state = 'processing')
+											state = any(VALUES ('fetching'::dlstate_enum), ('processing'::dlstate_enum))
 										AND
 											id > {}
 										AND
@@ -159,12 +155,83 @@ def resetInProgress():
 
 
 def do_link_batch_update(logger, link_batch):
-	with db.session_context() as sess:
-		do_link_batch_update_sess(logger, sess, link_batch)
+	try:
+		with db.session_context() as sess:
+			do_link_batch_update_sess(logger, sess, link_batch)
+	except Exception:
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		print("ERROR")
+		traceback.print_exc()
+		print("ERROR")
+		print("ERROR")
+		raise
 
 def do_link_batch_update_sess(logger, interface, link_batch):
 	if not link_batch:
 		return
+
+	expected_keys = set([
+			'url',
+			'starturl',
+			'netloc',
+			'distance',
+			'is_text',
+			'priority',
+			'type',
+			'addtime',
+			'state',
+			'ignoreuntiltime',
+			'maximum_priority',
+		])
+
+
+	for item in link_batch:
+		try:
+			assert 'url'              in item
+			assert 'starturl'         in item
+			assert 'netloc'           in item
+			assert 'distance'         in item
+			assert 'is_text'          in item
+			assert 'priority'         in item
+			assert 'type'             in item
+			assert 'addtime'          in item
+			assert 'state'            in item
+			assert 'ignoreuntiltime'  in item
+
+			if not 'maximum_priority' in item:
+				item['maximum_priority'] = item['priority']
+			assert 'maximum_priority' in item
+		except AssertionError:
+			logger.error("Missing key from entry: ")
+			item_str = pprint.pformat(item)
+			for line in item_str.split("\n"):
+				logger.error("	%s", line.rstrip())
+			raise
+
+		item_keys = set(item.keys())
+		excess_keys = item_keys - expected_keys
+		try:
+			assert not excess_keys
+		except AssertionError:
+			logger.error("Excess key(s) in entry: '%s'", excess_keys)
+			item_str = pprint.pformat(item)
+			for line in item_str.split("\n"):
+				logger.error("	%s", line.rstrip())
+			raise
+
+
+
 
 	logger.info("Inserting %s items into DB in batch.", len(link_batch))
 	# This is kind of horrible.
@@ -248,15 +315,15 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		bulk_cmd = bulk_cmd.replace("  ", " ")
 
 
-	bulk_cmd_list = [bulk_cmd.format(cnt=cnt) for cnt in range(len(self.batched_links))]
+	bulk_cmd_list = [bulk_cmd.format(cnt=cnt) for cnt in range(len(link_batch))]
 	bulk_cmd_assembled = "; ".join(bulk_cmd_list)
 
 	# Build the overall SQL string
-	# bulk_cmds = [bulk_cmd.format(cnt=cnt) for cnt in range(len(self.batched_links))]
+	# bulk_cmds = [bulk_cmd.format(cnt=cnt) for cnt in range(len(link_batch))]
 	# bulk_cmd_assembled = bulk_cmd_prefix + ", ".join(bulk_cmds) + bulk_cmd_postfix
 
 	# Build a nested list of dicts
-	bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in self.batched_links[cnt].items()} for cnt in range(len(self.batched_links)) ]
+	bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in link_batch[cnt].items()} for cnt in range(len(link_batch)) ]
 
 	# Then flatten it down to a single dict
 	bulk_dict = {k: v for d in bulk_dict for k, v in d.items()}
@@ -270,7 +337,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		raw_cur.execute(bulk_cmd_assembled, bulk_dict)
 		raw_cur.execute("COMMIT;")
 		raw_cur.execute("RESET statement_timeout;")
-		self.batched_links = []
+		link_batch = []
 		return
 
 	except psycopg2.Error:
@@ -285,7 +352,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 	while 1:
 		try:
 			raw_cur.execute("BEGIN;")
-			for paramset in self.batched_links:
+			for paramset in link_batch:
 				assert isinstance(paramset['starturl'], str)
 				if len(paramset['url']) > 2000:
 					logger.error("URL Is too long to insert into the database!")
@@ -500,7 +567,7 @@ class UpdateAggregator(object):
 				self.do_amqp(value)
 		elif target == "new_link":
 			self.do_link(value)
-		elif target == "trigger_immediate_if_new":
+		elif target == "high_priority_link_trigger":
 			print("Trigger immediate if new", value)
 			self.do_immediate_link(value)
 		else:

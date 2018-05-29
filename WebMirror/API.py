@@ -13,7 +13,7 @@ from flask import g
 from app import app
 from app import utilities
 
-import WebRequest.Constants as wr_constants
+import WebRequest.UA_Constants as wr_constants
 
 def td_format(td_object):
 		seconds = int(td_object.total_seconds())

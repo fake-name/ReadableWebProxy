@@ -10,6 +10,7 @@ import multiprocessing
 import traceback
 import time
 import queue
+import urllib.parse
 
 from sqlalchemy import desc
 import common.database as db
@@ -68,7 +69,7 @@ def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance
 	job_aggregator_instance.put_job(raw_job)
 
 def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
-	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
+	print('qidianSmartFeedFetch', params, rid, joburl, netloc)
 
 
 	sess = db.get_db_session(flask_sess_if_possible=False)
@@ -180,6 +181,22 @@ def pushSpecialCase(specialcase, rid, joburl, netloc, job_aggregator_instance):
 		err_msg = "Unknown special-case filter! Filter name: '%s', parameters: '%s', job conf: '%s'", op, params, (rid, joburl, netloc)
 		raise SpecialCaseFilterMissing(err_msg)
 
+
+def getSpecialCase(specialcase, joburl=None, netloc=None):
+	if not (netloc or joburl):
+		raise RuntimeError("You need to pass either joburl or netloc!")
+
+	if not netloc:   # We assume joburl must be defined if netloc is not, at this point
+		netloc = urllib.parse.urlsplit(joburl).netloc
+
+	if netloc in specialcase:
+		# No special case for netloc
+		return specialcase[netloc]
+
+	if joburl in specialcase:
+		return specialcase[joburl]
+
+	return None
 
 def haveSpecialCase(specialcase, joburl, netloc):
 

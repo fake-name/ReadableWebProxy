@@ -15,6 +15,8 @@ import urllib.parse
 import WebRequest
 import bs4
 
+import WebMirror.rules
+import WebMirror.SpecialCase
 import WebMirror.processor.ProcessorBase
 
 from activePlugins import PREPROCESSORS
@@ -63,6 +65,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		self.response_queue = response_queue
 		self.job            = job
 		self.db_sess        = db_sess
+
 
 		if wg_proxy:
 			self.wg_proxy = wg_proxy
@@ -205,11 +208,21 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 	def getItem(self, itemUrl):
 
+		spc = WebMirror.rules.load_special_case_sites()
+		casehandler = WebMirror.SpecialCase.getSpecialCase(specialcase=spc, joburl=itemUrl)
+
+		if casehandler == ["chrome_render_fetch"]:
+			self.log.info("Synchronous rendered chromium fetch!")
+			content, fileN, mType = self.wg_proxy().chromiumGetRenderedItem(itemUrl)
+			return content, fileN, mType
+		else:
+			return self.__plain_local_fetch(itemUrl)
+
+	def __plain_local_fetch(self, itemUrl):
 		error = None
 		try:
 			itemUrl = itemUrl.strip()
 			itemUrl = itemUrl.replace(" ", "%20")
-
 			content, handle = self.wg_proxy().getpage(itemUrl, returnMultiple=True)
 		except WebRequest.FetchFailureError:
 			self.log.error("Failed to fetch page!")

@@ -3,29 +3,30 @@ import sys
 import multiprocessing
 import threading
 import contextlib
+import time
+import traceback
+import queue
 
-from settings import MAX_DB_SESSIONS
 
+import sqlalchemy.exc
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
-import time
 
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 
-import queue
 
 from settings import DATABASE_IP            as C_DATABASE_IP
 from settings import DATABASE_DB_NAME       as C_DATABASE_DB_NAME
 from settings import DATABASE_USER          as C_DATABASE_USER
 from settings import DATABASE_PASS          as C_DATABASE_PASS
 
-import traceback
-
 from flask import g
+
+from settings import MAX_DB_SESSIONS
 import flags
 
 if '__pypy__' in sys.builtin_module_names:
@@ -151,6 +152,25 @@ def session_context():
 	sess = get_db_session(postfix='context-sess')
 	try:
 		yield sess
+
+	except sqlalchemy.exc.InternalError:
+		print("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
+		sess.rollback()
+		raise
+	except sqlalchemy.exc.OperationalError:
+		print("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
+		sess.rollback()
+		raise
+	except sqlalchemy.exc.IntegrityError:
+		print("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
+		sess.rollback()
+		raise
+	except sqlalchemy.exc.InvalidRequestError:
+		print("Transaction error (sqlalchemy.exc.InvalidRequestError). Retrying.")
+		traceback.print_exc()
+		sess.rollback()
+		raise
+
 	finally:
 		delete_db_session(postfix='context-sess')
 

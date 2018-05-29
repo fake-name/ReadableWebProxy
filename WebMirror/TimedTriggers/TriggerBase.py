@@ -114,7 +114,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			loopcnt = 0
 			try:
 				try:
-					for url in tqdm.tqdm(urlList):
+					for url in tqdm.tqdm(urlList, desc="Retriggering for %s plugin" % self.pluginName):
 						loopcnt += 1
 						self.__raw_retrigger_with_cursor(url, raw_cur)
 						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:

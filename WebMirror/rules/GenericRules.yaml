@@ -241,6 +241,14 @@ titleTweakLut:  [
 		'add'    : 'Douluo Dalu',
 	}
 	]
+
+
+special_case_filters : {
+	"google.com" : ["chrome_render_fetch"],
+	"www.google.com" : ["chrome_render_fetch"],
+}
+
+
 #   # Methods to allow the child-class to modify the content at various points.
 #   def extractTitle(self, srcSoup, doc, url):
 #       title = doc.title()

@@ -214,7 +214,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 							ref_pages.add(referrer)
 
 		for spage in ref_pages:
-			self.trigger_immediate_if_new(spage)
+			self.high_priority_link_trigger(spage)
 
 		return releases
 

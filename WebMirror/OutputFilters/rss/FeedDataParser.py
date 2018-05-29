@@ -306,6 +306,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.log.warning("Skipping due to should_ignore_feed_post")
 			return
 
+		self.high_priority_link_trigger(feedDat['linkUrl'])
 		# print("ProcessFeedData! ", netloc)
 
 		# A bunch of crap is aggregated through the "feedproxy.google.com" netloc.

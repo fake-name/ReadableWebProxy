@@ -46,6 +46,7 @@ from common.Exceptions import DownloadException
 import WebMirror.Fetch
 import common.database as db
 import common.global_constants
+import WebMirror.UrlUpserter
 from config import C_RESOURCE_DIR
 
 
@@ -509,7 +510,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		ret = set()
 
 		if interactive:
-			iterator = tqdm.tqdm(links)
+			iterator = tqdm.tqdm(links, desc="Filtering content links.")
 		else:
 			iterator = links
 
@@ -641,86 +642,43 @@ class SiteArchiver(LogBase.LoggerMixin):
 			self.log.info("Links placed into queue. Items in processing queue: %s", self.resp_q.qsize())
 		else:
 			self.log.info("Doing local link upsert in engine thread!")
-			raw_cur = self.db_sess.connection().connection.cursor()
 
-			#  Fucking huzzah for ON CONFLICT!
-			#  Priority is smaller = higher, so go with the smallest priority in most cases
-			cmd = """
-					INSERT INTO
-						web_pages
-						(url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-					VALUES
-						(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
-					ON CONFLICT (url) DO
-						UPDATE
-							SET
-								state           = EXCLUDED.state,
-								starturl        = EXCLUDED.starturl,
-								netloc          = EXCLUDED.netloc,
-								is_text         = EXCLUDED.is_text,
-								distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-								priority        = GREATEST(EXCLUDED.priority, web_pages.priority),
-								addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-							WHERE
-							(
-									web_pages.ignoreuntiltime < %(ignoreuntiltime)s
-								AND
-									web_pages.url = EXCLUDED.url
-								AND
-									(web_pages.state = 'complete' OR web_pages.state = 'error')
-							)
-						;
-					""".replace("	", " ").replace("\n", " ")
+			print(items)
+
+			batch_items = [
+				{
+					# Forward-data the next walk, time, rather then using now-value for the thresh.
+					'url'             : link_url,
+					'starturl'        : new_starturl,
+					'netloc'          : urllib.parse.urlsplit(link_url).netloc,
+					'distance'        : new_distance,
+					'is_text'         : is_text,
+					'priority'        : new_priority,
+					'type'            : new_type,
+					'state'           : "new",
+					'addtime'         : datetime.datetime.now(),
+
+					# Don't retrigger unless the ignore time has elaped.
+					'ignoreuntiltime' : datetime.datetime.now(),
+				}
+				for
+					link_url, is_text
+				in
+					items
+			]
 
 
-			# Only commit per-URL if we're tried to do the update in batch, and failed.
-			commit_each = False
+			assert all([tmp['url'].startswith("http") for tmp in batch_items])
+			assert all([tmp['netloc'] for tmp in batch_items])
 
-			if interactive:
-				iterator = tqdm.tqdm(items)
-			else:
-				iterator = items
-
-
-			for link, istext in iterator:
-				while 1:
-					try:
-						start = urllib.parse.urlsplit(link).netloc
-
-						assert link.startswith("http")
-						assert start
+			WebMirror.UrlUpserter.do_link_batch_update_sess(
+					logger     = self.log,
+					interface  = self.db_sess,
+					link_batch = batch_items,
+				)
 
 
-						# Forward-data the next walk, time, rather then using now-value for the thresh.
-						data = {
-							'url'             : link,
-							'starturl'        : new_starturl,
-							'netloc'          : start,
-							'distance'        : new_distance,
-							'is_text'         : istext,
-							'priority'        : new_priority,
-							'type'            : new_type,
-							'state'           : "new",
-							'addtime'         : datetime.datetime.now(),
 
-							# Don't retrigger unless the ignore time has elaped.
-							'ignoreuntiltime' : datetime.datetime.now(),
-							}
-						raw_cur.execute(cmd, data)
-						if commit_each:
-							raw_cur.execute("COMMIT;")
-						break
-					except psycopg2.Error:
-						if commit_each is False:
-							self.log.warn("psycopg2.Error - Retrying with commit each.")
-						else:
-							self.log.warn("psycopg2.Error - Retrying.")
-							traceback.print_exc()
-
-						raw_cur.execute("ROLLBACK;")
-						commit_each = True
-
-			raw_cur.execute("COMMIT;")
 
 	def upsertFileResponse(self, job, response):
 		# Response dict structure:

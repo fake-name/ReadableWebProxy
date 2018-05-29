@@ -111,7 +111,7 @@ class RollingRawRewalkTrigger(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseC
 		self.log.info("Have to process from ID %s to %s", minid, maxid)
 		chunk_size = 50000
 		affected = 0
-		pbar = tqdm.tqdm(range(minid, maxid, chunk_size))
+		pbar = tqdm.tqdm(range(minid, maxid, chunk_size), desc="Retriggering raw non-rule URLs")
 		for chunk in pbar:
 			while 1:
 				try:

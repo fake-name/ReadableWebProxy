@@ -105,8 +105,10 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 			print(contentDat)
 			raise ValueError("How can one post have multiple contents?")
 
-		contentDat = contentDat[0]
+		if not contentDat['value']:
+			return "No content for post!"
 
+		contentDat = contentDat[0]
 
 		params = self.kwargs.copy()
 
