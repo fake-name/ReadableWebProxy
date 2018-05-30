@@ -595,6 +595,8 @@ def exposed_nu_new_from_feeds(fetch_title=False):
 				continue
 			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
 				continue
+			if any([tmp in tgturl for tmp in common.global_constants.GLOBAL_BAD_URLS]):
+				continue
 
 			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc):
 				continue
@@ -900,16 +902,13 @@ def exposed_delete_error_versions():
 		stop = list(stop)[0][0]
 		print("Maximum row ID: ", stop)
 
-		if not start:
-			print("No error rows to fix!")
-			return
 
 		print("Need to fix rows from %s to %s" % (start, stop))
 		start = start - (start % step)
 
 		changed = 0
 		changed_tot = 0
-		pb = tqdm.tqdm(range(start, stop, step), desc='Dropping priorities.')
+		pb = tqdm.tqdm(range(start, stop, step), desc='Clearing error states.')
 		for idx in pb:
 			try:
 				# SQL String munging! I'm a bad person!

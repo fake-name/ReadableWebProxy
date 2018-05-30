@@ -182,7 +182,7 @@ def pushSpecialCase(specialcase, rid, joburl, netloc, job_aggregator_instance):
 		raise SpecialCaseFilterMissing(err_msg)
 
 
-def getSpecialCase(specialcase, joburl=None, netloc=None):
+def getSpecialCaseHandler(specialcase, joburl=None, netloc=None):
 	if not (netloc or joburl):
 		raise RuntimeError("You need to pass either joburl or netloc!")
 
@@ -206,7 +206,6 @@ def haveSpecialCase(specialcase, joburl, netloc):
 		return False
 
 	if netloc in specialcase:
-		# No special case for netloc
 		return True
 
 	if joburl in specialcase:

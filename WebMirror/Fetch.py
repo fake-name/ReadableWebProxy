@@ -203,17 +203,39 @@ class ItemFetcher(LogBase.LoggerMixin):
 		return ret
 
 
+	def cr_fetch(self, itemUrl):
+		wg = self.wg_proxy()
+		self.log.info("Synchronous rendered chromium fetch!")
+		with wg.chromiumContext() as cr:
+			cr.blocking_navigate(itemUrl)
+
+			for x in range(99):
+				try:
+					content = cr.get_rendered_page_source()
+				except Exception as e:
+					self.log.error("Failure extracting source (%s)! Retrying %s..." % (e, x))
+					if x > 3:
+						raise
+			mType = 'text/html'
 
 
+			raw_url = cr.get_current_url()
+			fileN = urllib.parse.unquote(urllib.parse.urlparse(raw_url)[2].split("/")[-1])
+			fileN = bs4.UnicodeDammit(fileN).unicode_markup
+
+			title, cur_url = cr.get_page_url_title()
+			print(title)
+
+		return content, fileN, mType
 
 	def getItem(self, itemUrl):
 
 		spc = WebMirror.rules.load_special_case_sites()
-		casehandler = WebMirror.SpecialCase.getSpecialCase(specialcase=spc, joburl=itemUrl)
+		casehandler = WebMirror.SpecialCase.getSpecialCaseHandler(specialcase=spc, joburl=itemUrl)
 
 		if casehandler == ["chrome_render_fetch"]:
 			self.log.info("Synchronous rendered chromium fetch!")
-			content, fileN, mType = self.wg_proxy().chromiumGetRenderedItem(itemUrl)
+			content, fileN, mType = self.cr_fetch(itemUrl)
 			return content, fileN, mType
 		else:
 			return self.__plain_local_fetch(itemUrl)
