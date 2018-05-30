@@ -889,6 +889,7 @@ def exposed_delete_error_versions():
 	'''
 
 	step  = 10000
+	commit = 1000
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")
@@ -908,7 +909,7 @@ def exposed_delete_error_versions():
 
 		changed = 0
 		changed_tot = 0
-		pb = tqdm.tqdm(range(start, stop, step), desc='Clearing error states.')
+		pb = tqdm.tqdm(range(stop, start, step*-1), desc='Clearing error states.')
 		for idx in pb:
 			try:
 				# SQL String munging! I'm a bad person!
@@ -926,7 +927,7 @@ def exposed_delete_error_versions():
 				# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
 				changed += have.rowcount
 				changed_tot += have.rowcount
-				if changed > step:
+				if changed > commit:
 					print("Committing (%s changed rows)...." % changed, end=' ')
 					sess.commit()
 					print("done")
