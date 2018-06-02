@@ -84,7 +84,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			)
 
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
-		self.normal_out_queue  = multiprocessing.Queue()
+		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
+		self.j_fetch_proc = None
 		if start_thread:
 			self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
 			self.j_fetch_proc.start()
@@ -171,7 +172,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			num_new = self._get_task_internal()
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
 
-			if runStatus.run_state.value != 1:
+			if self.run_flag.value != 1:
 				return
 
 			new_j_l =self.ratelimiter.get_available_jobs()
@@ -245,7 +246,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 					self.active_jobs = 0
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.active_jobs, self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
-				self.normal_out_queue.put(("processed", tmp))
+				self.blocking_put_response(("processed", tmp))
 			else:
 				self.print_mod += 1
 				if self.print_mod > 20:
@@ -253,6 +254,15 @@ class RawJobFetcher(LogBase.LoggerMixin):
 					self.print_mod = 0
 				time.sleep(1)
 				break
+
+	def blocking_put_response(self, item):
+		while self.run_flag.value == 1:
+			try:
+				self.normal_out_queue.put_nowait(item)
+				return
+			except queue.Full:
+				self.log.warning("Response queue full (%s items). Sleeping", self.normal_out_queue.qsize())
+				time.sleep(1)
 
 	def queue_filler_proc(self):
 
@@ -340,7 +350,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		start = time.time()
 
-		while runStatus.run_state.value == 1:
+		while self.run_flag.value == 1:
 			try:
 				cursor.execute(raw_query)
 				rids = cursor.fetchall()
@@ -353,7 +363,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				time.sleep(delay)
 				self.db_interface.rollback()
 
-		if runStatus.run_state.value != 1:
+		if self.run_flag.value != 1:
 			return 0
 
 		if not rids:
@@ -362,7 +372,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		rids = list(rids)
 		# If we broke because a user-interrupt, we may not have a
 		# valid rids at this point.
-		if runStatus.run_state.value != 1:
+		if self.run_flag.value != 1:
 			return 0
 
 		xqtim = time.time() - start
@@ -370,7 +380,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		if len(rids) == 0:
 			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
 			for dummy_x in range(5):
-				if runStatus.run_state.value == 1:
+				if self.run_flag.value == 1:
 					time.sleep(1)
 			return 0
 
@@ -399,7 +409,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 					self.ratelimiter.put_job(rid, joburl, netloc)
 					# self.put_outbound_job(rid, joburl, netloc=netloc)
 				else:
-					self.normal_out_queue.put(("unfetched", rid))
+					self.blocking_put_response(("unfetched", rid))
 
 			except RawArchiver.misc.UnwantedUrlError:
 				self.log.warning("Unwanted url in database? Url: '%s'", joburl)
@@ -425,6 +435,11 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		cursor.execute("""UPDATE raw_web_pages SET state = %s WHERE raw_web_pages.id = %s AND raw_web_pages.url = %s;""", ('disabled', rid, joburl))
 		self.db_interface.commit()
 
+	def get_status(self):
+		if self.j_fetch_proc:
+			return "Worker: %s, alive: %s." % (self.j_fetch_proc.ident, self.j_fetch_proc.is_alive())
+
+		return "Worker is none! Error!"
 
 def test2():
 	import logSetup
