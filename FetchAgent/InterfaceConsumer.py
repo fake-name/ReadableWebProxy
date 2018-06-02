@@ -362,6 +362,7 @@ class SingleAmqpConnection(object):
 		self.exit_signaled.value = 1
 
 	def join(self):
+		self.shutdown()
 		self.signal_stop()
 		self.__worker.join()
 
@@ -369,8 +370,14 @@ class SingleAmqpConnection(object):
 		self.shutdown()
 		self.signal_stop()
 		try:
+			self.storm_connection.kill()
+		except Exception:
+			pass
+
+		try:
 			self.__worker.join()
 		except Exception:
+			traceback.print_exc()
 			pass
 
 	@classmethod

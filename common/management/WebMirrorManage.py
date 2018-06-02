@@ -888,8 +888,8 @@ def exposed_delete_error_versions():
 	Reset the priority of every row in the table to the IDLE_PRIORITY level
 	'''
 
-	step  = 10000
-	commit = 1000
+	step   = 10000
+	commit = 10000
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")

@@ -87,7 +87,7 @@ class IO(object):
 
     def kill(self):
         if self._inbound_thread.is_alive():
-            self._die.value = 1
+            self._running.clear()
             while self._inbound_thread.is_alive():
                 self._inbound_thread.join(1)
 
@@ -226,6 +226,7 @@ class IO(object):
             if self.poller.is_ready:
                 self.data_in += self._receive()
                 self.data_in = self._on_read(self.data_in)
+
             sleep(IDLE_WAIT)
 
     def _receive(self):

@@ -181,7 +181,10 @@ class Connection(Stateful):
         for channel in self._channels.items():
             channel.remove_consumer_tag()
 
-        self._io.kill()
+        try:
+            self._io.close()
+        except Exception:
+            self._io.kill()
 
 
     def open(self):
