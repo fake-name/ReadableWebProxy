@@ -65,6 +65,22 @@ def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance
 		serialize      = True,
 	)
 
+	job_aggregator_instance.put_job(raw_job)
+
+def handleRemoteChromeFetch(params, rid, joburl, netloc, job_aggregator_instance):
+	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
+
+	raw_job = WebMirror.JobUtils.buildjob(
+		module         = 'WebRequest',
+		call           = 'chromiumGetRenderedItem',
+		dispatchKey    = "fetcher",
+		jobid          = rid,
+		args           = [joburl],
+		kwargs         = {},
+		additionalData = {'mode' : 'fetch'},
+		postDelay      = 0,
+		serialize      = True,
+	)
 
 	job_aggregator_instance.put_job(raw_job)
 

@@ -171,6 +171,10 @@
   "def extract12Superlatives(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "18konko.wordpress.com": [
+  "\ndef extract18KonkoWordpressCom(item):\n\t'''\n\tParser for '18konko.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:00.128341"
+ ],
  "1HP": [
   "def extract1HP(item):\n\t\"\"\"\n\t# 1HP\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'Route to almightyness from 1HP' in item['title'] and (chp or vol):\n\t\treturn buildReleaseMessage(item, 'HP1 kara Hajimeru Isekai Musou', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
@@ -8411,6 +8415,10 @@
   "\ndef extractAjrgWordpressCom(item):\n\t'''\n\tParser for 'ajrg.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-03-16T21:52:23.660844"
  ],
+ "ancientheartloss.com": [
+  "\ndef extractAncientheartlossCom(item):\n\t'''\n\tParser for 'ancientheartloss.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-31T22:02:02.024626"
+ ],
  "ancientheartloss.wordpress.com": [
   "\ndef extractAncientheartlossWordpressCom(item):\n\t'''\n\tParser for 'ancientheartloss.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-05-22T02:39:03.634219"
@@ -8431,6 +8439,10 @@
   "\ndef extractAzurezinktranslatingBlogspotCom(item):\n\t'''\n\tParser for 'azurezinktranslating.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-05-22T02:35:20.398572"
  ],
+ "benttranslations.wordpress.com": [
+  "\ndef extractBenttranslationsWordpressCom(item):\n\t'''\n\tParser for 'benttranslations.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:01.775719"
+ ],
  "bluebugsstory": [
   "\ndef extractBluebugsstory(item):\n\t'''\n\tParser for 'bluebugsstory'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
   "2017-03-23T05:27:55.724892"
@@ -8442,6 +8454,10 @@
  "brotherhoodarchive.com": [
   "\ndef extractBrotherhoodarchiveCom(item):\n\t'''\n\tParser for 'brotherhoodarchive.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-04-15T02:18:56.476914"
+ ],
+ "creativenovels.com": [
+  "\ndef extractCreativenovelsCom(item):\n\t'''\n\tParser for 'creativenovels.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:01.197161"
  ],
  "crimsonmagic.me": [
   "\ndef extractCrimsonmagicMe(item):\n\t'''\n\tParser for 'crimsonmagic.me'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
@@ -8462,6 +8478,10 @@
  "dollstranslations.blogspot.com.es": [
   "\ndef extractDollstranslationsBlogspotComEs(item):\n\t'''\n\tParser for 'dollstranslations.blogspot.com.es'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2017-12-22T06:37:32.609628"
+ ],
+ "dreamztranslation.com": [
+  "\ndef extractDreamztranslationCom(item):\n\t'''\n\tParser for 'dreamztranslation.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:08.339649"
  ],
  "dummytranslations.com": [
   "\ndef extractDummytranslationsCom(item):\n\t'''\n\tParser for 'dummytranslations.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
@@ -8491,9 +8511,17 @@
   "def extractEternalpath(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "eternarianovels.com": [
+  "\ndef extractEternarianovelsCom(item):\n\t'''\n\tParser for 'eternarianovels.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:03.728967"
+ ],
  "fgiLaN translations": [
   "def extractfgiLaNTranslations(item):\n\t\"\"\"\n\t# 'fgiLaN translations'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'kimi no na wa' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'kimi no na wa', vol, chp, frag=frag, postfix=postfix)\n\tif 'shuumatsu nani shitemasu ka? isogashii desu ka? sukutte moratte ii desu ka?' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'shuumatsu nani shitemasu ka? isogashii desu ka? sukutte moratte ii desu ka?', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
+ ],
+ "fleshtoplush.blogspot.com": [
+  "\ndef extractFleshtoplushBlogspotCom(item):\n\t'''\n\tParser for 'fleshtoplush.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:22:40.423054"
  ],
  "fourtranslations.wordpress.com": [
   "def extractFourtranslationsWordpressCom(item):\n\t'''\n\tParser for 'fourtranslations.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttitlemap = [\n\t\t('Master of Monsters \u2013 Volume ',  'Master of Monsters',      'translated'),\n\t]\n\n\tfor titlecomponent, name, tl_type in titlemap:\n\t\tif titlecomponent.lower() in item['title'].lower():\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False",
@@ -8511,9 +8539,21 @@
   "def extractGuhehe(item):\n\t\"\"\"\n\t# guhehe.TRANSLATIONS\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'ShominSample' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Ore ga Ojou-sama Gakkou ni \"Shomin Sample\" Toshite Rachirareta Ken', vol, chp, frag=frag, postfix=postfix)\n\tif 'OniAi' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Onii-chan Dakedo Ai Sae Areba Kankeinai yo ne', vol, chp, frag=frag, postfix=postfix)\n\tif 'Haganai' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Boku wa Tomodachi ga Sukunai', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "hasutsuki.com": [
+  "\ndef extractHasutsukiCom(item):\n\t'''\n\tParser for 'hasutsuki.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:37.690040"
+ ],
  "hereticlnt.blogspot.com": [
   "\ndef extractHereticlntBlogspotCom(item):\n\t'''\n\tParser for 'hereticlnt.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
   "2017-03-23T05:15:51.485022"
+ ],
+ "hinawary.wordpress.com": [
+  "\ndef extractHinawaryWordpressCom(item):\n\t'''\n\tParser for 'hinawary.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:11.330165"
+ ],
+ "hiscension.com": [
+  "\ndef extractHiscensionCom(item):\n\t'''\n\tParser for 'hiscension.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:30:59.545480"
  ],
  "hoshiandme": [
   "\ndef extractHoshiandme(item):\n\t'''\n\tParser for 'hoshiandme'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\tif \"WATTT\" in item['tags']:\n\t\treturn buildReleaseMessage(item, \"WATTT\", vol, chp, frag=frag, postfix=postfix)\n\n\treturn False\n\t",
@@ -8522,6 +8562,10 @@
  "ikigai.novels": [
   "def extractIkigainovelsWordpressCom(item):\n\t'''\n\tParser for 'ikigainovels.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('ABG30D',       'Agreement of Being Gay for 30 Days',                      'translated'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False",
   "2017-09-13T05:49:57.413284"
+ ],
+ "iluskamaelanitranslations.wordpress.com": [
+  "\ndef extractIluskamaelanitranslationsWordpressCom(item):\n\t'''\n\tParser for 'iluskamaelanitranslations.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:06.797823"
  ],
  "inconnuesite": [
   "def extractInconnuesite(item):\n\t'''\n\tParser for 'inconnuesite'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn False\n\n\ttagmap = [\n\t\t(\"SGS\", \"Shoujo Grand Summoning\",    'translated'),\n\t\t(\"UAW\", \"Unlimited Anime Works\",     'translated'),\n\t\t(\"HF\",  \"Holistic Fantasy\",          'translated'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False",
@@ -8551,6 +8595,10 @@
   "def extractKhasinTH(item):\n\t\"\"\"\n\t\"kha'sinTH\"\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
  ],
+ "ktranslations980580331.wordpress.com": [
+  "\ndef extractKtranslations980580331WordpressCom(item):\n\t'''\n\tParser for 'ktranslations980580331.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:20.128399"
+ ],
  "leonardpetracci": [
   "\ndef extractLeonardpetracciCom(item):\n\t'''\n\tParser for 'leonardpetracci.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2017-11-20T02:27:19.131570"
@@ -8562,6 +8610,10 @@
  "lightnoveltranslations793805610.wordpress.com": [
   "\ndef extractLightnoveltranslations793805610WordpressCom(item):\n\t'''\n\tParser for 'lightnoveltranslations793805610.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-05-14T03:20:13.859123"
+ ],
+ "lucksego.com": [
+  "\ndef extractLucksegoCom(item):\n\t'''\n\tParser for 'lucksego.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:04.340855"
  ],
  "machinetranslationdotblog.wordpress.com": [
   "\ndef extractMachinetranslationdotblogWordpressCom(item):\n\t'''\n\tParser for 'machinetranslationdotblog.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
@@ -8582,6 +8634,10 @@
  "new tales of the hotel st crispian": [
   "\ndef extractStcrispianBlogspotCom(item):\n\t'''\n\tParser for 'stcrispian.blogspot.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2017-11-20T02:28:33.322736"
+ ],
+ "novel618603696.wordpress.com": [
+  "\ndef extractNovel618603696WordpressCom(item):\n\t'''\n\tParser for 'novel618603696.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:30:59.384840"
  ],
  "novelasymangasjpo.blogspot.com": [
   "def extractNovelasymangasjpoBlogspotCom(item):\n\t'''\n\tParser for 'novelasymangasjpo.blogspot.com'\n\t'''\n\n\treturn None",
@@ -8707,6 +8763,10 @@
   "\ndef extractTranslasiSanusiMe(item):\n\t'''\n\tParser for 'translasi.sanusi.me'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2017-11-24T06:47:32.564253"
  ],
+ "trashmtl.wordpress.com": [
+  "\ndef extractTrashmtlWordpressCom(item):\n\t'''\n\tParser for 'trashmtl.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:05.292030"
+ ],
  "v7 Silent": [
   "def extractV7Silent(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'The Demon Queen is My Fianc\u00e9e!' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'The Demon Queen is My Fianc\u00e9e!', vol, chp, frag=frag, postfix=postfix, tl_type='oel')\n\tif 'Getcha Skills' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'Getcha Skills', vol, chp, frag=frag, postfix=postfix, tl_type='oel')\n\treturn False\n",
   "2017-03-08T04:59:21.700134"
@@ -8714,6 +8774,10 @@
  "vanillamusenovels.wordpress.com": [
   "\ndef extractVanillamusenovelsWordpressCom(item):\n\t'''\n\tParser for 'vanillamusenovels.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-05-14T03:20:08.261953"
+ ],
+ "wanderingmusetranslation.wordpress.com": [
+  "\ndef extractWanderingmusetranslationWordpressCom(item):\n\t'''\n\tParser for 'wanderingmusetranslation.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-05-30T06:31:16.862574"
  ],
  "weedsroyalroad": [
   "def extractWeedsroyalroad(item):\n\t\"\"\"\n\tParser for 'weedsroyalroad'\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or 'preview' in item['title'].lower():\n\t\treturn None\n\tif 'WATTT' in item['tags']:\n\t\treturn buildReleaseMessage(item, 'WATTT', vol, chp, frag=frag, postfix=postfix)\n\treturn False\n",

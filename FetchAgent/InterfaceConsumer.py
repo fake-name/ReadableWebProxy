@@ -362,10 +362,16 @@ class SingleAmqpConnection(object):
 		self.exit_signaled.value = 1
 
 	def join(self):
+		self.signal_stop()
 		self.__worker.join()
 
 	def __del__(self):
 		self.shutdown()
+		self.signal_stop()
+		try:
+			self.__worker.join()
+		except Exception:
+			pass
 
 	@classmethod
 	def build_thread(cls, config, tx_q, rx_q):

@@ -151,13 +151,16 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	@property
 	def wg(self):
-		if getattr(self, '__wg', None) is None:
-			alt_cj = dbCj.DatabaseCookieJar(db=self.db, session=common.database.get_db_session(postfix="_cookie_interface"))
+		if getattr(self, '_SiteArchiver__wg', None) is None:
+			print("Creating WG Interface!")
+			alt_cj = dbCj.DatabaseCookieJar(db=self.db, session=db.get_db_session(postfix="_cookie_interface"))
 			self.__wg = WebRequest.WebGetRobust(
 					use_socks     = self.__wr_use_socks,
 					alt_cookiejar = alt_cj,
 					custom_ua     = self.__wr_ua_override,
 				)
+		else:
+			print("=Have wg interface")
 		return self.__wg
 
 	def __init__(self,
@@ -166,7 +169,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 			new_job_queue,
 			response_queue=None,
 			use_socks=False,
-			ua_override=None):
+			ua_override=None,
+			wg_override=None):
 
 		# print("SiteArchiver __init__()")
 		super().__init__()
@@ -187,6 +191,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.__wr_cookie_lock = cookie_lock
 		self.__wr_use_socks   = use_socks
 		self.__wr_ua_override = ua_override
+		self.__wg             = wg_override
 
 
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
@@ -643,7 +648,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		else:
 			self.log.info("Doing local link upsert in engine thread!")
 
-			print(items)
+			# print(items)
 
 			batch_items = [
 				{

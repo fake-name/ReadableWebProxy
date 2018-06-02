@@ -206,18 +206,32 @@ class ItemFetcher(LogBase.LoggerMixin):
 	def cr_fetch(self, itemUrl):
 		wg = self.wg_proxy()
 		self.log.info("Synchronous rendered chromium fetch!")
-		with wg.chromiumContext() as cr:
-			cr.blocking_navigate(itemUrl)
+		with wg.chromiumContext(itemUrl) as cr:
+			try:
+				content = cr.blocking_navigate_and_get_source(itemUrl)
+				if content:
+					if content['binary'] is False:
+						content = content['content']
+					else:
+						self.log.error("Binary content!")
 
-			for x in range(99):
-				try:
-					content = cr.get_rendered_page_source()
-				except Exception as e:
-					self.log.error("Failure extracting source (%s)! Retrying %s..." % (e, x))
-					if x > 3:
-						raise
-			mType = 'text/html'
+			except Exception:
+				pass
 
+			if not content:
+				for x in range(99):
+					try:
+						content = cr.get_rendered_page_source()
+					except Exception as e:
+						self.log.error("Failure extracting source (%s)! Retrying %s..." % (e, x))
+						if x > 3:
+							raise
+
+
+			if itemUrl.endswith("/feed/"):
+				mType = "application/rss+xml"
+			else:
+				mType = 'text/html'
 
 			raw_url = cr.get_current_url()
 			fileN = urllib.parse.unquote(urllib.parse.urlparse(raw_url)[2].split("/")[-1])
@@ -344,9 +358,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 	#
 	########################################################################################################################
 
-	# # This is the main function that's called by the task management system.
-	# # Retreive remote content at `url`, call the appropriate handler for the
-	# # transferred content (e.g. is it an image/html page/binary file)
+	# This is the main function that's called by the task management system.
+	# Retreive remote content at `url`, call the appropriate handler for the
+	# transferred content (e.g. is it an image/html page/binary file)
 	def fetch(self, preretrieved):
 
 

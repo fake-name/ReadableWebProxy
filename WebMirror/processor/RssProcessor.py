@@ -56,9 +56,14 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 	def wantsFromContent(content):
 		try:
 			# Check if the feed has a version
+			# print("Content: ", content)
 			feed = feedparser.parse(content)
+			# print("Parsed feed: ", feed)
 			return bool(feed['version'])
 		except Exception:
+			# print("Feedparser failed on content!")
+			# traceback.print_exc()
+			# print(content)
 			return False
 
 	def __init__(self, **kwargs):

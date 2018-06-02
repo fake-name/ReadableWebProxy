@@ -13,7 +13,10 @@ from flask import g
 from app import app
 from app import utilities
 
+import WebRequest
 import WebRequest.UA_Constants as wr_constants
+import common.util.DbCookieJar as dbCj
+import common.database as db
 
 def td_format(td_object):
 		seconds = int(td_object.total_seconds())
@@ -36,7 +39,9 @@ def td_format(td_object):
 
 		return ", ".join(retstr)
 
-UA_POOL = [wr_constants.getUserAgent() for x in range(3)]
+WG_POOL = [WebRequest.WebGetRobust(
+			alt_cookiejar = dbCj.DatabaseCookieJar(db=db, session=db.get_db_session(postfix="_cookie_interface"))
+			) for x in range(2)]
 
 class RemoteContentObject(object):
 	def __init__(self, url, db_session = None):
@@ -55,7 +60,7 @@ class RemoteContentObject(object):
 		self.archiver = WebMirror.Engine.SiteArchiver(cookie_lock=False,
 			new_job_queue=None,
 			db_interface=self.db_sess,
-			ua_override=random.choice(UA_POOL)
+			wg_override=random.choice(WG_POOL)
 			)
 
 

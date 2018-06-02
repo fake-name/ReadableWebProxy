@@ -487,9 +487,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.db_interface.commit()
 
 	def set_special_case_blocked(self, rid, joburl):
-		self.log.warning("Setting job status to blocked for url: '%s'", joburl)
+		self.log.warning("Setting job status to blocked for id->url: %s->'%s'", rid, joburl)
 		cursor = self.db_interface.cursor()
-		cursor.execute("""UPDATE web_pages         SET state='specialty_blocked' WHERE web_pages.id = %s         AND web_pages.url = %s;""", (rid, joburl))
+		cursor.execute("""UPDATE web_pages         SET state='specialty_blocked' WHERE web_pages.id = %s;""", (rid, ))
+		cursor.execute("""COMMIT;""")
 		self.db_interface.commit()
 
 

@@ -568,7 +568,7 @@ class UpdateAggregator(object):
 		elif target == "new_link":
 			self.do_link(value)
 		elif target == "high_priority_link_trigger":
-			print("Trigger immediate if new", value)
+			# print("Trigger immediate if new", value)
 			self.do_immediate_link(value)
 		else:
 			print("Todo", target, value)

@@ -893,13 +893,13 @@ def exposed_delete_error_versions():
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")
-		start = sess.execute("""SELECT min(id) FROM web_pages WHERE  state = 'error'""")
+		start = sess.execute("""SELECT min(id) FROM web_pages WHERE  (state = 'error' OR state = 'fetching')""")
 		start = list(start)[0][0]
 		if start is None:
 			print("No rows to reset!")
 			return
 		print("Minimum row ID: ", start, "getting maximum row...")
-		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE  state = 'error'""")
+		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE  (state = 'error' OR state = 'fetching')""")
 		stop = list(stop)[0][0]
 		print("Maximum row ID: ", stop)
 
@@ -916,7 +916,7 @@ def exposed_delete_error_versions():
 				# Only done because I can't easily find how to make sqlalchemy
 				# bind parameters ignore the postgres specific cast
 				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-				have = sess.execute("""DELETE FROM web_pages_version WHERE state = 'error' AND id > {} AND id <= {};""".format(idx, idx+step))
+				have = sess.execute("""DELETE FROM web_pages_version WHERE (state = 'error' OR state = 'fetching') AND id > {} AND id <= {};""".format(idx, idx+step))
 				# print()
 
 				# processed  = idx - start
