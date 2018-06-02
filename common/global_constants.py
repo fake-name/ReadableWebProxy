@@ -168,6 +168,7 @@ GLOBAL_BAD_URLS = [
 			'www.wattpad.com',
 			'www1.trungtnguyen123.org',
 			'www1.trungtnguyen123.org',
+			'ww2.steadytranslation.com',
 
 			'install.shopping-day.com',
 			'www.hugedomains.com',
