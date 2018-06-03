@@ -68,8 +68,17 @@ class MessageProcessor(object):
 		dead_workers = [tmp for tmp in self.worker_pools[worker_name]['workers'] if not tmp.worker_alive()]
 		for dead_worker in dead_workers:
 			self.log.warning("Dead worker thread in pool for '%s'! Removing", worker_name)
-			dead_worker.join()
-			self.worker_pools[worker_name]['workers'].remove(dead_worker)
+			try:
+				dead_worker.join()
+				self.worker_pools[worker_name]['workers'].remove(dead_worker)
+			except Exception:
+				with open("Error in message processor %s.txt" % time.time(), "w") as fp:
+					exc = traceback.format_exc()
+					fp.write("Message processor had error!\n")
+					fp.write(exc)
+					print("Message processor had error!\n")
+					print(exc)
+
 		while len(self.worker_pools[worker_name]['workers']) < worker_settings['worker_threads']:
 			self.log.warning("Need to create worker thread in pool for '%s'", worker_name)
 			new_worker = InterfaceConsumer.SingleAmqpConnection(

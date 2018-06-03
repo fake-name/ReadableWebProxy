@@ -31,7 +31,6 @@ import os
 import settings
 import WebMirror.rules
 import common.get_rpyc
-import runStatus
 import WebMirror.SpecialCase
 import WebMirror.JobUtils
 

@@ -33,6 +33,7 @@ BAD_RESOLVES = [
 	'novelsnao.com/?reqp=1&reqr=',
 	'data:application/javascript',
 	'offer.alibaba.com',
+	'about:blank',
 ]
 GONE_RESOLVES = [
 	'www1.trungtnguyen123.org',
@@ -336,6 +337,11 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 					if any([tmp in respurl for tmp in BAD_RESOLVES]):
 						self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)
 						return True
+
+					if not respurl.lower().startswith("http"):
+						self.log.warning("URL '%s' does not start with 'http'. Not inserting into DB.", respurl)
+						return True
+
 
 
 					if '/?utm_source=feedburner' in respurl:

@@ -79,7 +79,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		url_netloc = urllib.parse.urlsplit(url).netloc
 
-		assert url.startswith("http")
+		assert url.lower().startswith("http"), "URLs MUST start with 'HTTP'. Passed %s" % url
 		assert url_netloc
 
 

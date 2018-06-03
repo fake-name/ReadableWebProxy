@@ -1,52 +1,36 @@
 
 
-if __name__ == "__main__":
-	import logSetup
-	logSetup.initLogging()
 
-import common.LogBase as LogBase
-import runStatus
 import queue
 import mimetypes
 import time
 import os.path
 import os
 import sys
-import sqlalchemy.exc
-import random
-import settings
-import pprint
-
-import Misc.diff_match_patch as dmp
-from sqlalchemy import desc
-
-
-import common.util.urlFuncs
 import urllib.parse
 import traceback
 import datetime
+import hashlib
+
+import sqlalchemy.exc
+import WebRequest
+from sqlalchemy_continuum.utils import version_table
+
+import common.database
+import common.global_constants
+import common.LogBase as LogBase
+import common.util.DbCookieJar as dbCj
+import common.util.urlFuncs
+import RawArchiver.misc
+import RawArchiver.RawActiveModules
+import RawArchiver.RawJobDispatcher
+import runStatus
+from config import C_RAW_RESOURCE_DIR
 
 if '__pypy__' in sys.builtin_module_names:
 	import psycopg2cffi as psycopg2
 else:
 	import psycopg2
-
-from sqlalchemy.sql import text
-from sqlalchemy.sql import func
-import WebRequest
-import common.util.DbCookieJar as dbCj
-
-import hashlib
-from config import C_RAW_RESOURCE_DIR
-
-
-from sqlalchemy_continuum.utils import version_table
-
-import common.global_constants
-import common.database
-import RawArchiver.RawActiveModules
-import RawArchiver.RawJobDispatcher
-import RawArchiver.misc
 
 
 def getHash(fCont):
@@ -135,24 +119,48 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
 
-	def __init__(self, total_worker_count, worker_num, new_job_queue, cookie_lock, db_interface, response_queue, db=common.database, use_socks=False):
+
+	@property
+	def wg(self):
+		if getattr(self, '_RawSiteArchiver__wg', None) is None:
+			print("Creating WG Interface!")
+			alt_cj = dbCj.DatabaseCookieJar(db=self.db, session=self.db.get_db_session(postfix="_cookie_interface"))
+			self.__wg = WebRequest.WebGetRobust(
+					use_socks     = self.__wr_use_socks,
+					alt_cookiejar = alt_cj,
+				)
+		else:
+			print("Have wg interface")
+		return self.__wg
+
+	def __init__(self,
+					total_worker_count,
+					worker_num,
+					new_job_queue,
+					cookie_lock,
+					db_interface,
+					response_queue,
+					db        = None,
+					use_socks = False):
 		# print("RawSiteArchiver __init__()")
 		super().__init__()
 
+		if db is None:
+			db = common.database
 
 		self.total_worker_count = total_worker_count
 		self.worker_num   = worker_num
 		self.new_job_queue = new_job_queue
 
+
+		self.__wr_cookie_lock = cookie_lock
+		self.__wr_use_socks   = use_socks
+
+
 		self.cookie_lock = cookie_lock
 		self.db_sess = db_interface
 		self.db      = db
 
-		alt_cj = dbCj.DatabaseCookieJar(db=db, session=common.database.get_db_session(postfix="_cookie_interface"))
-
-		# print("Prelim Alt cookiejar = ", alt_cj)
-
-		self.wg = WebRequest.WebGetRobust(cookie_lock=cookie_lock, use_socks=use_socks, alt_cookiejar=alt_cj)
 
 
 	def get_file_name_mime(self, url):
@@ -581,7 +589,6 @@ def test():
 
 def test2():
 	fetcher = RawArchiver.RawJobDispatcher.RawJobFetcher()
-	import common.database
 	sess = common.database.get_db_session()
 
 	try:

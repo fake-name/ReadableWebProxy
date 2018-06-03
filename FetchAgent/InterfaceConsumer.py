@@ -315,7 +315,7 @@ class SingleAmqpConnection(object):
 					self.log.error(line)
 				raise e
 
-
+		self.shutdown()
 
 	def disconnect(self):
 		self.prefetch_extended = False
@@ -330,15 +330,18 @@ class SingleAmqpConnection(object):
 		raise ThreadDieException("Exiting")
 
 	def shutdown(self):
-		self.log.info("ConnectorManager shutdown called!")
+		self.log.info("ConnectorManager shutdown called with %s remaining items to process!", self.task_queue.qsize())
 		for dummy_x in range(30):
 			qs = self.task_queue.qsize()
 			if qs == 0:
 				break
 			else:
 				self.log.warning("Outgoing queue draining. Items: %s", qs)
-				self.__do_tx()
-				time.sleep(1)
+				try:
+					self.__do_tx()
+					time.sleep(1)
+				except amqpstorm.AMQPConnectionError:
+					break
 		self.disconnect()
 
 
@@ -362,23 +365,28 @@ class SingleAmqpConnection(object):
 		self.exit_signaled.value = 1
 
 	def join(self):
-		self.shutdown()
 		self.signal_stop()
 		self.__worker.join()
 
 	def __del__(self):
-		self.shutdown()
 		self.signal_stop()
 		try:
 			self.storm_connection.kill()
 		except Exception:
 			pass
 
-		try:
-			self.__worker.join()
-		except Exception:
-			traceback.print_exc()
-			pass
+		for x in range(99999):
+			try:
+				self.__worker.join(timeout=1)
+			except Exception as e:
+				if x > 20:
+					with open("Error in interface consumer %s.txt" % time.time(), "w") as fp:
+						exc = traceback.format_exc()
+						fp.write("Interface consumer had error!\n")
+						fp.write(exc)
+						print("Interface consumer had error!\n")
+						print(exc)
+					raise e
 
 	@classmethod
 	def build_thread(cls, config, tx_q, rx_q):
