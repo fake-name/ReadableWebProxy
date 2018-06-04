@@ -66,7 +66,12 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 							ignoreuntiltime = LEAST(EXCLUDED.addtime, raw_web_pages.addtime, %(ignoreuntiltime)s)
 						WHERE
 						(
-								(raw_web_pages.state = 'complete' OR raw_web_pages.state = 'new' OR raw_web_pages.state = 'fetching' OR raw_web_pages.state = 'error')
+								(
+									   raw_web_pages.state = 'complete'
+									OR raw_web_pages.state = 'new'
+									OR raw_web_pages.state = 'fetching'
+									OR raw_web_pages.state = 'error'
+									OR raw_web_pages.state = 'specialty_blocked')
 							AND
 								raw_web_pages.url = %(url)s
 						)

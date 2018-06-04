@@ -38,6 +38,7 @@ class RollingRewalkTriggersBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseC
 						and_(
 							self.db.WebPages.netloc == netloc,
 							self.db.WebPages.state != 'new',
+							self.db.WebPages.state != 'specialty_blocked',
 							or_(
 								self.db.WebPages.fetchtime       < ago,
 								self.db.WebPages.fetchtime is None

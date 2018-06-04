@@ -37,6 +37,7 @@ class RollingRawRewalkTrigger(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseC
 						and_(
 							self.db.RawWebPages.netloc == netloc,
 							self.db.RawWebPages.state != 'new',
+							self.db.RawWebPages.state != 'specialty_blocked',
 							or_(
 								self.db.RawWebPages.fetchtime       < ago,
 								self.db.RawWebPages.fetchtime is None
@@ -126,7 +127,7 @@ class RollingRawRewalkTrigger(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseC
 
 					affected += ret.rowcount
 					sess.commit()
-					desc = 'Changed: %10i' % (affected, )
+					desc = 'Retriggered: %10i' % (affected, )
 					pbar.set_description(desc)
 
 					break

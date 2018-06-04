@@ -96,15 +96,15 @@ def resetInProgress():
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")
-		start = sess.execute("""SELECT min(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing'""")
-		# start = sess.execute("""SELECT min(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		start = sess.execute("""SELECT min(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing')""")
+		# start = sess.execute("""SELECT min(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing') OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
 		start = list(start)[0][0]
 		if start is None:
 			print("No rows to reset!")
 			return
 		print("Minimum row ID: ", start, "getting maximum row...")
-		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing'""")
-		# stop = sess.execute("""SELECT max(id) FROM web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing')""")
+		# stop = sess.execute("""SELECT max(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing') OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
 		stop = list(stop)[0][0]
 		print("Maximum row ID: ", stop)
 
@@ -125,7 +125,7 @@ def resetInProgress():
 										SET
 											state = 'new'
 										WHERE
-											state = any(VALUES ('fetching'::dlstate_enum), ('processing'::dlstate_enum))
+											(state = 'fetching' OR state = 'processing')
 										AND
 											id > {}
 										AND

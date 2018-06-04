@@ -43,7 +43,8 @@ class SingleAmqpConnection(object):
 		validate_config(config)
 		self.config             = config
 
-		self.log = logging.getLogger("Main.Connector.Internal")
+		global GLOBAL_THREAD_NO
+		self.log = logging.getLogger("Main.Connector.Internal-%s" % GLOBAL_THREAD_NO)
 
 		self.task_queue              = task_queue
 		self.response_queue          = response_queue
@@ -63,6 +64,7 @@ class SingleAmqpConnection(object):
 		self.keepalive_exchange_name = "keepalive_exchange"+str(id("wat"))
 
 		self.__launch_thread()
+		GLOBAL_THREAD_NO += 1
 
 	def __connect(self):
 
@@ -297,14 +299,17 @@ class SingleAmqpConnection(object):
 
 	def __run(self):
 		self.__connect()
-
-		while self.exit_signaled.value == 0:
+		sleep_time = 0.1
+		# 30 minutes, 60 seconds/minute, and then
+		lifetime = int(30 * 60 * (1 / sleep_time))
+		while self.exit_signaled.value == 0 and lifetime > 0:
 			try:
 				print("\\", end="", flush=True)
 				self.__do_tx()
 				self.__do_rx()
 				self.__check_timeouts()
 				time.sleep(0.1)
+				lifetime -= 1
 			except Exception as e:
 				# with open("mq error %s.txt" % time.time(), 'w') as fp:
 				# 	fp.write("Error!\n\n")
@@ -352,8 +357,6 @@ class SingleAmqpConnection(object):
 				)
 		self.__worker.start()
 
-		global GLOBAL_THREAD_NO
-		GLOBAL_THREAD_NO += 1
 
 	def get_thread(self):
 		return self.__worker

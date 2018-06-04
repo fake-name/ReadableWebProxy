@@ -206,6 +206,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 	def cr_fetch(self, itemUrl):
 		wg = self.wg_proxy()
 		self.log.info("Synchronous rendered chromium fetch!")
+		content = None
 		with wg.chromiumContext(itemUrl) as cr:
 			try:
 				content = cr.blocking_navigate_and_get_source(itemUrl)

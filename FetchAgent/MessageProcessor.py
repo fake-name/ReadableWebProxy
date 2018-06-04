@@ -69,6 +69,7 @@ class MessageProcessor(object):
 		for dead_worker in dead_workers:
 			self.log.warning("Dead worker thread in pool for '%s'! Removing", worker_name)
 			try:
+				dead_worker.signal_stop()
 				dead_worker.join()
 				self.worker_pools[worker_name]['workers'].remove(dead_worker)
 			except Exception:

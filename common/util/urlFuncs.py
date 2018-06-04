@@ -325,13 +325,13 @@ def hasDuplicatePathSegments(url):
 		qduplicates = list(set([(i, querychunks.count(i)) for i in querychunks if querychunks.count(i) > 1]))
 
 		if any([cnt > 3 for (item, cnt) in duplicates]):
-			print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+			# print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
 			return True
 		if any([cnt > 3 for (item, cnt) in qduplicates]):
-			print("Query chunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+			# print("Query chunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
 			return True
 		if len(duplicates) > 3:
-			print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+			# print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
 			return True
 
 		return False
