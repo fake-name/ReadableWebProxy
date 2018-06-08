@@ -177,9 +177,8 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 			if tmp:
 				assert 'mode' not in tmp, "No mode key allowed in rpc response!"
 
-				nl = None
-				if 'extradat' in tmp and 'netloc' in tmp['extradat']:
-					nl = tmp['extradat']['netloc']
+				nl   = tmp.get('extradat', {}).get('netloc', None)
+				mode = tmp.get('extradat', {}).get('dispatch_mode', None)
 
 
 				with acquire_timeout(self.state_lock, 10) as acquired:
@@ -189,11 +188,21 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 						self.system_state['active_jobs']      = max(self.system_state['active_jobs'], 0)
 						self.system_state['qsize']            = self.normal_out_queue.qsize()
 						if nl:
-							if 'success' in tmp and tmp['success']:
-								self.system_state['ratelimiter'].netloc_ok(nl)
+							if mode and mode in self.system_state['ratelimiters']:
+								self.log.info("Have mode in dispatched response: %s", mode)
+								if 'success' in tmp and tmp['success']:
+									self.system_state['ratelimiters'][mode].netloc_ok(nl)
+								else:
+									self.system_state['ratelimiters'][mode].netloc_error(nl)
 							else:
-								print("Success val: ", 'success' in tmp, list(tmp.keys()))
-								self.system_state['ratelimiter'].netloc_error(nl)
+								self.log.warning("Missing mode in dispatched response.")
+								if 'success' in tmp and tmp['success']:
+									for limiter in self.system_state['ratelimiters'].values():
+										limiter.netloc_ok(nl)
+								else:
+									for limiter in self.system_state['ratelimiters'].values():
+										limiter.netloc_error(nl)
+
 						else:
 							self.log.warning("Missing netloc in response extradat!")
 					else:
@@ -266,7 +275,8 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 						self.system_state['jobs_in']         += 1
 						self.system_state['active_jobs']      = 1
 						self.system_state['qsize']            = 1
-						self.system_state['ratelimiter'].clear_active_counts(override_status=500)
+						for limiter in self.system_state['ratelimiters'].values():
+							limiter.clear_active_counts(override_status=500)
 
 			else:
 				print("Queue consumer looping!")
@@ -319,6 +329,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.loggerPath = "Main.JobDispatcher(%s)" % mode
 		self.statsd_prefix = self.statsd_prefix + "." + mode
 		super().__init__()
+		self.mode = mode
+
 
 
 		self.last_rx = datetime.datetime.now()
@@ -345,7 +357,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
 
 		self.feed_urls_list = []
-		[self.feed_urls_list.extend(tmp['feedurls']) for tmp in self.ruleset if 'feedurls' in tmp and tmp['feedurls']]
+		for tmp in self.ruleset:
+			if 'feedurls' in tmp and tmp['feedurls']:
+				self.feed_urls_list.extend(tmp['feedurls'])
 
 		self.feed_urls = set(self.feed_urls_list)
 
@@ -360,6 +374,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		self.print_mod = 0
 
+		with state_lock:
+			self.system_state['ratelimiters'][self.mode] = common.NetlocThrottler.NetlockThrottler()
 
 	def blocking_put_response(self, item):
 		assert 'mode' in item, "Response items must have a mode key!"
@@ -413,7 +429,11 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			jobid          = jobid,
 			args           = [joburl],
 			kwargs         = {},
-			additionalData = {'mode' : 'fetch', 'netloc' : netloc},
+			additionalData = {
+									'mode'          : 'fetch',
+									'netloc'        : netloc,
+									'dispatch_mode' : self.mode,
+								},
 			postDelay      = 0
 		)
 
@@ -539,7 +559,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			time.sleep(0.5)
 			self.log.info("Job queue filler process. Added %s, active jobs: %s (out: %s, in: %s, pq: %s, deferred: %s). Runstate: %s",
 				newj, self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'],
-				self.system_state['ratelimiter'].get_in_queues(), self.run_flag.value)
+				self.system_state['ratelimiters'][self.mode].get_in_queues(), self.run_flag.value)
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
@@ -584,7 +604,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		new_j_l = []
 		with acquire_timeout(self.state_lock, 2) as acquired:
 			if acquired:
-				new_j_l =self.system_state['ratelimiter'].get_available_jobs()
+				new_j_l =self.system_state['ratelimiters'][self.mode].get_available_jobs()
 			else:
 				self.log.error("Failure when extracting jobs from rate-limiting system!")
 
@@ -740,7 +760,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		xqtim = time.time() - start
 
-		if len(rids) == 0:
+		if not rids:
 			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
 			for dummy_x in range(5):
 				if self.run_flag.value == 1:
@@ -798,12 +818,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		with acquire_timeout(self.state_lock, 10) as acquired:
 			if acquired:
 				for rid_d, joburl_d, netloc_d in defer:
-					self.system_state['ratelimiter'].put_job(rid_d, joburl_d, netloc_d)
+					self.system_state['ratelimiters'][self.mode].put_job(rid_d, joburl_d, netloc_d)
 			else:
 				self.log.error("Failed to acquire rate-limiter synchronization lock!")
 		cursor.close()
 
-		if len(rids) == 0:
+		if not rids:
 			self.log.warning("No jobs to dispatch in query response!?")
 
 
@@ -864,11 +884,11 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	def run(self):
 
 		system_state = {
-			'active_jobs' : 0,
-			'jobs_out'    : 0,
-			'jobs_in'     : 0,
-			'qsize'       : 0,
-			'ratelimiter' : common.NetlocThrottler.NetlockThrottler(),
+			'active_jobs'  : 0,
+			'jobs_out'     : 0,
+			'jobs_in'      : 0,
+			'qsize'        : 0,
+			'ratelimiters' : {},
 
 		}
 
@@ -914,7 +934,10 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				with acquire_timeout(self.state_lock, 10) as acquired:
 					if acquired:
 						self.log.info("Calling job reducer!")
-						system_state['ratelimiter'].job_reduce()
+						for limiter in system_state['ratelimiters'].values():
+							limiter.job_reduce()
+						for mode, limiter in system_state['ratelimiters'].items():
+							self.log.info("Limiter for %s -> %s", mode, limiter.get_in_queues())
 
 
 

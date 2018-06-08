@@ -336,12 +336,24 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/comic/chap3/images/mrc/',
 		'www.userfriendly.org/cgi-bin/',
 		'www.gpf-comics.com/wikix/',
+		'index.php/Special:',
+		'/index.php/fan-gallery/',
+		'/index.php/themes/',
+		'/vlozress/css/',
+		'/wordpress/themes/',
+		'/index.php/wordpress/',
+		'/themes/vlozress/',
+		'/js/themes/',
+		'/sharenAlliance/css/',
+		'/common/js/',
+		'/js/wordpress/',
+
+
 
 		# Fucking forumns ruin everything.
 		'.keenspot.com/forum/',
 		'www.comedity.com/forums/',
 		'www.samandfuzzy.com/forum/',
-
 		'www.comedity.com/www.comedity.com/',
 	]
 

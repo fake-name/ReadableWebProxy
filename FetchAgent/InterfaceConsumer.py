@@ -332,7 +332,7 @@ class SingleAmqpConnection(object):
 			self.storm_connection.close()
 		except Exception:
 			pass
-		raise ThreadDieException("Exiting")
+		self.storm_connection.kill()
 
 	def shutdown(self):
 		self.log.info("ConnectorManager shutdown called with %s remaining items to process!", self.task_queue.qsize())
@@ -347,7 +347,9 @@ class SingleAmqpConnection(object):
 					time.sleep(1)
 				except amqpstorm.AMQPConnectionError:
 					break
+
 		self.disconnect()
+		self.join()
 
 
 	def __launch_thread(self):

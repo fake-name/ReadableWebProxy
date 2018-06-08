@@ -178,7 +178,7 @@ class Connection(Stateful):
         LOGGER.debug('Connection Closed')
 
     def kill(self):
-        for channel in self._channels.items():
+        for channel in self._channels.values():
             channel.remove_consumer_tag()
 
         try:
