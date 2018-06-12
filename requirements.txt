@@ -5,7 +5,7 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
 git+https://github.com/fake-name/ChromeController.git
 
-webrequest==0.0.33
+webrequest==0.0.39
 
 pillow==5.1.0
 json2html==1.2.1
@@ -19,7 +19,7 @@ objgraph==3.4.0
 zerorpc==0.6.1
 cssutils==1.0.2
 tinycss2==0.6.1
-fontTools==3.26.0
+fontTools==3.27.0
 semantic==1.0.3
 fdict==0.8.1
 cachetools==2.1.0
