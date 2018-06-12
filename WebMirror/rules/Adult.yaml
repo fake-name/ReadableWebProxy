@@ -220,7 +220,8 @@ decompose: [
 	{'id'     : 'footercon'},
 	{'id'     : 'bigblock'},
 	{'id'     : 'footerbottom'},
-
+	{'id'     : 'kfjlbfm'},
+	
 
 	{'class'  : 'main-nav'},
 	{'class'  : 'inside-right-sidebar'},
@@ -236,6 +237,9 @@ decompose: [
 	{'class'  : 'logo'},
 
 	# {'class'  : 'b-sidebar'},
+	{'class'  : 'b-footer'},
+	{'class'  : 'SAAWidget__container___3G3j-'},
+	{'class'  : 'LAWidget__container___2M_y9'},
 	{'class'  : 'b-footer'},
 ]
 

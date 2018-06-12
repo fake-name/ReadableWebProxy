@@ -59,10 +59,10 @@ def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance
 		dispatchKey    = "fetcher",
 		jobid          = rid,
 		args           = [joburl],
-		kwargs         = {},
+		kwargs         = {'extra_tid' : True},
 		additionalData = {'mode' : 'fetch'},
 		postDelay      = 0,
-		serialize      = True,
+		# serialize      = True,
 	)
 
 	job_aggregator_instance.put_job(raw_job)
@@ -76,10 +76,10 @@ def handleRemoteChromeFetch(params, rid, joburl, netloc, job_aggregator_instance
 		dispatchKey    = "fetcher",
 		jobid          = rid,
 		args           = [joburl],
-		kwargs         = {},
+		kwargs         = {'extra_tid' : True},
 		additionalData = {'mode' : 'fetch'},
 		postDelay      = 0,
-		serialize      = True,
+		# serialize      = True,
 	)
 
 	job_aggregator_instance.put_job(raw_job)

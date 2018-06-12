@@ -377,5 +377,6 @@ GLOBAL_INLINE_BULLSHIT = [
 			'Please don’t post elsewhere.',
 			'translated at nakimushitl.wordpress.com',
 			'This translation is only hosted on bcatranslation',
+			'Come Read it at DarkCirclesTranslations.com instead',
 
 ]

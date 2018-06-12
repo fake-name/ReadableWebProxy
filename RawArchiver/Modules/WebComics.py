@@ -345,8 +345,10 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'/themes/vlozress/',
 		'/js/themes/',
 		'/sharenAlliance/css/',
+		'/themes/sharenAlliance/',
 		'/common/js/',
 		'/js/wordpress/',
+		'/wiki/themes/',
 
 
 
@@ -357,10 +359,32 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'www.comedity.com/www.comedity.com/',
 	]
 
+	bad_segments = [
+		'announcements',
+		'common',
+		'css',
+		'drowforums',
+		'fan-gallery',
+		'images',
+		'index.php',
+		'js',
+		'sharenAlliance',
+		'themes',
+		'vlozress',
+		'wiki',
+		'wordpress',
+	]
+
 	@classmethod
 	def cares_about_url(cls, url):
 		if any([badword in url for badword in cls.badwords]):
 			return False
+
+		if 'www.drowtales.com' in url:
+			bad_count = sum([url.count(sub) for sub in cls.bad_segments])
+			if bad_count > 4:
+				print("Bad subsection count:", bad_count)
+				return False
 
 		if RawArchiver.ModuleBase.duplicate_path_fragments(url):
 			return False

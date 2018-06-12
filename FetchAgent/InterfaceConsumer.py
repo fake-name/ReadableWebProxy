@@ -1,14 +1,14 @@
 
-import amqpstorm
-import urllib.parse
-import socket
-import random
-import traceback
 import logging
-import threading
 import multiprocessing
 import queue
+import random
+import socket
+import threading
 import time
+import traceback
+import urllib.parse
+import amqpstorm
 
 
 
@@ -310,6 +310,11 @@ class SingleAmqpConnection(object):
 				self.__check_timeouts()
 				time.sleep(0.1)
 				lifetime -= 1
+			except ThreadDieException:
+				self.log.warning("Thread die exception. Terminating worker.")
+				self.signal_stop()
+				self.disconnect()
+				return
 			except Exception as e:
 				# with open("mq error %s.txt" % time.time(), 'w') as fp:
 				# 	fp.write("Error!\n\n")
@@ -349,7 +354,7 @@ class SingleAmqpConnection(object):
 					break
 
 		self.disconnect()
-		self.join()
+		self.signal_stop()
 
 
 	def __launch_thread(self):

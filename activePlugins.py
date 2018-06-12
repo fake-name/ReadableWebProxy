@@ -14,6 +14,7 @@ import WebMirror.PreProcessors.QidianPreprocess
 import WebMirror.PreProcessors.GravityTalesPreprocess
 import WebMirror.PreProcessors.WixsitePreprocess
 import WebMirror.PreProcessors.LiteroticaPreprocess
+import WebMirror.PreProcessors.CreativeNovelsPreprocess
 
 PREPROCESSORS = [
 	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor,
@@ -23,6 +24,7 @@ PREPROCESSORS = [
 	WebMirror.PreProcessors.QidianPreprocess.QidianPreprocessor,
 	WebMirror.PreProcessors.GravityTalesPreprocess.GravityTalesPreprocessor,
 	WebMirror.PreProcessors.WixsitePreprocess.JsRendererPreprocessor,
+	WebMirror.PreProcessors.CreativeNovelsPreprocess.CreativeNovelsPreprocessor,
 
 	WebMirror.PreProcessors.LiteroticaPreprocess.LiteroticaFavouritePreprocessor,
 
