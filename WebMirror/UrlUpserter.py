@@ -231,40 +231,11 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			raise
 
 
-
-
 	logger.info("Inserting %s items into DB in batch.", len(link_batch))
 	# This is kind of horrible.
 	raw_cur = interface.connection().connection.cursor()
 
 
-
-	bulk_cmd = """
-		INSERT INTO
-		    web_pages
-		    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-		VALUES
-		    (%(url_{cnt})s, %(starturl_{cnt})s, %(netloc_{cnt})s, %(distance_{cnt})s, %(is_text_{cnt})s, %(priority_{cnt})s, %(type_{cnt})s, %(addtime_{cnt})s, %(state_{cnt})s)
-		ON CONFLICT (url) DO
-		    UPDATE
-		        SET
-		            state           = EXCLUDED.state,
-		            starturl        = EXCLUDED.starturl,
-		            netloc          = EXCLUDED.netloc,
-		            is_text         = EXCLUDED.is_text,
-		            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-		            priority        = GREATEST(EXCLUDED.priority, web_pages.priority, %(maximum_priority_{cnt})s),
-		            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-		        WHERE
-		        (
-		                web_pages.ignoreuntiltime < %(ignoreuntiltime_{cnt})s
-		            AND
-		                web_pages.url = EXCLUDED.url
-		            AND
-		                (web_pages.state = 'complete' OR web_pages.state = 'error')
-		        )
-		    ;
-			""".replace("	", " ").replace("\n", " ")
 
 	bulk_cmd = """
 		SELECT upsert_link(
@@ -280,7 +251,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			%(ignoreuntiltime_{cnt})s,
 			%(maximum_priority_{cnt})s
 			)
-	""".replace("	", " ").replace("\n", " ")
+	""".replace("	", " ")
 
 	per_cmd = """
 		INSERT INTO
@@ -295,8 +266,12 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		            starturl        = EXCLUDED.starturl,
 		            netloc          = EXCLUDED.netloc,
 		            is_text         = EXCLUDED.is_text,
+
+		            -- Largest distance is 100, but it's not checked, so eh
 		            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-		            priority        = GREATEST(EXCLUDED.priority, web_pages.priority, %(maximum_priority)s),
+
+		            -- The lowest priority is 10.
+		            priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, %(maximum_priority)s), 10),
 		            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 		        WHERE
 		        (
@@ -307,7 +282,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		                (web_pages.state = 'complete' OR web_pages.state = 'error')
 		        )
 		    ;
-			""".replace("	", " ").replace("\n", " ")
+			""".replace("	", " ")
 
 	while "  " in per_cmd:
 		per_cmd = per_cmd.replace("  ", " ")
@@ -439,8 +414,12 @@ class UpdateAggregator(object):
 			                starturl        = EXCLUDED.starturl,
 			                netloc          = EXCLUDED.netloc,
 			                is_text         = EXCLUDED.is_text,
+
+			                -- Largest distance is 100, but it's not checked
 			                distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-			                priority        = GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v),
+
+			                -- The lowest priority is 10.
+			                priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v), 10),
 			                addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 			            WHERE
 			            (

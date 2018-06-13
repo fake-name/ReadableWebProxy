@@ -8,6 +8,7 @@ import random
 import datetime
 import signal
 import socket
+import runStatus
 
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
@@ -298,8 +299,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		except queue.Empty:
 			pass
 
-		self.log.info("Job queue filler process. Current job queue size: %s. Runstate: %s", self.active_jobs, runStatus.job_run_state.value==1)
-
+		self.log.info("Job queue filler process. Current job queue size: %s. ", self.active_jobs)
 		self.log.info("Job queue fetcher halted.")
 
 	def _get_task_internal(self):
@@ -331,12 +331,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				                WHERE
 				                    state = 'new'::dlstate_enum
 				                AND
-				                    distance < 1000000
-				                AND
 				                    raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				            ) + 10
-				        AND
-				            raw_web_pages.distance < 1000000
+				            ) + 1
 				        AND
 				            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 				        LIMIT {in_flight}
@@ -377,7 +373,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		xqtim = time.time() - start
 
-		if len(rids) == 0:
+		if not rids:
 			self.log.warning("No jobs available! Sleeping for 5 seconds waiting for new jobs to become available!")
 			for dummy_x in range(5):
 				if self.run_flag.value == 1:

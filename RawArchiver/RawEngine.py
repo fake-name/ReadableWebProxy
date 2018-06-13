@@ -277,7 +277,10 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		new_starturl = job.starturl,
 		new_distance = job.distance+1
-		new_priority = job.priority
+
+		# Priority decays with distance.
+		# That basically results in breadth-first fetches.
+		new_priority = job.priority+1
 
 		raw_cur = self.db_sess.connection().connection.cursor()
 
@@ -294,8 +297,10 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 							state           = EXCLUDED.state,
 							starturl        = EXCLUDED.starturl,
 							netloc          = EXCLUDED.netloc,
+							-- Largest distance is 100, but it's not checked
 							distance        = LEAST(EXCLUDED.distance, raw_web_pages.distance),
-							priority        = GREATEST(EXCLUDED.priority, raw_web_pages.priority),
+							-- The lowest priority is 10.
+							priority        = LEAST(GREATEST(EXCLUDED.priority, raw_web_pages.priority), 10),
 							addtime         = LEAST(EXCLUDED.addtime, raw_web_pages.addtime)
 						WHERE
 						(
@@ -306,7 +311,7 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 								(raw_web_pages.state = 'complete' OR raw_web_pages.state = 'error')
 						)
 					;
-				""".replace("	", " ").replace("\n", " ")
+				""".replace("	", " ")
 
 		# Only commit per-URL if we're tried to do the update in batch, and failed.
 		commit_each = False

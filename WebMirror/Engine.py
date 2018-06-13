@@ -1120,9 +1120,9 @@ def test():
 		'url'       : 'http://www.royalroadl.com/fiction/1484',
 		'starturl'  : 'http://www.royalroadl.com/',
 		'netloc'    : "www.royalroadl.com",
-		'distance'  : 50000,
+		'distance'  : 99,
 		'is_text'   : True,
-		'priority'  : 500000,
+		'priority'  : 9,
 		'type'      : 'unknown',
 		'fetchtime' : datetime.datetime.now(),
 		}

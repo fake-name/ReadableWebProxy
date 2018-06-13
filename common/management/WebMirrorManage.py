@@ -1010,13 +1010,13 @@ def exposed_drop_priorities():
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")
-		start = sess.execute("""SELECT min(id) FROM web_pages WHERE priority != 500000""")
+		start = sess.execute("""SELECT min(id) FROM web_pages WHERE priority != 9""")
 		start = list(start)[0][0]
 		if start is None:
 			print("No rows to reset!")
 			return
 		print("Minimum row ID: ", start, "getting maximum row...")
-		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE priority != 500000""")
+		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE priority != 9""")
 		stop = list(stop)[0][0]
 		print("Maximum row ID: ", stop)
 
@@ -1036,7 +1036,7 @@ def exposed_drop_priorities():
 				# Only done because I can't easily find how to make sqlalchemy
 				# bind parameters ignore the postgres specific cast
 				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-				have = sess.execute("""update web_pages set priority = 500000 where priority != 500000 AND id > {} AND id <= {};""".format(idx, idx+step))
+				have = sess.execute("""update web_pages set priority = 9 where priority != 9 AND id > {} AND id <= {};""".format(idx, idx+step))
 				# print()
 
 				# processed  = idx - start

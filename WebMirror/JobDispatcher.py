@@ -637,8 +637,6 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 						AND
 							normal_fetch_mode = true
 						AND
-							web_pages.distance < 1000000
-						AND
 							web_pages.file IS NULL
 						AND
 							web_pages.content IS NULL
@@ -665,8 +663,6 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 							web_pages.state = 'new'::dlstate_enum
 						AND
 							normal_fetch_mode = true
-						AND
-							web_pages.distance < 1000000
 						LIMIT {in_flight}
 					)
 				AND
@@ -698,8 +694,6 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 									web_pages
 								WHERE
 									state = 'new'::dlstate_enum
-								AND
-									distance < 1000000
 								AND
 									normal_fetch_mode = true
 								AND

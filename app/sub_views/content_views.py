@@ -133,7 +133,7 @@ def view_history():
 	ctbl = version_table(db.WebPages.__table__)
 
 
-	versions = g.session.query(ctbl.c.id, ctbl.c.state, ctbl.c.fetchtime, ctbl.c.transaction_id) \
+	versions = g.session.query(ctbl.c.id, ctbl.c.state, ctbl.c.addtime, ctbl.c.fetchtime, ctbl.c.transaction_id) \
 		.filter(ctbl.c.url == req_url)                                    \
 		.order_by(ctbl.c.fetchtime)                                       \
 		.all()

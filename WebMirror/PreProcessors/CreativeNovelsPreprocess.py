@@ -17,8 +17,8 @@ class CreativeNovelsPreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 
 	def preprocessContent(self, url, mimetype, contentstr):
 		soup = WebRequest.as_soup(contentstr)
-		prev_chp_links = soup.find_all("a", class_='nextkey')
-		next_chp_links = soup.find_all("a", class_='prevkey')
+		next_chp_links = soup.find_all("a", class_='nextkey')
+		prev_chp_links = soup.find_all("a", class_='prevkey')
 
 		for tag in next_chp_links:
 			tag.string = "Next chapter"
@@ -55,9 +55,10 @@ class CreativeNovelsPreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 			print("found append")
 			appends.append(item.extract())
 
-		tgtdiv = soup.find("div", class_='content')
+		tgtdiv = soup.find("article", class_='post')
 
 		if tgtdiv:
+			tgtdiv = tgtdiv.parent.parent
 			tgtdiv.append(soup.new_tag('hr'))
 			for append in appends:
 				print("Appending:", append)

@@ -61,7 +61,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 						SET
 							state           = %(state)s,
 							distance        = LEAST(EXCLUDED.distance, raw_web_pages.distance),
-							priority        = LEAST(EXCLUDED.priority, raw_web_pages.priority),
+							-- The lowest priority is 10.
+							priority        = LEAST(GREATEST(EXCLUDED.priority, raw_web_pages.priority), 10),
 							addtime         = LEAST(EXCLUDED.addtime, raw_web_pages.addtime),
 							ignoreuntiltime = LEAST(EXCLUDED.addtime, raw_web_pages.addtime, %(ignoreuntiltime)s)
 						WHERE
@@ -71,7 +72,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 									OR raw_web_pages.state = 'new'
 									OR raw_web_pages.state = 'fetching'
 									OR raw_web_pages.state = 'error'
-									OR raw_web_pages.state = 'specialty_blocked')
+									OR raw_web_pages.state = 'specialty_blocked'
+								)
 							AND
 								raw_web_pages.url = %(url)s
 						)
@@ -79,7 +81,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 					raw_web_pages.state, raw_web_pages.url
 					;
 
-			""".replace("	", " ").replace("\n", " ")
+			""".replace("	", " ")
 
 		url_netloc = urllib.parse.urlsplit(url).netloc
 

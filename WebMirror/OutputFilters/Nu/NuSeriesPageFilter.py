@@ -59,7 +59,7 @@ def upsertNuItem(raw_cur, itemparams):
 				(%(seriesname)s, %(releaseinfo)s, %(groupinfo)s, %(referrer)s, %(outbound_wrapper)s, %(first_seen)s, %(release_date)s, %(validated)s, %(fetch_attempts)s)
 			ON CONFLICT (outbound_wrapper) DO NOTHING
 				;
-			""".replace("	", " ").replace("\n", " ")
+			""".replace("	", " ")
 
 	# Forward-data the next walk, time, rather then using now-value for the thresh.
 	data = {
