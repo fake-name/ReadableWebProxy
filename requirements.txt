@@ -1,4 +1,4 @@
-requests==2.19.0
+requests==2.19.1
 ## git+https://github.com/fake-name/amqpstorm.git
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
