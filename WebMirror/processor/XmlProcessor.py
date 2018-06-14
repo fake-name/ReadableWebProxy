@@ -10,7 +10,7 @@ class XmlProcessor(ProcessorBase.PageProcessor):
 
 
 	wanted_mimetypes = ['text/xml', 'application/xml']
-	want_priority    = 50
+	want_priority    = 40
 
 	loggerPath = "Main.Text.XmlProcessor"
 
