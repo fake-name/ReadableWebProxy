@@ -940,12 +940,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	def taskProcess(self):
 		'''
-		Return true if there was something to do, false if not.
+		Return true if there was something to do, false if not (or we had an error).
 		'''
 		job = None
 		try:
-
-			while runStatus.run_state.value == 1:
+			if runStatus.run_state.value == 1:
 				job_item = self.get_job_item()
 				if not job_item:
 					return False
@@ -959,6 +958,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 				else:
 					raise RuntimeError("Unknown job item!")
 
+				return True
 
 		except Exception:
 			# err_f = os.path.join("./logs", "error - {}.txt".format(time.time()))
@@ -974,7 +974,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 			for line in traceback.format_exc().split("\n"):
 				self.log.critical("%s", line.rstrip())
-		return True
+
+			return False
 
 	def get_row(self, url, distance=None, priority=None):
 		if distance == None:

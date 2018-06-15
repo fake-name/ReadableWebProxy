@@ -30,7 +30,8 @@ class RunInstance(object):
 		self.cookie_lock   = cookie_lock
 		self.new_job_queue = new_job_queue
 
-		# print("RunInstance %s MOAR init!" % num)
+		# Shaddup, pylint
+		self.archiver = None
 
 	def __del__(self):
 		db.delete_db_session()
@@ -56,7 +57,7 @@ class RunInstance(object):
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
-		for dummy_x in range(50):
+		for dummy_x in range(500):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
@@ -66,21 +67,17 @@ class RunInstance(object):
 				break
 			loop += 1
 
-			# If there was nothing to do, sleep 30 seconds and recheck.
-			# This is because with 50 workers with a sleep-time of 5 seconds on job-miss,
-			# it was causing 100% CPU usage on the DB just for the getjob queries. (I think)
+			# If there was nothing to do, sleep and recheck.
 			if not hadjob:
 				time.sleep(1)
 				if runStatus.run_state.value != 1:
 					self.log.info("Thread %s saw exit flag while waiting for jobs. Runstate: %s", self.num, runStatus.run_state.value)
-					return
+					break
 
-		if runStatus.run_state.value:
-			self.log.info("Thread %s restarting. Runstate: %s", self.num, runStatus.run_state.value)
+		if runStatus.run_state.value == 1:
+			self.log.info("Thread %s Exited with a non-die runstate!. Runstate: %s", self.num, runStatus.run_state.value)
 		else:
 			self.log.info("Thread %s halting. Runstate: %s", self.num, runStatus.run_state.value)
-
-
 
 
 	@classmethod

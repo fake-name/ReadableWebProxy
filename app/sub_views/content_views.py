@@ -242,11 +242,17 @@ def render_resource():
 	# Deal with internet explorer being garbage.
 	if mimetype == 'image/webp':
 		img = Image.open(io.BytesIO(content))
+
+		if img.rgb_mode == "RGBX":
+			img = img.convert("RGBA")
+
 		out = io.BytesIO()
 		img.save(out, format="png")
 		content = out.getvalue()
 		mimetype = 'img/png'
 		fname = fname + ".png"
+
+
 
 	response = make_response(content)
 	response.headers['Content-Type'] = mimetype
