@@ -16,7 +16,8 @@ baseUrl: [
 		'https://justblthings.weebly.com',
 		'https://earlandfairy.weebly.com',
 
-
+		'https://work.nwong.net',
+		'https://www.hontra.com',
 		'http://www.gundamwingtales.com',
 
 		# Dickish blocking garbage shit.
@@ -38,6 +39,7 @@ baseUrl: [
 		'http://www.karasunovels.com',
 		'http://www.comegatranslations.com',
 		'http://www.everythingsweet.me',
+		'https://www.mntranslations.xyz',
 
 
 		# Dreamwidth seems OK with the default rules
@@ -82,27 +84,32 @@ baseUrl: [
 	]
 
 feeds: [
-	'https://www.lightnovelbastion.com/rss.php',
-	'https://lightnovelbastion.com/rss.php',
-	'http://www.ultimaguil.org/base/novelupdates_rss.xml',
-	'http://www.ultimaguil.org/base/news_rss.xml',
+
 	'http://chongmeitranslations.weebly.com/1/feed',
-	'http://hakushakutoyousei.weebly.com/1/feed',
 	'http://fleetingphoenix.weebly.com/1/feed',
-
-	'http://www.hasutsuki.com/feeds/posts/default',
-	'http://novel.oddsquad.org/feeds/posts/default',
-	'http://www.heavenlyenchantress.com/feeds/posts/default',
-
-	'https://justblthings.weebly.com/1/feed',
-	'https://earlandfairy.weebly.com/1/feed',
-
-	'https://wuxiadream.com/rss',
-	'http://www.novellatranslation.com/feed',
-	'http://www.lionmask.pro/feeds/posts/default',
 	'http://girlyboysalliance.mozello.com/blog/rss/',
-	'https://www.wuxiaworld.com/feed/chapters',
+	'http://hakushakutoyousei.weebly.com/1/feed',
+	'http://novel.oddsquad.org/feeds/posts/default',
+	'http://www.comegatranslations.com/feeds/posts/default',
+	'http://www.everythingsweet.me/feeds/posts/default',
+	'http://www.hasutsuki.com/feeds/posts/default',
+	'http://www.heavenlyenchantress.com/feeds/posts/default',
+	'http://www.karasunovels.com/feeds/posts/default',
+	'http://www.lionmask.pro/feeds/posts/default',
+	'http://www.novellatranslation.com/feed',
+	'http://www.ultimaguil.org/base/news_rss.xml',
+	'http://www.ultimaguil.org/base/novelupdates_rss.xml',
+	'https://earlandfairy.weebly.com/1/feed',
+	'https://justblthings.weebly.com/1/feed',
+	'https://lightnovelbastion.com/rss.php',
+	'https://work.nwong.net/rss',
+	'https://wuxiadream.com/rss',
+	'https://www.hontra.com/updates?format=RSS',
+	'https://www.lightnovelbastion.com/rss.php',
+	'https://www.mntranslations.xyz/feeds/posts/default',
 	'https://www.wuxiaworld.com/feed',
+	'https://www.wuxiaworld.com/feed/chapters',
+
 ]
 
 extraStartUrls: [

@@ -9,6 +9,7 @@ import common.LogBase as LogBase
 
 import datetime
 import traceback
+import sys
 
 import common.util.urlFuncs as url_util
 import urllib.parse
@@ -239,7 +240,13 @@ class ItemFetcher(LogBase.LoggerMixin):
 			fileN = bs4.UnicodeDammit(fileN).unicode_markup
 
 			title, cur_url = cr.get_page_url_title()
-			print(title)
+
+		if "debug" in sys.argv:
+			self.log.info("Title: %s", title)
+			self.log.info("Mime: %s", mType)
+			self.log.info("Fname: %s", fileN)
+			self.log.info("Content: ")
+			self.log.info("%s", content)
 
 		return content, fileN, mType
 

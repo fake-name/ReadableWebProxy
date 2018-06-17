@@ -1066,11 +1066,11 @@ class SiteArchiver(LogBase.LoggerMixin):
 								response_queue = self.resp_q,
 								db_sess        = self.db_sess)
 		ret = fetcher.dispatchContent(content, filename, mimetype)
-		self.processResponse(row, ret)
+		self.processResponse(row, ret, False)
 
 
 
-	def synchronousJobRequest(self, url, ignore_cache=False, force=True):
+	def synchronousJobRequest(self, url, ignore_cache=False, force=True, debug=False):
 		"""
 		trigger an immediate, synchronous dispatch of a job for url `url`,
 		and return the fetched row upon completion

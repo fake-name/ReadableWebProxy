@@ -13,6 +13,7 @@ rewalk_interval_days: 30
 baseUrl: [
 
 
+
 	'http://13thechelon.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
@@ -149,6 +150,7 @@ baseUrl: [
 	'http://weaktranslation.blogspot.com',
 	'http://whitesharktl.blogspot.com',
 	'http://wishuponahope.blogspot.com',
+	'http://wn404.blogspot.com',
 	'http://www.avertranslation.org',
 	'http://www.hasutsuki.com',
 	'http://xcrossj.blogspot.com',
@@ -195,6 +197,7 @@ baseUrl: [
 	'https://ohdamndone.blogspot.com',
 	'https://otakutls.blogspot.com',
 	'https://parttimer-fui.blogspot.com',
+	'https://pegasusfarts.blogspot.com',
 	'https://peonynoveltl.blogspot.de,',
 	'https://psychictattoo.blogspot.com',
 	'https://raisingmytail.blogspot.co.id',
