@@ -338,6 +338,7 @@ RSS_TITLE_FILTER = [
 
 # Goooooo FUCK YOURSELF
 GLOBAL_INLINE_BULLSHIT = [
+			"Read the original on https://dao.ist",
 			"Property of Fantasy-Books.live | outside of it, it is stolen.",
 			"This translation is property of Infinite Novel Translations.",
 			"This translation is property of Infinite NovelTranslations.",
