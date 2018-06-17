@@ -168,8 +168,8 @@ def get_filter_state_for_url(url):
 		# return "Rulefile badword filtered!"
 
 	if had_ruleset:
-		return "Not filtered, had ruleset!"
-	return "Not Filtered, no ruleset."
+		return "Not filtered, url would be scraped!"
+	return "Not Filtered, URL missing from scrape targets."
 
  # @no_cache
 @app.route('/render', methods=['GET'])

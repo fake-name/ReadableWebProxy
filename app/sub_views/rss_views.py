@@ -199,6 +199,12 @@ def feedLoadFilteredData(feedid):
 		.filter(db.RssFeedPost.published > datetime.datetime.now() - datetime.timedelta(days=30)) \
 		.all()
 
+	if len(releases) < 10:
+		# If there were no releases within the window, fetch ALL THE THINGS.
+		releases = g.session.query(db.RssFeedPost)                                                       \
+			.filter(db.RssFeedPost.feed_id == feedid)                                                 \
+			.all()
+
 	# .join(db.RssFeedEntry.releases)                                                          \
 
 	print("Loaded. Procesing.")
@@ -217,9 +223,21 @@ def feedIdView(feedid):
 		.filter(db.RssFeedEntry.id == feedid) \
 		.scalar()
 
+
+	if feed:
+		urls = [tmp.feed_url for tmp in feed.urls if tmp.feed_url]
+		if urls:
+			filter_state = content_views.get_filter_state_for_url(urls[0])
+		else:
+			filter_state = "No URLs?"
+
+	else:
+		filter_state = "Entry missing?"
+
 	return render_template('rss-pages/feed_filter_item.html',
 						   feed          = feed,
 						   feedid        = feedid,
+						   filter_state  = filter_state,
 						   )
 
 
