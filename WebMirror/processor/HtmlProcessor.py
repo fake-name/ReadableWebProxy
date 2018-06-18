@@ -95,21 +95,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	########################################################################################################################
 
 
-	def extractImages(self, soup, baseUrl):
-		ret = []
-		for imtag in soup.find_all("img"):
-						# Skip empty anchor tags
-			try:
-				url = imtag["src"]
-			except KeyError:
-				continue
-
-			item = self.processImageLink(url, baseUrl)
-			if item:
-				ret.append(item)
-		return ret
-
-
 	def destyleItems(self, soup):
 		'''
 		using the set of search 2-tuples in `destyle`,

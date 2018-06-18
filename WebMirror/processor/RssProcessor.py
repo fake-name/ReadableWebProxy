@@ -13,6 +13,8 @@ import json
 import time
 import calendar
 import traceback
+import WebRequest
+import common.util.urlFuncs as urlFuncs
 import WebMirror.OutputFilters.rss.FeedDataParser
 
 # import TextScrape.RelinkLookup
@@ -215,9 +217,6 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 				item['contents'] = ""
 
 
-			# print("Keys: ", list(item.keys()))
-
-
 			# processFeedData() call has to be /before/ we convert the tags to a json object.
 			self.processFeedData(self.db_sess, item)
 
@@ -244,15 +243,43 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 				self.log.critical(line)
 			raise e
 
+		plainLinks = []
+		rsrcLinks  = []
 
-		# print(data)
-		# self.insertFeed(tableName, tableKey, pluginName, feedUrl, data, badwords)
+		if 'entries' in feed:
+			for post in feed['entries']:
+
+				if hasattr(post, 'contenturl') and post.contenturl.startswith("tag:blogger.com"):
+					continue
+
+				if hasattr(post, 'contenturl') and post.contenturl and not '#comment_' in post.contenturl:
+					plainLinks.append(post.contenturl)
+
+				if hasattr(post, 'contents') and post.contents and post.contents != 'Disabled?' and post.contents != 'wat':
+					soup = WebRequest.as_soup(post.contents)
+					# print(post.contents)
+					# Make all the page URLs fully qualified, so they're unambiguous
+					soup = urlFuncs.canonizeUrls(soup, post.contenturl)
+
+					# pull out the page content and enqueue it. Filtering is
+					# done in the parent.
+					plainLinks.extend(self.extractLinks(soup, post.contenturl))
+					rsrcLinks.extend(self.extractImages(soup, post.contenturl))
+				if 'links' in post:
+					for link in post['links']:
+						if 'href' in link:
+							plainLinks.append(link['href'])
+				if 'link' in post:
+					plainLinks.append(post['link'])
+
 
 
 		ret = {}
 		# No links here
 
 		ret['rss-content'] = (data)
+		ret['plainLinks']  = plainLinks
+		ret['rsrcLinks']   = rsrcLinks
 		return ret
 
 

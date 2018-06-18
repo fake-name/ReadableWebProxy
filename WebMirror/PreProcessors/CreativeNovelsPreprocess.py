@@ -16,6 +16,12 @@ class CreativeNovelsPreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 	loggerPath = "Main.Preprocessor.JsRenderer"
 
 	def preprocessContent(self, url, mimetype, contentstr):
+		if mimetype != 'text/html':
+			return contentstr
+
+		if isinstance(contentstr, bytes):
+			contentstr = bs4.UnicodeDammit(contentstr).unicode_markup
+
 		soup = WebRequest.as_soup(contentstr)
 		next_chp_links = soup.find_all("a", class_='nextkey')
 		prev_chp_links = soup.find_all("a", class_='prevkey')
