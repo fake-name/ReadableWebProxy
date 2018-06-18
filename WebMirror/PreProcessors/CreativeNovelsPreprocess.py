@@ -52,7 +52,7 @@ class CreativeNovelsPreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 
 		appends = []
 		for item in soup.find_all('div', class_='togglepost'):
-			print("found append")
+			# print("found append")
 			appends.append(item.extract())
 
 		tgtdiv = soup.find("article", class_='post')
@@ -61,7 +61,7 @@ class CreativeNovelsPreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 			tgtdiv = tgtdiv.parent.parent
 			tgtdiv.append(soup.new_tag('hr'))
 			for append in appends:
-				print("Appending:", append)
+				# print("Appending:", append)
 				tgtdiv.append(append)
 
 		return soup.prettify()

@@ -280,6 +280,30 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		return set(ret)
 
+	def processImageLink(self, url, baseUrl):
+
+		# Skip tags with `img src=""`.
+		# No idea why they're there, but they are
+		if not url:
+			return None
+
+		# # Filter by domain
+		# if not self.allImages and not any([base in url for base in self._fileDomains]):
+		# 	return
+
+		# and by blocked words
+		hadbad = False
+		urll = url.lower()
+		for badword in self._badwords:
+			if badword.lower() in urll:
+				hadbad = True
+		if hadbad:
+			return None
+
+
+		url = urlFuncs.urlClean(url)
+
+		return self.processNewUrl(url, baseUrl=baseUrl, istext=False)
 
 	def extractImages(self, soup, baseUrl):
 		ret = []

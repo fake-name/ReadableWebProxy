@@ -556,6 +556,11 @@ def exposed_fetch_unmapped_qidian_items():
 			itemid = itemid[-1]
 			print("'%s' : ('%s',                                                                     '%s')," % (itemid, meta['title'].strip(), 'oel' if 'is-orig' in meta and meta['is-orig'] else 'translated'))
 
+def chunks(l, n):
+	"""Yield successive n-sized chunks from l."""
+	for i in range(0, len(l), n):
+		yield l[i:i + n]
+
 def exposed_retrigger_feed_urls():
 	'''
 	Retrigger the content urls from each feed item.
@@ -576,9 +581,6 @@ def exposed_retrigger_feed_urls():
 	# 	tags
 	# 	author
 
-
-
-
 	urls = set()
 	with db.session_context() as sess:
 		processor = WebMirror.processor.RssProcessor.RssProcessor(loggerPath   = "Main.RssDb",
@@ -596,7 +598,8 @@ def exposed_retrigger_feed_urls():
 		have_content = [tmp for tmp in items if tmp.contents]
 		print("%s rows have content" % len(have_content))
 
-		for post in tqdm.tqdm(items, desc="Retriggering RSS URLs"):
+		pbar = tqdm.tqdm(items, desc="Retriggering RSS URLs")
+		for post in pbar:
 			if post.contenturl.startswith("tag:blogger.com"):
 				continue
 
@@ -605,7 +608,7 @@ def exposed_retrigger_feed_urls():
 
 			if post.contents and post.contents != 'Disabled?' and post.contents != 'wat':
 				soup = WebRequest.as_soup(post.contents)
-				print(post.contents)
+				# print(post.contents)
 				# Make all the page URLs fully qualified, so they're unambiguous
 				soup = urlFuncs.canonizeUrls(soup, post.contenturl)
 
@@ -614,37 +617,52 @@ def exposed_retrigger_feed_urls():
 				plainLinks = processor.extractLinks(soup, post.contenturl)
 				imageLinks = processor.extractImages(soup, post.contenturl)
 
-				if plainLinks or imageLinks:
-					print((len(plainLinks), len(imageLinks)))
+				# if plainLinks or imageLinks:
+				# 	print((len(plainLinks), len(imageLinks)))
 
+				urls.update(plainLinks)
+				urls.update(imageLinks)
+			pbar.set_description("Links: %s" % len(urls))
 
-		print("Extracted %s unique links" % len(urls))
+	urls = list(urls)
 
-	rules = WebMirror.rules.load_rules()
+	urld = {}
+	for url in [tmp for tmp in urls if tmp]:
+		nl = urllib.parse.urlsplit(url).netloc
+		if nl:
+			urld.setdefault(nl, [])
+			urld[nl].append(url)
 
-	feeds = [item['feedurls'] for item in rules]
-	feeds = [item for sublist in feeds for item in sublist]
+	print("Extracted %s unique links for %s netlocs" % (len(urls), len(urld)))
 
-	url = feeds[0]
-	parsed = urllib.parse.urlparse(url)
-	root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+	# rules = WebMirror.rules.load_rules()
+	# feeds = [item['feedurls'] for item in rules]
+	# feeds = [item for sublist in feeds for item in sublist]
+	# url = feeds[0]
+	# parsed = urllib.parse.urlparse(url)
+	# root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+	# print("Using feed url %s for job base" % url)
 
-	print("Using feed url %s for job base" % url)
-
-	job = db.WebPages(
-		url       = url,
-		starturl  = root,
-		netloc    = parsed.netloc,
-		distance  = 0,
-		is_text   = True,
-		priority  = 500000,
-		type      = 'unknown',
-		fetchtime = datetime.datetime.now(),
-		)
 	try:
 		with db.session_context() as sess:
 			archiver = SiteArchiver(None, sess, None)
-			archiver.upsertResponseLinks(job, plain=urls, resource=[], debug=True, interactive=True)
+			for key, urls in tqdm.tqdm(urld.items(), desc='Source Netlocs'):
+				sel_url = urls[0]
+				parsed = urllib.parse.urlparse(sel_url)
+				root = urllib.parse.urlunparse((parsed[0], parsed[1], "", "", "", ""))
+
+				job = db.WebPages(
+					url       = sel_url,
+					starturl  = root,
+					netloc    = key,
+					distance  = 0,
+					is_text   = True,
+					priority  = db.DB_LOW_PRIORITY,
+					type      = 'unknown',
+					fetchtime = datetime.datetime.now(),
+					)
+				for chunk in chunks(urls, 500):
+					archiver.upsertResponseLinks(job, plain=chunk, resource=[], debug=True, interactive=True)
 
 	except Exception as e:
 		traceback.print_exc()

@@ -555,11 +555,43 @@ def startup():
 startup()
 
 
-if __name__ == "__main__":
+def test():
 	# print(load_raw_mirror_sites())
 	# print(load_special_case_sites())
-	print(load_triggered_url_list())
 
+	ruleset = load_rules()
+
+	specialty_handlers = load_special_case_sites()
+
+	# print("SiteArchiver rules loaded")
+	relinkable = set()
+	for item in ruleset:
+		[relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
+		if item['netlocs'] != None:
+			[relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
+
+
+	ctnt_filters = {}
+	rsc_filters  = {}
+
+
+	for item in ruleset:
+		if not item['netlocs']:
+			continue
+		for netloc in item['netlocs']:
+			ctnt_filters[netloc] = item['netlocs']
+		for netloc in item['fileDomains']:
+			rsc_filters[netloc]  = item['fileDomains']
+
+	# for key, value in ctnt_filters.items():
+	# 	print(key, value)
+
+	import pdb
+	pdb.set_trace()
+
+
+if __name__ == "__main__":
+	test()
 	# for ruleset in load_rules():
 	# 	if ruleset['send_raw_feed'] == False:
 	# 		print(ruleset['netlocs'])

@@ -282,7 +282,6 @@ baseUrl: [
 		'http://thepeninthestone.com',
 		'http://thesylthorian.com',
 		'http://thirst.filmsandfables.com',
-		'http://turtleme.me',
 		'http://unsongbook.com',
 		'http://vaancruze.com',
 		'http://whatzombiesfear.com',
@@ -363,10 +362,6 @@ badwords: [
 		# Broken link is recursing.
 		'chapter-16-powers-awakening/2015/',
 
-		'turtleme.me/feed/includes/',
-		'turtleme.me/feed/images/',
-		'turtleme.me/includes/',
-		'turtleme.me/images/products/includes/',
 
 		# Appears to now be a squatter
 		'vikingstoryteller.com/RPG.cfm?fp=',

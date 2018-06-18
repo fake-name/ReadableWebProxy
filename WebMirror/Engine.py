@@ -533,11 +533,13 @@ class SiteArchiver(LogBase.LoggerMixin):
 				ret.add(link)
 			else:
 				if debug:
-					self.log.info("Bad netloc: %s -> %s (netloc in self.ctnt_filters: %s, job.netloc in self.ctnt_filters[netloc]: %s)",
+					self.log.info("Bad netloc: %s -> %s (netloc in self.ctnt_filters: %s, job.netloc in self.ctnt_filters[netloc]: %s, ctnt_filters: %s)",
 						netloc,
 						job.netloc,
 						netloc in self.ctnt_filters,
-						job.netloc in self.ctnt_filters[netloc] if netloc in self.ctnt_filters else "None")
+						job.netloc in self.ctnt_filters[netloc] if netloc in self.ctnt_filters else "None",
+						len(self.ctnt_filters)
+						)
 					# self.log.info("Wat: %s", self.ctnt_filters[netloc])
 		return ret
 

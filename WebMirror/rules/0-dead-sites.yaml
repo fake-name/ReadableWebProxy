@@ -226,6 +226,7 @@ baseUrl: [
 
 	'http://mynerves.tk',
 	'http://onequality.tk',
+	'http://turtleme.me',
 
 	# This redirects to http://watashiwasugoidesu.wordpress.com
 	'http://www.watashiwasugoidesu.wordpress.com',
@@ -248,6 +249,10 @@ baseUrl: [
 
 badwords: [
 
+		'turtleme.me/feed/includes/',
+		'turtleme.me/feed/images/',
+		'turtleme.me/includes/',
+		'turtleme.me/images/products/includes/',
 	]
 
 decompose: [
