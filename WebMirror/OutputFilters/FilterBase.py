@@ -43,70 +43,52 @@ class FilterBase(PageProcessor):
 			self.rpc_interface.close()
 
 
-	def put_page_link(self, link):
+	def _put_page_links(self, links, priority):
 		if not 'job' in self.kwargs:
 			self.log.warning("Cannot upsert URL due to no job passed to filters!")
 			return
 
-		start = urllib.parse.urlsplit(link).netloc
+		links_out = []
 
-		assert link.startswith("http")
-		assert start
-		new = {
-			'url'               : link,
-			'starturl'          : self.kwargs['job'].starturl,
-			'netloc'            : start,
-			'distance'          : self.kwargs['job'].distance+1,
-			'is_text'           : True,
-			'priority'          : self.kwargs['job'].priority,
-			'maximum_priority'  : db.DB_IDLE_PRIORITY,
-			'type'              : self.kwargs['job'].type,
-			'state'             : "new",
-			'addtime'           : datetime.datetime.now(),
-			'ignoreuntiltime'   : datetime.datetime.min,
-			}
-		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None:
-			self.kwargs['message_q'].put(("new_link", new))
-		else:
-			# Local upsert
-			WebMirror.UrlUpserter.do_link_batch_update(self.log, [new, ])
+		for link in links:
+			start = urllib.parse.urlsplit(link).netloc
 
-	def high_priority_link_trigger(self, link):
-		if not 'job' in self.kwargs:
-			self.log.warning("Cannot upsert URL due to no job passed to filters!")
-			return
+			assert link.startswith("http")
+			assert start
+			new = {
+				'url'               : link,
+				'starturl'          : self.kwargs['job'].starturl,
+				'netloc'            : start,
+				'distance'          : self.kwargs['job'].distance+1,
+				'is_text'           : True,
+				'priority'          : self.kwargs['job'].priority,
+				'maximum_priority'  : db.DB_IDLE_PRIORITY,
+				'type'              : self.kwargs['job'].type,
+				'state'             : "new",
+				'addtime'           : datetime.datetime.now(),
+				'ignoreuntiltime'   : datetime.datetime.min,
+				}
+			links_out.append(new)
 
-		start = urllib.parse.urlsplit(link).netloc
+		WebMirror.UrlUpserter.do_link_batch_update_sess(self.log, self.db_sess, links_out)
 
+	def high_priority_links_trigger(self, links):
+		self._put_page_links(links=links, priority=db.DB_HIGH_PRIORITY)
 
-		assert link.startswith("http")
-		assert start
-		new = {
-			'url'               : link,
-			'starturl'          : self.kwargs['job'].starturl,
-			'netloc'            : start,
-			'distance'          : self.kwargs['job'].distance+1,
-			'is_text'           : True,
-			'priority'          : self.kwargs['job'].priority,
-			'maximum_priority'  : db.DB_HIGH_PRIORITY,
-			'type'              : self.kwargs['job'].type,
-			'state'             : "new",
-			'addtime'           : datetime.datetime.now(),
-			'ignoreuntiltime'   : datetime.datetime.min,
-			}
+	def normal_priority_links_trigger(self, links):
+		self._put_page_links(links=links, priority=db.DB_MED_PRIORITY)
 
-		if 'message_q' in self.kwargs and self.kwargs['message_q'] != None:
-			self.kwargs['message_q'].put(("high_priority_link_trigger", new))
-		else:
-			# Local upsert
-			WebMirror.UrlUpserter.do_link_batch_update(self.log, [new, ])
+	def low_priority_links_trigger(self, links):
+		self._put_page_links(links=links, priority=db.DB_LOW_PRIORITY)
+
+	def idle_priority_links_trigger(self, links):
+		self._put_page_links(links=links, priority=db.DB_IDLE_PRIORITY)
 
 
 	def amqp_put_many(self, items):
 
 		if not self._needs_amqp:
 			raise ValueError("Plugin declared to not require AMQP connectivity, and yet AMQP call used?")
-
 
 		if config.C_DO_RABBIT:
 			self.rpc_interface.put_many_feed_job(items)

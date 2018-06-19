@@ -39,6 +39,42 @@ import common.database as db
 import common.stuck
 import common.get_rpyc
 
+
+
+def _paginate(seq, page_size):
+	"""Consume an iterable and return it in chunks.
+	Every chunk is at most `page_size`. Never return an empty chunk.
+	"""
+	page = []
+	it = iter(seq)
+	while 1:
+		try:
+			for i in range(page_size):
+				page.append(next(it))
+			yield page
+			page = []
+		except StopIteration:
+			if page:
+				yield page
+			return
+
+def execute_batch(cur, sql, argslist, page_size=100):
+	r"""Execute groups of statements in fewer server roundtrips.
+	Execute *sql* several times, against all parameters set (sequences or
+	mappings) found in *argslist*.
+	The function is semantically similar to
+	.. parsed-literal::
+		*cur*\.\ `~cursor.executemany`\ (\ *sql*\ , *argslist*\ )
+	but has a different implementation: Psycopg will join the statements into
+	fewer multi-statement commands, each one containing at most *page_size*
+	statements, resulting in a reduced number of server roundtrips.
+	After the execution of the function the `cursor.rowcount` property will
+	**not** contain a total result.
+	"""
+	for page in _paginate(argslist, page_size=page_size):
+		sqls = [cur.mogrify(sql, args) for args in page]
+		cur.execute(b";".join(sqls))
+
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
 	sess = db.get_db_session()
@@ -233,69 +269,29 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	logger.info("Inserting %s items into DB in batch.", len(link_batch))
 	# This is kind of horrible.
+	# Reach down through sqlalchemy and pull out the raw cursor directly.
 	raw_cur = interface.connection().connection.cursor()
 
-
-
-	bulk_cmd = """
-		SELECT upsert_link(
-			%(url_{cnt})s,
-			%(starturl_{cnt})s,
-			%(netloc_{cnt})s,
-			%(distance_{cnt})s,
-			%(is_text_{cnt})s,
-			%(priority_{cnt})s,
-			%(type_{cnt})s,
-			%(addtime_{cnt})s,
-			%(state_{cnt})s,
-			%(ignoreuntiltime_{cnt})s,
-			%(maximum_priority_{cnt})s
-			)
-	""".replace("	", " ")
-
 	per_cmd = """
-		INSERT INTO
-		    web_pages
-		    (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-		VALUES
-		    (%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(type)s, %(addtime)s, %(state)s)
-		ON CONFLICT (url) DO
-		    UPDATE
-		        SET
-		            state           = EXCLUDED.state,
-		            starturl        = EXCLUDED.starturl,
-		            netloc          = EXCLUDED.netloc,
-		            is_text         = EXCLUDED.is_text,
-
-		            -- Largest distance is 100, but it's not checked, so eh
-		            distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-
-		            -- The lowest priority is 10.
-		            priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, %(maximum_priority)s), 10),
-		            addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-		        WHERE
-		        (
-		                web_pages.ignoreuntiltime < %(ignoreuntiltime)s
-		            AND
-		                web_pages.url = EXCLUDED.url
-		            AND
-		                (web_pages.state = 'complete' OR web_pages.state = 'error')
-		        )
-		    ;
+	SELECT upsert_link(
+			%(url)s,
+			%(starturl)s,
+			%(netloc)s,
+			%(distance)s,
+			%(is_text)s,
+			%(priority)s,
+			%(type)s,
+			%(addtime)s,
+			%(state)s,
+			%(ignoreuntiltime)s,
+			%(maximum_priority)s
+			);
 			""".replace("	", " ")
+
+	per_cmd = per_cmd.replace("\n", " ")
 
 	while "  " in per_cmd:
 		per_cmd = per_cmd.replace("  ", " ")
-	while "  " in bulk_cmd:
-		bulk_cmd = bulk_cmd.replace("  ", " ")
-
-
-	bulk_cmd_list = [bulk_cmd.format(cnt=cnt) for cnt in range(len(link_batch))]
-	bulk_cmd_assembled = "; ".join(bulk_cmd_list)
-
-	# Build the overall SQL string
-	# bulk_cmds = [bulk_cmd.format(cnt=cnt) for cnt in range(len(link_batch))]
-	# bulk_cmd_assembled = bulk_cmd_prefix + ", ".join(bulk_cmds) + bulk_cmd_postfix
 
 	# Build a nested list of dicts
 	bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in link_batch[cnt].items()} for cnt in range(len(link_batch)) ]
@@ -307,13 +303,16 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 	raw_cur.execute("SET statement_timeout TO 5000;")
 	raw_cur.execute("BEGIN;")
 
+	rowcnt = 0
 	try:
 		# We try the bulk insert command first.
-		raw_cur.execute(bulk_cmd_assembled, bulk_dict)
+		execute_batch(raw_cur, per_cmd, link_batch)
+		rowcnt = raw_cur.rowcount
 		raw_cur.execute("COMMIT;")
 		raw_cur.execute("RESET statement_timeout;")
 		link_batch = []
-		return
+		logger.info("Touched AT LEAST %s rows", rowcnt)
+		return rowcnt
 
 	except psycopg2.Error:
 		logger.error("psycopg2.Error - Failure on bulk insert.")
@@ -325,6 +324,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 	# We only commit per-URL if we're tried to do per-URL update in batch, and failed.
 	commit_each = False
 	while 1:
+		rowcnt = 0
 		try:
 			raw_cur.execute("BEGIN;")
 			for paramset in link_batch:
@@ -336,6 +336,8 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 				else:
 					# Forward-data the next walk, time, rather then using now-value for the thresh.
 					raw_cur.execute(per_cmd, paramset)
+					rowcnt += raw_cur.rowcount
+
 					if commit_each:
 						raw_cur.execute("COMMIT;")
 						raw_cur.execute("BEGIN;")
@@ -355,7 +357,9 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	raw_cur.execute("RESET statement_timeout;")
 
+	logger.info("Changed %s rows", rowcnt)
 
+	return
 
 class UpdateAggregator(object):
 	def __init__(self, msg_queue, db_interface):
@@ -388,48 +392,48 @@ class UpdateAggregator(object):
 
 		cmd = """
 			CREATE OR REPLACE FUNCTION upsert_link(
-			        url_v text,
-			        starturl_v text,
-			        netloc_v text,
-			        distance_v integer,
-			        is_text_v boolean,
-			        priority_v integer,
-			        type_v itemtype_enum,
-			        addtime_v timestamp without time zone,
-			        state_v dlstate_enum,
-			        ignoreuntiltime_v timestamp without time zone,
-			        max_priority_v integer
-			        )
-			    RETURNS VOID AS $$
+					url_v text,
+					starturl_v text,
+					netloc_v text,
+					distance_v integer,
+					is_text_v boolean,
+					priority_v integer,
+					type_v itemtype_enum,
+					addtime_v timestamp without time zone,
+					state_v dlstate_enum,
+					ignoreuntiltime_v timestamp without time zone,
+					max_priority_v integer
+					)
+				RETURNS VOID AS $$
 
-			    INSERT INTO
-			        web_pages
-			         (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
-			    VALUES
-			        (url_v, starturl_v, netloc_v, distance_v, is_text_v, priority_v, type_v, addtime_v, state_v)
-			    ON CONFLICT (url) DO
-			        UPDATE
-			            SET
-			                state           = EXCLUDED.state,
-			                starturl        = EXCLUDED.starturl,
-			                netloc          = EXCLUDED.netloc,
-			                is_text         = EXCLUDED.is_text,
+				INSERT INTO
+					web_pages
+					 (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+				VALUES
+					(url_v, starturl_v, netloc_v, distance_v, is_text_v, priority_v, type_v, addtime_v, state_v)
+				ON CONFLICT (url) DO
+					UPDATE
+						SET
+							state           = EXCLUDED.state,
+							starturl        = EXCLUDED.starturl,
+							netloc          = EXCLUDED.netloc,
+							is_text         = EXCLUDED.is_text,
 
-			                -- Largest distance is 100, but it's not checked
-			                distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+							-- Largest distance is 100, but it's not checked
+							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
 
-			                -- The lowest priority is 10.
-			                priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v), 10),
-			                addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
-			            WHERE
-			            (
-			                    web_pages.ignoreuntiltime < ignoreuntiltime_v
-			                AND
-			                    web_pages.url = EXCLUDED.url
-			                AND
-			                    (web_pages.state = 'complete' OR web_pages.state = 'error')
-			            )
-			        ;
+							-- The lowest priority is 10.
+							priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v), 10),
+							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+						WHERE
+						(
+								web_pages.ignoreuntiltime < ignoreuntiltime_v
+							AND
+								web_pages.url = EXCLUDED.url
+							AND
+								(web_pages.state = 'complete' OR web_pages.state = 'error')
+						)
+					;
 
 			$$ LANGUAGE SQL;
 

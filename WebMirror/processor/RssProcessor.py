@@ -274,6 +274,8 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 
+		self.normal_priority_links_trigger(plainLinks + rsrcLinks)
+
 		ret = {}
 		# No links here
 

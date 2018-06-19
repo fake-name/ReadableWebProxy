@@ -197,6 +197,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
 
+		# LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
+		self.seen = cachetools.TTLCache(maxsize=100 * 1000, ttl=60 * 60 * 6)
+
 		from activePlugins import INIT_CALLS
 		for item in INIT_CALLS:
 			item(self)
@@ -598,92 +601,62 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.log.info("Found %s links (%s before filtering)" % (filtered, unfiltered))
 
 		items = []
-		[items.append((link, True))  for link in plain]
-		[items.append((link, False)) for link in resource]
+		for link in plain:
+			items.append((link, True))
+		for link in resource:
+			items.append((link, False))
 
 		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
 
 		new_starturl = job.starturl
 
-		# Every step away from home is a step further in distance, and a reduction in priority.
 		new_distance = job.distance+1
-		# new_priority = job.priority+1
 		new_priority = job.priority
 		new_type     = job.type
 
-		full_printer = 100
 
-		if self.resp_q != None:
-			for link, istext in items:
-				if link not in self.seen:
-					self.seen[link] = True
-					start = urllib.parse.urlsplit(link).netloc
+		# Use the local upsert in the general case.
+		# self.log.info("Doing local link upsert in engine thread!")
+		# for url, _ in items:
+		# 	self.log.info("	%s", url)
 
-					assert link.startswith("http")
-					assert start
-					new = {
-							'url'              : link,
-							'starturl'         : new_starturl,
-							'netloc'           : start,
-							'distance'         : new_distance,
-							'is_text'          : istext,
-							'priority'         : new_priority,
-							'type'             : new_type,
-							'state'            : "new",
-							'addtime'          : datetime.datetime.now(),
+		batch_items = [
+			{
+				# Forward-data the next walk, time, rather then using now-value for the thresh.
+				'url'             : link_url,
+				'starturl'        : new_starturl,
+				'netloc'          : urllib.parse.urlsplit(link_url).netloc,
+				'distance'        : new_distance,
+				'is_text'         : is_text,
+				'priority'        : new_priority,
+				'type'            : new_type,
+				'state'           : "new",
+				'addtime'         : datetime.datetime.now(),
 
-							# Don't retrigger unless the ignore time has elaped.
-							'ignoreuntiltime'  : datetime.datetime.now(),
+				# Don't retrigger unless the ignore time has elaped.
+				'ignoreuntiltime' : datetime.datetime.now(),
+			}
+			for
+				link_url, is_text
+			in
+				items
+			if
+				link_url not in self.seen
+		]
 
-							'maximum_priority' : self.getMaxPriority(start),
-
-						}
-					self.resp_q.put(("new_link", new))
-
-					while self.resp_q.qsize() > 10000:
-						time.sleep(0.1)
-						full_printer -= 1
-						if full_printer <= 0:
-							self.log.error("NewLinkQueue seems to have too many URLs in it (%s). Sleeping until it drains.", self.resp_q.qsize())
-							full_printer = 25
-
-			self.log.info("Links placed into queue. Items in processing queue: %s", self.resp_q.qsize())
-		else:
-			self.log.info("Doing local link upsert in engine thread!")
-
-			# print(items)
-
-			batch_items = [
-				{
-					# Forward-data the next walk, time, rather then using now-value for the thresh.
-					'url'             : link_url,
-					'starturl'        : new_starturl,
-					'netloc'          : urllib.parse.urlsplit(link_url).netloc,
-					'distance'        : new_distance,
-					'is_text'         : is_text,
-					'priority'        : new_priority,
-					'type'            : new_type,
-					'state'           : "new",
-					'addtime'         : datetime.datetime.now(),
-
-					# Don't retrigger unless the ignore time has elaped.
-					'ignoreuntiltime' : datetime.datetime.now(),
-				}
-				for
-					link_url, is_text
-				in
-					items
-			]
+		# Seen cache.
+		for link_url, _ in items:
+			self.seen[link_url] = True
 
 
-			assert all([tmp['url'].startswith("http") for tmp in batch_items])
-			assert all([tmp['netloc'] for tmp in batch_items])
+		assert all([tmp['url'].startswith("http") for tmp in batch_items])
+		assert all([tmp['netloc'] for tmp in batch_items])
 
-			WebMirror.UrlUpserter.do_link_batch_update_sess(
-					logger     = self.log,
-					interface  = self.db_sess,
-					link_batch = batch_items,
-				)
+		WebMirror.UrlUpserter.do_link_batch_update_sess(
+				logger     = self.log,
+				interface  = self.db_sess,
+				link_batch = batch_items,
+			)
 
 
 
