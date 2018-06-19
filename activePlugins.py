@@ -96,7 +96,7 @@ PLUGINS = [
 	WebMirror.processor.RoyalRoadLSeriesPageProcessor.RoyalRoadLSeriesPageProcessor,
 	WebMirror.processor.RoyalRoadLSeriesPageProcessor.RoyalRoadLSeriesPageProcessor,
 	#WebMirror.processor.FontRemapProcessors.KobatoChanDaiSukiPageProcessor,
-	WebMirror.processor.FontRemapProcessors.NepustationPageProcessor,
+	# WebMirror.processor.FontRemapProcessors.NepustationPageProcessor,
 	WebMirror.processor.NuProcessor.NuProcessor,
 	WebMirror.processor.GarbageInlineProcessors.HecatesCornerPageProcessor,
 	WebMirror.processor.GarbageInlineProcessors.ZenithNovelsPageProcessor,

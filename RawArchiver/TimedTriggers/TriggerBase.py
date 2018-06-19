@@ -72,13 +72,10 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 									OR raw_web_pages.state = 'new'
 									OR raw_web_pages.state = 'fetching'
 									OR raw_web_pages.state = 'error'
-									OR raw_web_pages.state = 'specialty_blocked'
 								)
 							AND
 								raw_web_pages.url = %(url)s
 						)
-				RETURNING
-					raw_web_pages.state, raw_web_pages.url
 					;
 
 			""".replace("	", " ")
@@ -105,10 +102,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			}
 
 		cursor.execute(cmd, data)
-		ret = cursor.fetchall()
-		if not ret:
-			self.log.warning("Row appears to already be in the new state: %s", url)
-		return ret
+		rowcnt = cursor.rowcount
+		return rowcnt
 
 	def retriggerUrlList(self, urlList):
 
@@ -118,13 +113,14 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		raw_cur = sess.connection().connection.cursor()
 		commit_each = False
-
+		changed = 0
 		while 1:
 			loopcnt = 0
+			changed = 0
 			try:
 				for url in urlList:
 					loopcnt += 1
-					self.__raw_retrigger_with_cursor(url, raw_cur)
+					changed += self.__raw_retrigger_with_cursor(url, raw_cur)
 					if commit_each or (loopcnt % 250) == 0:
 						self.log.info("Committing!")
 						raw_cur.execute("COMMIT;")
@@ -141,24 +137,12 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				raw_cur.execute("ROLLBACK;")
 				commit_each = True
 
+		self.log.info("Retrigger changed %s rows", changed)
 
 
 	def retriggerUrl(self, url, conditional=None):
 
-		sess = self.db.get_db_session()
-
-		raw_cur = sess.connection().connection.cursor()
-		while 1:
-			try:
-				self.__raw_retrigger_with_cursor(url, raw_cur)
-				raw_cur.execute("COMMIT;")
-				break
-
-			except psycopg2.Error:
-				self.log.warning("psycopg2.Error - Retrying.")
-				traceback.print_exc()
-				raw_cur.execute("ROLLBACK;")
-
+		self.retriggerUrlList([url, ])
 
 if __name__ == "__main__":
 	import utilities.testBase as tb

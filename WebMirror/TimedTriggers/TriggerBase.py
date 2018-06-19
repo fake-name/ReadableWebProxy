@@ -68,12 +68,17 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 							ignoreuntiltime = LEAST(EXCLUDED.addtime, web_pages.addtime, %(ignoreuntiltime)s)
 						WHERE
 						(
-								(web_pages.state = 'complete' OR web_pages.state = 'new' OR web_pages.state = 'fetching' OR web_pages.state = 'error')
+								(
+									   web_pages.state = 'complete'
+									OR web_pages.state = 'new'
+									OR web_pages.state = 'fetching'
+									OR web_pages.state = 'error'
+								)
 							AND
 								web_pages.url = %(url)s
+							AND
+								web_pages.ignoreuntiltime > %(ignoreuntiltime)s
 						)
-				RETURNING
-					web_pages.state, web_pages.url
 					;
 
 			""".replace("	", " ")
@@ -100,10 +105,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			}
 
 		cursor.execute(cmd, data)
-		ret = cursor.fetchall()
-		if not ret:
-			self.log.warning("Row appears to already be in the new state: %s", url)
-		return ret
+		rowcnt = cursor.rowcount
+		return rowcnt
 
 	def retriggerUrlList(self, urlList):
 
@@ -111,23 +114,26 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		raw_cur = sess.connection().connection.cursor()
 		commit_each = False
+		changed = 0
 		while 1:
 			loopcnt = 0
+			changed = 0
 			try:
 				try:
 					for url in tqdm.tqdm(urlList, desc="Retriggering for %s plugin" % self.pluginName):
 						loopcnt += 1
-						self.__raw_retrigger_with_cursor(url, raw_cur)
+						changed += self.__raw_retrigger_with_cursor(url, raw_cur)
 						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
 							self.log.info("Committing!")
 							raw_cur.execute("COMMIT;")
 					raw_cur.execute("COMMIT;")
 					break
 				except AttributeError:
+					changed = 0
 					self.log.warning("TQDM Issue. Siiiiiiigh")
 					for url in urlList:
 						loopcnt += 1
-						self.__raw_retrigger_with_cursor(url, raw_cur)
+						changed += self.__raw_retrigger_with_cursor(url, raw_cur)
 						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
 							self.log.info("Committing!")
 							raw_cur.execute("COMMIT;")
@@ -144,6 +150,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				raw_cur.execute("ROLLBACK;")
 				commit_each = True
 
+		self.log.info("Retrigger changed %s rows", changed)
 
 
 	def retriggerUrl(self, url, conditional=None):
