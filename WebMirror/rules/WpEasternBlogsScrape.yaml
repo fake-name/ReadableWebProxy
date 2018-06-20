@@ -5,7 +5,6 @@ send_raw_feed: True
 rewalk_interval_days: 30
 
 baseUrl: [
-
 	'http://eccentrictranslations.wordpress.com',
 	'http://mistycloudtranslations.wordpress.com',
 	'http://tiffybook.wordpress.com',
@@ -74,6 +73,7 @@ baseUrl: [
 	'https://artegthebear.wordpress.com',
 	'https://artofbutchery.wordpress.com',
 	'https://asd398.wordpress.com',
+	'https://ashtranslations.wordpress.com',
 	'https://asiancult.wordpress.com',
 	'https://asiandramalife.wordpress.com',
 	'https://asterlucerne.wordpress.com',
@@ -81,6 +81,7 @@ baseUrl: [
 	'https://atentranslationswordpresscom.wordpress.com',
 	'https://atling.wordpress.com',
 	'https://atranslatorsjourney.wordpress.com',
+	'https://automaticmanual.wordpress.com',
 	'https://avaritiachan.wordpress.com',
 	'https://avaritiakuns.wordpress.com',
 	'https://awildbard.wordpress.com',
@@ -507,6 +508,7 @@ baseUrl: [
 	'https://koreantown.wordpress.com',
 	'https://koreyorihachidori.wordpress.com',
 	'https://korezombiethetranslation.wordpress.com',
+	'https://krmaku.wordpress.com',
 	'https://krtranslations.wordpress.com',
 	'https://ktlchamber.wordpress.com',
 	'https://ktranslations980580331.wordpress.com',
@@ -1188,10 +1190,10 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 
 
-
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	'http://absurdtl.com',
 	'http://aethernea.com',
+	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',
 	'http://arkmachinetranslations.com',
 	'http://asuratales.com',
@@ -1311,7 +1313,6 @@ baseUrl: [
 	'http://shintranslations.com',
 	'http://shiroyukitranslations.com',
 	'http://shmtranslations.com',
-	'https://secondtranslation.com',
 	'http://shomotsu.com',
 	'http://shujinkou.com',
 	'http://siber-owl.com',
@@ -1495,6 +1496,7 @@ baseUrl: [
 	'https://saiakutranslationsblog.com',
 	'https://sakuraidreader.com',
 	'https://scatterdrift.com',
+	'https://secondtranslation.com',
 	'https://shadytranslations.com',
 	'https://shikkakutranslations.org',
 	'https://shintranslations.com',
@@ -1524,12 +1526,15 @@ baseUrl: [
 	'https://www.euricette.com',
 	'https://www.exenovels.com',
 	'https://www.fuyukai.club',
+	'https://www.kfannovels.com',
 	'https://www.liberspark.com',
 	'https://www.lnovelreader.com',
 	'https://www.oppatranslations.com',
+	'https://www.otakubu.com',
 	'https://www.paradoxnovels.com',
 	'https://www.polarbearadise.com',
 	'https://www.readingattic.com',
+	'https://www.sakhyulations.com',
 	'https://www.sakuranovels.com',
 	'https://www.shinkunovels.com',
 	'https://www.shintranslations.com',

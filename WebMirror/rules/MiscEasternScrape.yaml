@@ -23,6 +23,7 @@ baseUrl: [
 		# Dickish blocking garbage shit.
 		'https://nepustation.wordpress.com',
 
+
 		# No rss, apparently. Sadface
 		'http://www.novelsreborn.com',
 		'http://novelsreborn.com',     # Redirects to the www netloc

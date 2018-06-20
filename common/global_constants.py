@@ -169,6 +169,7 @@ GLOBAL_BAD_URLS = [
 			'www1.trungtnguyen123.org',
 			'www1.trungtnguyen123.org',
 			'ww2.steadytranslation.com',
+			'ww1.pegasusfarts.com',
 
 			'install.shopping-day.com',
 			'www.hugedomains.com',

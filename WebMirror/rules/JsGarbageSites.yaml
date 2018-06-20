@@ -8,6 +8,7 @@ baseUrl: [
 
 		# Oh god javascript shit.
 		'http://translations.afteraugustmaking.me',
+		'https://divinelink2.wixsite.com/dlscanlations',
 
 	]
 
@@ -77,6 +78,7 @@ stripTitle: []
 
 special_case_filters : {
 	"translations.afteraugustmaking.me" : ["chrome_render_fetch"],
+	"divinelink2.wixsite.com"           : ["chrome_render_fetch"],
 }
 
 

@@ -304,7 +304,8 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 								'referrer'         : seriesPageUrl,
 								'outbound_wrapper' : linkfq,
 								'release_date'     : reldate,
-								'first_seen'       : datetime.datetime.min,
+								'first_seen'       : datetime.datetime.now(),
+								'ignoreuntiltime'  : datetime.datetime.min,
 							})
 						self.log.info("Upserting outbound wrapper url %s, changed %s rows.", linkfq, changed)
 

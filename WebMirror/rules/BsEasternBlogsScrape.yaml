@@ -13,7 +13,6 @@ rewalk_interval_days: 30
 baseUrl: [
 
 
-
 	'http://13thechelon.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
@@ -170,6 +169,7 @@ baseUrl: [
 	'https://avertranslation.blogspot.com',
 	'https://azurezinktranslating.blogspot.com',
 	'https://bakalation.blogspot.com',
+	'https://blacksoulz.blogspot.com',
 	'https://coba-semuanya.blogspot.com',
 	'https://elysiantranslations.blogspot.com',
 	'https://emmatranslates.blogspot.com',
