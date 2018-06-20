@@ -3,6 +3,7 @@ import runStatus
 import logSetup
 import logging
 
+import gc
 import time
 import os
 import multiprocessing
@@ -26,7 +27,7 @@ if '__pypy__' in sys.builtin_module_names:
 	import psycopg2cffi as psycopg2
 else:
 	import psycopg2
-
+is_pypy = '__pypy__' in sys.builtin_module_names
 
 if __name__ == "__main__":
 	logSetup.initLogging()
@@ -249,6 +250,10 @@ class Crawler(object):
 						self.log.info("Raw job Queue Fillers: %s ", self.raw_job_fetcher.get_status())
 					except Exception:
 						pass
+
+					if is_pypy:
+						collected = gc.collect()
+						self.log.info("Collected %s object with garbage collector", collected)
 
 
 			except KeyboardInterrupt:
