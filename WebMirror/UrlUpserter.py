@@ -319,6 +319,24 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		for line in traceback.format_exc().split("\n"):
 			logger.error(line)
 		raw_cur.execute("ROLLBACK;")
+		logger.error("Retrying.")
+
+	try:
+		# We try the bulk insert command first.
+		execute_batch(raw_cur, per_cmd, link_batch)
+		rowcnt = raw_cur.rowcount
+		raw_cur.execute("COMMIT;")
+		raw_cur.execute("RESET statement_timeout;")
+		link_batch = []
+		logger.info("Touched AT LEAST %s rows", rowcnt)
+		return rowcnt
+
+	except psycopg2.Error:
+		logger.error("psycopg2.Error - Failure on bulk insert.")
+		for line in traceback.format_exc().split("\n"):
+			logger.error(line)
+		raw_cur.execute("ROLLBACK;")
+		logger.error("Retrying with per upsert commit.")
 
 	# If the bulk insert failed, we then try a per-URL upsert
 	# We only commit per-URL if we're tried to do per-URL update in batch, and failed.
