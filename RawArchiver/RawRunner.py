@@ -122,7 +122,6 @@ class RawRunInstance(object):
 	@classmethod
 	def run(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
-		common.stuck.install_pystuck()
 
 		try:
 			run = cls(num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig)

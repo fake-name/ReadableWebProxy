@@ -594,7 +594,6 @@ class UpdateAggregator(object):
 	def launch_agg(cls, agg_queue):
 
 		try:
-			common.stuck.install_pystuck()
 			agg_db = db.get_db_session()
 			instance = cls(agg_queue, agg_db)
 			instance.run()

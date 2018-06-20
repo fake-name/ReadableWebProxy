@@ -76,8 +76,8 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 100
 	# MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 500
-	MAX_IN_FLIGHT_JOBS = 1000
-	# MAX_IN_FLIGHT_JOBS = 2500
+	# MAX_IN_FLIGHT_JOBS = 1000
+	MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
 	# MAX_IN_FLIGHT_JOBS = 5000
 	# MAX_IN_FLIGHT_JOBS = 8000
@@ -946,7 +946,6 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	@classmethod
 	def run_shim(cls, job_queue, run_flag, test_mode):
 
-		common.stuck.install_pystuck()
 		try:
 			instance = cls(job_queue, run_flag, test_mode=test_mode)
 			instance.run()
@@ -1008,7 +1007,6 @@ def test():
 	import logSetup
 	logSetup.initLogging()
 
-	common.stuck.install_pystuck()
 
 	tester = RpcJobManagerWrapper(test_mode=True)
 

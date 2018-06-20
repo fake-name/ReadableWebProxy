@@ -14,6 +14,7 @@ import WebMirror.UrlUpserter
 import RawArchiver.RawRunner
 import RawArchiver.UrlUtils
 import common.stuck
+import Misc.ls_open_file_handles
 
 from settings import NO_PROCESSES
 from settings import RAW_NO_PROCESSES
@@ -22,7 +23,8 @@ from settings import MAX_DB_SESSIONS
 
 def go():
 
-	common.stuck.install_pystuck()
+	# fm = Misc.ls_open_file_handles.FileMonitor()
+	# fm.patch()
 
 	largv = [tmp.lower() for tmp in sys.argv]
 

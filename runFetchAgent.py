@@ -1,7 +1,6 @@
 
 import sys
 import common.stuck
-common.stuck.install_pystuck()
 
 def init_yappi():
 	import atexit

@@ -243,11 +243,17 @@ def render_resource():
 	if mimetype == 'image/webp':
 		img = Image.open(io.BytesIO(content))
 
-		if img.rgb_mode == "RGBX":
+		if hasattr(img, "rgb_mode") and  img.rgb_mode == "RGBX":
 			img = img.convert("RGBA")
 
-		out = io.BytesIO()
-		img.save(out, format="png")
+		try:
+			out = io.BytesIO()
+			img.save(out, format="png")
+		except (KeyError, OSError):
+			img = img.convert("RGBA")
+			out = io.BytesIO()
+			img.save(out, format="png")
+		
 		content = out.getvalue()
 		mimetype = 'img/png'
 		fname = fname + ".png"
