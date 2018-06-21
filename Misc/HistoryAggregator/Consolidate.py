@@ -10,6 +10,7 @@ import logging
 import os.path
 import json
 import calendar
+import tqdm
 
 # from pympler import tracker
 import objgraph
@@ -171,81 +172,7 @@ class DbFlattener(object):
 
 		return dirty
 
-
-	def truncate_url_history(self, sess, url):
-		ctbl = version_table(db.WebPages.__table__)
-
-		items = sess.query(ctbl) \
-			.filter(ctbl.c.url == url) \
-			.all()
-
-		items.sort(key=lambda x: (x.id, x.transaction_id, x.end_transaction_id))
-		# for x in items:
-		# 	print(x.id, x.transaction_id, x.end_transaction_id)
-
-		deleted_1 = 0
-		deleted_2 = 0
-
-		orig_cnt = len(items)
-		datevec = self.snap_times
-		self.log.info("Clearing history for URL: %s (items: %s)", url, orig_cnt)
-		attachments = {}
-		for item in items:
-			if item.state != "complete":
-				deleted_1 += 1
-				self.log.info("Deleting incomplete item for url: %s!", url)
-				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
-			elif item.content == None and item.file == None:
-				self.log.info("Deleting item without a file and no content for url: %s!", url)
-				# print(type(item), item.mimetype, item.file, item.content)
-				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
-				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
-				deleted_1 += 1
-			elif item.content != None:
-				# print(type(item), item.keys(), item.addtime, item.fetchtime)
-				closest = min(datevec, key=self.diff_func(item))
-				if not closest in attachments:
-					attachments[closest] = []
-				attachments[closest].append(item)
-			elif item.file != None:
-				pass
-			else:
-				print("Wat?")
-
-
-		self.log.info("Found %s items missing both file reference and content", deleted_1)
-		keys = list(attachments.keys())
-		keys.sort()
-
-		out = []
-
-		for key in keys:
-			superset = attachments[key]
-			if len(superset) > 1:
-				# print("lolercoaster")
-				superset.sort(key=lambda x: (x.addtime if x.fetchtime is None else x.fetchtime, x.id, x.transaction_id), reverse=True)
-				out.append(superset[0])
-				# print(superset[0].fetchtime, superset[0].id, superset[0].transaction_id)
-				for tmp in superset[1:]:
-					sess.execute(ctbl.delete().where(ctbl.c.id == tmp.id).where(ctbl.c.transaction_id == tmp.transaction_id))
-					deleted_2 += 1
-			elif len(superset) == 1:
-				out.append(superset[0])
-			else:
-				raise ValueError("Wat? Key with no items!")
-
-		deleted = deleted_1 + deleted_2
-		seq_dirty = self.relink_row_sequence(sess, out)
-		if deleted > 0 or seq_dirty:
-			# Rewrite the tid links so the history renders properly
-			self.log.info("Committing because %s items were removed!", deleted)
-			sess.commit()
-		else:
-			sess.rollback()
-
-		self.log.info("Deleted: %s items when simplifying history, Total deleted: %s, remaining: %s", deleted_2, deleted, orig_cnt-deleted)
-
-	def consolidate_history(self):
+	def consolidate_history_old(self):
 
 		with db.session_context() as sess:
 			self.qlog.info("Querying for items with significant history size")
@@ -284,6 +211,169 @@ class DbFlattener(object):
 						res.pop().result()
 
 		executor.shutdown()
+
+
+	def truncate_url_history(self, sess, url):
+		ctbl = version_table(db.WebPages.__table__)
+
+		items = sess.query(ctbl) \
+			.filter(ctbl.c.url == url) \
+			.all()
+
+		items.sort(key=lambda x: (x.id, x.transaction_id, x.end_transaction_id))
+		# for x in items:
+		# 	print(x.id, x.transaction_id, x.end_transaction_id)
+
+		deleted_1 = 0
+		deleted_2 = 0
+
+		orig_cnt = len(items)
+		datevec = self.snap_times
+		# self.log.info("Clearing history for URL: %s (items: %s)", url, orig_cnt)
+		attachments = {}
+		for item in items:
+			if item.state != "complete":
+				deleted_1 += 1
+				# self.log.info("Deleting incomplete item for url: %s!", url)
+				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+			elif item.content == None and item.file == None:
+				# self.log.info("Deleting item without a file and no content for url: %s!", url)
+				# print(type(item), item.mimetype, item.file, item.content)
+				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				deleted_1 += 1
+			elif item.content != None:
+				# print(type(item), item.keys(), item.addtime, item.fetchtime)
+				closest = min(datevec, key=self.diff_func(item))
+				if not closest in attachments:
+					attachments[closest] = []
+				attachments[closest].append(item)
+			elif item.file != None:
+				pass
+			else:
+				print("Wat?")
+
+
+		# self.log.info("Found %s items missing both file reference and content", deleted_1)
+		keys = list(attachments.keys())
+		keys.sort()
+
+		out = []
+
+		for key in keys:
+			superset = attachments[key]
+			if len(superset) > 1:
+				# print("lolercoaster")
+				superset.sort(key=lambda x: (x.addtime if x.fetchtime is None else x.fetchtime, x.id, x.transaction_id), reverse=True)
+				out.append(superset[0])
+				# print(superset[0].fetchtime, superset[0].id, superset[0].transaction_id)
+				for tmp in superset[1:]:
+					sess.execute(ctbl.delete().where(ctbl.c.id == tmp.id).where(ctbl.c.transaction_id == tmp.transaction_id))
+					deleted_2 += 1
+			elif len(superset) == 1:
+				out.append(superset[0])
+			else:
+				raise ValueError("Wat? Key with no items!")
+
+		deleted = deleted_1 + deleted_2
+		seq_dirty = self.relink_row_sequence(sess, out)
+		if deleted > 0 or seq_dirty:
+			# Rewrite the tid links so the history renders properly
+			# self.log.info("Committing because %s items were removed!", deleted)
+			sess.commit()
+		else:
+			sess.rollback()
+
+		# self.log.info("Deleted: %s items when simplifying history, Total deleted: %s, remaining: %s", deleted_2, deleted, orig_cnt-deleted)
+		return deleted
+
+	def truncate_url_range(self, sess, range_start, range_end):
+		# self.log.info("Querying for items with significant history size in range %s -> %s", range_start, range_end)
+		urls = sess.execute("""
+				SELECT
+					count(*), url
+				FROM
+					web_pages_version
+				WHERE
+					id > :min_id
+				AND
+					id <= :max_id
+				GROUP BY
+					url
+				HAVING
+					COUNT(*) > 10
+				ORDER BY COUNT(*) DESC
+
+			""", {
+				'min_id' : range_start,
+				'max_id' : range_end,
+			})
+		urls = list(urls)
+		urls = [tmp[1] for tmp in urls]
+
+		urls = [tmp for tmp in urls if tmp not in self.url_hit_list]
+
+		ret = 0
+
+		for url in urls:
+			self.url_hit_list.add(url)
+			ret += self.truncate_url_history(sess, url)
+
+		return ret
+		# self.log.info("Found %s URLs in range that require processing.", len(urls))
+
+		# self.log.info("Deleted: %s items when simplifying history, Total deleted: %s, remaining: %s", deleted_2, deleted, orig_cnt-deleted)
+
+	def consolidate_history(self):
+
+		with db.session_context() as sess:
+			self.qlog.info("Querying for items with significant history size")
+			end = sess.execute("""
+					SELECT
+						min(id), max(id)
+					FROM
+						web_pages_version
+				""")
+			start, end = list(end)[0]
+			self.qlog.info("Database Extents: %s", end)
+
+			sess.flush()
+			sess.expire_all()
+
+		self.url_hit_list = set()
+
+		step = 5000
+		start = start - (start % step)
+		pbar = tqdm.tqdm(range(start, end, step))
+
+		deleted = 0
+		for x in pbar:
+			with db.session_context() as sess:
+				pbar.set_description("Deleted %s. Processed %s urls" % (deleted, len(self.url_hit_list)))
+				try:
+					deleted += self.truncate_url_range(sess, x, x+step)
+				except sqlalchemy.exc.OperationalError:
+					self.log.error("Error in range section %s -> %s", x, x+step)
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
+					sess.rollback()
+
+		# worker_count = 4
+		# executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+		# for batchset in batch(list(batch(end, 50)), 50):
+		# 	executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+		# 	res = []
+		# 	for paramset in batchset:
+
+		# 		future = executor.submit(incremental_history_consolidate, paramset)
+		# 		res.append(future)
+
+		# 		if len(res) > 10:
+		# 			self.log.info("Processing results incrementally.")
+		# 			while res:
+		# 				res.pop().result()
+
+		# executor.shutdown()
 
 			# for res in batch_res:
 			# 	self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )

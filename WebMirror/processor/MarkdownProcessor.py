@@ -74,6 +74,8 @@ class MarkdownProcessor(ProcessorBase.PageProcessor):
 		if prefix:
 			title = "{prefix} - {title}".format(prefix=prefix, title=title)
 
+		if len(title) > 200:
+			title = title[:200] + " [truncated]"
 		return title
 
 

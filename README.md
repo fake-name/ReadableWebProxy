@@ -25,8 +25,7 @@ per-domain, or global basis).
 
 Quick installation overview:
 
- - Install Postgresql **>= 9.5.** This is ~~alpha~~, you will (probably) have to build from source.
-     (This is because this project uses the new `ON CONFLICT` clause)
+ - Install Postgresql **>= 9.5.** 
  - Build the community extensions for Postgresql.
  - Create a database for the project.
  - In the project database, install the `pg_trgm` and `citext` extensions from the 

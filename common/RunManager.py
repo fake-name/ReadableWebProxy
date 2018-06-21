@@ -258,6 +258,7 @@ class Crawler(object):
 
 			except KeyboardInterrupt:
 				self.log.info("Control C caught. Stopping scraper.")
+				runStatus.run_state.value = 0
 				break
 
 			except Exception:
