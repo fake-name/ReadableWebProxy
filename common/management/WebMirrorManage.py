@@ -346,6 +346,87 @@ def delete_internal(sess, ids, netloc, badwords):
 				sess.rollback()
 
 
+def exposed_delete_url_history(netloc):
+	'''
+	Iterate over each ruleset in the rules directory, and generate a compound query that will
+	delete any matching rows.
+	For rulesets with a large number of rows, or many badwords, this
+	can be VERY slow.
+
+	Similar in functionality to `clear_bad`, except it results in many fewer queryies,
+	and is therefore likely much more performant.
+	'''
+
+	print("Delete URL called with netloc param: '%s'" % netloc)
+
+
+	commit_interval =  50000
+	step            =  50000
+
+	with db.session_context() as sess:
+		print("Getting minimum row in need or update..")
+		start = sess.execute("""SELECT min(id) FROM web_pages_version WHERE netloc=:netloc""", {'netloc' : netloc, })
+		# start = sess.execute("""SELECT min(id) FROM web_pages_version WHERE netloc=:netloc OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		start = list(start)[0][0]
+		if start is None:
+			print("No rows to reset!")
+			return
+		print("Minimum row ID:", start, "getting maximum row...")
+		stop = sess.execute("""SELECT max(id) FROM web_pages_version WHERE netloc=:netloc""", {'netloc' : netloc, })
+		# stop = sess.execute("""SELECT max(id) FROM web_pages_version WHERE netloc=:netloc OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		stop = list(stop)[0][0]
+		print("Maximum row ID: ", stop)
+
+
+		print("Need to fix rows from %s to %s" % (start, stop))
+		start = start - (start % step)
+
+		changed = 0
+		tot_changed = 0
+		for idx in tqdm.tqdm(range(start, stop, step), desc="Deleting"):
+			try:
+				# SQL String munging! I'm a bad person!
+				# Only done because I can't easily find how to make sqlalchemy
+				# bind parameters ignore the postgres specific cast
+				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+				have = sess.execute("""DELETE FROM
+											web_pages_version
+										WHERE
+											netloc = :netloc
+										AND
+											id > :min_idx
+										AND
+											id <= :max_idx;""",
+											{
+												'netloc'  : netloc,
+												'min_idx' : idx,
+												'max_idx' : idx+step,
+											 })
+				# print()
+
+				# processed  = idx - start
+				# total_todo = stop - start
+				# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
+				changed += have.rowcount
+				tot_changed += have.rowcount
+				if changed > commit_interval:
+					print("Committing (%s changed rows)...." % changed, end=' ')
+					sess.commit()
+					print("done")
+					changed = 0
+
+			except sqlalchemy.exc.OperationalError:
+				sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				sess.rollback()
+
+
+		sess.commit()
+
+	if not found_ruleset:
+		print("ERROR!")
+		print("Selected netloc (%s) not found in rulesets!" % selected_netloc)
+
 def exposed_purge_invalid_urls(selected_netloc=None):
 	'''
 	Iterate over each ruleset in the rules directory, and generate a compound query that will

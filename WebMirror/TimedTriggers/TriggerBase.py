@@ -77,7 +77,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 							AND
 								web_pages.url = %(url)s
 							AND
-								web_pages.ignoreuntiltime > %(ignoreuntiltime)s
+								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
 						)
 					;
 

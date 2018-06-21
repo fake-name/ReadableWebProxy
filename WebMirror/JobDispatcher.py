@@ -308,7 +308,9 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 	def run(self):
 		try:
 			self.consume()
-
+		except KeyboardInterrupt:
+			self.log.info("Saw keyboard interrupt. Breaking!")
+			self.run_flag.value = 0
 		except Exception:
 			with open("error %s - %s.txt" % ('job_consumer', time.time()), "w") as fp:
 				fp.write("Manager crashed?\n")
@@ -827,6 +829,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 	def run(self):
 		try:
 			self.queue_filler_proc()
+		except KeyboardInterrupt:
+			self.log.info("Saw keyboard interrupt. Breaking!")
+			self.run_flag.value = 0
 		except Exception:
 			with open("error %s - %s.txt" % (self.jq_mode, time.time()), "w") as fp:
 				fp.write("Manager crashed?\n")
@@ -889,7 +894,7 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
 		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
 		random_fetch_proc   = RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
-		job_consumer_proc   = RpcJobConsumerInternal(self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
+		job_consumer_proc   = RpcJobConsumerInternal(                self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
 
 
 		threads = [
@@ -949,6 +954,11 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		try:
 			instance = cls(job_queue, run_flag, test_mode=test_mode)
 			instance.run()
+
+		except KeyboardInterrupt:
+			print("Saw keyboard interrupt. Breaking!")
+			run_flag.value = 0
+
 		except Exception:
 			print("Error!")
 			print("Error!")

@@ -299,8 +299,8 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 	# Then flatten it down to a single dict
 	bulk_dict = {k: v for d in bulk_dict for k, v in d.items()}
 
-	# We use a statement timeout context of 5000 ms, so we don't get wedged on a lock.
-	raw_cur.execute("SET statement_timeout TO 5000;")
+	# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
+	raw_cur.execute("SET statement_timeout TO 2500;")
 	raw_cur.execute("BEGIN;")
 
 	rowcnt = 0
