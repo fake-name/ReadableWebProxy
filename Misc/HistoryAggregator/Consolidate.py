@@ -276,8 +276,9 @@ class DbFlattener(object):
 				raise ValueError("Wat? Key with no items!")
 
 		deleted = deleted_1 + deleted_2
-		seq_dirty = self.relink_row_sequence(sess, out)
-		if deleted > 0 or seq_dirty:
+		# seq_dirty = self.relink_row_sequence(sess, out)
+		# if deleted > 0 or seq_dirty:
+		if deleted > 0:
 			# Rewrite the tid links so the history renders properly
 			# self.log.info("Committing because %s items were removed!", deleted)
 			sess.commit()
