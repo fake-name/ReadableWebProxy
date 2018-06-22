@@ -127,7 +127,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 		# baseUrls, pageUrl, pgContent, loggerPath, relinkable
-		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(**params)
+		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(extra_msg="for rss filter", extra_logger="-RSS", **params)
 
 		extracted = scraper.extractContent()
 		assert contentDat['type'] == 'text/html'

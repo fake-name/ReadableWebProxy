@@ -1,9 +1,5 @@
 
-import time
-import multiprocessing
-import urllib.parse
-import pprint
-import json
+import sys
 import datetime
 import traceback
 import logging
@@ -11,7 +7,9 @@ import os.path
 import json
 import calendar
 import tqdm
-from pympler import tracker
+
+if '__pypy__' not in sys.builtin_module_names:
+	from pympler import tracker
 
 import objgraph
 import code
@@ -175,7 +173,7 @@ class DbFlattener(object):
 
 		with db.session_context() as sess:
 			self.qlog.info("Querying for items with significant history size")
-			end = sess.execute("""
+			high_incidence_items = sess.execute("""
 					SELECT
 						count(*), url
 					FROM
@@ -184,24 +182,23 @@ class DbFlattener(object):
 						url
 					HAVING
 						COUNT(*) > 100
-					ORDER BY COUNT(*) ASC
 
 				""")
-			end = list(end)
-			self.qlog.info("Found %s items with more then 10 history entries. Processing", len(end))
+			high_incidence_items = [list(tmp) for tmp in high_incidence_items]
+			self.qlog.info("Found %s items with more then 10 history entries. Processing", len(high_incidence_items))
 
 			sess.flush()
 			sess.expire_all()
 
-		worker_count = 4
-
-		m_tracker = tracker.SummaryTracker()
+		self.log.info("Writing items to json file.")
+		with open("high_incidence_items.json", "w") as fp:
+			json.dump(high_incidence_items, fp)
 
 		self.log.info("Processing in chunks")
 
-		for batchset in batch(list(batch(end, 50)), 50):
-			# executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
-			res = []
+
+		m_tracker = tracker.SummaryTracker()
+		for batchset in batch(list(batch(high_incidence_items, 50)), 50):
 			for paramset in batchset:
 				incremental_history_consolidate(paramset)
 				m_tracker.print_diff()
@@ -209,7 +206,7 @@ class DbFlattener(object):
 	def truncate_url_history(self, sess, url):
 		ctbl = version_table(db.WebPages.__table__)
 
-		self.log.info("Counting rows for url %s.", count)
+		self.log.info("Counting rows for url %s.", url)
 		count = sess.query(ctbl) \
 			.filter(ctbl.c.url == url) \
 			.count()
@@ -252,7 +249,7 @@ class DbFlattener(object):
 				print("Wat?")
 
 
-		# self.log.info("Found %s items missing both file reference and content", deleted_1)
+		self.log.info("Found %s items missing both file reference and content", deleted_1)
 		keys = list(attachments.keys())
 		keys.sort()
 

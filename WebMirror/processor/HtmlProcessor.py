@@ -37,9 +37,15 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	loggerPath = "Main.Text.HtmlProc"
 
-	def __init__(self, baseUrls, pageUrl, pgContent, loggerPath, relinkable, **kwargs):
+	def __init__(self, baseUrls, pageUrl, pgContent, loggerPath, relinkable, extra_msg=None, extra_logger=None, **kwargs):
 
-		self.log.info("HtmlProc processing HTML content.")
+		self.loggerPath = "Main.Text.HtmlProc%s" % (extra_logger if extra_logger else "")
+
+		msg = ""
+		if extra_msg:
+			msg = " (%s)" % extra_msg
+		self.log.info("HtmlProc processing HTML content%s.", msg)
+
 		self._tld           = set()
 		self._fileDomains   = set()
 

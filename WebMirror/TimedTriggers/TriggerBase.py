@@ -63,9 +63,9 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 							state           = %(state)s,
 							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
 							-- The lowest priority is 10.
-							priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority), 10),
+							priority        = GREATEST(LEAST(EXCLUDED.priority, web_pages.priority, 10), 1),
 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
-							ignoreuntiltime = LEAST(EXCLUDED.addtime, web_pages.addtime, %(ignoreuntiltime)s)
+							ignoreuntiltime = LEAST(EXCLUDED.ignoreuntiltime, web_pages.ignoreuntiltime, %(ignoreuntiltime)s, %(ignoreuntiltime_override)s)
 						WHERE
 						(
 								(
@@ -101,7 +101,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'addtime'         : datetime.datetime.now(),
 
 			# Don't retrigger unless the ignore time has elaped or we're in force mode.
-			'ignoreuntiltime' : datetime.datetime.max if ignoreignore else datetime.datetime.now(),
+			'ignoreuntiltime'          : datetime.datetime.max if ignoreignore else datetime.datetime.now(),
+			'ignoreuntiltime_override' : datetime.datetime.min if ignoreignore else datetime.datetime.now(),
 			}
 
 		cursor.execute(cmd, data)

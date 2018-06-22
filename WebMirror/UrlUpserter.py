@@ -75,6 +75,12 @@ def execute_batch(cur, sql, argslist, page_size=100):
 		sqls = [cur.mogrify(sql, args) for args in page]
 		cur.execute(b";".join(sqls))
 
+
+def batch(iterable, n=1):
+	l = len(iterable)
+	for ndx in range(0, l, n):
+		yield iterable[ndx:min(ndx + n, l)]
+
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
 	sess = db.get_db_session()
@@ -303,20 +309,22 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 	# Something something DBAPI
 	raw_cur.execute("COMMIT;")
 
-	# We don't care about isolation for these operations, as each operation
-	# is functionally independent.
-	raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
-
-	# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
-	raw_cur.execute("SET statement_timeout TO 2500;")
 
 	rowcnt = 0
 	try:
-		# We try the bulk insert command first.
-		execute_batch(raw_cur, per_cmd, link_batch)
-		rowcnt = raw_cur.rowcount
-		raw_cur.execute("COMMIT;")
-		raw_cur.execute("RESET statement_timeout;")
+		for subc in batch(link_batch, 50):
+			# We don't care about isolation for these operations, as each operation
+			# is functionally independent.
+			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
+
+			# We use a statement timeout context of 1000 ms, so we don't get wedged on a lock.
+			raw_cur.execute("SET statement_timeout TO 1000;")
+
+			# We try the bulk insert command first.
+			execute_batch(raw_cur, per_cmd, subc)
+			rowcnt += raw_cur.rowcount
+			raw_cur.execute("COMMIT;")
+			raw_cur.execute("RESET statement_timeout;")
 		link_batch = []
 		logger.info("Touched AT LEAST %s rows", rowcnt)
 		return rowcnt
@@ -328,17 +336,21 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		raw_cur.execute("ROLLBACK;")
 		logger.error("Retrying.")
 
+	rowcnt = 0
 	try:
-		raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
+		for subc in batch(link_batch, 5):
+			# We don't care about isolation for these operations, as each operation
+			# is functionally independent.
+			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
 
-		# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
-		raw_cur.execute("SET statement_timeout TO 2500;")
+			# We use a statement timeout context of 1000 ms, so we don't get wedged on a lock.
+			raw_cur.execute("SET statement_timeout TO 1000;")
 
-		# We try the bulk insert command first.
-		execute_batch(raw_cur, per_cmd, link_batch)
-		rowcnt = raw_cur.rowcount
-		raw_cur.execute("COMMIT;")
-		raw_cur.execute("RESET statement_timeout;")
+			# We try the bulk insert command first.
+			execute_batch(raw_cur, per_cmd, subc)
+			rowcnt += raw_cur.rowcount
+			raw_cur.execute("COMMIT;")
+			raw_cur.execute("RESET statement_timeout;")
 		link_batch = []
 		logger.info("Touched AT LEAST %s rows", rowcnt)
 		return rowcnt
@@ -458,8 +470,9 @@ class UpdateAggregator(object):
 							-- Largest distance is 100, but it's not checked
 							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
 
-							-- The lowest priority is 10.
-							priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v), 10),
+							-- The lowest priority is 10. Highest is 1
+							-- Priorities drop as they spread, generally
+							priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v, 1), 10),
 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 						WHERE
 						(

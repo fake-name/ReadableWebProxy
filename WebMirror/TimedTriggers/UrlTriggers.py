@@ -162,8 +162,8 @@ if __name__ == "__main__":
 	logSetup.initLogging(1)
 	run1 = RssTriggerBase()
 	run1._go()
-	run2 = HourlyPageTrigger()
-	run2._go()
-	run3 = EveryOtherDayPageTrigger()
-	run3._go()
+	# run2 = HourlyPageTrigger()
+	# run2._go()
+	# run3 = EveryOtherDayPageTrigger()
+	# run3._go()
 
