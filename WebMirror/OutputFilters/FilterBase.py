@@ -66,7 +66,7 @@ class FilterBase(PageProcessor):
 				'type'              : self.kwargs['job'].type,
 				'state'             : "new",
 				'addtime'           : datetime.datetime.now(),
-				'ignoreuntiltime'   : datetime.datetime.min,
+				'ignoreuntiltime'   : datetime.datetime.now(),
 				}
 			links_out.append(new)
 
@@ -147,7 +147,7 @@ class FilterBase(PageProcessor):
 						have.state in ['new', 'fetching', 'processing', 'removed']
 						and have.priority <= trigger_priority
 						and have.distance > 1
-						and have.ignoreuntiltime > datetime.datetime.now() - datetime.timedelta(hours=1)
+						and have.ignoreuntiltime < datetime.datetime.now() - datetime.timedelta(hours=1)
 					):
 					self.log.info("Skipping: '%s' (%s, %s)", release_url, have.state, have.priority)
 					break

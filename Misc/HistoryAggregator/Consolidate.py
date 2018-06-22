@@ -11,8 +11,8 @@ import os.path
 import json
 import calendar
 import tqdm
+from pympler import tracker
 
-# from pympler import tracker
 import objgraph
 import code
 import concurrent.futures
@@ -21,7 +21,6 @@ import sqlalchemy.exc
 
 import common.database as db
 from sqlalchemy_continuum.utils import version_table
-
 
 # # # Do the delete from the versioning table now.
 # ctbl = version_table(db.WebPages.__table__)
@@ -172,7 +171,7 @@ class DbFlattener(object):
 
 		return dirty
 
-	def consolidate_history_old(self):
+	def consolidate_history(self):
 
 		with db.session_context() as sess:
 			self.qlog.info("Querying for items with significant history size")
@@ -184,8 +183,8 @@ class DbFlattener(object):
 					GROUP BY
 						url
 					HAVING
-						COUNT(*) > 10
-					ORDER BY COUNT(*) DESC
+						COUNT(*) > 100
+					ORDER BY COUNT(*) ASC
 
 				""")
 			end = list(end)
@@ -196,26 +195,25 @@ class DbFlattener(object):
 
 		worker_count = 4
 
-		executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+		m_tracker = tracker.SummaryTracker()
+
+		self.log.info("Processing in chunks")
+
 		for batchset in batch(list(batch(end, 50)), 50):
-			executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
+			# executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
 			res = []
 			for paramset in batchset:
-
-				future = executor.submit(incremental_history_consolidate, paramset)
-				res.append(future)
-
-				if len(res) > 10:
-					self.log.info("Processing results incrementally.")
-					while res:
-						res.pop().result()
-
-		executor.shutdown()
-
+				incremental_history_consolidate(paramset)
+				m_tracker.print_diff()
 
 	def truncate_url_history(self, sess, url):
 		ctbl = version_table(db.WebPages.__table__)
 
+		self.log.info("Counting rows for url %s.", count)
+		count = sess.query(ctbl) \
+			.filter(ctbl.c.url == url) \
+			.count()
+		self.log.info("Found %s results for url %s. Fetching", count, url)
 		items = sess.query(ctbl) \
 			.filter(ctbl.c.url == url) \
 			.all()
@@ -325,7 +323,7 @@ class DbFlattener(object):
 
 		# self.log.info("Deleted: %s items when simplifying history, Total deleted: %s, remaining: %s", deleted_2, deleted, orig_cnt-deleted)
 
-	def consolidate_history(self):
+	def consolidate_history_new(self):
 
 		with db.session_context() as sess:
 			self.qlog.info("Querying for items with significant history size")
@@ -336,29 +334,39 @@ class DbFlattener(object):
 						web_pages_version
 				""")
 			start, end = list(end)[0]
-			self.qlog.info("Database Extents: %s", end)
+			self.qlog.info("Database Extents: %s -> %s", start, end)
 
 			sess.flush()
 			sess.expire_all()
 
 		self.url_hit_list = set()
 
-		step = 5000
+		step = 50000
 		start = start - (start % step)
 		pbar = tqdm.tqdm(range(start, end, step))
+
+		m_tracker = tracker.SummaryTracker()
+
+		delta = 0
 
 		deleted = 0
 		for x in pbar:
 			with db.session_context() as sess:
 				pbar.set_description("Deleted %s. Processed %s urls" % (deleted, len(self.url_hit_list)))
 				try:
-					deleted += self.truncate_url_range(sess, x, x+step)
+					changed  = self.truncate_url_range(sess, x, x+step)
+					deleted += changed
+
 				except sqlalchemy.exc.OperationalError:
 					self.log.error("Error in range section %s -> %s", x, x+step)
 					for line in traceback.format_exc().split("\n"):
 						self.log.error(line)
 					sess.rollback()
 
+				delta   += 1
+				if delta > 5000:
+					delta = 0
+					m_tracker.print_diff()
 		# worker_count = 4
 		# executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
 		# for batchset in batch(list(batch(end, 50)), 50):

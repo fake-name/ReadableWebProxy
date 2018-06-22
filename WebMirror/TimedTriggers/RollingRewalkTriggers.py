@@ -43,7 +43,7 @@ class RollingRewalkTriggersBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseC
 								self.db.WebPages.fetchtime       < ago,
 								self.db.WebPages.fetchtime is None
 							)
-							# self.db.WebPages.ignoreuntiltime > (datetime.datetime.min + datetime.timedelta(days=1)),
+							# self.db.WebPages.ignoreuntiltime < (datetime.datetime.min + datetime.timedelta(days=1)),
 						)
 					)
 		# print("Query:", q)

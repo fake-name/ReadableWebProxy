@@ -98,7 +98,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'addtime'         : datetime.datetime.now(),
 
 			# Don't retrigger unless the ignore time has elaped.
-			'ignoreuntiltime' : datetime.datetime.min,
+			'ignoreuntiltime' : datetime.datetime.now(),
 			}
 
 		cursor.execute(cmd, data)

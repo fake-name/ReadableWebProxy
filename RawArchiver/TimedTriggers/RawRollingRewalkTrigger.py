@@ -42,7 +42,7 @@ class RollingRawRewalkTrigger(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseC
 								self.db.RawWebPages.fetchtime       < ago,
 								self.db.RawWebPages.fetchtime is None
 							)
-							# self.db.RawWebPages.ignoreuntiltime > (datetime.datetime.min + datetime.timedelta(days=1)),
+							# self.db.RawWebPages.ignoreuntiltime < (datetime.datetime.min + datetime.timedelta(days=1)),
 						)
 					)
 		# print("Query:", q)

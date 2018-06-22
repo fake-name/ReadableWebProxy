@@ -45,7 +45,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		self.log.info("Update check for %s finished.", self.pluginName)
 
 
-	def __raw_retrigger_with_cursor(self, url, cursor):
+	def __raw_retrigger_with_cursor(self, url, cursor, ignoreignore):
 
 		# self.log.info("Retriggering fetch for URL: %s", url)
 
@@ -100,15 +100,15 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'state'           : "new",
 			'addtime'         : datetime.datetime.now(),
 
-			# Don't retrigger unless the ignore time has elaped.
-			'ignoreuntiltime' : datetime.datetime.min,
+			# Don't retrigger unless the ignore time has elaped or we're in force mode.
+			'ignoreuntiltime' : datetime.datetime.max if ignoreignore else datetime.datetime.now(),
 			}
 
 		cursor.execute(cmd, data)
 		rowcnt = cursor.rowcount
 		return rowcnt
 
-	def retriggerUrlList(self, urlList):
+	def retriggerUrlList(self, urlList, ignoreignore=False):
 
 		sess = self.db.get_db_session()
 
@@ -122,7 +122,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				try:
 					for url in tqdm.tqdm(urlList, desc="Retriggering for %s plugin" % self.pluginName):
 						loopcnt += 1
-						changed += self.__raw_retrigger_with_cursor(url, raw_cur)
+						changed += self.__raw_retrigger_with_cursor(url, raw_cur, ignoreignore=ignoreignore)
 						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
 							self.log.info("Committing!")
 							raw_cur.execute("COMMIT;")
@@ -133,7 +133,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 					self.log.warning("TQDM Issue. Siiiiiiigh")
 					for url in urlList:
 						loopcnt += 1
-						changed += self.__raw_retrigger_with_cursor(url, raw_cur)
+						changed += self.__raw_retrigger_with_cursor(url, raw_cur, ignoreignore=ignoreignore)
 						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
 							self.log.info("Committing!")
 							raw_cur.execute("COMMIT;")
@@ -153,14 +153,14 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		self.log.info("Retrigger changed %s rows", changed)
 
 
-	def retriggerUrl(self, url, conditional=None):
+	def retriggerUrl(self, url, conditional=None, ignoreignore=False):
 
 		sess = self.db.get_db_session()
 
 		raw_cur = sess.connection().connection.cursor()
 		while 1:
 			try:
-				self.__raw_retrigger_with_cursor(url, raw_cur)
+				self.__raw_retrigger_with_cursor(url, raw_cur, ignoreignore=ignoreignore)
 				raw_cur.execute("COMMIT;")
 				break
 

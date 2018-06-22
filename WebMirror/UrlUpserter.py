@@ -299,9 +299,16 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 	# Then flatten it down to a single dict
 	bulk_dict = {k: v for d in bulk_dict for k, v in d.items()}
 
+	# Somehow we're getting here with an open transaction. I have no idea what's opening them.
+	# Something something DBAPI
+	raw_cur.execute("COMMIT;")
+
+	# We don't care about isolation for these operations, as each operation
+	# is functionally independent.
+	raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
+
 	# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
 	raw_cur.execute("SET statement_timeout TO 2500;")
-	raw_cur.execute("BEGIN;")
 
 	rowcnt = 0
 	try:
@@ -322,6 +329,11 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		logger.error("Retrying.")
 
 	try:
+		raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
+
+		# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
+		raw_cur.execute("SET statement_timeout TO 2500;")
+
 		# We try the bulk insert command first.
 		execute_batch(raw_cur, per_cmd, link_batch)
 		rowcnt = raw_cur.rowcount
@@ -344,7 +356,11 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 	while 1:
 		rowcnt = 0
 		try:
-			raw_cur.execute("BEGIN;")
+			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
+
+			# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
+			raw_cur.execute("SET statement_timeout TO 2500;")
+
 			for paramset in link_batch:
 				assert isinstance(paramset['starturl'], str)
 				if len(paramset['url']) > 2000:
@@ -358,7 +374,9 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 					if commit_each:
 						raw_cur.execute("COMMIT;")
-						raw_cur.execute("BEGIN;")
+						raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
+						# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
+						raw_cur.execute("SET statement_timeout TO 2500;")
 
 			raw_cur.execute("COMMIT;")
 			break
