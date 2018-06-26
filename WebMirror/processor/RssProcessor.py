@@ -287,21 +287,6 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 
-def testJobFromUrl(url):
-	import datetime
-	import WebMirror.database
-	return WebMirror.database.WebPages(
-				state     = 'fetching',
-				url       = url,
-				starturl  = url,
-				netloc    = "wat",
-				distance  = WebMirror.database.MAX_DISTANCE-2,
-				is_text   = True,
-				priority  = WebMirror.database.DB_REALTIME_PRIORITY,
-				type      = "unknown",
-				fetchtime = datetime.datetime.now(),
-				)
-
 
 
 def test():

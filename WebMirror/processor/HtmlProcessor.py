@@ -101,6 +101,38 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 	########################################################################################################################
 
 
+	def purgeEmptyTags(self, soup):
+		for _ in range(3):
+			# SVGs are annoying, and nest shit.
+			for path_tag in soup.find_all("polygon"):
+				if path_tag.contents == [] and path_tag.get_text(strip=True) == "":
+					path_tag.decompose()
+			for path_tag in soup.find_all("g"):
+				if path_tag.contents == [] and path_tag.get_text(strip=True) == "":
+					path_tag.decompose()
+			for path_tag in soup.find_all("path"):
+				if path_tag.contents == [] and path_tag.get_text(strip=True) == "":
+					path_tag.decompose()
+
+			for svg_tag in soup.find_all("svg"):
+				for svg_title in svg_tag.find_all("title"):
+					svg_title.unwrap()
+
+			for svg_tag in soup.find_all("svg"):
+				if svg_tag.contents == [] and svg_tag.get_text(strip=True) == "":
+					svg_tag.decompose()
+
+		for div_tag in soup.find_all("div"):
+			if div_tag.contents == [] and div_tag.get_text(strip=True) == "":
+				div_tag.decompose()
+
+		for span_tag in soup.find_all("span"):
+			if span_tag.contents == [] and span_tag.get_text(strip=True) == "":
+				span_tag.decompose()
+
+
+		return soup
+
 	def destyleItems(self, soup):
 		'''
 		using the set of search 2-tuples in `destyle`,
@@ -499,6 +531,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		soup = self.postprocessBody(soup)
 
 		soup = self.removeClasses(soup)
+
+		soup = self.purgeEmptyTags(soup)
 
 		soup = self.fixCss(soup)
 

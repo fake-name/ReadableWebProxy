@@ -17,6 +17,7 @@ import concurrent.futures
 
 import sqlalchemy.exc
 
+import WebMirror.rules
 import common.database as db
 from sqlalchemy_continuum.utils import version_table
 
@@ -75,6 +76,9 @@ class DbFlattener(object):
 		self.qlog = logging.getLogger("Main.DbVersioning.Cleaner.Query")
 
 		self.snap_times = self.generate_snap_times()
+
+		rules =  WebMirror.rules.load_rules()
+		self.feed_urls = [tmp for item in rules for tmp in item['feedurls']]
 
 
 	def ago(self, then):
@@ -170,47 +174,70 @@ class DbFlattener(object):
 		return dirty
 
 	def consolidate_history(self):
+		try:
+			with open("high_incidence_items.json") as fp:
+				high_incidence_items = json.load(fp)
+				self.log.info("Using json cached query results!")
+		except Exception:
+			self.log.warning("No cached json results. Rerunning query.")
+			with db.session_context() as sess:
+				self.qlog.info("Querying for items with significant history size")
+				high_incidence_items = sess.execute("""
+						SELECT
+							count(*), url
+						FROM
+							web_pages_version
+						GROUP BY
+							url
+						HAVING
+							COUNT(*) > 10
 
-		with db.session_context() as sess:
-			self.qlog.info("Querying for items with significant history size")
-			high_incidence_items = sess.execute("""
-					SELECT
-						count(*), url
-					FROM
-						web_pages_version
-					GROUP BY
-						url
-					HAVING
-						COUNT(*) > 100
+					""")
+				high_incidence_items = [list(tmp) for tmp in high_incidence_items]
+				self.qlog.info("Found %s items with more then 10 history entries. Processing", len(high_incidence_items))
 
-				""")
-			high_incidence_items = [list(tmp) for tmp in high_incidence_items]
-			self.qlog.info("Found %s items with more then 10 history entries. Processing", len(high_incidence_items))
+				sess.flush()
+				sess.expire_all()
 
-			sess.flush()
-			sess.expire_all()
-
-		self.log.info("Writing items to json file.")
-		with open("high_incidence_items.json", "w") as fp:
-			json.dump(high_incidence_items, fp)
+			self.log.info("Writing items to json file.")
+			with open("high_incidence_items.json", "w") as fp:
+				json.dump(high_incidence_items, fp)
 
 		self.log.info("Processing in chunks")
 
 
 		m_tracker = tracker.SummaryTracker()
-		for batchset in batch(list(batch(high_incidence_items, 50)), 50):
-			for paramset in batchset:
-				incremental_history_consolidate(paramset)
-				m_tracker.print_diff()
+		with concurrent.futures.ThreadPoolExecutor(max_workers = 4) as exc:
+			self.log.info("Submitting tasks to worker queue.")
+			for batchset in batch(list(batch(high_incidence_items, 50)), 50):
+				for paramset in batchset:
+					exc.submit(self.incremental_consolidate, paramset)
+					# self.incremental_consolidate(paramset)
+				# incremental_history_consolidate(paramset)
+				# self.log.info("Printing memory deltas.")
+				# m_tracker.print_diff()
+			self.log.info("All jobs submitted. Waiting for executor to complete!")
 
 	def truncate_url_history(self, sess, url):
 		ctbl = version_table(db.WebPages.__table__)
+
+		if url in self.feed_urls:
+			self.log.info("Feed URL (%s)! Deleting history wholesale!", url)
+
+			res = sess.execute(
+					ctbl.delete() \
+					.where(ctbl.c.url == url)
+				)
+			self.log.info("Modified %s rows", res.rowcount)
+			return
+
+
 
 		self.log.info("Counting rows for url %s.", url)
 		count = sess.query(ctbl) \
 			.filter(ctbl.c.url == url) \
 			.count()
-		self.log.info("Found %s results for url %s. Fetching", count, url)
+		self.log.info("Found %s results for url %s. Fetching rows", count, url)
 		items = sess.query(ctbl) \
 			.filter(ctbl.c.url == url) \
 			.all()
@@ -227,12 +254,12 @@ class DbFlattener(object):
 		# self.log.info("Clearing history for URL: %s (items: %s)", url, orig_cnt)
 		attachments = {}
 		for item in items:
-			if item.state != "complete":
+			if item.state != "complete" and item.state != 'error':
 				deleted_1 += 1
-				# self.log.info("Deleting incomplete item for url: %s!", url)
+				self.log.info("Deleting incomplete item for url: %s (state: %s)!", url, item.state)
 				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 			elif item.content == None and item.file == None:
-				# self.log.info("Deleting item without a file and no content for url: %s!", url)
+				self.log.info("Deleting item without a file and no content for url: %s!", url)
 				# print(type(item), item.mimetype, item.file, item.content)
 				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
@@ -280,7 +307,7 @@ class DbFlattener(object):
 		else:
 			sess.rollback()
 
-		# self.log.info("Deleted: %s items when simplifying history, Total deleted: %s, remaining: %s", deleted_2, deleted, orig_cnt-deleted)
+		self.log.info("Deleted: %s items when simplifying history, %s incomplete items, Total deleted: %s, remaining: %s", deleted_2, deleted_1, deleted, orig_cnt-deleted)
 		return deleted
 
 	def truncate_url_range(self, sess, range_start, range_end):

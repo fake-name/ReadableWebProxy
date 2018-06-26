@@ -45,6 +45,8 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 
 		toc_container = self.wg_proxy().getJson(toc_url)
 
+		print(toc_container)
+
 		if (not 'msg' in toc_container
 			or not 'data' in toc_container
 			or not 'code' in toc_container
@@ -106,10 +108,12 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 
 			d_s.append(linkli)
 
+
 		header = main_list.new_tag("h3")
 		header.string = 'Table of Contents'
 		main_list.append(header)
 		main_list.append(d_s)
+
 
 		tocdiv = soup.find("div", class_='j_tagWrap')
 		tocdiv.insert_after(main_list)
@@ -122,7 +126,7 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 
 		if BAD_TOC_STR in contentstr:
 			self.log.info("Page %s may contain chapter placeholder. Fetching chapter ToC", url)
-			content_soup = soup = bs4.BeautifulSoup(contentstr, "lxml")
+			content_soup = bs4.BeautifulSoup(contentstr, "lxml")
 			if content_soup.find("div", id='contents') and content_soup.find("div", id='contents').find('span', class_='g_loading'):
 				self.log.info("Page %s contains chapter placeholder. Fetching chapter ToC", url)
 				self.update_toc(url, content_soup)

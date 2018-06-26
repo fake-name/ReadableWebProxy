@@ -472,7 +472,9 @@ class UpdateAggregator(object):
 
 							-- The lowest priority is 10. Highest is 1
 							-- Priorities drop as they spread, generally
-							priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, max_priority_v, 1), 10),
+							-- Priority drops as distance increases, too
+							-- This principally causes breadth-first scans.
+							priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, EXCLUDED.distance, web_pages.distance, max_priority_v, 1), 10),
 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
 						WHERE
 						(

@@ -129,8 +129,6 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 					use_socks     = self.__wr_use_socks,
 					alt_cookiejar = alt_cj,
 				)
-		else:
-			print("Have wg interface")
 		return self.__wg
 
 	def __init__(self,

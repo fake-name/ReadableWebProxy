@@ -63,7 +63,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 							state           = %(state)s,
 							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
 							-- The lowest priority is 10.
-							priority        = GREATEST(LEAST(EXCLUDED.priority, web_pages.priority, 10), 1),
+							priority        = GREATEST(LEAST(EXCLUDED.priority, 10), 1),
 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
 							ignoreuntiltime = LEAST(EXCLUDED.ignoreuntiltime, web_pages.ignoreuntiltime, %(ignoreuntiltime)s, %(ignoreuntiltime_override)s)
 						WHERE
@@ -96,7 +96,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'netloc'          : url_netloc,
 			'distance'        : 0,
 			'is_text'         : True,
-			'priority'        : db.DB_HIGH_PRIORITY,
+			'priority'        : db.DB_HIGH_PRIORITY if ignoreignore else db.DB_LOW_PRIORITY,
 			'state'           : "new",
 			'addtime'         : datetime.datetime.now(),
 

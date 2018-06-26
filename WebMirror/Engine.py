@@ -159,8 +159,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 					alt_cookiejar = alt_cj,
 					custom_ua     = self.__wr_ua_override,
 				)
-		else:
-			print("=Have wg interface")
 		return self.__wg
 
 	def __init__(self,
@@ -863,6 +861,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 				return
 
 			if 'ret' in rpcresp:
+				# Clear the error number (if present)
+				job.errno = None
 				preretrieved = rpcresp['ret']
 				self.dispatchRequest(job, preretrieved)
 			else:
@@ -958,7 +958,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 			distance = self.db.MAX_DISTANCE-2
 
 		if priority == None:
-			priority = self.db.DB_REALTIME_PRIORITY
+			priority = self.db.DB_IDLE_PRIORITY
 
 		# Rather then trying to add, and rolling back if it exists,
 		# just do a simple check for the row first. That'll
@@ -1078,8 +1078,8 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 		row.state     = 'new'
 		if force:
-			row.distance  = self.db.MAX_DISTANCE-2
-			row.priority  = self.db.DB_REALTIME_PRIORITY
+			row.distance  = 0
+			row.priority  = self.db.DB_IDLE_PRIORITY
 
 		# dispatchRequest modifies the row contents directly.
 		self.dispatchRequest(row)
