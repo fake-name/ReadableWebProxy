@@ -35,51 +35,13 @@ import runStatus
 import concurrent.futures
 
 import common.util.urlFuncs as urlFuncs
+import common.util.misc as misc
+import common.util.psycopg_execute_batch as psycopg_execute_batch
 import common.database as db
 import common.stuck
 import common.get_rpyc
 
 
-
-def _paginate(seq, page_size):
-	"""Consume an iterable and return it in chunks.
-	Every chunk is at most `page_size`. Never return an empty chunk.
-	"""
-	page = []
-	it = iter(seq)
-	while 1:
-		try:
-			for i in range(page_size):
-				page.append(next(it))
-			yield page
-			page = []
-		except StopIteration:
-			if page:
-				yield page
-			return
-
-def execute_batch(cur, sql, argslist, page_size=100):
-	r"""Execute groups of statements in fewer server roundtrips.
-	Execute *sql* several times, against all parameters set (sequences or
-	mappings) found in *argslist*.
-	The function is semantically similar to
-	.. parsed-literal::
-		*cur*\.\ `~cursor.executemany`\ (\ *sql*\ , *argslist*\ )
-	but has a different implementation: Psycopg will join the statements into
-	fewer multi-statement commands, each one containing at most *page_size*
-	statements, resulting in a reduced number of server roundtrips.
-	After the execution of the function the `cursor.rowcount` property will
-	**not** contain a total result.
-	"""
-	for page in _paginate(argslist, page_size=page_size):
-		sqls = [cur.mogrify(sql, args) for args in page]
-		cur.execute(b";".join(sqls))
-
-
-def batch(iterable, n=1):
-	l = len(iterable)
-	for ndx in range(0, l, n):
-		yield iterable[ndx:min(ndx + n, l)]
 
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
@@ -312,7 +274,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	rowcnt = 0
 	try:
-		for subc in batch(link_batch, 50):
+		for subc in misc.batch(link_batch, 50):
 			# We don't care about isolation for these operations, as each operation
 			# is functionally independent.
 			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
@@ -321,7 +283,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			raw_cur.execute("SET statement_timeout TO 1000;")
 
 			# We try the bulk insert command first.
-			execute_batch(raw_cur, per_cmd, subc)
+			psycopg_execute_batch.execute_batch(raw_cur, per_cmd, subc)
 			rowcnt += raw_cur.rowcount
 			raw_cur.execute("COMMIT;")
 			raw_cur.execute("RESET statement_timeout;")
@@ -338,7 +300,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	rowcnt = 0
 	try:
-		for subc in batch(link_batch, 5):
+		for subc in misc.batch(link_batch, 5):
 			# We don't care about isolation for these operations, as each operation
 			# is functionally independent.
 			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
@@ -347,7 +309,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			raw_cur.execute("SET statement_timeout TO 1000;")
 
 			# We try the bulk insert command first.
-			execute_batch(raw_cur, per_cmd, subc)
+			psycopg_execute_batch.execute_batch(raw_cur, per_cmd, subc)
 			rowcnt += raw_cur.rowcount
 			raw_cur.execute("COMMIT;")
 			raw_cur.execute("RESET statement_timeout;")

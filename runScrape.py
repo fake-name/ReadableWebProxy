@@ -12,7 +12,7 @@ import WebMirror.rules
 import WebMirror.Runner
 import WebMirror.UrlUpserter
 import RawArchiver.RawRunner
-import RawArchiver.UrlUtils
+import RawArchiver.RawUrlUpserter
 import common.stuck
 import Misc.ls_open_file_handles
 
@@ -35,13 +35,15 @@ def go():
 
 	if "raw" in largv:
 		print("RAW Scrape!")
+		RawArchiver.RawUrlUpserter.check_init_func()
+
 		if not "noreset" in largv:
 			print("Resetting any in-progress downloads.")
-			RawArchiver.UrlUtils.resetRawInProgress()
+			RawArchiver.RawUrlUpserter.resetRawInProgress()
 		else:
 			print("Not resetting in-progress downloads.")
 
-		RawArchiver.UrlUtils.initializeRawStartUrls()
+		RawArchiver.RawUrlUpserter.initializeRawStartUrls()
 		runner.run_raw()
 	else:
 

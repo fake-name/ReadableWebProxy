@@ -24,6 +24,7 @@ import common.util.urlFuncs
 import RawArchiver.misc
 import RawArchiver.RawActiveModules
 import RawArchiver.RawJobDispatcher
+import RawArchiver.RawUrlUpserter
 import runStatus
 from config import C_RAW_RESOURCE_DIR
 
@@ -272,85 +273,36 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 		self.log.info("Upserting %s links (%s filtered)" % (post_filter, orig-post_filter))
 
-
-		new_starturl = job.starturl,
+		new_starturl = job.starturl
 		new_distance = job.distance+1
 
 		# Priority decays with distance.
 		# That basically results in breadth-first fetches.
 		new_priority = job.priority+1
 
-		raw_cur = self.db_sess.connection().connection.cursor()
+		linksd = RawArchiver.RawUrlUpserter.links_to_dicts(links, new_starturl, new_distance, new_priority)
 
-		#  Fucking huzzah for ON CONFLICT!
-		cmd = """
-				INSERT INTO
-					raw_web_pages
-					(url, starturl, netloc, distance, priority, addtime, state, ignoreuntiltime)
-				VALUES
-					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(priority)s, %(addtime)s, %(state)s, now())
-				ON CONFLICT (url) DO
-					UPDATE
-						SET
-							state           = EXCLUDED.state,
-							starturl        = EXCLUDED.starturl,
-							netloc          = EXCLUDED.netloc,
-							-- Largest distance is 100, but it's not checked
-							distance        = LEAST(EXCLUDED.distance, raw_web_pages.distance),
-							-- The lowest priority is 10.
-							priority        = LEAST(GREATEST(EXCLUDED.priority, raw_web_pages.priority), 10),
-							addtime         = LEAST(EXCLUDED.addtime, raw_web_pages.addtime)
-						WHERE
-						(
-								raw_web_pages.ignoreuntiltime < now()
-							AND
-								raw_web_pages.url = EXCLUDED.url
-							AND
-								(raw_web_pages.state = 'complete' OR raw_web_pages.state = 'error')
-						)
-					;
-				""".replace("	", " ")
-
-		# Only commit per-URL if we're tried to do the update in batch, and failed.
-		commit_each = False
-		while 1:
-			try:
-				for link in links:
-					# print("Doing insert", commit_each, link)
-					start = urllib.parse.urlsplit(link).netloc
-
-					assert link.startswith("http"), "Link %s doesn't seem to be HTTP content?" % link
-					assert start
-
-
-					# Forward-data the next walk, time, rather then using now-value for the thresh.
-					data = {
-						'url'             : link,
-						'starturl'        : new_starturl,
-						'netloc'          : start,
-						'distance'        : new_distance,
-						'priority'        : new_priority,
-						'state'           : "new",
-						'addtime'         : datetime.datetime.now(),
-
-						# Don't retrigger unless the ignore time has elaped.
-						'ignoreuntiltime' : datetime.datetime.now(),
-						}
-					raw_cur.execute(cmd, data)
-					if commit_each:
-						raw_cur.execute("COMMIT;")
-				raw_cur.execute("COMMIT;")
-				break
-			except psycopg2.Error:
-				if commit_each is False:
-					self.log.warn("psycopg2.Error - Retrying with commit each.")
-				else:
-					self.log.warn("psycopg2.Error - Retrying.")
-					traceback.print_exc()
-
-				raw_cur.execute("ROLLBACK;")
-				commit_each = True
-
+		try:
+			RawArchiver.RawUrlUpserter.do_link_batch_update_sess(self.log, self.db_sess, linksd)
+		except Exception:
+			# A barf here getting all the way out is a BIG ISSUE.
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			print("ERROR")
+			traceback.print_exc()
+			print("ERROR")
+			print("ERROR")
+			raise
 
 
 	def fetch_job(self, job):
