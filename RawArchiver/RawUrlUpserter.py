@@ -194,7 +194,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		return
 
 	expected_keys = set([
-			'url'
+			'url',
 			'starturl',
 			'netloc',
 			'distance',
@@ -217,7 +217,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			assert 'ignoreuntiltime'  in item
 
 		except AssertionError:
-			logger.error("Missing key from entry: ")
+			logger.error("Missing key from raw entry: ")
 			item_str = pprint.pformat(item)
 			for line in item_str.split("\n"):
 				logger.error("	%s", line.rstrip())
@@ -228,7 +228,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 		try:
 			assert not excess_keys
 		except AssertionError:
-			logger.error("Excess key(s) in entry: '%s'", excess_keys)
+			logger.error("Excess key(s) in raw entry: '%s'", excess_keys)
 			item_str = pprint.pformat(item)
 			for line in item_str.split("\n"):
 				logger.error("	%s", line.rstrip())
@@ -247,8 +247,8 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			%(netloc)s,
 			%(distance)s,
 			%(priority)s,
-			%(state)s,
 			%(addtime)s,
+			%(state)s,
 			%(ignoreuntiltime)s
 			);
 			""".replace("	", " ")
@@ -257,12 +257,6 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	while "  " in per_cmd:
 		per_cmd = per_cmd.replace("  ", " ")
-
-	# Build a nested list of dicts
-	bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in link_batch[cnt].items()} for cnt in range(len(link_batch)) ]
-
-	# Then flatten it down to a single dict
-	bulk_dict = {k: v for d in bulk_dict for k, v in d.items()}
 
 	# Somehow we're getting here with an open transaction. I have no idea what's opening them.
 	# Something something DBAPI

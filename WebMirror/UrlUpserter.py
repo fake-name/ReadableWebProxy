@@ -134,7 +134,6 @@ def resetInProgress():
 											id > {}
 										AND
 											id <= {};""".format(idx, idx+step))
-				# print()
 
 				# processed  = idx - start
 				# total_todo = stop - start
@@ -260,12 +259,6 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	while "  " in per_cmd:
 		per_cmd = per_cmd.replace("  ", " ")
-
-	# Build a nested list of dicts
-	bulk_dict = [ {key+"_{cnt}".format(cnt=cnt) : val for key, val in link_batch[cnt].items()} for cnt in range(len(link_batch)) ]
-
-	# Then flatten it down to a single dict
-	bulk_dict = {k: v for d in bulk_dict for k, v in d.items()}
 
 	# Somehow we're getting here with an open transaction. I have no idea what's opening them.
 	# Something something DBAPI
