@@ -477,14 +477,14 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			for item in unstamped:
 				item.validated_on = datetime.datetime.now()
 
-
 			db_sess.commit()
-
 
 
 	def do_release(self, row):
 
 		if row.seriesname.endswith("..."):
+			return
+		if row.groupinfo.endswith("..."):
 			return
 
 		if not row.releaseinfo:

@@ -272,8 +272,8 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			# is functionally independent.
 			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
 
-			# We use a statement timeout context of 1000 ms, so we don't get wedged on a lock.
-			raw_cur.execute("SET statement_timeout TO 1000;")
+			# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
+			raw_cur.execute("SET statement_timeout TO 2500;")
 
 			# We try the bulk insert command first.
 			psycopg_execute_batch.execute_batch(raw_cur, per_cmd, subc)
@@ -298,8 +298,8 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			# is functionally independent.
 			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
 
-			# We use a statement timeout context of 1000 ms, so we don't get wedged on a lock.
-			raw_cur.execute("SET statement_timeout TO 1000;")
+			# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
+			raw_cur.execute("SET statement_timeout TO 2500;")
 
 			# We try the bulk insert command first.
 			psycopg_execute_batch.execute_batch(raw_cur, per_cmd, subc)

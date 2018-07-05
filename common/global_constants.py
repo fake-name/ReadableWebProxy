@@ -40,7 +40,7 @@ GLOBAL_BAD_URLS = [
 			'www.pinterest.com/pin/',
 			'www.wattpad.com/login?',
 			'www.tumblr.com/reblog/',
-
+			'#comment-form',
 			'www.paypalobjects.com',
 			'attorneyking.pro',    # Wat
 			'.temp.domains',

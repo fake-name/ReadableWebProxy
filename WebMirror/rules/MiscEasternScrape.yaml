@@ -17,7 +17,6 @@ baseUrl: [
 		'https://earlandfairy.weebly.com',
 
 		'https://work.nwong.net',
-		'https://www.hontra.com',
 		'http://www.gundamwingtales.com',
 
 		# Dickish blocking garbage shit.
@@ -105,7 +104,6 @@ feeds: [
 	'https://lightnovelbastion.com/rss.php',
 	'https://work.nwong.net/rss',
 	'https://wuxiadream.com/rss',
-	'https://www.hontra.com/updates?format=RSS',
 	'https://www.lightnovelbastion.com/rss.php',
 	'https://www.mntranslations.xyz/feeds/posts/default',
 	'https://www.wuxiaworld.com/feed',

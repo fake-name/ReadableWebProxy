@@ -6,8 +6,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-
-
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -317,6 +315,7 @@ baseUrl: [
 	'https://forthemoneytranslations.wordpress.com',
 	'https://fourtranslations.wordpress.com',
 	'https://foxscoffeetime.wordpress.com',
+	'https://foxswuxia.wordpress.com',
 	'https://fraiziartl.wordpress.com',
 	'https://friendshipispower.wordpress.com',
 	'https://frostfire10.wordpress.com',
@@ -1046,6 +1045,7 @@ baseUrl: [
 	'https://theotherhalfofmyapple.wordpress.com',
 	'https://theotherturret.wordpress.com',
 	'https://thernotstudio.wordpress.com',
+	'https://thestrangeobservers.wordpress.com',
 	'https://theundeadgoogletranslator.wordpress.com',
 	'https://theundeadmachinetranslator.wordpress.com',
 	'https://thewizardworld.wordpress.com',

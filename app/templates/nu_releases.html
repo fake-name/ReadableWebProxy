@@ -209,43 +209,6 @@
 
 		}
 
-		// function delete_changes()
-		// {
-		// 	var rows = $(".release-row");
-
-		// 	var changes = [];
-		// 	rows.each(function( index, value ) {
-		// 		var itm = $(this);
-
-		// 		if (itm.is(':checked'))
-		// 		{
-		// 			for (var idx in itm.data().rowId)
-		// 			{
-		// 				changes.push({
-		// 					'del_id'  : itm.data().rowId[idx],
-		// 				});
-		// 			}
-		// 		}
-		// 	});
-		// 	console.log("Changes:", changes.length, changes)
-
-
-		// 	if (changes.length)
-		// 	{
-		// 		console.log("Making request")
-		// 		$.ajax({
-		// 			url         : '/nu_api/',
-		// 			data        : JSON.stringify({'op' : 'nu release delete', 'data' : changes}),
-		// 			success     : content_load_cb,
-		// 			error       : content_load_fail,
-		// 			method      : "POST",
-		// 			dataType    : 'json',
-		// 			contentType : "application/json;",
-
-		// 		})
-		// 	}
-
-		// }
 
 		function check_rows()
 		{
@@ -278,12 +241,18 @@
 				{
 
 				}
+				else if (title_td.first().text().includes('error'))
+				{
+					itm.find("input[value=rejected]").prop( "checked", true );
+
+				}
 				else if (title_td.first().text().includes("page not found") && title_td.first().text().includes("gravity tales"))
 				{
 					itm.find("input[value=rejected]").prop( "checked", true );
 				}
 				else if (title_td.first().text().includes("not found - wuxiaworld")
 					|| title_td.first().text().includes("page not found")
+					|| title_td.first().text().includes("404 not found")
 					|| title_td.first().text().includes("Title: blog not found")
 					|| title_td.first().text().includes("Title: wordpress.com"))
 				{

@@ -86,6 +86,7 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		if not len(list(self)):
 			return
 		self.log.info("Saving %s cookies......", len(list(self)))
+		tries = 0
 		while 1:
 			try:
 				for cookie in self:
@@ -93,9 +94,11 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				self.session.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
+				tries += 1
 				print("Operational error")
 				self.session.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
+				tries += 1
 				print("InvalidRequestError")
 				self.session.rollback()
 
@@ -104,6 +107,9 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				for line in traceback.format_exc().split("\n"):
 					self.log.error("%s", line.rstrip())
 				raise e
+
+			if tries > 10:
+				self.log.error("Failure saving cookies!")
 
 		distinct = set(((c.name, c.domain, c.path) for c in self))
 

@@ -1,0 +1,104 @@
+type: eastern
+
+
+rewalk_interval_days: 30
+
+send_raw_feed: True
+
+baseUrl: [
+		'https://www.hontra.com',
+	]
+
+feeds: [
+	'https://www.hontra.com/updates?format=RSS',
+
+
+]
+
+extraStartUrls: [
+	]
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			'/assets/css/assets/',
+			'/js/assets/js/',
+			'/assets/js/assets/',
+			'/js/assets/js/images/',
+			'/js/images/assets/',
+			'cms/download.php?auth=',
+			'/<cms:show k_page_link',
+
+			'/images/images/',
+			'/css/images/assets/',
+			'/images/images/',
+			'/images/assets/css/images/',
+			'/assets/js/images/',
+
+			'/css/images/css/',
+			'/css/css/',
+			'/images/css/images/',
+
+			'/search.php?',
+
+			# I think I can conclude basically 85% of people who hand-roll
+			# their own HTML are completely incapable.
+			'www.eugenewoodbury.com/feeds/posts/',
+			'www.eugenewoodbury.com/kasho/paradise/',
+			'www.eugenewoodbury.com/wind/image/',
+
+
+			# Stupid dreamwidth commenting garbage.
+			'?replyto=',
+
+			'&reverse-paginate=true&',
+			'?like_comment=',
+
+			# Block mobile garbage.
+			'm.xianxiaworld.net',
+			'm.wuxiaworld.com',
+		]
+
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+	{'class' : "adsbygoogle"},
+]
+
+decompose: [
+
+	{'id'  : 'footer'},
+	{'id'  : 'header'},
+	{'id'  : 'mobileNav'},
+	{'id'  : 'mobileMenuLink'},
+
+	{'class'  : 'info-footer-wrapper'},
+	{'class'  : 'info-footer'},
+	{'class'  : 'soundcloud-block'},
+	{'class'  : 'sqs-block-soundcloud'},
+	{'class'  : 'main-nav'},
+	{'class'  : 'product-block'},
+	{'class'  : 'summary-v2-block'},
+	{'class'  : 'sqs-block-summary-v2'},
+	{'class'  : 'summary-item'},
+	{'class'  : 'summary-item-list-container'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'blog-sidebar'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: [
+]
+
+
+
