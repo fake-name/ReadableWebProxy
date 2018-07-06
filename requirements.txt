@@ -42,7 +42,7 @@ bbcode==1.0.31
 pympler==0.5
 
 colorama==0.3.9
-pyyaml==3.12
+pyyaml==3.13
 natsort==5.3.2
 mdx_linkify==1.1
 ftfy==5.4.1
