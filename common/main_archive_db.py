@@ -1,6 +1,6 @@
 
 
-from sqlalchemy import Table
+import datetime
 
 from sqlalchemy import Column
 from sqlalchemy import BigInteger
@@ -9,24 +9,15 @@ from sqlalchemy import Text
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
-from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
-from sqlalchemy.schema import UniqueConstraint
 
-# from  sqlalchemy.sql.expression import func
-# from citext import CIText
 
 import citext
-import datetime
-from sqlalchemy.dialects.postgresql import ENUM
-
 
 import common.db_base
 import common.db_types
 
-from common.db_engine import get_db_session
-from common.db_engine import delete_db_session
 
 class WebPages(common.db_base.Base):
 	__versioned__ = {}
@@ -150,43 +141,4 @@ class NuResolvedOutbound(common.db_base.Base):
 	__table_args__ = (
 		UniqueConstraint('parent', 'client_id', 'client_key', 'actual_target'),
 		)
-
-
-# 'seriesname'       : series.get_text().strip(),
-# 'releaseinfo'      : release.get_text().strip(),
-# 'groupinfo'        : group.get_text().strip(),
-# 'referrer'         : currentUrl,
-# 'outbound_wrapper' : release.find('a', class_='chp-release')['href'],
-# 'actual_target'    : None,
-
-# 'client_id'        : self.settings['clientid'],
-# 'client_key'       : self.settings['client_key'],
-
-# # Tools for tracking plugins
-# class NuOutboundWrapperMap(common.db_base.Base):
-# 	__tablename__ = 'nu_outbound_wrappers'
-# 	id               = Column(BigInteger, primary_key = True)
-
-# 	client_id        = Column(Text, index=True)
-# 	client_key       = Column(Text, index=True)
-
-# 	seriesname       = Column(Text, index=True)
-# 	releaseinfo      = Column(Text)
-# 	groupinfo        = Column(Text, index=True)
-# 	referrer         = Column(Text)
-# 	outbound_wrapper = Column(Text)
-# 	actual_target    = Column(Text)
-
-# 	released_on      = Column(DateTime, default=datetime.datetime.utcnow, index=True)
-
-# 	validated        = Column(Boolean, default=False)
-
-
-# 	__table_args__ = (
-# 		UniqueConstraint('client_id', 'client_key', 'seriesname', 'releaseinfo', 'groupinfo', 'actual_target'),
-# 		)
-
-
-# common.db_base.Base.metadata.create_all(bind=get_engine(), checkfirst=True)
-
 

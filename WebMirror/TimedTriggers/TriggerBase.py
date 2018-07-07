@@ -96,7 +96,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'netloc'          : url_netloc,
 			'distance'        : 0,
 			'is_text'         : True,
-			'priority'        : db.DB_HIGH_PRIORITY if ignoreignore else db.DB_LOW_PRIORITY,
+			'priority'        : db.DB_HIGH_PRIORITY + 1 if ignoreignore else db.DB_LOW_PRIORITY,
 			'state'           : "new",
 			'addtime'         : datetime.datetime.now(),
 

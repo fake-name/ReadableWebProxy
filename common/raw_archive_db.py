@@ -1,32 +1,11 @@
 
-
-from sqlalchemy import Table
+import datetime
 
 from sqlalchemy import Column
 from sqlalchemy import BigInteger
 from sqlalchemy import Integer
 from sqlalchemy import Text
-from sqlalchemy import Float
-from sqlalchemy import Boolean
 from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy import PrimaryKeyConstraint
-from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import relationship
-from sqlalchemy.schema import UniqueConstraint
-
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.associationproxy import association_proxy
-# from  sqlalchemy.sql.expression import func
-# from citext import CIText
-
-from sqlalchemy_utils.types import TSVectorType
-
-import citext
-import datetime
-from sqlalchemy.dialects.postgresql import ENUM
-from sqlalchemy.dialects.postgresql import TSVECTOR
-
 
 import common.db_base
 import common.db_types

@@ -1,4 +1,9 @@
 
+import code
+import ast
+import re
+import json
+import datetime
 
 from sqlalchemy import Table
 
@@ -6,14 +11,12 @@ from sqlalchemy import Column
 from sqlalchemy import BigInteger
 from sqlalchemy import Integer
 from sqlalchemy import Text
-from sqlalchemy import Float
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
-from sqlalchemy.schema import UniqueConstraint
 
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -26,14 +29,9 @@ from sqlalchemy.ext.associationproxy import association_proxy
 import common.db_base
 import common.db_types
 
-import code
-import ast
-import re
-import json
-import datetime
 import cachetools
-
 import citext
+
 from common.db_engine import get_db_session
 
 from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
@@ -78,7 +76,6 @@ class Author(common.db_base.Base):
 
 
 def tag_creator(tag):
-
 	tmp = get_db_session().query(Tags) \
 		.filter(Tags.tag == tag)    \
 		.scalar()
@@ -127,84 +124,7 @@ class RssFeedPost(common.db_base.Base):
 ##########################################################################################
 ##########################################################################################
 
-
-
-
-class KeyValueStore(common.db_base.Base):
-	__tablename__ = 'key_value_store'
-
-	id          = Column(BigInteger, primary_key=True)
-
-	key    = Column(Text, nullable=False, index=True, unique=True)
-	value  = Column(JSONB)
-
-KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
-
-def get_from_db_key_value_store(key):
-	global KV_META_CACHE
-	print("Getting %s from kv store" % (key, ))
-	if key in KV_META_CACHE:
-		return KV_META_CACHE[key]
-
-	sess = get_db_session(flask_sess_if_possible=False)
-	have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
-	if have:
-		print("KV store had entry")
-		ret = have.value
-	else:
-		print("KV store did not have entry")
-		ret = {}
-
-	sess.commit()
-
-	try:
-		KV_META_CACHE[key] = ret
-	except KeyError:
-		KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
-		KV_META_CACHE[key] = ret
-
-
-	return ret
-
-def set_in_db_key_value_store(key, new_data):
-	global KV_META_CACHE
-	print("Setting kv key %s to %s" % (key, new_data))
-	if key in KV_META_CACHE:
-		if KV_META_CACHE[key] == new_data:
-			return
-
-	sess = get_db_session(flask_sess_if_possible=False)
-	have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
-	if have:
-		if have.value != new_data:
-			print("Updating item: ", have, have.key)
-			print("	old -> ", have.value)
-			print("	new -> ", new_data)
-			have.value = new_data
-		else:
-			print("Item has not changed. Nothing to do!")
-	else:
-		print("New item: ", key, new_data)
-		new = KeyValueStore(
-			key   = key,
-			value = new_data,
-			)
-		sess.add(new)
-
-	sess.commit()
-
-	try:
-		KV_META_CACHE[key] = new_data
-	except KeyError:
-		KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
-		KV_META_CACHE[key] = new_data
-
-
-
-##########################################################################################
-##########################################################################################
-##########################################################################################
-##########################################################################################
+QIDIAN_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 
 class QidianFeedPostMeta(common.db_base.Base):
 	__tablename__ = 'feed_post_meta'
@@ -214,7 +134,6 @@ class QidianFeedPostMeta(common.db_base.Base):
 	contentid    = Column(Text, nullable=False, index=True, unique=True)
 	meta         = Column(JSONB)
 
-QIDIAN_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 
 def get_feed_article_meta(feedid):
 	global QIDIAN_META_CACHE
@@ -279,6 +198,10 @@ def set_feed_article_meta(feedid, new_data):
 ##########################################################################################
 ##########################################################################################
 
+
+# LRU Cache of function text -> function objects.
+PARSED_FUNCTION_CACHE = cachetools.LRUCache(maxsize=5000)
+
 class RssFeedUrlMapper(common.db_base.Base):
 	__versioned__ = {}
 
@@ -298,8 +221,6 @@ class RssFeedUrlMapper(common.db_base.Base):
 		UniqueConstraint('feed_netloc', 'feed_id'),
 		)
 
-# LRU Cache of function text -> function objects.
-PARSED_FUNCTION_CACHE = cachetools.LRUCache(maxsize=5000)
 
 def str_to_ast(instr, name):
 	print("Compiling function from DB (str_to_ast) for '%s'" % name)

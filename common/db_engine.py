@@ -128,6 +128,10 @@ def get_db_session(postfix="", flask_sess_if_possible=True):
 	return SESSIONS[csid][1]
 
 def delete_db_session(postfix=""):
+	if flags.IS_FLASK and flask_sess_if_possible:
+		# No need to do anything with flask sess
+		return
+
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
 	csid = "{}-{}-{}".format(cpid, ctid, postfix)
