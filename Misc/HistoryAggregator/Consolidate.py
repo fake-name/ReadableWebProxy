@@ -41,6 +41,8 @@ from sqlalchemy_continuum.utils import version_table
 # 		.filter(or_(*loc2)) \
 # 		.delete(synchronize_session=False)
 
+FLATTEN_SCAN_INTERVAL = datetime.timedelta(days=30)
+
 def batch(iterable, n=1):
 	l = len(iterable)
 	for ndx in range(0, l, n):
@@ -219,6 +221,13 @@ class DbFlattener(object):
 			self.log.info("All jobs submitted. Waiting for executor to complete!")
 
 	def truncate_url_history(self, sess, url):
+
+		last_check = db.get_from_version_check_table(sess, url)
+
+		if last_check > datetime.datetime.now() - FLATTEN_SCAN_INTERVAL:
+			self.log.info("Url %s checked within the check interval (%s, %s). Skipping.", url, FLATTEN_SCAN_INTERVAL, last_check)
+			return 0
+
 		ctbl = version_table(db.WebPages.__table__)
 
 		if url in self.feed_urls:
@@ -258,7 +267,7 @@ class DbFlattener(object):
 				deleted_1 += 1
 				self.log.info("Deleting incomplete item for url: %s (state: %s)!", url, item.state)
 				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
-			elif item.content == None and item.file == None:
+			elif item.content is None and item.file is None:
 				self.log.info("Deleting item without a file and no content for url: %s!", url)
 				# print(type(item), item.mimetype, item.file, item.content)
 				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
@@ -306,6 +315,8 @@ class DbFlattener(object):
 			sess.commit()
 		else:
 			sess.rollback()
+
+		db.set_in_version_check_table(sess, url, datetime.datetime.now())
 
 		self.log.info("Deleted: %s items when simplifying history, %s incomplete items, Total deleted: %s, remaining: %s", deleted_2, deleted_1, deleted, orig_cnt-deleted)
 		return deleted

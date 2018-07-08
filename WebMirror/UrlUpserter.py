@@ -34,6 +34,8 @@ import config
 import runStatus
 import concurrent.futures
 
+import Misc.install_vmprof
+
 import common.util.urlFuncs as urlFuncs
 import common.util.misc as misc
 import common.util.psycopg_execute_batch as psycopg_execute_batch
@@ -598,7 +600,7 @@ class UpdateAggregator(object):
 
 	@classmethod
 	def launch_agg(cls, agg_queue):
-
+		Misc.install_vmprof.install_vmprof("update_aggregator")
 		try:
 			agg_db = db.get_db_session()
 			instance = cls(agg_queue, agg_db)

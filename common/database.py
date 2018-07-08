@@ -23,6 +23,8 @@ from common.rss_func_db import QidianFeedPostMeta
 from common.misc_db import KeyValueStore
 from common.misc_db import get_from_db_key_value_store
 from common.misc_db import set_in_db_key_value_store
+from common.misc_db import get_from_version_check_table
+from common.misc_db import set_in_version_check_table
 
 from common.cookie_db import WebCookieDb
 

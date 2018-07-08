@@ -7,6 +7,9 @@ if __name__ == "__main__":
 # This HAS to be included before the app, to prevent circular dependencies.
 # import WebMirror.runtime_engines
 
+import vmprof
+import os
+
 import common.RunManager
 import WebMirror.rules
 import WebMirror.Runner
@@ -15,6 +18,8 @@ import RawArchiver.RawRunner
 import RawArchiver.RawUrlUpserter
 import common.stuck
 import Misc.ls_open_file_handles
+
+import Misc.install_vmprof
 
 from settings import NO_PROCESSES
 from settings import RAW_NO_PROCESSES
@@ -53,7 +58,11 @@ def go():
 		else:
 			print("Not resetting in-progress downloads.")
 		WebMirror.UrlUpserter.initializeStartUrls(rules)
+
+		Misc.install_vmprof.install_vmprof("main_thread")
+
 		runner.run()
+		print("Main runner returned!")
 
 
 	# print("Thread halted. App exiting.")

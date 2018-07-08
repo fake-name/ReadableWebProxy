@@ -108,44 +108,41 @@ class VersionCheckTable(common.db_base.Base):
 	checked = Column(DateTime, index=True)
 
 
-def get_from_version_check_table(url):
-	with session_context() as sess:
-		have = sess.query(VersionCheckTable).filter(VersionCheckTable.url == url).scalar()
-		if have:
-			ret = have.url
-		else:
-			ret = datetime.datetime.min
-		sess.commit()
+def get_from_version_check_table(sess, url):
+	have = sess.query(VersionCheckTable).filter(VersionCheckTable.url == url).scalar()
+	if have:
+		ret = have.url
+	else:
+		ret = datetime.datetime.min
+	sess.commit()
 
 	return ret
 
-
-def set_in_version_check_table(url, update_date):
+def set_in_version_check_table(sess, url, update_date):
 	assert isinstance(update_date, datetime.datetime)
 	assert update_date <= datetime.datetime.now()
 
-	with session_context() as sess:
-		have = sess.query(VersionCheckTable).filter(VersionCheckTable.url == url).scalar()
-		if have:
-			if have.checked < update_date:
-				print("Updating item: ", have, have.url)
-				print("	old -> ", have.checked)
-				print("	new -> ", update_date)
-				have.checked = update_date
-			elif have.checked > datetime.datetime.now():
-				print("Have date is too recent?: ", have, have.url)
-				print("	old -> ", have.checked)
-				print("	new -> ", update_date)
-				have.checked = update_date
-			else:
-				print("Item has not changed. Nothing to do!")
+	have = sess.query(VersionCheckTable).filter(VersionCheckTable.url == url).scalar()
+	if have:
+		if have.checked < update_date:
+			print("Updating item: ", have, have.url)
+			print("	old -> ", have.checked)
+			print("	new -> ", update_date)
+			have.checked = update_date
+		elif have.checked > datetime.datetime.now():
+			print("Have date is too recent?: ", have, have.url)
+			print("	old -> ", have.checked)
+			print("	new -> ", update_date)
+			have.checked = update_date
 		else:
-			print("New item: ", url, update_date)
-			new = VersionCheckTable(
-				url     = url,
-				checked = update_date,
-				)
-			sess.add(new)
+			print("Item has not changed. Nothing to do!")
+	else:
+		print("New item: ", url, update_date)
+		new = VersionCheckTable(
+			url     = url,
+			checked = update_date,
+			)
+		sess.add(new)
 
-		sess.commit()
+	sess.commit()
 
