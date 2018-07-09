@@ -24,9 +24,7 @@ import common.LogBase as LogBase
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
-
-from settings import NO_PROCESSES
-from settings import MAX_DB_SESSIONS
+import settings
 
 from common.db_engine import SQLALCHEMY_DATABASE_URI
 import activeScheduledTasks
@@ -285,9 +283,7 @@ if __name__ == "__main__":
 
 	largv = [tmp.lower() for tmp in sys.argv]
 
-	global NO_PROCESSES
-	global MAX_DB_SESSIONS
 
-	MAX_DB_SESSIONS = NO_PROCESSES + 5
-	MAX_DB_SESSIONS = 4
+	settings.MAX_DB_SESSIONS = settings.NO_PROCESSES + 5
+	settings.MAX_DB_SESSIONS = 4
 	go_sched()

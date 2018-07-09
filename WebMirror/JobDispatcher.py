@@ -943,7 +943,10 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		self.log.info("MultiRpcRunner exit flag seen. Joining on threads")
 		while any([tmp.is_alive() for tmp in threads]):
 			for thread in [tmp for tmp in threads if tmp.is_alive()]:
-				thread.join(timeout=1)
+				try:
+					thread.join(timeout=1)
+				except multiprocessing.TimeoutError:
+					self.log.error("Joining %s failed!", thread)
 		self.log.info("MultiRpcRunner joined all threads. Exiting")
 
 
@@ -1000,8 +1003,20 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 		self.log.info("Requesting job-dispatching RPC system to halt.")
 		self.run_flag.value = 0
 
+		# We have to consume any remaining jobs in the output queue, or we'll never
+		# fully exit.
 		if self.main_job_agg:
-			self.main_job_agg.join()
+			while 1:
+				try:
+					self.main_job_agg.join(timeout=1)
+					return
+				except multiprocessing.TimeoutError:
+					pass
+				try:
+					while 1:
+						self.normal_out_queue.get_nowait()
+				except queue.Empty:
+					pass
 
 	def get_status(self):
 		if self.main_job_agg:

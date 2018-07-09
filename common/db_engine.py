@@ -127,7 +127,7 @@ def get_db_session(postfix="", flask_sess_if_possible=True):
 	SESSIONS[csid][0] = time.time()
 	return SESSIONS[csid][1]
 
-def delete_db_session(postfix=""):
+def delete_db_session(postfix="", flask_sess_if_possible=True):
 	if flags.IS_FLASK and flask_sess_if_possible:
 		# No need to do anything with flask sess
 		return

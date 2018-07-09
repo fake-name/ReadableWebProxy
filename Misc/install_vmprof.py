@@ -11,6 +11,7 @@ import os
 import vmprof
 
 def install_vmprof(name="thread"):
+	return
 
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
@@ -25,4 +26,6 @@ def install_vmprof(name="thread"):
 
 def close_profile_file():
 
+	print("Closing VMProf!")
 	vmprof.disable()
+	print("VMProf closed!")

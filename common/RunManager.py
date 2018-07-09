@@ -35,6 +35,7 @@ if __name__ == "__main__":
 import config
 import runStatus
 
+import Misc.install_vmprof
 import WebMirror.Engine
 import WebMirror.rules
 import common.util.urlFuncs as urlFuncs
@@ -155,7 +156,13 @@ class Crawler(object):
 		self.log.info("Asking Aggregator process to stop.")
 		runStatus.agg_run_state.value = 0
 		if hasattr(self, 'main_job_agg'):
-			self.main_job_agg.join(0)
+			while 1:
+				try:
+					self.main_job_agg.join(timeout=1)
+					break
+				except multiprocessing.TimeoutError:
+					print("Failed to join main_job_agg")
+
 		self.log.info("Aggregator joined.")
 
 	def start_main_job_fetcher(self):
@@ -208,6 +215,9 @@ class Crawler(object):
 
 		new_url_aggreator_queue = self.start_aggregator()
 		main_new_job_queue      = self.start_main_job_fetcher()
+
+		Misc.install_vmprof.install_vmprof("main_thread")
+
 		# # cls, num, response_queue, new_job_queue, cookie_lock
 		main_kwargs = {
 			'response_queue' : new_url_aggreator_queue,

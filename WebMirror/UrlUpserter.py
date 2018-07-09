@@ -587,7 +587,6 @@ class UpdateAggregator(object):
 			try:
 				time.sleep(1)
 				self.dispatch_update()
-
 			except KeyboardInterrupt:
 				pass
 
@@ -601,6 +600,7 @@ class UpdateAggregator(object):
 	@classmethod
 	def launch_agg(cls, agg_queue):
 		Misc.install_vmprof.install_vmprof("update_aggregator")
+
 		try:
 			agg_db = db.get_db_session()
 			instance = cls(agg_queue, agg_db)
