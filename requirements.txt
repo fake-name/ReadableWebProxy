@@ -14,7 +14,7 @@ tqdm==4.23.4
 chardet==3.0.4
 pymysql==0.9.2
 statsd==3.2.2
-xxhash==1.1.0
+xxhash==1.1.0.post0
 objgraph==3.4.0
 zerorpc==0.6.1
 cssutils==1.0.2
