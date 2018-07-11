@@ -396,6 +396,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.log.info("Joining on worker thread.")
 
 
+
 	def put_job(self, raw_job):
 		if self.test_mode:
 			return
@@ -1006,17 +1007,35 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 		# We have to consume any remaining jobs in the output queue, or we'll never
 		# fully exit.
 		if self.main_job_agg:
-			while 1:
+			for _ in range(60 * 5):
 				try:
 					self.main_job_agg.join(timeout=1)
 					return
+
 				except multiprocessing.TimeoutError:
 					pass
+
+				self.log.info("Waiting for job dispatcher to join. Currently active jobs in queue: %s",
+						self.normal_out_queue.qsize()
+					)
+
+			while True:
+				self.main_job_agg.join(timeout=1)
+				try:
+					self.main_job_agg.join(timeout=1)
+					return
+
+				except multiprocessing.TimeoutError:
+					pass
+
+				self.log.error("Timeout when waiting for join. Bulk consuming from intermediate queue.")
 				try:
 					while 1:
 						self.normal_out_queue.get_nowait()
 				except queue.Empty:
 					pass
+
+
 
 	def get_status(self):
 		if self.main_job_agg:

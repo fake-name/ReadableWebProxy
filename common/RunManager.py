@@ -166,7 +166,6 @@ class Crawler(object):
 		self.log.info("Aggregator joined.")
 
 	def start_main_job_fetcher(self):
-
 		self.main_job_fetcher = WebMirror.JobDispatcher.RpcJobManagerWrapper()
 		return self.main_job_fetcher.get_queues()
 
@@ -175,12 +174,14 @@ class Crawler(object):
 		return self.raw_job_fetcher.get_queue()
 
 	def join_job_fetcher(self):
-		self.log.info("Asking main job source task to halt.")
 		if hasattr(self, 'main_job_fetcher'):
+			self.log.info("Asking main job source task to halt.")
 			self.main_job_fetcher.join_proc()
-		self.log.info("Asking raw job source task to halt.")
+
 		if hasattr(self, 'raw_job_fetcher'):
+			self.log.info("Asking raw job source task to halt.")
 			self.raw_job_fetcher.join_proc()
+
 		self.log.info("Job source halted.")
 
 	def launchProcessesFromQueue(self, processes, job_in_queue):
@@ -206,7 +207,8 @@ class Crawler(object):
 		drain_queues = [raw_new_job_queue]
 		flush_queues = [new_url_aggreator_queue, raw_new_job_queue]
 
-		self._runloop(managers, drain_queues, flush_queues)
+		self._runloop(managers, drain_queues)
+		self._teardown(managers, drain_queues, flush_queues)
 
 	def run(self):
 
@@ -216,7 +218,7 @@ class Crawler(object):
 		new_url_aggreator_queue = self.start_aggregator()
 		main_new_job_queue      = self.start_main_job_fetcher()
 
-		Misc.install_vmprof.install_vmprof("main_thread")
+		# Misc.install_vmprof.install_vmprof("main_thread")
 
 		# # cls, num, response_queue, new_job_queue, cookie_lock
 		main_kwargs = {
@@ -230,9 +232,10 @@ class Crawler(object):
 		drain_queues = [main_new_job_queue]
 		flush_queues = [new_url_aggreator_queue, main_new_job_queue]
 
-		self._runloop(managers, drain_queues, flush_queues)
+		self._runloop(managers, drain_queues)
+		self._teardown(managers, drain_queues, flush_queues)
 
-	def _runloop(self, managers, drain_queues, flush_queues):
+	def _runloop(self, managers, drain_queues):
 
 		cnt = 10
 
@@ -279,6 +282,7 @@ class Crawler(object):
 					fp.write(traceback.format_exc())
 				break
 
+	def _teardown(self, managers, drain_queues, flush_queues):
 		# Stop the job fetcher, and then let the active jobs
 		# flush down.
 		self.join_job_fetcher()

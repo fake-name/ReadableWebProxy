@@ -13,9 +13,6 @@ rewalk_interval_days: 30
 baseUrl: [
 
 
-
-	'http://ripperxd.blogspot.com',
-	'https://wtitranslation.blogspot.com',
 	'http://13thechelon.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
@@ -116,6 +113,7 @@ baseUrl: [
 	'http://popsiclete.blogspot.com',
 	'http://pumpkintranslations.blogspot.com',
 	'http://r1enne.blogspot.com',
+	'http://ripperxd.blogspot.com',
 	'http://royalroadweed.blogspot.com',
 	'http://sabishiidesu.blogspot.com',
 	'http://sakurahonyaku.blogspot.com',
@@ -182,6 +180,7 @@ baseUrl: [
 	'https://fate-and-affinity.blogspot.com',
 	'https://fleshtoplush.blogspot.com',
 	'https://godofabc.blogspot.com',
+	'https://gugeltranslation.blogspot.com',
 	'https://hainemakorutranslations.blogspot.com',
 	'https://hermitranslation.blogspot.com',
 	'https://iamabananav2.blogspot.com',
@@ -217,6 +216,7 @@ baseUrl: [
 	'https://translatedino.blogspot.com',
 	'https://translatingsloth.blogspot.com',
 	'https://uminovel.blogspot.com',
+	'https://wtitranslation.blogspot.com',
 	'https://yamitranslations.blogspot.com',
 	'https://yiumre.blogspot.com',
 	'https://yorasutranslations.blogspot.com',

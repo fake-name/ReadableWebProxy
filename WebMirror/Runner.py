@@ -83,7 +83,6 @@ class RunInstance(object):
 	@classmethod
 	def run_prof(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 
-		Misc.install_vmprof.install_vmprof("update_aggregator")
 
 		pid = os.getpid()
 		try:
@@ -102,6 +101,7 @@ class RunInstance(object):
 	@classmethod
 	def run(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
+		Misc.install_vmprof.install_vmprof("update_aggregator")
 
 		# total_worker_count, worker_num are ignored at the moment.
 
@@ -113,3 +113,5 @@ class RunInstance(object):
 			print()
 			print("Exception in sub-process!")
 			traceback.print_exc()
+		finally:
+			Misc.install_vmprof.close_profile_file()

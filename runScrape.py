@@ -17,7 +17,6 @@ import RawArchiver.RawUrlUpserter
 import common.stuck
 import Misc.ls_open_file_handles
 
-import Misc.install_vmprof
 
 from settings import NO_PROCESSES
 from settings import RAW_NO_PROCESSES

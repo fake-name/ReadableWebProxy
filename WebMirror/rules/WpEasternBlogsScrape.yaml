@@ -6,6 +6,7 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -50,6 +51,7 @@ baseUrl: [
 	'https://amayadoritranslations.wordpress.com',
 	'https://amber99y.wordpress.com',
 	'https://amethystically.wordpress.com',
+	'https://anameescans.wordpress.com',
 	'https://ancientheartloss.wordpress.com',
 	'https://ankoutranslations.wordpress.com',
 	'https://anonempireblog.wordpress.com',
@@ -636,6 +638,7 @@ baseUrl: [
 	'https://milkypandablog.wordpress.com',
 	'https://mionline657939096.wordpress.com',
 	'https://miracutor.wordpress.com',
+	'https://miratranslates.wordpress.com',
 	'https://miritranslations.wordpress.com',
 	'https://mirrortranslationsblog.wordpress.com',
 	'https://missinghairtranslation.wordpress.com',
@@ -766,6 +769,7 @@ baseUrl: [
 	'https://penguinoverlordblog.wordpress.com',
 	'https://pengutaichou.wordpress.com',
 	'https://pettankotranslations.wordpress.com',
+	'https://phiarehere.wordpress.com',
 	'https://pickupthisnoveltranslations.com',
 	'https://piggybottle.wordpress.com',
 	'https://pineappletranslations.wordpress.com',
@@ -1057,6 +1061,7 @@ baseUrl: [
 	'https://thousandsilentstars.wordpress.com',
 	'https://thundertranslations.wordpress.com',
 	'https://tiffybook.wordpress.com',
+	'https://tilsummerends.wordpress.com',
 	'https://tinkerbellsan.wordpress.com',
 	'https://tofubyu.wordpress.com',
 	'https://tokyoespscans.wordpress.com',

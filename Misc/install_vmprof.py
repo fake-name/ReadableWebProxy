@@ -11,7 +11,6 @@ import os
 import vmprof
 
 def install_vmprof(name="thread"):
-	return
 
 	cpid = multiprocessing.current_process().name
 	ctid = threading.current_thread().name
@@ -22,7 +21,7 @@ def install_vmprof(name="thread"):
 	outfd = os.open(fname, flags)
 	vmprof.enable(outfd, period=0.01)
 
-	atexit.register(close_profile_file)
+	# atexit.register(close_profile_file)
 
 def close_profile_file():
 

@@ -132,7 +132,25 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	def join_proc(self):
 		self.run_flag.value = 0
-		self.j_fetch_proc.join(0)
+
+		for _ in range(60 * 5):
+			self.j_fetch_proc.join(timeout=1)
+			if self.j_fetch_proc.is_alive() is False:
+				return
+			self.log.info("Waiting for job dispatcher to join. Currently active jobs in queue: %s",
+					self.normal_out_queue.qsize()
+				)
+
+		while True:
+			self.j_fetch_proc.join(timeout=1)
+			if self.j_fetch_proc.is_alive() is False:
+				return
+			self.log.error("Timeout when waiting for join. Bulk consuming from intermediate queue.")
+			try:
+				while 1:
+					self.normal_out_queue.get_nowait()
+			except queue.Empty:
+				pass
 
 
 	def put_outbound_job(self, jobid, joburl, netloc=None):
