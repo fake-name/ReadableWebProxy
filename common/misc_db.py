@@ -1,5 +1,7 @@
 
 import datetime
+import logging
+import copy
 
 from sqlalchemy import Column
 from sqlalchemy import Text
@@ -24,6 +26,8 @@ from common.db_engine import session_context
 
 KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 
+kv_log = logging.getLogger("Main.KV_Store")
+
 class KeyValueStore(common.db_base.Base):
 	__tablename__ = 'key_value_store'
 
@@ -35,49 +39,48 @@ class KeyValueStore(common.db_base.Base):
 
 def get_from_db_key_value_store(key):
 	global KV_META_CACHE
-	print("Getting %s from kv store" % (key, ))
+	kv_log.info("Getting '%s' from kv store", key)
 	if key in KV_META_CACHE:
 		return KV_META_CACHE[key]
 
-	with session_context() as sess:
+	with session_context('kv_store') as sess:
 		have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
 		if have:
-			print("KV store had entry")
+			kv_log.info("KV store had entry")
 			ret = have.value
 		else:
-			print("KV store did not have entry")
+			kv_log.info("KV store did not have entry")
 			ret = {}
 
 		sess.commit()
-
-	try:
-		KV_META_CACHE[key] = ret
-	except KeyError:
-		KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
-		KV_META_CACHE[key] = ret
 
 	return ret
 
 
 def set_in_db_key_value_store(key, new_data):
 	global KV_META_CACHE
-	print("Setting kv key %s to %s" % (key, new_data))
+
+	new_s = str(new_data)
+	if len(new_s) > 40:
+		new_s = new_s[:35] + "..."
+
+	kv_log.info("Setting kv key '%s' to '%s'", key, new_s)
 	if key in KV_META_CACHE:
 		if KV_META_CACHE[key] == new_data:
 			return
 
-	with session_context() as sess:
+	with session_context('kv_store') as sess:
 		have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
 		if have:
 			if have.value != new_data:
-				print("Updating item: ", have, have.key)
-				print("	old -> ", have.value)
-				print("	new -> ", new_data)
+				kv_log.info("Updating item: '%s', '%s'", have, have.key)
+				kv_log.info("	old -> %s", have.value)
+				kv_log.info("	new -> %s", new_s)
 				have.value = new_data
 			else:
-				print("Item has not changed. Nothing to do!")
+				kv_log.info("Item has not changed. Nothing to do!")
 		else:
-			print("New item: ", key, new_data)
+			kv_log.info("New item: '%s', %s", key, new_s)
 			new = KeyValueStore(
 				key   = key,
 				value = new_data,
@@ -87,10 +90,10 @@ def set_in_db_key_value_store(key, new_data):
 		sess.commit()
 
 	try:
-		KV_META_CACHE[key] = new_data
+		KV_META_CACHE[key] = copy.copy(new_data)
 	except KeyError:
 		KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
-		KV_META_CACHE[key] = new_data
+		KV_META_CACHE[key] = copy.copy(new_data)
 
 
 
@@ -100,6 +103,7 @@ def set_in_db_key_value_store(key, new_data):
 ##########################################################################################
 
 
+vc_log = logging.getLogger("Main.VersionCheckStore")
 
 class VersionCheckTable(common.db_base.Base):
 	__tablename__ = 'version_checked_table'
@@ -125,19 +129,19 @@ def set_in_version_check_table(sess, url, update_date):
 	have = sess.query(VersionCheckTable).filter(VersionCheckTable.url == url).scalar()
 	if have:
 		if have.checked < update_date:
-			print("Updating item: ", have, have.url)
-			print("	old -> ", have.checked)
-			print("	new -> ", update_date)
+			vc_log("Updating item: %s, %s", have, have.url)
+			vc_log("	old -> %s", have.checked)
+			vc_log("	new -> %s", update_date)
 			have.checked = update_date
 		elif have.checked > datetime.datetime.now():
-			print("Have date is too recent?: ", have, have.url)
-			print("	old -> ", have.checked)
-			print("	new -> ", update_date)
+			vc_log("Have date is too recent: %s, %s", have, have.url)
+			vc_log("	old -> %s", have.checked)
+			vc_log("	new -> %s", update_date)
 			have.checked = update_date
 		else:
-			print("Item has not changed. Nothing to do!")
+			vc_log("Item has not changed. Nothing to do!")
 	else:
-		print("New item: ", url, update_date)
+		vc_log("New item: %s, %s", url, update_date)
 		new = VersionCheckTable(
 			url     = url,
 			checked = update_date,

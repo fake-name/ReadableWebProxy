@@ -400,6 +400,12 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		for expect in expected:
 			assert expect in params, "Plugin missing expected argument: '%s'" % expect
 
+		assert params['job'].url
+		assert params['job'].netloc
+		assert params['job'].starturl
+		assert params['job'].distance is not None
+		assert params['job'].priority
+
 		instance = cls(**params)
 		# print("Instantiated plugin: ", instance)
 		# print("Now calling: ", instance.extractContent)
@@ -444,6 +450,15 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 					assert expect in ret, "Expected key '%s' in ret (keys: '%s')" % (expect, list(ret.keys()))
 			else:
 				raise ValueError("Invalid number of items in ret. Keys = '%s'" % list(ret.keys()))
+
+		# These assertions will generally throw if something has invalidate the db session.
+		# Check for anonymous context managers
+		assert params['job'].url
+		assert params['job'].netloc
+		assert params['job'].starturl
+		assert params['job'].distance is not None
+		assert params['job'].priority
+
 
 		return ret
 

@@ -14,6 +14,7 @@ import time
 import calendar
 import traceback
 import WebRequest
+import common.database
 import common.util.urlFuncs as urlFuncs
 import WebMirror.OutputFilters.rss.FeedDataParser
 
@@ -115,7 +116,6 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 		contentDat = contentDat[0]
 
-
 		if not contentDat['value']:
 			return "No content for post!"
 
@@ -175,47 +175,54 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 			if not "authors" in entry:
 				entry['authors'] = ""
 
-			item = {}
-			item['feedtype'] = self.type
 
-			item['title']    = entry['title']
-			item['guid']     = entry['guid']
-			item['linkUrl']  = entry['link']
-			item['authors']  = entry['authors']
+			kv_id = feedUrl + " " + entry['guid']
+			item = common.database.get_from_db_key_value_store(kv_id)
 
-			item['feedUrl']  = feedUrl
-
-
-
-			if 'updated_parsed' in entry and entry['updated_parsed']:
-				item['updated']   = calendar.timegm(entry['updated_parsed'])
-
-			if 'published_parsed' in entry and entry['published_parsed']:
-				item['published'] = calendar.timegm(entry['published_parsed'])
-
-
-			if 'updated' not in item:
-				item['updated']   = time.time()
-
-			if 'published' not in item or ('updated' in item and item['published'] > item['updated']):
-				item['published'] = item['updated']
-
-			item['tags']    = []
-			if 'tags' in entry:
-				for tag in entry['tags']:
-					item['tags'].append(tag['term'])
-
-
-			if 'content' in entry:
-				item['content'] = entry['content']
-				item['contents'] = self.extractFeedContents(feedUrl, entry['content'])
-			elif 'summary' in entry:
-				item['contents'] = self.extractFeedContents(feedUrl, entry['summary'])
+			# Don't reparse releases continuously.
+			if item:
+				self.log.info("Using cached parse output!")
 			else:
-				self.log.error('Empty item in feed?')
-				self.log.error('Feed url: %s', feedUrl)
-				item['contents'] = ""
+				item['feedtype'] = self.type
 
+				item['title']    = entry['title']
+				item['guid']     = entry['guid']
+				item['linkUrl']  = entry['link']
+				item['authors']  = entry['authors']
+
+				item['feedUrl']  = feedUrl
+
+
+
+				if 'updated_parsed' in entry and entry['updated_parsed']:
+					item['updated']   = calendar.timegm(entry['updated_parsed'])
+
+				if 'published_parsed' in entry and entry['published_parsed']:
+					item['published'] = calendar.timegm(entry['published_parsed'])
+
+
+				if 'updated' not in item:
+					item['updated']   = time.time()
+
+				if 'published' not in item or ('updated' in item and item['published'] > item['updated']):
+					item['published'] = item['updated']
+
+				item['tags']    = []
+				if 'tags' in entry:
+					for tag in entry['tags']:
+						item['tags'].append(tag['term'])
+
+				if 'content' in entry:
+					item['content'] = entry['content']
+					item['contents'] = self.extractFeedContents(feedUrl, entry['content'])
+				elif 'summary' in entry:
+					item['contents'] = self.extractFeedContents(feedUrl, entry['summary'])
+				else:
+					self.log.error('Empty item in feed?')
+					self.log.error('Feed url: %s', feedUrl)
+					item['contents'] = ""
+
+			common.database.set_in_db_key_value_store(kv_id, item)
 
 			# processFeedData() call has to be /before/ we convert the tags to a json object.
 			self.processFeedData(self.db_sess, item)
@@ -231,10 +238,11 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 
 	def extractContent(self):
-		print("Rss extracting content!")
-
 
 		feed = self.parseFeed(self.content)
+
+
+
 		try:
 			data = self.processFeed(feed, self.pageUrl)
 		except Exception as e:
@@ -242,6 +250,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 			for line in traceback.format_exc().split("\n"):
 				self.log.critical(line)
 			raise e
+
 
 		plainLinks = []
 		rsrcLinks  = []
@@ -271,7 +280,6 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 							plainLinks.append(link['href'])
 				if 'link' in post:
 					plainLinks.append(post['link'])
-
 
 
 		self.normal_priority_links_trigger(plainLinks + rsrcLinks)

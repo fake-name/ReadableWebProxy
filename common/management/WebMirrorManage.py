@@ -66,6 +66,32 @@ class TestQueueTrigger(WebMirror.TimedTriggers.QueueTriggers.QueueTrigger):
 		return []
 
 
+def get_job_from_url(sess, url, starturl, netloc):
+
+	sess.flush()
+	sess.commit()
+	job = sess.query(db.WebPages) \
+		.filter(db.WebPages.url == url)    \
+		.scalar()
+	sess.commit()
+
+	if job:
+		return job
+
+	new = db.WebPages(
+		url       = url,
+		starturl  = starturl,
+		netloc    = netloc,
+		distance  = 5,
+		is_text   = True,
+		priority  = 9,
+		type      = 'unknown',
+		fetchtime = datetime.datetime.now(),
+		)
+	sess.add(new)
+	sess.commit()
+
+	return job
 
 
 
@@ -146,24 +172,14 @@ def exposed_fetch(url, debug=True, rss_debug=False, special_case_enabled=True):
 		WebMirror.SpecialCase.pushSpecialCase(specialcase_data, -1, url, parsed.netloc, None)
 		return
 
-	new = db.WebPages(
-		url       = url,
-		starturl  = root,
-		netloc    = parsed.netloc,
-		distance  = 50000,
-		is_text   = True,
-		priority  = 500000,
-		type      = 'unknown',
-		fetchtime = datetime.datetime.now(),
-		)
-
-	if debug:
-		print(new)
 
 	try:
 		with db.session_context() as sess:
+
+
 			archiver = SiteArchiver(None, sess, None)
 			archiver.synchronousJobRequest(url, ignore_cache=True, debug=True)
+
 	except Exception as e:
 		traceback.print_exc()
 

@@ -279,6 +279,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def processFeedData(self, session, feedDat, tx_raw=True, tx_parse=True):
 
+
 		if any([item in feedDat['linkUrl'] for item in common.global_constants.RSS_SKIP_FILTER]):
 			print("LinkURL '%s' contains a filtered string. Not fetching!" % feedDat['linkUrl'])
 			return

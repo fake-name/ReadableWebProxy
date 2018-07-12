@@ -152,8 +152,8 @@ def delete_db_session(postfix="", flask_sess_if_possible=True):
 			# print("Deleted session for id: ", csid)
 
 @contextlib.contextmanager
-def session_context():
-	sess = get_db_session(postfix='context-sess')
+def session_context(name=""):
+	sess = get_db_session(postfix=name + 'context-sess')
 	try:
 		yield sess
 
