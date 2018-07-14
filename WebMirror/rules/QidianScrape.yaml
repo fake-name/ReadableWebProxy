@@ -34,6 +34,14 @@ badwords: [
 decompose_svg: True
 
 decompose: [
+	{'id'    : 'modPowerVote'},
+	{'class' : 'j_modal_chat'},
+	{'class' : 'power-vote-hd'},
+	{'class' : 'j_bottom_comments'},
+	{'class' : 'cha-score'},
+	{'class' : 'j_chapterLoading'},
+	{'class' : 'cha-loader'},
+
 	{'id'    : 'header'},
 	{'id'    : 'modalTheme'},
 	{'id'    : 'modalCatalog'},

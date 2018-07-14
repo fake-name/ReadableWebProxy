@@ -2,15 +2,19 @@
 
 
 
-import bs4
 import time
-import WebMirror.PreProcessors.PreProcessorBase
+import ast
 import urllib.parse
-from settings import WATTPAD_AUTH_CREDS
+import pprint
+
+import bs4
+
+import WebMirror.PreProcessors.PreProcessorBase
 
 
-BAD_TOC_STR = \
-'''<div class="det-tab-pane" id="contents">'''
+BAD_TOC_STR = '''<div class="det-tab-pane" id="contents">'''
+
+CHAP_LOADER_STR = '''<div class="iso-area j_chapterLoading cha-loader">'''
 
 '''	<div class="det-tab-pane" id="contents">
 		<div class="g_wrap det-con mb30 j_catalog_wrap">
@@ -118,6 +122,75 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 		tocdiv = soup.find("div", class_='j_tagWrap')
 		tocdiv.insert_after(main_list)
 
+	def extract_chapinfo_segment(self, soup):
+		for script_tag in soup.find_all('script'):
+			script = script_tag.get_text()
+			if 'var chapInfo = ' in script:
+				lines = script.split("\n")
+				val_lines = [tmp.strip() for tmp in lines if 'var chapInfo = ' in tmp]
+				if len(val_lines) == 1:
+					chapinfo = val_lines[0]
+					_, chapinfo = chapinfo.split("=", 1)
+					chapinfo = chapinfo.rstrip(";")
+					chapinfo = chapinfo.replace(":null", ":None")
+					chapinfo = chapinfo.strip()
+
+					return ast.literal_eval(chapinfo)
+
+	def insert_nav(self, url, soup, chapinfo):
+
+		next_ch_id = chapinfo['chapterInfo']['nextChapterId']
+		prev_ch_id = chapinfo['chapterInfo']['preChapterId']
+
+		link_root = url
+		while link_root.count("/") > 4:
+			link_root, _ = link_root.rsplit("/", 1)
+
+		link_root += "/"
+
+		for ps_garb_div in soup.find_all('div', class_='cha-bts'):
+			ps_garb_div.attrs = None
+			ps_garb_div.clear()
+
+			if prev_ch_id == "-1":
+				prev_chp_tag = soup.new_tag('span')
+			else:
+				prev_chp_tag = soup.new_tag('a', href=link_root + prev_ch_id + "/")
+
+			if next_ch_id == "-1":
+				next_chp_tag = soup.new_tag('span')
+			else:
+				next_chp_tag = soup.new_tag('a', href=link_root + next_ch_id + "/")
+
+			toc_chp_tag = soup.new_tag('a', href=link_root)
+
+			prev_chp_tag.attrs['style'] = 'float: left'
+			next_chp_tag.attrs['style'] = 'float: right'
+
+			prev_chp_tag.string = "Previous Chapter"
+			toc_chp_tag.string  = "Table of Contents"
+			next_chp_tag.string = "Next Chapter"
+
+			ps_garb_div.append(prev_chp_tag)
+			ps_garb_div.append(" ")
+			ps_garb_div.append(toc_chp_tag)
+			ps_garb_div.append(" ")
+			ps_garb_div.append(next_chp_tag)
+
+
+		return soup.prettify()
+
+	def add_chap_nav_links(self, url, contentstr):
+		content_soup = bs4.BeautifulSoup(contentstr, "lxml")
+
+		chapinfo = self.extract_chapinfo_segment(content_soup)
+
+
+		if 'chapterInfo' in chapinfo and 'nextChapterId' in chapinfo['chapterInfo'] and 'preChapterId' in chapinfo['chapterInfo']:
+			contentstr = self.insert_nav(url, content_soup, chapinfo)
+
+
+		return contentstr
 
 	def preprocessContent(self, url, mimetype, contentstr):
 		if not isinstance(contentstr, str):
@@ -132,6 +205,10 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 				self.update_toc(url, content_soup)
 				contentstr = content_soup.prettify()
 
+		if CHAP_LOADER_STR in contentstr:
+			self.log.info("Page %s seems to be a chapter page. Adding navigation links.", url)
+			contentstr = self.add_chap_nav_links(url, contentstr)
+
 		contentstr = contentstr.replace('<img src="//www.yueimg.com/en/images/common/imgPh.8c927.png" alt=" ">', "")
 
 		return contentstr
@@ -139,4 +216,5 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 	@staticmethod
 	def wantsUrl(url):
 		netloc = urllib.parse.urlsplit(url).netloc
-		return netloc.lower().endswith("www.webnovel.com")
+		return netloc.lower().endswith(".webnovel.com")
+ast

@@ -208,7 +208,7 @@ class DbFlattener(object):
 		self.log.info("Processing in chunks")
 
 
-		m_tracker = tracker.SummaryTracker()
+		# m_tracker = tracker.SummaryTracker()
 		with concurrent.futures.ThreadPoolExecutor(max_workers = 4) as exc:
 			self.log.info("Submitting tasks to worker queue.")
 			for batchset in batch(list(batch(high_incidence_items, 50)), 50):
@@ -380,7 +380,7 @@ class DbFlattener(object):
 		start = start - (start % step)
 		pbar = tqdm.tqdm(range(start, end, step))
 
-		m_tracker = tracker.SummaryTracker()
+		# m_tracker = tracker.SummaryTracker()
 
 		delta = 0
 
@@ -401,7 +401,7 @@ class DbFlattener(object):
 				delta   += 1
 				if delta > 5000:
 					delta = 0
-					m_tracker.print_diff()
+					# m_tracker.print_diff()
 		# worker_count = 4
 		# executor = concurrent.futures.ProcessPoolExecutor(max_workers = worker_count)
 		# for batchset in batch(list(batch(end, 50)), 50):

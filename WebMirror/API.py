@@ -4,6 +4,7 @@ import os.path
 import contextlib
 import logging
 import random
+import urllib.parse
 import common.database
 import Misc.txt_to_img
 import WebMirror.Engine
@@ -49,7 +50,7 @@ class RemoteContentObject(object):
 		self.url     = url
 		self.fetched = False
 		self.job     = None
-
+			
 		if db_session:
 			self.db_sess = db_session
 		else:
@@ -179,8 +180,10 @@ class RemoteContentObject(object):
 		job = lambda:None
 
 		job.url       = self.url
+		job.priority  = 9
 		job.starturl  = "http://www.example.org"
 		job.distance  = common.database.MAX_DISTANCE-2
+		job.netloc    = urllib.parse.urlsplit(self.url).netloc
 		fetcher       = self.archiver.fetcher(self.archiver.ruleset, target_url=job.url, start_url=job.starturl, db_sess=self.archiver.db_sess, job=job, cookie_lock=False)
 		print(fetcher)
 		ret          = fetcher.dispatchContent(content, "None", "text/html")
