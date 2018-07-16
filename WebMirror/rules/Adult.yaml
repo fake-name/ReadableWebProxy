@@ -185,6 +185,8 @@ badwords: [
 
 			'/~BE_Games/',
 
+			'tag[]=',
+
 			]
 
 
@@ -221,7 +223,7 @@ decompose: [
 	{'id'     : 'bigblock'},
 	{'id'     : 'footerbottom'},
 	{'id'     : 'kfjlbfm'},
-	
+
 
 	{'class'  : 'main-nav'},
 	{'class'  : 'inside-right-sidebar'},

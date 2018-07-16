@@ -29,6 +29,7 @@ baseUrl: [
 	'https://freezinglightnovels.wordpress.com',
 	'https://gashaconepubs.wordpress.com',
 	'https://hendricksensama.wordpress.com',
+
 	'https://hikkinomori.wordpress.com',
 	'https://hyorinmarublog.wordpress.com',
 	'https://iijmsrb.wordpress.com',
@@ -192,6 +193,7 @@ baseUrl: [
 	'http://www.anotherparallel.space',
 	'http://www.novitranslation.com',
 	'https://xiaoxiaonovels.com',
+	'http://www.pathoftranslation.com',
 	'http://soratranslations.com',
 
 
@@ -253,6 +255,7 @@ badwords: [
 		'turtleme.me/feed/images/',
 		'turtleme.me/includes/',
 		'turtleme.me/images/products/includes/',
+		'pathoftranslation.com/?ga=',
 	]
 
 decompose: [

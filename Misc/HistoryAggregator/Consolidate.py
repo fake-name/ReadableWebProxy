@@ -8,8 +8,8 @@ import json
 import calendar
 import tqdm
 
-if '__pypy__' not in sys.builtin_module_names:
-	from pympler import tracker
+# if '__pypy__' not in sys.builtin_module_names:
+# 	from pympler import tracker
 
 import objgraph
 import code
