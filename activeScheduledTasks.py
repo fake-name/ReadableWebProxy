@@ -27,7 +27,7 @@ import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
 scrapePlugins = {
 	0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                             minutes(15)),
 	1  : (WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggersBase,          hours(4)),
-	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                         minutes(60)),
+	2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                         minutes(90)),
 	3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,                     hours(4)),
 	# 4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                      days(3)),
 	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                            minutes(10)),

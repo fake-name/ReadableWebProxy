@@ -1727,6 +1727,7 @@ badwords: [
 		'/js/css/js/',
 		'?payment-mode=paypal',
 		'tototrans.com/rg-erdr.php',
+		'egscans.com/forum/',
 
 		# Google amp crap, I assume?
 		'/amp/',

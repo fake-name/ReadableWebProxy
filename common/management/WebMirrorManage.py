@@ -331,7 +331,8 @@ def delete_internal(sess, ids, netloc, badwords):
 					except IndexError:
 						ex = None
 
-				triggered = [tmp for tmp in badwords if tmp in ex]
+
+				triggered = [tmp for tmp in badwords if ex and tmp in ex]
 				print("Example removed URL: '%s'" % (ex))
 				print("Triggering badwords: '%s'" % triggered)
 				assert triggered
