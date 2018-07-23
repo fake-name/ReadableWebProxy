@@ -44,6 +44,9 @@ GLOBAL_BAD_URLS = [
 			'www.paypalobjects.com',
 			'attorneyking.pro',    # Wat
 			'.temp.domains',
+			'box5113.temp.domains',
+			'attorneykings.gdn',
+			's2ba7sw2d.us-02.live-paas.net',
 
 			# Tumblr can seriously go fuck itself with a rusty stake
 			'tumblr.com/widgets/',
@@ -85,6 +88,7 @@ GLOBAL_BAD_URLS = [
 			# NFI where /this/ came from
 			'www.miforcampuspolice.com',
 			'attorneyking.pro',
+			'webkingsga.us',
 
 
 			'tracking.feedpress.it',
@@ -380,5 +384,10 @@ GLOBAL_INLINE_BULLSHIT = [
 			'translated at nakimushitl.wordpress.com',
 			'This translation is only hosted on bcatranslation',
 			'Come Read it at DarkCirclesTranslations.com instead',
+			'Read-only at SHMTranslations.com',
+			'Read at SHMTranslations.com',
+			'SHMTranslations.com',
+			'Please support the translator by reading at shmtranslations.com',
+			'Read at SHMTranslations dot com',
 
 ]

@@ -7,6 +7,7 @@ import sys
 import tqdm
 import pprint
 import time
+import random
 import tqdm
 import traceback
 from concurrent.futures import ThreadPoolExecutor
@@ -314,8 +315,9 @@ def delete_internal(sess, ids, netloc, badwords):
 	else:
 		print("No rows needing retriggering for netloc %s." % (netloc))
 
-	chunk_size = 5000
-	for chunk_idx in range(0, len(ids), chunk_size):
+	chunk_size = 2000
+	pbar = tqdm.tqdm(range(0, len(ids), chunk_size))
+	for chunk_idx in pbar:
 		chunk = ids[chunk_idx:chunk_idx+chunk_size]
 		while 1:
 			try:
@@ -333,32 +335,30 @@ def delete_internal(sess, ids, netloc, badwords):
 
 
 				triggered = [tmp for tmp in badwords if ex and tmp in ex]
-				print("Example removed URL: '%s'" % (ex))
-				print("Triggering badwords: '%s'" % triggered)
-				assert triggered
+				pbar.write("Example removed URL: '%s'" % (ex))
+				pbar.write("Triggering badwords: '%s'" % triggered)
+				if triggered:
+					q1 = sess.query(db.WebPages).filter(db.WebPages.id.in_(chunk))
+					affected_rows_main = q1.delete(synchronize_session=False)
 
+					q2 = sess.query(ctbl).filter(ctbl.c.id.in_(chunk))
+					affected_rows_ver = q2.delete(synchronize_session=False)
 
-				q1 = sess.query(db.WebPages).filter(db.WebPages.id.in_(chunk))
-				affected_rows_main = q1.delete(synchronize_session=False)
-
-				q2 = sess.query(ctbl).filter(ctbl.c.id.in_(chunk))
-				affected_rows_ver = q2.delete(synchronize_session=False)
-
-				sess.commit()
-				print("Deleted %s rows (%s version table rows) for netloc %s. %0.2f%% done." %
-						(affected_rows_main, affected_rows_ver, netloc, 100 * ((chunk_idx) / len(ids))))
+					sess.commit()
+					pbar.write("Deleted %s rows (%s version table rows) for netloc %s. %0.2f%% done." %
+							(affected_rows_main, affected_rows_ver, netloc, 100 * ((chunk_idx) / len(ids))))
 				break
 			except sqlalchemy.exc.InternalError:
-				print("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
+				pbar.write("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
 				sess.rollback()
 			except sqlalchemy.exc.OperationalError:
-				print("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
+				pbar.write("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
 				sess.rollback()
 			except sqlalchemy.exc.IntegrityError:
-				print("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
+				pbar.write("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
 				sess.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
-				print("Transaction error (sqlalchemy.exc.InvalidRequestError). Retrying.")
+				pbar.write("Transaction error (sqlalchemy.exc.InvalidRequestError). Retrying.")
 				traceback.print_exc()
 				sess.rollback()
 
@@ -458,7 +458,11 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 	print("Purge invalid URLs called with netloc param: '%s'" % selected_netloc)
 	found_ruleset = False
 	with db.session_context() as sess:
-		for ruleset in WebMirror.rules.load_rules():
+		rs = WebMirror.rules.load_rules()
+
+		random.shuffle(rs)
+
+		for ruleset in rs:
 
 			if      (
 							(ruleset['netlocs'] and ruleset['badwords'])

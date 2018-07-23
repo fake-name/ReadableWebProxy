@@ -156,9 +156,15 @@ def proto_process_releases(feed_releases, disable_range_limit=False):
 			type=None,
 			)
 
+	QIDIAN_FEED_ID = 2578
 	futures = []
 	with concurrent.futures.ThreadPoolExecutor(max_workers=8) as tpe:
 		for item in feed_releases:
+
+			# Qidian stuff is processed automatically.
+			if item.feed_id == QIDIAN_FEED_ID:
+				continue
+
 			proc_tmp = {}
 			proc_tmp['feedtype']  = item.type
 			proc_tmp['title']     = item.title
@@ -363,7 +369,7 @@ def feedFiltersRecent():
 	else:
 		return render_template('error.html', title = 'Viewer', message = "Error! Invalid history scope!")
 
-
+	# Mask out the qidian stuff, since it's automated.
 
 	feeds = g.session.query(db.RssFeedPost)                  \
 		.filter(db.RssFeedPost.published > item_scope_limit) \

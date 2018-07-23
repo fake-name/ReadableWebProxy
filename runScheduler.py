@@ -74,7 +74,12 @@ class JobCaller(LogBase.LoggerMixin):
 
 		self.log.info("Calling job %s", self.job_name)
 		session = db.get_db_session()
-		item = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==self.job_name).one()
+		item = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==self.job_name).scalar()
+
+		if not item:
+			self.log.error("Don't have instance for job %s? How did this happen?", self.job_name)
+			raise RuntimeError
+
 		if item.is_running:
 			session.commit()
 			self.log.error("Plugin %s is already running! Not doing re-entrant call!", self.job_name)

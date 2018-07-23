@@ -44,6 +44,8 @@ badwords: [
 			"/betareaders/",
 			"/poetry/", # Really?
 
+			"?show_comments=",
+
 			]
 
 # Content Stripping needs to be determined.
