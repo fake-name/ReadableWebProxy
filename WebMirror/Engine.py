@@ -138,6 +138,10 @@ def build_rewalk_time_lut(rules):
 #
 ########################################################################################################################
 
+
+# LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
+SEEN_CACHE = cachetools.TTLCache(maxsize=100 * 1000, ttl=60 * 60 * 6)
+
 class SiteArchiver(LogBase.LoggerMixin):
 
 	loggerPath = "Main.SiteArchiver"
@@ -146,8 +150,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 	# This (functionally) equates to no limit.
 	# The db defaults to  (e.g. max signed integer value) anyways
 	FETCH_DISTANCE = 1000 * 1000
-
-
 
 	@property
 	def wg(self):
@@ -195,8 +197,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		self.specialty_handlers = WebMirror.rules.load_special_case_sites()
 
 
-		# LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
-		self.seen = cachetools.TTLCache(maxsize=100 * 1000, ttl=60 * 60 * 6)
 
 		from activePlugins import INIT_CALLS
 		for item in INIT_CALLS:
@@ -232,9 +232,6 @@ class SiteArchiver(LogBase.LoggerMixin):
 		# self.log.info("Content filter size: %s. Resource filter size %s.", len(self.ctnt_filters), len(self.rsc_filters))
 		# print("SiteArchiver initializer complete")
 
-
-		# URL Cache to keep stupid dupes out.
-		self.seen = cachetools.LRUCache(maxsize=10 * 1000)
 
 	########################################################################################################################
 	#
@@ -604,7 +601,9 @@ class SiteArchiver(LogBase.LoggerMixin):
 		for link in resource:
 			items.append((link, False))
 
-		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links.", len(plain), len(resource))
+		pre_filt_plain_cnt = len(plain)
+		pre_filt_rsc_cnt   = len(resource)
+
 
 		new_starturl = job.starturl
 
@@ -639,12 +638,19 @@ class SiteArchiver(LogBase.LoggerMixin):
 			in
 				items
 			if
-				link_url not in self.seen
+				link_url not in SEEN_CACHE
 		]
+
+		self.log.info("Page had %s unfiltered content links, %s unfiltered resource links (%s, %s after filtering).",
+			pre_filt_plain_cnt,
+			pre_filt_rsc_cnt,
+			pre_filt_plain_cnt + pre_filt_rsc_cnt,
+			len(batch_items)
+			)
 
 		# Seen cache.
 		for link_url, _ in items:
-			self.seen[link_url] = True
+			SEEN_CACHE[link_url] = True
 
 
 		assert all([tmp['url'].startswith("http") for tmp in batch_items])

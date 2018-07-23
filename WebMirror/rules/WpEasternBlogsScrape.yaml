@@ -6,7 +6,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -137,6 +136,7 @@ baseUrl: [
 	'https://builddesks.wordpress.com',
 	'https://bunimithetranslation.wordpress.com',
 	'https://bureidanworks.wordpress.com',
+	'https://byzabootl.wordpress.com',
 	'https://cabnovels.wordpress.com',
 	'https://cagedbramblings.wordpress.com',
 	'https://calicoxtabby.wordpress.com',
@@ -862,6 +862,7 @@ baseUrl: [
 	'https://rubylikesfood.wordpress.com',
 	'https://ruibelle.wordpress.com',
 	'https://ruzetranslations.wordpress.com',
+	'https://rvstranslations.wordpress.com',
 	'https://sabertranslations.wordpress.com',
 	'https://sabishidesu.wordpress.com',
 	'https://sadhoovysinhumantranslations.wordpress.com',
@@ -1033,6 +1034,7 @@ baseUrl: [
 	'https://tdwktranslates.wordpress.com',
 	'https://teafragrance.wordpress.com',
 	'https://teaquilashot.wordpress.com',
+	'https://teddybearlations.wordpress.com',
 	'https://tekusite.wordpress.com',
 	'https://tempotranslations.wordpress.com',
 	'https://tensaitranslations.wordpress.com',
@@ -1109,6 +1111,7 @@ baseUrl: [
 	'https://unchainedtranslation.wordpress.com',
 	'https://uncommittedtranslations.wordpress.com',
 	'https://undecentlnt.wordpress.com',
+	'https://undecidedtranslations.wordpress.com',
 	'https://unhingedtranslation.wordpress.com',
 	'https://unicornsgaloreblog.wordpress.com',
 	'https://uniquebooksblog.wordpress.com',
@@ -1284,6 +1287,7 @@ baseUrl: [
 	'http://hikkinomori.mistbinder.org',
 	'http://hotchocolatescans.com',
 	'http://hyorinmaru.net',
+	'http://idlebearkun.com',
 	'http://indoromance.com',
 	'http://isohungrytls.com',
 	'http://izra709.com',
@@ -1568,6 +1572,7 @@ baseUrl: [
 	'https://www.kfannovels.com',
 	'https://www.liberspark.com',
 	'https://www.lnovelreader.com',
+	'https://www.nekoseirei.com',
 	'https://www.oppatranslations.com',
 	'https://www.otakubu.com',
 	'https://www.paradoxnovels.com',

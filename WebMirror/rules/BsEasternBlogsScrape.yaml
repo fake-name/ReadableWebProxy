@@ -12,7 +12,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-
 	'http://13thechelon.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
@@ -122,6 +121,7 @@ baseUrl: [
 	'http://shinetranslation.blogspot.com',
 	'http://shovatranslations.blogspot.com',
 	'http://skythewood.blogspot.com',
+	'http://snowbelldot.blogspot.com',
 	'http://sodtl.blogspot.com',
 	'http://soupytranslations.blogspot.com',
 	'http://sousetsuka.blogspot.com',
@@ -173,7 +173,9 @@ baseUrl: [
 	'https://bakalation.blogspot.com',
 	'https://blacksoulz.blogspot.com',
 	'https://coba-semuanya.blogspot.com',
+	'https://daisyktranslations.blogspot.com',
 	'https://elysiantranslations.blogspot.com',
+	'https://emeraldmayblossom.blogspot.com',
 	'https://emmatranslates.blogspot.com',
 	'https://entertainmentandsnacks.blogspot.com',
 	'https://exetranslations.blogspot.com',
