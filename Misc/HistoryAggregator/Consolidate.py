@@ -207,6 +207,7 @@ class DbFlattener(object):
 
 		self.log.info("Processing in chunks")
 
+		high_incidence_items.sort(reverse=True)
 
 		# m_tracker = tracker.SummaryTracker()
 		with concurrent.futures.ThreadPoolExecutor(max_workers = 4) as exc:
@@ -227,6 +228,9 @@ class DbFlattener(object):
 		if last_check > datetime.datetime.now() - FLATTEN_SCAN_INTERVAL:
 			self.log.info("Url %s checked within the check interval (%s, %s). Skipping.", url, FLATTEN_SCAN_INTERVAL, last_check)
 			return 0
+		else:
+			self.log.info("Url %s last checked %s.", url, last_check)
+
 
 		ctbl = version_table(db.WebPages.__table__)
 
@@ -238,6 +242,10 @@ class DbFlattener(object):
 					.where(ctbl.c.url == url)
 				)
 			self.log.info("Modified %s rows", res.rowcount)
+			sess.commit()
+			self.log.info("Committed")
+			db.set_in_version_check_table(sess, url, datetime.datetime.now())
+
 			return
 
 
