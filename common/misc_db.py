@@ -129,24 +129,26 @@ def set_in_version_check_table(sess, url, update_date):
 	have = sess.query(VersionCheckTable).filter(VersionCheckTable.url == url).scalar()
 	if have:
 		if have.checked < update_date:
-			vc_log("Updating item: %s, %s", have, have.url)
-			vc_log("	old -> %s", have.checked)
-			vc_log("	new -> %s", update_date)
+			vc_log.info("Updating item: %s, %s", have, have.url)
+			vc_log.info("	old -> %s", have.checked)
+			vc_log.info("	new -> %s", update_date)
 			have.checked = update_date
 		elif have.checked > datetime.datetime.now():
-			vc_log("Have date is too recent: %s, %s", have, have.url)
-			vc_log("	old -> %s", have.checked)
-			vc_log("	new -> %s", update_date)
+			vc_log.info("Have date is too recent: %s, %s", have, have.url)
+			vc_log.info("	old -> %s", have.checked)
+			vc_log.info("	new -> %s", update_date)
 			have.checked = update_date
 		else:
-			vc_log("Item has not changed. Nothing to do!")
+			vc_log.info("Item has not changed. Nothing to do!")
 	else:
-		vc_log("New item: %s, %s", url, update_date)
+		vc_log.info("New item: %s, %s", url, update_date)
 		new = VersionCheckTable(
 			url     = url,
 			checked = update_date,
 			)
 		sess.add(new)
+
+
 
 	sess.commit()
 

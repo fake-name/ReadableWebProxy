@@ -243,7 +243,7 @@ class DbFlattener(object):
 				)
 			self.log.info("Modified %s rows", res.rowcount)
 			sess.commit()
-			self.log.info("Committed")
+			self.log.info("Committed. Setting version log.")
 			db.set_in_version_check_table(sess, url, datetime.datetime.now())
 
 			return
