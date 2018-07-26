@@ -66,19 +66,7 @@ class ColumnReflector(object):
             sa.BigInteger,
             primary_key=True,
             index=True,
-            autoincrement=False  # This is needed for MySQL
-        )
-
-    @property
-    def end_transaction_column(self):
-        """
-        Returns end_transaction column. By default the name of this column is
-        'end_transaction_id'.
-        """
-        return sa.Column(
-            self.option('end_transaction_column_name'),
-            sa.BigInteger,
-            index=True
+            autoincrement=True  # This is needed for MySQL
         )
 
     @property
@@ -100,8 +88,6 @@ class ColumnReflector(object):
         # single table inheritance
         if not self.model or not sa.inspect(self.model).single:
             yield self.transaction_column
-            if self.option('strategy') == 'validity':
-                yield self.end_transaction_column
             yield self.operation_type_column
 
 

@@ -138,15 +138,15 @@ class UnitOfWork(object):
             version_obj = version_cls()
             self.version_objs[version_key] = version_obj
             self.version_session.add(version_obj)
-            tx_column = self.manager.option(
-                target,
-                'transaction_column_name'
-            )
-            setattr(
-                version_obj,
-                tx_column,
-                self.current_transaction.id
-            )
+            # tx_column = self.manager.option(
+            #     target,
+            #     'transaction_column_name'
+            # )
+            # setattr(
+            #     version_obj,
+            #     tx_column,
+            #     self.current_transaction.id
+            # )
             return version_obj
         else:
             return self.version_objs[version_key]
@@ -168,14 +168,14 @@ class UnitOfWork(object):
         version_obj.operation_type = operation.type
         self.assign_attributes(target, version_obj)
 
-        self.manager.plugins.after_create_version_object(
-            self, target, version_obj
-        )
-        if self.manager.option(target, 'strategy') == 'validity':
-            self.update_version_validity(
-                target,
-                version_obj
-            )
+        # self.manager.plugins.after_create_version_object(
+        #     self, target, version_obj
+        # )
+        # if self.manager.option(target, 'strategy') == 'validity':
+        #     self.update_version_validity(
+        #         target,
+        #         version_obj
+        #     )
         operation.processed = True
 
     def create_version_objects(self, session):
@@ -270,6 +270,7 @@ class UnitOfWork(object):
                         )
                     )
                 )
+
                 query.update(
                     {
                         end_tx_column_name(version_obj):
