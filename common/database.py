@@ -1,7 +1,7 @@
 
 
 
-from sqlalchemy_continuum import make_versioned
+from sqlalchemy_continuum_vendored import make_versioned
 make_versioned(user_cls=None)
 
 # Import the DB things.

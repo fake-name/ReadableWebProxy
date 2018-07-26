@@ -22,7 +22,7 @@ from sqlalchemy import or_
 from sqlalchemy.sql import func
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
-from sqlalchemy_continuum.utils import version_table
+from sqlalchemy_continuum_vendored.utils import version_table
 
 if __name__ == "__main__":
 	import logSetup

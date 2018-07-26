@@ -9,7 +9,7 @@ from flask import request
 from flask import jsonify
 from flask import g
 
-from sqlalchemy_continuum.utils import version_table
+from sqlalchemy_continuum_vendored.utils import version_table
 
 import common.database as db
 from app import app
@@ -253,7 +253,7 @@ def render_resource():
 			img = img.convert("RGBA")
 			out = io.BytesIO()
 			img.save(out, format="png")
-		
+
 		content = out.getvalue()
 		mimetype = 'img/png'
 		fname = fname + ".png"

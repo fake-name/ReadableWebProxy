@@ -19,7 +19,7 @@ import sqlalchemy.exc
 
 import WebMirror.rules
 import common.database as db
-from sqlalchemy_continuum.utils import version_table
+from sqlalchemy_continuum_vendored.utils import version_table
 
 # # # Do the delete from the versioning table now.
 # ctbl = version_table(db.WebPages.__table__)

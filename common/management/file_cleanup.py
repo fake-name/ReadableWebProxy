@@ -8,7 +8,7 @@ import sys
 from tqdm import tqdm
 
 import common.database as db
-from sqlalchemy_continuum.utils import version_table
+from sqlalchemy_continuum_vendored.utils import version_table
 
 
 
