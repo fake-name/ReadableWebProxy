@@ -38,8 +38,10 @@ badwords: [
 
 
 decomposeBefore: [
-	{'class'      :'comments-area'},
-	{'class' : "adsbygoogle"},
+	{'class'      : 'comments-area'},
+	{'class'      : "adsbygoogle"},
+	{'class'      : "discussList"},
+	{'class'      : "readLeftMode_ul"},
 ]
 
 decompose: [
@@ -53,6 +55,15 @@ decompose: [
 	{'class'  : 'blog-sidebar'},
 	{'class'  : 'paging-navigation'},
 	{'class'  : 'comments-area'},
+	{'class'  : 'header'},
+	{'class'  : 'RightModule'},
+	{'class'  : 'pof'},
+	{'class'  : 'SignIn_html'},
+	{'class'  : 'disN'},
+	{'class'  : 'signEmail'},
+	{'class'  : 'signUpBox'},
+
+	{'id'     : 'content_footer'},
 ]
 
 stripTitle: [
