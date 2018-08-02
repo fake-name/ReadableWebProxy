@@ -214,6 +214,9 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			timestr = cdate.get_text(strip=True)
 			itemDate, status = parsedatetime.Calendar().parse(timestr)
 
+			if status < 1:
+				continue
+
 			reldate = time.mktime(itemDate)
 
 			relurl = common.util.urlFuncs.rebaseUrl(cname.a['href'], seriesPageUrl)
