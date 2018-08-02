@@ -10,7 +10,7 @@ webrequest==0.0.44
 pillow==5.2.0
 json2html==1.2.1
 mprpc==0.1.16
-tqdm==4.23.4
+tqdm==4.24.0
 chardet==3.0.4
 pymysql==0.9.2
 statsd==3.2.2
@@ -19,7 +19,7 @@ objgraph==3.4.0
 zerorpc==0.6.1
 cssutils==1.0.2
 tinycss2==0.6.1
-fontTools==3.28.0
+fontTools==3.29.0
 semantic==1.0.3
 fdict==0.8.1
 cachetools==2.1.0
@@ -65,7 +65,7 @@ apscheduler==3.5.1
 git+https://github.com/kvesteri/sqlalchemy-continuum.git
 sqlalchemy_searchable==1.0.3
 
-BeautifulSoup4==4.6.0
+BeautifulSoup4==4.6.1
 
 alembic==1.0.0
 
