@@ -115,7 +115,7 @@ class VersionCheckTable(common.db_base.Base):
 def get_from_version_check_table(sess, url):
 	have = sess.query(VersionCheckTable).filter(VersionCheckTable.url == url).scalar()
 	if have:
-		ret = have.url
+		ret = have.checked
 	else:
 		ret = datetime.datetime.min
 	sess.commit()

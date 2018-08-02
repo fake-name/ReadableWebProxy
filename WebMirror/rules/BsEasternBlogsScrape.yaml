@@ -12,6 +12,8 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+	'https://djurasico.blogspot.com',
+	'https://lights-n-progress.blogspot.com',
 	'http://13thechelon.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
@@ -104,6 +106,7 @@ baseUrl: [
 	'http://novelasian.blogspot.ae',
 	'http://novelasymangasjpo.blogspot.com',
 	'http://novelstranslation.blogspot.com',
+	'http://okanegahishii.blogspot.com',
 	'http://onesecondspring.blogspot.com',
 	'http://otakunoeiyaku.blogspot.com',
 	'http://overlordvolume10.blogspot.com',

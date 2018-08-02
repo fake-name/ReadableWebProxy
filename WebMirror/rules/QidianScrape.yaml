@@ -12,7 +12,7 @@ send_raw_feed: False
 badwords: [
 			"/welcome",
 
-
+			"/rssbook/",
 			"/manga/",
 			"/recruitment/",
 			"wpmp_switcher=mobile",

@@ -353,8 +353,8 @@ class VersioningManager(object):
 
         :param session: SQLAlchemy session object
         """
-        if session.transaction.nested:
-            return
+        # if session.transaction.nested:
+        #     return
         conn = self.session_connection_map.pop(session, None)
         if conn in self.units_of_work:
             uow = self.units_of_work[conn]

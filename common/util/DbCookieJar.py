@@ -110,6 +110,9 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 			if tries > 10:
 				self.log.error("Failure saving cookies!")
+			if tries > 11:
+				self.log.error("Giving up saving cookies.")
+				return
 
 		distinct = set(((c.name, c.domain, c.path) for c in self))
 

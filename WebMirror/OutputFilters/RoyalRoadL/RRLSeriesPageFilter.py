@@ -9,6 +9,7 @@ import datetime
 import time
 import json
 import os.path
+import parsedatetime
 import bleach
 
 import WebRequest
@@ -209,7 +210,12 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 				continue
 			cname, cdate = chapter.find_all("td")
 
-			reldate = cdate.time['unixtime']
+
+			timestr = cdate.get_text(strip=True)
+			itemDate, status = parsedatetime.Calendar().parse(timestr)
+
+			reldate = time.mktime(itemDate)
+
 			relurl = common.util.urlFuncs.rebaseUrl(cname.a['href'], seriesPageUrl)
 
 

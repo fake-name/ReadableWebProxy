@@ -3,6 +3,8 @@ import re
 import urllib.parse
 import unshortenit
 
+import requests.exceptions
+
 import common.database as db
 
 # All tags you need to look into to do link canonization
@@ -185,7 +187,7 @@ def cleanUrl(urlin):
 	try:
 		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=False)
 		return url
-	except (unshortenit.NotFound, unshortenit.UnshortenFailed):
+	except (unshortenit.NotFound, unshortenit.UnshortenFailed, requests.exceptions.ConnectionError):
 		return None
 
 	return urlin
@@ -290,6 +292,31 @@ def hasDuplicatePathSegments(url):
 				'member.php',
 				'register.php',
 				'showthread.php',
+			]
+
+			if sum([pathchunks.count(i) for i in disalow_several]) > 1:
+				return True
+
+			# ON SPCnet, the value in the path after the .php file is the target
+			# page ID. Any path after the page id is basically ignored.
+			# As such, it'll basically wind up being a duplicate, since they
+			# all redirect to the same place.
+			# Therefore, we handle (and ignore) pages with lots of duplicates.
+			for bad_chunk in disalow_several:
+				try:
+					idx = pathchunks.index(bad_chunk)
+					if len(pathchunks) - idx > 2:
+						print("Bad:", pathchunks, idx)
+						return True
+				except ValueError:
+					pass
+
+
+		# http://www.spcnet.tv/forums/showthread.php/21185-mobile-suit-gundam-the-second-century-(part-2-the-second-century)/images/icons/images/misc/showthread.php/21185-Mobile-Suit-Gundam-The-Second-Century-(Part-2-The-Second-Century)/page10
+		if netloc == 'www.eugenewoodbury.com':
+
+			# Block a url where multiple instances of the php page is present.
+			disalow_several = [
 
 				'angel',
 				'biblio',

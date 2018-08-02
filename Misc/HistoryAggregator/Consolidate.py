@@ -207,10 +207,11 @@ class DbFlattener(object):
 
 		self.log.info("Processing in chunks")
 
-		high_incidence_items.sort(reverse=True)
+		high_incidence_items.sort()
+		# high_incidence_items.sort(reverse=True)
 
 		# m_tracker = tracker.SummaryTracker()
-		with concurrent.futures.ThreadPoolExecutor(max_workers = 4) as exc:
+		with concurrent.futures.ThreadPoolExecutor(max_workers = 6) as exc:
 			self.log.info("Submitting tasks to worker queue.")
 			for batchset in batch(list(batch(high_incidence_items, 50)), 50):
 				for paramset in batchset:
@@ -245,6 +246,8 @@ class DbFlattener(object):
 			sess.commit()
 			self.log.info("Committed. Setting version log.")
 			db.set_in_version_check_table(sess, url, datetime.datetime.now())
+			new_val = db.get_from_version_check_table(sess, url)
+			self.log.info("New value from DB: %s", new_val)
 
 			return
 
@@ -254,12 +257,22 @@ class DbFlattener(object):
 		count = sess.query(ctbl) \
 			.filter(ctbl.c.url == url) \
 			.count()
-		self.log.info("Found %s results for url %s. Fetching rows", count, url)
-		items = sess.query(ctbl) \
-			.filter(ctbl.c.url == url) \
-			.all()
 
-		items.sort(key=lambda x: (x.id, x.transaction_id, x.end_transaction_id))
+		self.log.info("Found %s results for url %s. Fetching rows", count, url)
+
+		if count > 5000:
+			items = []
+			for item in tqdm.tqdm(
+				sess.query(ctbl) \
+				.filter(ctbl.c.url == url) \
+				.yield_per(500), total=count):
+				items.append(item)
+		else:
+			items = sess.query(ctbl) \
+				.filter(ctbl.c.url == url) \
+				.all()
+
+		items.sort(key=lambda x: (x.id, x.transaction_id))
 		# for x in items:
 		# 	print(x.id, x.transaction_id, x.end_transaction_id)
 
@@ -441,6 +454,8 @@ class DbFlattener(object):
 						break
 					except sqlalchemy.exc.OperationalError:
 						temp_sess.rollback()
+					except Exception:
+						traceback.print_exc()
 
 	def tickle_rows(self, sess, urlset):
 		jobs = []
