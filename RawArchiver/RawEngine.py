@@ -111,6 +111,7 @@ def saveFile(filecont, url, filename):
 ########################################################################################################################
 
 
+
 class RawSiteArchiver(LogBase.LoggerMixin):
 
 	loggerPath = "Main.RawArchiver"
@@ -399,17 +400,67 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			self.log.info("Missing jobid: '%s'", jid)
 			return
 
-		# TODO: Add error handling?
 
-		assert 'module' in response, "No module in response message? Response: %s" % response
-		assert 'call' in response, "No call in response message? Response: %s" % response
 
-		assert response['module'] == 'WebRequest', "Incorrect module? Module: '%s'" % response['module']
-		assert response['call'] == 'getItem', "Incorrect call? Call: '%s'" % response['call']
+		if 'ret' in response and 'success' in response and response['success'] is True:
+			assert 'module' in response, "No module in response message? Response: %s" % response
+			assert 'call' in response, "No call in response message? Response: %s" % response
 
-		if response['success'] == True:
+			assert response['module'] == 'WebRequest', "Incorrect module? Module: '%s'" % response['module']
+			assert response['call'] == 'getItem', "Incorrect call? Call: '%s'" % response['call']
 			content, fileN, mType = response['ret']
 			self.process_job(job, content, fileN, mType)
+
+		else:
+			job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
+			job.state = 'error'
+			job.errno = -4
+
+			content = "DOWNLOAD FAILED"
+			content += "<br>"
+			if 'traceback' in response:
+				content += "<pre>"
+				content += "<br>".join(response['traceback'])
+				content += "</pre>"
+
+				log_func = self.log.error
+
+				if '<FetchFailureError 410 -> ' in content:
+					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+					log_func = self.log.warning
+					job.errno = 410
+				elif '<FetchFailureError 404 -> ' in content:
+					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+					log_func = self.log.warning
+					job.errno = 404
+				elif '<FetchFailureError 403 -> ' in content:
+					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
+					job.errno = 403
+				elif '<FetchFailureError 500 -> ' in content:
+					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
+					job.errno = 500
+				else:
+					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
+					job.errno = -1
+
+				max_len_trunc = 450
+
+				for line in response['traceback']:
+					if len(line) > max_len_trunc:
+						log_func("Remote traceback: %s [...snip...]", line[:max_len_trunc])
+					else:
+						log_func("Remote traceback: %s", line)
+			else:
+				self.log.error("No traceback in response?")
+				self.log.error("Response: %s", response)
+
+			self.db_sess.commit()
+			self.log.error("Error in remote fetch.")
+
+
+
+
+
 
 
 		# {

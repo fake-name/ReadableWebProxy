@@ -48,6 +48,8 @@ baseUrl: [
 		# Garbage drupal thing
 		'https://fiction.live',
 
+		'http://www.meejee.net',
+
 		# Needs more checking.
 		# 'https://www.eviscerati.org'
 

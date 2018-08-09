@@ -162,11 +162,20 @@ def resetRawInProgress():
 	db.delete_db_session()
 
 
+# LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
+SEEN_CACHE = cachetools.TTLCache(maxsize=100 * 1000, ttl=60 * 60 * 6)
+
 
 def links_to_dicts(links_in, starturl, distance, priority):
 	ret = []
 
 	for link in links_in:
+
+		if link in SEEN_CACHE:
+			continue
+
+		SEEN_CACHE[link] = True
+
 		# print("Doing insert", commit_each, link)
 		start = urllib.parse.urlsplit(link).netloc
 

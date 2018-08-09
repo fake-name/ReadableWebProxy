@@ -201,13 +201,40 @@ class MayonaizeShrimpLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 
 		return soup
 
+
+class ConvallariasLibraryProcessor(HtmlProcessor.HtmlPageProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+
+	loggerPath = "Main.Text.ConvallariasLibrary"
+	
+	@staticmethod
+	def wantsUrl(url):
+		if re.search(r"^https?://www\.convallariaslibrary\.com/", url):
+			print("ms Wants url: '%s'" % url)
+			return True
+		# print("lnw doesn't want url: '%s'" % url)
+		return False
+
+	def preprocessBody(self, soup):
+
+		# Decompose the annoying inline shit.
+		# ex: <span style="color:#ffffff;">the truth is out!</span>
+		badspans = soup.find_all("span", style=re.compile(r"font-size\W?:\W?0px", re.I))
+		for bad in badspans:
+			bad.decompose()
+
+		return soup
+
 class RebirthOnlineLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 
 	wanted_mimetypes = ['text/html']
 	want_priority    = 80
 
 
-	loggerPath = "Main.Text.MayonaizeShrimp"
+	loggerPath = "Main.Text.RebirthOnline"
 
 	@staticmethod
 	def wantsUrl(url):
@@ -231,6 +258,9 @@ class RebirthOnlineLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 			content = rule.content
 			prelude = [tmp for tmp in prelude if tmp.type != 'whitespace']
 			content = [tmp for tmp in content if tmp.type != 'whitespace']
+			
+			print("Rule:", (prelude, content))
+			
 			if (
 					len(prelude) == 2 and
 					prelude[0].type == "literal" and
@@ -246,7 +276,17 @@ class RebirthOnlineLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 				):
 
 				bad_class = prelude[1].value
+				bad_classes.append(bad_class)
+			if (
+					len(prelude) == 2 and
+					prelude[0].type == "literal" and
+					prelude[1].type == "ident" and
+					prelude[0].value == "." and
+					"left" in str(content) and
+					"-9999px" in str(content)
+				):
 
+				bad_class = prelude[1].value
 				bad_classes.append(bad_class)
 		return bad_classes
 

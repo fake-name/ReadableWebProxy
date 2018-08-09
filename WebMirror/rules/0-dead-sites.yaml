@@ -7,6 +7,18 @@ rewalk_disabled: True
 rewalk_interval_days: 50000
 
 baseUrl: [
+
+
+
+	'https://madsnail.ru',
+	'http://madsnail.ru',
+	'https://allwgr.org.cn',
+	'http://allwgr.org.cn',
+	'https://us.hzotm.win',
+	'http://us.hzotm.win',
+	'https://www.arcgames.com',
+	'http://www.arcgames.com',
+
 	'http://www.thecrank.wordpress.com',
 	'https://alicetranslations.wordpress.com',
 	'https://ankydon.wordpress.com',

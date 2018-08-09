@@ -17,6 +17,12 @@ import concurrent.futures
 
 import sqlalchemy.exc
 
+
+if '__pypy__' in sys.builtin_module_names:
+	import psycopg2cffi as psycopg2
+else:
+	import psycopg2
+
 import WebMirror.rules
 import common.database as db
 from sqlalchemy_continuum_vendored.utils import version_table
@@ -452,9 +458,12 @@ class DbFlattener(object):
 					try:
 						self.truncate_url_history(temp_sess, url)
 						break
+					except psycopg2.InternalError:
+						temp_sess.rollback()
 					except sqlalchemy.exc.OperationalError:
 						temp_sess.rollback()
 					except Exception:
+						temp_sess.rollback()
 						traceback.print_exc()
 
 	def tickle_rows(self, sess, urlset):
