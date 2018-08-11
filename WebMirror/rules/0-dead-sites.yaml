@@ -8,6 +8,7 @@ rewalk_interval_days: 50000
 
 baseUrl: [
 
+	'http://www.deadlylegends.com/translations/',
 
 
 	'https://madsnail.ru',

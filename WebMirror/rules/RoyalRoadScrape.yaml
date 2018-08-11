@@ -45,6 +45,7 @@ badwords: [
 			'nav-sa-kindle-amazon-echo',
 			'/kindle-dbs/',
 			'/prime-pr/',
+			'?comments=',
 
 			# Did RoyalRoadL redirect to amazon somewhere?
 			'royalroadl.com/Kindle-eBooks/',
