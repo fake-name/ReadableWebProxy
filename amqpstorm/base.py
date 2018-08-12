@@ -9,7 +9,7 @@ from amqpstorm.exception import AMQPChannelError
 AUTH_MECHANISM = 'PLAIN'
 IDLE_WAIT = 0.01
 FRAME_MAX = 131072
-MAX_CHANNELS = 65535
+MAX_CHANNELS = 1024
 LOCALE = locale.getdefaultlocale()[0] or 'en_US'
 
 

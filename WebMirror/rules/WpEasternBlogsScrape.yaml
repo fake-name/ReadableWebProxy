@@ -6,6 +6,7 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -22,6 +23,7 @@ baseUrl: [
 	'https://abcpwip.wordpress.com',
 	'https://absurdtl.wordpress.com',
 	'https://acantranslations.wordpress.com',
+	'https://acquiescetranslations.wordpress.com',
 	'https://adcaelumtranslations.wordpress.com',
 	'https://addnewtab.wordpress.com',
 	'https://adorablexd.wordpress.com',
@@ -85,6 +87,7 @@ baseUrl: [
 	'https://automaticmanual.wordpress.com',
 	'https://avaritiachan.wordpress.com',
 	'https://avaritiakuns.wordpress.com',
+	'https://awanderingpotato.wordpress.com',
 	'https://awildbard.wordpress.com',
 	'https://ayaxworld.wordpress.com',
 	'https://aydenshizuki.wordpress.com',
@@ -168,6 +171,7 @@ baseUrl: [
 	'https://chuunihime.wordpress.com',
 	'https://circatrans.wordpress.com',
 	'https://cloudmanor.wordpress.com',
+	'https://cloudtranslates.wordpress.com',
 	'https://cloudtranslations.wordpress.com',
 	'https://cloudytl.wordpress.com',
 	'https://clover7snook.wordpress.com',
@@ -1163,6 +1167,7 @@ baseUrl: [
 	'https://weitranslations.wordpress.com',
 	'https://weletranslation.wordpress.com',
 	'https://whatevertranslations.wordpress.com',
+	'https://whitehemlocktranslations.wordpress.com',
 	'https://whitemoonxblacksun.wordpress.com',
 	'https://whitenightsite.wordpress.com',
 	'https://whitetigertranslations.wordpress.com',
@@ -1188,6 +1193,7 @@ baseUrl: [
 	'https://wwyxhqc.wordpress.com',
 	'https://wxxxtranslation.wordpress.com',
 	'https://wysteriats.wordpress.com',
+	'https://xahxiaoran.wordpress.com',
 	'https://xaiomogetranslation.wordpress.com',
 	'https://xantandminions.wordpress.com',
 	'https://xantbos.wordpress.com',
@@ -1361,6 +1367,7 @@ baseUrl: [
 	'http://selftaughtjapanese.com',
 	'http://september.strawberrywine.org',
 	'http://sereneandtranquil.com',
+	'http://sheeptranslator.com',
 	'http://shinsekai.cadet-nine.org',
 	'http://shinsori.com',
 	'http://shintranslations.com',
@@ -1463,6 +1470,7 @@ baseUrl: [
 	'http://yurikatrans.xyz',
 	'http://zenithnovels.com',
 	'http://zxzxzx.info',
+	'https://acidtranslation.com',
 	'https://amateurtranslations.com',
 	'https://antheor.eu',
 	'https://aoitenshi.com',
