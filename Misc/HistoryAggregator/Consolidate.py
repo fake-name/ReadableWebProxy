@@ -217,7 +217,7 @@ class DbFlattener(object):
 		# high_incidence_items.sort(reverse=True)
 
 		# m_tracker = tracker.SummaryTracker()
-		with concurrent.futures.ThreadPoolExecutor(max_workers = 6) as exc:
+		with concurrent.futures.ThreadPoolExecutor(max_workers = 1) as exc:
 			self.log.info("Submitting tasks to worker queue.")
 			for batchset in batch(list(batch(high_incidence_items, 50)), 50):
 				for paramset in batchset:

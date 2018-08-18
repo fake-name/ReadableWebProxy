@@ -18,7 +18,11 @@ import WebMirror.OutputFilters.util.MessageConstructors as msgpackers
 import common.util.urlFuncs
 import common.database as db
 
-MIN_RATING = 5
+import cachetools
+
+MIN_RATING   = 2.5
+MIN_RATE_CNT = 3
+MIN_CHAPTERS = 4
 
 ########################################################################################################################
 #
@@ -32,11 +36,30 @@ MIN_RATING = 5
 #
 ########################################################################################################################
 
+
+
+@cachetools.cached(cachetools.TTLCache(100, 60*30), key=lambda wg, url: cachetools.keys.hashkey(url))
+def get_json(wg, url):
+	accept_override = {'Accept' : 'application/json,*/*'}
+	return wg.getJson(url, addlHeaders=accept_override)
+
+
+
+@cachetools.cached(cachetools.TTLCache(100, 60*30), key=lambda wg, url: cachetools.keys.hashkey(url))
+def get_spage(wg, url):
+	accept_override = {'PlzAddRating' : 'I\'m only making these requests because the series statistics, url slug (for chapter links) and author name '
+		+ 'aren\'t available as part of the info or chapters API endpoints already! I just need `author`, chapter url slug, `ratingValue` and `ratingCount`.'}
+	return wg.getSoup(url, addlHeaders=accept_override)
+
+
+
+
 def clean_parsed_data(d):
+
 	if isinstance(d, (dict, collections.OrderedDict)):
 		d = dict(d)
-		if 'ApiChapterList' in d:
-			d = clean_parsed_data(d['ApiChapterList'])
+		if 'chapters' in d and not isinstance(d['chapters'], list):
+			d = clean_parsed_data(d['chapters'])
 
 			# So XML is annoying, and lists with a single item basically get implicitly unwrapped
 			# Anyways, we know this *should* be a list, so if it's not, wrap it into a list manually
@@ -45,13 +68,19 @@ def clean_parsed_data(d):
 		else:
 			for key in list(d.keys()):
 				d[key] = clean_parsed_data(d[key])
-				if key in ['FirstUpdate', 'LastUpdate', 'Date']:
+				if key in ['firstUpdate', 'lastUpdate', 'date']:
 					d[key] = datetime.datetime.utcfromtimestamp(d[key])
 
 	elif isinstance(d, (list, tuple)):
 		d = [clean_parsed_data(tmp) for tmp in d]
 	elif isinstance(d, str):
 		d = d.strip()
+	elif isinstance(d, (int, float)):
+		pass
+	elif d is None:
+		pass
+	else:
+		raise RuntimeError("Unknown type: %s" % type(d))
 
 	return d
 
@@ -107,47 +136,158 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 ##################################################################################################################################
 
 	def validate_sdata(self, sinfo):
-		pass
+		# {
+		#     "description": "<p>This is the tale of Noah, Pestilence in game, who starts his adventure in the newest all promising VRMMORPG: Vesper.</p>\n<p>Vesper's design is maximum freedom, a fun and everlasting adventure to keep you enthralled. Its purpose is to create a new reality where everyone can have a shot&nbsp;at the top!</p>\n<p>When he&nbsp;has no clear future ahead, he will live day by day but&nbsp;with<em> death</em>, he shall rest!</p>\n<p>-----<br><br>Hello! I'm Matt, an Italian guy with little experience in English. I got the language down by reading a lot of web novels so expect&nbsp;some grammar mistakes and spelling errors, I'm trying to&nbsp;improve my writing so every comment and correction is very welcome!</p>\n<p>This story will focus on a necromantic adventure with some out of game development, actually, there is no <span style=\"text-decoration: line-through\">skeleton</span>(pun)&nbsp; programmed development and I'm writing day by day. I'm open to suggestions both in progress and revising of content.</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>",
+		#     "firstUpdate": 1531778821,
+		#     "lastUpdate": 1534548542,
+		#     "tags": "action,adventure,fantasy,litrpg,psychological,slice_of_life,magic,gore,traimatising",
+		#     "id": 19442,
+		#     "title": "The Grand General - MmoRpg",
+		#     "cover": null,
+		#     "topCover": null,
+		#     "topCoverAlignment": 0
+		# }
+
+		expect = ["description", "firstUpdate", "lastUpdate", "tags", "id", "title", "cover", "topCover", "topCoverAlignment"]
+
+		have_expected = all([tmp in sinfo for tmp in expect])
+
+		return have_expected
+
+
 	def validate_cdata(self, cinfo):
 		if not isinstance(cinfo, list):
 			return False
 
+		if len(cinfo) < MIN_CHAPTERS:
+			self.log.info("Too few chapters. Not adding.")
+			return False
 
 		return True
 
+	def validate_rdata(self, soup):
+		rtag = soup.find("meta", property='ratingValue')
+		ctag = soup.find("meta", property='ratingCount')
+
+		if not rtag and ctag:
+			return False
+
+		rating = float(rtag.get('content', 0))
+		rcnt   = float(ctag.get('content', 0))
+
+		if rating > MIN_RATING and rcnt > MIN_RATE_CNT:
+			return True
+
+		self.log.info("Failed validation due to low/few ratings: %s ratings, with a value of %s.", rcnt, rating)
+
+		return False
+
+
+
+	def extract_description(self, desc_str):
+
+		soup = bs4.BeautifulSoup(desc_str, "html.parser")
+
+		bad_attrs = ['style', 'font', 'size']
+
+		for tag in soup.find_all():
+			for bad_attr in bad_attrs:
+				if bad_attr in tag.attrs:
+					tag.attrs.pop(bad_attr)
+
+		return soup.prettify()
+
 
 	def process_series(self, series):
-		expected_keys = ['Chapters', 'Cover', 'Description', 'FirstUpdate', 'Id', 'LastUpdate', 'Tags', 'Title']
+		expected_keys = ['chapters', 'cover', 'description', 'firstUpdate', 'id', 'lastUpdate', 'tags', 'title']
 		if not all([tmp in series for tmp in expected_keys]):
-			self.log.error("Missing key(s) %s from chapter. Cannot continue", [tmp for tmp in expected_keys if not tmp in series])
+			self.log.error("Missing key(s) %s from series %s. Cannot continue", [tmp for tmp in expected_keys if not tmp in series], series)
 			return
-		print("Series", series['Title'])
+		print("Series", series['title'])
 
-		accept_override = {'Accept' : 'application/json,*/*'}
 
-		sinfo = self.wg.getJson("https://royalroadl.com/api/fiction/info/{sid}?apikey={key}".format(sid=series['Id'], key=settings.RRL_API_KEY), addlHeaders=accept_override)
-		cinfo = self.wg.getJson("https://royalroadl.com/api/fiction/chapters/{sid}?apikey={key}".format(sid=series['Id'], key=settings.RRL_API_KEY), addlHeaders=accept_override)
+		sinfo = get_json(self.wg, "https://royalroadl.com/api/fiction/info/{sid}?apikey={key}"    .format(sid=series['id'], key=settings.RRL_API_KEY))
 
 		if not self.validate_sdata(sinfo):
+			self.log.warning("Series data for sid %s failed validation" % series['id'])
 			return
+
+		cinfo = get_json(self.wg, "https://royalroadl.com/api/fiction/chapters/{sid}?apikey={key}".format(sid=series['id'], key=settings.RRL_API_KEY))
 		if not self.validate_cdata(cinfo):
 			return
 
-		print(sinfo)
-		print(cinfo)
+		seriesPageUrl = "https://www.royalroad.com/fiction/{sid}/".format(sid=series['id'])
+		rinfo = get_spage(self.wg, seriesPageUrl)
+
+		if not self.validate_rdata(rinfo):
+			return
+
+		author_tag = rinfo.find(property="author")
+		if not author_tag and author_tag.a:
+			self.log.error("Could not find author tag on url '%s'", seriesPageUrl)
+			return
+
+
+		sinfo['tags'] = tags = sinfo['tags'].split(",")
+
+		# pprint.pprint(sinfo)
+		# pprint.pprint(cinfo)
+		# print(rinfo)
+
+		description = self.extract_description(sinfo['description'])
+
+		title = sinfo['title'].strip()
+		author = author_tag.a.get_text(strip=True)
+
+		seriesmeta = {}
+
+		seriesmeta['title']       = msgpackers.fix_string(title)
+		seriesmeta['author']      = msgpackers.fix_string(author)
+		seriesmeta['tags']        = tags
+		seriesmeta['homepage']    = seriesPageUrl
+		seriesmeta['desc']        = description
+		seriesmeta['tl_type']     = 'oel'
+		seriesmeta['sourcesite']  = 'RoyalRoadL'
+		seriesmeta['create_tags'] = True
+		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
+
+		messages = [meta_pkt]
+		trigger_urls = [seriesPageUrl]
+
+		extra = {}
+		extra['tags']     = tags
+		extra['homepage'] = seriesPageUrl
+		extra['sourcesite']  = 'RoyalRoadL'
+
+
+		for chapter in cinfo:
+
+			reldate = chapter['date']
+			chap_url = "https://www.royalroad.com/fiction/{sid}/rrl-doesnt-provide-the-series-slug/chapter/{cid}/apparently-this-needs-to-be-here-too".format(
+				sid = series['id'], cid=chapter['id'])
+
+
+			chp_title = chapter['title']
+			# print("Chp title: '{}'".format(chp_title))
+			vol, chp, frag, _ = titleParsers.extractTitle(chp_title + " " + title)
+
+			raw_item = {}
+			raw_item['srcname']   = "RoyalRoadL"
+			raw_item['published'] = float(reldate)
+			raw_item['linkUrl']   = chap_url
 
 
 
-		# seriesmeta = {}
+			raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+			release_msg = msgpackers.createReleasePacket(raw_msg)
 
-		# seriesmeta['title']       = msgpackers.fix_string(title)
-		# seriesmeta['author']      = msgpackers.fix_string(author)
-		# seriesmeta['tags']        = tags
-		# seriesmeta['homepage']    = seriesPageUrl
-		# seriesmeta['desc']        = "\r\n".join(desc)
-		# seriesmeta['tl_type']     = 'oel'
-		# seriesmeta['sourcesite']  = 'RoyalRoadL'
-		# seriesmeta['create_tags'] = True
+			trigger_urls.append(chap_url)
+			messages.append(release_msg)
+
+		self.amqp_put_many(messages)
+		self.low_priority_links_trigger(trigger_urls)
+
+
 
 
 ##################################################################################################################################
@@ -187,17 +327,25 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		data = xmljson.parker.data(tree)
 
 		loaded = clean_parsed_data(data['ApiFictionInfoWithChapters'])
-		loaded.sort(key=lambda x: x['LastUpdate'])
+		loaded.sort(key=lambda x: x['lastUpdate'])
 
 		return loaded
 
 	def load_json(self):
 		loaded = json.loads(self.content)
-		loaded.sort(key=lambda x: x['LastUpdate'])
+
+
+		loaded.sort(key=lambda x: x['lastUpdate'])
+
+		# pprint.pprint(loaded)
 		content = clean_parsed_data(loaded)
+		# pprint.pprint("Cleaned: ")
+		# pprint.pprint(loaded)
+
 		return content
 
 	def processParsedData(self, loaded):
+		# pprint.pprint(loaded)
 		for series in loaded:
 			self.process_series(series)
 
@@ -211,7 +359,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		else:
 			self.log.error("Unknown content type (%s)!", self.mtype)
 
-		self.processParsedData(loaded)
+		return self.processParsedData(loaded)
 
 
 ##################################################################################################################################
@@ -247,19 +395,19 @@ def test():
 	# 		archiver = SiteArchiver(None, sess, None)
 	# 		archiver.synchronousJobRequest(url, ignore_cache=True)
 
-	with open("fiction_updates.xml", "r") as fp:
-		content = fp.read()
+	# with open("fiction_updates.xml", "r") as fp:
+	# 	content = fp.read()
 
-	instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content, mimeType="application/xml", db_sess=None)
-	print(instance)
-	extracted1 = instance.extractContent()
+	# instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content, mimeType="application/xml", db_sess=None)
+	# print(instance)
+	# extracted1 = instance.extractContent()
 
-	with open("json_reenc.json", "r") as fp:
-		content2 = fp.read()
+	# with open("json_reenc.json", "r") as fp:
+	# 	content2 = fp.read()
 
-	instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content2, mimeType="application/json", db_sess=None)
-	print(instance)
-	extracted2 = instance.extractContent()
+	# instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content2, mimeType="application/json", db_sess=None)
+	# print(instance)
+	# extracted2 = instance.extractContent()
 
 
 if __name__ == "__main__":

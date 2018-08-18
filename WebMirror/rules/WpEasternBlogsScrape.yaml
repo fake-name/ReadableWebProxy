@@ -7,6 +7,8 @@ rewalk_interval_days: 30
 baseUrl: [
 
 
+
+
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -33,6 +35,7 @@ baseUrl: [
 	'https://aftertranslations.wordpress.com',
 	'https://aihristdreamtranslation.wordpress.com',
 	'https://ajrg.wordpress.com',
+	'https://akaitranslates.wordpress.com',
 	'https://akashiatranslations.wordpress.com',
 	'https://alazyloafofbread.wordpress.com',
 	'https://albertkenoreijou.wordpress.com',
@@ -150,6 +153,7 @@ baseUrl: [
 	'https://catharcity.wordpress.com',
 	'https://cathdeary.wordpress.com',
 	'https://catinghampalace.wordpress.com',
+	'https://catorablog.wordpress.com',
 	'https://ceiphiedknightandbanditsplight.wordpress.com',
 	'https://ceruleonice.wordpress.com',
 	'https://cfensi.wordpress.com',
@@ -556,6 +560,7 @@ baseUrl: [
 	'https://lastvoicetranslator.wordpress.com',
 	'https://laughingghoultranslations.wordpress.com',
 	'https://layzisheep.wordpress.com',
+	'https://lazycatnovels.wordpress.com',
 	'https://lazyfaerygarden.wordpress.com',
 	'https://lazynanablog.wordpress.com',
 	'https://lazyneet.wordpress.com',
@@ -726,6 +731,7 @@ baseUrl: [
 	'https://norvablog.wordpress.com',
 	'https://notarealtranslator.wordpress.com',
 	'https://notrans.wordpress.com',
+	'https://notsogoodtranslator.wordpress.com',
 	'https://novel618603696.wordpress.com',
 	'https://novelaffairs.wordpress.com',
 	'https://novelexpress.wordpress.com',
@@ -1022,6 +1028,7 @@ baseUrl: [
 	'https://sub29translation.wordpress.com',
 	'https://subpartl.wordpress.com',
 	'https://subudai11.wordpress.com',
+	'https://sugaminnyjp.wordpress.com',
 	'https://sugardarkthetranslation.wordpress.com',
 	'https://suidishtranslation.wordpress.com',
 	'https://suihansanyou.wordpress.com',
