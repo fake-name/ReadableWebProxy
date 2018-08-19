@@ -16,7 +16,7 @@ import code
 import concurrent.futures
 
 import sqlalchemy.exc
-
+import sqlalchemy.orm
 
 if '__pypy__' in sys.builtin_module_names:
 	import psycopg2cffi as psycopg2
@@ -213,8 +213,8 @@ class DbFlattener(object):
 
 		self.log.info("Processing in chunks")
 
-		high_incidence_items.sort()
-		# high_incidence_items.sort(reverse=True)
+		# high_incidence_items.sort()
+		high_incidence_items.sort(reverse=True)
 
 		# m_tracker = tracker.SummaryTracker()
 		with concurrent.futures.ThreadPoolExecutor(max_workers = 1) as exc:
@@ -223,7 +223,7 @@ class DbFlattener(object):
 				for paramset in batchset:
 					exc.submit(self.incremental_consolidate, paramset)
 					# self.incremental_consolidate(paramset)
-				# incremental_history_consolidate(paramset)
+				# incremental_history_consolidate(paramset);
 				# self.log.info("Printing memory deltas.")
 				# m_tracker.print_diff()
 			self.log.info("All jobs submitted. Waiting for executor to complete!")
@@ -260,36 +260,24 @@ class DbFlattener(object):
 
 
 		self.log.info("Counting rows for url %s.", url)
-		count = sess.query(ctbl) \
-			.filter(ctbl.c.url == url) \
+		orig_cnt = sess.query(ctbl)           \
+			.filter(ctbl.c.url == url)     \
 			.count()
 
-		self.log.info("Found %s results for url %s. Fetching rows", count, url)
-
-		if count > 5000:
-			items = []
-			for item in tqdm.tqdm(
-				sess.query(ctbl) \
-				.filter(ctbl.c.url == url) \
-				.yield_per(500), total=count):
-				items.append(item)
-		else:
-			items = sess.query(ctbl) \
-				.filter(ctbl.c.url == url) \
-				.all()
-
-		items.sort(key=lambda x: (x.id, x.transaction_id))
-		# for x in items:
-		# 	print(x.id, x.transaction_id, x.end_transaction_id)
+		self.log.info("Found %s results for url %s. Fetching rows", orig_cnt, url)
 
 		deleted_1 = 0
 		deleted_2 = 0
 
-		orig_cnt = len(items)
 		datevec = self.snap_times
-		# self.log.info("Clearing history for URL: %s (items: %s)", url, orig_cnt)
 		attachments = {}
-		for item in items:
+
+		for item in tqdm.tqdm(
+			sess.query(ctbl)                               \
+			.filter(ctbl.c.url == url)                     \
+			.order_by(ctbl.c.id, ctbl.c.transaction_id)    \
+			.yield_per(50), total=orig_cnt):
+
 			if item.state != "complete" and item.state != 'error':
 				deleted_1 += 1
 				self.log.info("Deleting incomplete item for url: %s (state: %s)!", url, item.state)
@@ -301,15 +289,22 @@ class DbFlattener(object):
 				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 				deleted_1 += 1
 			elif item.content != None:
-				# print(type(item), item.keys(), item.addtime, item.fetchtime)
 				closest = min(datevec, key=self.diff_func(item))
 				if not closest in attachments:
 					attachments[closest] = []
-				attachments[closest].append(item)
+
+				attachments[closest].append({
+						'addtime'        : item.addtime,
+						'fetchtime'      : item.fetchtime,
+						'id'             : item.id,
+						'transaction_id' : item.transaction_id,
+					})
+
 			elif item.file != None:
 				pass
 			else:
 				print("Wat?")
+
 
 
 		self.log.info("Found %s items missing both file reference and content", deleted_1)
@@ -318,15 +313,16 @@ class DbFlattener(object):
 
 		out = []
 
-		for key in keys:
+		for key in tqdm.tqdm(keys):
 			superset = attachments[key]
 			if len(superset) > 1:
 				# print("lolercoaster")
-				superset.sort(key=lambda x: (x.addtime if x.fetchtime is None else x.fetchtime, x.id, x.transaction_id), reverse=True)
+				superset.sort(key=lambda x: (x['addtime'] if x['fetchtime'] is None else x['fetchtime'], x['id'], x['transaction_id']), reverse=True)
 				out.append(superset[0])
 				# print(superset[0].fetchtime, superset[0].id, superset[0].transaction_id)
+				self.log.info("Deleting %s items (out of %s) from date-segment %s", len(superset)-1, len(superset), key)
 				for tmp in superset[1:]:
-					sess.execute(ctbl.delete().where(ctbl.c.id == tmp.id).where(ctbl.c.transaction_id == tmp.transaction_id))
+					sess.execute(ctbl.delete().where(ctbl.c.id == tmp['id']).where(ctbl.c.transaction_id == tmp['transaction_id']))
 					deleted_2 += 1
 			elif len(superset) == 1:
 				out.append(superset[0])
@@ -587,5 +583,18 @@ def test():
 	proc.fix_missing_history()
 	# proc._go()
 
+def test_jt_big_page_flatten():
+	import logSetup
+	logSetup.initLogging()
+
+	print("Trying to flatten huge history")
+
+	giant_history = 'http://japtem.com/fanfic.php'
+
+
+	proc = DbFlattener()
+	with db.session_context() as sess:
+		proc.truncate_url_history(sess, giant_history)
+
 if __name__ == '__main__':
-	test()
+	test_jt_big_page_flatten()

@@ -82,8 +82,6 @@ class HourlyPageTrigger(PageTriggerBase):
 	pages = [
 		# RoyalRoadL
 
-		'https://royalroadl.com/api/fiction/updates?apiKey='     + settings.RRL_API_KEY,
-		'https://royalroadl.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
 
 		'https://www.royalroadl.com/fictions/new-releases',
 		# 'https://www.royalroadl.com/fictions/weekly-popular',
@@ -160,10 +158,10 @@ class EveryOtherDayPageTrigger(PageTriggerBase):
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging(1)
-	run1 = RssTriggerBase()
-	run1._go()
+	# run1 = RssTriggerBase()
+	# run1._go()
 	# run2 = HourlyPageTrigger()
 	# run2._go()
-	# run3 = EveryOtherDayPageTrigger()
-	# run3._go()
+	run3 = EveryOtherDayPageTrigger()
+	run3._go()
 
