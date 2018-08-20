@@ -63,7 +63,8 @@ else:
 
 from WebMirror.OutputFilters.rss.FeedDataParser import getCreateRssSource
 
-
+def hours(num):
+	return 60*60*num
 
 def getHash(fCont):
 
@@ -601,6 +602,43 @@ class SiteArchiver(LogBase.LoggerMixin):
 		for link in resource:
 			items.append((link, False))
 
+		if items:
+			with self.db.redis_session_context() as redis:
+
+				# Lookup all the URLs in redis
+				havel = redis.mget([url for url, _ in items])
+				# for item, have in zip(items, havel):
+				# 	print((item, have))
+
+				old_cnt = len(items)
+
+				items = [
+						item
+					for
+						item, have
+					in
+						zip(items, havel)
+					if
+						(
+								have
+							and
+								float(have) < (time.time() - hours(12))
+						)
+						or
+							have is None
+						]
+
+				new_cnt = len(items)
+
+				# Set all the new URLs
+				with redis.pipeline(transaction=False) as pipe:
+					for url, _ in items:
+						pipe.set(url, time.time())
+					pipe.execute()
+
+
+				self.log.info("Redis upsert limit queue removed %s items (%s, %s)", old_cnt - new_cnt, old_cnt, new_cnt)
+
 		pre_filt_plain_cnt = len(plain)
 		pre_filt_rsc_cnt   = len(resource)
 
@@ -610,6 +648,7 @@ class SiteArchiver(LogBase.LoggerMixin):
 		new_distance = job.distance+1
 		new_priority = job.priority
 		new_type     = job.type
+
 
 
 		# Use the local upsert in the general case.

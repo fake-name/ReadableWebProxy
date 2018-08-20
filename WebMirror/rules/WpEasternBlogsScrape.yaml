@@ -7,8 +7,6 @@ rewalk_interval_days: 30
 baseUrl: [
 
 
-
-
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -518,6 +516,7 @@ baseUrl: [
 	'https://kirschblute.wordpress.com',
 	'https://kisatohobbies.wordpress.com',
 	'https://kitakamiooi.wordpress.com',
+	'https://kitsuao.wordpress.com',
 	'https://kitsunesamanoshinto.wordpress.com',
 	'https://knightsoflunadia.wordpress.com',
 	'https://knoktranslations.wordpress.com',
@@ -1251,8 +1250,6 @@ baseUrl: [
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
 
-
-
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	'http://absurdtl.com',
 	'http://aethernea.com',
@@ -1577,7 +1574,9 @@ baseUrl: [
 	'https://shosetsu.ninja',
 	'https://slothtranslations.com',
 	'https://sodachip.com',
+	'https://spearpointtranslations.home.blog',
 	'https://takeyourhearttranslation.000webhostapp.com',
+	'https://thehlifestyle.com',
 	'https://thesuniscold.translatednovels.com',
 	'https://tigertranslations.org',
 	'https://translasi.sanusi.me',
@@ -1610,6 +1609,7 @@ baseUrl: [
 	'https://www.liberspark.com',
 	'https://www.lnovelreader.com',
 	'https://www.nekoseirei.com',
+	'https://www.noveltranslatedcollection.com',
 	'https://www.oppatranslations.com',
 	'https://www.otakubu.com',
 	'https://www.paradoxnovels.com',

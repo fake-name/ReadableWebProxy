@@ -181,13 +181,18 @@ class DbFlattener(object):
 
 		return dirty
 
-	def consolidate_history(self):
-		try:
-			with open("high_incidence_items.json") as fp:
-				high_incidence_items = json.load(fp)
-				self.log.info("Using json cached query results!")
-		except Exception:
-			self.log.warning("No cached json results. Rerunning query.")
+	def consolidate_history(self, use_cache=False):
+		high_incidence_items = None
+		if use_cache:
+			try:
+				with open("high_incidence_items.json") as fp:
+					high_incidence_items = json.load(fp)
+					self.log.info("Using json cached query results!")
+			except Exception:
+				self.log.warning("No cached json results. Rerunning query.")
+				pass
+
+		if not high_incidence_items:
 			with db.session_context() as sess:
 				self.qlog.info("Querying for items with significant history size")
 				high_incidence_items = sess.execute("""

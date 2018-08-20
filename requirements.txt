@@ -69,6 +69,11 @@ BeautifulSoup4==4.6.3
 
 alembic==1.0.0
 
+redis
+
+hiredis
+
+
 ## alembic
 ## Babel
 ## blinker

@@ -45,6 +45,8 @@ from common.db_constants import MAX_DISTANCE
 
 from common.db_base import Base
 
+from common.redis import redis_session_context
+
 import sqlalchemy as sa
 sa.orm.configure_mappers()
 
