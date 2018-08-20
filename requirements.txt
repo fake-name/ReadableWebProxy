@@ -71,7 +71,7 @@ alembic==1.0.0
 
 redis==2.10.6
 
-hiredis
+hiredis==0.2.0
 
 vmprof
 
