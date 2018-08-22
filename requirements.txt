@@ -75,7 +75,7 @@ hiredis
 
 vmprof
 
-parsedatetime
+parsedatetime==2.4
 
 ## alembic
 ## Babel
