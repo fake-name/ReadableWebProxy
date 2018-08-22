@@ -73,7 +73,7 @@ redis
 
 hiredis
 
-vmprof
+vmprof==0.4.12
 
 parsedatetime
 
