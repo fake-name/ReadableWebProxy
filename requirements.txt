@@ -73,6 +73,9 @@ redis
 
 hiredis
 
+vmprof
+
+parsedatetime
 
 ## alembic
 ## Babel

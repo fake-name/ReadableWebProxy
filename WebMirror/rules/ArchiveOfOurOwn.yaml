@@ -43,6 +43,7 @@ badwords: [
 			"/games/",
 			"/betareaders/",
 			"/poetry/", # Really?
+			'/bookmarks/new',
 
 			"?show_comments=",
 

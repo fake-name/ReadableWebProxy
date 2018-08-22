@@ -222,16 +222,12 @@ class DbFlattener(object):
 		high_incidence_items.sort(reverse=True)
 
 		# m_tracker = tracker.SummaryTracker()
-		with concurrent.futures.ThreadPoolExecutor(max_workers = 1) as exc:
-			self.log.info("Submitting tasks to worker queue.")
-			for batchset in batch(list(batch(high_incidence_items, 50)), 50):
-				for paramset in batchset:
-					exc.submit(self.incremental_consolidate, paramset)
-					# self.incremental_consolidate(paramset)
-				# incremental_history_consolidate(paramset);
-				# self.log.info("Printing memory deltas.")
-				# m_tracker.print_diff()
-			self.log.info("All jobs submitted. Waiting for executor to complete!")
+		for batchset in tqdm.tqdm(batch(high_incidence_items, 50)):
+			self.incremental_consolidate(batchset)
+			# self.incremental_consolidate(paramset)
+			# incremental_history_consolidate(paramset);
+			# self.log.info("Printing memory deltas.")
+			# m_tracker.print_diff()
 
 	def truncate_url_history(self, sess, url):
 

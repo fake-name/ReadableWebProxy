@@ -343,7 +343,9 @@ def hasDuplicatePathSegments(url):
 				return True
 
 
-
+		if netloc == 'archiveofourown.org' or netloc == 'www.archiveofourown.org':
+			if "feed.atom" in url:
+				return True
 
 		if len(set(pathchunks)) == len(pathchunks):
 			return False
