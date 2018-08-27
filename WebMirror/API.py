@@ -14,6 +14,9 @@ from flask import g
 from app import app
 from app import utilities
 
+import common.global_constants
+
+
 import WebRequest
 import WebRequest.UA_Constants as wr_constants
 import common.util.DbCookieJar as dbCj
@@ -50,7 +53,9 @@ class RemoteContentObject(object):
 		self.url     = url
 		self.fetched = False
 		self.job     = None
-			
+
+
+
 		if db_session:
 			self.db_sess = db_session
 		else:
@@ -238,6 +243,17 @@ def getPage(url, ignore_cache=False, version=None):
 	finally:
 		page.close()
 
+
+	if any([tmp.lower() in url.lower() for tmp in common.global_constants.GLOBAL_BAD_URLS]):
+
+		bad_segs = [tmp for tmp in common.global_constants.GLOBAL_BAD_URLS if tmp.lower() in url.lower()]
+
+		return (
+				'Filtered',
+				'Url %s is filtered by GLOBAL_BAD_URLS (%s)' % (url, bad_segs),
+				'filtered',
+			)
+
 	return title, content, cachestate
 
 
@@ -264,6 +280,19 @@ def getResource(url, ignore_cache=False, session=None):
 	Get a url that (probably) contains resource content synchronously.
 	Return is a 4-tuple consisting of (mimetype, filename, filecontent, cache-state)
 	'''
+
+
+	if any([tmp.lower() in url.lower() for tmp in common.global_constants.GLOBAL_BAD_URLS]):
+
+		bad_segs = [tmp for tmp in common.global_constants.GLOBAL_BAD_URLS if tmp.lower() in url.lower()]
+
+		return (
+				'text/ascii',
+				'Url %s is filtered by GLOBAL_BAD_URLS (%s)' % (url, bad_segs),
+				'Url %s is filtered by GLOBAL_BAD_URLS (%s)' % (url, bad_segs),
+				'filtered',
+			)
+
 	page = RemoteContentObject(url, db_session=session)
 	try:
 		page.fetch(ignore_cache)

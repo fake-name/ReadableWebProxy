@@ -121,6 +121,8 @@ GLOBAL_BAD_URLS = [
 
 			# Oh god fuck discord so much.
 			'discord1-1494780898_lrg.png',
+			'discord_partner_badge_black.png',
+			'discord.png',
 
 			# Bought by asshole squatters
 			'app3.letitbefaster.world',
