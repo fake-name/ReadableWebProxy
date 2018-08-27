@@ -102,16 +102,15 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 
 	def purgeEmptyTags(self, soup):
-		for _ in range(4):
+		for _ in range(5):
 			# SVGs are annoying, and nest shit.
 			for path_tag in soup.find_all(["polygon", "g", "path", "svg", "div", "span"]):
 				if path_tag.contents == [] and path_tag.get_text(strip=True) == "":
 					path_tag.decompose()
 
-			for svg_tag in soup.find_all("svg"):
-				for svg_title in svg_tag.find_all("title"):
-					svg_title.unwrap()
-
+				if path_tag.name == 'svg':
+					for svg_title in path_tag.find_all("title"):
+						svg_title.unwrap()
 
 		return soup
 
@@ -121,10 +120,24 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		walk the parse tree and decompose the attributes of any matching
 		element.
 		'''
-		for tagtype, attrs in self.destyle:
-			for found in soup.find_all(tagtype, attrs=attrs):
-				for key in list(found.attrs):
-					del found.attrs[key]
+
+		# Use a custom function so we only walk the tree once.
+		def destyleSearchFunc(tag):
+			if tag.name in self.destyle:
+				filter_attr = self.destyle[tag.name]
+
+				if not filter_attr:
+					return True
+
+				for key, value in filter_attr.items():
+					if tag.get(key, "NO_VAL_WAT") == value:
+						return True
+
+			return False
+
+		for found in soup.find_all(destyleSearchFunc):
+			for key in list(found.attrs):
+				del found.attrs[key]
 
 		return soup
 
@@ -138,7 +151,6 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# Use a custom function so we only walk the tree once.
 		def searchFunc(tag):
 			for candidate in toDecompose:
-				matches = []
 				for key, value in candidate.items():
 					haskey = tag.get(key)
 					if haskey:
@@ -147,10 +159,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 							vallist = [vallist, ]
 
 						hasval = any([sattr.lower() == value.lower() for sattr in vallist if sattr])
-						matches.append(hasval)
-				match = any(matches)
-				if match:
-					return True
+						if hasval:
+							return True
 			return False
 
 
@@ -185,18 +195,27 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			"link",
 			# Meta tags
 			"meta",
+
+			# Stylesheets (needs further checking)
+			"style",
 		]
 
+		if self.decompose_svg:
+			decompose.append("svg")
+
 		for instance in soup.find_all(decompose):
-			instance.decompose()
+
+			# If it's a style tag, make sure the type is text/css before removing
+			if instance.name == 'style':
+				if instance.get("type", None) == "text/css":
+					instance.decompose()
+			else:
+				instance.decompose()
 
 		# Comments
 		for item in soup.findAll(text=lambda text:isinstance(text, bs4.Comment)):
 			item.extract()
 
-		if self.decompose_svg:
-			for item in soup.find_all("svg"):
-				item.decompose()
 
 		return soup
 
