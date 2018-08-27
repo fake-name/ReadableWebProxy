@@ -102,33 +102,15 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 
 	def purgeEmptyTags(self, soup):
-		for _ in range(3):
+		for _ in range(4):
 			# SVGs are annoying, and nest shit.
-			for path_tag in soup.find_all("polygon"):
-				if path_tag.contents == [] and path_tag.get_text(strip=True) == "":
-					path_tag.decompose()
-			for path_tag in soup.find_all("g"):
-				if path_tag.contents == [] and path_tag.get_text(strip=True) == "":
-					path_tag.decompose()
-			for path_tag in soup.find_all("path"):
+			for path_tag in soup.find_all(["polygon", "g", "path", "svg", "div", "span"]):
 				if path_tag.contents == [] and path_tag.get_text(strip=True) == "":
 					path_tag.decompose()
 
 			for svg_tag in soup.find_all("svg"):
 				for svg_title in svg_tag.find_all("title"):
 					svg_title.unwrap()
-
-			for svg_tag in soup.find_all("svg"):
-				if svg_tag.contents == [] and svg_tag.get_text(strip=True) == "":
-					svg_tag.decompose()
-
-		for div_tag in soup.find_all("div"):
-			if div_tag.contents == [] and div_tag.get_text(strip=True) == "":
-				div_tag.decompose()
-
-		for span_tag in soup.find_all("span"):
-			if span_tag.contents == [] and span_tag.get_text(strip=True) == "":
-				span_tag.decompose()
 
 
 		return soup
@@ -188,30 +170,25 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	def decomposeAdditional(self, soup):
 
-
-		# Clear out all the iframes
-		for instance in soup.find_all('iframe'):
-			instance.decompose()
-
 		# Clean out any local stylesheets
 		for instance in soup.find_all('style', attrs={"type" : "text/css"}):
 			instance.decompose()
 
-		# Even if not explicitly tagged as css
-		for instance in soup.find_all('style'):
+		decompose = [
+			# Clear out all the iframes
+			'iframe',
+			# Even if not explicitly tagged as css
+			'style',
+			# And all remote scripts
+			"script",
+			# Link tags
+			"link",
+			# Meta tags
+			"meta",
+		]
+
+		for instance in soup.find_all(decompose):
 			instance.decompose()
-
-		# And all remote scripts
-		for item in soup.find_all("script"):
-			item.decompose()
-
-		# Link tags
-		for item in soup.find_all("link"):
-			item.decompose()
-
-		# Meta tags
-		for item in soup.find_all("meta"):
-			item.decompose()
 
 		# Comments
 		for item in soup.findAll(text=lambda text:isinstance(text, bs4.Comment)):

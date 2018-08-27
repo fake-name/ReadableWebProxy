@@ -1,9 +1,4 @@
 
-
-if __name__ == "__main__":
-	import logSetup
-	logSetup.initLogging()
-
 import WebMirror.rules
 import WebMirror.SpecialCase
 import common.LogBase as LogBase
@@ -46,6 +41,7 @@ from common.Exceptions import DownloadException
 import WebMirror.Fetch
 import common.database as db
 import common.global_constants
+import common.StatsdMixin as StatsdMixin
 import WebMirror.UrlUpserter
 from config import C_RESOURCE_DIR
 
@@ -143,8 +139,9 @@ def build_rewalk_time_lut(rules):
 # LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
 SEEN_CACHE = cachetools.TTLCache(maxsize=100 * 1000, ttl=60 * 60 * 6)
 
-class SiteArchiver(LogBase.LoggerMixin):
+class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
+	statsd_prefix = 'ReadableWebProxy.Proc.SiteArchiver'
 	loggerPath = "Main.SiteArchiver"
 
 	# Fetch items up to 1,000,000 (1 million) links away from the root source
@@ -581,8 +578,10 @@ class SiteArchiver(LogBase.LoggerMixin):
 
 	def upsertResponseLinks(self, job, plain=[], resource=[], debug=False, interactive=False):
 		self.log.info("Processing %s, %s response links.", len(plain), len(resource))
-		plain    = set(plain)
-		resource = set(resource)
+		plain        = set(plain)
+		resource     = set(resource)
+		plain_cnt    = len(plain)
+		resource_cnt = len(resource)
 
 		unfiltered = len(plain)+len(resource)
 
@@ -701,6 +700,14 @@ class SiteArchiver(LogBase.LoggerMixin):
 				link_batch = batch_items,
 			)
 
+		with self.mon_con.pipeline() as pipe:
+			pipe.incr('plain_in_links',      count=plain_cnt)
+			pipe.incr('resource_in_links',   count=resource_cnt)
+			pipe.incr('plain_filt_links',    count=pre_filt_plain_cnt)
+			pipe.incr('resource_filt_links', count=pre_filt_rsc_cnt)
+			pipe.incr('input_links',         count=unfiltered)
+			pipe.incr('filtered_links',      count=filtered)
+			pipe.incr('upserted_links',      count=len(batch_items))
 
 
 
@@ -1173,8 +1180,32 @@ def test2():
 	netloc_rewalk_times = build_rewalk_time_lut(ruleset)
 	print(netloc_rewalk_times)
 
+def test3():
+
+	print("Loading")
+	ruleset = WebMirror.rules.load_rules()
+	netloc_rewalk_times = build_rewalk_time_lut(ruleset)
+
+
+	print("Testing")
+	archiver = SiteArchiver(None, None, None)
+
+
+	with archiver.mon_con.pipeline() as pipe:
+		pipe.incr('test',      1)
+	# 	pipe.incr('resource_in_links',   count=resource_cnt)
+	# 	pipe.incr('plain_filt_links',    count=pre_filt_plain_cnt)
+	# 	pipe.incr('resource_filt_links', count=pre_filt_rsc_cnt)
+	# 	pipe.incr('input_links',         count=unfiltered)
+	# 	pipe.incr('filtered_links',      count=filtered)
+	# 	pipe.incr('upserted_links',      count=batch_items)
+
+
 
 if __name__ == "__main__":
-	test2()
+	import logSetup
+	logSetup.initLogging()
+
+	test3()
 
 

@@ -265,7 +265,6 @@ baseUrl: [
 
 
 badwords: [
-
 		'turtleme.me/feed/includes/',
 		'turtleme.me/feed/images/',
 		'turtleme.me/includes/',

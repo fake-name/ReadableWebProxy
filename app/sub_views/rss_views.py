@@ -285,6 +285,13 @@ def feedFiltersRoot():
 			'avertranslation.blogspot.com',
 			'noveltoread.com',
 			'wuxiasociety.freeforums.net',
+			'archiveofourown.org',
+			'ftp.liberspark.com',
+			'www.bestwebnovel.com',
+			'178.128.155.123',
+
+			'nenglengli.wordpress.com',      # Ded
+			'zer0translations.blogspot.com',
 		]
 		for item in common.global_constants.RSS_SKIP_FILTER:
 			skip_missing.append(item)
