@@ -203,7 +203,29 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		if not all([tmp in series for tmp in expected_keys]):
 			self.log.error("Missing key(s) %s from series %s. Cannot continue", [tmp for tmp in expected_keys if not tmp in series], series)
 			return
-		print("Series", series['title'])
+
+
+		# {
+		# 	'topCover': None,
+		# 	'description': "<p>Gerald, born a Viscount's son, spent most of his life since he was six as an enemy Duke's 'ward', nothing short "
+		#  "of a hostage. Until a shocking letter arrived requesting that he be sent back to inherit his father's territory and title.</p>\n<p>Now "
+		#  "he has to return and rule the ruin that is his family's lands. Bandits roam&nbsp;and enemies leer. Conspiracies brew and wars rage. "
+		#  "Meanwhile, Gerald has to rise with his house from the ashes.</p>\n<p>&nbsp;</p>\n<p>Schedule: Updates 4 times a week--&gt; Monday-"
+		#  "Thursday.</p>\n<p>&nbsp;</p>\n<p>Additional tags: Kingdom Building - Strategy - War - Army Building.</p>",
+		# 	'id': 19290,
+		# 	'firstUpdate': datetime.datetime(2018, 7, 10, 6, 35, 48),
+		# 	'topCoverAlignment': 0,
+		# 	'chapters': [{'title': 'Chapter 33',
+		# 	'fictionId': 19290,
+		# 	'date': datetime.datetime(2018, 8, 28, 1, 55, 48),
+		# 	'id': 285611}],
+		# 	'cover': 'https://royalroadlupload.blob.core.windows.net/thundersurfer/rise-of-the-lord-full-AAAASg1dcgo=.jpg',
+		# 	'tags': 'action,fantasy,martial_arts,male_lead,strategy,profanity,gore',
+		# 	'title': 'Rise of the Lord',
+		# 	'lastUpdate': datetime.datetime(2018, 8, 28, 1, 55, 48)
+		#  }
+
+
 
 
 		sinfo = get_json(self.wg, "https://royalroadl.com/api/fiction/info/{sid}?apikey={key}"    .format(sid=series['id'], key=settings.RRL_API_KEY))
@@ -219,6 +241,14 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		seriesPageUrl = "https://www.royalroad.com/fiction/{sid}/".format(sid=series['id'])
 		rinfo = get_spage(self.wg, seriesPageUrl)
 
+
+		# print("Series", )
+		# pprint.pprint(series)
+		# print("Sinfo")
+		# pprint.pprint(sinfo)
+		# print("Chapter")
+		# pprint.pprint(cinfo)
+
 		if not self.validate_rdata(rinfo):
 			return
 
@@ -227,8 +257,13 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			self.log.error("Could not find author tag on url '%s'", seriesPageUrl)
 			return
 
-
-		sinfo['tags'] = tags = sinfo['tags'].split(",")
+		if isinstance(sinfo['tags'], str):
+			tags = sinfo['tags'].split(",")
+		elif isinstance(sinfo['tags'], (list, tuple)):
+			tags = list(sinfo['tags'])
+		else:
+			print("sinfo unknown type: ", sinfo['tags'])
+			print("Sinfo: ", sinfo)
 
 		# pprint.pprint(sinfo)
 		# pprint.pprint(cinfo)
@@ -275,8 +310,6 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			raw_item['srcname']   = "RoyalRoadL"
 			raw_item['published'] = float(reldate)
 			raw_item['linkUrl']   = chap_url
-
-
 
 			raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 			release_msg = msgpackers.createReleasePacket(raw_msg)
@@ -398,7 +431,12 @@ def test():
 	# with open("fiction_updates.xml", "r") as fp:
 	# 	content = fp.read()
 
-	# instance = RRLJsonXmlSeriesUpdateFilter(pageUrl="https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY, pgContent=content, mimeType="application/xml", db_sess=None)
+	# instance = RRLJsonXmlSeriesUpdateFilter(
+	# 		pageUrl   = "https://royalroadl.com/api/fiction/updates?apiKey=" + settings.RRL_API_KEY,
+	# 		pgContent = content,
+	# 		mimeType  = "application/xml",
+	# 		db_sess   = None
+	# 	)
 	# print(instance)
 	# extracted1 = instance.extractContent()
 
