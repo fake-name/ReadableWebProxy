@@ -25,6 +25,7 @@ import RawArchiver.misc
 import RawArchiver.RawActiveModules
 import RawArchiver.RawJobDispatcher
 import RawArchiver.RawUrlUpserter
+import common.StatsdMixin as StatsdMixin
 import runStatus
 from config import C_RAW_RESOURCE_DIR
 
@@ -40,6 +41,9 @@ def getHash(fCont):
 	m.update(fCont)
 	return m.hexdigest()
 
+
+def hours(num):
+	return 60*60*num
 
 def saveFile(filecont, url, filename):
 	# use the first 3 chars of the hash for the folder name.
@@ -112,8 +116,9 @@ def saveFile(filecont, url, filename):
 
 
 
-class RawSiteArchiver(LogBase.LoggerMixin):
+class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
+	statsd_prefix = 'ReadableWebProxy.Proc.SiteArchiver'
 	loggerPath = "Main.RawArchiver"
 
 	# Fetch items up to 1,000,000 (1 million) links away from the root source
@@ -267,12 +272,12 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 
 	def upsertResponseLinks(self, job, links):
 		self.log.info("Updating database with response links")
-		links       = set(links)
-		orig        = len(links)
-		links       = self.filterLinks(links)
-		post_filter = len(links)
+		links           = set(links)
+		orig_link_cnt   = len(links)
+		links           = self.filterLinks(links)
+		filter_link_cnt = len(links)
 
-		self.log.info("Upserting %s links (%s filtered)" % (post_filter, orig-post_filter))
+		self.log.info("Upserting %s links (%s filtered)" % (filter_link_cnt, orig_link_cnt-filter_link_cnt))
 
 		new_starturl = job.starturl
 		new_distance = job.distance+1
@@ -280,6 +285,46 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 		# Priority decays with distance.
 		# That basically results in breadth-first fetches.
 		new_priority = job.priority+1
+
+
+		if links:
+			with self.db.redis_session_context() as redis:
+
+				# Lookup all the URLs in redis
+				havel = redis.mget(["raw_" + url for url in links])
+				# for item, have in zip(links, havel):
+				# 	print((item, have))
+
+				old_cnt = len(links)
+
+				links = [
+						item
+					for
+						item, have
+					in
+						zip(links, havel)
+					if
+						(
+								have
+							and
+								float(have) < (time.time() - hours(12))
+						)
+						or
+							have is None
+						]
+
+				new_cnt = len(links)
+
+				# Set all the new URLs
+				with redis.pipeline(transaction=False) as pipe:
+					for url in links:
+						pipe.set("raw_" + url, time.time())
+					pipe.execute()
+
+
+				self.log.info("Redis upsert limit queue removed %s items (%s, %s)", old_cnt - new_cnt, old_cnt, new_cnt)
+
+
 
 		linksd = RawArchiver.RawUrlUpserter.links_to_dicts(links, new_starturl, new_distance, new_priority)
 
@@ -304,6 +349,12 @@ class RawSiteArchiver(LogBase.LoggerMixin):
 			print("ERROR")
 			print("ERROR")
 			raise
+
+		with self.mon_con.pipeline() as pipe:
+			pipe.incr('raw_plain_in_links',      count=orig_link_cnt)
+			pipe.incr('raw_plain_filt_links',    count=filter_link_cnt)
+			pipe.incr('raw_filtered_links',      count=len(links))
+			pipe.incr('raw_upserted_links',      count=len(linksd))
 
 
 	def fetch_job(self, job):

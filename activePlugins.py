@@ -80,6 +80,7 @@ import WebMirror.processor.RoyalRoadLSeriesPageProcessor
 import WebMirror.processor.NuProcessor
 import WebMirror.processor.FontRemapProcessors
 import WebMirror.processor.GarbageInlineProcessors
+import WebMirror.processor.XiAiNovelProcessor
 
 
 PLUGINS = [
@@ -107,6 +108,8 @@ PLUGINS = [
 	WebMirror.processor.GarbageInlineProcessors.MayonaizeShrimpLiveProcessor,
 	WebMirror.processor.GarbageInlineProcessors.RebirthOnlineLiveProcessor,
 	WebMirror.processor.GarbageInlineProcessors.ConvallariasLibraryProcessor,
+
+	WebMirror.processor.XiAiNovelProcessor.XiAiNovelPageProcessor,
 ]
 
 

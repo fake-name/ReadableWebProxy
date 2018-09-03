@@ -55,7 +55,7 @@ def config_redis():
 		redis.config_set("auto-aof-rewrite-percentage", 0)
 		redis.config_set("save", '')
 		redis.config_set("appendonly", "no")
-		redis.config_set("maxmemory", "2gb")
+		redis.config_set("maxmemory", "4gb")
 		redis.config_set("maxmemory-policy", "allkeys-lru")
 	print("redis configured")
 	pass
