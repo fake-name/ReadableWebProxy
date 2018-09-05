@@ -3,7 +3,7 @@ import os
 import datetime
 
 from flask import Flask
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 from babel.dates import format_datetime
 
 import urllib.parse
@@ -18,7 +18,7 @@ if "debug" in sys.argv:
 	app.debug = True
 app.config.from_object('config.BaseConfig')
 
-CsrfProtect(app)
+CSRFProtect(app)
 
 
 if not app.debug:

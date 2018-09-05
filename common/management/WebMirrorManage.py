@@ -1108,7 +1108,7 @@ def exposed_drop_priorities():
 	Reset the priority of every row in the table to the IDLE_PRIORITY level
 	'''
 
-	step  = 10000
+	step  = 50000
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")

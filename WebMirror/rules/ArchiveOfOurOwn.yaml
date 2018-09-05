@@ -46,6 +46,7 @@ badwords: [
 			'/bookmarks/new',
 
 			"?show_comments=",
+			"/comments",
 
 			]
 

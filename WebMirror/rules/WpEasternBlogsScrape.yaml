@@ -1262,24 +1262,19 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
-	'http://absurdtl.com',
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',
-	'http://arkmachinetranslations.com',
 	'http://asuratales.com',
 	'http://aurarealm.com',
 	'http://avertranslation.org',
-	'http://banana.translatednovels.com',
 	'http://bcnovels.com',
-	'http://blazingtranslations.com',
 	'http://blog.onehallyu.com',
 	'http://bookbychapters.com',
 	'http://booklovers.zone',
 	'http://brotakus.com',
 	'http://butterflyscurse.stream',
 	'http://c-cafe.suespages.com',
-	'http://catingham-palace.com',
 	'http://cautrs.com',
 	'http://chinesenoveltranslations.simplegamesdev.com',
 	'http://choyce.club',
@@ -1660,6 +1655,9 @@ baseUrl: [
 
 feedPostfix: "/feed/"
 
+feeds: [
+	'https://danielyang.ninja/?feed=rss2',
+]
 
 
 # Any url containing any of the words in the `badwords` list will be ignored.

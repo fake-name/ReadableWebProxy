@@ -34,18 +34,16 @@ def getStartURLs(ruleset):
 	return ret
 
 def getFeedUrls(ruleset):
+	feeds = []
 	if 'feedPostfix' in ruleset:
-		assert 'feeds' not in ruleset
 		assert isinstance(ruleset['feedPostfix'], str)
-		feeds = [url+ruleset['feedPostfix'] for url in ruleset['baseUrl']]
-		return feeds
+		feeds.extend([url+ruleset['feedPostfix'] for url in ruleset['baseUrl']])
 
 	if 'feeds' in ruleset:
-		assert 'feedPostfix' not in ruleset
 		assert isinstance(ruleset['feeds'], list)
-		return ruleset['feeds']
+		feeds.extend(ruleset['feeds'])
 
-	return []
+	return feeds
 
 def getUrlBadWords(ruleset):
 	assert 'badwords' in ruleset

@@ -218,8 +218,8 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 				elif 'summary' in entry:
 					item['contents'] = self.extractFeedContents(feedUrl, entry['summary'])
 				else:
-					self.log.error('Empty item in feed?')
-					self.log.error('Feed url: %s', feedUrl)
+					self.log.warning('Empty item in feed?')
+					self.log.warning('Feed url: %s', feedUrl)
 					item['contents'] = ""
 
 			common.database.set_in_db_key_value_store(kv_id, item)

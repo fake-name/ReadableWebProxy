@@ -52,7 +52,7 @@ if "twoprocess" in largv or "oneprocess" in largv:
 	MAX_IN_FLIGHT_JOBS = 2
 else:
 	# MAX_IN_FLIGHT_JOBS = 5
-	MAX_IN_FLIGHT_JOBS = 50
+	MAX_IN_FLIGHT_JOBS = 25
 	# MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 500
