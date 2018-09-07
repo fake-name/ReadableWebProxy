@@ -185,7 +185,12 @@ def cleanUrl(urlin):
 	if urlin.startswith("https://www.tumblr.com/login"):
 		return None
 	try:
-		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=False)
+		resolve_redirects = False
+
+		if '://wp.me' in urlin:
+			resolve_redirects = True
+
+		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=resolve_redirects)
 		return url
 	except (unshortenit.NotFound, unshortenit.UnshortenFailed, requests.exceptions.ConnectionError):
 		return None
