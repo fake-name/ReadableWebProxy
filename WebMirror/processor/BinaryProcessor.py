@@ -22,6 +22,7 @@ class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 
 						"text/css",
 						"text/javascript",
+						"font/woff",
 						"application/font-woff",
 						"application/x-font-woff",
 						]

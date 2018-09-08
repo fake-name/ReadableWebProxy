@@ -3,8 +3,12 @@ import bs4
 import copy
 import re
 import time
-import webcolors
 import urllib.parse
+import os.path
+import os
+
+
+import tqdm
 
 from fontTools.ttLib import TTFont
 import fontTools.ttLib.tables._g_l_y_f as g_l_y_f
@@ -20,18 +24,75 @@ import itertools
 import code
 import io
 
+from .fonts import FontTables
 
-########################################################################################################################
-#
-#	##     ##    ###    #### ##    ##     ######  ##          ###     ######   ######
-#	###   ###   ## ##    ##  ###   ##    ##    ## ##         ## ##   ##    ## ##    ##
-#	#### ####  ##   ##   ##  ####  ##    ##       ##        ##   ##  ##       ##
-#	## ### ## ##     ##  ##  ## ## ##    ##       ##       ##     ##  ######   ######
-#	##     ## #########  ##  ##  ####    ##       ##       #########       ##       ##
-#	##     ## ##     ##  ##  ##   ###    ##    ## ##       ##     ## ##    ## ##    ##
-#	##     ## ##     ## #### ##    ##     ######  ######## ##     ##  ######   ######
-#
-########################################################################################################################
+PRELOADED_FONTS = {}
+
+def get_codepoint_name_map(f):
+
+	# Now we have to extract the map of
+	# unicode codepoints to the internal font symbol names.
+	unicode_plat = None
+	for table in f['cmap'].tables:
+		# Platform ID 0 is "Unicode", whatever that means.
+		# there's also a 'platEncID' parameter, but I haven't been able
+		# to figure out what it refers to at all.
+		if table.platformID == 0:
+			unicode_plat = table
+
+	if not unicode_plat:
+		return None
+
+	# Since the map is codepoint->name, we flip it.
+	inverse_map = {value:key for key, value in unicode_plat.cmap.items()}
+
+	return inverse_map
+
+def load_fonts():
+	fonts = []
+
+	fontdir = os.path.join(os.path.dirname(__file__), "fonts")
+	for font_name in tqdm.tqdm(os.listdir(fontdir)):
+		if font_name.endswith(".woff"):
+			with open(os.path.join(fontdir, font_name), "rb") as fp:
+				font = TTFont(fp)
+				fonts.append((font, font_name))
+
+	return fonts
+
+
+def check_init_font_cache():
+
+	if PRELOADED_FONTS:
+		return PRELOADED_FONTS
+
+	fonts = load_fonts()
+
+
+	for font, font_name in tqdm.tqdm(fonts):
+		inverse_map = get_codepoint_name_map(font)
+
+		if not inverse_map:
+			print("Error - No unicode table in %s" % font_name)
+			continue
+
+		gs = font.getGlyphSet()
+
+		keys = list(gs.keys())
+		keys.sort()
+
+		for key in keys:
+			# For each glyph, pull out a flattened, sorted representation of the glyph's component(s)
+			gly = gs[key]
+			raw_glyph = gly._glyph
+			coords = flatten_coords(raw_glyph)
+
+			# Using that base representation of the glyph, stick it into
+			# a list
+			PRELOADED_FONTS.setdefault(tuple(coords), []).append((inverse_map.get(key, None), gly))
+
+	print("Pre-initialized with %s glyphs from %s files" % (len(PRELOADED_FONTS), len(fonts)))
+	return PRELOADED_FONTS
 
 
 def flatten_coords(in_coords):
@@ -52,18 +113,27 @@ def flatten_coords(in_coords):
 	elif hasattr(in_coords, "numberOfContours") and in_coords.numberOfContours == 0:
 		return tuple()
 	else:
-		print("Wat: ", type(in_coords), in_coords)
+		# print("Wat: ", type(in_coords), in_coords)
 		return tuple()
 
 
-def defont(font):
+def defont(font, url):
+
+	# print("Processing font file from url %s" % url)
+
 	f = TTFont(font)
 
 	gs = f.getGlyphSet()
 	keys = list(gs.keys())
 	keys.sort()
 
-	coorset = {}
+	coorset = {k : [(ord(v['char']), None)] for k, v in FontTables.PREDEFINED_FONT_MAPS.items()}
+
+
+	inverse_map = get_codepoint_name_map(f)
+
+
+	# print(inverse_map)
 
 	for key in keys:
 		# For each glyph, pull out a flattened, sorted representation of the glyph's component(s)
@@ -71,24 +141,12 @@ def defont(font):
 		raw_glyph = gly._glyph
 		coords = flatten_coords(raw_glyph)
 
+		# print(key, inverse_map.get(key, None), coords)
 
 		# Using that base representation of the glyph, stick it into
 		# a list
-		coorset.setdefault(tuple(coords), []).append((key, gly))
+		coorset.setdefault(tuple(coords), []).append((inverse_map.get(key, None), gly))
 
-
-	# Now we have to extract the map of
-	# unicode codepoints to the internal font symbol names.
-	unicode_plat = None
-	for table in f['cmap'].tables:
-		# Platform ID 0 is "Unicode", whatever that means.
-		# there's also a 'platEncID' parameter, but I haven't been able
-		# to figure out what it refers to at all.
-		if table.platformID == 0:
-			unicode_plat = table
-
-	# Since the map is codepoint->name, we flip it.
-	inverse_map = {value:key for key, value in unicode_plat.cmap.items()}
 
 
 	# Filter the codepoint lists.
@@ -98,19 +156,29 @@ def defont(font):
 	# It seems to work.
 	items = []
 	for key, value in coorset.items():
+		# print("Key, value:", key, value)
 		if len(value) > 1:
 
-			syms = [item[0] for item in value]
-			cps = [inverse_map[key] for key in syms if key in inverse_map]
+
+			cps  = [item[0] for item in value if item[0]]
+			syms = [item[1] for item in value]
+
+			# Ignore invalid mappings.
+			if len(cps) <= 1:
+				continue
 
 			# We have to sort the codepoints, because we want to convert down to the simpler entries.
 			# A-Za-z is within the ascii table, so we are converting from high codepoints (> 1000) to
 			# the ascii entries. Going the other way is how you /add/ the replacement cipher.
 			cps.sort()
 
-			# Filtering.
-			if len(cps) < 2:
+			# print("Key:", key)
+			# print("Dupe:", cps, syms, value)
+
+			# Identity mappings are useless
+			if all([cps[0] == c for c in cps]):
 				continue
+
 			items.append((cps, syms))
 
 	items.sort()
@@ -118,8 +186,10 @@ def defont(font):
 	convmap = {}
 	for codepoints, symbols in items:
 		convs = " <- ".join([chr(cp) for cp in codepoints])
+		# print("Conversion: %s" % convs)
 		for cp in codepoints[1:]:
-			convmap[chr(cp)] = chr(codepoints[0])
+			if chr(cp) != chr(codepoints[0]):
+				convmap[chr(cp)] = chr(codepoints[0])
 
 
 
@@ -127,6 +197,21 @@ def defont(font):
 
 def isplit(iterable, conditional):
 	return [list(g) for k,g in itertools.groupby(iterable, conditional) if not k]
+
+
+def apply_correction_map(soup, tag, cor_map):
+	for item in list(tag.descendants):
+		if isinstance(item, bs4.NavigableString):
+			origstr = str(item)
+			itemstr = origstr
+			for fontset in cor_map:
+				for badc, goodc in fontset.items():
+					if badc in itemstr:
+						itemstr = itemstr.replace(badc, goodc)
+			if origstr != itemstr:
+				news = soup.new_string(itemstr)
+				item.replace_with(news)
+
 
 
 class BaseFontRemapProcessor(HtmlProcessor.HtmlPageProcessor):
@@ -175,30 +260,41 @@ class BaseFontRemapProcessor(HtmlProcessor.HtmlPageProcessor):
 							else:
 								urls.append(urllib.parse.urljoin(self.pageUrl, value))
 
+							self.log.info("Found font-family tag: '%s' -> '%s'", name, value)
 
 			if name and urls:
-				fonts[name] = list(set(urls))[0]
+				fonts.setdefault(name, [])
+				fonts[name].append(list(set(urls))[0])
+		self.log.info("Found %s font-family tags!", len(fonts))
 		return fonts
+
 	def _getFontLuts(self, fonturls):
+
 		ret = {}
-		for key, fonturl in fonturls.items():
-			page = WebMirror.API.RemoteContentObject(fonturl, db_session=self.sess)
-			try:
-				page.fetch(ignore_cache=False)
-				mimetype, fname, content = page.getResource()
-			except AssertionError:
-				page.fetch(ignore_cache=True)
-				mimetype, fname, content = page.getResource()
 
-			print(key, mimetype, fname, fonturl)
-			cmap = defont(io.BytesIO(content))
-			ret[key] = cmap
+		for key, fonturl_list in fonturls.items():
+			ret[key] = []
+			for fonturl in fonturl_list:
+				self.log.info("Building font remap LUT for font at %s", fonturl)
+				with WebMirror.API.getPageRow(fonturl, ignore_cache=False, session=self.sess) as page:
+					try:
+						page.fetch(ignore_cache=False)
+						_, _, content = page.getResource()
+					except AssertionError:
+						page.fetch(ignore_cache=True)
+						_, _, content = page.getResource()
 
-			page.close()
+					cmap = defont(io.BytesIO(content), fonturl)
+					if cmap:
+						# self.log.info("Font remap contains %s remapped code-points", len(cmap))
+						ret[key].append(cmap)
+
 
 		# I'm unclear why just this one char is being missed.
 		if 'arial-kcds' in ret:
 			ret['arial-kcds']["걣"] = "A"
+
+		self.log.info("Found %s remapped fonts", len(ret))
 
 		return ret
 
@@ -225,30 +321,16 @@ class BaseFontRemapProcessor(HtmlProcessor.HtmlPageProcessor):
 			to_fix = soup.find_all(True, style=re.compile(key, re.IGNORECASE))
 			for item in to_fix:
 				apply_correction_map(soup, item, maptable)
-			print(key)
+			to_fix = soup.find_all(True, class_=re.compile(key, re.IGNORECASE))
+			for item in to_fix:
+				apply_correction_map(soup, item, maptable)
+
+
 
 		apply_correction_map(soup, soup.body, maptable)
 
 		return soup
 
-
-
-def apply_correction_map(soup, tag, cor_map):
-	for item in list(tag.descendants):
-		if isinstance(item, bs4.NavigableString):
-			origstr = str(item)
-			itemstr = origstr
-			for badc, goodc in cor_map.items():
-				if badc in itemstr:
-					itemstr = itemstr.replace(badc, goodc)
-			if origstr != itemstr:
-				news = soup.new_string(itemstr)
-				item.replace_with(news)
-
-	# print(str(tag).encode("utf-8"))
-	# print("걣 in str:", '걣' in str(tag))
-	# print("걣 in cor_map:", '걣' in cor_map)
-	# print("놣 in str:", '놣' in str(tag))
 
 class KobatoChanDaiSukiPageProcessor(BaseFontRemapProcessor):
 
@@ -287,3 +369,111 @@ class NepustationPageProcessor(BaseFontRemapProcessor):
 		soup = super().preprocessBody(soup)
 
 		return soup
+
+class EccentricTranslationsFontRemapProcessor(BaseFontRemapProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+	loggerPath = "Main.Text.EccentricTranslations"
+
+	@staticmethod
+	def wantsUrl(url):
+		if re.search(r"^https?://(?:www\.)?eccentrictranslations\.com", url):
+			print("EccentricTranslationsProcessor Wants url: '%s'" % url)
+			return True
+		return False
+
+	def _getCssUrls(self, soup):
+		ret = []
+		css = soup.find_all('link', rel='stylesheet')
+		for tag in css:
+			if tag.get("href", None):
+				url = tag.get("href")
+				ret.append(urllib.parse.urljoin(self.pageUrl, url))
+
+		self.log.info("Found %s CSS Links", len(ret))
+
+		return ret
+
+
+	def getMapTable(self, soup):
+
+		cssUrls = self._getCssUrls(soup)
+		if not cssUrls:
+			return []
+
+		for cssUrl in cssUrls:
+			with WebMirror.API.getPageRow(cssUrl, ignore_cache=False, session=self.sess) as page:
+				assert page
+				mimetype, fname, content = page.getResource()
+
+			assert mimetype.lower() == "text/css"
+
+			fonturls = self._extractCss(content)
+
+			fontluts = self._getFontLuts(fonturls)
+		return fontluts
+
+
+
+	def preprocessBody(self, soup):
+		if soup.find('div', id='copyfight_content'):
+			self.log.info("Found copyfight garbage div. Fixing.")
+			soup = super().preprocessBody(soup)
+
+		return soup
+
+	def test(self):
+		import pprint
+
+		fontluts = self._getFontLuts({'copyfight' : [
+				# 'http://eccentrictranslations.com/wp-content/plugins/copyfight/cache/opensans/OpenSans-Regular.woff',
+				'http://eccentrictranslations.com/wp-content/plugins/copyfight/cache/4/42a38ad215ab716a45257eec057d15748f829ec44d6e17d0c8b41aa1fb42a4f4.woff',
+			]})
+
+
+		# print("Font luts:")
+		# pprint.pprint(fontluts)
+
+
+def test():
+
+	# fonts = check_init_font_cache()
+	# print(fonts)
+
+	wat = EccentricTranslationsFontRemapProcessor(
+									pageUrl         = 'wat',
+									pgContent       = 'wat',
+									mimeType        = 'wat',
+									db_sess         = 'wat',
+									baseUrls        = 'wat',
+									loggerPath      = 'wat',
+									badwords        = 'wat',
+									decompose       = 'wat',
+									decomposeBefore = 'wat',
+									fileDomains     = 'wat',
+									allImages       = 'wat',
+									decompose_svg   = 'wat',
+									ignoreBadLinks  = 'wat',
+									stripTitle      = 'wat',
+									relinkable      = 'wat',
+									destyle         = 'wat',
+									preserveAttrs   = 'wat',
+									type            = 'wat',
+									message_q       = 'wat',
+									job             = 'wat',
+									wg_proxy        = 'wat',
+		)
+
+	print(wat)
+
+	wat.test()
+
+
+
+if __name__ == '__main__':
+	import logSetup
+	logSetup.initLogging(1)
+	test()
+

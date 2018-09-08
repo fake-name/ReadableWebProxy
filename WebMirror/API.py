@@ -77,7 +77,6 @@ class RemoteContentObject(object):
 
 		self.job     = self.archiver.synchronousJobRequest(self.url, ignore_cache)
 
-		print("Fetched! Job:", self.job)
 		# Override the job instance if we're fetching a old version
 		if version != None:
 			self.job = self.job.versions[version]
