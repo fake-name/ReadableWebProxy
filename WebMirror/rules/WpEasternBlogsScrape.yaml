@@ -6,7 +6,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',

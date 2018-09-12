@@ -49,6 +49,8 @@ urlContainingTargets = [
 ]
 
 
+gdocBaseRe = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+(?:/pub)?)(.*)$')
+
 def trimGDocUrl(rawUrl):
 	# if "docs.google.com" in rawUrl:
 	# 	print("Trimming URL: ", rawUrl)
@@ -97,7 +99,6 @@ def trimGDocUrl(rawUrl):
 			"?embedded=false",
 			]
 
-		gdocBaseRe = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+(?:/pub)?)(.*)$')
 		simpleCheck = gdocBaseRe.search(url)
 		if simpleCheck:
 			if any([item in simpleCheck.group(2) for item in strip]):
@@ -116,19 +117,29 @@ def trimGDocUrl(rawUrl):
 
 	return url
 
+gdocBaseRe = re.compile(r'(https?://docs\.google\.com/document/d/[-_0-9a-zA-Z]+)')
+driveToDocRe = re.compile(r'https?://drive\.google\.com/open\?id=([-_0-9a-zA-Z]+)')
+
 def isGdocUrl(url):
-	gdocBaseRe = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+)')
 	simpleCheck = gdocBaseRe.search(url)
 	if simpleCheck and not url.endswith("/pub"):
 		# return True, simpleCheck.group(1)
 		return True, trimGDocUrl(url)
 
+	simpleCheck = driveToDocRe.search(url)
+	if simpleCheck and not url.endswith("/pub"):
+		print("URL Group:", simpleCheck.group(1))
+		# return True, simpleCheck.group(1)
+		return True, "https://docs.google.com/document/d/{}".format(simpleCheck.group(1))
+
+
+
 	return False, url
 
+gFileBaseRe = re.compile(r'(https?://docs.google.com/file/d/[-_0-9a-zA-Z]+)')
 
 def isGFileUrl(url):
 
-	gFileBaseRe = re.compile(r'(https?://docs.google.com/file/d/[-_0-9a-zA-Z]+)')
 	simpleCheck = gFileBaseRe.search(url)
 	if simpleCheck and not url.endswith("/pub"):
 		return True, trimGDocUrl(url)
