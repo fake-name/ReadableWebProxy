@@ -7,10 +7,12 @@ type: "western"
 
 send_raw_feed: False
 baseUrl: [
-	"https://www.royalroadl.com/",
 	"http://www.royalroadl.com/",
-	"https://royalroadl.com/",
 	"http://royalroadl.com/",
+	"https://royalroadl.com/",
+	"https://www.royalroadl.com/",
+	"https://royalroad.com/",
+	"https://www.royalroad.com/",
 	]
 
 badwords: [

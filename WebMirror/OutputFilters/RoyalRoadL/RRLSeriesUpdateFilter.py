@@ -77,6 +77,32 @@ class RRLSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			'https://www.royalroadl.com/fictions/latest-updates',
 			'https://www.royalroadl.com/fictions/new-releases',
 			'https://www.royalroadl.com/fictions/weekly-views-top-50',
+
+			'http://royalroad.com/fictions/active-popular',
+			'http://royalroad.com/fictions/active-top-50',
+			'http://royalroad.com/fictions/best-rated',
+			'http://royalroad.com/fictions/latest-updates',
+			'http://royalroad.com/fictions/new-releases',
+			'http://royalroad.com/fictions/weekly-popular',
+			'http://royalroad.com/fictions/weekly-views-top-50',
+			'http://www.royalroad.com/fictions/active-top-50',
+			'http://www.royalroad.com/fictions/best-rated',
+			'http://www.royalroad.com/fictions/latest-updates',
+			'http://www.royalroad.com/fictions/new-releases',
+			'http://www.royalroad.com/fictions/weekly-views-top-50',
+
+			'https://royalroad.com/fictions/active-popular',
+			'https://royalroad.com/fictions/active-top-50',
+			'https://royalroad.com/fictions/best-rated',
+			'https://royalroad.com/fictions/latest-updates',
+			'https://royalroad.com/fictions/new-releases',
+			'https://royalroad.com/fictions/weekly-popular',
+			'https://royalroad.com/fictions/weekly-views-top-50',
+			'https://www.royalroad.com/fictions/active-top-50',
+			'https://www.royalroad.com/fictions/best-rated',
+			'https://www.royalroad.com/fictions/latest-updates',
+			'https://www.royalroad.com/fictions/new-releases',
+			'https://www.royalroad.com/fictions/weekly-views-top-50',
 		])
 		url = url.lower()
 		if any([url.startswith(tmp) for tmp in want]):

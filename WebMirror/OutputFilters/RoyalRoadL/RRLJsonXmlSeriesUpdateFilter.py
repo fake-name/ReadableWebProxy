@@ -105,6 +105,11 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			'http://royalroadl.com/api/',
 			'https://www.royalroadl.com/api/',
 			'http://www.royalroadl.com/api/',
+
+			'https://royalroad.com/api/',
+			'http://royalroad.com/api/',
+			'https://www.royalroad.com/api/',
+			'http://www.royalroad.com/api/',
 		])
 		url = url.lower()
 		if any([url.startswith(tmp) for tmp in want]):
@@ -228,13 +233,13 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 
 
 
-		sinfo = get_json(self.wg, "https://royalroadl.com/api/fiction/info/{sid}?apikey={key}"    .format(sid=series['id'], key=settings.RRL_API_KEY))
+		sinfo = get_json(self.wg, "https://www.royalroad.com/api/fiction/info/{sid}?apikey={key}"    .format(sid=series['id'], key=settings.RRL_API_KEY))
 
 		if not self.validate_sdata(sinfo):
 			self.log.warning("Series data for sid %s failed validation" % series['id'])
 			return
 
-		cinfo = get_json(self.wg, "https://royalroadl.com/api/fiction/chapters/{sid}?apikey={key}".format(sid=series['id'], key=settings.RRL_API_KEY))
+		cinfo = get_json(self.wg, "https://www.royalroad.com/api/fiction/chapters/{sid}?apikey={key}".format(sid=series['id'], key=settings.RRL_API_KEY))
 		if not self.validate_cdata(cinfo):
 			return
 
@@ -298,7 +303,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		for chapter in cinfo:
 
 			reldate = chapter['date']
-			chap_url = "https://www.royalroad.com/fiction/{sid}/rrl-doesnt-provide-the-series-slug/chapter/{cid}/apparently-this-needs-to-be-here-too".format(
+			chap_url = "https://www.royalroad.com/fiction/{sid}/rrls-api-doesnt-provide-the-series-slug/chapter/{cid}/apparently-this-needs-to-be-here-too".format(
 				sid = series['id'], cid=chapter['id'])
 
 

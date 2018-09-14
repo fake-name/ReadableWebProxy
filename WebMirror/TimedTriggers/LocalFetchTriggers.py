@@ -16,8 +16,8 @@ class HourlyLocalFetchTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCla
 
 
 	urls = [
-		'https://royalroadl.com/api/fiction/updates?apiKey='     + settings.RRL_API_KEY,
-		'https://royalroadl.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
+		'https://royalroad.com/api/fiction/updates?apiKey='     + settings.RRL_API_KEY,
+		'https://royalroad.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
 	]
 
 

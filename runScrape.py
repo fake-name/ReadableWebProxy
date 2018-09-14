@@ -2,7 +2,9 @@
 
 if __name__ == "__main__":
 	import logSetup
+	import logging
 	logSetup.initLogging()
+	# logSetup.initLogging(logging.WARNING)
 
 # This HAS to be included before the app, to prevent circular dependencies.
 # import WebMirror.runtime_engines
