@@ -43,7 +43,10 @@ class RunInstance(object):
 		hadjob = False
 		try:
 			self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, new_job_queue=self.new_job_queue, response_queue=self.resp_queue, db_interface=db_handle)
-			hadjob = self.archiver.taskProcess()
+			for x in range(500):
+				hadjob = self.archiver.taskProcess()
+				if not hadjob:
+					return hadjob
 		finally:
 			# Clear out the sqlalchemy state
 			db_handle.expunge_all()

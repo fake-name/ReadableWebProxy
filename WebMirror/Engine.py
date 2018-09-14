@@ -212,6 +212,15 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		self.rsc_filters  = {}
 
 
+		self.netloc_dupe_allowed = {}
+
+		for ruleset in self.ruleset:
+			if ruleset['netlocs'] and isinstance(ruleset['netlocs'], (list, tuple)):
+				for netloc in ruleset['netlocs']:
+					self.netloc_dupe_allowed[netloc] = ruleset['disallow_duplicate_path_segments']
+
+
+
 		for item in self.ruleset:
 
 			if not item['netlocs']:
@@ -496,10 +505,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			self.log.error("Wat? No netloc for URL: %s", url)
 			return True
 
-		disallowDupe = False
-		for ruleset in self.ruleset:
-			if ruleset['netlocs'] and netloc in ruleset['netlocs']:
-				disallowDupe = ruleset['disallow_duplicate_path_segments'] or disallowDupe
+		disallowDupe = self.netloc_dupe_allowed.get(netloc, False)
 
 		if not disallowDupe:
 			return False

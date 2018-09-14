@@ -96,7 +96,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 		for item in PREPROCESSORS:
 			self.preprocessor_modules.append(item)
 
-		baseRules = [ruleset for ruleset in rules if ruleset['netlocs'] == None].pop(0)
+		baseRules = [ruleset for ruleset in rules if ruleset['netlocs'] is None].pop(0)
 
 		rules = [ruleset for ruleset in rules if ruleset['netlocs'] != None]
 		rules.sort(key=lambda x:x['netlocs'])
@@ -105,9 +105,10 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 		self.relinkable = set()
 		for item in self.ruleset:
-			[self.relinkable.add(url) for url in item['fileDomains']]         #pylint: disable=W0106
-			[self.relinkable.add(url) for url in item['netlocs']]             #pylint: disable=W0106
-
+			if item['fileDomains']:
+				self.relinkable.update(item['fileDomains'])
+			if item['netlocs']:
+				self.relinkable.update(item['netlocs'])
 
 		netloc = urllib.parse.urlsplit(target_url).netloc
 

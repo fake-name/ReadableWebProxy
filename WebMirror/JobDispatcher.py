@@ -82,6 +82,8 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 5000
 	# MAX_IN_FLIGHT_JOBS = 8000
 
+LOCAL_ENQUEUED_JOB_RESPONSES = 200
+
 class RpcMixin():
 
 	def __init__(self, *args, **kwargs):
@@ -229,7 +231,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 		# If we haven't had a received job in 10 minutes, reset the job counter because we might
 		# have leaked the jobs away somehow.
 		if (self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES)) < datetime.datetime.now():
-			if self.normal_out_queue.qsize() > MAX_IN_FLIGHT_JOBS:
+			if self.normal_out_queue.qsize() > LOCAL_ENQUEUED_JOB_RESPONSES:
 				self.log.warn("Long latency since last received job, but received job queue contains lots of jobs. Huh? (Jobqueue size: %s)", self.normal_out_queue.qsize())
 			else:
 				self.log.error("Timeout since last job seen. Resetting active job counter. (lastJob: %s)", self.last_rx + datetime.timedelta(minutes=NO_JOB_TIMEOUT_MINUTES))
@@ -412,7 +414,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 					else:
 						self.log.error("Failure when updating active job counters!")
 
-				self.log.info("Dispatched new job (active jobs: %s of %s)", self.system_state['active_jobs'], MAX_IN_FLIGHT_JOBS)
+				self.log.info("Dispatched new job (active jobs: %s of %s, %s of %s)",
+					self.system_state['active_jobs'], MAX_IN_FLIGHT_JOBS, self.system_state['qsize'], LOCAL_ENQUEUED_JOB_RESPONSES)
 				return
 			except TypeError:
 				self.check_open_rpc_interface()
@@ -520,7 +523,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		if 'drain' in sys.argv:
 			return 0
 		total_new = 0
-		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < MAX_IN_FLIGHT_JOBS:
+		while self.system_state['active_jobs'] < MAX_IN_FLIGHT_JOBS and self.system_state['qsize'] < LOCAL_ENQUEUED_JOB_RESPONSES:
 			old = self.system_state['active_jobs']
 			with self.mon_con.pipeline() as pipe:
 				with pipe.timer("get_task"):
