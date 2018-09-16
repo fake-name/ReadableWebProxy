@@ -6,6 +6,8 @@ class DownloadException(Exception):
 
 class CannotAccessGDocException(DownloadException):
 	pass
+class GarbageDomainSquatterException(DownloadException):
+	pass
 
 
 def getErrorDiv():

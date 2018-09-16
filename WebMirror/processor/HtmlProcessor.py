@@ -12,6 +12,7 @@ import common.global_constants
 
 import common.util.urlFuncs as urlFuncs
 from . import ProcessorBase
+from common.Exceptions import GarbageDomainSquatterException
 
 
 ########################################################################################################################
@@ -474,6 +475,21 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 		return soup
 
+
+	def checkSquatters(self, content):
+		if '<iframe src="http://mcc.godaddy.com/park' in content:
+			raise GarbageDomainSquatterException("GoDaddy Domain Squatter!")
+		if '<script src="//i.cdnpark.com/registrar/' in content:
+			raise GarbageDomainSquatterException("CDNPark Domain Squatter!")
+		if 'is for sale. To purchase, call BuyDomains.com at 781-373-6841 or 844-896-7299.' in content:
+			raise GarbageDomainSquatterException("BuyDomains Domain Squatter!")
+		if 'Profits. Great Investment. #1 in Premium Domains. 300,000 of the World\'s Best .Com Domains." />' in content:
+			raise GarbageDomainSquatterException("DomainMarket Domain Squatter!")
+		if "<html><head><title>Loading...</title></head><body><script type='text/javascript'>window.location.replace('http" in content:
+			raise GarbageDomainSquatterException("No Idea who this is Domain Squatter!")
+		if '><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE,NO_STORE"><META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">' in content:
+			raise GarbageDomainSquatterException("No Idea who this is 2 Domain Squatter!")
+
 	# Process a plain HTML page.
 	# This call does a set of operations to permute and clean a HTML page.
 	#
@@ -490,6 +506,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		if self.content.strip().lower().startswith(badxmlprefix):
 			self.content = self.content[len(badxmlprefix):]
 
+
+		self.checkSquatters(self.content)
 
 		soup = WebRequest.as_soup(self.content)
 		# try:

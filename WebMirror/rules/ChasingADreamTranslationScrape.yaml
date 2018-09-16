@@ -6,7 +6,6 @@ send_raw_feed: True
 rewalk_interval_days: 30
 
 baseUrl: [
-	'http://chasingadreamtranslations.com',
 	]
 
 

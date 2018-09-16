@@ -12,7 +12,6 @@ feeds:
 	- 'http://www.baka-tsuki.org/project/index.php?title=Special:RecentChanges&feed=atom'
 
 	# Epub generator for BT?
-	- 'http://ln.m-chan.org/v3/feed.php'
 
 badwords:
 	 - "/blog/"

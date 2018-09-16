@@ -32,6 +32,7 @@ import common.rss_func_db as rfdb
 import astor
 import astor.source_repr
 
+import WebMirror.API
 
 
 # def getCreateRssSource(db_sess, feedname, feedurl):
@@ -259,3 +260,31 @@ def exposed_underp_rss_functions():
 			print(row.func)
 	sess.commit()
 	pass
+
+
+def exposed_validate_feed_url_mimetypes():
+	'''
+	Scan the feed URLs from the rules, and check that they all return
+	actual feed contents.
+
+	This is useful for detecting things like garbage domain squatters,
+	which take over a domain and all paths on the server return 200.
+	'''
+	wg = WebMirror.API.WG_POOL[0]
+
+	rules = WebMirror.rules.load_rules()
+
+	feed_urls = [tmp for item in rules for tmp in item['feedurls']]
+
+	for url in feed_urls:
+		try:
+			_, _, mime = wg.getFileNameMime(url)
+			print("Type: '%s' for url: '%s'" % (mime, url))
+		except Exception:
+			print("Failure fetching url: '%s'" % (url, ))
+
+
+	# print("Wg:", wg)
+
+	# print(feed_urls)
+
