@@ -5,7 +5,7 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/berkerpeksag/astor.git
 git+https://github.com/fake-name/ChromeController.git
 
-webrequest==0.0.49
+webrequest==0.0.51
 
 pillow==5.2.0
 json2html==1.2.1
