@@ -49,7 +49,7 @@ urlContainingTargets = [
 ]
 
 
-gdocBaseRe = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+(?:/pub)?)(.*)$')
+gdocBaseReExt = re.compile(r'(https?://docs.google.com/document/d/[-_0-9a-zA-Z]+(?:/pub)?)(.*)$')
 
 def trimGDocUrl(rawUrl):
 	# if "docs.google.com" in rawUrl:
@@ -99,8 +99,9 @@ def trimGDocUrl(rawUrl):
 			"?embedded=false",
 			]
 
-		simpleCheck = gdocBaseRe.search(url)
+		simpleCheck = gdocBaseReExt.search(url)
 		if simpleCheck:
+			# print("SimpleCheck: ", simpleCheck, simpleCheck.groups())
 			if any([item in simpleCheck.group(2) for item in strip]):
 				url = simpleCheck.group(1)
 
@@ -198,7 +199,7 @@ def cleanUrl(urlin):
 	try:
 		resolve_redirects = False
 
-		if '://wp.me' in urlin:
+		if 'wp.me' in urllib.parse.urlparse(urlin).netloc:
 			resolve_redirects = True
 
 		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=resolve_redirects)

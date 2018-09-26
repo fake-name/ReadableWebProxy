@@ -33,6 +33,7 @@ baseUrl: [
 		'http://www.karasunovels.com',
 		'http://www.everythingsweet.me',
 		'http://www.whiteshark.tk',
+		'http://www.fringeoctopus.com',
 
 		# Dreamwidth seems OK with the default rules
 		"https://duelnoir.dreamwidth.org",
@@ -44,6 +45,7 @@ baseUrl: [
 		"https://sincere.dreamwidth.org",
 		'https://talesof.dreamwidth.org',
 		'https://pucari.dreamwidth.org',
+		'https://shadow.dreamwidth.org',
 
 		'http://uncommittedtranslations.bravesites.com',
 
@@ -80,6 +82,8 @@ baseUrl: [
 		'http://www.zeonic-republic.net',
 		'http://lesyt.xyz',
 		'https://universalnovels.com',
+
+		'https://badnovels.com',
 	]
 
 feeds: [

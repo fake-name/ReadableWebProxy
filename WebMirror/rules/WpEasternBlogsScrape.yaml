@@ -7,6 +7,7 @@ rewalk_interval_days: 30
 baseUrl: [
 
 
+
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -164,6 +165,7 @@ baseUrl: [
 	'https://chaspoilerishtranslations.wordpress.com',
 	'https://chauffeurtranslation.wordpress.com',
 	'https://cherryclannovels.wordpress.com',
+	'https://cherrynovelfactory.wordpress.com',
 	'https://chestnuttranslations.wordpress.com',
 	'https://chibitranslation.wordpress.com',
 	'https://chillock.wordpress.com',
@@ -239,6 +241,7 @@ baseUrl: [
 	'https://distractedchinese.wordpress.com',
 	'https://diwasteman.wordpress.com',
 	'https://dlingson.wordpress.com',
+	'https://dmlations.wordpress.com',
 	'https://dmtranslationscn.wordpress.com',
 	'https://dogecoretranslations.wordpress.com',
 	'https://dokuhanatl.wordpress.com',
@@ -626,6 +629,7 @@ baseUrl: [
 	'https://lylisasmodeus.wordpress.com',
 	'https://lypheonblog.wordpress.com',
 	'https://lyran1mtranslation.wordpress.com',
+	'https://m3nmi.wordpress.com',
 	'https://maboandgibo.wordpress.com',
 	'https://machineslicedbread.wordpress.com',
 	'https://machinetranslationdotblog.wordpress.com',
@@ -680,6 +684,7 @@ baseUrl: [
 	'https://mochadelighttranslation.wordpress.com',
 	'https://mofumofutranslationblog.wordpress.com',
 	'https://mojotranslations.wordpress.com',
+	'https://momopeachproject.wordpress.com',
 	'https://monktranslation.wordpress.com',
 	'https://monktranslations.wordpress.com',
 	'https://moonlighttranslations.wordpress.com',
@@ -754,6 +759,7 @@ baseUrl: [
 	'https://novicetranslator.wordpress.com',
 	'https://ntrholic.wordpress.com',
 	'https://nubi96.wordpress.com',
+	'https://numpaomtl.wordpress.com',
 	'https://nuttyisprocrasinating.wordpress.com',
 	'https://nvscblog.wordpress.com',
 	'https://nxtlvlfortheplot.wordpress.com',
@@ -815,6 +821,7 @@ baseUrl: [
 	'https://pizzasandcoke.wordpress.com',
 	'https://plainlybored.wordpress.com',
 	'https://planttranslation.wordpress.com',
+	'https://playfulkydd.wordpress.com',
 	'https://plumlizi.wordpress.com',
 	'https://polarbearadise.wordpress.com',
 	'https://polarbearcatcher.wordpress.com',
@@ -981,6 +988,7 @@ baseUrl: [
 	'https://silvercattranslations.wordpress.com',
 	'https://silveredtongue.wordpress.com',
 	'https://silverliningtranslations.wordpress.com',
+	'https://silversnowtranslations.wordpress.com',
 	'https://sinistertranslations.wordpress.com',
 	'https://sinpathy976389827.wordpress.com',
 	'https://sjcnoveltranslations.wordpress.com',
@@ -1046,6 +1054,7 @@ baseUrl: [
 	'https://sugardarkthetranslation.wordpress.com',
 	'https://suidishtranslation.wordpress.com',
 	'https://suihansanyou.wordpress.com',
+	'https://sukinanokanaa.wordpress.com',
 	'https://summerraintranslation.wordpress.com',
 	'https://summiesdummyworld.wordpress.com',
 	'https://sunflowerfactorysite.wordpress.com',
@@ -1230,6 +1239,7 @@ baseUrl: [
 	'https://xingtianworks.wordpress.com',
 	'https://xiose.wordpress.com',
 	'https://xtostos.wordpress.com',
+	'https://xtrawhippedcream.wordpress.com',
 	'https://xueversity.wordpress.com',
 	'https://xytranslations.wordpress.com',
 	'https://yamanekothetranslation.wordpress.com',
@@ -1268,8 +1278,6 @@ baseUrl: [
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 
-
-	'http://www.hasutsuki.com',
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',
@@ -1281,6 +1289,7 @@ baseUrl: [
 	'http://brotakus.com',
 	'http://butterflyscurse.stream',   # These idiots seem to have /disabled/ rss. What the fuck?
 	'http://cautrs.com',
+	'http://cherriecake.com',
 	'http://chinesenoveltranslations.simplegamesdev.com',
 	'http://choyce.club',
 	'http://cnovels.bookbychapters.com',
@@ -1399,6 +1408,7 @@ baseUrl: [
 	'http://www.aihristdreamtranslations.com',
 	'http://www.ainushi.com',
 	'http://www.ameryedge.com',
+	'http://www.ancientnovels.com',
 	'http://www.arantranslations.com',
 	'http://www.blazingtranslations.com',
 	'http://www.chiakunloong.com',
@@ -1409,6 +1419,7 @@ baseUrl: [
 	'http://www.eodtranslations.asia',
 	'http://www.epyontranslations.com',
 	'http://www.gravitytales.com',
+	'http://www.hasutsuki.com',
 	'http://www.heroicnovels.com',
 	'http://www.kencephalontranslations.com',
 	'http://www.kitakamiooi.com',
@@ -1490,6 +1501,7 @@ baseUrl: [
 	'https://hasutsuki.com',
 	'https://hiscension.com',
 	'https://hitogai.com',
+	'https://homescribble.mybluemix.net',
 	'https://imjustheretoreadbl.com',
 	'https://intensedessugar.com',
 	'https://itsallgoodnow.home.blog',

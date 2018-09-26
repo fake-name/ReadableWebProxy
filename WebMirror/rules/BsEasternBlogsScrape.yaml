@@ -12,6 +12,7 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
 	'http://ahoujicha.blogspot.com',
@@ -184,6 +185,7 @@ baseUrl: [
 	'https://fishytranslation.blogspot.com',
 	'https://flamingdeity.blogspot.com',
 	'https://fleshtoplush.blogspot.com',
+	'https://fotranslates.blogspot.com',
 	'https://godofabc.blogspot.com',
 	'https://gugeltranslation.blogspot.com',
 	'https://hainemakorutranslations.blogspot.com',
@@ -199,6 +201,7 @@ baseUrl: [
 	'https://legendarygomo.blogspot.com',
 	'https://lights-n-progress.blogspot.com',
 	'https://lionmask.blogspot.com',
+	'https://momopeachtranslation.blogspot.com',
 	'https://novel44.blogspot.com',
 	'https://novelsanctuary.blogspot.com',
 	'https://novustreasures.blogspot.sg',

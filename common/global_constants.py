@@ -233,6 +233,11 @@ GLOBAL_BAD_URLS = [
 
 			# Lawl
 			'/<?php',
+			
+			
+			'www.facebook.com',
+			'www.pinterest.com',  # fucking hell, really?
+			'www.linkedin.com',
 	]
 
 

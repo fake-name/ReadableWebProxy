@@ -281,7 +281,13 @@ def exposed_validate_feed_url_mimetypes():
 			_, _, mime = wg.getFileNameMime(url)
 			print("Type: '%s' for url: '%s'" % (mime, url))
 		except Exception:
-			print("Failure fetching url: '%s'" % (url, ))
+			root_url = urllib.parse.urlunsplit(urllib.parse.urlsplit(url)[:2] + ("", "", ""))
+			try:
+				_, _, mime = wg.getFileNameMime(root_url)
+				print("Failure fetching url, but root OK: '%s'" % (url, ))
+
+			except Exception:
+				print("Failure fetching url, and root failed too: '%s'" % (url, ))
 
 
 	# print("Wg:", wg)

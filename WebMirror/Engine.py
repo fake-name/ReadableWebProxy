@@ -465,7 +465,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			# print(feedentry['contents'])
 			# print(feedentry['published'])
 
-			while 1:
+			for x in range(10):
 				try:
 					self.insertRssItem(feedentry, feedurl)
 					break
@@ -481,6 +481,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					print("[upsertRssItems] -> Integrity error!")
 					traceback.print_exc()
 					self.db_sess.rollback()
+					self.db_sess.expire_all()
 
 
 	def generalLinkClean(self, link, badwords, badcompounds):
