@@ -41,7 +41,7 @@ python-dateutil==2.7.3
 bbcode==1.0.32
 pympler==0.5
 
-colorama==0.3.9
+colorama==0.4.0
 pyyaml==3.13
 natsort==5.4.1
 mdx_linkify==1.1
