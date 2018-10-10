@@ -71,19 +71,6 @@ mark {
 small {
   font-size: 80%;
 }
-sub,
-sup {
-  position: relative;
-  font-size: 75%;
-  line-height: 0;
-  vertical-align: baseline;
-}
-sup {
-  top: -.5em;
-}
-sub {
-  bottom: -.25em;
-}
 img {
   border: 0;
 }

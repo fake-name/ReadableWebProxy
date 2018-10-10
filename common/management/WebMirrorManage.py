@@ -365,13 +365,11 @@ def delete_internal(sess, ids, netloc, badwords):
 
 def exposed_delete_url_history(netloc):
 	'''
-	Iterate over each ruleset in the rules directory, and generate a compound query that will
-	delete any matching rows.
-	For rulesets with a large number of rows, or many badwords, this
-	can be VERY slow.
+	Given a netloc, delete all entries in the history table for that netloc.
 
-	Similar in functionality to `clear_bad`, except it results in many fewer queryies,
-	and is therefore likely much more performant.
+	THIS IS DESTRUCTIVE IN ALL CASES.
+
+	The history for a URL is deleted without any filtering!
 	'''
 
 	print("Delete URL called with netloc param: '%s'" % netloc)
@@ -480,11 +478,11 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 				# So there's no way to escape a LIKE string in postgres.....
 				search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in agg_bad]
 
+				print("Netlocs:")
+				print(ruleset['netlocs'])
 				print("Badwords:")
 				for bad in search_strs:
 					print("	Bad: ", bad)
-				print("Netlocs:")
-				print(ruleset['netlocs'])
 
 				# We have to delete from the normal table before the versioning table,
 				# because deleting from the normal table causes inserts into the versioning table
@@ -849,6 +847,11 @@ def exposed_load_feed_names_from_file(json_file):
 			print(e)
 
 
+def exposed_reset_in_progress():
+	'''
+	Reset processed downloads that are in progress.
+	'''
+	WebMirror.UrlUpserter.resetInProgress()
 
 def exposed_unfuck_dropped_feed_name_lut():
 	'''

@@ -369,6 +369,7 @@ badwords: [
 		'turtleme.me/includes/',
 		'turtleme.me/images/products/includes/',
 		'pathoftranslation.com/?ga=',
+		'?fp=',
 	]
 
 decompose: [

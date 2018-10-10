@@ -1,5 +1,7 @@
 
 import re
+import markdown
+import bs4
 import tinycss2
 
 from . import HtmlProcessor
@@ -353,6 +355,69 @@ class RebirthOnlineLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 			bad_p = soup.find_all("p", class_=bad_class)
 			for bad in bad_p:
 				bad.decompose()
+
+		return soup
+
+
+
+class AfterAugustMakingProcessor(HtmlProcessor.HtmlPageProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+
+	loggerPath = "Main.Text.AfterAugustMaking"
+
+	@staticmethod
+	def wantsUrl(url):
+
+		if re.search(r"^https?://translations\.afteraugustmaking\.me/", url):
+			print("AAM Wants url: '%s'" % url)
+			return True
+		# print("lnw doesn't want url: '%s'" % url)
+		return False
+
+
+	def preprocessBody(self, soup):
+		for bad in soup.find_all('div', id='sitedescription'):
+			bad.decompose()
+		for bad in soup.find_all('td', id='staticpanel'):
+			bad.decompose()
+		for bad in soup.find_all('td', id='foohide'):
+			bad.decompose()
+		for bad in soup.find_all('canvas'):
+			bad.decompose()
+
+		for styled_div in soup.find_all("div", style=True):
+			styled_div.attrs = {}
+
+		soup.table.unwrap()
+		for wat in soup.find_all("ng-view"):
+			wat.unwrap()
+
+		textbody = soup.find("h4", id='novelText')
+		if textbody:
+			for text in textbody.find_all(text=True):
+				content = soup.new_tag("p")
+				for line in text.split("\n"):
+					content.append(soup.new_string(line))
+					content.append(soup.new_tag('br'))
+
+				text.replace_with(content)
+
+
+		for span in soup.find_all("span", title=True):
+			replacement = soup.new_tag('sup')
+			replacement.string = span['title']
+			span.replace_with(replacement)
+
+			wrapper1 = soup.new_tag("sub")
+			replacement.wrap(wrapper1)
+
+			wrapper2 = soup.new_tag("p")
+			replacement.wrap(wrapper2)
+
+
 
 		return soup
 

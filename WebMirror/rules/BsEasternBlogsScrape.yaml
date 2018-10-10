@@ -12,7 +12,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
 	'http://ahoujicha.blogspot.com',
@@ -180,6 +179,7 @@ baseUrl: [
 	'https://emeraldmayblossom.blogspot.com',
 	'https://emmatranslates.blogspot.com',
 	'https://entertainmentandsnacks.blogspot.com',
+	'https://erilyntranslate.blogspot.com',
 	'https://exetranslations.blogspot.com',
 	'https://fate-and-affinity.blogspot.com',
 	'https://fishytranslation.blogspot.com',

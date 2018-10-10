@@ -233,8 +233,11 @@ GLOBAL_BAD_URLS = [
 
 			# Lawl
 			'/<?php',
-			
-			
+
+
+			# Fuck that one domain squatter in particular.
+			'.com/?fp=',
+
 			'www.facebook.com',
 			'www.pinterest.com',  # fucking hell, really?
 			'www.linkedin.com',

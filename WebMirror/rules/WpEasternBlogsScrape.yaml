@@ -7,7 +7,6 @@ rewalk_interval_days: 30
 baseUrl: [
 
 
-
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -81,6 +80,7 @@ baseUrl: [
 	'https://ashtranslations.wordpress.com',
 	'https://asiancult.wordpress.com',
 	'https://asiandramalife.wordpress.com',
+	'https://asplashofnovels.wordpress.com',
 	'https://asterlucerne.wordpress.com',
 	'https://asthmaticspider.wordpress.com',
 	'https://atentranslationswordpresscom.wordpress.com',
@@ -236,6 +236,7 @@ baseUrl: [
 	'https://destinytranslations007.wordpress.com',
 	'https://deusexmachinetranslations.wordpress.com',
 	'https://devildante777.wordpress.com',
+	'https://devilfoxblog.wordpress.com',
 	'https://dijoninpieces.wordpress.com',
 	'https://dipperweb.wordpress.com',
 	'https://distractedchinese.wordpress.com',
@@ -317,6 +318,7 @@ baseUrl: [
 	'https://falamartranslation.wordpress.com',
 	'https://falinmer.wordpress.com',
 	'https://familyfiendly.wordpress.com',
+	'https://fanfictls.wordpress.com',
 	'https://fantasyedgenovel.wordpress.com',
 	'https://fantasytranslation.wordpress.com',
 	'https://fantranslationsblog.wordpress.com',
@@ -424,6 +426,7 @@ baseUrl: [
 	'https://iamprocrastinator.wordpress.com',
 	'https://ianscornerblog.wordpress.com',
 	'https://iballisticbunnies.wordpress.com',
+	'https://icecream1524.wordpress.com',
 	'https://icecreamcaketl.wordpress.com',
 	'https://ichigoichiebanzai.wordpress.com',
 	'https://idlebearkun.wordpress.com',
@@ -436,6 +439,7 @@ baseUrl: [
 	'https://imoutosite.wordpress.com',
 	'https://imperialwinters.wordpress.com',
 	'https://inaccuratetranslations.wordpress.com',
+	'https://inacloudspace.wordpress.com',
 	'https://inadequatetranslations.wordpress.com',
 	'https://incarneous.wordpress.com',
 	'https://inconnuesite.wordpress.com',
@@ -809,6 +813,7 @@ baseUrl: [
 	'https://pekaboblog.wordpress.com',
 	'https://penguinoverlordblog.wordpress.com',
 	'https://pengutaichou.wordpress.com',
+	'https://penjournalhappy.wordpress.com',
 	'https://pettankotranslations.wordpress.com',
 	'https://phiarehere.wordpress.com',
 	'https://pickupthisnoveltranslations.com',
@@ -861,6 +866,7 @@ baseUrl: [
 	'https://ravenbluesday.wordpress.com',
 	'https://razorace.wordpress.com',
 	'https://rbktrtranslations.wordpress.com',
+	'https://readermegane.wordpress.com',
 	'https://realdungeon.wordpress.com',
 	'https://realmofchaosblog.wordpress.com',
 	'https://reantoanna.wordpress.com',
@@ -869,6 +875,7 @@ baseUrl: [
 	'https://redlanternarchives.wordpress.com',
 	'https://refreshtranslations.wordpress.com',
 	'https://reincarnatedtranslator.wordpress.com',
+	'https://reinepearl.wordpress.com',
 	'https://reitransblog.wordpress.com',
 	'https://releasethatwitch.wordpress.com',
 	'https://reondell.wordpress.com',
@@ -1009,6 +1016,7 @@ baseUrl: [
 	'https://slothtranslationsblog.wordpress.com',
 	'https://snailspacesite.wordpress.com',
 	'https://snailtranslations.wordpress.com',
+	'https://snoozetranslations.wordpress.com',
 	'https://snowbelldot.wordpress.com',
 	'https://snowjadeflowers.wordpress.com',
 	'https://snowtranslations.wordpress.com',
@@ -1102,6 +1110,7 @@ baseUrl: [
 	'https://theflowergarden1412.wordpress.com',
 	'https://theludicroushattertranslations.wordpress.com',
 	'https://themustangtranslator.wordpress.com',
+	'https://thenovelsiread.wordpress.com',
 	'https://theotherhalfofmyapple.wordpress.com',
 	'https://theotherturret.wordpress.com',
 	'https://thernotstudio.wordpress.com',
@@ -1466,6 +1475,7 @@ baseUrl: [
 	'https://acidtranslation.com',
 	'https://adoseoflove4.me',
 	'https://amateurtranslations.com',
+	'https://americanfaux.com',
 	'https://antheor.eu',
 	'https://aoitenshi.com',
 	'https://astralnoveltranslations.com',
@@ -1524,6 +1534,7 @@ baseUrl: [
 	'https://lucksego.com',
 	'https://maddertranslates.com',
 	'https://magnavalon.com',
+	'https://meganemtl.xyz',
 	'https://myoniyonitranslations.com',
 	'https://nakimushitl.com',
 	'https://nononosanctuary.xyz',
@@ -1971,6 +1982,8 @@ decompose: [
 	{'class'                          : 'gdpr-right'},
 	{'class'                          : 'gdpr-wrapper'},
 
+	#goddammit svg
+	{'href'  : '#icon-wordpress'},
 
 	]
 
@@ -1984,6 +1997,9 @@ decomposeBefore: [
 	{'id'    : 'comments'},
 	{'id'    : 'info-bt'},
 	{'id'    : 'jp-post-flair'},
+
+	#goddammit svg
+	{'href'  : '#icon-wordpress'},
 	]
 
 stripTitle: [

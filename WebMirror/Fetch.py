@@ -214,7 +214,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 				content = cr.blocking_navigate_and_get_source(itemUrl)
 				if content:
 					if content['binary'] is False:
-						content = content['content']
+						# If the content isn't binary, retreive the rendered version.
+						content = cr.get_rendered_page_source()
 					else:
 						self.log.error("Binary content!")
 
@@ -374,7 +375,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 		if not preretrieved:
-			self.target_url = url_util.urlClean(self.target_url)
+			# self.target_url = url_util.urlClean(self.target_url)
 			content, fName, mimeType = self.getItem(self.target_url)
 		else:
 			content, fName, mimeType = preretrieved

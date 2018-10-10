@@ -441,6 +441,12 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	# Miscellaneous spot-fixes for specific sites.
 	def spotPatch(self, soup):
+		
+		if '//imoutosite.wordpress.com/' in self.pageUrl:
+			# Clean out any local stylesheets
+			for instance in soup.find_all('svg'):
+				instance.decompose()
+
 
 		# Replace <pre> tags on wattpad.
 		# wp_div = soup.find_all('div', class_="panel-reading")

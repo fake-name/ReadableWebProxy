@@ -147,6 +147,13 @@ def to_locpath(fqpath):
 		locpath = locpath[1:]
 	return locpath
 
+def exposed_reset_raw_in_progress():
+	'''
+	Reset raw downloads that are in progress.
+	'''
+	RawArchiver.RawUrlUpserter.resetRawInProgress()
+
+
 def exposed_reset_raw_missing():
 	'''
 	Retrigger all raw-archive links that don't seem to have

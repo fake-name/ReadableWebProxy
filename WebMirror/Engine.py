@@ -263,6 +263,8 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 							wg_proxy       = self.wg_proxy,
 							response_queue = self.resp_q,
 							db_sess        = self.db_sess)
+
+
 		response = fetcher.fetch(preretrieved = preretrieved)
 		return response
 
