@@ -358,8 +358,11 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
 				break
 			except sqlalchemy.exc.OperationalError:
+				self.log.warning("sqlalchemy.exc.OperationalError!")
 				self.db_sess.rollback()
+				traceback.print_exc()
 			except sqlalchemy.exc.InvalidRequestError:
+				self.log.warning("sqlalchemy.exc.InvalidRequestError!")
 				self.db_sess.rollback()
 
 

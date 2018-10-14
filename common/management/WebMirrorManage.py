@@ -252,11 +252,17 @@ def exposed_longest_rows():
 				web_pages
 			ORDER BY
 				LENGTH(content) DESC NULLS LAST
-			LIMIT 50;
+			LIMIT 50000;
 			""")
 		print("Rows:")
+
+		have = [list(tmp) for tmp in have]
+
+		with open("Long_files.json", "w") as fp:
+			json.dump(have, fp, indent=4)
+
 		savepath = "./large_files/"
-		for row in have:
+		for row in have[50:]:
 			print(row[0], row[1])
 			try:
 				os.makedirs(savepath)

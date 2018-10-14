@@ -16,4 +16,14 @@ for module in RawArchiver.Modules.plugins:
 
 
 
+def dump_active_modules():
+
+	print("Enumerating active modules in raw scraper.")
+
+	for module in ACTIVE_MODULES:
+		print("	-> ", module)
+
+
+if __name__ == '__main__':
+	dump_active_modules()
 
