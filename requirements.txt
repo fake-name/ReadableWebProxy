@@ -10,7 +10,7 @@ webrequest==0.0.51
 pillow==5.3.0
 json2html==1.2.1
 mprpc==0.1.16
-tqdm==4.25.0
+tqdm==4.26.0
 chardet==3.0.4
 pymysql==0.9.2
 statsd==3.3.0
@@ -23,7 +23,7 @@ fontTools==3.30.0
 semantic==1.0.3
 fdict==0.8.1
 cachetools==2.1.0
-bleach==2.1.4
+bleach==3.0.2
 Jinja2==2.10
 xmljson==0.1.9 
 pystuck==0.8.5
@@ -41,12 +41,12 @@ python-dateutil==2.7.3
 bbcode==1.0.32
 pympler==0.5
 
-colorama==0.3.9
+colorama==0.4.0
 pyyaml==3.13
 natsort==5.4.1
 mdx_linkify==1.1
 ftfy==5.4.1
-lxml==4.2.4
+lxml==4.2.5
 Flask==1.0.2
 Flask-DebugToolbar==0.10.1
 Flask-Login==0.4.1
