@@ -369,32 +369,58 @@ def delete_internal(sess, ids, netloc, badwords):
 				sess.rollback()
 
 
-def exposed_delete_url_history(netloc):
+def exposed_delete_url(netloc, allow_internal=False):
 	'''
-	Given a netloc, delete all entries in the history table for that netloc.
+	Given a netloc, delete all entries for that netloc.
 
 	THIS IS DESTRUCTIVE IN ALL CASES.
 
-	The history for a URL is deleted without any filtering!
+	ALL CONTENT is deleted without any filtering.
 	'''
 
-	print("Delete URL called with netloc param: '%s'" % netloc)
+	rs = WebMirror.rules.load_rules()
 
+	walked_netlocs = []
+
+
+	if allow_internal == 'true':
+		print("Allow internal is true")
+		allow_internal = True
+	else:
+		print("Allow internal is false")
+		allow_internal = False
+
+
+	for ruleset in rs:
+		if ruleset['netlocs']:
+			walked_netlocs.extend(ruleset['netlocs'])
+
+	if netloc in walked_netlocs:
+		print("WARNING: Netloc %s appears to be still in the walked netlocs list!")
+		if not allow_internal:
+			raise RuntimeError("Cannot delete walked netloc without allow_internal being 'true'")
+
+	print("Doing delete!")
+
+	bulk_delete_netloc(netloc, main=True, history=True)
+
+
+def bulk_delete_netloc(netloc, main=False, history=False):
 
 	commit_interval =  50000
 	step            =  50000
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")
-		start = sess.execute("""SELECT min(id) FROM web_pages_version WHERE netloc=:netloc""", {'netloc' : netloc, })
-		# start = sess.execute("""SELECT min(id) FROM web_pages_version WHERE netloc=:netloc OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		start = sess.execute("""SELECT min(id) FROM web_pages WHERE netloc=:netloc""", {'netloc' : netloc, })
+		# start = sess.execute("""SELECT min(id) FROM web_pages WHERE netloc=:netloc OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
 		start = list(start)[0][0]
 		if start is None:
 			print("No rows to reset!")
 			return
 		print("Minimum row ID:", start, "getting maximum row...")
-		stop = sess.execute("""SELECT max(id) FROM web_pages_version WHERE netloc=:netloc""", {'netloc' : netloc, })
-		# stop = sess.execute("""SELECT max(id) FROM web_pages_version WHERE netloc=:netloc OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+		stop = sess.execute("""SELECT max(id) FROM web_pages WHERE netloc=:netloc""", {'netloc' : netloc, })
+		# stop = sess.execute("""SELECT max(id) FROM web_pages WHERE netloc=:netloc OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
 		stop = list(stop)[0][0]
 		print("Maximum row ID: ", stop)
 
@@ -403,6 +429,8 @@ def exposed_delete_url_history(netloc):
 		start = start - (start % step)
 
 		changed = 0
+		main_changed = 0
+		version_changed = 0
 		tot_changed = 0
 		for idx in tqdm.tqdm(range(start, stop, step), desc="Deleting"):
 			try:
@@ -410,26 +438,45 @@ def exposed_delete_url_history(netloc):
 				# Only done because I can't easily find how to make sqlalchemy
 				# bind parameters ignore the postgres specific cast
 				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-				have = sess.execute("""DELETE FROM
-											web_pages_version
-										WHERE
-											netloc = :netloc
-										AND
-											id > :min_idx
-										AND
-											id <= :max_idx;""",
-											{
-												'netloc'  : netloc,
-												'min_idx' : idx,
-												'max_idx' : idx+step,
-											 })
-				# print()
+				if main:
+					have = sess.execute("""DELETE FROM
+												web_pages
+											WHERE
+												netloc = :netloc
+											AND
+												id > :min_idx
+											AND
+												id <= :max_idx;""",
+												{
+													'netloc'  : netloc,
+													'min_idx' : idx,
+													'max_idx' : idx+step,
+												 })
+					changed         += have.rowcount
+					main_changed    += have.rowcount
+					tot_changed     += have.rowcount
+				if history:
+					have = sess.execute("""DELETE FROM
+												web_pages_version
+											WHERE
+												netloc = :netloc
+											AND
+												id > :min_idx
+											AND
+												id <= :max_idx;""",
+												{
+													'netloc'  : netloc,
+													'min_idx' : idx,
+													'max_idx' : idx+step,
+												 })
+					changed         += have.rowcount
+					version_changed += have.rowcount
+					tot_changed     += have.rowcount
+
 
 				# processed  = idx - start
 				# total_todo = stop - start
 				# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
-				changed += have.rowcount
-				tot_changed += have.rowcount
 				if changed > commit_interval:
 					print("Committing (%s changed rows)...." % changed, end=' ')
 					sess.commit()
@@ -444,9 +491,18 @@ def exposed_delete_url_history(netloc):
 
 		sess.commit()
 
-	if not found_ruleset:
-		print("ERROR!")
-		print("Selected netloc (%s) not found in rulesets!" % selected_netloc)
+def exposed_delete_url_history(netloc):
+	'''
+	Given a netloc, delete all entries in the history table for that netloc.
+
+	THIS IS DESTRUCTIVE IN ALL CASES.
+
+	The history for a URL is deleted without any filtering!
+	'''
+
+	print("Delete URL called with netloc param: '%s'" % netloc)
+	bulk_delete_netloc(netloc, main=False, history=True)
+
 
 def exposed_purge_invalid_urls(selected_netloc=None):
 	'''

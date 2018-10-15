@@ -6,7 +6,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -22,6 +21,7 @@ baseUrl: [
 	'https://9ethtranslations.wordpress.com',
 	'https://abcpwip.wordpress.com',
 	'https://absurdtl.wordpress.com',
+	'https://abysslibrary.wordpress.com',
 	'https://acantranslations.wordpress.com',
 	'https://acquiescetranslations.wordpress.com',
 	'https://adcaelumtranslations.wordpress.com',
@@ -666,6 +666,7 @@ baseUrl: [
 	'https://meiheim.wordpress.com',
 	'https://meiraevetranslation.wordpress.com',
 	'https://memorizetranslations.wordpress.com',
+	'https://menaritranslations.wordpress.com',
 	'https://mengpossoupshop.wordpress.com',
 	'https://metalhaguremt.wordpress.com',
 	'https://meyoutranslation.wordpress.com',
@@ -1221,6 +1222,7 @@ baseUrl: [
 	'https://wolfietranslation.wordpress.com',
 	'https://wordofcraft.wordpress.com',
 	'https://workingneet.wordpress.com',
+	'https://worldnoveltranslation.wordpress.com',
 	'https://worldontheotherside.wordpress.com',
 	'https://wumstranslations.wordpress.com',
 	'https://wuwuwu555.wordpress.com',

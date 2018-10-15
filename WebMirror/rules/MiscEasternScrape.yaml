@@ -83,7 +83,9 @@ baseUrl: [
 		'http://lesyt.xyz',
 		'https://universalnovels.com',
 
+		'https://www.badnovels.com',
 		'https://badnovels.com',
+		'http://deadlynovels.tk',
 	]
 
 feeds: [
