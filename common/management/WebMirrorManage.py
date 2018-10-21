@@ -400,15 +400,17 @@ def exposed_delete_url(netloc, allow_internal=False):
 		if not allow_internal:
 			raise RuntimeError("Cannot delete walked netloc without allow_internal being 'true'")
 
-	print("Doing delete!")
 
-	bulk_delete_netloc(netloc, main=True, history=True)
+	print("Doing delete!")
+	bulk_delete_netloc(netloc, main=True, history=False)
+	print("Doing history delete!")
+	bulk_delete_netloc(netloc, main=False, history=True)
 
 
 def bulk_delete_netloc(netloc, main=False, history=False):
 
 	commit_interval =  50000
-	step            =  50000
+	step            =  10000
 
 	with db.session_context() as sess:
 		print("Getting minimum row in need or update..")
@@ -432,7 +434,8 @@ def bulk_delete_netloc(netloc, main=False, history=False):
 		main_changed = 0
 		version_changed = 0
 		tot_changed = 0
-		for idx in tqdm.tqdm(range(start, stop, step), desc="Deleting"):
+		pbar = tqdm.tqdm(range(start, stop, step), desc="Deleting")
+		for idx in pbar:
 			try:
 				# SQL String munging! I'm a bad person!
 				# Only done because I can't easily find how to make sqlalchemy
@@ -473,7 +476,7 @@ def bulk_delete_netloc(netloc, main=False, history=False):
 					version_changed += have.rowcount
 					tot_changed     += have.rowcount
 
-
+				pbar.set_description("Deleted %s, %s since commit" % (tot_changed, changed))
 				# processed  = idx - start
 				# total_todo = stop - start
 				# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)

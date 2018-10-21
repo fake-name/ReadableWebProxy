@@ -479,6 +479,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 
 	def outbound_job_wanted(self, netloc, joburl):
+		if netloc == "archiveofourown.org":
+			return False
 
 		disallowDupe = False
 		for ruleset in self.ruleset:
@@ -562,7 +564,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				break
 			newj = self.fill_jobs()
 
-			time.sleep(0.5)
+			time.sleep(2.5)
 			self.log.info("Job queue filler process. Added %s, active jobs: %s (out: %s, in: %s, pq: %s, deferred: %s). Runstate: %s",
 				newj, self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'],
 				self.system_state['ratelimiters'][self.mode].get_in_queues(), self.run_flag.value)
@@ -693,18 +695,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 						AND
 							normal_fetch_mode = true
 						AND
-							web_pages.priority < (
-							   SELECT
-									min(priority) + 10
-								FROM
-									web_pages
-								WHERE
-									state = 'new'::dlstate_enum
-								AND
-									normal_fetch_mode = true
-								AND
-									web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-							)
+							web_pages.priority < 9
+							
 						AND
 							web_pages.distance < 1000000
 						AND
@@ -716,7 +708,21 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				RETURNING
 					web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
-
+		'''
+							(
+							   SELECT
+									4
+									min(priority) + 3
+								FROM
+									web_pages
+								WHERE
+									state = 'new'::dlstate_enum
+								AND
+									normal_fetch_mode = true
+								AND
+									web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+							)
+		'''
 
 		start = time.time()
 
@@ -740,7 +746,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				break
 			except psycopg2.Error:
 				delay = random.random() / 3
-				# traceback.print_exc()
+				traceback.print_exc()
 				self.log.warn("Error getting job (psycopg2.Error)! Delaying %s.", delay)
 				time.sleep(delay)
 				cursor.execute("ROLLBACK;")
@@ -782,11 +788,19 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		immediate = 0
 		defer = []
 		for rid, netloc, joburl in rids:
+
+			if netloc == "archiveofourown.org":
+				# Do nothing, these are being handled by an out-of-process deletion interface
+				del_count += 1
+
+				continue
+
 			processed += 1
 			if "booksie.com" in netloc:
 				booksie += 1
 				print(netloc)
 				continue
+
 			if not self.outbound_job_wanted(netloc, joburl):
 				del_count += 1
 				self.delete_job(rid, joburl)
@@ -827,7 +841,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			self.log.warning("No jobs to dispatch in query response!?")
 
 
-		return len(rids)
+		# Deleted and defered jobs don't count towards the active jobs number.
+		return len(rids) - (del_count + defer_count)
 
 
 	def run(self):
@@ -895,17 +910,13 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		}
 
-		new_fetch_proc      = RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
-		priority_fetch_proc = RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
-		random_fetch_proc   = RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
-		job_consumer_proc   = RpcJobConsumerInternal(                self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode)
 
 
 		threads = [
-			threading.Thread(target=new_fetch_proc.run),
-			threading.Thread(target=priority_fetch_proc.run),
-			threading.Thread(target=random_fetch_proc.run),
-			threading.Thread(target=job_consumer_proc.run),
+			threading.Thread(target=RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
+			# threading.Thread(target=RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
+			# threading.Thread(target=RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
+			threading.Thread(target=RpcJobConsumerInternal(                self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
 		]
 
 		self.log.info("MultiRpcRunner starting RPC feeder/consumer threads")

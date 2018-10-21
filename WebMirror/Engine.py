@@ -15,7 +15,6 @@ import settings
 import pprint
 import tqdm
 
-import Misc.diff_match_patch as dmp
 from sqlalchemy import desc
 
 from sqlalchemy.sql import text

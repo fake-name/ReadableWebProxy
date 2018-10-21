@@ -52,7 +52,7 @@ if "twoprocess" in largv or "oneprocess" in largv:
 	MAX_IN_FLIGHT_JOBS = 2
 else:
 	# MAX_IN_FLIGHT_JOBS = 5
-	MAX_IN_FLIGHT_JOBS = 25
+	MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 500
@@ -406,6 +406,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
+
+		dispatched = 0
 		for rid, netloc, joburl in rids:
 			try:
 
@@ -415,9 +417,12 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				if not self.outbound_job_wanted(netloc, joburl):
 					self.delete_job(rid, joburl)
 					continue
+
 				if self.outbound_job_disabled(netloc, joburl):
 					self.disable_job(rid, joburl)
 					continue
+
+				dispatched += 1
 
 				threadn = RawArchiver.misc.thread_affinity(joburl, 1)
 				if threadn is True:
@@ -435,7 +440,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		cursor.close()
 
-		return len(rids)
+		return dispatched
 
 	def delete_job(self, rid, joburl):
 		self.log.warning("Deleting job for url: '%s'", joburl)

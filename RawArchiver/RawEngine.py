@@ -45,10 +45,53 @@ def getHash(fCont):
 def hours(num):
 	return 60*60*num
 
+def splitall(path):
+	allparts = []
+	while 1:
+		parts = os.path.split(path)
+		if parts[0] == path:  # sentinel for absolute paths
+			allparts.insert(0, parts[0])
+			break
+		elif parts[1] == path: # sentinel for relative paths
+			allparts.insert(0, parts[1])
+			break
+		else:
+			path = parts[0]
+			allparts.insert(0, parts[1])
+	return allparts
+
+RESOURCE_SPLIT = splitall(C_RAW_RESOURCE_DIR)
+
+def create_dir_ignoring_files(fqpath, dir_suffix = "_d"):
+
+	dirPath, fName = os.path.split(fqpath)
+
+	full_split = splitall(dirPath)
+
+	root_segment = full_split[:len(RESOURCE_SPLIT)]
+
+	for x in range(len(RESOURCE_SPLIT), len(full_split)):
+
+		inc_path = os.path.join(*(root_segment + [full_split[x], ]))
+		if os.path.exists(inc_path) and os.path.isdir(inc_path):
+			root_segment.append(full_split[x])
+		elif os.path.exists(inc_path) and os.path.isfile(inc_path):
+			root_segment.append(full_split[x] + dir_suffix)
+		else:
+			# This could probably short-circuit since the first non
+			# existent item means the rest of the path is safe, but w/e
+			root_segment.append(full_split[x])
+
+
+	dirPath = os.path.join(*root_segment)
+	os.makedirs(dirPath, exist_ok=True)
+
+	fqpath = os.path.join(dirPath, fName)
+
+	return fqpath
+
+
 def saveFile(filecont, url, filename):
-	# use the first 3 chars of the hash for the folder name.
-	# Since it's hex-encoded, that gives us a max of 2^12 bits of
-	# directories, or 4096 dirs.
 
 	split = urllib.parse.urlsplit(url)
 
@@ -75,14 +118,15 @@ def saveFile(filecont, url, filename):
 	else:
 		outname = urlfname + " - " + filename
 
+
 	fqpath = os.path.join(dirPath, outname)
+	fqpath = create_dir_ignoring_files(fqpath)
 	fqpath = os.path.abspath(fqpath)
+
 	dirPath = os.path.abspath(dirPath)
+
 	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
 	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
-
-	if not os.path.exists(dirPath):
-		os.makedirs(dirPath)
 
 	if os.path.exists(fqpath):
 		fname, ext = os.path.splitext(fqpath)
@@ -675,10 +719,19 @@ def test2():
 	archiver.taskProcess()
 
 
+def test3():
+	in_paths = [
+		]
+	for in_path in in_paths:
+		ret = create_dir_ignoring_files(in_path)
+
+		print("Resolved out to path %s" % ret)
+
 if __name__ == "__main__":
 	# resetInProgress()
 	# test()
-	test2()
+	# test2()
+	test3()
 
 
 

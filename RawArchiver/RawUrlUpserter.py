@@ -1,12 +1,7 @@
 
 
-import time
 import os
-import multiprocessing
 import datetime
-import signal
-import logging
-import logSetup
 import cProfile
 import traceback
 import pprint
@@ -48,15 +43,11 @@ from sqlalchemy.sql import text
 from sqlalchemy.sql import func
 
 
-import config
 import runStatus
 import concurrent.futures
 
-import WebMirror.Engine
-import WebMirror.rules
 import common.util.urlFuncs as urlFuncs
 import common.database as db
-import WebMirror.JobDispatcher as njq
 
 import common.stuck
 
