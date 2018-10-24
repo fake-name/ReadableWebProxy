@@ -76,7 +76,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		self.run_flag = multiprocessing.Value("b", 1, lock=False)
 
-		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(fifo_limit = 1000 * 1000)
+		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(fifo_limit = 100 * 1000)
 
 		self.db_interface = psycopg2.connect(
 				database = settings.DATABASE_DB_NAME,

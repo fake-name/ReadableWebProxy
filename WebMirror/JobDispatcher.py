@@ -695,8 +695,18 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 						AND
 							normal_fetch_mode = true
 						AND
-							web_pages.priority < 9
-							
+							web_pages.priority < (
+							   SELECT
+									min(priority) + 1
+								FROM
+									web_pages
+								WHERE
+									state = 'new'::dlstate_enum
+								AND
+									normal_fetch_mode = true
+								AND
+									web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+							)
 						AND
 							web_pages.distance < 1000000
 						AND
@@ -708,21 +718,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				RETURNING
 					web_pages.id, web_pages.netloc, web_pages.url;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
-		'''
-							(
-							   SELECT
-									4
-									min(priority) + 3
-								FROM
-									web_pages
-								WHERE
-									state = 'new'::dlstate_enum
-								AND
-									normal_fetch_mode = true
-								AND
-									web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-							)
-		'''
+
 
 		start = time.time()
 
@@ -914,8 +910,8 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		threads = [
 			threading.Thread(target=RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
-			# threading.Thread(target=RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
-			# threading.Thread(target=RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
+			threading.Thread(target=RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
+			threading.Thread(target=RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
 			threading.Thread(target=RpcJobConsumerInternal(                self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
 		]
 
