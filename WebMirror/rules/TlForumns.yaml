@@ -211,6 +211,8 @@ badwords: [
 
 
 			'&action=history',
+			'&diff=',
+			'&feed=atom',
 
 			]
 

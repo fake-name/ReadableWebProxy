@@ -38,6 +38,7 @@ import common.NetlocThrottler
 import common.global_constants
 import common.util.urlFuncs
 
+import common.process
 import common.LogBase as LogBase
 import common.StatsdMixin as StatsdMixin
 
@@ -75,9 +76,9 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 100
 	# MAX_IN_FLIGHT_JOBS = 250
-	# MAX_IN_FLIGHT_JOBS = 500
+	MAX_IN_FLIGHT_JOBS = 500
 	# MAX_IN_FLIGHT_JOBS = 1000
-	MAX_IN_FLIGHT_JOBS = 2500
+	# MAX_IN_FLIGHT_JOBS = 2500
 	# MAX_IN_FLIGHT_JOBS = 3000
 	# MAX_IN_FLIGHT_JOBS = 5000
 	# MAX_IN_FLIGHT_JOBS = 8000
@@ -308,6 +309,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 		self.log.info("Job queue fetcher halted.")
 
 	def run(self):
+		common.process.name_process("RPC response handler")
 		try:
 			self.consume()
 		except KeyboardInterrupt:
@@ -335,10 +337,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		super().__init__()
 		self.mode = mode
 
-
-
 		self.last_rx = datetime.datetime.now()
-
 
 		self.db_interface = psycopg2.connect(
 				database = settings.DATABASE_DB_NAME,
@@ -842,6 +841,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 
 	def run(self):
+		common.process.name_process("dispatcher for mode %s", self.mode)
 		try:
 			self.queue_filler_proc()
 		except KeyboardInterrupt:

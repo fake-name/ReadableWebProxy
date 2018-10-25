@@ -27,6 +27,7 @@ import RawArchiver.RawJobDispatcher as njq
 
 import common.stuck
 import common.database
+import common.process
 
 
 import RawArchiver.RawActiveModules
@@ -72,7 +73,7 @@ class RawRunInstance(object):
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
-		for dummy_x in range(100):
+		for dummy_x in range(25):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)
@@ -105,6 +106,9 @@ class RawRunInstance(object):
 	@classmethod
 	def run_prof(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 
+		logSetup.resetLoggingLocks()
+		common.process.name_process("raw fetcher processing worker w-profiling")
+
 		pid = os.getpid()
 		try:
 			cProfile.runctx('cls.run(num, response_queue, new_job_queue, cookie_lock, nosig)', globals(), locals(), 'prof%d.prof' % pid)
@@ -122,6 +126,7 @@ class RawRunInstance(object):
 	@classmethod
 	def run(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
+		common.process.name_process("raw fetcher processing worker")
 
 		try:
 			run = cls(num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig)

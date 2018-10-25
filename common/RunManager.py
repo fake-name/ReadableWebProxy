@@ -193,7 +193,7 @@ class Crawler(object):
 		assert self.raw_thread_count >= 1
 
 		# Dummy queues to shut up the teardown garbage
-		new_url_aggreator_queue = queue.Queue()
+		new_url_aggreator_queue = multiprocessing.Queue()
 		raw_new_job_queue       = self.start_raw_job_fetcher()
 
 		raw_kwargs = {

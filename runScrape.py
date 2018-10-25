@@ -17,6 +17,7 @@ import WebMirror.UrlUpserter
 import RawArchiver.RawRunner
 import RawArchiver.RawUrlUpserter
 import common.stuck
+import common.process
 import Misc.ls_open_file_handles
 
 
@@ -26,6 +27,7 @@ from settings import MAX_DB_SESSIONS
 
 
 def go():
+
 
 	# fm = Misc.ls_open_file_handles.FileMonitor()
 	# fm.patch()
@@ -38,6 +40,7 @@ def go():
 	runner = common.RunManager.Crawler(main_thread_count=NO_PROCESSES, raw_thread_count=RAW_NO_PROCESSES)
 
 	if "raw" in largv:
+		common.process.name_process("raw fetcher management thread")
 		print("RAW Scrape!")
 		RawArchiver.RawUrlUpserter.check_init_func()
 
@@ -51,6 +54,7 @@ def go():
 		runner.run_raw()
 	else:
 
+		common.process.name_process("fetcher management thread")
 		if not "noreset" in largv:
 			print("Resetting any in-progress downloads.")
 			WebMirror.UrlUpserter.resetInProgress()

@@ -42,6 +42,7 @@ import common.util.psycopg_execute_batch as psycopg_execute_batch
 import common.database as db
 import common.stuck
 import common.get_rpyc
+import common.process
 
 
 
@@ -599,6 +600,7 @@ class UpdateAggregator(object):
 
 	@classmethod
 	def launch_agg(cls, agg_queue):
+		common.process.name_process("raw fetcher url aggregator")
 		# Misc.install_vmprof.install_vmprof("update_aggregator")
 
 		try:

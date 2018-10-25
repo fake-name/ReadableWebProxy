@@ -29,6 +29,7 @@ import common.get_rpyc
 
 import WebMirror.JobUtils
 import common.util.urlFuncs
+import common.process
 
 ########################################################################################################################
 #
@@ -286,6 +287,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	def queue_filler_proc(self):
 
+		common.process.name_process("raw job filler worker")
 		self.open_rpc_interface()
 
 		try:

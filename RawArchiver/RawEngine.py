@@ -609,7 +609,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		job = None
 		try:
 
-			while runStatus.run_state.value == 1:
+			if runStatus.run_state.value == 1:
 				try:
 					mode, data = self.new_job_queue.get_nowait()
 

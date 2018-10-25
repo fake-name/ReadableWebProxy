@@ -86,6 +86,8 @@ class RunInstance(object):
 	@classmethod
 	def run_prof(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 
+		logSetup.resetLoggingLocks()
+		common.process.name_process("fetcher processing worker w-profiling")
 
 		pid = os.getpid()
 		try:
@@ -104,6 +106,9 @@ class RunInstance(object):
 	@classmethod
 	def run(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
+		common.process.name_process("fetcher processing worker")
+
+
 		# Misc.install_vmprof.install_vmprof("runner")
 
 		# total_worker_count, worker_num are ignored at the moment.

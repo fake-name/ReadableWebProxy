@@ -139,8 +139,8 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 
 	def insert_nav(self, url, soup, chapinfo):
 
-		next_ch_id = chapinfo['chapterInfo']['nextChapterId']
-		prev_ch_id = chapinfo['chapterInfo']['preChapterId']
+		next_ch_id = str(chapinfo['chapterInfo']['nextChapterId'])
+		prev_ch_id = str(chapinfo['chapterInfo']['preChapterId'])
 
 		link_root = url
 		while link_root.count("/") > 4:
@@ -152,12 +152,12 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 			ps_garb_div.attrs = None
 			ps_garb_div.clear()
 
-			if prev_ch_id == "-1":
+			if prev_ch_id == "-1" or prev_ch_id == -1:
 				prev_chp_tag = soup.new_tag('span')
 			else:
 				prev_chp_tag = soup.new_tag('a', href=link_root + prev_ch_id + "/")
 
-			if next_ch_id == "-1":
+			if next_ch_id == "-1" or next_ch_id == -1:
 				next_chp_tag = soup.new_tag('span')
 			else:
 				next_chp_tag = soup.new_tag('a', href=link_root + next_ch_id + "/")
