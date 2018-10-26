@@ -9475,6 +9475,10 @@
   "\ndef extractLonewolftranslationsHomeBlog(item):\n\t'''\n\tParser for 'lonewolftranslations.home.blog'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-09-16T11:27:26.951962"
  ],
+ "lyzo.eu": [
+  "\ndef extractLyzoEu(item):\n\t'''\n\tParser for 'lyzo.eu'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2018-10-24T21:53:05.424918"
+ ],
  "m3nmi.wordpress.com": [
   "\ndef extractM3NmiWordpressCom(item):\n\t'''\n\tParser for 'm3nmi.wordpress.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2018-09-26T08:41:40.885521"

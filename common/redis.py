@@ -10,13 +10,13 @@ import settings
 
 
 
-pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=0)
+m_pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=0)
 
 def get_redis_conn():
-	return redis.StrictRedis(connection_pool=pool)
+	return redis.StrictRedis(connection_pool=m_pool)
 
 def put_redis_conn(conn):
-	pool.release(conn)
+	m_pool.release(conn)
 
 
 
@@ -30,6 +30,29 @@ def redis_session_context():
 	finally:
 		pass
 		# put_redis_conn(conn)
+
+
+
+q_pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=1)
+
+def get_redis_queue_conn():
+	return redis.StrictRedis(connection_pool=q_pool)
+
+def put_redis_queue_conn(conn):
+	q_pool.release(conn)
+
+
+
+@contextlib.contextmanager
+def redis_queue_session_context():
+
+	conn = get_redis_queue_conn()
+	try:
+		yield conn
+
+	finally:
+		pass
+		# put_redis_queue_conn(conn)
 
 def test():
 	with redis_session_context() as rd:
@@ -47,11 +70,23 @@ def test():
 		print(havel)
 
 		print([float(tmp) for tmp in havel])
-
+	with redis_queue_session_context() as rd:
+		print(rd)
+		print(rd.lpop("test"))
+		rd.rpush("test", "lolwat")
+		print(rd.lpop("test"))
+		rd.rpush("test", None)
+		print(rd.lpop("test"))
 
 def config_redis():
 	print("Setting redis config")
 	with redis_session_context() as redis:
+		redis.config_set("auto-aof-rewrite-percentage", 0)
+		redis.config_set("save", '')
+		redis.config_set("appendonly", "no")
+		redis.config_set("maxmemory", "4gb")
+		redis.config_set("maxmemory-policy", "allkeys-lru")
+	with redis_queue_session_context() as redis:
 		redis.config_set("auto-aof-rewrite-percentage", 0)
 		redis.config_set("save", '')
 		redis.config_set("appendonly", "no")

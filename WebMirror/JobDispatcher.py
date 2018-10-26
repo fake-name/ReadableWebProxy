@@ -841,7 +841,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 
 	def run(self):
-		common.process.name_process("dispatcher for mode %s", self.mode)
+		common.process.name_process("dispatcher for mode %s" % (self.mode, ))
 		try:
 			self.queue_filler_proc()
 		except KeyboardInterrupt:

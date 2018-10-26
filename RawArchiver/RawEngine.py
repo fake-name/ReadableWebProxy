@@ -634,11 +634,12 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 										self.db_sess.rollback()
 								raise
 
+							return True
 						else:
 							self.new_job_queue.put((mode, jobid))
-							time.sleep(0.01)
+							return False
 				except queue.Empty:
-					time.sleep(1)
+					return False
 
 		except Exception:
 			for line in traceback.format_exc().split("\n"):

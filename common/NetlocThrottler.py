@@ -2,8 +2,14 @@
 import logging
 import queue
 import cachetools
+import os
+import os.path
+import msgpack
 
 import common.LogBase
+import common.redis
+
+
 
 class NetlockThrottler(common.LogBase.LoggerMixin):
 
@@ -21,25 +27,33 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 
 		self.jobl = []
 
+		# There should only be a few of these, so we can just
+		# keep connections forever in each.
+		self.redis = common.redis.get_redis_queue_conn()
+
+
 	def __check_init_nl(self, netloc):
 
 		if not netloc in self.url_throttler:
 			self.url_throttler[netloc] = {
 				'active_fetches'     : 0,
 				'status_accumulator' : 10,
-				'job_queue'          : queue.Queue(),
 			}
 
 	def put_job(self, row_id, job_url, job_netloc):
 		self.__check_init_nl(job_netloc)
 		self.log.info("Putting limited job for netloc %s (%s items, score: %s, active: %s)",
 			job_netloc,
-			self.url_throttler[job_netloc]['job_queue'].qsize(),
+			self.redis.llen(job_netloc),
 			self.url_throttler[job_netloc]['status_accumulator'],
 			self.url_throttler[job_netloc]['active_fetches'])
 
-		if self.fifo_limit is None or self.url_throttler[job_netloc]['job_queue'].qsize() < self.fifo_limit:
-			self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
+		# if self.fifo_limit is None or self.url_throttler[job_netloc]['job_queue'].qsize() < self.fifo_limit:
+		# 	self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
+
+		item_b = msgpack.packb((row_id, job_url, job_netloc), use_bin_type=True)
+		self.redis.rpush(job_netloc, item_b)
+		# self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
 
 		self.total_queued += 1
 
@@ -83,14 +97,21 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 
 	def get_available_jobs(self):
 		ret = []
-		for item in self.url_throttler.values():
+		for job_netloc, key_dict in self.url_throttler.items():
 			try:
 				# Allow unlimited fetching if the site isn't erroring at all
-				while item['active_fetches'] <= item['status_accumulator']:
-					ret.append(item['job_queue'].get(block=False))
-					item['active_fetches'] += 1
+				while key_dict['active_fetches'] <= key_dict['status_accumulator']:
+					# ret.append(item['job_queue'].get(block=False))
+					item_b = self.redis.lpop(job_netloc)
+					if not item_b:  # Nothing in queue
+						break
+					item = msgpack.unpackb(item_b, use_list=False, raw=False)
+					ret.append(item)
+					key_dict['active_fetches'] += 1
 					self.total_queued -= 1
 			except queue.Empty:
+				pass
+			except persistqueue.Empty:
 				pass
 
 		self.log.info("Extracted %s jobs from rate-limiting queues.", len(ret))

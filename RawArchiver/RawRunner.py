@@ -73,7 +73,7 @@ class RawRunInstance(object):
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.
-		for dummy_x in range(25):
+		for dummy_x in range(250):
 
 			if runStatus.run_state.value == 1:
 				# objgraph.show_growth(limit=3)

@@ -164,7 +164,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			cookie_lock,
 			db_interface,
 			new_job_queue,
-			# response_queue=None,
+			response_queue=None,
 			use_socks=False,
 			ua_override=None,
 			wg_override=None):
@@ -174,7 +174,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		self.new_job_queue = new_job_queue
 		self.cookie_lock = cookie_lock
-		# self.resp_q  = response_queue
+		self.resp_q  = response_queue
 		self.db_sess = db_interface
 		self.db      = db
 
@@ -260,7 +260,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 							start_url      = job.starturl,
 							job            = job,
 							wg_proxy       = self.wg_proxy,
-							# response_queue = self.resp_q,
+							response_queue = self.resp_q,
 							db_sess        = self.db_sess)
 
 
@@ -1102,7 +1102,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 								start_url      = parentjob.starturl,
 								job            = row,
 								wg_proxy       = self.wg_proxy,
-								# response_queue = self.resp_q,
+								response_queue = self.resp_q,
 								db_sess        = self.db_sess)
 		ret = fetcher.dispatchContent(content, filename, mimetype)
 		self.processResponse(row, ret, False)
