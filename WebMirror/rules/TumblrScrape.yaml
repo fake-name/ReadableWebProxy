@@ -5,6 +5,9 @@ type: eastern
 send_raw_feed: False
 
 baseUrl: [
+
+	'https://indulgenttranslationsblog.tumblr.com',
+	'http://booksnail.tumblr.com',
 	'http://2minutesofyourtime.tumblr.com',
 	'http://amethystcria.tumblr.com',
 	'http://applepling.tumblr.com',

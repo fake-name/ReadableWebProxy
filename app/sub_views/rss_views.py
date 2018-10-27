@@ -303,8 +303,8 @@ def feedFiltersRoot():
 		for feed in feeds_in:
 			if feed.feed_name in [tmp.feed_netloc for tmp in feed.urls]:
 				if feed.feed_name not in skip_missing:
-
-					feeds.append(feed)
+					if len(feed.releases) > 1:
+						feeds.append(feed)
 	else:
 		feeds = feeds_in
 

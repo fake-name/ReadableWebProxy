@@ -7,11 +7,15 @@ import traceback
 import os.path
 import json
 import calendar
+import tqdm
 
 import sqlalchemy.exc
 from sqlalchemy.orm import joinedload
 from sqlalchemy import desc
 from sqlalchemy import func
+
+
+import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 
 from WebMirror.JobUtils import buildjob
 import common.database as db
@@ -284,12 +288,12 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				self.check_open_rpc_interface()
 
 
-
-		expected_keys = ['call', 'cancontinue', 'dispatch_key', 'extradat', 'jobid',
-					'jobmeta', 'module', 'ret', 'success', 'user', 'user_uuid']
 		if new is None:
 			self.log.info("No NU Head responses!")
 			return False
+
+		expected_keys = ['call', 'cancontinue', 'dispatch_key', 'extradat', 'jobid',
+					'jobmeta', 'module', 'ret', 'success', 'user', 'user_uuid']
 		while True:
 			with db.session_context() as db_sess:
 				try:
@@ -483,8 +487,12 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 	def do_release(self, row):
 
 		if row.seriesname.endswith("..."):
+			self.log.warning("Series name ends with dots. Skipping (%s -> %s -> %s)",
+				row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
 			return
 		if row.groupinfo.endswith("..."):
+			self.log.warning("Group name ends with dots. Skipping (%s -> %s -> %s -> %s)",
+				row.groupinfo, row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
 			return
 
 		if not row.releaseinfo:
@@ -663,6 +671,65 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			if loops > max_loop_time:
 				return
 
+	def get_dotted(self):
+		self.fix_names()
+
+		dotted_series = []
+		dotted_authors = []
+
+		with db.session_context() as db_sess:
+			print("Counting items to load.")
+			count = db_sess.query(db.NuReleaseItem)      \
+				.filter(db.NuReleaseItem.reviewed == 'valid')        \
+				.filter(db.NuReleaseItem.validated == True)       \
+				.count()
+
+			print("Loading")
+			validated = db_sess.query(db.NuReleaseItem)      \
+				.filter(db.NuReleaseItem.reviewed == 'valid')        \
+				.filter(db.NuReleaseItem.validated == True)       \
+				.yield_per(1000)
+			validated = [tmp for tmp in tqdm.tqdm(validated, total=count)]
+
+		print("Found %s releases" % len(validated))
+
+		for row in tqdm.tqdm(validated):
+			if row.seriesname.endswith("..."):
+				dotted_series.append((row.seriesname.strip(), row.actual_target))
+			if row.groupinfo.endswith("..."):
+				dotted_authors.append((row.groupinfo, row.actual_target))
+
+		dseries = {}
+		dauths  = {}
+
+
+
+
+		with db.session_context() as db_sess:
+			for name, url in dotted_series:
+				nl = urllib.parse.urlparse(url).netloc
+				nlname = feedNameLut.getNiceName(db_sess, url)
+				if not nlname:
+					nlname = nl
+				dseries.setdefault(nlname, {})
+				dseries[nlname][name] = url
+
+			for name, url in dotted_authors:
+				nl = urllib.parse.urlparse(url).netloc
+				nlname = feedNameLut.getNiceName(db_sess, url)
+				if not nlname:
+					nlname = nl
+				dauths.setdefault(nlname, {})
+				dauths[nlname][name] = url
+
+		self.log.info("Found %s dotted series, %s dotted authors", len(dseries), len(dauths))
+
+
+		with open("dotted_nu_items.pyson", "w") as fp:
+			out = pprint.pformat((dseries, dauths), indent=4)
+			fp.write(out)
+
+
 	def trigger_all_urls(self):
 
 		release_urls = []
@@ -671,9 +738,6 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				.filter(db.NuReleaseItem.reviewed == 'valid')        \
 				.filter(db.NuReleaseItem.validated == True)       \
 				.all()
-
-			# print("validated:")
-			# print(len(list(validated)))
 
 
 			for row in validated:
@@ -782,9 +846,10 @@ if __name__ == '__main__':
 	# test_all_the_same()
 
 	hdl = NuHeader()
-	hdl.trigger_all_urls()
+	# hdl.trigger_all_urls()
 	# hdl.run()
 	# hdl.review_probable_validated()
 
-	# ago = datetime.datetime.now() - datetime.timedelta(days=3)
+	# ago = datetime.datetime.now() - datetime.timedelta(days=30)
 	# hdl.transmit_since(ago)
+	hdl.get_dotted()

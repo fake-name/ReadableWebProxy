@@ -358,6 +358,11 @@ NU_NEW_MASK_NETLOCS = [
 
 			'jianghuwanderer.com',
 			'www.failtranslations.xyz',
+			'jpierce.peopleshostvps.com',
+			'localhost',
+			'mygirlfriendisazombiechapter169',
+			'3619.furust.com',
+			'449.furust.com',
 		]
 
 
