@@ -37,7 +37,7 @@ sqlalchemy-citext==1.3-0
 
 PySocks==1.6.8
 msgpack-python==0.5.6
-python-dateutil==2.7.3
+python-dateutil==2.7.5
 bbcode==1.0.32
 pympler==0.5
 
