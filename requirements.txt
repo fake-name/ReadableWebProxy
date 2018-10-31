@@ -50,7 +50,7 @@ lxml==4.2.5
 Flask==1.0.2
 Flask-DebugToolbar==0.10.1
 Flask-Login==0.4.1
-Flask-Babel==0.11.2
+Flask-Babel==0.12.2
 selenium==3.14.1
 webcolors==1.8.1
 pyparsing==2.2.2
