@@ -515,7 +515,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		if not disallowDupe:
 			return False
 
-		return common.util.urlFuncs.hasDuplicatePathSegments(url)
+		return common.util.urlFuncs.hasDuplicateSegments(url)
 
 
 	# Todo: FIXME

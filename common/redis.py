@@ -55,21 +55,21 @@ def redis_queue_session_context():
 		# put_redis_queue_conn(conn)
 
 def test():
-	with redis_session_context() as rd:
-		print(rd)
-		havel = rd.mget(['1', '2', '3'])
-		print(havel)
+	# with redis_session_context() as rd:
+	# 	print(rd)
+	# 	havel = rd.mget(['1', '2', '3'])
+	# 	print(havel)
 
-		# Set all the new URLs
-		with rd.pipeline(transaction=False) as pipe:
-			for url in ['1', '2', '3']:
-				pipe.set(url, time.time())
-			pipe.execute()
+	# 	# Set all the new URLs
+	# 	with rd.pipeline(transaction=False) as pipe:
+	# 		for url in ['1', '2', '3']:
+	# 			pipe.set(url, time.time())
+	# 		pipe.execute()
 
-		havel = rd.mget(['1', '2', '3'])
-		print(havel)
+	# 	havel = rd.mget(['1', '2', '3'])
+	# 	print(havel)
 
-		print([float(tmp) for tmp in havel])
+	# 	print([float(tmp) for tmp in havel])
 	with redis_queue_session_context() as rd:
 		print(rd)
 		print(rd.lpop("test"))
@@ -77,6 +77,12 @@ def test():
 		print(rd.lpop("test"))
 		rd.rpush("test", None)
 		print(rd.lpop("test"))
+
+	with redis_queue_session_context() as rd:
+		items = rd.scan_iter("*")
+		print(list(items))
+		items = rd.scan_iter("raw_*")
+		print(list(items))
 
 def config_redis():
 	print("Setting redis config")
@@ -93,9 +99,10 @@ def config_redis():
 		redis.config_set("maxmemory", "4gb")
 		redis.config_set("maxmemory-policy", "allkeys-lru")
 	print("redis configured")
-	pass
 
 config_redis()
 
 if __name__ == '__main__':
 	test()
+
+

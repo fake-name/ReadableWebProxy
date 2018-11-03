@@ -809,7 +809,7 @@ def do_nu_sync(scheduler):
 		fetch_and_flush()
 	finally:
 
-		sleeptime = int(random.triangular(3*60, (30*60), (15*60)))
+		sleeptime = int(random.triangular(1*60, (10*60), (5*60)))
 		next_exec = datetime.datetime.now() + datetime.timedelta(seconds=sleeptime)
 		schedule_next_exec(scheduler, next_exec)
 
@@ -847,9 +847,9 @@ if __name__ == '__main__':
 
 	hdl = NuHeader()
 	# hdl.trigger_all_urls()
-	# hdl.run()
+	hdl.run()
 	# hdl.review_probable_validated()
 
 	# ago = datetime.datetime.now() - datetime.timedelta(days=30)
 	# hdl.transmit_since(ago)
-	hdl.get_dotted()
+	# hdl.get_dotted()

@@ -77,7 +77,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		self.run_flag = multiprocessing.Value("b", 1, lock=False)
 
-		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(fifo_limit = 100 * 1000)
+		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(key_prefix='raw', fifo_limit = 100 * 1000)
 
 		self.db_interface = psycopg2.connect(
 				database = settings.DATABASE_DB_NAME,
@@ -97,7 +97,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	def outbound_job_wanted(self, netloc, joburl):
 
-		bad = common.util.urlFuncs.hasDuplicatePathSegments(joburl)
+		bad = common.util.urlFuncs.hasDuplicateSegments(joburl)
 		if bad:
 			self.log.warn("Unwanted URL (pathchunks): '%s' - %s", joburl, bad)
 			return False

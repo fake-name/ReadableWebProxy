@@ -11,6 +11,8 @@ send_raw_feed: True
 rewalk_interval_days: 30
 
 baseUrl: [
+
+	'https://hilirivsfantasy.blogspot.com',
 	'https://interimmtl.blogspot.com',
 	'https://flyingsaucertranslates.blogspot.com',
 	'http://3mmfs.blogspot.my',

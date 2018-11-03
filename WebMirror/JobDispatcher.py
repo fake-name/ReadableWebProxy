@@ -378,7 +378,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.print_mod = 0
 
 		with state_lock:
-			self.system_state['ratelimiters'][self.mode] = common.NetlocThrottler.NetlockThrottler(fifo_limit = 1000 * 1000)
+			self.system_state['ratelimiters'][self.mode] = common.NetlocThrottler.NetlockThrottler(key_prefix='processed', fifo_limit = 1000 * 1000)
 
 	def blocking_put_response(self, item):
 		assert 'mode' in item, "Response items must have a mode key!"
@@ -487,7 +487,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				disallowDupe = ruleset['disallow_duplicate_path_segments'] or disallowDupe
 
 		if disallowDupe:
-			bad = common.util.urlFuncs.hasDuplicatePathSegments(joburl)
+			bad = common.util.urlFuncs.hasDuplicateSegments(joburl)
 			if bad:
 				self.log.warn("Unwanted URL (pathchunks): '%s' - %s", joburl, bad)
 				return False

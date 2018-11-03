@@ -204,6 +204,7 @@ baseUrl: [
 	'https://creativestorieshome.wordpress.com',
 	'https://creatureofhavok.wordpress.com',
 	'https://crimsonjianghu.wordpress.com',
+	'https://crimsonlilies.wordpress.com',
 	'https://crystalraindescends.wordpress.com',
 	'https://ctrlalcala.wordpress.com',
 	'https://cubbyfox.wordpress.com',
@@ -341,6 +342,7 @@ baseUrl: [
 	'https://fluffysnowtime.wordpress.com',
 	'https://fmgandalf.wordpress.com',
 	'https://forgetfuldreamer.wordpress.com',
+	'https://forsakenmoonlight.wordpress.com',
 	'https://forthemoneytranslations.wordpress.com',
 	'https://fourtranslations.wordpress.com',
 	'https://foxaholic.wordpress.com',
@@ -559,6 +561,7 @@ baseUrl: [
 	'https://kumaotou.wordpress.com',
 	'https://kungfubears.wordpress.com',
 	'https://kurenaithetranslation.wordpress.com',
+	'https://kurokarasublog.wordpress.com',
 	'https://kuronochandesuyo.wordpress.com',
 	'https://kurossite.wordpress.com',
 	'https://kurotranslation.wordpress.com',
@@ -666,6 +669,7 @@ baseUrl: [
 	'https://mechanictranslations.wordpress.com',
 	'https://mediumwelltranslations.wordpress.com',
 	'https://megacarp.wordpress.com',
+	'https://meganemtl.wordpress.com',
 	'https://megaotakublog.wordpress.com',
 	'https://mehtranslations.wordpress.com',
 	'https://meiheim.wordpress.com',
@@ -804,6 +808,7 @@ baseUrl: [
 	'https://otsumi.wordpress.com',
 	'https://otterspacetranslation.wordpress.com',
 	'https://owntranslation.wordpress.com',
+	'https://oxymoronictranslations.wordpress.com',
 	'https://oyasumireads.wordpress.com',
 	'https://padamtl.wordpress.com',
 	'https://paichuntranslations.wordpress.com',
@@ -1300,8 +1305,6 @@ baseUrl: [
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 
-
-
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',
@@ -1500,6 +1503,8 @@ baseUrl: [
 	'https://bayabuscotranslation.com',
 	'https://bcatranslation.com',
 	'https://birdytranslations.com',
+	'https://buzyhoneybee.blog',
+	'https://cardboardtranslations.com',
 	'https://cgtranslations.me',
 	'https://chaleuria.com',
 	'https://chrysanthemumconquerortranslations.home.blog',
@@ -1512,6 +1517,7 @@ baseUrl: [
 	'https://deltatranslations.org',
 	'https://demontranslations.com',
 	'https://desiringtranslation.com',
+	'https://devil-pending-translations.home.blog',
 	'https://dewandfrost.home.blog',
 	'https://dreamztranslation.com',
 	'https://dsrealmtranslations.com',
@@ -1643,6 +1649,7 @@ baseUrl: [
 	'https://yuukou.us',
 	'https://zelskytranslations.com',
 	'https://zirusmusings.com',
+	'http://www.deadlynovels.com',
 
 	'https://backstage01.pressbooks.com',
 	'https://backstage02.pressbooks.com',

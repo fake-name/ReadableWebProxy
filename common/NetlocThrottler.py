@@ -15,7 +15,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 
 	loggerPath = "Main.RateLimiter"
 
-	def __init__(self, fifo_limit=None):
+	def __init__(self, key_prefix, fifo_limit=None):
 		super().__init__()
 
 		self.fifo_limit      = fifo_limit
@@ -26,10 +26,23 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		self.total_queued    = 0
 
 		self.jobl = []
+		self.key_prefix = key_prefix
 
 		# There should only be a few of these, so we can just
 		# keep connections forever in each.
 		self.redis = common.redis.get_redis_queue_conn()
+
+		# Since we restarted, clear the url queues.
+		self.log.info("Flushing redis queues")
+		dropped = 0
+		for key in self.redis.scan_iter(match=self.__netloc_to_key("*")):
+			self.redis.delete(key)
+			dropped += 1
+		self.log.info("Queues flushed. Deleted %s netlocs", dropped)
+
+
+	def __netloc_to_key(self, netloc):
+		return self.key_prefix + "_" + netloc
 
 
 	def __check_init_nl(self, netloc):
@@ -44,7 +57,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		self.__check_init_nl(job_netloc)
 		self.log.info("Putting limited job for netloc %s (%s items, score: %s, active: %s)",
 			job_netloc,
-			self.redis.llen(job_netloc),
+			self.redis.llen(self.__netloc_to_key(job_netloc)),
 			self.url_throttler[job_netloc]['status_accumulator'],
 			self.url_throttler[job_netloc]['active_fetches'])
 
@@ -52,7 +65,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		# 	self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
 
 		item_b = msgpack.packb((row_id, job_url, job_netloc), use_bin_type=True)
-		self.redis.rpush(job_netloc, item_b)
+		self.redis.rpush(self.__netloc_to_key(job_netloc), item_b)
 		# self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
 
 		self.total_queued += 1
@@ -102,7 +115,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 				# Allow unlimited fetching if the site isn't erroring at all
 				while key_dict['active_fetches'] <= key_dict['status_accumulator']:
 					# ret.append(item['job_queue'].get(block=False))
-					item_b = self.redis.lpop(job_netloc)
+					item_b = self.redis.lpop(self.__netloc_to_key(job_netloc))
 					if not item_b:  # Nothing in queue
 						break
 					item = msgpack.unpackb(item_b, use_list=False, raw=False)
@@ -110,8 +123,6 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 					key_dict['active_fetches'] += 1
 					self.total_queued -= 1
 			except queue.Empty:
-				pass
-			except persistqueue.Empty:
 				pass
 
 		self.log.info("Extracted %s jobs from rate-limiting queues.", len(ret))

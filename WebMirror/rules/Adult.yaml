@@ -3,7 +3,6 @@ type: western
 
 send_raw_feed: False
 baseUrl: [
-	'http://www.asstr.org',
 	'http://pokegirls.org',
 	'http://www.tgstorytime.com',
 	'http://www.booksiesilk.com',
@@ -150,11 +149,6 @@ badwords: [
 
 			'type=epubbrowse',
 
-			# Not sure why there's so much gay content on ASSTR. Not my thing.
-			"/nifty/gay/",
-			"/nifty/bisexual/",
-			'/nifty/authors.html/gay/',
-			'/nifty/authors.html/bisexual/',
 
 			# Something is fucking up and generating double-slashes.
 			# They don't affect the server, but they'll duplicate content for
@@ -186,6 +180,8 @@ badwords: [
 			'/~BE_Games/',
 
 			'tag[]=',
+
+
 
 			]
 

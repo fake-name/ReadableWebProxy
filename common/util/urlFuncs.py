@@ -275,7 +275,7 @@ def extractUrls(soup, pageUrl, truncate_fragment=False):
 	return urls
 
 
-def hasDuplicatePathSegments(url):
+def hasDuplicateSegments(url):
 
 		parsed = urllib.parse.urlsplit(url)
 		netloc = parsed.netloc
@@ -285,8 +285,6 @@ def hasDuplicatePathSegments(url):
 
 		pathchunks = parsed.path.split("/")
 		pathchunks = [chunk for chunk in pathchunks if chunk]
-		querychunks = parsed.path.split("/")
-		querychunks = [chunk for chunk in querychunks if chunk]
 
 		# http://www.spcnet.tv/forums/showthread.php/21185-mobile-suit-gundam-the-second-century-(part-2-the-second-century)/images/icons/images/misc/showthread.php/21185-Mobile-Suit-Gundam-The-Second-Century-(Part-2-The-Second-Century)/page10
 		if netloc == 'www.spcnet.tv' or netloc == 'www.eugenewoodbury.com':
@@ -364,20 +362,31 @@ def hasDuplicatePathSegments(url):
 			if "feed.atom" in url:
 				return True
 
-		if len(set(pathchunks)) == len(pathchunks):
-			return False
 
-		duplicates = list(set([(i, pathchunks.count(i)) for i in pathchunks if pathchunks.count(i) > 1]))
+
+		if len(set(pathchunks)) != len(pathchunks):
+
+			duplicates = list(set([(i, pathchunks.count(i)) for i in pathchunks if pathchunks.count(i) > 1]))
+
+			if any([cnt > 3 for (item, cnt) in duplicates]):
+				# print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+				return True
+			if len(duplicates) > 3:
+				# print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+				return True
+
+
+		querydict = urllib.parse.parse_qs(parsed.query)
+
+		querychunks = []
+		for key in querydict.keys():
+			for value in querydict[key]:
+				querychunks.append((key, value))
+
 		qduplicates = list(set([(i, querychunks.count(i)) for i in querychunks if querychunks.count(i) > 1]))
-
-		if any([cnt > 3 for (item, cnt) in duplicates]):
-			# print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
-			return True
 		if any([cnt > 3 for (item, cnt) in qduplicates]):
-			# print("Query chunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
-			return True
-		if len(duplicates) > 3:
-			# print("Pathchunks issue: %s - %s" % (url, (pathchunks, set(pathchunks))))
+			# print("Query chunks issue: %s - %s" % (url, (querychunks, set(querychunks))))
+			# print("Thing: ", [cnt > 3 for (item, cnt) in qduplicates], qduplicates)
 			return True
 
 		return False
@@ -411,6 +420,22 @@ def getNetLoc(url):
 
 if __name__ == "__main__":
 
-	print(isGFileUrl('https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web'))
-	print(urlClean('http://inmydaydreams.com/?p=6128&share=tumblr'))
-	print(urlClean('http://inmydaydreams.com/?p=6091&share=tumblr'))
+	# print(isGFileUrl('https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web'))
+	# print(urlClean('http://inmydaydreams.com/?p=6128&share=tumblr'))
+	# print(urlClean('http://inmydaydreams.com/?p=6091&share=tumblr'))
+
+	print(hasDuplicateSegments('http://inmydaydreams.com/?p=6091&share=tumblr'))
+
+	print(hasDuplicateSegments(
+		"http://deadlynovels.com/community/recent/?view=unread?type=rss2&forum=g&topic=g?type=rss2&forum=g&"
+		"topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?"
+		"type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2"
+		"&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g"
+		"?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g"
+		"&topic=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2"
+		"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2"
+		"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g"
+		"?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2"
+		"&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2"
+		"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g"))
+

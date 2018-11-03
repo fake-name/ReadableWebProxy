@@ -20,6 +20,7 @@ import common.stuck
 import common.process
 import Misc.ls_open_file_handles
 
+import common.redis
 
 from settings import NO_PROCESSES
 from settings import RAW_NO_PROCESSES
@@ -27,10 +28,6 @@ from settings import MAX_DB_SESSIONS
 
 
 def go():
-
-
-	# fm = Misc.ls_open_file_handles.FileMonitor()
-	# fm.patch()
 
 	largv = [tmp.lower() for tmp in sys.argv]
 

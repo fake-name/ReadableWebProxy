@@ -13,6 +13,7 @@ baseUrl: [
 		'http://www.williammyrl.com',
 		'http://mayancalendargirls.com',
 		'http://stardancer.org',
+		'http://www.addergoole.com',
 
 		'http://thecityofroses.com',
 		'http://stefangagne.com',
@@ -89,6 +90,8 @@ badwords: [
 			'/images/css/images/',
 
 			'/search.php?',
+
+			'www.addergoole.com/forum/',
 			]
 
 

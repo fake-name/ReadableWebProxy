@@ -543,6 +543,7 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 				# So there's no way to escape a LIKE string in postgres.....
 				search_strs = ["%{}%".format(badword.replace(r"_", r"\_").replace(r"%", r"\%").replace(r"\\", r"\\")) for badword in agg_bad]
 
+				search_strs.sort()
 				print("Netlocs:")
 				print(ruleset['netlocs'])
 				print("Badwords:")
@@ -1356,8 +1357,6 @@ def exposed_delete_transactions():
 			print('Deleted %6i rows. Committing...' % (have.rowcount, ))
 			sess.commit()
 			print('Comitted')
-
-			# print()
 
 
 			mind += step

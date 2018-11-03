@@ -10,7 +10,7 @@ baseUrl: [
 
 	'http://www.deadlylegends.com/translations/',
 
-
+	'https://www.dlscanlations.com',
 	'http://catingham-palace.com',
 	'http://blazingtranslations.com',
 	'http://banana.translatednovels.com',
@@ -28,18 +28,18 @@ baseUrl: [
 	'http://littleshanks.net',
 	'http://nippleless.nl',
 	'http://novelsnao.com',
-		'http://starterserials.com',
+	'http://starterserials.com',
 	'http://www.pikatranslations.com',
 	'http://www.suiminchuudoku.net',
 	'http://reddycreations.com',
 	'http://eugene-rain.com',
 	'http://asuratales.com',
 	'http://avertranslation.org',
-		'http://bluephoenixnovel.com',
+	'http://bluephoenixnovel.com',
 	'http://c-cafe.suespages.com',
 	'http://chasingadreamtranslations.com',
 	'http://circustranslations.com',
-		'http://dragomircm.com',
+	'http://dragomircm.com',
 	'http://endofdoom.com',
 	'http://entruce.com',
 	'http://faktranslations.com',
@@ -53,6 +53,7 @@ baseUrl: [
 	'http://indoromance.com',
 	'http://izra709.com',
 	'http://lmsmachinetranslations.com',
+	'https://www.heavenlynovels.com',
 
 
 	'https://fenghuaxueyuetranslations.wordpress.com',
@@ -359,8 +360,18 @@ baseUrl: [
 	# NFI what this ever was.
 	'http://www.egloos.com',
 
+
+	'http://www.asstr.org',
+
+
 	]
 
+# select count(*) from web_pages where netloc = 'www.asstr.com';
+# select count(*) from web_pages where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+# delete from web_pages where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+# select count(*) from web_pages_version where netloc = 'www.asstr.com';
+# select count(*) from web_pages_version where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+# delete from web_pages_version where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
 
 
 badwords: [
@@ -370,6 +381,16 @@ badwords: [
 		'turtleme.me/images/products/includes/',
 		'pathoftranslation.com/?ga=',
 		'?fp=',
+
+
+		# Not sure why there's so much gay content on ASSTR. Not my thing.
+		"/nifty/gay/",
+		"/nifty/bisexual/",
+		'/nifty/authors.html/gay/',
+		'/nifty/authors.html/bisexual/',
+
+		'www.asstr.com/?ga=',
+
 	]
 
 decompose: [
