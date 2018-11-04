@@ -94,11 +94,15 @@ def get_nu_items(sess, selector):
 	new_items = new_items.order_by(desc(db.NuReleaseItem.first_seen))
 	new_items = new_items.limit(500).all()
 
-	have_dots = set([tmp.seriesname for tmp in new_items if '...' in tmp.seriesname])
-	if have_dots:
+	have_dots_series = list(set([tmp.seriesname for tmp in new_items if '...' in tmp.seriesname]))
+	have_dots_author = list(set([tmp.groupinfo for tmp in new_items if '...' in tmp.groupinfo]))
+
+	if have_dots_series or have_dots_author:
 		print("Have dots:")
 		print()
-		print(have_dots)
+		print(have_dots_series)
+		print()
+		print(have_dots_author)
 		print()
 	return new_items
 

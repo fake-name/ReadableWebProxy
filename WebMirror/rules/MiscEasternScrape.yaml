@@ -154,6 +154,7 @@ badwords: [
 			# Block mobile garbage.
 			'm.xianxiaworld.net',
 			'm.wuxiaworld.com',
+			'/comments/',
 		]
 
 

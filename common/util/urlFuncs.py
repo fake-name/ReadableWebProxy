@@ -424,18 +424,19 @@ if __name__ == "__main__":
 	# print(urlClean('http://inmydaydreams.com/?p=6128&share=tumblr'))
 	# print(urlClean('http://inmydaydreams.com/?p=6091&share=tumblr'))
 
-	print(hasDuplicateSegments('http://inmydaydreams.com/?p=6091&share=tumblr'))
+	print(hasDuplicateSegments('http://www.spcnet.tv/forums/showthread.php/23450-i-ve-decided-to-learn-chinese/index/images/misc/image.php?s=1129386e978631b0771a226dba5a82e5&u=65&dateline=1358455669'))
+	# print(hasDuplicateSegments('http://inmydaydreams.com/?p=6091&share=tumblr'))
 
-	print(hasDuplicateSegments(
-		"http://deadlynovels.com/community/recent/?view=unread?type=rss2&forum=g&topic=g?type=rss2&forum=g&"
-		"topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?"
-		"type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2"
-		"&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g"
-		"?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g"
-		"&topic=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2"
-		"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2"
-		"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g"
-		"?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2"
-		"&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2"
-		"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g"))
+	# print(hasDuplicateSegments(
+	# 	"http://deadlynovels.com/community/recent/?view=unread?type=rss2&forum=g&topic=g?type=rss2&forum=g&"
+	# 	"topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?"
+	# 	"type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2"
+	# 	"&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g"
+	# 	"?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g"
+	# 	"&topic=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2"
+	# 	"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2"
+	# 	"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g"
+	# 	"?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g?type=rss2"
+	# 	"&forum=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2"
+	# 	"&forum=g&topic=g?type=rss2&forum=g&topic=g?type=rss2&forum=g"))
 

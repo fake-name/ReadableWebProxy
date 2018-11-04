@@ -126,7 +126,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 	def put_job(self, put=3):
 		with db.session_context() as db_sess:
-			self.log.info("Loading rows to fetch...")
+			self.log.info("Loading rows to fetch..")
 			recent_d = datetime.datetime.now() - datetime.timedelta(hours=72)
 			recentq = db_sess.query(db.NuReleaseItem)                \
 				.outerjoin(db.NuResolvedOutbound)                         \
@@ -174,7 +174,6 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			if len(haveset) < put:
 				haveset.extend(random.sample(fallback, min(put-len(haveset), len(fallback))))
 
-
 			put = 0
 			active = set()
 
@@ -194,6 +193,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 					db_sess.delete(have)
 					db_sess.commit()
 					continue
+
 				if have.fetch_attempts > MAX_TOTAL_FETCH_ATTEMPTS:
 					self.log.error("Wat?")
 					self.log.error("Item fetched too many times!")
@@ -220,8 +220,12 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 					call           = 'getHeadTitleChromium',
 					dispatchKey    = "fetcher",
 					jobid          = -1,
-					args           = [have.outbound_wrapper, have.referrer],
-					kwargs         = {},
+					args           = [],
+					kwargs         = {
+						"url"           : have.outbound_wrapper,
+						"referrer"      : have.referrer,
+						"title_timeout" : 30,
+					},
 					additionalData = {
 						'mode'        : 'fetch',
 						'wrapper_url' : have.outbound_wrapper,
@@ -231,7 +235,6 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 					unique_id      = have.outbound_wrapper,
 					serialize      = 'Nu-Header',
 				)
-
 
 				self.rpc.put_job(raw_job)
 				put += 1
@@ -346,11 +349,8 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 						self.log.warning("URL '%s' does not start with 'http'. Not inserting into DB.", respurl)
 						return True
 
-
-
 					if '/?utm_source=feedburner' in respurl:
 						respurl = respurl.split('/?utm_source=feedburner')[0] + "/"
-
 
 					have = db_sess.query(db.NuReleaseItem)                                    \
 						.options(joinedload('resolved'))                                           \
@@ -362,6 +362,9 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 						self.log.error("Base row deleted from resolve?")
 						return
 
+					if title.strip().lower() == respurl.strip().lower():
+						self.log.warning("Item didn't resolve to a name properly!")
+						return
 
 					new = db.NuResolvedOutbound(
 							client_id      = new['user'],
@@ -618,7 +621,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		]
 		for title in titles:
 			if any([badword in title.lower() for badword in badwords]):
-				self.log.info("Badword in title: %s", titles)
+				self.log.info("Badword in title: %s (%s)", titles, [badword for badword in badwords if badword in title.lower()])
 				return
 
 		if not all([tgts[0] == tgt for tgt in tgts]):
@@ -729,6 +732,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			out = pprint.pformat((dseries, dauths), indent=4)
 			fp.write(out)
 
+		return (dseries, dauths)
 
 	def trigger_all_urls(self):
 
@@ -847,6 +851,7 @@ if __name__ == '__main__':
 
 	hdl = NuHeader()
 	# hdl.trigger_all_urls()
+	# hdl.put_job()
 	hdl.run()
 	# hdl.review_probable_validated()
 

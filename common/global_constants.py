@@ -188,6 +188,7 @@ GLOBAL_BAD_URLS = [
 			'ww12.myotterspace.com',
 			'www.swoopdeal.com',
 			'www.hyfind.de'
+			'ww1.helidwarf.com',
 
 			'install.shopping-day.com',
 			'www.hugedomains.com',
@@ -231,6 +232,7 @@ GLOBAL_BAD_URLS = [
 			'turtleme.me/images/products/includes/',
 			'pathoftranslation.com/?ga=',
 
+			'//en.wordpress.com/'
 			# Lawl
 			'/<?php',
 

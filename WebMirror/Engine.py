@@ -25,6 +25,7 @@ import common.util.urlFuncs
 import urllib.parse
 import traceback
 import datetime
+import cachetools
 if '__pypy__' in sys.builtin_module_names:
 	import psycopg2cffi as psycopg2
 else:
@@ -66,6 +67,9 @@ def getHash(fCont):
 	m = hashlib.md5()
 	m.update(fCont)
 	return m.hexdigest()
+
+
+NETLOC_BADWORDS_LOOKUP_CACHE = cachetools.LRUCache(maxsize=1000)
 
 
 def saveCoverFile(filecont, fHash, filename):
@@ -518,8 +522,22 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		return common.util.urlFuncs.hasDuplicateSegments(url)
 
 
+	def external_link_check(self, netloc, url, is_content=True):
+		badwords, badcompounds = self.getBadWords(netloc)
+
+		if is_content:
+			ret = self.filterContentLinks(netloc, [url], badwords, badcompounds)
+		else:
+			ret = self.filterResourceLinks(       [url], badwords, badcompounds)
+
+		if ret:
+			assert len(ret) == 1
+			return ret.pop()
+		else:
+			return None
+
 	# Todo: FIXME
-	def filterContentLinks(self, job, links, badwords, badcompounds, debug=False, interactive=False):
+	def filterContentLinks(self, job_netloc, links, badwords, badcompounds, debug=False, interactive=False):
 		ret = set()
 
 		if interactive:
@@ -543,15 +561,15 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				if debug:
 					self.log.info("Bad netloc: %s -> %s (netloc in self.ctnt_filters: %s, job.netloc in self.ctnt_filters[netloc]: %s, ctnt_filters: %s)",
 						netloc,
-						job.netloc,
+						job_netloc,
 						netloc in self.ctnt_filters,
-						job.netloc in self.ctnt_filters[netloc] if netloc in self.ctnt_filters else "None",
+						job_netloc in self.ctnt_filters[netloc] if netloc in self.ctnt_filters else "None",
 						len(self.ctnt_filters)
 						)
 					# self.log.info("Wat: %s", self.ctnt_filters[netloc])
 		return ret
 
-	def filterResourceLinks(self, job, links, badwords, badcompounds, debug=False):
+	def filterResourceLinks(self, links, badwords, badcompounds, debug=False):
 		ret = set()
 		for link in links:
 			link = self.generalLinkClean(link, badwords, badcompounds)
@@ -565,9 +583,11 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				ret.add(link)
 		return ret
 
-	def getBadWords(self, job):
+	def getBadWords(self, netloc):
+		if netloc in NETLOC_BADWORDS_LOOKUP_CACHE:
+			return NETLOC_BADWORDS_LOOKUP_CACHE[netloc]
 		badwords = [tmp for tmp in common.global_constants.GLOBAL_BAD_URLS]
-		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
+		for item in [rules for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs']]:
 			badwords += item['badwords']
 
 		# A "None" can occationally crop up. Filter it.
@@ -577,11 +597,12 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		badcompounds = []
 
-		for item in [rules for rules in self.ruleset if rules['netlocs'] and job.netloc in rules['netlocs']]:
+		for item in [rules for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs']]:
 			if item['compound_badwords']:
 				badcompounds += item['compound_badwords']
 
-		return badwords, badcompounds
+		NETLOC_BADWORDS_LOOKUP_CACHE[netloc] = (badwords, badcompounds)
+		return NETLOC_BADWORDS_LOOKUP_CACHE[netloc]
 
 	def getMaxPriority(self, netloc):
 		return max(rules['maximum_priority'] for rules in self.ruleset if rules['netlocs'] and netloc in rules['netlocs'])
@@ -596,12 +617,12 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		unfiltered = len(plain)+len(resource)
 
-		badwords, badcompounds = self.getBadWords(job)
+		badwords, badcompounds = self.getBadWords(job.netloc)
 
 		if debug:
 			self.log.info("Have %s plain, %s resource links before filtering", len(plain), len(resource))
-		plain    = self.filterContentLinks(job,  plain,    badwords, badcompounds, debug=debug, interactive=interactive)
-		resource = self.filterResourceLinks(job, resource, badwords, badcompounds, debug=debug)
+		plain    = self.filterContentLinks(job.netloc,  plain,    badwords, badcompounds, debug=debug, interactive=interactive)
+		resource = self.filterResourceLinks(         resource,    badwords, badcompounds, debug=debug)
 
 		filtered = len(plain)+len(resource)
 		self.log.info("Found %s links (%s before filtering)" % (filtered, unfiltered))

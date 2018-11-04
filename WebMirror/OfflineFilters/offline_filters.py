@@ -246,3 +246,13 @@ def exposed_retransmit_nu_releases(all_releases=False):
 	else:
 		header.transmit_since()
 
+
+
+def exposed_get_nu_releases_with_dots():
+	'''
+	Get the nu releases that aren't transmittable (as they're truncated)
+	'''
+
+	header = Misc.NuForwarder.NuHeader.NuHeader()
+
+	header.get_dotted()

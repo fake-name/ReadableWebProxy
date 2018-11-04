@@ -97,9 +97,9 @@ class FictionPressRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 	module_name = "FictionPressRawModule"
 
 	target_urls = [
-		"http://www.fictionpress.com/",
-		"https://www.fanfiction.net/",
-		"http://www.fanfiction.net/",
+		"http://www.fictionpress.com",
+		"https://www.fanfiction.net",
+		"http://www.fanfiction.net",
 	]
 
 	target_tlds = [urllib.parse.urlparse(tmp).netloc for tmp in target_urls]

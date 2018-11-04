@@ -94,61 +94,66 @@ def resetRawInProgress():
 	step            =  50000
 
 	with db.session_context() as sess:
-		print("Getting minimum row in need or update..")
-		start = sess.execute("""SELECT min(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing'""")
-		# start = sess.execute("""SELECT min(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
-		start = list(start)[0][0]
-		if start is None:
-			print("No rows to reset!")
-			return
-		print("Minimum row ID:", start, "getting maximum row...")
-		stop = sess.execute("""SELECT max(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing'""")
-		# stop = sess.execute("""SELECT max(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
-		stop = list(stop)[0][0]
-		print("Maximum row ID: ", stop)
+		try:
+			sess.execute('''SET enable_bitmapscan TO off;''')
+			print("Getting minimum row in need or update..")
+			start = sess.execute("""SELECT min(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing'""")
+			# start = sess.execute("""SELECT min(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+			start = list(start)[0][0]
+			if start is None:
+				print("No rows to reset!")
+				return
+			print("Minimum row ID:", start, "getting maximum row...")
+			stop = sess.execute("""SELECT max(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing'""")
+			# stop = sess.execute("""SELECT max(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+			stop = list(stop)[0][0]
+			print("Maximum row ID: ", stop)
 
 
-		print("Need to fix rows from %s to %s" % (start, stop))
-		start = start - (start % step)
+			print("Need to fix rows from %s to %s" % (start, stop))
+			start = start - (start % step)
 
-		changed = 0
-		tot_changed = 0
-		for idx in tqdm.tqdm(range(start, stop, step), desc="Resetting raw URLs"):
-			try:
-				# SQL String munging! I'm a bad person!
-				# Only done because I can't easily find how to make sqlalchemy
-				# bind parameters ignore the postgres specific cast
-				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-				have = sess.execute("""UPDATE
-											raw_web_pages
-										SET
-											state = 'new'
-										WHERE
-											(state = 'fetching' OR state = 'processing')
-										AND
-											id > {}
-										AND
-											id <= {};""".format(idx, idx+step))
-				# print()
+			changed = 0
+			tot_changed = 0
+			for idx in tqdm.tqdm(range(start, stop, step), desc="Resetting raw URLs"):
+				try:
+					# SQL String munging! I'm a bad person!
+					# Only done because I can't easily find how to make sqlalchemy
+					# bind parameters ignore the postgres specific cast
+					# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+					have = sess.execute("""UPDATE
+												raw_web_pages
+											SET
+												state = 'new'
+											WHERE
+												(state = 'fetching' OR state = 'processing')
+											AND
+												id > {}
+											AND
+												id <= {};""".format(idx, idx+step))
+					# print()
 
-				# processed  = idx - start
-				# total_todo = stop - start
-				# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
-				changed += have.rowcount
-				tot_changed += have.rowcount
-				if changed > commit_interval:
-					print("Committing (%s changed rows)...." % changed, end=' ')
-					sess.commit()
-					print("done")
-					changed = 0
+					# processed  = idx - start
+					# total_todo = stop - start
+					# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
+					changed += have.rowcount
+					tot_changed += have.rowcount
+					if changed > commit_interval:
+						print("Committing (%s changed rows)...." % changed, end=' ')
+						sess.commit()
+						print("done")
+						changed = 0
 
-			except sqlalchemy.exc.OperationalError:
-				sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				sess.rollback()
+				except sqlalchemy.exc.OperationalError:
+					sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					sess.rollback()
 
 
-		sess.commit()
+			sess.commit()
+
+		finally:
+			sess.execute('''SET enable_bitmapscan TO on;''')
 
 	db.delete_db_session()
 

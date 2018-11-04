@@ -37,6 +37,7 @@ import WebMirror.OutputFilters.rss.FeedDataParser
 
 import WebMirror.OutputFilters.util.feedNameLut
 import WebRequest
+import WebMirror.Engine
 
 
 
@@ -146,4 +147,33 @@ def exposed_fix_nu_duplicate_url_segments():
 
 		sess.commit()
 		# print(dbid, curl)
+
+
+
+
+
+def exposed_scan_for_masked_urls():
+	'''
+	Do a streaming iteration over the rows in the database, and run them through the url filtering mechanism to see
+	if any are actually not wanted.
+	'''
+
+	engine = WebMirror.Engine.SiteArchiver(None, None, None)
+
+	with db.session_context() as sess:
+		print("Querying for rows")
+		iterable = sess.query(db.WebPages.id, db.WebPages.url, db.WebPages.netloc) \
+			.order_by(db.WebPages.netloc)                                          \
+			.yield_per(1000)
+		rows = 0
+		skipped = []
+		for rid, url, netloc in tqdm.tqdm(iterable):
+			ret = engine.external_link_check(netloc, url)
+			if not ret:
+				skipped.append((netloc, url, rid))
+			rows += 1
+		print("Found %s rows. Saving" % rows)
+		with open("delete_netlocs.json", "w") as fp:
+			json.dump(skipped, fp, indent=4)
+		print("Saved to output json")
 

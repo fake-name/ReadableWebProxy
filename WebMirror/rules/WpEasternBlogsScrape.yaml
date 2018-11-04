@@ -286,7 +286,6 @@ baseUrl: [
 	'https://ellionoratranslation.wordpress.com',
 	'https://elsyrtrans.wordpress.com',
 	'https://emptyboundaries.wordpress.com',
-	'https://en.wordpress.com',
 	'https://enchantingelementalist.wordpress.com',
 	'https://endkun.wordpress.com',
 	'https://endlessfantasytranslations.wordpress.com',
@@ -1305,6 +1304,7 @@ baseUrl: [
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 
+	'https://oniichanyamete.moe',
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',
