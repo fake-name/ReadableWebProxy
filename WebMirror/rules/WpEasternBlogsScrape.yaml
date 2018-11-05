@@ -1304,6 +1304,7 @@ baseUrl: [
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 
+	'https://shirusekai.com',
 	'https://oniichanyamete.moe',
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',

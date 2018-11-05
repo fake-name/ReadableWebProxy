@@ -103,7 +103,7 @@ def resetInProgress():
 
 	with db.session_context() as sess:
 		try:
-			sess.execute('''SET enable_bitmapscan TO off;''')
+			# sess.execute('''SET enable_bitmapscan TO off;''')
 			print("Getting minimum row in need or update..")
 			start = sess.execute("""SELECT min(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing')""")
 			# start = sess.execute("""SELECT min(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing') OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
@@ -160,7 +160,8 @@ def resetInProgress():
 
 			sess.commit()
 		finally:
-			sess.execute('''SET enable_bitmapscan TO on;''')
+			pass
+			# sess.execute('''SET enable_bitmapscan TO on;''')
 
 	db.delete_db_session()
 
