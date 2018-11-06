@@ -189,6 +189,12 @@ class WatashiWaSugoiDesuPageProcessor(HtmlProcessor.HtmlPageProcessor):
 		badspans = soup.find_all("span", style=re.compile(r"color\W?:\W?#ffffff", re.I))
 		for bad in badspans:
 			bad.decompose()
+		
+		# Decompose the annoying inline shit.
+		# ex: <span style="color:#ffffff;">the truth is out!</span>
+		badspans = soup.find_all("span", style=re.compile(r"color\W?:\W?#000909", re.I))
+		for bad in badspans:
+			bad.decompose()
 
 		return soup
 

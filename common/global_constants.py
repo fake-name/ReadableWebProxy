@@ -61,26 +61,20 @@ GLOBAL_BAD_URLS = [
 			'www.tumblr.com/login',
 			'://tumblr.com',
 			'&share=tumblr',
-
 			'/wp-content/plugins/',
 			'/wp-content/themes/',
 			'/wp-json/oembed/',
-
 			'tracking.feedpress.it',
-
 			# At least one site (booksie) is serving the favicon with a mime-type
 			# of "text/plain", which then confuses the absolute crap out of the
 			# mime-type dispatcher.
 			# Since I'm not re-serving favicons anyways, just do not fetch them ever.
 			'favicon.ico',
-
 			# Try to not scrape inline images
 			';base64,',
-
 			"www.fashionmodeldirectory.com",
 			"www.watchingprivatepractice.com",
 			"Ebonyimages.jupiterimages.com",
-
 			# More garbage issues.
 			'"https',
 			'#comment-',
@@ -90,27 +84,18 @@ GLOBAL_BAD_URLS = [
 			'?feed=rss2&page_id',
 			'?share=tumblr',
 			'?share=facebook',
-
 			'chasingadreamtranslations.com/?fp=',
-
 			# NFI where /this/ came from
 			'www.miforcampuspolice.com',
 			'attorneyking.pro',
 			'webkingsga.us',
-
-
-			'tracking.feedpress.it',
 			'www.quantcast.com',
-
 			'mailto:',
 			'javascript:popupWindow(',
-
 			'en.blog.wordpress.com',
-
 			'counter.yadro.ru',
 			'box5315.temp.domains',
 			'seen-on-screen.thewhizmarketing.com',
-
 			'/js/js/',
 			'/css/css/',
 			'/images/images/',
@@ -118,68 +103,36 @@ GLOBAL_BAD_URLS = [
 			'https:/www.',
 			'tumblr.com/oembed/1.0?',
 			'/wp-includes/js/',
-
 			# Oh god fuck discord so much.
 			'discord1-1494780898_lrg.png',
 			'discord_partner_badge_black.png',
 			'discord.png',
-
 			# Bought by asshole squatters
 			'app3.letitbefaster.world',
 			'app4.letitbefaster.world',
 			'install.shopping-day.com',
 			'pastebin.com',
 			'ww1.absurdtl.com',
-			'ww1.absurdtl.com',
-			'ww1.avertranslation.org',
 			'ww1.avertranslation.org',
 			'ww1.catingham-palace.com',
 			'ww1.chiakunloong.com',
-			'ww1.chiakunloong.com',
-			'ww1.circustranslations.com',
 			'ww1.circustranslations.com',
 			'ww1.grimdarkztranslations.com',
-			'ww1.grimdarkztranslations.com',
-			'ww1.grimdarkztranslations.com',
-			'ww1.grimdarkztranslations.com',
-			'ww1.grimdarkztranslations.com',
-			'ww1.helidwarf.com',
 			'ww1.helidwarf.com',
 			'ww1.kudalakorn.com',
-			'ww1.kudalakorn.com',
-			'ww12.circustranslations.com',
-			'ww12.circustranslations.com',
 			'ww12.circustranslations.com',
 			'ww12.nepustation.com',
-			'ww12.nepustation.com',
-			'ww12.nepustation.com',
-			'ww12.nepustation.com',
-			'ww12.nepustation.com',
-			'ww12.pegasusfarts.com',
-			'ww12.pegasusfarts.com',
 			'ww12.pegasusfarts.com',
 			'ww12.shomotsu.com',
-			'ww12.shomotsu.com',
-			'ww12.steadytranslation.com',
 			'ww12.steadytranslation.com',
 			'ww3.grimdarkztranslations.com',
-			'ww3.grimdarkztranslations.com',
-			'ww3.grimdarkztranslations.com',
-			'ww3.grimdarkztranslations.com',
-			'ww3.grimdarkztranslations.com',
 			'ww38.asuratales.com',
-			'ww38.asuratales.com',
-			'ww4.grimdarkztranslations.com',
-			'ww4.grimdarkztranslations.com',
-			'ww4.grimdarkztranslations.com',
-			'ww4.grimdarkztranslations.com',
 			'ww4.grimdarkztranslations.com',
 			'www.dropcatch.com',
 			'www.fictionpress.com',
 			'www.google.com',
 			'www.hugedomains.com',
 			'www.wattpad.com',
-			'www1.trungtnguyen123.org',
 			'www1.trungtnguyen123.org',
 			'ww2.steadytranslation.com',
 			'ww1.pegasusfarts.com',
@@ -188,58 +141,25 @@ GLOBAL_BAD_URLS = [
 			'ww12.myotterspace.com',
 			'www.swoopdeal.com',
 			'www.hyfind.de'
-			'ww1.helidwarf.com',
-
-			'install.shopping-day.com',
-			'www.hugedomains.com',
-			'.temp.domains',
 			'https:/68.media.tumblr.com',
 			'https%3A/68.media.tumblr.com',
 			'/68.media.tumblr.com',
-
-			'ww1.avertranslation.org',
-			'ww1.catingham-palace.com',
-			'ww1.chiakunloong.com',
-			'ww1.grimdarkztranslations.com',
-			'ww1.helidwarf.com',
-			'ww1.kudalakorn.com',
-			'ww12.nepustation.com',
-			'ww12.pegasusfarts.com',
-			'ww12.shomotsu.com',
-			'ww12.steadytranslation.com',
-			'ww3.grimdarkztranslations.com',
-			'ww38.asuratales.com',
-			'ww4.grimdarkztranslations.com',
-
-			'app3.letitbefaster.world',
-			'app4.letitbefaster.world',
-
 			# Wat
 			'fierydragonbreath.tumblr.com',
-
-			'install.shopping-day.com',
-
 			# Spanish. I don't want to waste disk space on this.
 			'novelasymangasjpo.blogspot.com',
-
 			# Seems to be just anime images.
 			'trashbunny.tumblr.com',
-
-
 			'turtleme.me/feed/includes/',
 			'turtleme.me/feed/images/',
 			'turtleme.me/includes/',
 			'turtleme.me/images/products/includes/',
 			'pathoftranslation.com/?ga=',
-
 			'//en.wordpress.com/'
 			# Lawl
 			'/<?php',
-
-
 			# Fuck that one domain squatter in particular.
 			'.com/?fp=',
-
 			'www.facebook.com',
 			'www.pinterest.com',  # fucking hell, really?
 			'www.linkedin.com',
