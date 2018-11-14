@@ -9,7 +9,9 @@ rewalk_interval_days: 50000
 baseUrl: [
 
 	'http://www.deadlylegends.com/translations/',
-
+	'https://webnoveltranslations.blogspot.com',
+	'https://yamitranslations.blogspot.com',
+	'https://noodlessthehoodless.blogspot.com',
 	'https://www.dlscanlations.com',
 	'http://catingham-palace.com',
 	'http://blazingtranslations.com',
@@ -381,6 +383,8 @@ badwords: [
 		'turtleme.me/images/products/includes/',
 		'pathoftranslation.com/?ga=',
 		'?fp=',
+
+		'?returnTo=?',
 
 
 		# Not sure why there's so much gay content on ASSTR. Not my thing.

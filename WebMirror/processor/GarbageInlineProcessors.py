@@ -14,6 +14,30 @@ from . import HtmlProcessor
 
 
 
+class CreativeNovelsPageProcessor(HtmlProcessor.HtmlPageProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+	loggerPath = "Main.Text.CreativeNovels"
+
+	@staticmethod
+	def wantsUrl(url):
+		if re.search(r"^https?://(?:www\.)?creativenovels.com", url):
+			print("CreativeNovels Wants url: '%s'" % url)
+			return True
+		# print("hecatescorner doesn't want url: '%s'" % url)
+		return False
+
+	def preprocessBody(self, soup):
+
+		for bad in soup.find_all("style"):
+			bad.decompose()
+		for bad in soup.find_all("noscript"):
+			bad.decompose()
+
+		return soup
+
 class HecatesCornerPageProcessor(HtmlProcessor.HtmlPageProcessor):
 
 	wanted_mimetypes = ['text/html']
@@ -38,6 +62,7 @@ class HecatesCornerPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			bad.decompose()
 
 		return soup
+
 
 
 class XiAiNovelPageProcessor(HtmlProcessor.HtmlPageProcessor):
@@ -189,7 +214,7 @@ class WatashiWaSugoiDesuPageProcessor(HtmlProcessor.HtmlPageProcessor):
 		badspans = soup.find_all("span", style=re.compile(r"color\W?:\W?#ffffff", re.I))
 		for bad in badspans:
 			bad.decompose()
-		
+
 		# Decompose the annoying inline shit.
 		# ex: <span style="color:#ffffff;">the truth is out!</span>
 		badspans = soup.find_all("span", style=re.compile(r"color\W?:\W?#000909", re.I))
@@ -397,7 +422,9 @@ class AfterAugustMakingProcessor(HtmlProcessor.HtmlPageProcessor):
 		for styled_div in soup.find_all("div", style=True):
 			styled_div.attrs = {}
 
-		soup.table.unwrap()
+		if soup.table:
+			soup.table.unwrap()
+
 		for wat in soup.find_all("ng-view"):
 			wat.unwrap()
 

@@ -90,10 +90,34 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
 		self.j_fetch_proc = None
 		if start_thread:
-			self.j_fetch_proc = threading.Thread(target=self.queue_filler_proc)
+			self.j_fetch_proc = threading.Thread(target=self.run_shim)
 			self.j_fetch_proc.start()
 
 		self.print_mod = 0
+
+
+
+	def run_shim(self):
+
+		try:
+			self.queue_filler_proc()
+
+		except KeyboardInterrupt:
+			print("Saw keyboard interrupt. Breaking!")
+			return
+
+		except Exception:
+			print("Error!")
+			print("Error!")
+			print("Error!")
+			print("Error!")
+			traceback.print_exc()
+			with open("error %s - %s.txt" % ("rawjobdispatcher", time.time()), "w") as fp:
+				fp.write("Manager crashed?\n")
+				fp.write(traceback.format_exc())
+			raise
+
+
 
 	def outbound_job_wanted(self, netloc, joburl):
 

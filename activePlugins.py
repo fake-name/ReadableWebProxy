@@ -110,6 +110,7 @@ PLUGINS = [
 	WebMirror.processor.GarbageInlineProcessors.RebirthOnlineLiveProcessor,
 	WebMirror.processor.GarbageInlineProcessors.ConvallariasLibraryProcessor,
 	WebMirror.processor.GarbageInlineProcessors.AfterAugustMakingProcessor,
+	WebMirror.processor.GarbageInlineProcessors.CreativeNovelsPageProcessor,
 
 	WebMirror.processor.XiAiNovelProcessor.XiAiNovelPageProcessor,
 ]

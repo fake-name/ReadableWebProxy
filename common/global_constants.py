@@ -139,6 +139,10 @@ GLOBAL_BAD_URLS = [
 			'ww1.myotterspace.com',
 			'ww12.kudalakorn.com',
 			'ww12.myotterspace.com',
+			'ww1.pegasusfarts.com',
+			'ww12.kudalakorn.com',
+			'ww12.nepustation.com',
+			'ww12.pegasusfarts.com',
 			'www.swoopdeal.com',
 			'www.hyfind.de'
 			'https:/68.media.tumblr.com',
@@ -163,6 +167,8 @@ GLOBAL_BAD_URLS = [
 			'www.facebook.com',
 			'www.pinterest.com',  # fucking hell, really?
 			'www.linkedin.com',
+
+			'www.nifty.com',
 	]
 
 

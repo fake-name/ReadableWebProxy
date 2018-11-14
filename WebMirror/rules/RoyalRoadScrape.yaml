@@ -16,6 +16,8 @@ baseUrl: [
 	]
 
 badwords: [
+			"royalroadl.com/private/",
+			"royalroad.com/private/",
 			"/about/",
 			"/join-us/",
 			"/chat/",
