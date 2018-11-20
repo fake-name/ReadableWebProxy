@@ -77,7 +77,7 @@ def create_function_for_name(name):
 def getCreateRssSource(db_sess, feedname, feedurl):
 	nl = urllib.parse.urlsplit(feedurl).netloc
 
-	assert nl, "Netloc for url '%s' is empty!" % feedurl
+	assert nl, "Netloc for url '%s' (feed '%s') is empty!" % (feedurl, feedname)
 
 	if feedname is None:
 		feedname = nl

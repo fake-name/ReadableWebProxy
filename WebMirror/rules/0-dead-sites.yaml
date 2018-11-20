@@ -387,6 +387,9 @@ badwords: [
 		'?returnTo=?',
 
 
+		'/news/rss',
+
+
 		# Not sure why there's so much gay content on ASSTR. Not my thing.
 		"/nifty/gay/",
 		"/nifty/bisexual/",

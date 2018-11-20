@@ -362,7 +362,9 @@ def hasDuplicateSegments(url):
 			if "feed.atom" in url:
 				return True
 
-
+		if netloc == 'creativenovels.com' and url.count("/") >= 5 and url.endswith("/feed/"):
+			# Goddammit wordpress
+			return False
 
 		if len(set(pathchunks)) != len(pathchunks):
 

@@ -3,11 +3,14 @@ import bs4
 import copy
 import re
 import time
-import webcolors
 import urllib.parse
-import markdown
+
+import webcolors
+# import markdown
 import tinycss2
+from paka import cmark
 import WebRequest
+
 import common.global_constants
 
 import common.util.urlFuncs as urlFuncs
@@ -441,7 +444,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 	# Miscellaneous spot-fixes for specific sites.
 	def spotPatch(self, soup):
-		
+
 		if '//imoutosite.wordpress.com/' in self.pageUrl:
 			# Clean out any local stylesheets
 			for instance in soup.find_all('svg'):
@@ -457,10 +460,10 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			contentstr = pre.encode_contents().decode("utf-8")
 
 			# Don't markdown huge documents.
-			if len(contentstr) > 1024 * 500:
+			if len(str(contentstr)) > 1024 * 500:
 				continue
 
-			formatted = markdown.markdown(contentstr, extensions=["linkify"])
+			formatted = cmark.to_html(contentstr) #, extensions=["linkify"])
 			formatted = WebRequest.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()

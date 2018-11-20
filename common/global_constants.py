@@ -95,7 +95,7 @@ GLOBAL_BAD_URLS = [
 			'en.blog.wordpress.com',
 			'counter.yadro.ru',
 			'box5315.temp.domains',
-			'seen-on-screen.thewhizmarketing.com',
+			'thewhizmarketing.com',
 			'/js/js/',
 			'/css/css/',
 			'/images/images/',
@@ -233,6 +233,7 @@ RSS_SKIP_FILTER = [
 # Some sites have gone down or are now squatters.
 # Mask them off.
 NU_NEW_MASK_NETLOCS = [
+			'en.wordpress.com',
 			'endofdays42.ph.tn',
 			'endofdays42.000webhostapp.com',
 			'host307.hostmonster.com',

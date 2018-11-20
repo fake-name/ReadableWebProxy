@@ -238,10 +238,22 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			self.rpc_interface.close()
 		except Exception:
 			pass
-		self.rpc_interface = common.get_rpyc.RemoteJobInterface("RawMirror")
 
+		for x in range(100):
+			try:
+				self.rpc_interface = common.get_rpyc.RemoteJobInterface("RawMirror")
+				return
 
+			except TypeError:
+				pass
+			except KeyError:
+				pass
+			except socket.timeout:
+				pass
+			except ConnectionRefusedError:
+				pass
 
+		raise RuntimeError("Could not establish connection to RPC remote!")
 
 	def process_responses(self):
 		while 1:
@@ -328,7 +340,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 			msg_loop += 1
 			time.sleep(0.2)
-			if msg_loop > 250:
+			if msg_loop > 25:
 				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, self.run_flag.value==1)
 				msg_loop = 0
 				self.ratelimiter.job_reduce()

@@ -9,6 +9,7 @@ baseUrl: [
 		'http://www.spcnet.tv/forums',
 		'http://forum.wuxiaworld.com',
 		'http://wuxiasociety.freeforums.net',
+		'http://www.jcafe24.net',
 ]
 
 feeds: [
@@ -192,7 +193,7 @@ badwords: [
 			'&do=',
 
 			'spcnet.tv/music-',
-
+			'&action=history',
 			'/statusicon/',
 
 			# WHY are there MULTIPLE pagination modes?

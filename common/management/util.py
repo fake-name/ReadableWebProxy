@@ -26,11 +26,11 @@ def get_page_title(wg, url):
 		ret['failed'] = True
 		ret['code'] = err.err_code
 		ret['reason'] = err.err_reason
-		ret['err'] = str(err)
+		ret['err'] = str(err)[:200]
 
 	except Exception as err:
 		ret['failed'] = True
-		ret['err'] = err
+		ret['err'] = str(err)[:200]
 
 	if 'title' in ret and 'https://www.webnovel.com' in url:
 		ret['title_orig'] = ret['title']

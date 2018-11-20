@@ -729,55 +729,6 @@ def exposed_nu_fetch_sources():
 		print("	- ", name)
 
 
-def exposed_nu_new_from_feeds(fetch_title=False):
-	'''
-	Parse outbound netlocs from NovelUpdates releases, extracting
-	any sites that are not known in the feednamelut.
-	'''
-
-	rules = WebMirror.rules.load_rules()
-	urls = [item['starturls'] if item['starturls'] else [] + item['feedurls'] if item['feedurls'] else [] for item in rules]
-	urls = [item for sublist in urls for item in sublist]
-
-	starturldict = {WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(url).netloc) : url for url in urls}
-
-
-	wg = WebRequest.WebGetRobust()
-
-	with db.session_context() as sess:
-
-		nu_items = sess.query(db.NuReleaseItem)             \
-			.filter(db.NuReleaseItem.validated == True)     \
-			.filter(db.NuReleaseItem.actual_target != None) \
-			.all()
-
-		mapdict = {
-			WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(row.actual_target).netloc) : row.actual_target for row in nu_items}
-		print("Nu outbound items: ", len(mapdict))
-
-		missing = 0
-		for netloc, tgturl in mapdict.items():
-			if not netloc:
-				continue
-			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
-				continue
-			if any([tmp in tgturl for tmp in common.global_constants.GLOBAL_BAD_URLS]):
-				continue
-
-			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc):
-				continue
-
-			if netloc in starturldict:
-				continue
-
-
-			WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, None, netloc)
-			title = netloc
-			if fetch_title:
-				title = common.management.util.get_page_title(wg, tgturl)
-			print("Missing: ", (netloc, title, tgturl))
-			missing += 1
-		print("Nu outbound items: ", len(mapdict), "missing:", missing)
 
 def exposed_find_dead_netlocs():
 	'''
@@ -1437,12 +1388,9 @@ def exposed_nu_retrigger_series_pages():
 
 
 
+def get_wln_release_urls():
+	print("loading netlocs from WLN release listings")
 
-
-def exposed_new_from_wln_releases(fetch_title=False):
-	'''
-
-	'''
 	import settings
 
 	if '__pypy__' in sys.builtin_module_names:
@@ -1460,12 +1408,12 @@ def exposed_new_from_wln_releases(fetch_title=False):
 	print("Conn:", conn)
 	cur = conn.cursor()
 
-	print("Fetching rows")
+	print("Fetching rows from changes table")
 	cur.execute("""
 		SELECT DISTINCT(srcurl) FROM releaseschanges;
 		""")
 	rows_1 = cur.fetchall()
-	print("Fetching rows 2")
+	print("Fetching rows from main table")
 	cur.execute("""
 		SELECT DISTINCT(srcurl) FROM releases;
 		""")
@@ -1478,38 +1426,122 @@ def exposed_new_from_wln_releases(fetch_title=False):
 		if url:
 			if isinstance(url, bytes):
 				url = url.decode("utf-8")
-			parsed = urllib.parse.urlparse(url)
-			nlfilter.setdefault(parsed.netloc, set())
-			nlfilter[parsed.netloc].add(url)
+			itemnl = WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(url).netloc)
+			nlfilter.setdefault(itemnl, set())
+			nlfilter[itemnl].add(url)
 
-	print("Distinct netlocs: %s" % len(nlfilter))
+	print("WLN Releases distinct netlocs: %s" % len(nlfilter))
+
+	return nlfilter
+
+def get_nu_head_urls():
+	print("Loading netlocs from nuheader system")
+	with db.session_context() as sess:
+
+		nu_items = sess.query(db.NuReleaseItem)             \
+			.filter(db.NuReleaseItem.validated == True)     \
+			.filter(db.NuReleaseItem.actual_target != None) \
+			.all()
+
+		mapdict = {}
+		for row in nu_items:
+			itemnl = WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(row.actual_target).netloc)
+			mapdict.setdefault(itemnl, set())
+			mapdict[itemnl].add(row.actual_target)
+
+
+	print("Nu outbound items: ", len(mapdict))
+
+	return mapdict
+
+def filter_get_have_url(netloc_dict, fetch_title):
+
 
 	rules = WebMirror.rules.load_rules()
 	urls = [item['starturls'] if item['starturls'] else [] + item['feedurls'] if item['feedurls'] else [] for item in rules]
 	urls = [item for sublist in urls for item in sublist]
 
+	starturldict = {}
+
+	for url in urls:
+		itemnl = WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(url).netloc)
+		starturldict.setdefault(itemnl, [])
+		starturldict[itemnl] = url
+
 	wg = WebRequest.WebGetRobust()
-	starturldict = {WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(url).netloc) : url for url in urls}
+
 
 	missing = 0
+
 	with db.session_context() as sess:
-		for netloc, tgturls in nlfilter.items():
+		for netloc, tgturl_set in netloc_dict.items():
+
+			if not netloc:
+				continue
 			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
 				continue
+			if any([tmp in netloc for tmp in common.global_constants.GLOBAL_BAD_URLS]):
+				continue
 
-			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, None, netloc):
+			if any([
+						badstr in tmp
+					for
+						badstr in common.global_constants.GLOBAL_BAD_URLS
+					for
+						tmp in tgturl_set
+					]):
+				continue
+
+			if netloc.startswith("http://www.novelupdates.com/") or netloc.startswith("https://www.novelupdates.com/"):
+				continue
+
+			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc):
 				continue
 
 			if netloc in starturldict:
 				continue
 
-
-			WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, None, netloc)
+			random_nl = next(iter(tgturl_set))
 			title = netloc
-			tgturl = tgturls.pop()
 			if fetch_title:
-				title = common.management.util.get_page_title(wg, tgturl)
-			print("Missing: ", (netloc, title, tgturl))
+				title = common.management.util.get_page_title(wg, random_nl)
+			print("Missing: ", (netloc, title, random_nl))
 			missing += 1
-		print("Nu outbound items: ", len(nlfilter), "missing:", missing)
+
+	print("Total outbound items: ", len(netloc_dict), "missing:", missing)
+
+def exposed_new_from_wln_feeds(fetch_title=False):
+	'''
+	Parse the local WLN instance's release listing and extract the found release urls
+	that are not in the known feednamelut.
+	'''
+	nlfilter = get_wln_release_urls()
+	filter_get_have_url(nlfilter, fetch_title)
+
+
+def exposed_new_from_nu_feeds(fetch_title=False):
+	'''
+	Parse outbound netlocs from NovelUpdates releases, extracting
+	any sites that are not known in the feednamelut.
+	'''
+
+	mapdict = get_nu_head_urls()
+	filter_get_have_url(mapdict, fetch_title)
+
+def exposed_new_from_all_feeds(fetch_title=False):
+	'''
+	Parse outbound netlocs from NovelUpdates and WLN releases, extracting
+	any sites that are not known in the feednamelut.
+	'''
+
+	nlfilter = get_wln_release_urls()
+	mapdict = get_nu_head_urls()
+
+	print("NU Header urls: %s, wln URLs: %s" % (len(mapdict), len(nlfilter)))
+
+	for key, value in nlfilter.items():
+		mapdict.setdefault(key, set())
+		mapdict[key].update(value)
+
+	filter_get_have_url(mapdict, fetch_title)
 

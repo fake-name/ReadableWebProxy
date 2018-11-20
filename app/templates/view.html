@@ -67,6 +67,11 @@
 			filtst.text(data['filterstate']);
 			content.html(data['contents']);
 			document.title = "ReadProxy - " + data['title']
+			
+			
+			var content = $("#refetch_link_1");
+			content.html('Re-Fetch');
+			
 		};
 		function content_load_fail(jqXHR, textStatus, errorThrown)
 		{
@@ -93,8 +98,8 @@
 		{
 			var url = "/render?{{ {"url" : req_url, "nocache" : "true", "version" : None} | urlencode | safe }}";
 
-			var content = $("#content");
-			content.html('<div class="center-block text-center"><h4>Re-Loading</h4><p>Please Wait.</p><img src="/static/loading.gif"><br><br></div>');
+			var content = $("#refetch_link_1");
+			content.html('Refetching');
 
 			$.ajax({
 				url      : url,

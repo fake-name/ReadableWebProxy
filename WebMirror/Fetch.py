@@ -320,6 +320,8 @@ class ItemFetcher(LogBase.LoggerMixin):
 	def dispatchContent(self, content, fName, mimeType):
 		assert bool(content) == True
 
+		assert mimeType, "Mimetype must not be none"
+
 		# Do preprocessing:
 		preprocess_counts = 0
 		for filter_plg in self.preprocessor_modules:
