@@ -169,6 +169,8 @@ GLOBAL_BAD_URLS = [
 			'www.linkedin.com',
 
 			'www.nifty.com',
+			'tag:blogger.com',
+			'http:/s',
 	]
 
 
@@ -226,12 +228,10 @@ RSS_SKIP_FILTER = [
 	# lost on this guy.
 	'whathasjesusdone.wordpress.com',
 
-
 ]
 
 
-# Some sites have gone down or are now squatters.
-# Mask them off.
+# Some sites have gone down or are now squatters. Mask them off.
 NU_NEW_MASK_NETLOCS = [
 			'en.wordpress.com',
 			'endofdays42.ph.tn',
@@ -292,6 +292,23 @@ NU_NEW_MASK_NETLOCS = [
 			'mygirlfriendisazombiechapter169',
 			'3619.furust.com',
 			'449.furust.com',
+
+			'forums.lolscans.com',
+			'arestiny.com',
+			'kousato106.wix.com',
+
+			'medium.com',
+			'ttps',
+			'wp.me',
+			'www.blogger.com',
+			'webnovel.com',
+			'www.hostinger.co.uk',
+
+
+			# Some extnu leaked through.
+			'www.novelupdates.com',
+
+
 		]
 
 

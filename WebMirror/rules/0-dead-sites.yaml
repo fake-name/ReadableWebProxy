@@ -365,12 +365,12 @@ baseUrl: [
 
 	'http://www.asstr.org',
 
-
 	]
 
 # select count(*) from web_pages where netloc = 'www.asstr.com';
 # select count(*) from web_pages where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
 # delete from web_pages where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+
 # select count(*) from web_pages_version where netloc = 'www.asstr.com';
 # select count(*) from web_pages_version where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
 # delete from web_pages_version where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
@@ -397,7 +397,8 @@ badwords: [
 		'/nifty/authors.html/bisexual/',
 
 		'www.asstr.com/?ga=',
-
+		'www.asstr.com/rg-erdr.php?_rpo=',
+		'giraffecorps.liamak.net/?ga=',
 	]
 
 decompose: [

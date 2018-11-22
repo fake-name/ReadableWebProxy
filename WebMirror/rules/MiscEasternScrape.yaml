@@ -34,6 +34,8 @@ baseUrl: [
 		'http://www.everythingsweet.me',
 		'http://www.whiteshark.tk',
 		'http://www.fringeoctopus.com',
+		'https://www.zerothnovels.com',
+		'https://www.huntresstranslations.xyz',
 
 		# Dreamwidth seems OK with the default rules
 		"https://duelnoir.dreamwidth.org",
@@ -82,6 +84,8 @@ baseUrl: [
 		'http://www.zeonic-republic.net',
 		'http://lesyt.xyz',
 		'https://universalnovels.com',
+		'https://novel.babelchain.org',
+		'https://www.flying-lines.com',
 
 		'https://www.badnovels.com',
 		'https://badnovels.com',
@@ -156,6 +160,8 @@ badwords: [
 			'm.wuxiaworld.com',
 			'/comments/',
 			'everythingsweet.me/search/',
+
+			'&action=history',   # For elwiki.net
 		]
 
 

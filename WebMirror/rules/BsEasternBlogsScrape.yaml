@@ -12,9 +12,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-	'https://hilirivsfantasy.blogspot.com',
-	'https://interimmtl.blogspot.com',
-	'https://flyingsaucertranslates.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
 	'http://ahoujicha.blogspot.com',
@@ -94,6 +91,7 @@ baseUrl: [
 	'http://mahoukoukoku.blogspot.com',
 	'http://mathranslation.blogspot.com',
 	'http://mineralwatertranslation.blogspot.com',
+	'http://msvijaya.blogspot.com',
 	'http://mtlcorner.blogspot.com',
 	'http://mtldao.blogspot.com',
 	'http://mtrizkan.blogspot.com',
@@ -188,14 +186,17 @@ baseUrl: [
 	'https://fishytranslation.blogspot.com',
 	'https://flamingdeity.blogspot.com',
 	'https://fleshtoplush.blogspot.com',
+	'https://flyingsaucertranslates.blogspot.com',
 	'https://fotranslates.blogspot.com',
 	'https://godofabc.blogspot.com',
 	'https://gugeltranslation.blogspot.com',
 	'https://hainemakorutranslations.blogspot.com',
 	'https://hermitranslation.blogspot.com',
+	'https://hilirivsfantasy.blogspot.com',
 	'https://iamabananav2.blogspot.com',
 	'https://iminhollywood.blogspot.in',
 	'https://inneedtranslation.blogspot.com',
+	'https://interimmtl.blogspot.com',
 	'https://jasminechaitea.blogspot.com',
 	'https://kaede726.blogspot.com',
 	'https://kidneytranslations.blogspot.com',
@@ -207,7 +208,9 @@ baseUrl: [
 	'https://momopeachtranslation.blogspot.com',
 	'https://novel44.blogspot.com',
 	'https://novelsanctuary.blogspot.com',
+	'https://novelsformy.blogspot.com',
 	'https://novustreasures.blogspot.sg',
+	'https://nuexin-novels.blogspot.com',
 	'https://nusantaracafe.blogspot.com',
 	'https://oceaniclantern.blogspot.com',
 	'https://ohdamndone.blogspot.com',
@@ -236,7 +239,6 @@ baseUrl: [
 	'https://youjosenki.blogspot.com',
 	'https://yuanshucave.blogspot.com',
 	'https://zigguratlocalizations.blogspot.com',
-
 
 
 	# Dead:
