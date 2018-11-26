@@ -206,14 +206,22 @@ badwords: [
 
 			'/entry/signin?',
 			'/entry/register?',
-			'/entry/signin?',
-			'/entry/signin?',
-			'/entry/signin?',
+			'feedrecentchanges',
+			'&feedformat=',
 
 
 			'&action=history',
 			'&diff=',
 			'&feed=atom',
+			'Special:RecentChangesLinked',
+
+
+			# JCafe crap
+			';prev_next=',
+			'action=printpage',
+			'.msg',
+			'&action=',
+			'?PHPSESSID=',
 
 			]
 

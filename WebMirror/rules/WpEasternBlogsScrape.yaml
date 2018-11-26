@@ -1322,6 +1322,7 @@ baseUrl: [
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 
+	'https://cookiesncreamtranslations.com',
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',

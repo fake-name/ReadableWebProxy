@@ -171,6 +171,14 @@ GLOBAL_BAD_URLS = [
 			'www.nifty.com',
 			'tag:blogger.com',
 			'http:/s',
+			'/comments/default',
+			'#comment-',
+			'/comment-',
+			'/data/atom/?itemid=',
+			'Special:UserLogin',
+			'&returnto=',
+			'Special:WhatLinksHere',
+			'/User:',
 	]
 
 
