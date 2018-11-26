@@ -67,7 +67,7 @@ sqlalchemy_searchable==1.0.3
 
 BeautifulSoup4==4.6.3
 
-alembic==1.0.2
+alembic==1.0.3
 
 redis==2.10.6
 
