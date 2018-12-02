@@ -159,6 +159,11 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 	def processFeed(self, feed, feedUrl):
 
 
+		if '://pumanovels.com/' in feedUrl:
+			return []
+		if '://comrademao.com/' in feedUrl:
+			return []
+
 		meta = feed['feed']
 		entries = feed['entries']
 

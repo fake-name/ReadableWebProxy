@@ -133,6 +133,7 @@ def proto_process_releases(feed_releases, disable_range_limit=False):
 			"successful" : [],
 			"missed"     : [],
 			"ignored"    : [],
+			"ignored-w-tumblr-idiots"    : [],
 	}
 
 	feed_releases = list(feed_releases)
@@ -190,7 +191,10 @@ def proto_process_releases(feed_releases, disable_range_limit=False):
 		elif ret is False:
 			ret_dict["missed"].append((ret, proc_tmp))
 		elif ret is None:
-			ret_dict["ignored"].append((ret, proc_tmp))
+			if 'tumblr.com/' not in proc_tmp['linkUrl']:
+				ret_dict["ignored"].append((ret, proc_tmp))
+			ret_dict["ignored-w-tumblr-idiots"].append((ret, proc_tmp))
+
 		else:
 			raise RuntimeError("Wat? Unknown ret ({}) for release: {}".format(ret, proc_tmp))
 
@@ -377,6 +381,12 @@ def feedFiltersRecent():
 	if "scope" in request.args and request.args['scope'] in valid_scopes:
 		scope = request.args['scope']
 
+
+	valid_filter = ["missed", "ignored", "ignored-w-tumblr-idiots", "successful"]
+	content_filter = 'missed'
+	if "content_filter" in request.args and request.args['content_filter'] in valid_filter:
+		content_filter = request.args['content_filter']
+
 	if   scope == "day":
 		item_scope_str   = "Last day"
 		item_scope_limit = datetime.datetime.now() - datetime.timedelta(days=1)
@@ -400,11 +410,15 @@ def feedFiltersRecent():
 
 	items = proto_process_releases(feeds, disable_range_limit=True)
 
-	release_count = len(feeds)
-	missed_count  = len(items['missed'])
+	release_count   = len(feeds)
+	missed_count    = len(items['missed'])
+	ignored_count   = len(items['ignored'])
+	processed_count = len(items['successful'])
+
+
 
 	bykey = {}
-	for dummy_ret, item in items['missed']:
+	for dummy_ret, item in items[content_filter]:
 		if not item['srcname'] in bykey:
 			bykey[item['srcname']] = []
 
@@ -424,11 +438,18 @@ def feedFiltersRecent():
 			sorted_items[key] = []
 		sorted_items[key].extend(item)
 
+	total_entries = sum([len(tmp) for tmp in sorted_items.values()])
+
 	return render_template('rss-pages/feeds_only_results.html',
-						   release_count = release_count,
-						   missed_count  = missed_count,
-						   items         = sorted_items,
-						   item_scope    = item_scope_str,
+						   release_count   = release_count,
+						   items           = sorted_items,
+						   item_scope      = item_scope_str,
+						   missed_count    = missed_count,
+						   ignored_count   = ignored_count,
+						   processed_count = processed_count,
+						   content_filter  = content_filter,
+						   total_entries   = total_entries,
+						   scope           = scope,
 						   )
 
 

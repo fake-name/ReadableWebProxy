@@ -365,6 +365,8 @@ baseUrl: [
 
 	'http://www.asstr.org',
 
+	'http://koalasplayground.com',
+
 	]
 
 # select count(*) from web_pages where netloc = 'www.asstr.com';
@@ -399,6 +401,10 @@ badwords: [
 		'www.asstr.com/?ga=',
 		'www.asstr.com/rg-erdr.php?_rpo=',
 		'giraffecorps.liamak.net/?ga=',
+		'nippleless.nl/feed/',
+
+		# Fucking trailing space
+		'http://koalasplayground.com ',
 	]
 
 decompose: [

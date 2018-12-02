@@ -64,17 +64,22 @@
 	{%- include '_block_flash.html' -%}
 	<div class="well well-large" style="min-height: 140px; width: 100%;">
 		<div class='pull-right'>
-			<span><a href="{{ url_for('feedFiltersRecent') }}">Last Day</a></span>
-			<span><a href="{{ url_for('feedFiltersRecent', scope='week') }}">Last Week</a></span>
-			<span><a href="{{ url_for('feedFiltersRecent', scope='month') }}">Last Month</a></span>
-			<span><a href="{{ url_for('feedFiltersRecent', scope='all') }}">All</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter=content_filter,              ) }}">Last Day</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter=content_filter, scope='week' ) }}">Last Week</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter=content_filter, scope='month') }}">Last Month</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter=content_filter, scope='all'  ) }}">All</a></span>
+			<br>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter='missed',                  scope=scope) }}">Missed</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter='ignored',                 scope=scope) }}">Ignored</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter='ignored-w-tumblr-idiots', scope=scope) }}">Ignored w/Tumblr</a></span>
+			<span><a href="{{ url_for('feedFiltersRecent', content_filter='successful',              scope=scope) }}">Successful</a></span>
 		</div>
 		<div><h2 style='display: inline'>Feeds by date: {{item_scope}}</h2></div>
 		<div class='clearfix'></div>
 
 		<div id="process-results">
 			<div class='pull-right'>TotalReleases: {{release_count}}</div>
-			<h4>Missed items: {{missed_count}}</h4>
+			<h4>Missed items: {{missed_count}}, ignored: {{ignored_count}}, valid: {{processed_count}}. Active filter: {{content_filter}}. Processed: {{total_entries}}</h4>
 			<div class='clearfix'></div>
 			{{ release_block(items) }}
 		</div>

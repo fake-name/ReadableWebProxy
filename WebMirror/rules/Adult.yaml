@@ -12,6 +12,7 @@ baseUrl: [
 	'http://www.nifty.org',
 	'https://www.literotica.com',
 	'https://tags.literotica.com',
+	'https://search.literotica.com',
 	'http://www.mcstories.com',
 	'http://www.overflowingbra.com',
 	'http://tsa.transform.to',
@@ -233,6 +234,8 @@ decompose: [
 
 	# Obnoxious literotica SVG bullshit.
 	{'class'  : 'logo'},
+	{'class'  : 'SAAWidget__container'},
+	{'id'     : 'kvkkddp'},
 
 	# {'class'  : 'b-sidebar'},
 	{'class'  : 'b-footer'},

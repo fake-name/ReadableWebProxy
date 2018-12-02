@@ -1014,54 +1014,60 @@ def exposed_delete_error_versions():
 	commit = 10000
 
 	with db.session_context() as sess:
-		print("Getting minimum row in need or update..")
-		start = sess.execute("""SELECT min(id) FROM web_pages_version WHERE  (state = 'error' OR state = 'fetching')""")
-		start = list(start)[0][0]
-		if start is None:
-			print("No rows to reset!")
-			return
-		print("Minimum row ID: ", start, "getting maximum row...")
-		stop = sess.execute("""SELECT max(id) FROM web_pages_version WHERE  (state = 'error' OR state = 'fetching')""")
-		stop = list(stop)[0][0]
-		print("Maximum row ID: ", stop)
+		try:
+			sess.execute("SET statement_timeout TO 0;")
 
 
-		print("Need to fix rows from %s to %s" % (start, stop))
-		start = start - (start % step)
-
-		changed = 0
-		changed_tot = 0
-		pb = tqdm.tqdm(range(stop, start, step*-1), desc='Clearing error states.')
-		for idx in pb:
-			try:
-				# SQL String munging! I'm a bad person!
-				# Only done because I can't easily find how to make sqlalchemy
-				# bind parameters ignore the postgres specific cast
-				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-				have = sess.execute("""DELETE FROM web_pages_version WHERE (state = 'error' OR state = 'fetching') AND id > {} AND id <= {};""".format(idx, idx+step))
-				# print()
-
-				# processed  = idx - start
-				# total_todo = stop - start
-				desc = '%6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
-				pb.set_description(desc)
-
-				# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
-				changed += have.rowcount
-				changed_tot += have.rowcount
-				if changed > commit:
-					print("Committing (%s changed rows)...." % changed, end=' ')
-					sess.commit()
-					print("done")
-					changed = 0
-
-			except sqlalchemy.exc.OperationalError:
-				sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				sess.rollback()
+			print("Getting minimum row in need or update..")
+			start = sess.execute("""SELECT min(id) FROM web_pages_version WHERE  (state = 'error' OR state = 'fetching')""")
+			start = list(start)[0][0]
+			if start is None:
+				print("No rows to reset!")
+				return
+			print("Minimum row ID: ", start, "getting maximum row...")
+			stop = sess.execute("""SELECT max(id) FROM web_pages_version WHERE  (state = 'error' OR state = 'fetching')""")
+			stop = list(stop)[0][0]
+			print("Maximum row ID: ", stop)
 
 
-		sess.commit()
+			print("Need to fix rows from %s to %s" % (start, stop))
+			start = start - (start % step)
+
+			changed = 0
+			changed_tot = 0
+			pb = tqdm.tqdm(range(stop, start, step*-1), desc='Clearing error states.')
+			for idx in pb:
+				try:
+					# SQL String munging! I'm a bad person!
+					# Only done because I can't easily find how to make sqlalchemy
+					# bind parameters ignore the postgres specific cast
+					# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+					have = sess.execute("""DELETE FROM web_pages_version WHERE (state = 'error' OR state = 'fetching') AND id > {} AND id <= {};""".format(idx, idx+step))
+					# print()
+
+					# processed  = idx - start
+					# total_todo = stop - start
+					desc = '%6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
+					pb.set_description(desc)
+
+					# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
+					changed += have.rowcount
+					changed_tot += have.rowcount
+					if changed > commit:
+						print("Committing (%s changed rows)...." % changed, end=' ')
+						sess.commit()
+						print("done")
+						changed = 0
+
+				except sqlalchemy.exc.OperationalError:
+					sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					sess.rollback()
+
+
+			sess.commit()
+		finally:
+			sess.execute("RESET statement_timeout;")
 
 def exposed_block_special_case_netlocs():
 	'''

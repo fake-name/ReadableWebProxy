@@ -10,6 +10,7 @@ baseUrl: [
 		'http://forum.wuxiaworld.com',
 		'http://wuxiasociety.freeforums.net',
 		'http://www.jcafe24.net',
+		'https://elwiki.net',
 ]
 
 feeds: [
@@ -208,6 +209,19 @@ badwords: [
 			'/entry/register?',
 			'feedrecentchanges',
 			'&feedformat=',
+			'&action=history',   # For elwiki.net
+			'&page=User_talk:',
+			'Special:RecentChangesLinked',
+			'Special:CiteThisPage',
+			'Special:Contributions',
+			'Special:Log',
+			'Special:RecentChanges',
+			'Special:NewFiles',
+			'Special:NewPages',
+			'Special:ListUsers',
+			'Special:Search',
+			'&direction=prev&',
+			'&direction=next&',
 
 
 			'&action=history',
@@ -222,6 +236,9 @@ badwords: [
 			'.msg',
 			'&action=',
 			'?PHPSESSID=',
+
+			# Forum.wuxiaworld.com
+			'/feed.rss',
 
 			]
 

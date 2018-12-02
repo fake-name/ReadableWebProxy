@@ -67,7 +67,6 @@ baseUrl: [
 		'https://www.fuyuneko.org',
 		'http://lyzo.eu',
 		'https://meejee.net',
-		'https://elwiki.net',
 
 		'https://wuxiaworld.com',
 		'https://www.wuxiaworld.com',
@@ -90,6 +89,11 @@ baseUrl: [
 		'https://www.badnovels.com',
 		'https://badnovels.com',
 		'http://deadlynovels.tk',
+
+		# I /think/ these are aggregators, but I'm not totally sure.
+		'http://comrademao.com',
+		'https://pumanovels.com',
+
 	]
 
 feeds: [
@@ -161,7 +165,6 @@ badwords: [
 			'/comments/',
 			'everythingsweet.me/search/',
 
-			'&action=history',   # For elwiki.net
 		]
 
 
