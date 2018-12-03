@@ -54,7 +54,7 @@ def exposed_test_qidian_fetch():
 
 	WebMirror.SpecialCase.qidianSmartFeedFetch(None, -1, 'https://www.webnovel.com/feed/', None, job_aggregator_instance=rpc_interface)
 
-	for x in range(60 * 15):
+	for x in range(60 * 60):
 
 		try:
 			tmp = rpc_interface.get_job()

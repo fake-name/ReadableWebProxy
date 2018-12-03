@@ -92,6 +92,7 @@ badwords: [
 			'/search.php?',
 
 			'www.addergoole.com/forum/',
+			'www.addergoole.com/wiki/',
 			]
 
 

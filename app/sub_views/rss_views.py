@@ -108,9 +108,6 @@ def renderFeedsSourceTable(source, page=1):
 
 @app.route('/feeds/postid/<int:postid>')
 def renderFeedEntry(postid):
-
-
-
 	post = g.session.query(db.RssFeedPost) \
 		.filter(db.RssFeedPost.id == postid)    \
 		.scalar()

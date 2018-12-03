@@ -190,7 +190,7 @@ class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release['href']
 
-			msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, tl_type='oel', extraData=extra, matchAuthor=True)
+			msg = msgpackers._buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, tl_type='oel', extraData=extra, matchAuthor=True)
 			retval.append(msg)
 
 

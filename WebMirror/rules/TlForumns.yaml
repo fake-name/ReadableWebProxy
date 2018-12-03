@@ -220,6 +220,8 @@ badwords: [
 			'Special:NewPages',
 			'Special:ListUsers',
 			'Special:Search',
+			'Special:ShortPages',
+			'Special:LongPages',
 			'&direction=prev&',
 			'&direction=next&',
 

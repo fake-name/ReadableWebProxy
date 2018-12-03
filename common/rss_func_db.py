@@ -34,7 +34,8 @@ import citext
 
 from common.db_engine import get_db_session
 
-from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
+from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseDeleteMessageWithType
+from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessageWithType
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVol
 from WebMirror.OutputFilters.util.TitleParsers import extractChapterVolFragment
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
@@ -251,14 +252,15 @@ def str_to_function(instr, name):
 	# These keys determine what modules are available to the database functions.
 	# If a database function needs a library, it has to be imported here!
 	scope = {
-		"get_feed_article_meta"            : get_feed_article_meta,
-		"set_feed_article_meta"            : set_feed_article_meta,
-		"buildReleaseMessage"              : buildReleaseMessage,
-		"extractChapterVol"                : extractChapterVol,
-		"extractChapterVolFragment"        : extractChapterVolFragment,
-		"extractVolChapterFragmentPostfix" : extractVolChapterFragmentPostfix,
-		"re"                               : re,
-		"json"                             : json,
+		"get_feed_article_meta"             : get_feed_article_meta,
+		"set_feed_article_meta"             : set_feed_article_meta,
+		"buildReleaseMessageWithType"       : buildReleaseMessageWithType,
+		"buildReleaseDeleteMessageWithType" : buildReleaseDeleteMessageWithType,
+		"extractChapterVol"                 : extractChapterVol,
+		"extractChapterVolFragment"         : extractChapterVolFragment,
+		"extractVolChapterFragmentPostfix"  : extractVolChapterFragmentPostfix,
+		"re"                                : re,
+		"json"                              : json,
 	}
 	popkeys = set(scope.keys())
 	popkeys.add("__builtins__")

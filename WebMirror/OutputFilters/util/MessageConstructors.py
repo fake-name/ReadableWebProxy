@@ -111,7 +111,7 @@ def pack_message(type, data, is_beta=False):
 
 
 
-def buildReleaseMessage(raw_item,
+def _buildReleaseMessage(raw_item,
 						series,
 						vol,
 						chap=None,
@@ -152,6 +152,74 @@ def buildReleaseMessage(raw_item,
 		ret[key] = value
 
 	return ret
+
+
+
+def buildReleaseMessageWithType(*args, **kwargs):
+	'''
+	Special case behaviour:
+		If vol or chapter is None, the
+		item in question will sort to the end of
+		the relevant sort segment.
+	'''
+
+	ret = _buildReleaseMessage(*args, **kwargs)
+
+	release = {
+		'type' : 'parsed-release',
+		'data' : ret
+	}
+
+	return release
+
+
+def buildReleaseDeleteMessageWithType(raw_item,
+						series,
+						vol,
+						chap=None,
+						frag=None,
+						postfix='',
+						author=None,
+						tl_type='translated',
+						extraData={},
+						matchAuthor=False,
+						looseMatch=False):
+	'''
+	Special case behaviour:
+		If vol or chapter is None, the
+		item in question will sort to the end of
+		the relevant sort segment.
+	'''
+
+	ret = {
+		'srcname'      : raw_item['srcname'],
+		'series'       : fix_string(series),
+		'vol'          : vol,
+		'chp'          : chap,
+		'frag'         : frag,
+		'published'    : raw_item['published'],
+		'itemurl'      : raw_item['linkUrl'],
+		'postfix'      : fix_string(postfix),
+		'author'       : fix_string(author),
+		'tl_type'      : tl_type,
+		'match_author' : matchAuthor,
+		'loose_match'  : looseMatch,
+
+	}
+
+	# pprint.pprint(ret)
+
+	for key, value in extraData.items():
+		assert key not in ret
+		ret[key] = value
+
+
+	release = {
+		'type' : 'delete-release',
+		'data' : ret
+	}
+
+	return release
 
 
 def createSeriesInfoPacket(data, beta=False, matchAuthor=False):

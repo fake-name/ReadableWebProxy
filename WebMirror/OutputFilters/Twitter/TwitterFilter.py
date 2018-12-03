@@ -183,7 +183,7 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		self.low_priority_links_trigger([itemurl, ])
 
-		msg = msgpackers.buildReleaseMessage(raw_item, probSeries, vol, chp, frag, postfix=post)
+		msg = msgpackers._buildReleaseMessage(raw_item, probSeries, vol, chp, frag, postfix=post)
 		msg = msgpackers.createReleasePacket(msg)
 
 	def dispatchNanoDesu(self, netloc, itemurl, itemtxt):
@@ -199,7 +199,7 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		self.low_priority_links_trigger([itemurl, ])
 
-		msg = msgpackers.buildReleaseMessage(raw_item, itemtitle, vol, chp, frag, postfix=post)
+		msg = msgpackers._buildReleaseMessage(raw_item, itemtitle, vol, chp, frag, postfix=post)
 		msg = msgpackers.createReleasePacket(msg)
 		return msg
 

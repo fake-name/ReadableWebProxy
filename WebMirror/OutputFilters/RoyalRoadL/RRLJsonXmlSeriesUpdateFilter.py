@@ -316,7 +316,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			raw_item['published'] = float(reldate)
 			raw_item['linkUrl']   = chap_url
 
-			raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+			raw_msg = msgpackers._buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 			release_msg = msgpackers.createReleasePacket(raw_msg)
 
 			trigger_urls.append(chap_url)

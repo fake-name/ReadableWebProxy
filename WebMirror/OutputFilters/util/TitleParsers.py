@@ -9,8 +9,6 @@ import settings
 from WebMirror.util.titleParseNew import TitleParser
 
 
-from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessage
-
 # pylint: disable=W0201
 
 

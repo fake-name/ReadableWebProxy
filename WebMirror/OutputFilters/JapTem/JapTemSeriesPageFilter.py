@@ -174,7 +174,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 				raw_item['linkUrl']   = releaseurl
 
 
-				raw_msg = msgpackers.buildReleaseMessage(
+				raw_msg = msgpackers._buildReleaseMessage(
 									raw_item    = raw_item,
 									series      = title,
 									vol         = vol,

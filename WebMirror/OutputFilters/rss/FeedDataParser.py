@@ -45,7 +45,7 @@ def %s(item):
 
 	for tagname, name, tl_type in tagmap:
 		if tagname in item['tags']:
-			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return _buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 
 	return False
@@ -202,7 +202,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		func = processor_row.get_func()
 
 		# And then use it.
-		return(func(item))
+		ret = func(item)
+		return ret
 
 	def dispatchRelease(self, item):
 
@@ -223,19 +224,26 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if ret is None:
 			return False
 
+
 		vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-
-		# Only return a value if we've actually found a chapter/vol
-		if ret and not (ret['vol'] or ret['chp'] or ret['postfix']):
-			self.log.info("Skipping item due to no chapter/vol/postfix: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix)
-			ret = False
-
-		# Do not trigger if there is "preview" in the title.
-		if 'preview' in item['title'].lower():
-			self.log.info("Skipping item due to preview string: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix)
-			ret = False
 		if ret:
-			assert 'tl_type' in ret
+			assert 'type' in ret
+			assert 'data' in ret
+
+			if ret['type'] == 'parsed-release' or ret['type'] == 'delete-release':
+				reldata = ret['data']
+
+				# Only return a value if we've actually found a chapter/vol
+				if reldata and not (reldata['vol'] or reldata['chp'] or reldata['postfix']):
+					self.log.info("Skipping item due to no chapter/vol/postfix: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix)
+					ret = False
+
+				# Do not trigger if there is "preview" in the title.
+				if 'preview' in item['title'].lower():
+					self.log.info("Skipping item due to preview string: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", item['srcname'], item['title'], item['tags'], vol, chp, frag, postfix)
+					ret = False
+				if reldata:
+					assert 'tl_type' in reldata
 
 
 
@@ -252,11 +260,7 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		release = self.dispatchRelease(feedDat)
 
 		if release:
-			ret = {
-				'type' : 'parsed-release',
-				'data' : release
-			}
-			return json.dumps(ret)
+			return json.dumps(release)
 		return False
 
 

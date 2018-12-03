@@ -245,10 +245,8 @@ def exposed_underp_rss_functions():
 	'''
 	Do stupid fixes to the RSS database.
 	'''
-	bad = '''	if not (chp or vol) or 'preview' in item['title'].lower():
-		return False'''
-	good = '''	if not (chp or vol) or 'preview' in item['title'].lower():
-		return None'''
+	bad = '''buildReleaseMessage('''
+	good = '''buildReleaseMessageWithType('''
 
 	sess = db.get_db_session()
 

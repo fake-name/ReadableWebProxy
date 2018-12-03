@@ -162,7 +162,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['srcname']   = "WattPad"
 			raw_item['published'] = reldate
 			raw_item['linkUrl']   = release['url']
-			msg = msgpackers.buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+			msg = msgpackers._buildReleaseMessage(raw_item, title, None, index, None, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 			retval.append(msg)
 
 			# Check if there was substantive structure in the chapter

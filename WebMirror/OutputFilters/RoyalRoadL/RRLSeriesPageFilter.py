@@ -231,7 +231,7 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = float(reldate)
 			raw_item['linkUrl']   = relurl
 
-			raw_msg = msgpackers.buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
+			raw_msg = msgpackers._buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
 
 
 			# print("Chapter:", raw_item)
