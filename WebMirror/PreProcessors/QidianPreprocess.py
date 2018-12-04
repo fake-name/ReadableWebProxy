@@ -49,7 +49,6 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 
 		toc_container = self.wg_proxy().getJson(toc_url)
 
-		print(toc_container)
 
 		if (not 'msg' in toc_container
 			or not 'data' in toc_container
@@ -59,13 +58,14 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 			):
 			self.log.error("API Call did not return success!")
 			return
-
 		toc_data = toc_container['data']
+		book_data = toc_data.get('bookInfo', {})
+
 		if 'chapterItems' in toc_data:
 			chapters = toc_data['chapterItems']
 			chapters.sort(key=lambda x: x['index'])
 
-			return chapters
+			return book_data, chapters
 
 		elif 'volumeItems' in toc_data:
 
@@ -77,11 +77,11 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 					chapters.append(chp)
 			chapters.sort(key=lambda x: x['index'])
 
-			return chapters
+			return book_data, chapters
 
 		else:
 			self.log.error("API Call response did not contain chapters")
-			return
+			return None, None
 
 
 	def update_toc(self, url, soup):
@@ -90,28 +90,40 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 			return
 		book_id = urllib.parse.urlsplit(url).path.split("/")[2]
 
-		chapters = self.get_chaps(url, book_id)
+		book_data, chapters = self.get_chaps(url, book_id)
 		if not chapters:
 			self.log.error("No chapters loaded! Nothing to do!")
 			return
 
 		main_list = bs4.BeautifulSoup("<div></div>", "lxml")
 
+		book_title = book_data['bookName']
 
 		self.log.info("ToC fetch found %s chapters!", len(chapters))
 
 		d_s = main_list.new_tag("ul")
 		for chapter in chapters:
 			linka           = main_list.new_tag("a")
+			linka['class']  = "chapter-link"
 			linka['id']     = "chapter-link"
 			linka['href']   = "https://www.webnovel.com/book/{bid}/{cid}".format(bid=book_id, cid=chapter['id'])
-			linka.string    = "{} - {}".format(chapter['index'], chapter['name'])
+			linka.string    = "{}{} ({}) - {}".format(
+				"BULLSHIT LOCKED - " if chapter['isVip'] else "",
+				chapter['chpIndex'],
+				chapter['index'],
+				chapter['name'])
+			linka['data-preprocessor-state']   = chapter['isVip']
+			linka['data-preprocessor-vol']     = chapter['chpIndex'][0]
+			linka['data-preprocessor-chp']     = chapter['chpIndex'][1]
+			linka['data-preprocessor-name']    = chapter['name']
+			linka['data-preprocessor-index']   = chapter['index']
+			linka['data-preprocessor-title']   = book_title
+			linka['data-preprocessor-reldate'] = chapter['createTime']
 
 			linkli = main_list.new_tag("li")
 			linkli.append(linka)
 
 			d_s.append(linkli)
-
 
 		header = main_list.new_tag("h3")
 		header.string = 'Table of Contents'

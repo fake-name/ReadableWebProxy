@@ -96,10 +96,13 @@ def fix_dict(inRelease):
 	return inRelease
 
 
-def pack_message(type, data, is_beta=False):
+def serialize_message(message):
+	return json.dumps(message).encode("utf-8")
+
+def pack_message(msg_type, data, is_beta=False):
 
 	ret = {
-		'type' : type,
+		'type' : msg_type,
 		'data' : data,
 
 		# "beta" items are optionally filtered client-end to allow
@@ -107,7 +110,7 @@ def pack_message(type, data, is_beta=False):
 		# to the prod env
 		'beta'      : is_beta,
 	}
-	return json.dumps(ret).encode("utf-8")
+	return serialize_message(ret)
 
 
 
@@ -164,6 +167,7 @@ def buildReleaseMessageWithType(*args, **kwargs):
 	'''
 
 	ret = _buildReleaseMessage(*args, **kwargs)
+	ret = fixReleasePacket(ret)
 
 	release = {
 		'type' : 'parsed-release',
@@ -213,6 +217,7 @@ def buildReleaseDeleteMessageWithType(raw_item,
 		assert key not in ret
 		ret[key] = value
 
+	ret = fixReleasePacket(ret)
 
 	release = {
 		'type' : 'delete-release',
@@ -261,10 +266,7 @@ def createSeriesInfoPacket(data, beta=False, matchAuthor=False):
 
 	return pack_message('series-metadata', data, is_beta=beta)
 
-
-def createReleasePacket(data, beta=False):
-	'''
-	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
+def fixReleasePacket(data):
 
 	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type']
 
@@ -274,5 +276,13 @@ def createReleasePacket(data, beta=False):
 	data['series']  = fix_string(data['series'])
 	data['postfix'] = fix_string(data['postfix'])
 	data['author']  = fix_string(data['author'])
+
+	return data
+
+def createReleasePacket(data, beta=False):
+	'''
+	Release packets can have "extra" data, so just check it's long enough and we have the keys we expect.	'''
+
+	data = fixReleasePacket(data)
 
 	return pack_message('parsed-release', data, is_beta=beta)

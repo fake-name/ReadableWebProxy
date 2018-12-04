@@ -1,4 +1,5 @@
 
+# pylint: disable=C0413
 
 # The processing pipeline has three stages.
 # Preprocessors have access to the page content before it's fed through the filters
@@ -49,6 +50,7 @@ import WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter
 import WebMirror.OutputFilters.Twitter.TwitterFilter
 import WebMirror.OutputFilters.Nu.NUHomepageFilter
 import WebMirror.OutputFilters.Nu.NuSeriesPageFilter
+import WebMirror.OutputFilters.Qidian.QidianSeriesPageFilter
 
 
 # Filters are executed against fetched content after preprocessing. They cannot modify content, but they can
@@ -65,6 +67,7 @@ FILTERS = [
 	WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter.BooksieSeriesPageFilter,
 	WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter.LNDBSeriesPageFilter,
 	WebMirror.OutputFilters.Twitter.TwitterFilter.TwitterFilter,
+	WebMirror.OutputFilters.Qidian.QidianSeriesPageFilter.QidianSeriesPageFilter,
 ]
 
 
