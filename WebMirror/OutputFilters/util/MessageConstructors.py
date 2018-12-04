@@ -124,7 +124,9 @@ def _buildReleaseMessage(raw_item,
 						tl_type='translated',
 						extraData={},
 						matchAuthor=False,
-						looseMatch=False):
+						looseMatch=False,
+						prefixMatch=False,
+						):
 	'''
 	Special case behaviour:
 		If vol or chapter is None, the
@@ -145,6 +147,7 @@ def _buildReleaseMessage(raw_item,
 		'tl_type'      : tl_type,
 		'match_author' : matchAuthor,
 		'loose_match'  : looseMatch,
+		'prefix_match' : prefixMatch,
 
 	}
 
@@ -187,7 +190,9 @@ def buildReleaseDeleteMessageWithType(raw_item,
 						tl_type='translated',
 						extraData={},
 						matchAuthor=False,
-						looseMatch=False):
+						looseMatch=False,
+						prefixMatch=False,
+						):
 	'''
 	Special case behaviour:
 		If vol or chapter is None, the
@@ -208,6 +213,7 @@ def buildReleaseDeleteMessageWithType(raw_item,
 		'tl_type'      : tl_type,
 		'match_author' : matchAuthor,
 		'loose_match'  : looseMatch,
+		'prefix_match' : prefixMatch,
 
 	}
 
@@ -270,8 +276,14 @@ def fixReleasePacket(data):
 
 	expect = ['srcname', 'series', 'vol', 'chp', 'published', 'itemurl', 'postfix', 'author', 'tl_type']
 
+	maybe = [
+		'match_author',
+		'loose_match',
+		'prefix_match',
+	]
+
 	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, data)
-	assert all([key in data for key in expect]), "Invalid key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
+	assert all([key in data for key in expect]), "Missing key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
 
 	data['series']  = fix_string(data['series'])
 	data['postfix'] = fix_string(data['postfix'])

@@ -114,10 +114,10 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['linkUrl']   = relurl
 
 			if state == '0':
-				raw_msg = msgpackers.buildReleaseMessageWithType(raw_item, title, None, index, None, tl_type='translated')
+				raw_msg = msgpackers.buildReleaseMessageWithType(raw_item, title, None, index, None, tl_type='translated', prefixMatch=True)
 				retval.append(msgpackers.serialize_message(raw_msg))
 			elif state == "2":
-				raw_msg = msgpackers.buildReleaseDeleteMessageWithType(raw_item, title, None, index, None, tl_type='translated')
+				raw_msg = msgpackers.buildReleaseDeleteMessageWithType(raw_item, title, None, index, None, tl_type='translated', prefixMatch=True)
 				retval.append(msgpackers.serialize_message(raw_msg))
 			else:
 				print("Unknown state:", state)
