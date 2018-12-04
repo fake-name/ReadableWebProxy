@@ -115,7 +115,7 @@ NANO_DESU_MAP = {
 	'www.bunimithetranslation.wordpress.com'        : 'Bu ni Mi wo Sasagete Hyaku to Yonen. Elf de Yarinaosu Musha Shugyou',
 }
 
-class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class TwitterFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
@@ -130,10 +130,10 @@ class TwitterProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		if url == "https://twitter.com/Baka_Tsuki":
-			print("TwitterProcessor want Baka-Tsuki URL")
+			print("TwitterFilter want Baka-Tsuki URL")
 			return True
 		if url == "https://twitter.com/Nano_Desu_Yo":
-			print("TwitterProcessor want NanoDesu URL")
+			print("TwitterFilter want NanoDesu URL")
 			return True
 		return False
 
@@ -262,7 +262,7 @@ def test():
 	# import WebRequest as webfunc
 
 	# wg = webfunc.WebGetRobust()
-	# proc = JapTemSeriesPageProcessor(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)
+	# proc = JapTemSeriesPageFilter(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)
 
 	# urls = [
 	# 	'http://japtem.com/fanfic.php',

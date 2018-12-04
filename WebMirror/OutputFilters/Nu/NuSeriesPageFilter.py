@@ -78,7 +78,7 @@ def upsertNuItem(raw_cur, itemparams):
 	return raw_cur.rowcount
 
 
-class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
+class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 
 	wanted_mimetypes = [
@@ -93,7 +93,7 @@ class NUSeriesPageProcessor(NUBaseFilter.NuBaseFilter):
 	@staticmethod
 	def wantsUrl(url):
 		if re.search(r"^https?://(?:www\.)?novelupdates\.com/series/.+/?$", url):
-			print("NUSeriesPageProcessor Wants url: '%s'" % url)
+			print("NUSeriesPageFilter Wants url: '%s'" % url)
 			return True
 		return False
 

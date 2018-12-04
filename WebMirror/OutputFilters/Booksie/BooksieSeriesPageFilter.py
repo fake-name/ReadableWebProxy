@@ -49,7 +49,7 @@ BAD_TAGS = [
 IS_BETA = True
 
 
-class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class BooksieSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
@@ -64,7 +64,7 @@ class BooksieSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		if re.search(r"^http://(?:www\.)?booksie\.com/.*?/novel/.*?/chapter/1$", url):
-			print("BooksieSeriesPageProcessor Wants url: '%s'" % url)
+			print("BooksieSeriesPageFilter Wants url: '%s'" % url)
 			return True
 
 		return False

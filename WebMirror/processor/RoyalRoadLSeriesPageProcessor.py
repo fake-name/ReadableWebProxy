@@ -38,7 +38,7 @@ class RoyalRoadLSeriesPageProcessor(HtmlProcessor.HtmlPageProcessor):
 	@staticmethod
 	def wantsUrl(url):
 		if re.search(r"^https?://(?:www\.)?royalroadl\.com/fiction/\d+?(?:/[a-z\-\d]+?/?)?$", url):
-			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
+			print("RoyalRoadLSeriesPageProcessor Wants url: '%s'" % url)
 			return True
 		return False
 

@@ -43,7 +43,7 @@ def load_lut():
 
 
 
-class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
@@ -58,10 +58,10 @@ class RRLSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@classmethod
 	def wantsUrl(cls, url):
 		if cls.match_re.search(url):
-			print("RRLSeriesPageProcessor Wants url: '%s'" % url)
+			print("RRLSeriesPageFilter Wants url: '%s'" % url)
 			return True
 		# else:
-		# 	print("RRLSeriesPageProcessor doesn't want url: '%s'" % url)
+		# 	print("RRLSeriesPageFilter doesn't want url: '%s'" % url)
 
 		return False
 

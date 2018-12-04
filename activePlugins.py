@@ -16,6 +16,10 @@ import WebMirror.PreProcessors.WixsitePreprocess
 import WebMirror.PreProcessors.LiteroticaPreprocess
 import WebMirror.PreProcessors.CreativeNovelsPreprocess
 
+# Preprocessors are executed against fetched content first.
+# They're principally useful for doing page-rewriting for
+# sites with annoying shit like click-wrappers or injecting
+# better navigation components into a page before processing.
 PREPROCESSORS = [
 	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor,
 	WebMirror.PreProcessors.RedditPreprocess.RedditPreprocessor,
@@ -47,20 +51,20 @@ import WebMirror.OutputFilters.Nu.NUHomepageFilter
 import WebMirror.OutputFilters.Nu.NuSeriesPageFilter
 
 
-# Filters are executed against fetched content first.
+# Filters are executed against fetched content after preprocessing. They cannot modify content, but they can
+# perform operations based on it's content (e.g. generating releases for WLNUpdates, etc...).
 FILTERS = [
-	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageProcessor,
+	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter.RRLSeriesPageFilter,
 	WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter.RRLSeriesUpdateFilter,
 	WebMirror.OutputFilters.RoyalRoadL.RRLJsonXmlSeriesUpdateFilter.RRLJsonXmlSeriesUpdateFilter,
 
 	WebMirror.OutputFilters.Nu.NUHomepageFilter.NuHomepageFilter,
-	WebMirror.OutputFilters.Nu.NuSeriesPageFilter.NUSeriesPageProcessor,
-	WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter.JapTemSeriesPageProcessor,
+	WebMirror.OutputFilters.Nu.NuSeriesPageFilter.NUSeriesPageFilter,
+	WebMirror.OutputFilters.JapTem.JapTemSeriesPageFilter.JapTemSeriesPageFilter,
 	#WebMirror.OutputFilters.WattPad.WattPadSeriesPageFilter.WattPadSeriesPageFilter,
-	WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter.BooksieSeriesPageProcessor,
+	WebMirror.OutputFilters.Booksie.BooksieSeriesPageFilter.BooksieSeriesPageFilter,
 	WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter.LNDBSeriesPageFilter,
-
-	WebMirror.OutputFilters.Twitter.TwitterFilter.TwitterProcessor,
+	WebMirror.OutputFilters.Twitter.TwitterFilter.TwitterFilter,
 ]
 
 
@@ -82,7 +86,8 @@ import WebMirror.processor.FontRemapProcessors
 import WebMirror.processor.GarbageInlineProcessors
 import WebMirror.processor.XiAiNovelProcessor
 
-
+# Finally, plugins handle fully extracting the content from a page. They can also do
+# rewriting like how preprocessors work, but they're intended for more general use.
 PLUGINS = [
 	WebMirror.processor.HtmlProcessor.HtmlPageProcessor,
 	WebMirror.processor.GDriveDirProcessor.GDriveDirProcessor,

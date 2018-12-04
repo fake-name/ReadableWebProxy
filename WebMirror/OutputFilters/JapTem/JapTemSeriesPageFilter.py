@@ -36,7 +36,7 @@ MIN_RATING = 2.5
 
 
 
-class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
+class JapTemSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
@@ -51,7 +51,7 @@ class JapTemSeriesPageProcessor(WebMirror.OutputFilters.FilterBase.FilterBase):
 	@staticmethod
 	def wantsUrl(url):
 		if re.search(r"^http://japtem.com/fanfic.php$", url):
-			print("JapTemSeriesPageProcessor Wants url: '%s'" % url)
+			print("JapTemSeriesPageFilter Wants url: '%s'" % url)
 			return True
 		return False
 
@@ -254,7 +254,7 @@ def test():
 	# import WebRequest as webfunc
 
 	# wg = webfunc.WebGetRobust()
-	# proc = JapTemSeriesPageProcessor(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)
+	# proc = JapTemSeriesPageFilter(pageUrl="urlllllll", pgContent="watttt", type='lolertype', dosuper=False)
 
 	# urls = [
 	# 	'http://japtem.com/fanfic.php',

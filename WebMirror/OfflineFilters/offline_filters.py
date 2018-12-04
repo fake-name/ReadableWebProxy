@@ -210,8 +210,8 @@ def exposed_process_nu_pages(transmit=True):
 	for row in pages:
 		try:
 			# print(row, row.url, row.state)
-			if row['pgContent'] and NuSeriesPageFilter.NUSeriesPageProcessor.wantsUrl(row['pageUrl']):
-				proc = NuSeriesPageFilter.NUSeriesPageProcessor(db_sess=sess, **row)
+			if row['pgContent'] and NuSeriesPageFilter.NUSeriesPageFilter.wantsUrl(row['pageUrl']):
+				proc = NuSeriesPageFilter.NUSeriesPageFilter(db_sess=sess, **row)
 				proc.extractContent()
 		except Exception:
 			print("")
