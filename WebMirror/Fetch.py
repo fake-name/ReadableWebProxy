@@ -318,9 +318,12 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 	def dispatchContent(self, content, fName, mimeType):
-		assert bool(content) == True
+		assert bool(content)
 
-		assert mimeType, "Mimetype must not be none"
+		if content and not mimeType:
+			mimeType = 'application/octet-stream'
+
+		assert mimeType, "Mimetype must not be none. URL: '%s'" % (self.target_url)
 
 		# Do preprocessing:
 		preprocess_counts = 0
@@ -330,7 +333,7 @@ class ItemFetcher(LogBase.LoggerMixin):
 				preprocess_counts += 1
 
 		if preprocess_counts > 1:
-			raise ValueError("Multiple preprocess executions for the same content (%s, %s, %s). Wat?" % (self.target_url, self.fName, self.mimeType))
+			raise ValueError("Multiple preprocess executions for the same content (%s, %s, %s). Wat?" % (self.target_url, fName, mimeType))
 
 		# Feed content through filters that want it (if any):
 		for filter_plg in self.filter_modules:
@@ -383,7 +386,11 @@ class ItemFetcher(LogBase.LoggerMixin):
 			content, fName, mimeType = preretrieved
 
 		started_at = time.time()
-		ret = self.dispatchContent(content, fName, mimeType)
+		try:
+			ret = self.dispatchContent(content, fName, mimeType)
+		except Exception:
+			self.log.error("Failure processing content from url '%s', mimetype '%s', filename: '%s'" % (self.target_url, mimeType, fName))
+			raise
 
 		fetchtime = (time.time() - started_at) * 1000
 

@@ -222,6 +222,7 @@ badwords: [
 			'Special:Search',
 			'Special:ShortPages',
 			'Special:LongPages',
+			'Special:ListFiles',
 			'&direction=prev&',
 			'&direction=next&',
 
