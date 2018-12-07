@@ -1,6 +1,7 @@
 
 import re
 import urllib.parse
+import re
 import unshortenit
 
 import requests.exceptions
@@ -191,16 +192,24 @@ class CacheObject():
 	def has_key(self, k):
 		return db.get_from_db_key_value_store(k) != {}
 
+SQUATTER_NETLOC_RE = re.compile(r"^www?\d+\.")
 
 def cleanUrl(urlin):
 	# Fucking tumblr redirects.
 	if urlin.startswith("https://www.tumblr.com/login"):
 		return None
-	try:
-		resolve_redirects = False
 
-		if 'wp.me' in urllib.parse.urlparse(urlin).netloc:
-			resolve_redirects = True
+	resolve_redirects = False
+
+	parsed = urllib.parse.urlparse(urlin)
+	if SQUATTER_NETLOC_RE.match(parsed.netloc):
+		print("Regex rejecting url: ", urlin)
+		return None
+
+	if 'wp.me' in parsed.netloc:
+		resolve_redirects = True
+
+	try:
 
 		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=resolve_redirects)
 		return url

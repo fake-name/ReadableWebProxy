@@ -663,7 +663,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		received = 0
 		loops = 0
-		max_loop_time = 60 * 60
+		max_loop_time = 60 * 30
 		while 1:
 			received += self.process_avail()
 			print("\r`fetch_and_flush` sleeping for {} more responses ({} of {}, loop {} of {})\r".format(resp_cnt - received, received, resp_cnt, loops, max_loop_time), end='', flush=True)

@@ -12,6 +12,7 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+	'https://tetractys-translations.blogspot.com',
 	'https://handofvecna.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',

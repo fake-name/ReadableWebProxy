@@ -320,8 +320,6 @@ class ItemFetcher(LogBase.LoggerMixin):
 	def dispatchContent(self, content, fName, mimeType):
 		assert bool(content)
 
-		if content and not mimeType:
-			mimeType = 'application/octet-stream'
 
 		assert mimeType, "Mimetype must not be none. URL: '%s'" % (self.target_url)
 
@@ -384,6 +382,9 @@ class ItemFetcher(LogBase.LoggerMixin):
 			content, fName, mimeType = self.getItem(self.target_url)
 		else:
 			content, fName, mimeType = preretrieved
+
+		if content and not mimeType:
+			mimeType = 'application/octet-stream'
 
 		started_at = time.time()
 		try:

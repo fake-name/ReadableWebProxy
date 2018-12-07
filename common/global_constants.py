@@ -143,6 +143,9 @@ GLOBAL_BAD_URLS = [
 			'ww12.kudalakorn.com',
 			'ww12.nepustation.com',
 			'ww12.pegasusfarts.com',
+			'ww1.fictiongrill.com',
+			'ww12.fictiongrill.com',
+
 			'www.swoopdeal.com',
 			'www.hyfind.de'
 			'https:/68.media.tumblr.com',

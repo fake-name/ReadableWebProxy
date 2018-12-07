@@ -153,10 +153,16 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		return False
 
 
-	def processPage(self, url_ignored, content):
+	def processPage(self, url, content):
 		# Ignore 404 chapters
 		if "<title>Not Found | RoyalRoadL</title>" in content:
 			return
+
+		if '<a href="#contents" title="Table of Contents" class="j_show_contents" data-report-eid' not in content:
+			return
+		if '<span>Table of Contents</span></a>' not in content:
+			return
+
 
 		soup = WebRequest.as_soup(self.content)
 
