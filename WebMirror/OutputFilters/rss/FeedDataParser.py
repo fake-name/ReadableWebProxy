@@ -45,7 +45,7 @@ def %s(item):
 
 	for tagname, name, tl_type in tagmap:
 		if tagname in item['tags']:
-			return _buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 
 	return False

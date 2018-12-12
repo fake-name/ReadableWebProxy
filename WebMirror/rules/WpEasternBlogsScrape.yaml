@@ -6,8 +6,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-
-
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -139,6 +137,7 @@ baseUrl: [
 	'https://blackpond.wordpress.com',
 	'https://blessedmango.wordpress.com',
 	'https://bloodsongs.wordpress.com',
+	'https://bltotheuniverse.wordpress.com',
 	'https://bludeblobtranslations.wordpress.com',
 	'https://bluebugsstory.wordpress.com',
 	'https://bluebunnytranslations.wordpress.com',
@@ -306,6 +305,7 @@ baseUrl: [
 	'https://enxiao.wordpress.com',
 	'https://epyontranslations.wordpress.com',
 	'https://eromangaweb.wordpress.com',
+	'https://eroranobe.wordpress.com',
 	'https://errorknife.wordpress.com',
 	'https://eternalkifune.wordpress.com',
 	'https://etherealnovels.wordpress.com',
@@ -937,6 +937,7 @@ baseUrl: [
 	'https://ronsetsubu.wordpress.com',
 	'https://roseredcamellia.wordpress.com',
 	'https://rosyfantasy.wordpress.com',
+	'https://rottengirlstranslation.wordpress.com',
 	'https://rottentranslations.wordpress.com',
 	'https://rozenfantasyblog.wordpress.com',
 	'https://rozenkristal.wordpress.com',
@@ -966,6 +967,7 @@ baseUrl: [
 	'https://sasamisanthetranslation.wordpress.com',
 	'https://saurimania.wordpress.com',
 	'https://savagebunun3.wordpress.com',
+	'https://scelussceleris.wordpress.com',
 	'https://scryatranslations.wordpress.com',
 	'https://scumbagtranslations.wordpress.com',
 	'https://secondlifetranslations.wordpress.com',
@@ -1350,8 +1352,11 @@ baseUrl: [
 	'https://stormytranslations.home.blog',
 	'https://tbrithatrans.home.blog',
 	'https://thesoundsofsoothingrain.home.blog',
+	'https://rosietranslates.home.blog',
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
+	'http://narou-tl.com',
+	'https://ebisutranslations.com',
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',
@@ -1649,6 +1654,8 @@ baseUrl: [
 	'https://thesuniscold.translatednovels.com',
 	'https://tigertranslations.org',
 	'https://totallytranslations.com',
+	'https://aya.sanusi.id',
+	'https://aya.sanusi.me',
 	'https://translasi.sanusi.me',
 	'https://translatednovels.com',
 	'https://translationchicken.com',

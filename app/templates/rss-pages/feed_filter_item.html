@@ -102,7 +102,7 @@
 	ltags = [tmp.lower() for tmp in item['tags']]
 	for key, value in tlut.items():
 		if key in ltags:
-			return buildReleaseMessage(item, value, vol, chp, frag=frag, postfix=postfix, tl_type='translated')
+			return buildReleaseMessageWithType(item, value, vol, chp, frag=frag, postfix=postfix, tl_type='translated')
 
 	################################################################################################################
 
@@ -112,7 +112,7 @@
 
 	for tag, sname in tagmap.items():
 		if tag in item['tags']:
-			return buildReleaseMessage(item, sname, vol, chp, frag=frag)
+			return buildReleaseMessageWithType(item, sname, vol, chp, frag=frag)
 
 	################################################################################################################
 
@@ -123,7 +123,7 @@
 
 	for series, require_chp in chp_prefixes:
 		if item['title'].lower().startswith(series.lower()) and (not require_chp or 'chapter' in item['title'].lower()):
-			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix)
+			return buildReleaseMessageWithType(item, series, vol, chp, frag=frag, postfix=postfix)
 
 	return False
 </code></pre>
@@ -138,7 +138,7 @@
 
 	for tagname, name, tl_type in tagmap:
 		if tagname in item['tags']:
-			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 </code></pre>
 
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('url-lut-snippet')">Insert</button>
@@ -150,7 +150,7 @@
 
 	for key, name, tl_type in urlfrag:
 		if key in item['linkUrl'].lower():
-			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 </code></pre>
 
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('title-lut-snippet')">Insert</button>
@@ -161,7 +161,7 @@
 
 	for titlecomponent, name, tl_type in titlemap:
 		if titlecomponent.lower() in item['title'].lower():
-			return buildReleaseMessage(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 </code></pre>
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-keyed-lut-snippet')">Insert</button>
 <pre><code id='startswith-keyed-lut-snippet'>	chp_prefixes = [
@@ -171,7 +171,7 @@
 
 	for series, require_chp, tl_type in chp_prefixes:
 		if item['title'].lower().startswith(series.lower()) and (not require_chp or 'chapter' in item['title'].lower()):
-			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return buildReleaseMessageWithType(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 </code></pre>
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-lut-snippet')">Insert</button>
@@ -182,7 +182,7 @@
 
 	for prefix, series, tl_type in chp_prefixes:
 		if item['title'].lower().startswith(prefix.lower()):
-			return buildReleaseMessage(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+			return buildReleaseMessageWithType(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 </code></pre>
 
@@ -190,7 +190,7 @@
 <pre><code id='lower-lut-snippet'>	if 'tdadp' in item['title'].lower() or 'To deprive a deprived person episode'.lower() in item['title'].lower():
 		if vol and chp:
 			vol = None
-		return buildReleaseMessage(item, 'To Deprive a Deprived Person', vol, chp, frag=frag, postfix=postfix)
+		return buildReleaseMessageWithType(item, 'To Deprive a Deprived Person', vol, chp, frag=frag, postfix=postfix)
 </code></pre>
 
 								<hr>

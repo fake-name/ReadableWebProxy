@@ -1445,7 +1445,6 @@ def get_nu_head_urls():
 	with db.session_context() as sess:
 
 		nu_items = sess.query(db.NuReleaseItem)             \
-			.filter(db.NuReleaseItem.validated == True)     \
 			.filter(db.NuReleaseItem.actual_target != None) \
 			.all()
 

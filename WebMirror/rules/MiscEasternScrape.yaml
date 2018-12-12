@@ -89,10 +89,13 @@ baseUrl: [
 		'https://www.badnovels.com',
 		'https://badnovels.com',
 		'http://deadlynovels.tk',
+		'https://lovelyteatranslation.webnode.com',
 
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'http://comrademao.com',
 		'https://pumanovels.com',
+		'https://www.novelmultiverse.com',
+		'http://www.spaceofgod.com',
 
 	]
 
