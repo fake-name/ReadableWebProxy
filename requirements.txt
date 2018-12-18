@@ -22,7 +22,7 @@ tinycss2==0.6.1
 fontTools==3.34.2
 semantic==1.0.3
 fdict==0.8.1
-cachetools==2.1.0
+cachetools==3.0.0
 bleach==3.0.2
 Jinja2==2.10
 xmljson==0.1.9 
