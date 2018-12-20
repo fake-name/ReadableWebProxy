@@ -6,6 +6,7 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -33,6 +34,7 @@ baseUrl: [
 	'https://aflappyteddybird.wordpress.com',
 	'https://aftertranslations.wordpress.com',
 	'https://aihristdreamtranslation.wordpress.com',
+	'https://airfalltranslations.wordpress.com',
 	'https://ajrg.wordpress.com',
 	'https://akaitranslates.wordpress.com',
 	'https://akashiatranslations.wordpress.com',
@@ -82,6 +84,7 @@ baseUrl: [
 	'https://asiancult.wordpress.com',
 	'https://asiandramalife.wordpress.com',
 	'https://asplashofnovels.wordpress.com',
+	'https://astereads.wordpress.com',
 	'https://asterlucerne.wordpress.com',
 	'https://asthmaticspider.wordpress.com',
 	'https://atentranslationswordpresscom.wordpress.com',
@@ -347,6 +350,7 @@ baseUrl: [
 	'https://fivestarspecialists.wordpress.com',
 	'https://flowerbridgetoo.wordpress.com',
 	'https://flowermoontranslations.wordpress.com',
+	'https://flowersucculent.wordpress.com',
 	'https://fluffysnowtime.wordpress.com',
 	'https://fmgandalf.wordpress.com',
 	'https://forgetfuldreamer.wordpress.com',
@@ -375,6 +379,7 @@ baseUrl: [
 	'https://gashacongamer.wordpress.com',
 	'https://gekkahimethetranslation.wordpress.com',
 	'https://gengareric.wordpress.com',
+	'https://geniuslyplain.wordpress.com',
 	'https://gilatranslationmonster.wordpress.com',
 	'https://ginironochou.wordpress.com',
 	'https://girlynovelsblog.wordpress.com',
@@ -620,6 +625,7 @@ baseUrl: [
 	'https://lingtiantranslation.wordpress.com',
 	'https://lingtranslations.wordpress.com',
 	'https://lionmaskrpt.wordpress.com',
+	'https://listeningstories.wordpress.com',
 	'https://liteleetranslated.wordpress.com',
 	'https://literarycrow.wordpress.com',
 	'https://littlefairyalice.wordpress.com',
@@ -705,6 +711,7 @@ baseUrl: [
 	'https://miratranslates.wordpress.com',
 	'https://miritranslations.wordpress.com',
 	'https://mirrortranslationsblog.wordpress.com',
+	'https://mirutranslations.wordpress.com',
 	'https://missinghairtranslation.wordpress.com',
 	'https://mistream.wordpress.com',
 	'https://mistycloudtranslations.wordpress.com',
@@ -865,7 +872,6 @@ baseUrl: [
 	'https://pooptl.wordpress.com',
 	'https://poormanstranslation.wordpress.com',
 	'https://poorqualitytl.wordpress.com',
-	'https://poppyscanlations.video.blog',
 	'https://popsiclete.wordpress.com',
 	'https://pprocrastination.wordpress.com',
 	'https://praisethemetalbat.wordpress.com',
@@ -1084,6 +1090,7 @@ baseUrl: [
 	'https://spicychickentranslations.wordpress.com',
 	'https://springraintranslations.wordpress.com',
 	'https://springscents.wordpress.com',
+	'https://staffofone.wordpress.com',
 	'https://starrydawntranslations.wordpress.com',
 	'https://starrynightnovels.wordpress.com',
 	'https://starvecleric.wordpress.com',
@@ -1172,6 +1179,7 @@ baseUrl: [
 	'https://tofubyu.wordpress.com',
 	'https://tokyoespscans.wordpress.com',
 	'https://tomorolls.wordpress.com',
+	'https://tomotranslations.wordpress.com',
 	'https://tototrans.wordpress.com',
 	'https://trackest.wordpress.com',
 	'https://translaboratory.wordpress.com',
@@ -1294,6 +1302,7 @@ baseUrl: [
 	'https://xianxianovel.wordpress.com',
 	'https://xianxiatales.wordpress.com',
 	'https://xianxiauniverse.wordpress.com',
+	'https://xiintranslations.wordpress.com',
 	'https://xingtianworks.wordpress.com',
 	'https://xiose.wordpress.com',
 	'https://xtostos.wordpress.com',
@@ -1333,6 +1342,7 @@ baseUrl: [
 	'https://zhanlantranslations.wordpress.com',
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
+	'https://nagisensei.wordpress.com',
 
 	# There's a .blog TLD. I hate everyone involved.
 	'https://barolaide.home.blog',
@@ -1353,6 +1363,11 @@ baseUrl: [
 	'https://tbrithatrans.home.blog',
 	'https://thesoundsofsoothingrain.home.blog',
 	'https://rosietranslates.home.blog',
+	'https://poppyscanlations.video.blog',
+	'https://gudemtl.home.blog',
+	'https://kaytranslationcom.home.blog',
+	'https://kuronekotranslation.home.blog',
+
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
 	'http://narou-tl.com',
