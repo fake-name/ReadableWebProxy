@@ -184,8 +184,14 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 						referrer == "http://www.novelupdates.com/")
 
 					linkas = release.find_all('a', class_='chp-release')
-					sname = series.get_text().strip()
-					gname = group.get_text().strip()
+
+					try:
+						sname = series.a['title'].strip()
+						gname = group.a['title'].strip()
+					except Exception:
+						sname = series.get_text().strip()
+						gname = group.get_text().strip()
+
 					for link in linkas:
 						bad = any([tmp in masked_classes for tmp in link['class']])
 						if not bad:

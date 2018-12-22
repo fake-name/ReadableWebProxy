@@ -503,6 +503,13 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		if not row.actual_target:
 			return
 
+
+		# Had a typo in the name_fix_lut.json file. Fix that. Also, derp.
+		if row.groupinfo == 'Misty Cloud Translations' and '//2slow2latemtl.icu/' in row.actual_target:
+			row.groupinfo = "2Slow2Late MTL"
+			self.log.error("What?")
+
+
 		if "www.webnovel.com" in row.actual_target and "/rssbook/" in row.actual_target:
 			return
 
