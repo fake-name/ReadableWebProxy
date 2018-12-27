@@ -69,12 +69,20 @@
 			document.title = "ReadProxy - " + data['title']
 			
 			
-			var content = $("#refetch_link_1");
-			content.html('Re-Fetch');
+			$("#refetch_link_1").html('Re-Fetch');
+			$("#refetch_link_2").html('Re-Fetch');
+
+			$('#refetch_link_1').click(load_nocache);
+			$('#refetch_link_2').click(load_nocache);
+
 			
 		};
 		function content_load_fail(jqXHR, textStatus, errorThrown)
 		{
+		
+			$('#refetch_link_1').click(load_nocache);
+			$('#refetch_link_2').click(load_nocache);
+
 			alert("Failed to fetch content!\nError: " + errorThrown + "\nStatus text: " + textStatus);
 		}
 
@@ -98,8 +106,10 @@
 		{
 			var url = "/render?{{ {"url" : req_url, "nocache" : "true", "version" : None} | urlencode | safe }}";
 
-			var content = $("#refetch_link_1");
-			content.html('Refetching');
+			$("#refetch_link_1").html('Refetching').off('click');
+			$("#refetch_link_2").html('Refetching').off('click');
+
+
 
 			$.ajax({
 				url      : url,

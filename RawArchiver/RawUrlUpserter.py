@@ -88,7 +88,6 @@ def initializeRawStartUrls():
 def resetRawInProgress():
 	print("Resetting any stalled downloads from the previous session.")
 
-	sess = db.get_db_session()
 
 	commit_interval =  50000
 	step            =  50000
@@ -156,7 +155,6 @@ def resetRawInProgress():
 			pass
 			# sess.execute('''SET enable_bitmapscan TO on;''')
 
-	db.delete_db_session()
 
 
 # LRU Cache with a maxsize of 1 million, and a TTL of 6 hours

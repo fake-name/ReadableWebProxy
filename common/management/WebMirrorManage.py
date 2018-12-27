@@ -50,6 +50,8 @@ import Misc.NuForwarder.NuHeader
 import flags
 
 
+from common.Exceptions import GarbageDomainSquatterException
+import WebMirror.processor.HtmlProcessor
 import WebMirror.TimedTriggers.RollingRewalkTriggers
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.SiteSync.fetch
@@ -1550,3 +1552,48 @@ def exposed_new_from_all_feeds(fetch_title=False):
 
 	filter_get_have_url(mapdict, fetch_title)
 
+
+def exposed_purge_squatter_content():
+
+
+	proc = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(
+			baseUrls        = None,
+			pageUrl         = None,
+			pgContent       = True,
+			loggerPath      = None,
+			relinkable      = None,
+			stripTitle      = None,
+			destyle         = None,
+			preserveAttrs   = None,
+			decompose_svg   = None,
+
+			decompose       = [],
+			decomposeBefore = [],
+
+		)
+
+	engine = WebMirror.Engine.SiteArchiver(None, None, None)
+
+	with db.session_context() as sess:
+		print("Querying for count")
+		count = sess.query(db.WebPages.id).count()
+		print("Tital count")
+		print("Querying for rows")
+		iterable = sess.query(db.WebPages.id, db.WebPages.url, db.WebPages.netloc, db.WebPages.content) \
+			.order_by(db.WebPages.netloc)                                          \
+			.yield_per(1000)
+		rows = 0
+		skipped = []
+
+
+
+		for rid, url, netloc, content in tqdm.tqdm(iterable, total=count):
+			try:
+				if content:
+					proc.checkSquatters(content)
+			except GarbageDomainSquatterException:
+				print("Squatter page: ", url)
+				skipped.append((rid, url, netloc))
+
+	with open("dump.json", "w") as fp:
+		json.dump(skipped, fp)

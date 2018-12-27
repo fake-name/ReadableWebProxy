@@ -35,7 +35,7 @@ if __name__ == "__main__":
 import config
 import runStatus
 
-import Misc.install_vmprof
+# import Misc.install_vmprof
 import WebMirror.Engine
 import WebMirror.rules
 import common.util.urlFuncs as urlFuncs

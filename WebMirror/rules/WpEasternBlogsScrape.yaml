@@ -1343,6 +1343,7 @@ baseUrl: [
 	'https://zmunjali.wordpress.com',
 	'https://zoengsaiwaa.wordpress.com',
 	'https://nagisensei.wordpress.com',
+	'https://basiclntranslations.wordpress.com',
 
 	# There's a .blog TLD. I hate everyone involved.
 	'https://barolaide.home.blog',
@@ -1367,9 +1368,12 @@ baseUrl: [
 	'https://gudemtl.home.blog',
 	'https://kaytranslationcom.home.blog',
 	'https://kuronekotranslation.home.blog',
+	'https://maplefalls.home.blog',
+	'https://xenontranslations.video.blog',
 
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
+	'https://james-park.me',
 	'http://narou-tl.com',
 	'https://ebisutranslations.com',
 	'http://aethernea.com',

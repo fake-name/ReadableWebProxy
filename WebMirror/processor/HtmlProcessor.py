@@ -486,6 +486,8 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 
 
 	def checkSquatters(self, content):
+		if 'Did you know that some of the best domains are available through PRIVATE AUCTION.' in content:
+			raise GarbageDomainSquatterException("Hexonet Domain Squatter!")
 		if '<iframe src="http://mcc.godaddy.com/park' in content:
 			raise GarbageDomainSquatterException("GoDaddy Domain Squatter!")
 		if '<script src="//i.cdnpark.com/registrar/' in content:

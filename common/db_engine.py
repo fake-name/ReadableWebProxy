@@ -152,9 +152,11 @@ def delete_db_session(postfix="", flask_sess_if_possible=True):
 			# print("Deleted session for id: ", csid)
 
 @contextlib.contextmanager
-def session_context(name=""):
+def session_context(name="", override_timeout=False):
 	sess = get_db_session(postfix=name + 'context-sess')
 	try:
+		if override_timeout:
+			sess.execute("""SET statement_timeout TO %s;""", (override_timeout, ))
 		yield sess
 
 	except sqlalchemy.exc.InternalError:
@@ -176,6 +178,8 @@ def session_context(name=""):
 		raise
 
 	finally:
+		if override_timeout:
+			sess.execute("""RESET statement_timeout;""")
 		delete_db_session(postfix='context-sess')
 
 

@@ -12,8 +12,6 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-	'https://tetractys-translations.blogspot.com',
-	'https://handofvecna.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
 	'http://ahoujicha.blogspot.com',
@@ -193,6 +191,7 @@ baseUrl: [
 	'https://godofabc.blogspot.com',
 	'https://gugeltranslation.blogspot.com',
 	'https://hainemakorutranslations.blogspot.com',
+	'https://handofvecna.blogspot.com',
 	'https://hermitranslation.blogspot.com',
 	'https://hilirivsfantasy.blogspot.com',
 	'https://iamabananav2.blogspot.com',
@@ -203,6 +202,7 @@ baseUrl: [
 	'https://kaede726.blogspot.com',
 	'https://kidneytranslations.blogspot.com',
 	'https://killerpant.blogspot.com',
+	'https://languidtranslations.blogspot.com',
 	'https://lazygtranslate.blogspot.com',
 	'https://legendarygomo.blogspot.com',
 	'https://lights-n-progress.blogspot.com',
@@ -220,6 +220,7 @@ baseUrl: [
 	'https://parttimer-fui.blogspot.com',
 	'https://pegasusfarts.blogspot.com',
 	'https://peonynoveltl.blogspot.de',
+	'https://plustranslators.blogspot.com',
 	'https://psychictattoo.blogspot.com',
 	'https://raisingmytail.blogspot.co.id',
 	'https://ramdomtl.blogspot.com',
@@ -229,6 +230,7 @@ baseUrl: [
 	'https://skimtranslation15.blogspot.com',
 	'https://sparklingdawnlights.blogspot.com',
 	'https://sulisha.blogspot.com',
+	'https://tetractys-translations.blogspot.com',
 	'https://timelessmtl.blogspot.com',
 	'https://translatedino.blogspot.com',
 	'https://translatingsloth.blogspot.com',
