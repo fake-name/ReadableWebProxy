@@ -30,10 +30,10 @@ from common.db_engine import SQLALCHEMY_DATABASE_URI
 import activeScheduledTasks
 
 CALLABLE_LUT = {}
-for item, dummy_interval in activeScheduledTasks.scrapePlugins.values():
-	print("Plugin: %s -> %s" % (item.__name__, item))
-	assert item.__name__ not in CALLABLE_LUT, "Plugin appears twice in call lookup table (%s)?" % item.__name__
-	CALLABLE_LUT[item.__name__] = item
+for sched_item, dummy_interval in activeScheduledTasks.scrapePlugins.values():
+	print("Plugin: %s -> %s" % (sched_item.__name__, sched_item))
+	assert sched_item.__name__ not in CALLABLE_LUT, "Plugin appears twice in call lookup table (%s)?" % sched_item.__name__
+	CALLABLE_LUT[sched_item.__name__] = sched_item
 
 
 class JobNameException(Exception):
@@ -53,55 +53,60 @@ class JobCaller(LogBase.LoggerMixin):
 		self.log.info("Invoking class %s as scheduled job", self.runModule)
 
 
-		session = db.get_db_session()
+		with db.session_context() as session:
+			try:
+				query = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name == job_name)
+				have = query.scalar()
+				if not have:
+					new = db.PluginStatus(plugin_name=job_name)
+					session.add(new)
+					session.commit()
+			except sqlalchemy.exc.OperationalError:
+				session.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				session.rollback()
 
-		try:
-			query = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==job_name)
-			have = query.scalar()
-			if not have:
-				new = db.PluginStatus(plugin_name=job_name)
-				session.add(new)
-				session.commit()
-		except sqlalchemy.exc.OperationalError:
-			session.rollback()
-		except sqlalchemy.exc.InvalidRequestError:
-			session.rollback()
-
-		finally:
-			db.delete_db_session()
+			finally:
+				db.delete_db_session()
 
 	def doCall(self):
 
 		self.log.info("Calling job %s", self.job_name)
-		session = db.get_db_session()
-		item = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==self.job_name).scalar()
 
-		if not item:
-			self.log.error("Don't have instance for job %s? How did this happen?", self.job_name)
-			raise RuntimeError
+		with db.session_context() as session:
+			item = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name == self.job_name).scalar()
 
-		if item.is_running:
+			if not item:
+				self.log.error("Don't have instance for job %s? How did this happen?", self.job_name)
+				raise RuntimeError
+
+			if item.is_running:
+				session.commit()
+				self.log.error("Plugin %s is already running! Not doing re-entrant call!", self.job_name)
+				return
+
+			item.is_running = True
+			item.last_run = datetime.datetime.now()
 			session.commit()
-			self.log.error("Plugin %s is already running! Not doing re-entrant call!", self.job_name)
-			return
-
-		item.is_running = True
-		item.last_run = datetime.datetime.now()
-		session.commit()
 
 		try:
 			self._doCall()
 		except Exception:
-			item.last_error      = datetime.datetime.now()
-			item.last_error_msg  = traceback.format_exc()
+
+			with db.session_context() as session:
+				item = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name == self.job_name).one()
+
+				item.last_error      = datetime.datetime.now()
+				item.last_error_msg  = traceback.format_exc()
 			raise
 		finally:
 
-			item2 = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name==self.job_name).one()
-			item2.is_running = False
-			item2.last_run_end = datetime.datetime.now()
-			session.commit()
-			db.delete_db_session()
+			with db.session_context() as session:
+				item2 = session.query(db.PluginStatus).filter(db.PluginStatus.plugin_name == self.job_name).one()
+				item2.is_running = False
+				item2.last_run_end = datetime.datetime.now()
+				session.commit()
+				db.delete_db_session()
 		self.log.info("Job %s complete.", self.job_name)
 
 	# Should probably be a lambda? Laaaazy.
@@ -199,10 +204,9 @@ def scheduleJobs(sched, timeToStart):
 
 def resetRunStates():
 	print("JobSetup call resetting run-states!")
-	session = db.get_db_session()
-	session.query(db.PluginStatus).update({db.PluginStatus.is_running : False})
-	session.commit()
-	db.delete_db_session()
+	with db.session_context() as session:
+		session.query(db.PluginStatus).update({db.PluginStatus.is_running : False})
+		session.commit()
 	print("Run-states reset.")
 
 
@@ -216,26 +220,24 @@ def dump_scheduled_jobs(sched):
 	for job in existing:
 		print("	", job, job.args, "running in:", job.next_run_time - tznow, (job.id, ))
 
-	session = db.get_db_session()
-	running = session.query(db.PluginStatus).filter(db.PluginStatus.is_running == True).all()
-	print("Running jobs:")
-	for jitem in running:
-		print("	", jitem.plugin_name, jitem.is_running, jitem.last_run, jitem.last_error, jitem.last_error_msg)
-	if not running:
-		print("	<None!>")
+	with db.session_context() as session:
+		running = session.query(db.PluginStatus).filter(db.PluginStatus.is_running == True).all()
+		print("Running jobs:")
+		for jitem in running:
+			print("	", jitem.plugin_name, jitem.is_running, jitem.last_run, jitem.last_error, jitem.last_error_msg)
+		if not running:
+			print("	<None!>")
 
-	print("Running threads:")
-	for thread in threading.enumerate():
-		print("	", thread.getName(), thread)
-	db.delete_db_session()
+		print("Running threads:")
+		for thread in threading.enumerate():
+			print("	", thread.getName(), thread)
 
 
-	# session = db.get_db_session()
-	# items = session.query(db.PluginStatus).all()
-	# print("Jobs in DB:")
-	# for item in items:
-	# 	print("	", item)
-	# db.delete_db_session()
+	# with db.session_context() as session:
+	# 	items = session.query(db.PluginStatus).all()
+	# 	print("Jobs in DB:")
+	# 	for item in items:
+	# 		print("	", item)
 
 
 def go_sched():

@@ -2,6 +2,7 @@
 import sys
 import multiprocessing
 import threading
+import logging
 import contextlib
 import time
 import traceback
@@ -35,6 +36,8 @@ else:
 	SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=C_DATABASE_USER, passwd=C_DATABASE_PASS, host=C_DATABASE_IP, database=C_DATABASE_DB_NAME)
 
 
+log = logging.getLogger("Main.DB-Engine")
+
 SESSIONS = {}
 ENGINES  = {}
 POOL    = None
@@ -54,7 +57,7 @@ def get_engine():
 			if csid in ENGINES:
 				return ENGINES[csid]
 
-			print("INFO: Creating engine for process! Engine name: '%s'" % csid)
+			log.info("INFO: Creating engine for process! Engine name: '%s'" % csid)
 			ENGINES[csid] = create_engine(SQLALCHEMY_DATABASE_URI,
 						isolation_level="REPEATABLE READ")
 						# isolation_level="READ COMMITTED")
@@ -64,7 +67,7 @@ def get_engine():
 def checkout_session():
 	global POOL
 	if not POOL:
-		print("Creating pool")
+		log.info("Creating pool")
 		POOL = queue.Queue()
 		for dummy_x in range(10):
 			POOL.put(scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))())
@@ -74,13 +77,13 @@ def checkout_session():
 	ctid = threading.current_thread().name
 	csid = "{}-{}".format(cpid, ctid)
 
-	print("Getting DB session (avail: %s, ID: '%s')" % (POOL.qsize(), csid))
+	log.info("Getting DB session (avail: %s, ID: '%s')" % (POOL.qsize(), csid))
 	sess = POOL.get()
 	return sess
 
 def release_session(session):
 	POOL.put(session)
-	print("Returning db handle to pool. Handles available: %s" % (POOL.qsize(), ))
+	log.info("Returning db handle to pool. Handles available: %s" % (POOL.qsize(), ))
 
 
 
@@ -113,7 +116,7 @@ def get_db_session(postfix="", flask_sess_if_possible=True):
 
 			# Delete the session that's oldest.
 			if len(SESSIONS) > MAX_DB_SESSIONS:
-				print("WARN: More then %s active sessions! Deleting oldest session to prevent session contention." % MAX_DB_SESSIONS)
+				log.info("WARN: More then %s active sessions! Deleting oldest session to prevent session contention." % MAX_DB_SESSIONS)
 				maxsz = sys.maxsize
 				to_delete = None
 				for key, value in SESSIONS.items():
@@ -152,33 +155,34 @@ def delete_db_session(postfix="", flask_sess_if_possible=True):
 			# print("Deleted session for id: ", csid)
 
 @contextlib.contextmanager
-def session_context(name="", override_timeout=False):
+def session_context(name="", override_timeout_ms=False):
 	sess = get_db_session(postfix=name + 'context-sess')
 	try:
-		if override_timeout:
-			sess.execute("""SET statement_timeout TO %s;""", (override_timeout, ))
+		if override_timeout_ms:
+			log.warning("Query timeout overridden to be %0.2f seconds!", override_timeout_ms / 1000.0, )
+			sess.execute("""SET statement_timeout TO :new_timeout;""", { 'new_timeout' : override_timeout_ms, })
 		yield sess
 
 	except sqlalchemy.exc.InternalError:
-		print("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
+		log.warning("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
 		sess.rollback()
 		raise
 	except sqlalchemy.exc.OperationalError:
-		print("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
+		log.warning("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
 		sess.rollback()
 		raise
 	except sqlalchemy.exc.IntegrityError:
-		print("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
+		log.warning("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
 		sess.rollback()
 		raise
 	except sqlalchemy.exc.InvalidRequestError:
-		print("Transaction error (sqlalchemy.exc.InvalidRequestError). Retrying.")
+		log.warning("Transaction error (sqlalchemy.exc.InvalidRequestError). Retrying.")
 		traceback.print_exc()
 		sess.rollback()
 		raise
 
 	finally:
-		if override_timeout:
+		if override_timeout_ms:
 			sess.execute("""RESET statement_timeout;""")
 		delete_db_session(postfix='context-sess')
 

@@ -362,6 +362,9 @@ class RawJobFetcher(LogBase.LoggerMixin):
 	def _get_task_internal(self):
 
 		cursor = self.db_interface.cursor()
+
+		cursor.execute("""SET statement_timeout TO 900000;""")
+
 		# Hand-tuned query, I couldn't figure out how to
 		# get sqlalchemy to emit /exactly/ what I wanted.
 		# TINY changes will break the query optimizer, and
@@ -476,6 +479,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				self.db_interface.commit()
 
 
+		cursor.execute("""RESET statement_timeout;""")
 		cursor.close()
 
 		return dispatched

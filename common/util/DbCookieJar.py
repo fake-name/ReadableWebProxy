@@ -21,7 +21,6 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		self.headers = None
 
 		self.db      = db
-		self.session = session
 
 	def init_agent(self, new_headers):
 		# self.log.info("Cookiejar inited with headers:")
@@ -32,8 +31,8 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		self.sync_cookies()
 
 
-	def __insert_update_cookie(self, cookie):
-		have = self.session.query(db.WebCookieDb)                                           \
+	def __insert_update_cookie(self, sess, cookie):
+		have = sess.query(db.WebCookieDb)                                           \
 			.filter(db.WebCookieDb.ua_user_agent        == self.headers['User-Agent'])      \
 			.filter(db.WebCookieDb.ua_accept_language   == self.headers['Accept-Language']) \
 			.filter(db.WebCookieDb.ua_accept            == self.headers['Accept'])          \
@@ -80,27 +79,29 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				c_rfc2109            = cookie.rfc2109,
 				c_rest               = json.dumps(cookie._rest),
 			)
-		self.session.add(new)
+		sess.add(new)
 
-	def __save_cookies(self):
+	def __save_cookies(self, sess):
+
 		if not len(list(self)):
 			return
+
 		self.log.info("Saving %s cookies......", len(list(self)))
 		tries = 0
 		while 1:
 			try:
 				for cookie in self:
-					self.__insert_update_cookie(cookie)
-				self.session.commit()
+					self.__insert_update_cookie(sess, cookie)
+				sess.commit()
 				break
 			except sqlalchemy.exc.OperationalError:
 				tries += 1
 				print("Operational error")
-				self.session.rollback()
+				sess.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
 				tries += 1
 				print("InvalidRequestError")
-				self.session.rollback()
+				sess.rollback()
 
 			except Exception as e:
 
@@ -121,9 +122,9 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		self.log.info("Saved %s cookies to db (%s distinct).", len(list(self)), len(distinct))
 
 
-	def __load_cookies(self):
+	def __load_cookies(self, sess):
 
-		have = self.session.query(db.WebCookieDb)                                           \
+		have = sess.query(db.WebCookieDb)                                           \
 			.filter(db.WebCookieDb.ua_user_agent        == self.headers['User-Agent'])      \
 			.filter(db.WebCookieDb.ua_accept_language   == self.headers['Accept-Language']) \
 			.filter(db.WebCookieDb.ua_accept            == self.headers['Accept'])          \
@@ -154,24 +155,26 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 		self.log.info("Loaded %s cookies from db.", len(have))
 
-		self.session.commit()
+		sess.commit()
 
 	def sync_cookies(self):
 		assert self.headers != None
-
-		self.__save_cookies()
-		self.__load_cookies()
-		self.session.commit()
+		with self.db.session_context("cookiejar") as sess:
+			self.__save_cookies(sess)
+			self.__load_cookies(sess)
+			sess.commit()
 
 	def save(self, filename=None, ignore_discard=False, ignore_expires=False):
 		assert self.headers != None
-		self.__save_cookies()
-		self.session.commit()
+		with self.db.session_context("cookiejar") as sess:
+			self.__save_cookies(sess)
+			sess.commit()
 
 	def load(self, filename=None, ignore_discard=False, ignore_expires=False):
 		assert self.headers != None
-		self.__load_cookies()
-		self.session.commit()
+		with self.db.session_context("cookiejar") as sess:
+			self.__load_cookies(sess)
+			sess.commit()
 
 	def revert(self, filename=None, ignore_discard=False, ignore_expires=False):
 		self.sync_cookies()
