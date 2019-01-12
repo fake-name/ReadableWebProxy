@@ -8,6 +8,10 @@ import time
 from pytz import reference
 import pytz
 
+# Shut up fucking annoying psycopg2 vomit every exec.
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='psycopg2')
+
 import sqlalchemy.exc
 
 from apscheduler.schedulers.blocking   import BlockingScheduler

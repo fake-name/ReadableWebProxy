@@ -6,6 +6,13 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 	# logSetup.initLogging(logging.WARNING)
 
+
+
+	# Shut up fucking annoying psycopg2 vomit every exec.
+	import warnings
+	warnings.filterwarnings("ignore", category=UserWarning, module='psycopg2')
+
+
 # This HAS to be included before the app, to prevent circular dependencies.
 # import WebMirror.runtime_engines
 

@@ -243,6 +243,17 @@ badwords: [
 			# Forum.wuxiaworld.com
 			'/feed.rss',
 
+
+			'/discussions/tagged/',
+
+			# Jcafe
+			';sa=attach;',
+			'?action=profile;',
+			';area=showposts;',
+			';area=statistics;',
+			';sort=starter',
+			';area=summary',
+			'index.php?action=',
 			]
 
 

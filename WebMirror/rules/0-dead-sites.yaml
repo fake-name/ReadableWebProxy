@@ -368,6 +368,10 @@ baseUrl: [
 
 	'http://koalasplayground.com',
 
+	'http://raisingthedead.ninja',
+	'http://www.raisingthedead.ninja',
+
+
 	]
 
 # select count(*) from web_pages where netloc = 'www.asstr.com';
@@ -406,6 +410,11 @@ badwords: [
 
 		# Fucking trailing space
 		'http://koalasplayground.com ',
+
+
+		'/buydomains/',
+		'hexonet',
+		'/hexonet_public/',
 	]
 
 decompose: [

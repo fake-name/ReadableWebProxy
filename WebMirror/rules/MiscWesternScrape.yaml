@@ -51,6 +51,7 @@ baseUrl: [
 		'https://fiction.live',
 
 		'http://www.meejee.net',
+		'https://www.scribblehub.com',
 
 		# Needs more checking.
 		# 'https://www.eviscerati.org'
@@ -91,6 +92,7 @@ badwords: [
 
 			'/search.php?',
 
+			'/stardancer.org/art?block=',
 			'www.addergoole.com/forum/',
 			'www.addergoole.com/wiki/',
 			]

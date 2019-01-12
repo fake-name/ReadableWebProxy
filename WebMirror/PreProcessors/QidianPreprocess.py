@@ -4,11 +4,17 @@
 
 import time
 import ast
+import json
 import urllib.parse
-import pprint
+import parsedatetime
 
 import bs4
+import common.get_rpyc
 
+from WebMirror.OutputFilters.util.MessageConstructors import fix_string
+from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
+from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseDeleteMessageWithType
+from WebMirror.OutputFilters.util.MessageConstructors import buildReleaseMessageWithType
 import WebMirror.PreProcessors.PreProcessorBase
 
 
@@ -25,6 +31,21 @@ CHAP_LOADER_STR = '''<div class="iso-area j_chapterLoading cha-loader">'''
 class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreprocessor):
 
 	loggerPath = "Main.Preprocessor.Qidian"
+
+	# Lazy-load the remote interface construction.
+	def __getattr__(self, name):
+		if name == "rpc_interface" and not name in self.__dict__:
+			self.rpc_interface = common.get_rpyc.RemoteJobInterface("FeedUpdater")
+			self.rpc_interface.check_ok()
+			return self.rpc_interface
+
+		else:
+			raise AttributeError
+
+	def __del__(self):
+		if hasattr(self, "rpc_interface"):
+			self.rpc_interface.close()
+
 
 	def get_csrf_tok(self):
 		for cookie in self.wg_proxy().cj:
@@ -84,6 +105,100 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 			return None, None
 
 
+	def do_release_for_chap(self, book_data, chap_info):
+
+
+		itemDate, status = parsedatetime.Calendar().parse(chap_info['createTime'])
+
+		if status < 1:
+			self.log.warning("Failed to process release date info: '%s'", chap_info['createTime'])
+			return
+
+		reldate = time.mktime(itemDate)
+
+		fake_raw_1 = {
+			'srcname'   : "Qidian",
+			'published' : reldate,
+			'linkUrl'   : "https://www.webnovel.com/book/{book_id}/{chap_id}/".format(
+				book_id = book_data['bookId'], chap_id = chap_info['id']),
+		}
+
+
+		fake_raw_2 = {
+			'srcname'   : "Qidian",
+			'published' : reldate,
+			'linkUrl'   : "https://www.webnovel.com/rssbook/{book_id}/{chap_id}/".format(
+				book_id = book_data['bookId'], chap_id = chap_info['id']),
+		}
+
+
+		if chap_info['isVip'] == 0:
+			msg_1 = buildReleaseMessageWithType(
+					raw_item    = fake_raw_1,
+					series      = book_data['bookName'],
+					vol         = None,
+					chap        = chap_info['index'],
+					frag        = None,
+					postfix     = chap_info['name'],
+					tl_type     = 'translated' if book_data['original'] is False else 'oel',
+					looseMatch  = True,
+					prefixMatch = True,
+				)
+
+			msg_2 = buildReleaseDeleteMessageWithType(
+					raw_item    = fake_raw_2,
+					series      = book_data['bookName'],
+					vol         = None,
+					chap        = chap_info['index'],
+					frag        = None,
+					postfix     = chap_info['name'],
+					tl_type     = 'translated' if book_data['original'] is False else 'oel',
+					looseMatch  = True,
+					prefixMatch = True,
+				)
+
+			# print("release message:", msg)
+			disp_1 = json.dumps(msg_1)
+			self.rpc_interface.put_feed_job(disp_1)
+
+			disp_2 = json.dumps(msg_2)
+			self.rpc_interface.put_feed_job(disp_2)
+
+		else:
+			msg_1 = buildReleaseDeleteMessageWithType(
+					raw_item    = fake_raw_1,
+					series      = book_data['bookName'],
+					vol         = None,
+					chap        = chap_info['index'],
+					frag        = None,
+					postfix     = chap_info['name'],
+					tl_type     = 'translated' if book_data['original'] is False else 'oel',
+					looseMatch  = True,
+					prefixMatch = True,
+				)
+			msg_2 = buildReleaseDeleteMessageWithType(
+					raw_item    = fake_raw_2,
+					series      = book_data['bookName'],
+					vol         = None,
+					chap        = chap_info['index'],
+					frag        = None,
+					postfix     = chap_info['name'],
+					tl_type     = 'translated' if book_data['original'] is False else 'oel',
+					looseMatch  = True,
+					prefixMatch = True,
+				)
+			# print("release message:", msg)
+			disp_1 = json.dumps(msg_1)
+			self.rpc_interface.put_feed_job(disp_1)
+
+			disp_2 = json.dumps(msg_2)
+			self.rpc_interface.put_feed_job(disp_2)
+
+
+
+
+
+
 	def update_toc(self, url, soup):
 		if "/book/" not in url:
 			self.log.error("Not a book item?")
@@ -97,7 +212,13 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 
 		main_list = bs4.BeautifulSoup("<div></div>", "lxml")
 
-		book_title = book_data['bookName']
+		book_data['original'] = False
+
+		if soup.find("strong", class_='z1'):
+			if 'original' in soup.find("strong", class_='z1').get_text(strip=True):
+				self.log.info("Series is original!")
+				book_data['original'] = True
+
 
 		self.log.info("ToC fetch found %s chapters!", len(chapters))
 
@@ -117,8 +238,11 @@ class QidianPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPreproc
 			linka['data-preprocessor-chp']     = chapter['chpIndex'][1]
 			linka['data-preprocessor-name']    = chapter['name']
 			linka['data-preprocessor-index']   = chapter['index']
-			linka['data-preprocessor-title']   = book_title
+			linka['data-preprocessor-title']   = book_data['bookName']
 			linka['data-preprocessor-reldate'] = chapter['createTime']
+
+
+			self.do_release_for_chap(book_data, chapter)
 
 			linkli = main_list.new_tag("li")
 			linkli.append(linka)

@@ -282,7 +282,7 @@ def fixReleasePacket(data):
 		'prefix_match',
 	]
 
-	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, data)
+	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, list(data.keys()))
 	assert all([key in data for key in expect]), "Missing key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
 
 	data['series']  = fix_string(data['series'])

@@ -91,6 +91,8 @@ baseUrl: [
 		'http://deadlynovels.tk',
 		'https://lovelyteatranslation.webnode.com',
 
+		'http://www.ssttranslations.com',
+
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'http://comrademao.com',
 		'https://pumanovels.com',
