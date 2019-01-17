@@ -69,7 +69,7 @@ BeautifulSoup4==4.7.1
 
 alembic==1.0.6
 
-redis==2.10.6
+redis==3.0.1
 
 hiredis==0.2.0
 
