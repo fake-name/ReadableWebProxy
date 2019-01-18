@@ -92,7 +92,7 @@ badwords: [
 
 			'/search.php?',
 
-			'/stardancer.org/art?block=',
+			'stardancer.org/art',
 			'www.addergoole.com/forum/',
 			'www.addergoole.com/wiki/',
 			]

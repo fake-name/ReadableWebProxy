@@ -566,6 +566,18 @@ class CompoundChapterFragmentToken(CompoundToken):
 	def get_fragment(self, parse_ascii):
 		return self.to_number_2(parse_ascii)
 
+class DecimalNumberCompoundChapterFragmentToken(CompoundToken):
+
+	def valid_chapter(self, parse_ascii):
+		return self.is_valid_1(parse_ascii)
+	def valid_fragment(self, parse_ascii):
+		return self.is_valid_2(parse_ascii)
+
+	def get_chapter(self, parse_ascii):
+		return self.to_number_1(parse_ascii)
+	def get_fragment(self, parse_ascii):
+		return self.to_number_2(parse_ascii)
+
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################

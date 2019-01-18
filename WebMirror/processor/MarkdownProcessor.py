@@ -69,13 +69,20 @@ class MarkdownProcessor(ProcessorBase.PageProcessor):
 			if urlText in url:
 				prefix = prepend
 
-		title = content.strip().split("\n")[0].strip()
+		if not content:
+			return "{prefix} - No content?".format(prefix=prefix)
+
+		tmp1 = content.strip()
+		tmp2 = tmp1.split("\n")
+		tmp3 = tmp2[0]
+		title = tmp3.strip()
 
 		if prefix:
 			title = "{prefix} - {title}".format(prefix=prefix, title=title)
 
 		if len(title) > 200:
 			title = title[:200] + " [truncated]"
+
 		return title
 
 
@@ -83,9 +90,6 @@ class MarkdownProcessor(ProcessorBase.PageProcessor):
 	# Process a Google-Doc resource page.
 	# This call does a set of operations to permute and clean a google doc page.
 	def extractContent(self):
-
-
-
 
 		title = self.extractMarkdownTitle(self.content, self.pageUrl)
 		procContent = markdown.markdown(self.content)

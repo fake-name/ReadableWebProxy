@@ -6,6 +6,7 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+	'https://amaieroyaoi.wordpress.com',
 	'https://12superlatives.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
@@ -292,6 +293,7 @@ baseUrl: [
 	'https://eccentrictranslations.wordpress.com',
 	'https://edentranslationsblog.wordpress.com',
 	'https://edltranslation.wordpress.com',
+	'https://eggdroptl.wordpress.com',
 	'https://egsmarttranslation.wordpress.com',
 	'https://egsnblog.wordpress.com',
 	'https://ehmedtranslations.wordpress.com',
@@ -472,6 +474,7 @@ baseUrl: [
 	'https://inconnuesite.wordpress.com',
 	'https://indimtl.wordpress.com',
 	'https://indonesianstorytranslation.wordpress.com',
+	'https://indulgenttranslations.wordpress.com',
 	'https://infinitenoveltranslations.wordpress.com',
 	'https://infinitetranslations.wordpress.com',
 	'https://inneedtranslation.wordpress.com',
@@ -1221,6 +1224,7 @@ baseUrl: [
 	'https://tumbleintofantasy.wordpress.com',
 	'https://turtleandharetranslations.wordpress.com',
 	'https://tusjecht.wordpress.com',
+	'https://twinkielittlestar.wordpress.com',
 	'https://twkisanotaku.wordpress.com',
 	'https://twomorefreethoughts.wordpress.com',
 	'https://typemoondb.wordpress.com',
@@ -1390,9 +1394,12 @@ baseUrl: [
 	'https://thesoundsofsoothingrain.home.blog',
 	'https://xenontranslations.video.blog',
 	'https://ruisitranslations.home.blog',
+	'https://hiraethtranslations.home.blog',
 
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
+	'https://www.thenovelst.com',
+	'https://www.thenoveltemple.com',
 	'http://aethernea.com',
 	'http://almighty-editor.bplaced.net',
 	'http://ameryedge.com',

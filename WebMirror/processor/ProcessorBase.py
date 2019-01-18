@@ -73,6 +73,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 
 	def convertToReaderUrl(self, inUrl, resource=False):
+		if not inUrl:
+			return ""
+
 		inUrl = urlFuncs.urlClean(inUrl)
 		inUrl = self.preprocessReaderUrl(inUrl)
 		# The link will have been canonized at this point
@@ -286,6 +289,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		# No idea why they're there, but they are
 		if not url:
 			return None
+		if url is None:
+			return None
 
 		# # Filter by domain
 		# if not self.allImages and not any([base in url for base in self._fileDomains]):
@@ -302,6 +307,10 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 
 		url = urlFuncs.urlClean(url)
+
+		# urlClean can return none for URLs pointing to garbage squatters and some other contexts.
+		if url is None:
+			return None
 
 		return self.processNewUrl(url, baseUrl=baseUrl, istext=False)
 

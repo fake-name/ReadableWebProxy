@@ -411,6 +411,9 @@ def urlClean(url):
 	url = trimGDocUrl(url)
 	url = cleanUrl(url)
 
+	if url is None:
+		return None
+
 	while True:
 		url2 = urllib.parse.unquote(url)
 		url2 = url2.split("#")[0]

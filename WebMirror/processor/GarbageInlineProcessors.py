@@ -339,7 +339,7 @@ class RebirthOnlineLiveProcessor(HtmlProcessor.HtmlPageProcessor):
 			prelude = [tmp for tmp in prelude if tmp.type != 'whitespace']
 			content = [tmp for tmp in content if tmp.type != 'whitespace']
 
-			print("Rule:", (prelude, content))
+			# print("Rule:", (prelude, content))
 
 			if (
 					len(prelude) == 2 and
