@@ -1,8 +1,8 @@
 
-import json
-import demjson
+import ast
 import os
 import os.path
+import pprint
 import tqdm
 import traceback
 
@@ -11,47 +11,27 @@ from WebMirror.util.titleParseNew import TitleParser as TPN
 
 import common.database as db
 
+
 def load_better_json(filepath):
 	'''
 	Load a json file, but allow shit necessary for sanity (like comments!)
 	'''
+
+	print("Loading file: '%s'" % filepath)
 	with open(filepath) as fp:
-		contin = fp.readlines()
+		contin = fp.read()
 
-	contl = [tmp for tmp in contin if not (tmp.strip().startswith("#") or tmp.strip().startswith("//"))]
-
-	print("Loading file '%s'" % filepath)
-	print("Loaded. File contained %s lines" % (len(contl), ))
-	conts = "".join(contl)
-	# cont = demjson.decode("\n".join(conts))
-	try:
-		cont = json.loads(conts)
-	except json.JSONDecodeError as e:
-		print("Error at line %s" % e.lineno)
-		print("Error Context: ")
-		splitt = conts.split("\n")
-		context_size = 3
-		context = splitt[max((0, e.lineno-context_size)) : min((len(splitt), e.lineno+context_size))]
-		print("snip....")
-		for idx, line in enumerate(context):
-			if idx == context_size:
-				print(line.rstrip(), "      <------")
-			else:
-				print(line.rstrip())
-		print("snip....")
-		raise e
-
-	print("Loaded. File contained %s entries" % (len(cont), ))
-	return cont
+	return ast.literal_eval(contin)
 
 
 def load_test_data(mismatch=True, only_mismatch=False):
 	ret = []
 	cdir = os.path.join(os.path.dirname(__file__), "title_data")
 	files = os.listdir(cdir)
+	files.sort()
 	for fn in files:
 
-		if fn.endswith(".json"):
+		if fn.endswith(".pyson"):
 			fqp = os.path.join(cdir, fn)
 
 			if only_mismatch:
@@ -66,6 +46,7 @@ def load_test_data(mismatch=True, only_mismatch=False):
 	print("Loaded %s test-cases!" % len(ret))
 	return ret
 
+
 def comment_mismatches_in_file(to_comment_lines, fqp):
 	with open(fqp) as fp:
 		conts = fp.readlines()
@@ -76,10 +57,10 @@ def comment_mismatches_in_file(to_comment_lines, fqp):
 	for idx, line in enumerate(conts):
 		# print(idx, line.strip(), any([tmp in line for tmp in to_comment_lines]))
 		if any([tmp in line for tmp in to_comment_lines]):
-			if not line.strip().startswith("//"):
+			if not line.strip().startswith("#"):
 				changed = True
 				# print("Changing '%s'" % (conts[idx], ))
-				conts[idx] = "	// " + conts[idx].lstrip()
+				conts[idx] = "	# " + conts[idx].lstrip()
 				# print("To '%s'" % (conts[idx], ))
 
 	if changed:
@@ -97,9 +78,9 @@ def comment_mismatches(to_comment_lines):
 		if 'mismatch' in fn:
 			pass
 		else:
-			if fn.endswith(".json"):
+			if fn.endswith(".pyson"):
 				fqp = os.path.join(cdir, fn)
-				print("Parsing json file: ", fn)
+				print("Parsing pyson file: ", fn)
 				changes = comment_mismatches_in_file(to_comment_lines, fqp)
 
 
@@ -198,13 +179,26 @@ def extract_mismatch():
 
 	test_data_dict = {}
 
-	for key, value in test_data:
+
+	for item in test_data:
+		try:
+			key, value = item
+		except Exception:
+			pprint.pprint(item)
+			raise
 		test_data_dict.setdefault(key, [])
 		test_data_dict[key].append(value)
 
 	remlines = []
 
-	with open("tests/title_data/title_test_data_mismatch.json", 'w') as fp:
+	if os.path.exists("tests/title_data/title_test_data_mismatch.pyson"):
+		raise RuntimeError("Mismatch file already exists. Not overwriting!")
+
+	existing_entries = []
+
+
+
+	with open("tests/title_data/title_test_data_mismatch.pyson", 'w') as fp:
 		fp.write("[\n")
 		goodstr = []
 		badstr = []
@@ -267,13 +261,16 @@ def extract_mismatch():
 		goodstr.sort()
 		badstr.sort()
 
-		fp.write("	// Lines with parse mismatches: %s" % (len(badstr), ))
+		fp.write("	# Lines with parse mismatches: %s" % (len(badstr), ))
 		fp.write("\n\n")
 		fp.write("".join(badstr))
 		fp.write("\n\n")
-		fp.write("	// Errored lines: %s" % (len(badstr), ))
+		fp.write("	# Errored lines: %s" % (len(errored), ))
 		fp.write("\n\n")
 		fp.write("".join(errored))
+		fp.write("	# Old lines: %s" % (len(existing_entries), ))
+		fp.write("\n\n")
+		fp.write("".join(existing_entries))
 
 		fp.write("]\n")
 
@@ -332,16 +329,133 @@ def test_mismatch():
 def format_double_row(title, output_volume, output_chapter, output_fragment, output_postfix,
 	                         expect_volume, expect_chapter, expect_fragment, expect_postfix
 		):
-	real_cont   = json.dumps((title, (output_volume, output_chapter, output_fragment, output_postfix)))
-	expect_cont = json.dumps((title, (expect_volume, expect_chapter, expect_fragment, expect_postfix)))
+	real_cont   = str((title, (output_volume, output_chapter, output_fragment, output_postfix)))
+	expect_cont = str((title, (expect_volume, expect_chapter, expect_fragment, expect_postfix)))
 	return (
-			"	// " + expect_cont + ",  // Parsed output\n" +
-			"	" + real_cont + ",  // Expected output\n\n"
+			"	# " + expect_cont + ",  # Parsed output\n" +
+			"	" + real_cont + ",  # Expected output\n\n"
 		), real_cont
 
 def format_row(title, volume, chapter, fragment, postfix):
-	cont = json.dumps((title, (volume, chapter, fragment, postfix)))
+	cont = str((title, (volume, chapter, fragment, postfix)))
 	return "	" + cont + ",\n"
+
+
+def create_data_file(prefix, outdir, bin_cont):
+	print("Bin for {} has {} items".format(prefix, len(bin_cont)))
+
+	bin_cont.sort(key=lambda x: x[0])
+
+	# p_str = ord(prefix) if len(prefix) == 1 and prefix not in string.ascii_lowercase+string.digits else prefix
+	pad = ""
+	cnt = 0
+	while (1):
+		mod_name = "'{}'_titles{}.pyson".format(prefix, pad)
+
+		fpath = os.path.join(outdir, mod_name)
+		if not os.path.exists(fpath):
+			break
+		pad = "_({})".format(cnt)
+		cnt += 1
+
+	dat = pprint.pformat(bin_cont)
+
+	with open(fpath, "w") as fp:
+		fp.write("\n\n")
+		fp.write("# Titles for releases starting with the character '{}'".format(prefix))
+		fp.write("\n\n")
+		fp.write("[\n")
+		for item in bin_cont:
+			dat = pprint.pformat(item, width=99999999)
+			fp.write("	{},\n".format(dat))
+
+		fp.write("]\n\n")
+
+	return mod_name
+
+
+def test():
+	dataset = []
+	for key, value in test_data:
+		if len(value) == 2:
+			e_chp, e_vol = value
+			dataset.append((key, (e_vol, e_chp, None, None)))
+		elif len(value) == 4:
+			e_vol, e_chp, e_frag, e_post = value
+			dataset.append((key, (e_vol, e_chp, e_frag, e_post)))
+		else:
+			print("Wat?", key, value)
+
+	print("Loaded {} item dataset".format(len(dataset)))
+	dataset.sort(key=lambda x: x[0])
+
+	bins = {}
+	for row in dataset:
+		prefix = row[0].lower()
+		if prefix:
+			prefix = prefix[0]
+		bins.setdefault(prefix, [])
+		bins[prefix].append(row)
+
+	print("Prefix bins: {}".format(len(bins)))
+	outdir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'title_data'))
+	print("Output dir:", outdir)
+
+	small_bin = []
+	for key in list(bins.keys()):
+		if len(bins[key]) < 10:
+			dat = bins.pop(key)
+			small_bin.extend(dat)
+
+	bins['other'] = small_bin
+
+	print("Prefix bins after consolidation: {}".format(len(bins)))
+	mod_list = []
+	for prefix in bins.keys():
+		mod = create_data_file(prefix, outdir, bins[prefix])
+		mod_list.append(mod)
+
+
+	load_test_data()
+
+
+def merge_in_fixed_mismatch():
+
+	test_data = load_test_data(only_mismatch=True)
+	count = 0
+	mismatch = 0
+
+	for key, value in test_data:
+
+		p = TPN(key)
+		vol, chp, frag, post = p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()
+
+		# print(p)
+		if len(value) == 4:
+			e_vol, e_chp, e_frag, e_post = value
+
+			if e_chp == 0.0 and chp is None:
+				e_chp = None
+			bad = False
+			if vol != e_vol or chp != e_chp or frag != e_frag:
+				bad = True
+				print(p)
+				print("Parsed: v{}, c{}, f{}".format(vol, chp, frag))
+				print("Expect: v{}, c{}, f{}".format(e_vol, e_chp, e_frag))
+				print()
+
+			if e_post != post:
+				bad = True
+				print(p)
+				print("Post mismatch - Parsed: {}".format(post))
+				print("Post mismatch - Expect: {}".format(e_post))
+
+			if bad:
+				mismatch += 1
+
+		count += 1
+
+
 
 # def load_items():
 # 	feed_items = db.get_db_session().query(db.RssFeedPost) \
@@ -370,6 +484,8 @@ if __name__ == "__main__":
 		extract_mismatch()
 	elif "test-mismatch" in sys.argv:
 		test_mismatch()
+	elif "merge-in-mismatch" in sys.argv:
+		merge_in_fixed_mismatch()
 	elif "load" in sys.argv:
 		load_test_data()
 	else:
