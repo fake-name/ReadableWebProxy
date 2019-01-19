@@ -69,14 +69,16 @@ def comment_mismatches_in_file(to_comment_lines, fqp):
 			fp.write("".join(conts))
 
 
-def comment_mismatches(to_comment_lines):
+def comment_mismatches(to_comment_lines, mismatch=False):
 
-	ret = []
+	to_comment_lines = [tmp.strip() for tmp in to_comment_lines]
+
 	cdir = os.path.join(os.path.dirname(__file__), "title_data")
 	files = os.listdir(cdir)
 	for fn in files:
-		if 'mismatch' in fn:
-			pass
+		if ('mismatch' in fn and mismatch == False) or (
+			'mismatch' not in fn and mismatch == True):
+			print("Skipping commenting in file '%s'" % fn)
 		else:
 			if fn.endswith(".pyson"):
 				fqp = os.path.join(cdir, fn)
@@ -374,23 +376,55 @@ def create_data_file(prefix, outdir, bin_cont):
 	return mod_name
 
 
-def test():
-	dataset = []
-	for key, value in test_data:
-		if len(value) == 2:
-			e_chp, e_vol = value
-			dataset.append((key, (e_vol, e_chp, None, None)))
-		elif len(value) == 4:
-			e_vol, e_chp, e_frag, e_post = value
-			dataset.append((key, (e_vol, e_chp, e_frag, e_post)))
-		else:
-			print("Wat?", key, value)
+# def test():
+# 	dataset = []
+# 	for key, value in test_data:
+# 		if len(value) == 2:
+# 			e_chp, e_vol = value
+# 			dataset.append((key, (e_vol, e_chp, None, None)))
+# 		elif len(value) == 4:
+# 			e_vol, e_chp, e_frag, e_post = value
+# 			dataset.append((key, (e_vol, e_chp, e_frag, e_post)))
+# 		else:
+# 			print("Wat?", key, value)
 
-	print("Loaded {} item dataset".format(len(dataset)))
-	dataset.sort(key=lambda x: x[0])
+# 	print("Loaded {} item dataset".format(len(dataset)))
+# 	dataset.sort(key=lambda x: x[0])
+
+# 	bins = {}
+# 	for row in dataset:
+# 		prefix = row[0].lower()
+# 		if prefix:
+# 			prefix = prefix[0]
+# 		bins.setdefault(prefix, [])
+# 		bins[prefix].append(row)
+
+# 	print("Prefix bins: {}".format(len(bins)))
+# 	outdir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'title_data'))
+# 	print("Output dir:", outdir)
+
+# 	small_bin = []
+# 	for key in list(bins.keys()):
+# 		if len(bins[key]) < 10:
+# 			dat = bins.pop(key)
+# 			small_bin.extend(dat)
+
+# 	bins['other'] = small_bin
+
+# 	print("Prefix bins after consolidation: {}".format(len(bins)))
+# 	mod_list = []
+# 	for prefix in bins.keys():
+# 		mod = create_data_file(prefix, outdir, bins[prefix])
+# 		mod_list.append(mod)
+
+
+# 	load_test_data()
+
+
+def create_set_files_for_values(new_set):
 
 	bins = {}
-	for row in dataset:
+	for row in new_set:
 		prefix = row[0].lower()
 		if prefix:
 			prefix = prefix[0]
@@ -416,46 +450,52 @@ def test():
 		mod_list.append(mod)
 
 
-	load_test_data()
-
-
 def merge_in_fixed_mismatch():
 
 	test_data = load_test_data(only_mismatch=True)
 	count = 0
 	mismatch = 0
 
+
+	remlines = []
+	good_lines = []
+	good_sets = []
+
 	for key, value in test_data:
 
 		p = TPN(key)
 		vol, chp, frag, post = p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()
 
-		# print(p)
-		if len(value) == 4:
-			e_vol, e_chp, e_frag, e_post = value
+		e_vol, e_chp, e_frag, e_post = value
 
-			if e_chp == 0.0 and chp is None:
-				e_chp = None
-			bad = False
-			if vol != e_vol or chp != e_chp or frag != e_frag:
-				bad = True
-				print(p)
-				print("Parsed: v{}, c{}, f{}".format(vol, chp, frag))
-				print("Expect: v{}, c{}, f{}".format(e_vol, e_chp, e_frag))
-				print()
-
-			if e_post != post:
-				bad = True
-				print(p)
-				print("Post mismatch - Parsed: {}".format(post))
-				print("Post mismatch - Expect: {}".format(e_post))
-
-			if bad:
-				mismatch += 1
+		if vol != e_vol or chp != e_chp or frag != e_frag or e_post != post:
+			badtmp, remline = format_double_row(key,
+						output_volume   = e_vol,
+						output_chapter  = e_chp,
+						output_fragment = e_frag,
+						output_postfix  = e_post,
+						expect_volume   = vol,
+						expect_chapter  = chp,
+						expect_fragment = frag,
+						expect_postfix  = post,
+					)
+			remlines.append(remline)
+		else:
+			goodtmp = format_row(key, e_vol, e_chp, e_frag, e_post)
+			good_lines.append(goodtmp)
+			good_sets.append((key, value))
 
 		count += 1
 
 
+	# print("All matches passed!")
+	print("{} Items with parsed output".format(count))
+	print("{} Items mismatch in new parser".format(len(remlines)))
+	print("{} OK lines".format(len(good_lines)))
+	print("Total items: {}".format(len(test_data)))
+	if good_lines:
+		comment_mismatches(good_lines, mismatch=True)
+		create_set_files_for_values(good_sets)
 
 # def load_items():
 # 	feed_items = db.get_db_session().query(db.RssFeedPost) \
@@ -489,5 +529,6 @@ if __name__ == "__main__":
 	elif "load" in sys.argv:
 		load_test_data()
 	else:
-		test()
+		print("No command")
+		# test()
 

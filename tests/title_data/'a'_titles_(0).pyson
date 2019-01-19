@@ -1,0 +1,37 @@
+
+
+# Titles for releases starting with the character 'a'
+
+[
+	('A Military Counselor 9-6', (None, 9.0, 6.0, '')),
+	('About BTTH for the next 2-3 weeks', (None, 2.0, 3.0, '')),
+	('Above The Cloud Sea 23.1-23.3', (None, 23.1, 23.3, '')),
+	('Above the Cloud Sea 1.2-1.3', (None, 1.2, 1.3, '')),
+	('Above the Cloud Sea 10.1-10.3', (None, 10.1, 10.3, '')),
+	('Above the Cloud Sea 16.1-16.3', (None, 16.1, 16.3, '')),
+	('Above the Cloud Sea 17.1-17.3', (None, 17.1, 17.3, '')),
+	('Above the Cloud Sea 18.1-18.3', (None, 18.1, 18.3, '')),
+	('Above the Cloud Sea 19.1-19.3', (None, 19.1, 19.3, '')),
+	('Above the Cloud Sea 2.1-2.3', (None, 2.1, 2.3, '')),
+	('Above the Cloud Sea 21.1-21.3', (None, 21.1, 21.3, '')),
+	('Above the Cloud Sea 22.1-22.3 and The Border of the Abysm 4', (None, 22.1, 22.3, '')),
+	('Above the Cloud Sea 24.1-24.3', (None, 24.1, 24.3, '')),
+	('Above the Cloud Sea 25.1-25.3', (None, 25.1, 25.3, '')),
+	('Above the Cloud Sea 26.1-26.3', (None, 26.1, 26.3, '')),
+	('Above the Cloud Sea 3.1-4.1', (None, 3.1, 4.1, '')),
+	('Above the Cloud Sea 4.2-4.3', (None, 4.2, 4.3, '')),
+	('Above the Cloud Sea 5.2-5.4', (None, 5.2, 5.4, '')),
+	('Above the Cloud Sea 6.1-6.3', (None, 6.1, 6.3, '')),
+	('Above the Cloud Sea 7.1-7.3', (None, 7.1, 7.3, '')),
+	('Above the Cloud Sea 8.1-8.3', (None, 8.1, 8.3, '')),
+	('Above the Cloud Sea 9.1-9.3', (None, 9.1, 9.3, '')),
+	('Astral Walker 14-16', (None, 14.0, 16.0, '')),
+	('Astral Walker 17-20', (None, 17.0, 20.0, '')),
+	('Astral Walker 2 and I’m a Loser 9-10', (None, 9.0, 10.0, '')),
+	('Astral Walker 21-22', (None, 21.0, 22.0, '')),
+	('Astral Walker 24-25', (None, 24.0, 25.0, '')),
+	('Astral Walker 26-27', (None, 26.0, 27.0, '')),
+	('Astral Walker 28-29, Above the Cloud Sea 5.1, The Border of the Abysm 3', (None, 28.0, 29.0, '')),
+	('Astral Walker 30-31', (None, 30.0, 31.0, '')),
+]
+

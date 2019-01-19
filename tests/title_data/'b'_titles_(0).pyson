@@ -1,0 +1,25 @@
+
+
+# Titles for releases starting with the character 'b'
+
+[
+	('BGHS 1-1: The Final Test', (None, 1.0, 1.0, '')),
+	('BTTH 146-148', (None, 146.0, 148.0, '')),
+	('BTTH 154-155', (None, 154.0, 155.0, '')),
+	('BTTH 167-168', (None, 167.0, 168.0, '')),
+	('BTTH 181-182', (None, 181.0, 182.0, '')),
+	('BTTH 186-188', (None, 186.0, 188.0, '')),
+	('BTTH 189-190', (None, 189.0, 190.0, '')),
+	('BTTH 236-237!', (None, 236.0, 237.0, '')),
+	('BTTH 241-242!', (None, 241.0, 242.0, '')),
+	('BTTH 313-314!', (None, 313.0, 314.0, '')),
+	('BTTH 396-397', (None, 396.0, 397.0, '')),
+	('BTTH 398-399!', (None, 398.0, 399.0, '')),
+	('BTTH 407-408', (None, 407.0, 408.0, '')),
+	('BTTH 409-410!', (None, 409.0, 410.0, '')),
+	('Because I’m so kind ~ Le Festin 03-02', (None, 3.0, 2.0, '')),
+	('Botsuraku Yotei 1-12', (None, 1.0, 12.0, '')),
+	('Botsuraku Yotei 1-13', (None, 1.0, 13.0, '')),
+	('By: DerpusA7-25', (None, 7.0, 25.0, '')),
+]
+
