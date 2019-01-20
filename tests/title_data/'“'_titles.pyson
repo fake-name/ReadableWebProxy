@@ -22,7 +22,7 @@
 	('“5.8 Interlude (Samael)” from “Anathema” by Chrysalis', (None, 5.8, None, 'Interlude (Samael)” from “Anathema” by Chrysalis')),
 	('“Bolna” English Translation and Lyrics', (None, None, None, '')),
 	('“Damned I” by Shaeor', (None, None, None, '')),
-	// ('“Death March” 1-2 and small changes', (None, 1.0, None, '')),
+	# ('“Death March” 1-2 and small changes', (None, 1.0, None, '')),
 	('“Death March” Volume 1 Chapter 1', (1.0, 1.0, None, '')),
 	('“Fancy” PDFs', (None, None, None, '')),
 	('“Flannel” is actually “Nell”, huh.', (None, None, None, '')),

@@ -533,7 +533,7 @@
 	('Update Projection', (None, None, None, '')),
 	('Update Schedule', (None, None, None, '')),
 	('Update Three | Poll and Editor/Translator Recruitment', (None, None, None, '')),
-	// ('Update Time! 2-8 is now available', (None, 2.0, None, '')),
+	# ('Update Time! 2-8 is now available', (None, 2.0, None, '')),
 	('Update Two | School, Motivation, and Hiring', (None, None, None, '')),
 	('Update YGDA Ch 37', (None, 37.0, None, '')),
 	('Update YGDA Ch 38', (None, 38.0, None, '')),

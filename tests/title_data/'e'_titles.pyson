@@ -173,7 +173,7 @@
 	('Edgenotes Issue 1 May 2016 – Strange Love', (None, 1.0, None, '')),
 	('Edited Gob 22', (None, 22.0, None, '')),
 	('Edited SOTR Chapter 161 posted!', (None, 161.0, None, '')),
-	// ('Edited Version of 2-1 Now Available', (None, 2.0, None, '')),
+	# ('Edited Version of 2-1 Now Available', (None, 2.0, None, '')),
 	('Editing: go go go', (None, None, None, '')),
 	('Editor Intro: IcedTea and Some Important Notes. For lazy readers, read the first and last 2 paragraphs.', (None, 2.0, None, '')),
 	('Editor I’m-too-lazy-to-think-of-something-more-original Tryouts (SFW)', (None, None, None, '')),

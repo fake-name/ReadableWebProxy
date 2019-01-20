@@ -780,7 +780,7 @@
 	('Volume 9 Teasers', (9.0, None, None, '')),
 	('Volume 9 complete', (9.0, None, None, '')),
 	('Volume 9: Pelantun Sihir Kehancuran', (9.0, None, None, '')),
-	// ('Volume Completion: Fire Girl Volume 1-1', (1.0, 1.0, None, '')),
+	# ('Volume Completion: Fire Girl Volume 1-1', (1.0, 1.0, None, '')),
 	('Volume Completion: Hai to Gensou no Grimgar Level 3', (None, 3.0, None, '')),
 	('Volume Completion: Kono Sekai ga Game da to, Ore dake ga Shitte Iru Volume 1', (1.0, None, None, '')),
 	('Volume Completion: Kore wa Zombie Desu ka? Volume 7', (7.0, None, None, '')),

@@ -9,7 +9,7 @@
 	('Yuusha Party 11-12', (None, 11.0, 12.0, '')),
 	('Yuusha Party 13-14', (None, 13.0, 14.0, '')),
 	('Yuusha Party 13-14 | Moving iminent', (None, 13.0, 14.0, '')),
-	('Yuusha Party 15-16+', (None, 15.0, 16.0, '')),
+	# ('Yuusha Party 15-16+', (None, 15.0, 16.0, '')),
 	('Yuusha Party 17-18', (None, 17.0, 18.0, '')),
 	('Yuusha Party 7-9', (None, 7.0, 9.0, '')),
 	('Yuusha Party WN20-22/LN 8-9 | OreDungeon 1-4', (None, 20.0, 22.0, '')),

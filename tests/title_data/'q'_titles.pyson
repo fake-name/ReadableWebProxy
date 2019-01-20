@@ -77,7 +77,7 @@
 	('Quanzhi Fashi ch23', (None, 23.0, None, '')),
 	('Quanzhi Fashi ch24', (None, 24.0, None, '')),
 	('Quanzhi Fashi ch30', (None, 30.0, None, '')),
-	// ('Quanzhi Fashi ch31-33', (None, 31.0, None, '')),
+	# ('Quanzhi Fashi ch31-33', (None, 31.0, None, '')),
 	('Quanzhi Fashi ch36,37', (None, 36.0, None, '')),
 	('Quanzhi Fashi ch41-Intermission & 42', (None, 41, None, 'ch41-Intermission & 42')),
 	('Quanzhi Fashi ch49', (None, 49.0, None, '')),

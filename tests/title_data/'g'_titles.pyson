@@ -762,7 +762,7 @@
 	('Girl Corps – Chapter 1', (None, 1.0, None, '')),
 	('Girl Who Ate Death 16, 17', (None, 16.0, None, '')),
 	('Girl Who Ate Death 23', (None, 23.0, None, '')),
-	// ('Girl Who Ate Death 6-8', (None, 6.0, None, '')),
+	# ('Girl Who Ate Death 6-8', (None, 6.0, None, '')),
 	('Girl Who Ate Death 9&10', (None, 9.0, None, '')),
 	('Girl Who Ate Death Ch. 2&3', (None, 2.0, None, '')),
 	('Girl Who Ate Death Chapter 11', (None, 11.0, None, '')),

@@ -1,0 +1,34 @@
+
+
+# Titles for releases starting with the character 'other'
+
+[
+	('/second-life-1-10/', (None, 1.0, 10.0, '')),
+	('Bu Bu Jing Xin Chapter 2 (Part 7) + Chapter 3 (Parts 1-2)', (None, 2.0, 7.0, '')),
+	('Bu Bu Jing Xin Chapter 4 (Part 1-2)', (None, 4.0, 2.0, '')),
+	('Bu Bu Jing Xin Chapter 4 (Part 5-6)', (None, 4.0, 6.0, '')),
+	('Bu Bu Jing Xin Chapter 5 (Part 2-3)', (None, 5.0, 3.0, '')),
+	('Bu Bu Jing Xin Chapter 5 (Part 4-5)', (None, 5.0, 5.0, '')),
+	('Bu Bu Jing Xin Chapter 6 (Part 1-3) + Chapter 5 Full', (None, 6.0, 3.0, '')),
+	('Bu Bu Jing Xin Chapter 7 (Part 1-2) and Link for BBJX Subbing Team', (None, 7.0, 2.0, '')),
+	('Bu Bu Jing Xin Chapter 8 (Part 4-6)', (None, 8.0, 6.0, '')),
+	('Death March 2-5A', (None, 2.0, 5.0, '')),
+	('Death March 2-5B (complete)', (None, 2.0, 5.0, '')),
+	('Isekai Maou – LN Parts 10-15 + Manga Ch. 1 Part 2', (None, 1.0, 2.0, '')),
+	('Kumo Desu ga, Nani ka? Oni 3 + Blood 9-10 + Chapter 208-209', (None, 208.0, 209, '')),
+	('Ostrich Chapters 95 & 96-1', (None, 95.0, 1.0, '')),
+	('Shadow Rogue Chapter 67 (65-66 uploaded again)', (None, 67.0, 66.0, '')),
+	("Today's update should be at 1-2pm", (None, 1.0, 2.0, '')),
+	('Trick or Treat #1-3. BTTH 196-197!', (None, 1.0, 3.0, '')),
+	('Volume Completion: Fire Girl Volume 1-1', (1.0, 1.0, None, '')),
+	('Yuusha Party 10 | OreDungeon 5-6 |Recruitment', (None, 5.0, 6.0, '')),
+	('Yuusha Party 15-16+', (None, 15.0, 16.0, '')),
+	('[WN] Doll Dungeon Part 1-10', (None, None, 10.0, '')),
+	('[WN] Doll Dungeon Part 1-11.', (None, None, 11.0, '')),
+	('[WN] Doll Dungeon Part 1-12.', (None, None, 12.0, '')),
+	('[WN] Doll Dungeon Part 1-13.', (None, None, 13.0, '')),
+	('[WN] Doll Dungeon Part 1-7.', (None, None, 7.0, '')),
+	('[WN] Doll Dungeon Part 1-8.', (None, None, 8.0, '')),
+	('[WN] Doll Dungeon Part 1-9.', (None, None, 9.0, '')),
+]
+

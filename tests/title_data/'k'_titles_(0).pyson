@@ -6,7 +6,7 @@
 	('Kumo Desu ga, Nani ka? Blood 1-3', (None, 1.0, 3.0, '')),
 	('Kumo Desu ga, Nani ka? Blood 12-14', (None, 12.0, 14.0, '')),
 	('Kumo Desu ga, Nani ka? Blood 15-16 + Oni 5', (None, 15.0, 16.0, '')),
-	('Kumo Desu ga, Nani ka? Blood 17-18 + Chapter 211', (None, 17.0, 18.0, '')),
+	# ('Kumo Desu ga, Nani ka? Blood 17-18 + Chapter 211', (None, 17.0, 18.0, '')),
 	('Kumo Desu ga, Nani ka? Blood 20-21 + Regular Reports', (None, 20.0, 21.0, '')),
 	('Kumo Desu ga, Nani ka? Blood 23-26', (None, 23.0, 26.0, '')),
 	('Kumo Desu ga, Nani ka? Blood 6-8', (None, 6.0, 8.0, '')),
@@ -14,6 +14,6 @@
 	('Kumo Desu ga, Nani ka? Elf Village Battle 5-8', (None, 5.0, 8.0, '')),
 	('Kumo Desu ga, Nani ka? Elf Village Battle 9-11', (None, 9.0, 11.0, '')),
 	('Kumo Desu ga, Nani ka? Oni 2 + Blood 4-5', (None, 4.0, 5.0, '')),
-	('Kumo Desu ga, Nani ka? Oni 3 + Blood 9-10 + Chapter 208-209', (None, 9.0, 10.0, '')),
+	# ('Kumo Desu ga, Nani ka? Oni 3 + Blood 9-10 + Chapter 208-209', (None, 9.0, 10.0, '')),
 ]
 

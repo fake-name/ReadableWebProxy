@@ -617,7 +617,7 @@
 	('LV999 Villager – Chapter 6 P9', (None, 6.0, 9.0, '')),
 	('LXY 26', (None, 26.0, None, '')),
 	('LXY V1C2', (1.0, 2.0, None, '')),
-	// ('LY 1-9', (None, 1.0, None, '')),
+	# ('LY 1-9', (None, 1.0, None, '')),
 	('Labor Day Post!', (None, None, None, '')),
 	('Labyrinth King', (None, None, None, '')),
 	('Labyrinth cheats begin with immortality Chapter 1: Episode one birth', (None, 1.0, 1, '')),

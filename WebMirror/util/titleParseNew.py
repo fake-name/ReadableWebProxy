@@ -2,8 +2,11 @@
 import abc
 import string
 import re
+import sys
 import semantic.numbers
 import traceback
+
+DEBUG = "debug" in sys.argv
 
 ONE_WORD_POSTFIX_KEYS = [
 		'prologue',
@@ -167,10 +170,11 @@ class CharSplitter(SplitterBase):
 
 
 LETTER_NUMBER_SPLITS = [
-	re.compile(r"([a-z_]+)(\.?)([0-9\.]+)", re.IGNORECASE),
-	re.compile(r"([0-9\.]+)(\.?)([a-z_]+)", re.IGNORECASE),
-	re.compile(r"([a-z_]+)(\-?)([0-9\.]+)", re.IGNORECASE),
-	re.compile(r"([0-9\.]+)(\-?)([a-z_]+)", re.IGNORECASE),
+	re.compile(r"([^\W\d]+)(\.?)([0-9\-]+)",  re.IGNORECASE),
+	re.compile(r"([^\W\d]+)(\.?)([0-9\.]+)",  re.IGNORECASE),
+	re.compile(r"([0-9\.]+)(\.?)([^\W\d]+)",  re.IGNORECASE),
+	re.compile(r"([^\W\d]+)(\-?)([0-9\.]+)",  re.IGNORECASE),
+	re.compile(r"([0-9\.]+)(\-?)([^\W\d]+)",  re.IGNORECASE),
 
 	re.compile(r"([a-z_\-]+)(\.)([0-9\.]+)", re.IGNORECASE),
 	re.compile(r"([0-9\.]+)(\.)([a-z_\-]+)", re.IGNORECASE),
@@ -327,13 +331,21 @@ class NumericToken(TokenBase):
 
 	def __repr__(self):
 		# print("Token __repr__ call!")
+		is_ascii = False
+		try:
+			is_ascii = self.is_ascii()
+		except TypeError:
+			is_ascii = False
+
+
+
 		ret = "<{:14} - contents: '{}' '{}' '{}' (numeric: {}, ascii: {}, parsed: {}>".format(self.__class__.__name__,
 			self.prefix,
 			self.intermediate,
 			self.content,
 			self.is_decimal(),
-			self.is_ascii(),
-			self.to_number(tok_text=self.content, parse_ascii=True) if self.is_ascii() else 'No'
+			is_ascii,
+			self.to_number(tok_text=self.content, parse_ascii=True) if is_ascii else 'No'
 			)
 		return ret
 
@@ -342,7 +354,7 @@ class NumericToken(TokenBase):
 			tok_text = self.content
 
 		if not tok_text:
-			raise NumberConversionException("Failed to convert '%s' to a number!" % (tok_text, ))
+			raise NumberConversionException("Empty token text ('%s'). Cannot convert to a number!" % (tok_text, ))
 		if not isinstance(tok_text, str):
 			raise NumberConversionException("Passed a token, rather then a string: '%s'!" % (tok_text, ))
 
@@ -365,7 +377,6 @@ class NumericToken(TokenBase):
 		if parse_ascii:
 			# return float(tok_text)
 			val = self.ascii_numeric(tok_text)
-			# print("Ascii_numeric call return: ", val)
 			if val != False:
 				return val
 
@@ -408,6 +419,8 @@ class NumericToken(TokenBase):
 				return True
 
 	def ascii_numeric(self, content):
+		# print("Ascii Numeric on: ", content)
+
 
 		bad_chars = [":", ";", ",", "[", "]"]
 		for bad_char in bad_chars:
@@ -421,6 +434,7 @@ class NumericToken(TokenBase):
 			"–",
 			".",
 			":",
+			"!",
 		]
 
 
@@ -542,6 +556,15 @@ class CompoundToken(NumericToken):
 		ret = "<{:14} - contents: '{}' '{}' '{}' '{}' '{}'>".format(self.__class__.__name__, self.prefix, self.intermediate, self.component_1, self.spacer, self.component_2)
 		return ret
 
+
+	def specialize_into(self, new_cls, prec, intermediate):
+		assert issubclass(new_cls, CompoundToken), "New class must be a subclass of %s. Passed type %s" % (
+			CompoundToken, type(new_cls))
+		self.intermediate = intermediate + self.prefix + self.intermediate
+		self.prefix = prec
+
+		self.__class__ = new_cls
+
 class CompoundVolChapterToken(CompoundToken):
 
 	def valid_volume(self, parse_ascii):
@@ -564,6 +587,44 @@ class CompoundChapterFragmentToken(CompoundToken):
 	def get_chapter(self, parse_ascii):
 		return self.to_number_1(parse_ascii)
 	def get_fragment(self, parse_ascii):
+		return self.to_number_2(parse_ascii)
+
+
+class FreeCompoundChapterFragmentToken(CompoundToken):
+
+	def valid_chapter(self, parse_ascii):
+		return self.is_valid_1(parse_ascii)
+	def valid_fragment(self, parse_ascii):
+		return self.is_valid_2(parse_ascii)
+
+	def get_chapter(self, parse_ascii):
+		return self.to_number_1(parse_ascii)
+	def get_fragment(self, parse_ascii):
+		return self.to_number_2(parse_ascii)
+
+
+class CompoundFragmentFragmentToken(CompoundToken):
+
+	def valid_fragment_1(self, parse_ascii):
+		return self.is_valid_1(parse_ascii)
+	def valid_fragment_2(self, parse_ascii):
+		return self.is_valid_2(parse_ascii)
+
+	def get_fragment_1(self, parse_ascii):
+		return self.to_number_1(parse_ascii)
+	def get_fragment_2(self, parse_ascii):
+		return self.to_number_2(parse_ascii)
+
+class CompoundVolumeVolumeToken(CompoundToken):
+
+	def valid_volume_1(self, parse_ascii):
+		return self.is_valid_1(parse_ascii)
+	def valid_volume_2(self, parse_ascii):
+		return self.is_valid_2(parse_ascii)
+
+	def get_volume_1(self, parse_ascii):
+		return self.to_number_1(parse_ascii)
+	def get_volume_2(self, parse_ascii):
 		return self.to_number_2(parse_ascii)
 
 class DecimalNumberCompoundChapterFragmentToken(CompoundToken):
@@ -876,7 +937,7 @@ class FractionGlobber(GlobBase):
 		return before, target, after
 
 
-class PrefixCompoundChapterGlobber(GlobBase):
+class PrefixCompoundChapterFragmentGlobber(GlobBase):
 	'''
 	Bind to '{chapter_prefix}{number(int)}-{number(int)}'
 	'''
@@ -908,7 +969,7 @@ class PrefixCompoundChapterGlobber(GlobBase):
 					break
 			# print("Match:", match)
 			if match:
-				# print("CompoundChapterGlobber: ", target)
+				# print("CompoundChapterFragmentGlobber: ", target)
 				p1, divider, p2 = match.groups()
 				# target = DateTextToken(target)
 				target = CompoundChapterFragmentToken(prec, intervening, p1, divider, p2 )
@@ -927,7 +988,7 @@ class PrefixCompoundChapterGlobber(GlobBase):
 		# print((before, prec, intervening, target, after))
 		return before, target, after
 
-class CompoundChapterGlobber(GlobBase):
+class CompoundChapterFragmentGlobber(GlobBase):
 
 	CHAPTER_KEYS = CHAPTER_KEYS_GLOBAL
 
@@ -952,10 +1013,98 @@ class CompoundChapterGlobber(GlobBase):
 
 			match = re.search(r'([\d\.]+)(-|–)([\d\.]+)', target)
 			if prec and prec.lower() in self.CHAPTER_KEYS and match:
-				# print("CompoundChapterGlobber: ", target)
+				# print("CompoundChapterFragmentGlobber: ", target)
 				p1, divider, p2 = match.groups()
 				# target = DateTextToken(target)
 				target = CompoundChapterFragmentToken(prec, intervening, p1, divider, p2 )
+			else:
+				if prec:
+					before.append(prec)
+				if intervening:
+					before.append(intervening)
+		else:
+			if prec:
+				before.append(prec)
+			if intervening:
+				before.append(intervening)
+
+		# print("target:", (prec, target))
+		# print((before, prec, intervening, target, after))
+		return before, target, after
+
+class CompoundVolumeChapterGlobber(GlobBase):
+
+	VOLUME_KEYS = VOLUME_KEYS_GLOBAL
+
+
+	def attach_token(self, before, target, after):
+		# print("AttachToken: ", (before, target, after))
+		# if len(after) == 3:
+		# 	target = before[-1] + target
+		# 	before = before[:-1]
+
+		# print("Getting text preceding '%s' (%s)" % (target, type(target)))
+
+		before, prec, intervening = self.get_preceeding_text(before)
+
+		if target == " ":
+			if prec:
+				before.append(prec)
+			if intervening:
+				before.append(intervening)
+
+		elif isinstance(target, str):
+
+			match = re.search(r'([\d\.]+)(-|–)([\d\.]+)', target)
+			if prec and prec.lower() in self.VOLUME_KEYS and match:
+				# print("CompoundChapterFragmentGlobber: ", target)
+				p1, divider, p2 = match.groups()
+				# target = DateTextToken(target)
+				target = CompoundVolChapterToken(prec, intervening, p1, divider, p2 )
+			else:
+				if prec:
+					before.append(prec)
+				if intervening:
+					before.append(intervening)
+		else:
+			if prec:
+				before.append(prec)
+			if intervening:
+				before.append(intervening)
+
+		# print("target:", (prec, target))
+		# print((before, prec, intervening, target, after))
+		return before, target, after
+
+class CompoundFragmentFragmentGlobber(GlobBase):
+
+	FRAGMENT_KEYS = FRAGMENT_KEYS_GLOBAL
+
+
+	def attach_token(self, before, target, after):
+		# print("AttachToken: ", (before, target, after))
+		# if len(after) == 3:
+		# 	target = before[-1] + target
+		# 	before = before[:-1]
+
+		# print("Getting text preceding '%s' (%s)" % (target, type(target)))
+
+		before, prec, intervening = self.get_preceeding_text(before)
+
+		if target == " ":
+			if prec:
+				before.append(prec)
+			if intervening:
+				before.append(intervening)
+
+		elif isinstance(target, str):
+
+			match = re.search(r'([\d\.]+)(-|–)([\d\.]+)', target)
+			if prec and prec.lower() in self.FRAGMENT_KEYS and match:
+				# print("CompoundChapterFragmentGlobber: ", target)
+				p1, divider, p2 = match.groups()
+				# target = DateTextToken(target)
+				target = CompoundFragmentFragmentToken(prec, intervening, p1, divider, p2 )
 			else:
 				if prec:
 					before.append(prec)
@@ -989,12 +1138,13 @@ class FreeCompoundGlobber(GlobBase):
 
 		if isinstance(target, str):
 
-			match = re.search(r'([\d\.]+)(-|–)([\d\.]+)', target)
+			match = re.search(r'([\d\.]+)(-|–)([\d\.]+)(.*?)', target)
 			if match:
-				# print("CompoundChapterGlobber: ", target)
-				p1, divider, p2 = match.groups()
+				# print("CompoundChapterFragmentGlobber: ", target)
+				p1, divider, p2, suffix = match.groups()
 				# target = DateTextToken(target)
-				target = CompoundChapterFragmentToken("", "", p1, divider, p2 )
+				target = FreeCompoundChapterFragmentToken("", "", p1, divider, p2 )
+				after = [suffix, ] + after
 
 		# print("target:", (prec, target))
 		# print((before, prec, intervening, target, after))
@@ -1034,12 +1184,29 @@ class EpisodeGlobber(GlobBase):
 				before.append(intervening)
 		else:
 			if prec and prec.lower() in self.KEYS:
-				if have_chapter_before:
-					target = FragmentToken(prec, intervening, target)
-				elif have_chapter_after:
-					target = VolumeToken(prec, intervening, target)
+				# print("Target: ", target)
+				if isinstance(target, CompoundToken):
+					# print("Wat?", (prec, intervening, target))
+
+					if prec and prec.lower() in self.KEYS:
+						if have_chapter_before:
+							target.specialize_into(CompoundFragmentFragmentToken, prec, intervening)
+						elif have_chapter_after:
+							target.specialize_into(CompoundVolumeVolumeToken, prec, intervening)
+						else:
+							target.specialize_into(CompoundVolChapterToken, prec, intervening)
+
+				elif isinstance(target, str):
+					if have_chapter_before:
+						target = FragmentToken(prec, intervening, target)
+					elif have_chapter_after:
+						target = VolumeToken(prec, intervening, target)
+					else:
+						target = ChapterToken(prec, intervening, target)
 				else:
-					target = ChapterToken(prec, intervening, target)
+					raise TypeError("Attempting to attach EpisodeToken to a non-string/CompoundToken instance!")
+
+
 
 
 
@@ -1122,14 +1289,17 @@ class TitleParser(object):
 		CommaSplitter,
 		DateGlobber,
 		R18Globber,
-		PrefixCompoundChapterGlobber,
+		PrefixCompoundChapterFragmentGlobber,
 		LetterNumberSplitter,
-		PrefixCompoundChapterGlobber,
+		PrefixCompoundChapterFragmentGlobber,
 		VolumeChapterFragGlobber,
-		CompoundChapterGlobber,
+		CompoundChapterFragmentGlobber,
+		CompoundFragmentFragmentGlobber,
 		AsciiDecimalSplitter,
 		VolumeChapterFragGlobber,
-		CompoundChapterGlobber,
+		CompoundVolumeChapterGlobber,
+		CompoundChapterFragmentGlobber,
+		CompoundFragmentFragmentGlobber,
 		FractionGlobber,
 		CharSplitter,
 		LetterNumberSplitter,
@@ -1163,9 +1333,11 @@ class TitleParser(object):
 		# print("Parsing title: '%s'" % title)
 
 		for step in self.PROCESSING_STEPS:
-			# print("Splitter step before: ", step, title)
+			if DEBUG:
+				print("Splitter step before: ", str(step).ljust(80), title)
 			title = step().process(title)
-			# print("Splitter step after: ", step, title)
+			if DEBUG:
+				print("Splitter step after:  ", str(step).ljust(80), title)
 
 		# print(self)
 		self.chunks = title
@@ -1204,6 +1376,9 @@ class TitleParser(object):
 		val = self.getTok(ChapterToken)
 		if val is not None:
 			return val
+		val = self.getTok(FreeCompoundChapterFragmentToken, tok_func=['valid_chapter', 'get_chapter'])
+		if val is not None:
+			return val
 		val = self.getTok(FreeChapterToken)
 		if val is not None:
 			return val
@@ -1214,6 +1389,12 @@ class TitleParser(object):
 		if val is not None:
 			return val
 		val = self.getTok(CompoundChapterFragmentToken, tok_func=['valid_fragment', 'get_fragment'])
+		if val is not None:
+			return val
+		val = self.getTok(CompoundFragmentFragmentToken, tok_func=['valid_fragment_2', 'get_fragment_2'])
+		if val is not None:
+			return val
+		val = self.getTok(FreeCompoundChapterFragmentToken, tok_func=['valid_fragment', 'get_fragment'])
 		if val is not None:
 			return val
 		return None
