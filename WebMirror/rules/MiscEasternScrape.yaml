@@ -13,6 +13,9 @@ baseUrl: [
 
 		'https://work.nwong.net',
 		'http://www.gundamwingtales.com',
+		'http://www.tigresstranslations.com',
+		'http://novel-id.blognive.com',
+		'http://baka.exnaid.com',
 
 		# Dickish blocking garbage shit.
 		'https://nepustation.wordpress.com',
@@ -48,6 +51,7 @@ baseUrl: [
 		'https://talesof.dreamwidth.org',
 		'https://pucari.dreamwidth.org',
 		'https://shadow.dreamwidth.org',
+		'https://luukia.dreamwidth.org',
 
 		'http://uncommittedtranslations.bravesites.com',
 
@@ -119,6 +123,7 @@ feeds: [
 	'https://www.wuxiaworld.com/feed/chapters',
 	'https://lesyt.xyz/rss/chapters/regular',
 	'http://weletranslation.com/atom.xml',
+	'http://novel-id.blognive.com/rss.xml',
 ]
 
 extraStartUrls: [

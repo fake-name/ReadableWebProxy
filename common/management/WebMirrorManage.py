@@ -1138,7 +1138,7 @@ def exposed_drop_priorities():
 
 	step  = 50000
 
-	with db.session_context() as sess:
+	with db.session_context(override_timeout_ms=30*60*1000) as sess:
 		print("Getting minimum row in need or update..")
 		start = sess.execute("""SELECT min(id) FROM web_pages WHERE priority != 9""")
 		start = list(start)[0][0]

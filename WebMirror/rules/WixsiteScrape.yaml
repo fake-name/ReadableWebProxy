@@ -10,9 +10,13 @@ baseUrl: [
 		'http://meejeenovels.wixsite.com',
 		'https://flairv.wixsite.com',
 		'https://nimini067.wixsite.com',
+		'https://tachibanachinatsu.wixsite.com/tenshitranslations/',
 	]
 
-feeds: []
+feeds: [
+		'https://www.catatopatch.com/feed.xml',
+		"https://tachibanachinatsu.wixsite.com/tenshitranslations/feed.xml"
+	]
 
 extraStartUrls: []
 
