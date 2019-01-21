@@ -23,6 +23,7 @@ import app.sub_views.search_views  as search_views
 import app.sub_views.status_view   as status_view
 import app.sub_views.misc_views    as misc_views
 import app.sub_views.nu_views      as nu_views
+import app.sub_views.ebook_view    as ebook_view
 
 
 # @lm.user_loader

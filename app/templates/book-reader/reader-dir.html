@@ -1,0 +1,35 @@
+<!-- extend base layout -->
+{% extends "__base.html" %}
+
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well">
+
+
+		<h2>Reader Directory for {{fpath}}</h2>
+
+
+				<table class='table-striped table table-bordered table-condensed fullwidth' style='width:100%'>
+					<colgroup>
+						<col >
+						<col  style='width:5%'>
+					</colgroup>
+					<tr>
+						<th>Name</th>
+						<th>Type</th>
+					</tr>
+					{%- for item in items -%}
+						<tr>
+							<td><a href="{{item['relp']}}">{{item['name']}}</a></td>
+
+							<td>{{'📁' if item['is_dir'] else '📄'}}</td>
+						</tr>
+					{%- endfor -%}
+				</table>
+
+
+
+	</div>
+
+{% endblock %}
+
