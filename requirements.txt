@@ -70,7 +70,7 @@ alembic==1.0.6
 
 redis==3.0.1
 
-hiredis==0.2.0
+hiredis==1.0.0
 
 vmprof==0.4.12
 
