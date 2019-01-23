@@ -40,8 +40,11 @@ from app import views
 def utility_processor():
 
 	def format_date(value, format='medium'):
+		try:
+			return format_datetime(value, "EE yyyy.MM.dd")
+		except AttributeError:
+			return "None?"
 
-		return format_datetime(value, "EE yyyy.MM.dd")
 
 	def date_now():
 		return format_datetime(datetime.datetime.today(), "yyyy/MM/dd, hh:mm:ss")

@@ -2,7 +2,6 @@ requests==2.20.0
 ## git+https://github.com/fake-name/amqpstorm.git
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
-git+https://github.com/berkerpeksag/astor.git
 git+https://github.com/fake-name/ChromeController.git
 
 webrequest==0.0.51
