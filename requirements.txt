@@ -26,7 +26,7 @@ bleach==3.1.0
 Jinja2==2.10
 xmljson==0.2.0 
 pystuck==0.8.5
-cherrypy==18.0.1
+cherrypy==18.1.0
 
 psycopg2cffi==2.8.1; platform.python_implementation == 'PyPy'
 psycopg2==2.7.5; platform.python_implementation == 'CPython'
