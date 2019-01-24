@@ -31,6 +31,8 @@ def render_ebook_directory(fpath):
 		}
 		for item in items
 	]
+
+	items.sort(key=lambda x: x['name'])
 	print("Query done. Rendering with %s items" % (len(items), ))
 	return render_template('book-reader/reader-dir.html',
 		fpath = fpath,
@@ -44,16 +46,18 @@ def render_ebook_reader(fpath):
 		return redirect("/static/ext/pdfjs/web/viewer.html?file=%s" % (urllib.parse.quote(furl)))
 
 	if ext == ".epub":
-
-		return redirect("/static/ext/bib/i/index.html?book=%s" % (urllib.parse.quote(furl)))
-		# return render_template('book-reader/reader-epub.html', furl = furl)
+		if "bibi" in request.args:
+			return render_template('book-reader/reader-epub-bibi.html', furl = furl)
+		else:
+			return render_template('book-reader/reader-epub-epubjs.html', furl = furl)
+			# return redirect("/static/ext/bib/i/index.html?book=%s" % (urllib.parse.quote(furl)))
 	else:
 
 		return render_template('error.html', title = 'Ebook Reader', message = "render_ebook_file on '%s' with unknown type: %s" % (fpath, ext))
 
 
 def render_ebook_file(fpath):
-	return render_template('error.html', title = 'Ebook Reader', message = "render_ebook_file: %s" % fpath)
+	return render_template('error.html', title = 'Ebook Reader', message = "render_ebook_file for unknown format file: : %s" % fpath)
 
 def render_ebook_error(fpath):
 	return render_template('error.html', title = 'Ebook Reader', message = "Could not find content at %s" % fpath)

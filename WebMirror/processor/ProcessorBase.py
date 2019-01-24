@@ -80,6 +80,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		inUrl = self.preprocessReaderUrl(inUrl)
 		# The link will have been canonized at this point
 
+		if not inUrl:
+			return ""
+
 		# Do not relink inline images
 		if inUrl.startswith("data:"):
 			return inUrl

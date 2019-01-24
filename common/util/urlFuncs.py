@@ -405,6 +405,9 @@ def hasDuplicateSegments(url):
 
 
 def urlClean(url):
+	'''
+	Clean a URL. Note: THIS CAN RETURN NONE!
+	'''
 	assert url != None
 	# Google docs can be accessed with or without the '/preview' postfix
 	# We want to remove this if it's present, so we don't duplicate content.
