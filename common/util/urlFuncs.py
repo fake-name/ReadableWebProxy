@@ -194,6 +194,14 @@ class CacheObject():
 
 SQUATTER_NETLOC_RE = re.compile(r"^www?\d+\.")
 
+def unwrap_redirect(urlin, resolve_redirects=True):
+	try:
+		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=resolve_redirects)
+		return url
+	except (unshortenit.NotFound, unshortenit.UnshortenFailed, requests.exceptions.ConnectionError):
+		return None
+
+
 def cleanUrl(urlin):
 	# Fucking tumblr redirects.
 	if urlin.startswith("https://www.tumblr.com/login"):
@@ -203,20 +211,14 @@ def cleanUrl(urlin):
 
 	parsed = urllib.parse.urlparse(urlin)
 	if SQUATTER_NETLOC_RE.match(parsed.netloc):
-		print("Regex rejecting url: ", urlin)
 		return None
 
 	if 'wp.me' in parsed.netloc:
 		resolve_redirects = True
+	if 'feedproxy.google.com' in parsed.netloc:
+		resolve_redirects = True
 
-	try:
-
-		url = unshortenit.UnshortenIt(urlcache=CacheObject()).unshorten(urlin, resolve_30x=resolve_redirects)
-		return url
-	except (unshortenit.NotFound, unshortenit.UnshortenFailed, requests.exceptions.ConnectionError):
-		return None
-
-	return urlin
+	return unwrap_redirect(urlin, resolve_redirects)
 
 
 ##############################################################################################################

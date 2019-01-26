@@ -12,6 +12,7 @@ import bs4
 import json
 import time
 import calendar
+import urllib.parse
 import traceback
 import WebRequest
 import common.database
@@ -155,9 +156,15 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 		# content = "Disabled?"
 		return content
 
+	def unwrap_redirect(self, url):
+		parsed = urllib.parse.urlparse(url)
+		if "feedproxy.google.com" in parsed.netloc:
+			url = urlFuncs.unwrap_redirect(url)
+
+		return url
+
 
 	def processFeed(self, feed, feedUrl):
-
 
 		if '://pumanovels.com/' in feedUrl:
 			return []
@@ -192,7 +199,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 				item['title']    = entry['title']
 				item['guid']     = entry['guid']
-				item['linkUrl']  = entry['link']
+				item['linkUrl']  = unwrap_redirect(entry['link'])
 				item['authors']  = entry['authors']
 
 				item['feedUrl']  = feedUrl

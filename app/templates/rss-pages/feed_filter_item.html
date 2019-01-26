@@ -164,14 +164,12 @@
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 </code></pre>
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-keyed-lut-snippet')">Insert</button>
-<pre><code id='startswith-keyed-lut-snippet'>	chp_prefixes = [
-			('Lord of the Star Ocean',                               True,  'translated'),
-			('Game Market 1983',                                     False, 'translated'),
+<pre><code id='startswith-keyed-lut-snippet'>
+	badwords = [
+			'badword',
 		]
-
-	for series, require_chp, tl_type in chp_prefixes:
-		if item['title'].lower().startswith(series.lower()) and (not require_chp or 'chapter' in item['title'].lower()):
-			return buildReleaseMessageWithType(item, series, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
 
 </code></pre>
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-lut-snippet')">Insert</button>

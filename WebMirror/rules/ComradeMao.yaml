@@ -1,0 +1,54 @@
+type: eastern
+
+
+rewalk_interval_days: 30
+
+send_raw_feed: True
+
+baseUrl: [
+
+		# I /think/ these are aggregators, but I'm not totally sure.
+		'http://comrademao.com',
+
+	]
+
+feeds: [
+]
+
+extraStartUrls: [
+	]
+
+badwords: [
+			"?",
+			"&",
+			"/feed/",
+			"/login/",
+
+
+		]
+
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+	{'class' : "adsbygoogle"},
+]
+
+decompose: [
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'blog-sidebar'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: [
+]
+
+
+
