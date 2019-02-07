@@ -5,8 +5,9 @@ send_raw_feed: True
 rewalk_interval_days: 30
 
 baseUrl: [
-
+	'https://tenshihonyakusha.wordpress.com',
 	'https://12superlatives.wordpress.com',
+	'https://17literarycorner.wordpress.com',
 	'https://18konko.wordpress.com',
 	'https://2333translations.wordpress.com',
 	'https://25thchestnutnoveltranslations.wordpress.com',
@@ -81,6 +82,7 @@ baseUrl: [
 	'https://artofbutchery.wordpress.com',
 	'https://asd398.wordpress.com',
 	'https://ashenfeather.wordpress.com',
+	'https://ashialafine.wordpress.com',
 	'https://ashtranslations.wordpress.com',
 	'https://asiancult.wordpress.com',
 	'https://asiandramalife.wordpress.com',
@@ -354,6 +356,7 @@ baseUrl: [
 	'https://fioret.wordpress.com',
 	'https://firebirdsnest.wordpress.com',
 	'https://firegirlthetranslation.wordpress.com',
+	'https://firetranslations.wordpress.com',
 	'https://fishsaysno.wordpress.com',
 	'https://fivestarspecialists.wordpress.com',
 	'https://flowerbridgetoo.wordpress.com',
@@ -521,6 +524,7 @@ baseUrl: [
 	'https://jjagaimo.wordpress.com',
 	'https://jntranslation.wordpress.com',
 	'https://joeglens.wordpress.com',
+	'https://jostenam.wordpress.com',
 	'https://jtranslashions.wordpress.com',
 	'https://jtranslation516320481.wordpress.com',
 	'https://jujutranslation.wordpress.com',
@@ -536,6 +540,7 @@ baseUrl: [
 	'https://kainantranslations.wordpress.com',
 	'https://kaistranslations.wordpress.com',
 	'https://kaitozero.wordpress.com',
+	'https://kaivustranslations.wordpress.com',
 	'https://kakaoostory.wordpress.com',
 	'https://kamitranslation.wordpress.com',
 	'https://kanyome.wordpress.com',
@@ -691,6 +696,7 @@ baseUrl: [
 	'https://maoyuuthetranslation.wordpress.com',
 	'https://mapleszone.wordpress.com',
 	'https://martialgodtranslator.wordpress.com',
+	'https://masterpaster.wordpress.com',
 	'https://matchashortcake.wordpress.com',
 	'https://maynoveltranslations.wordpress.com',
 	'https://mayochikithetranslation.wordpress.com',
@@ -1123,6 +1129,7 @@ baseUrl: [
 	'https://strangelyinterestingstory.wordpress.com',
 	'https://strangledhands.wordpress.com',
 	'https://strawberrytranslates.wordpress.com',
+	'https://sttranslations.wordpress.com',
 	'https://studentcntranslations.wordpress.com',
 	'https://sub29translation.wordpress.com',
 	'https://subpartl.wordpress.com',
@@ -1150,6 +1157,7 @@ baseUrl: [
 	'https://taffygirl13.wordpress.com',
 	'https://taidadonotranslations.wordpress.com',
 	'https://taidatranslations.wordpress.com',
+	'https://tailor31415.wordpress.com',
 	'https://tamakeribanchou.wordpress.com',
 	'https://tarabletranslation.wordpress.com',
 	'https://tatakaushisho.wordpress.com',
@@ -1368,6 +1376,8 @@ baseUrl: [
 	'https://zoengsaiwaa.wordpress.com',
 
 	# There's a .blog TLD. I hate everyone involved.
+	'https://cclawtranslations.home.blog',
+	'https://sulisha.blog',
 	'https://bamtranslations.home.blog',
 	'https://barolaide.home.blog',
 	'https://boredtranslations.home.blog',
@@ -1387,7 +1397,6 @@ baseUrl: [
 	'https://lonewolftranslations.home.blog',
 	'https://maplefalls.home.blog',
 	'https://mediocretranslations.home.blog',
-	'https://poppyscanlations.video.blog',
 	'https://rosietranslates.home.blog',
 	'https://ruisitranslations.home.blog',
 	'https://sasugatranslations.home.blog',
@@ -1400,10 +1409,21 @@ baseUrl: [
 	'https://stormytranslations.home.blog',
 	'https://tbrithatrans.home.blog',
 	'https://thesoundsofsoothingrain.home.blog',
+
+	'https://idleshelf.video.blog',
+	'https://poppyscanlations.video.blog',
 	'https://xenontranslations.video.blog',
 
 
 	# Non explicitly wordpress blogs (that use wordpress internally)
+	'https://arunametta.asia',
+	'https://blackbox-tl.com',
+	'https://chrysanthemumgarden.com',
+	'https://lfnovels.com',
+	'https://mjonlinearchives.wujigege.com',
+	'https://mrleoo01.com',
+	'https://shibbsden.com',
+	'https://www.verdantlore.com',
 	'http://devilfoxx.blog',
 	'https://www.thenovelst.com',
 	'https://www.thenoveltemple.com',
@@ -1438,7 +1458,6 @@ baseUrl: [
 	'http://geekyoven.com',
 	'http://giraffecorps.net',
 	'http://goodwifetranslation.com',
-	'http://gravitytales.com',
 	'http://hainemakoru.xyz',
 	'http://hamster428.com',
 	'http://hellping.org',
@@ -1614,7 +1633,6 @@ baseUrl: [
 	'https://chaleuria.com',
 	'https://chubbycheeksthoughts.com',
 	'https://cookiesncreamtranslations.com',
-	'https://creativenovels.com',
 	'https://crimsonmagic.me',
 	'https://cubbyfox.site',
 	'https://damenano.com',
@@ -1805,6 +1823,8 @@ badwords: [
 		"?share=",
 
 		"//page/",
+		"i1.wp.com/tynkerd.xyz/wp-content/uploads/2018/07/southpark-avatar-hdv3.png",
+
 
 		"giraffecorps.liamak.net/pdf/",
 		"giraffecorps.liamak.net/contact/",

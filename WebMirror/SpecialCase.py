@@ -129,7 +129,7 @@ def localContentFetch(params, rid, joburl, netloc, job_aggregator_instance):
 dispatchers = {
 	'rate_limit'            : handleRateLimiting,
 	'chrome_render_fetch'   : handleRemoteRenderFetch,
-	'qudian_feed_forward'   : qidianSmartFeedFetch,
+	'qidian_feed_forward'   : qidianSmartFeedFetch,
 	'local_fetch'           : localContentFetch,
 }
 

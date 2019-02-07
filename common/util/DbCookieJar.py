@@ -166,15 +166,26 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 	def save(self, filename=None, ignore_discard=False, ignore_expires=False):
 		assert self.headers != None
-		with self.db.session_context("cookiejar") as sess:
-			self.__save_cookies(sess)
-			sess.commit()
+		for _ in range(10):
+			try:
+				with self.db.session_context("cookiejar") as sess:
+					self.__save_cookies(sess)
+					sess.commit()
+				return
+			except sqlalchemy.exc.SQLAlchemyError:
+				pass
 
 	def load(self, filename=None, ignore_discard=False, ignore_expires=False):
 		assert self.headers != None
-		with self.db.session_context("cookiejar") as sess:
-			self.__load_cookies(sess)
-			sess.commit()
+		for _ in range(10):
+			try:
+				with self.db.session_context("cookiejar") as sess:
+					self.__load_cookies(sess)
+					sess.commit()
+				return
+			except sqlalchemy.exc.SQLAlchemyError:
+				pass
+
 
 	def revert(self, filename=None, ignore_discard=False, ignore_expires=False):
 		self.sync_cookies()

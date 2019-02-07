@@ -1,0 +1,97 @@
+type: eastern
+
+send_raw_feed: True
+
+rewalk_interval_days: 30
+
+baseUrl: [
+	'http://gravitytales.com',
+
+	]
+
+feeds: [
+	'http://gravitytales.com/feed/'
+]
+
+
+# Any url containing any of the words in the `badwords` list will be ignored.
+badwords: [
+
+		 # Why do people think they need a fucking comment system?
+		'/?replytocom=',
+		'#comments',
+		"_wpnonce=",
+		'public-api.wordpress.com',
+		 # Mask out the PDFs
+		"-online-pdf-viewer/",
+
+		 # Who the fuck shares shit like this anyways?
+		"?share=",
+
+
+
+
+		'http:/mistycloudtranslations.com',
+		" http://gravitytales.com",
+		" http:/gravitytales.com",
+		"%20http%3A//gravitytales.com",
+
+
+		# This image wouldn't bother me so much if it weren't HUGE, and shrunk with css.
+		"discord-feature-graphic-1.png",
+		# Another HUEG image
+		"9629673_orig-ID-62b82545-ae9c-4eb7-b488-75e7366caaca.png",
+		"cropped-starry-night-thinking21.jpg",
+
+		# Gravity tales CDN is shitting itself, so let's just remove
+		# the shit on it entirely.
+		'patreon_img.png',
+		'/images/discord.png',
+		'cdn.gravitytales.com',
+
+	]
+
+
+decompose: [
+
+
+	]
+
+
+decomposeBefore: [
+	{'name'  : 'likes-master'},   # Bullshit sharing widgets
+	{'class' : 'comments'},
+	{'class' : 'comments-area'},
+	{'class' : 'wpcnt'},
+	{'id'    : 'addthis-share'},
+	{'id'    : 'comments'},
+	{'id'    : 'info-bt'},
+	{'id'    : 'jp-post-flair'},
+
+	#goddammit svg
+	{'href'  : '#icon-wordpress'},
+	]
+
+stripTitle: [
+
+	]
+
+titleTweakLut:  [
+	{
+		'contain' : ['yuusha party no kawaii ko ga ita no de, kokuhaku shite mita',
+					 '告白してみた'],
+		'badUrl'  : ['1ljoXDy-ti5N7ZYPbzDsj5kvYFl3lEWaJ1l3Lzv1cuuM'],
+		'url'     : 'docs.google.com',
+		'add'    : 'Yuusha Party no Kawaii Ko ga ita no de, Kokuhaku Shite Mita',
+	},
+	{
+		'contain' : ['tang san'],
+		'badUrl'  : [],
+		'url'     : 'docs.google.com',
+		'add'    : 'Douluo Dalu',
+	}
+	]
+
+
+special_case_filters : {
+}

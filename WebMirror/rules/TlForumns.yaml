@@ -233,6 +233,8 @@ badwords: [
 			'&diff=',
 			'&feed=atom',
 			'Special:RecentChangesLinked',
+			'&printable=yes',
+			'&oldid=',
 
 
 			# JCafe crap

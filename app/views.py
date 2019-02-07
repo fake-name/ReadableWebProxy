@@ -81,7 +81,7 @@ def index():
 	if os.path.exists("reading_list.txt"):
 		with open("reading_list.txt", "r") as fp:
 			raw_text = fp.read()
-		interesting = markdown.markdown(raw_text, extensions=["linkify"])
+		interesting = markdown.markdown(raw_text, extensions=["mdx_linkify"])
 
 		interesting = WebMirror.API.processRaw(interesting)
 

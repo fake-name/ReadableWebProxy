@@ -323,7 +323,7 @@ def delete_internal(sess, ids, netloc, badwords):
 	else:
 		print("No rows needing retriggering for netloc %s." % (netloc))
 
-	chunk_size = 2000
+	chunk_size = 1000
 	pbar = tqdm.tqdm(range(0, len(ids), chunk_size))
 	for chunk_idx in pbar:
 		chunk = ids[chunk_idx:chunk_idx+chunk_size]
@@ -522,7 +522,7 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 
 	print("Purge invalid URLs called with netloc param: '%s'" % selected_netloc)
 	found_ruleset = False
-	with db.session_context() as sess:
+	with db.session_context(override_timeout_ms=1000 * 60 * 30) as sess:
 		rs = WebMirror.rules.load_rules()
 
 		random.shuffle(rs)
