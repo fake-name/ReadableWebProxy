@@ -679,6 +679,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 		raw_query_ordered = '''
+
 				UPDATE
 					web_pages
 				SET
@@ -723,6 +724,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		while self.run_flag.value == 1:
 			try:
+				cursor.execute("""SET statement_timeout = 60000;""")
 				if self.jq_mode == 'priority':
 					cursor.execute(raw_query_ordered)
 					rids = cursor.fetchall()
@@ -745,7 +747,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				self.log.warn("Error getting job (psycopg2.Error)! Delaying %s.", delay)
 				time.sleep(delay)
 				cursor.execute("ROLLBACK;")
-
+			finally:
+				cursor.execute("""RESET statement_timeout;""")
 		if self.run_flag.value != 1:
 			return 0
 

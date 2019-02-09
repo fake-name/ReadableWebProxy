@@ -242,6 +242,9 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		url = urlFuncs.urlClean(url)
 
+		if not url:
+			return None
+
 		if "google.com" in urllib.parse.urlsplit(url.lower()).netloc:
 			url = urlFuncs.trimGDocUrl(url)
 

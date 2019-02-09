@@ -289,8 +289,10 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			self.upsertResponseLinks(job, plain=[entry['linkUrl'] for entry in response['rss-content']])
 			self.upsertResponseLinks(job, plain=response['plainLinks'], resource=response['rsrcLinks'])
 		else:
-			self.upsertReponseContent(job, response)
 			self.upsertResponseLinks(job, plain=response['plainLinks'], resource=response['rsrcLinks'])
+
+		if "title" in response and 'contents' in response and 'mimeType' in response:
+			self.upsertReponseContent(job, response)
 
 		# Reset the fetch time download
 

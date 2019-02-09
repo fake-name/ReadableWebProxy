@@ -288,19 +288,44 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 					plainLinks.append(post['link'])
 
 
-		self.normal_priority_links_trigger(plainLinks + rsrcLinks)
+		# I can't for the life of me remember why I added this.
+		# self.normal_priority_links_trigger(plainLinks + rsrcLinks)
+
+		output = bs4.BeautifulSoup("<html><body></body></html>", "lxml")
+
+
+		output.html.body.append(output.new_tag("h3", text="RSS Feed for url '%s'" % self.pageUrl))
+
+		for feed_item in data:
+			itemdiv = output.new_tag("div")
+			temp = output.new_tag("h5", )
+			temp.string = feed_item['title']
+			itemdiv.append(temp)
+			temp = output.new_tag("a", href=feed_item['linkUrl'], )
+			temp.string = feed_item['linkUrl']
+			itemdiv.append(temp)
+			temp = output.new_tag("p", )
+			temp.string = ", ".join([str(author) for author in feed_item['authors']])
+			itemdiv.append(temp)
+			temp = output.new_tag("p", )
+			temp.string = feed_item['contents']
+			itemdiv.append(temp)
+
+			output.html.body.append(itemdiv)
+
 
 		ret = {}
-		# No links here
+
+		ret['title']    = "RSS Feed for url '%s'" % self.pageUrl
+		ret['contents'] = output.html.body.prettify()
+		ret['mimeType'] = "text/html"
 
 		ret['rss-content'] = (data)
 		ret['plainLinks']  = plainLinks
 		ret['rsrcLinks']   = rsrcLinks
+
+
 		return ret
-
-
-
-
 
 
 def test():

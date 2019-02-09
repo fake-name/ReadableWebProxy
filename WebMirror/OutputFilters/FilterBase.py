@@ -126,7 +126,7 @@ class FilterBase(PageProcessor):
 
 	def retrigger_page(self, release_url):
 
-		trigger_priority = db.DB_HIGH_PRIORITY
+		trigger_priority = db.DB_MED_PRIORITY
 
 		if self.db_sess is None:
 			return

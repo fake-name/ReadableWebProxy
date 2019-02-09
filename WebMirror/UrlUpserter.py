@@ -166,7 +166,7 @@ def resetInProgress():
 	db.delete_db_session()
 
 
-def do_link_batch_update(logger, link_batch):
+def do_link_batch_update(logger, link_batch, max_pri=None, show_progress=False):
 	try:
 		with db.session_context() as sess:
 			do_link_batch_update_sess(logger, sess, link_batch)
@@ -189,7 +189,7 @@ def do_link_batch_update(logger, link_batch):
 		print("ERROR")
 		raise
 
-def do_link_batch_update_sess(logger, interface, link_batch):
+def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_progress=False):
 	if not link_batch:
 		return
 
@@ -204,7 +204,8 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			'addtime',
 			'state',
 			'ignoreuntiltime',
-			'maximum_priority',
+			'maximum_priority',  # Optional
+			'ignore_ignore_time',      # Optional
 		])
 
 
@@ -223,7 +224,25 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 			if not 'maximum_priority' in item:
 				item['maximum_priority'] = item['priority']
+			if not 'ignore_ignore_time' in item:
+				item['ignore_ignore_time'] = False
+
+			if item['distance'] < item['maximum_priority']:
+				item['distance'] = item['maximum_priority']
+
 			assert 'maximum_priority' in item
+			assert 'ignore_ignore_time' in item
+
+			if max_pri is None:
+				max_pri = db.DB_LOW_PRIORITY
+
+			if item['maximum_priority'] < max_pri:
+				item['maximum_priority'] = max_pri
+
+			if item['distance'] < item['maximum_priority']:
+				item['distance'] = item['maximum_priority']
+
+
 		except AssertionError:
 			logger.error("Missing key from entry: ")
 			item_str = pprint.pformat(item)
@@ -241,6 +260,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			for line in item_str.split("\n"):
 				logger.error("	%s", line.rstrip())
 			raise
+		# print("item:", item)
 
 
 	logger.info("Inserting %s items into DB in batch.", len(link_batch))
@@ -260,7 +280,8 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			%(addtime)s,
 			%(state)s,
 			%(ignoreuntiltime)s,
-			%(maximum_priority)s
+			%(maximum_priority)s,
+			%(ignore_ignore_time)s
 			);
 			""".replace("	", " ")
 
@@ -276,13 +297,13 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	rowcnt = 0
 	try:
-		for subc in misc.batch(link_batch, 50):
+		for subc in misc.batch(link_batch, 50, show_progress=show_progress):
 			# We don't care about isolation for these operations, as each operation
 			# is functionally independent.
 			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
 
-			# We use a statement timeout context of 2500 ms, so we don't get wedged on a lock.
-			raw_cur.execute("SET statement_timeout TO 2500;")
+			# We use a statement timeout context of 5000 ms, so we don't get wedged on a lock.
+			raw_cur.execute("SET statement_timeout TO 5000;")
 
 			# We try the bulk insert command first.
 			psycopg_execute_batch.execute_batch(raw_cur, per_cmd, subc)
@@ -302,7 +323,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 
 	rowcnt = 0
 	try:
-		for subc in misc.batch(link_batch, 5):
+		for subc in misc.batch(link_batch, 5, show_progress=show_progress):
 			# We don't care about isolation for these operations, as each operation
 			# is functionally independent.
 			raw_cur.execute("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;")
@@ -404,17 +425,18 @@ class UpdateAggregator(object):
 
 		cmd = """
 			CREATE OR REPLACE FUNCTION upsert_link(
-					url_v text,
-					starturl_v text,
-					netloc_v text,
-					distance_v integer,
-					is_text_v boolean,
-					priority_v integer,
-					type_v itemtype_enum,
-					addtime_v timestamp without time zone,
-					state_v dlstate_enum,
-					ignoreuntiltime_v timestamp without time zone,
-					max_priority_v integer
+					url_v                text,
+					starturl_v           text,
+					netloc_v             text,
+					distance_v           integer,
+					is_text_v            boolean,
+					priority_v           integer,
+					type_v               itemtype_enum,
+					addtime_v            timestamp without time zone,
+					state_v              dlstate_enum,
+					ignoreuntiltime_v    timestamp without time zone,
+					max_priority_v       integer,
+					ignore_ignore_time_v boolean
 					)
 				RETURNS VOID AS $$
 
@@ -438,15 +460,35 @@ class UpdateAggregator(object):
 							-- Priorities drop as they spread, generally
 							-- Priority drops as distance increases, too
 							-- This principally causes breadth-first scans.
-							priority        = LEAST(GREATEST(EXCLUDED.priority, web_pages.priority, EXCLUDED.distance, web_pages.distance, max_priority_v, 1), 10),
-							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime)
+							priority        = LEAST(
+													10,
+													max_priority_v,
+													GREATEST(
+															EXCLUDED.priority,
+															web_pages.priority,
+															EXCLUDED.distance,
+															web_pages.distance,
+															1
+														)
+												),
+							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
+
+							ignoreuntiltime = (
+								CASE ignore_ignore_time_v
+									WHEN true THEN 'epoch'::timestamp
+									WHEN false THEN web_pages.ignoreuntiltime
+								END
+							)
 						WHERE
 						(
-								web_pages.ignoreuntiltime < ignoreuntiltime_v
+								(web_pages.ignoreuntiltime < ignoreuntiltime_v OR ignore_ignore_time_v)
 							AND
 								web_pages.url = EXCLUDED.url
 							AND
-								(web_pages.state = 'complete' OR web_pages.state = 'error')
+								-- We need to allow updating the priority on new items if we're intentially ignoring the ignore-time
+								-- I can't think of a reason allowing this to update 'new' items in all cases isn't desired, but
+								-- it's been this whay for a while, so.... ¯\_(ツ)_/¯
+								(web_pages.state = 'complete' OR web_pages.state = 'error' OR (web_pages.state = 'new' AND ignore_ignore_time_v))
 						)
 					;
 
@@ -624,3 +666,14 @@ class UpdateAggregator(object):
 			print()
 			print("Aggregator exception!")
 			traceback.print_exc()
+
+def test():
+
+	import common.database as db
+	with db.session_context() as sess:
+		agg = UpdateAggregator(None, sess)
+		print(agg)
+
+
+if __name__ == "__main__":
+	test()

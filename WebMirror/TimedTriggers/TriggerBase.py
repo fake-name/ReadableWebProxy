@@ -17,6 +17,8 @@ import sqlalchemy.exc
 import common.database as db
 import common.LogBase
 
+import WebMirror.UrlUpserter
+
 class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 	# Abstract class (must be subclassed)
@@ -45,49 +47,9 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		self.log.info("Update check for %s finished.", self.pluginName)
 
 
-	def __raw_retrigger_with_cursor(self, url, cursor, ignoreignore):
 
-		# self.log.info("Retriggering fetch for URL: %s", url)
-
-		#  Fucking huzzah for ON CONFLICT!
-		cmd = """
-
-				INSERT INTO
-					web_pages
-					(url, starturl, netloc, distance, is_text, priority, addtime, state)
-				VALUES
-					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(addtime)s, %(state)s)
-				ON CONFLICT (url) DO
-					UPDATE
-						SET
-							state           = %(state)s,
-							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
-							-- The lowest priority is 10.
-							priority        = GREATEST(LEAST(EXCLUDED.priority, 10), 1),
-							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
-							ignoreuntiltime = LEAST(EXCLUDED.ignoreuntiltime, web_pages.ignoreuntiltime, %(ignoreuntiltime)s, %(ignoreuntiltime_override)s)
-						WHERE
-						(
-								(
-									   web_pages.state = 'complete'
-									OR web_pages.state = 'new'
-									OR web_pages.state = 'fetching'
-									OR web_pages.state = 'error'
-								)
-							AND
-								web_pages.url = %(url)s
-							AND
-								web_pages.ignoreuntiltime < %(ignoreuntiltime)s
-						)
-					;
-
-			""".replace("	", " ")
-
+	def __url_to_dict(self, url, ignoreignore):
 		url_netloc = urllib.parse.urlsplit(url).netloc
-
-		assert url.lower().startswith("http"), "URLs MUST start with 'HTTP'. Passed %s" % url
-		assert url_netloc
-
 
 		# Forward-data the next walk, time, rather then using now-value for the thresh.
 		data = {
@@ -96,79 +58,35 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'netloc'          : url_netloc,
 			'distance'        : 0,
 			'is_text'         : True,
-			'priority'        : db.DB_HIGH_PRIORITY + 1 if ignoreignore else db.DB_LOW_PRIORITY,
+			'priority'        : db.DB_HIGH_PRIORITY if ignoreignore else db.DB_LOW_PRIORITY,
+			'type'            : "unknown",
 			'state'           : "new",
 			'addtime'         : datetime.datetime.now(),
 
 			# Don't retrigger unless the ignore time has elaped or we're in force mode.
-			'ignoreuntiltime'          : datetime.datetime.max if ignoreignore else datetime.datetime.now(),
-			'ignoreuntiltime_override' : datetime.datetime.min if ignoreignore else datetime.datetime.now(),
+			'ignoreuntiltime'    : datetime.datetime.min if ignoreignore else datetime.datetime.now(),
+			'ignore_ignore_time' : ignoreignore,
 			}
-
-		cursor.execute(cmd, data)
-		rowcnt = cursor.rowcount
-		return rowcnt
+		return data
 
 	def retriggerUrlList(self, urlList, ignoreignore=False):
 
+		if ignoreignore:
+			self.log.warning("Doing high-priority URL upsert!")
+
 		sess = self.db.get_db_session()
 
-		raw_cur = sess.connection().connection.cursor()
-		commit_each = False
-		changed = 0
-		while 1:
-			loopcnt = 0
-			changed = 0
-			try:
-				try:
-					for url in tqdm.tqdm(urlList, desc="Retriggering for %s plugin" % self.pluginName):
-						loopcnt += 1
-						changed += self.__raw_retrigger_with_cursor(url, raw_cur, ignoreignore=ignoreignore)
-						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
-							self.log.info("Committing!")
-							raw_cur.execute("COMMIT;")
-					raw_cur.execute("COMMIT;")
-					break
-				except AttributeError:
-					changed = 0
-					self.log.warning("TQDM Issue. Siiiiiiigh")
-					for url in urlList:
-						loopcnt += 1
-						changed += self.__raw_retrigger_with_cursor(url, raw_cur, ignoreignore=ignoreignore)
-						if (commit_each and (loopcnt % 5) == 0) or (loopcnt % 250) == 0:
-							self.log.info("Committing!")
-							raw_cur.execute("COMMIT;")
-					raw_cur.execute("COMMIT;")
-					break
+		priority = db.DB_HIGH_PRIORITY if ignoreignore else db.DB_IDLE_PRIORITY
 
-			except psycopg2.Error:
-				if commit_each is False:
-					self.log.warning("psycopg2.Error - Retrying with commit each.")
-				else:
-					self.log.warning("psycopg2.Error - Retrying.")
-					traceback.print_exc()
+		dictlinks = [self.__url_to_dict(url, ignoreignore) for url in urlList]
 
-				raw_cur.execute("ROLLBACK;")
-				commit_each = True
+		show_progress = len(dictlinks) > 500
 
-		self.log.info("Retrigger changed %s rows", changed)
+		WebMirror.UrlUpserter.do_link_batch_update_sess(self.log, sess, dictlinks, priority, show_progress=show_progress)
 
 
 	def retriggerUrl(self, url, conditional=None, ignoreignore=False):
-
-		sess = self.db.get_db_session()
-
-		raw_cur = sess.connection().connection.cursor()
-		while 1:
-			try:
-				self.__raw_retrigger_with_cursor(url, raw_cur, ignoreignore=ignoreignore)
-				raw_cur.execute("COMMIT;")
-				break
-
-			except psycopg2.Error:
-				self.log.warning("psycopg2.Error - Retrying.")
-				traceback.print_exc()
-				raw_cur.execute("ROLLBACK;")
+		self.retriggerUrlList([url], ignoreignore)
 
 
 if __name__ == "__main__":
