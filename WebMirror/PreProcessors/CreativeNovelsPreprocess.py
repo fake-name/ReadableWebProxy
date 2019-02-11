@@ -55,6 +55,10 @@ class CreativeNovelsPreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 			bogus.decompose()
 		for bogus in soup.find_all("button"):
 			bogus.decompose()
+		for bogus in soup.find_all("a", id='wpdUserContentInfoAnchor'):
+			bogus.decompose()
+		for bogus in soup.find_all("div", id='wpdUserContentInfo'):
+			bogus.decompose()
 
 		appends = []
 		for item in soup.find_all('div', class_='togglepost'):
@@ -69,6 +73,11 @@ class CreativeNovelsPreprocessor(WebMirror.PreProcessors.PreProcessorBase.Conten
 			for append in appends:
 				# print("Appending:", append)
 				tgtdiv.append(append)
+
+		# There should only ever be one of these.
+		for mature_div in soup.find_all("div", class_='include_content_rating'):
+			for item in mature_div.find_all('div', class_='list-group-item'):
+				item.decompose()
 
 		return soup.prettify()
 

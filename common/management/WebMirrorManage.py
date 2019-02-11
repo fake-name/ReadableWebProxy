@@ -178,9 +178,11 @@ def exposed_fetch(url, debug=True, rss_debug=False, special_case_enabled=True):
 
 	try:
 		with db.session_context() as sess:
-
-
-			archiver = SiteArchiver(None, sess, None)
+			archiver = SiteArchiver(
+					cookie_lock   = None,
+					db_interface  = sess,
+					new_job_queue = None
+				)
 			archiver.synchronousJobRequest(url, ignore_cache=True, debug=True)
 
 	except Exception as e:

@@ -10,6 +10,7 @@ import os.path
 import os
 import sys
 import sqlalchemy.exc
+from sqlalchemy import inspect
 import random
 import settings
 import pprint
@@ -359,9 +360,31 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 				job.fetchtime = datetime.datetime.now()
 
+
+				if job not in self.db_sess:
+					# I haven't figured out exactly why this happens, but it seems to only be an issue in
+					inss = inspect(job)
+					sd = {
+						"transient"  : inss.transient,
+						"pending"    : inss.pending,
+						"persistent" : inss.persistent,
+						"deleted"    : inss.deleted,
+						"detached"   : inss.detached,
+					}
+
+
+					# CLI-initiated synchronous fetches
+					self.log.warning("Item has become detatched from session. Re-attaching.")
+					self.log.warning("Job state: '%s'.", sd)
+					self.db_sess.add(job)
+					self.db_sess.flush()
+
+
 				self.db_sess.commit()
-				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
+				self.log.info("Marked plain job with id %s, url %s as complete (%s byte content)!", job.id, job.url, len(job.content))
+
 				break
+
 			except sqlalchemy.exc.OperationalError:
 				self.log.warning("sqlalchemy.exc.OperationalError!")
 				self.db_sess.rollback()
@@ -369,7 +392,10 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			except sqlalchemy.exc.InvalidRequestError:
 				self.log.warning("sqlalchemy.exc.InvalidRequestError!")
 				self.db_sess.rollback()
-
+			except Exception as e:
+				print("Exception!")
+				print(traceback.print_exc())
+				raise e
 
 
 
