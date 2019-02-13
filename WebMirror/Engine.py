@@ -38,6 +38,7 @@ import WebRequest
 import common.util.DbCookieJar as dbCj
 
 import hashlib
+from common.Exceptions import GarbageDomainSquatterException
 from common.Exceptions import DownloadException
 import WebMirror.Fetch
 import common.database as db
@@ -1047,6 +1048,8 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					raise RuntimeError("Unknown job item!")
 
 				return True
+		except GarbageDomainSquatterException:
+			pass
 
 		except Exception:
 			# err_f = os.path.join("./logs", "error - {}.txt".format(time.time()))

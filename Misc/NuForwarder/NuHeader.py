@@ -38,6 +38,7 @@ BAD_RESOLVES = [
 	'data:application/javascript',
 	'offer.alibaba.com',
 	'about:blank',
+	'://localhost/',
 ]
 GONE_RESOLVES = [
 	'www1.trungtnguyen123.org',

@@ -131,7 +131,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(extra_msg="for rss filter", extra_logger="-RSS", **params)
 
 		extracted = scraper.extractContent()
-		assert contentDat['type'] == 'text/html'
+		assert contentDat['type'] == 'text/html', "Content is not html? Type: %s" % contentDat['type']
 		content = extracted['contents']
 
 		# Use a parser that doesn't try to generate a well-formed output (and therefore doesn't insert
@@ -171,6 +171,9 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 		ret = []
 
 		for entry in entries:
+			if not 'title' in entry:
+				# Broken RSS sources
+				continue
 			if entry['title'].startswith('User:'):
 				# The tsuki feed includes changes to user pages. Fuck that noise. Ignore that shit.
 				continue

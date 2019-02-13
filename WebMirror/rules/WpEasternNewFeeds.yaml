@@ -1,0 +1,303 @@
+type: eastern
+
+send_raw_feed: True
+
+rewalk_interval_days: 30
+
+baseUrl: [
+
+	'https://anargyatesting.home.blog',
+	'https://arunametta.asia',
+	'https://comonokomono.wordpress.com',
+	'https://hhknovels.wordpress.com',
+	'https://mayonaizeshrimp.com',
+	'https://weebsnoveltranslation.wordpress.com',
+	'https://wwaraitai.wordpress.com',
+
+	]
+
+
+feedPostfix: "/feed/"
+
+feeds: [
+]
+
+
+# Any url containing any of the words in the `badwords` list will be ignored.
+badwords: [
+
+		# This image wouldn't bother me so much if it weren't HUGE, and shrunk with css.
+		"discord-feature-graphic-1.png",
+		# Another HUEG image
+		"9629673_orig-ID-62b82545-ae9c-4eb7-b488-75e7366caaca.png",
+		"cropped-starry-night-thinking21.jpg",
+
+		# Gravity tales CDN is shitting itself, so let's just remove
+		# the shit on it entirely.
+		'patreon_img.png',
+		'/images/discord.png',
+		'cdn.gravitytales.com',
+
+		'/wp-content/cache/',
+	]
+
+compound_badwords: [
+	['slavetranslations.com', '.mht'],
+]
+
+decompose: [
+	{'class'                         : 'authorpost'},
+	{'class'                         : 'bit'},
+	{'class'                         : 'blog-feeds'},
+	{'class'                         : 'blog-pager'},
+	{'class'                         : 'btop'},
+	{'class'                         : 'column-left-outer'},
+	{'class'                         : 'column-right-outer'},
+	{'class'                         : 'commentlist'},
+	{'class'                         : 'comments'},
+	{'class'                         : 'comments-link'},
+	{'class'                         : 'date-header'},
+	{'class'                         : 'entry-meta'},
+	{'class'                         : 'entry-utility'},
+	{'class'                         : 'footer'},
+	{'class'                         : 'footer-outer'},
+	{'class'                         : 'header-outer'},
+	{'class'                         : 'headerbg'},
+	{'class'                         : 'komensamping'},
+	{'class'                         : 'loggedout-follow-normal'},
+	{'class'                         : 'menujohanes'},
+	{'class'                         : 'nav-menu'},
+	{'class'                         : 'navbar'},
+	{'class'                         : 'photo-meta'},
+	{'class'                         : 'post-feeds'},
+	{'class'                         : 'post-footer'},
+	{'class'                         : 'quickedit'},
+	{'class'                         : 'sd-content'},
+	{'class'                         : 'sd-title'},
+	{'class'                         : 'site-header'},
+	{'class'                         : 'tabs-outer'},
+	{'class'                         : 'widget-container'},
+	{'class'                         : 'widget-content'},
+	{'class'                         : 'comment-respond'},
+	{'class'                         : 'comments-title'},
+	{'class'                         : 'commentlist'},
+	{'class'                         : 'sd-sharing-enabled'},
+	{'class'                         : 'sharedaddy'},
+	{'class'                         : 'likes-text'},
+	{'class'                         : 'sd-title'},
+	{'class'                         : 'sd-content'},
+	{'class'                         : 'wpl-button'},
+	{'class'                         : 'wpl-likebox'},
+	{'class'                         : 'td-login-form-wrap'},
+	{'class'                         : 'td-login-wrap'},
+	{'class'                         : 'td-login-mob'},
+	{'class'                         : 'td-register-mob'},
+	{'class'                         : 'td-register-div'},
+	{'class'                         : 'td-forgot-pass-mob'},
+	{'class'                         : 'td-login-close'},
+	{'class'                         : 'login-form-mobile'},
+	{'class'                         : 'td-search-wrapper'},
+	{'class'                         : 'header-search-wrap'},
+	{'class'                         : 'td-header-top-menu'},
+	{'class'                         : 'td-login-hide-mob'},
+	{'class'                         : 'td-search-wrap-mob'},
+	{'class'                         : 'td-search-background'},
+	{'class'                         : 'td-menu-socials-wrap'},
+	{'class'                         : 'td-menu-login-section'},
+	{'class'                         : 'td-guest-wrap'},
+	{'class'                         : 'td-post-sharing'},
+	{'class'                         : 'td-post-sharing-top'},
+
+	{'class'                         : 'sidebar-primary'},
+	{'class'                         : 'shins-before-content'},
+	{'class'                         : 'osny-nightmode'},
+
+
+
+	{'role'                          : "complementary"},
+	{'role'                          : "contentinfo"},
+	# {'class'                         : 'sidebar'},
+	# {'class'                         : 'widget-area'},
+
+	# Ads, I think.
+	{'class'                         : 'wpa'},
+	{'class'                         : 'wpcnt'},
+	{'class'                         : 'wpcom-follow-bubbles'},
+	{'class'                         : 'xoxo'},
+	{'class'                         : 'meta'},
+	{'class'                         : 'search-form'},
+	{'class'                         : 'site-footer'},
+	{'id'                            : 'comments'},
+	{'id'                            : 'search-toggle'},
+	{'id'                            : 'search-container'},
+	{'id'                            : 'comments-title'},
+	{'id'                            : 'access'},
+	{'id'                            : 'bit'},
+
+	{'id'                            : 'likes-other-gravatars'},
+	{'id'                            : 'branding'},
+	{'id'                            : 'calendar_wrap'},
+	{'id'                            : 'carousel-reblog-box'},
+	{'id'                            : 'colophon'},
+
+	{'id'                            : 'comments'},
+	{'id'                            : 'conversation'},
+	{'id'                            : 'credit-wrapper'},
+	{'id'                            : 'entry-author-info'},
+	{'id'                            : 'footer'},
+	{'id'                            : 'header'},
+	{'id'                            : 'layout'},
+	{'id'                            : 'masthead'},
+
+
+	{'id'                            : 'global-alert'},
+	{'id'                            : 'main-nav'},
+	{'id'                            : 'header-meta'},
+	{'id'                            : 'headerimg'},
+	{'id'                            : 'infinite-footer'},
+	{'id'                            : 'jp-post-flair'},
+	{'id'                            : 'likes-other-gravatars'},
+	{'id'                            : 'nav-above'},
+	{'id'                            : 'nav-below'},
+	{'id'                            : 'respond'},
+
+	{'id'                            : 'secondary'},
+	{'id'                            : 'conversation'},
+	{'id'                            : 'sidebar'},
+	{'id'                            : 'disqus-threadData'},
+	{'id'                            : 'sidebar-wrapper'},
+	{'id'                            : 'sidebar-wrapper1'},    # Yes, two `sidebar-wrapper` ids. Gah.
+	{'id'                            : 'site-header'},
+
+	{'id'                            : 'commentlist'},
+	{'id'                            : 'comments'},
+	{'id'                            : 'bitsubscribe'},
+	{'id'                            : 'site-navigation'},
+	{'id'                            : 'banner-widgets'},
+
+	{'name'                          : 'likes-master'},
+	{'style'                         : 'display:none'},
+	#{'role'                          : 'banner'},
+	{'class'                          : 'mobile-view-only'},
+
+	 # More Disqus bullshit
+	{'data-tracking-area'            : 'layout'},
+	{'id'                            : 'header'},
+	{'id'                            : 'footer'},
+	{'class'                         : 'photo-meta'},
+	{'class'                         : 'cookie-notice'},
+	{'class'                         : 'page-header'},
+	{'class'                         : 'wpcnt'},
+	{'class'                         : 'bit'},
+	{'id'                            : 'bit'},
+	{'id'                            : 'author-info'},
+	{'id'                            : 'secondary'},
+	{'id'                            : 'colophon'},
+	{'id'                            : 'branding'},
+	{'id'                            : 'nav-single'},
+	{'id'                            : 'likes-other-gravatars'},
+	{'id'                            : 'sidebar'},
+	{'id'                            : 'carousel-reblog-box'},
+	{'id'                            : 'infinite-footer'},
+	{'id'                            : 'nav-above'},
+	{'id'                            : 'nav-below'},
+	{'id'                            : 'jp-post-flair'},
+	{'id'                            : 'comments'},
+	{'class'                         : 'entry-utility'},
+	{'name'                          : 'likes-master'},
+
+	# Wow fuck the gdpr shit.
+	{'class'                          : 'gdpr'},
+	{'class'                          : 'gdpr-agreement'},
+	{'class'                          : 'gdpr-always-active'},
+	{'class'                          : 'gdpr-box-title'},
+	{'class'                          : 'gdpr-buttons'},
+	{'class'                          : 'gdpr-close'},
+	{'class'                          : 'gdpr-content'},
+	{'class'                          : 'gdpr-cookies-used'},
+	{'class'                          : 'gdpr-info'},
+	{'class'                          : 'gdpr-overlay'},
+	{'class'                          : 'gdpr-preferences'},
+	{'class'                          : 'gdpr-privacy-bar'},
+	{'class'                          : 'gdpr-privacy-preferences'},
+	{'class'                          : 'gdpr-privacy-preferences-frm'},
+	{'class'                          : 'gdpr-right'},
+	{'class'                          : 'gdpr-wrapper'},
+
+	#goddammit svg
+	{'href'  : '#icon-wordpress'},
+
+	]
+
+
+decomposeBefore: [
+	{'name'  : 'likes-master'},   # Bullshit sharing widgets
+	{'class' : 'comments'},
+	{'class' : 'comments-area'},
+	{'class' : 'wpcnt'},
+	{'id'    : 'addthis-share'},
+	{'id'    : 'comments'},
+	{'id'    : 'info-bt'},
+	{'id'    : 'jp-post-flair'},
+
+	#goddammit svg
+	{'href'  : '#icon-wordpress'},
+	]
+
+stripTitle: [
+	"| KobatoChanDaiSukiScan",
+	"| Hokage Translations",
+	"| 1HP",
+	"| Blue Silver Translations",
+	"| Krytyk's translations",
+	"| Light Novel translations",
+	"| LorCromwell",
+	"| mahoutsuki translation",
+	"| Novel Translation",
+	"| TheLazy9",
+	"| Tomorolls",
+	"| Ziru's Musings",
+	'| Gravity translation',
+	'| HaruPARTY Translation Group',
+	'| Kyakka',
+	'| manga0205',
+	'| SETSUNA86BLOG',
+	'| Solitary Translation',
+	'| Sousetsuka',
+	'| Tsuigeki Translations',
+	'| Unbreakable Machine Doll',
+	'| Unlimited Novel Failures',
+	'| なのですよ！',
+	'| 桜翻訳!',
+	'(NanoDesu)',
+	'A Translation of the',
+	'Roxism HQ |',
+	'| SETSUNA86BLOG',
+	'mahoutsuki translation |',
+	'&#124; Giraffe Corps',
+	'| Giraffe Corps',
+	'| Shin Sekai Yori &#8211; From the New World',
+	'| Shin Sekai YoriFrom the New World',
+	'| Shin Sekai Yori – From the New World',
+	':: tappity tappity tap.',
+	'Fanatical |',
+	'| A fish once said this to me:',
+	'| Fanatical',
+	'Raising the Dead |',
+	'Paztok |',
+	'| Paztok',
+
+	]
+
+titleTweakLut:  [
+		{
+			'contain' : ['tang san'],
+			'badUrl'  : [],
+			'url'     : 'docs.google.com',
+			'add'    : 'Douluo Dalu',
+		}
+	]
+
+
+special_case_filters : {
+}

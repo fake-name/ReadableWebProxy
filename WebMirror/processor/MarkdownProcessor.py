@@ -48,6 +48,7 @@ class MarkdownProcessor(ProcessorBase.PageProcessor):
 		self.pageUrl    = pageUrl
 
 		self.content    = pgContent
+		assert isinstance(pgContent, str), "Content for url %s is not a string" % pageUrl
 		self.urlLut     = {}
 
 		# if isinstance(scannedDomains, (set, list)):

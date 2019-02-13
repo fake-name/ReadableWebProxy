@@ -108,6 +108,7 @@ badwords: [
 			'royalroadl.com/fantasy-futuristic-ghost-romance-ebooks/',
 			'royalroadl.com/gp/',
 			'royalroadl.com/photos/home/',
+			'/Scripts/showads.js',
 			]
 
 # Content Stripping needs to be determined.

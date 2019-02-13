@@ -54,6 +54,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		self._fileDomains   = set()
 
 		assert bool(pgContent) == True
+		assert isinstance(pgContent, str), "Content for url %s is not a string" % pageUrl
 
 		self.content = pgContent
 		self.pageUrl = pageUrl
@@ -514,6 +515,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		# print(type(self.content))
 
 		badxmlprefix = '<?xml version="1.0"?>'
+
 		if self.content.strip().lower().startswith(badxmlprefix):
 			self.content = self.content[len(badxmlprefix):]
 
