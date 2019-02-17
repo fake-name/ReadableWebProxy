@@ -10,9 +10,6 @@ import cssutils
 
 import sqlalchemy.exc
 
-import runStatus
-runStatus.preloadDicts = False
-
 import common.StatsdMixin as StatsdMixin
 import WebMirror.OutputFilters.FilterBase
 

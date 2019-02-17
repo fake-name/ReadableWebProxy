@@ -1,9 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
 import WebMirror.OutputFilters.FilterBase
 
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers

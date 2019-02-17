@@ -255,6 +255,7 @@ def createSeriesInfoPacket(data, beta=False, matchAuthor=False):
 		'licensed',
 		'transcomplete',
 		'create_tags',
+		'covers',
 	]
 
 

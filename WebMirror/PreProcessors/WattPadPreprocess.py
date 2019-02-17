@@ -1,8 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
 
 import WebMirror.PreProcessors.PreProcessorBase
 import urllib.parse

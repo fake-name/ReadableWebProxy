@@ -1,8 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
 
 import WebMirror.PreProcessors.PreProcessorBase
 import urllib.parse
@@ -15,6 +13,28 @@ class JsRendererPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPre
 
 	loggerPath = "Main.Preprocessor.JsRenderer"
 
+	def clean_content(self, contentstr):
+
+		soup = WebRequest.as_soup(contentstr)
+
+		for bogus in soup.find_all("video"):
+			bogus.decompose()
+		for bogus in soup.find_all("div", class_="siteBackground"):
+			bogus.decompose()
+
+
+		for div in soup.find_all("main"):
+			if 'style' in div.attrs:
+				del div.attrs['style']
+		for div in soup.find_all("header"):
+			if 'style' in div.attrs:
+				del div.attrs['style']
+		for div in soup.find_all("div"):
+			if 'style' in div.attrs:
+				del div.attrs['style']
+
+		return soup.prettify()
+
 	def preprocessContent(self, url, mimetype, contentstr):
 		soup = WebRequest.as_soup(contentstr)
 		text = soup.body.get_text(strip=True).strip()
@@ -25,7 +45,8 @@ class JsRendererPreprocessor(WebMirror.PreProcessors.PreProcessorBase.ContentPre
 		else:
 			self.log.info("Page has %s char body, no re-fetch & render needed.", len(text))
 
-		return contentstr
+
+		return self.clean_content(contentstr)
 
 	@staticmethod
 	def wantsUrl(url):

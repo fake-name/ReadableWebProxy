@@ -1,13 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
-# import Levenshtein as lv
-
-
-
 import common.util.urlFuncs as urlFuncs
 import urllib.parse
 import common.LogBase as LogBase

@@ -6,10 +6,13 @@ send_raw_feed: True
 
 baseUrl: [
 
+		'https://divinelink2.wixsite.com/dlscanlations',
 		'https://www.catatopatch.com',
 		'http://meejeenovels.wixsite.com',
 		'https://flairv.wixsite.com',
 		'https://nimini067.wixsite.com',
+		'http://tachibanachinatsu.wix.com',
+		'https://planetchild.wixsite.com',
 		'https://tachibanachinatsu.wixsite.com/tenshitranslations/',
 	]
 

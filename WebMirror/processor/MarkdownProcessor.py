@@ -1,9 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
 from . import ProcessorBase
 
 

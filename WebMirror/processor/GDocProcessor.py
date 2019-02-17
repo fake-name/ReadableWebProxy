@@ -1,10 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
-# import Levenshtein as lv
 
 import urllib.parse
 

@@ -1,27 +1,22 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
-import WebMirror.OutputFilters.FilterBase
-
-import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
-from WebMirror.OutputFilters.util.TitleParsers import extractTitle
-# from WebMirror.Engine import SiteArchiver
-
-import bs4
 import re
 import calendar
 import time
-from dateutil.parser import parse
 import urllib.parse
+import base64
+
+from dateutil.parser import parse
 import WebRequest
 
-# import WebMirror.API
-import pprint
+import WebMirror.OutputFilters.FilterBase
+import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
+# from WebMirror.Engine import SiteArchiver
+import common.database as db
 
-MIN_RATING = 5
+
+# import WebMirror.API
 
 ########################################################################################################################
 #
@@ -42,7 +37,6 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	wanted_mimetypes = [
-
 							'text/html',
 						]
 	want_priority    = 50
@@ -82,10 +76,33 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 ##################################################################################################################################
 
 
+	def getCovers(self, itemsoup):
+		covers = []
+		coverdiv = itemsoup.find("div", class_='view-covers')
+		for item in coverdiv.find_all("div", recursive=False):
+			desc = item.find("div", class_='cover-title')
+			cov_img = item.find("a", class_='highslide')
+			if desc and cov_img:
+				cover = {}
+				url      = urllib.parse.urljoin('http://lndb.info/', cov_img['href'])
+
+				cover['titles'] = list(desc.stripped_strings)
+				f, n, m = self.wg.getFileNameMime(url)
+
+				# Transport to the clients is JSON, so we can't send raw bytes.
+				# This is horrible, but the least-bad option.
+				cover['image'] = (base64.b64encode(f).decode("ASCII"), n, m)
+
+				covers.append(cover)
+
+		return covers
+
+
 	def extractSeries(self, seriesPageUrl, soup):
 
 		itemsoup = self.getSoupForSeriesItem(seriesPageUrl, soup)
 		itemdata = self.extractSeriesInfo(itemsoup)
+		covers   = self.getCovers(itemsoup)
 		# print(itemdata)
 
 		tags = []
@@ -96,7 +113,9 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 		seriesmeta['title']       = itemdata['title']
-		seriesmeta['alt_titles']  = [itemdata['jTitle'], ] + itemdata['alt_names']
+		seriesmeta['alt_titles']  = itemdata['alt_names']
+		if 'jTitle' in itemdata:
+			seriesmeta['alt_titles'].append(itemdata['jTitle'])
 
 
 		seriesmeta['author']      = itemdata['author']
@@ -114,6 +133,7 @@ class LNDBSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		seriesmeta['tl_type']     = 'translated'
 		seriesmeta['sourcesite']  = 'LNDB'
+		seriesmeta['covers']      = covers
 
 
 		# pprint.pprint(itemdata)

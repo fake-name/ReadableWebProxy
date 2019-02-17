@@ -318,14 +318,13 @@ def exposed_fix_null():
 		sess.commit()
 
 
-def delete_internal(sess, ids, netloc, badwords):
+def delete_internal(sess, ids, netloc, badwords, show_badword=True, chunk_size=1000):
 
 	if ids:
 		print("Updating for netloc(s) %s. %s rows requiring update." % (netloc, len(ids)))
 	else:
 		print("No rows needing retriggering for netloc %s." % (netloc))
 
-	chunk_size = 1000
 	pbar = tqdm.tqdm(range(0, len(ids), chunk_size))
 	for chunk_idx in pbar:
 		chunk = ids[chunk_idx:chunk_idx+chunk_size]
@@ -333,21 +332,27 @@ def delete_internal(sess, ids, netloc, badwords):
 			try:
 				ctbl = version_table(db.WebPages.__table__)
 
-				# Allow ids that only exist in the history table by falling back to a
-				# history-table query if the main table doesn't have the ID.
-				try:
-					ex = sess.query(db.WebPages.url).filter(db.WebPages.id == chunk[0]).one()[0]
-				except sqlalchemy.orm.exc.NoResultFound:
+
+				triggered = not show_badword
+				if show_badword:
+
+					# Allow ids that only exist in the history table by falling back to a
+					# history-table query if the main table doesn't have the ID.
 					try:
-						ex = sess.query(ctbl.c.url).filter(ctbl.c.id == chunk[0]).all()[0][0]
-					except IndexError:
-						ex = None
+						ex = sess.query(db.WebPages.url).filter(db.WebPages.id == chunk[0]).one()[0]
+					except sqlalchemy.orm.exc.NoResultFound:
+						try:
+							ex = sess.query(ctbl.c.url).filter(ctbl.c.id == chunk[0]).all()[0][0]
+						except IndexError:
+							ex = None
 
 
-				triggered = [tmp for tmp in badwords if ex and tmp in ex]
-				pbar.write("Example removed URL: '%s'" % (ex))
-				pbar.write("Triggering badwords: '%s'" % triggered)
-				if triggered:
+					pbar.write("Example removed URL: '%s'" % (ex))
+
+					triggered = [tmp for tmp in badwords if ex and tmp in ex]
+					pbar.write("Triggering badwords: '%s'" % triggered)
+
+				if triggered :
 					q1 = sess.query(db.WebPages).filter(db.WebPages.id.in_(chunk))
 					affected_rows_main = q1.delete(synchronize_session=False)
 
@@ -363,6 +368,7 @@ def delete_internal(sess, ids, netloc, badwords):
 				sess.rollback()
 			except sqlalchemy.exc.OperationalError:
 				pbar.write("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
+				traceback.print_exc()
 				sess.rollback()
 			except sqlalchemy.exc.IntegrityError:
 				pbar.write("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
@@ -597,6 +603,79 @@ def exposed_purge_invalid_urls(selected_netloc=None):
 	if not found_ruleset:
 		print("ERROR!")
 		print("Selected netloc (%s) not found in rulesets!" % selected_netloc)
+
+
+class RuleManager():
+	def __init__(self):
+		self.rules = WebMirror.rules.load_rules()
+
+		self.global_bad = [tmp.lower() for tmp in common.global_constants.GLOBAL_BAD_URLS]
+		self.nl_badwords_map = {}
+		for ruleset in [rules for rules in self.rules if rules['netlocs']]:
+			for netloc in ruleset['netlocs']:
+				badwords = self.global_bad + ruleset['badwords']
+
+								# A "None" can occationally crop up. Filter it.
+				badwords = [badword for badword in badwords if badword]
+				badwords = [badword.lower() for badword in badwords]
+				badwords = list(set(badwords))
+
+				self.nl_badwords_map[netloc] = badwords
+
+	def is_bad(self, netloc, url):
+		if netloc in self.nl_badwords_map:
+			if any([badword in url for badword in self.nl_badwords_map[netloc]]):
+				return True
+			return False
+		else:
+			return any([badword in url for badword in self.global_bad])
+
+def exposed_streaming_purge_invalid_urls(selected_netloc=None):
+	'''
+	Iterate over each ruleset in the rules directory, and generate a compound query that will
+	delete any matching rows.
+	For rulesets with a large number of rows, or many badwords, this
+	can be VERY slow.
+
+	Similar in functionality to `clear_bad`, except it results in many fewer queries,
+	and is therefore likely much more performant.
+	'''
+
+	print("Purge invalid URLs called with netloc param: '%s'" % selected_netloc)
+
+	rulemgr = RuleManager()
+
+	badids = []
+
+	with db.session_context(name="query_sess", override_timeout_ms=1000 * 60 * 30) as sess:
+		print("Counting items in table")
+		total_items = sess.query(db.WebPages).count()
+		print("Table contains %s items" % (total_items, ))
+
+		ids = sess.query(db.WebPages.id, db.WebPages.url) \
+			.yield_per(50000)
+
+		pbar = tqdm.tqdm(ids, total=total_items)
+		scanned = 0
+		for rid, url in pbar:
+			parsed = urllib.parse.urlparse(url)
+			nl = parsed.netloc
+			if rulemgr.is_bad(nl, url):
+				# print("Bad URL: ", url)
+				badids.append((rid, url))
+			scanned += 1
+			pbar.set_description('Accumulated BadIds: %6i, or %0.2f%%' % (len(badids), (len(badids)/scanned) * 100))
+
+	if badids:
+		with open("bad-ids.json", "w") as fp:
+			json.dump(badids, fp)
+
+		# print("Deleting rows.")
+		# with db.session_context(name="del_sess", override_timeout_ms = 5 * 60 * 1000) as del_sess:
+		# 	delete_internal(del_sess, badids, "None", [], show_badword=False)
+		# 	del_sess.commit()
+		# deleted += len(badids)
+		# badids = []
 
 def exposed_purge_invalid_url_history():
 	'''

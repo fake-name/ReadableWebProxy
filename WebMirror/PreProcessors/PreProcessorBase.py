@@ -1,9 +1,6 @@
 
 
 
-import runStatus
-runStatus.preloadDicts = False
-
 import common.LogBase as LogBase
 import abc
 

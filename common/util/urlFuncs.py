@@ -376,8 +376,12 @@ def hasDuplicateSegments(url):
 		if netloc == 'creativenovels.com' and url.count("/") >= 5 and url.endswith("/feed/"):
 			# Goddammit wordpress
 			return False
+
 		if netloc == 'thewriteaholicblog.wordpress.com' and url.count("/") >= 5 and url.endswith("/feed/"):
 			# Goddammit wordpress
+			return False
+
+		if 'slavetranslations.com' in url and '.mht' in url:
 			return False
 
 		if len(set(pathchunks)) != len(pathchunks):
