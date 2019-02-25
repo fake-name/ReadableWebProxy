@@ -101,7 +101,7 @@ def resetInProgress():
 	commit_interval =  50000
 	step            =  50000
 
-	with db.session_context(override_timeout_ms=60 * 1000 * 5) as sess:
+	with db.session_context(override_timeout_ms=60 * 1000 * 15) as sess:
 		try:
 			# sess.execute('''SET enable_bitmapscan TO off;''')
 			print("Getting minimum row in need or update..")

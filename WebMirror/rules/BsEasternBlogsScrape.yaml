@@ -12,6 +12,8 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+	'https://editingonaslowday.blogspot.com',
+	'https://jeronovel.blogspot.com',
 	'http://3mmfs.blogspot.my',
 	'http://a0132.blogspot.com',
 	'http://ahoujicha.blogspot.com',
@@ -358,7 +360,6 @@ decompose: [
 	{'class'  : 'authorpost'},
 	{'class'  : 'bit'},
 	{'class'  : 'blog-feeds'},
-	{'class'  : 'blog-pager'},
 	{'class'  : 'btop'},
 	{'class'  : 'column-left-outer'},
 	{'class'  : 'column-right-outer'},

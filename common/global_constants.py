@@ -383,5 +383,6 @@ GLOBAL_INLINE_BULLSHIT = [
 			'This chapter is translated by Convallaria’s Library (www.convallariaslibrary.com), so please continue to read there. Drop some comments to show your support over there. If you are seeing this, then that means you’re reading from another site that simply stole our translation, and you will keep seeing this message a few times.',
 
 			'(Thank you for reading at bayabuscotranslation.com)',
-
+			'(Ele note: Follow Supreme Tentacle’s site at Cardboard Translations. Top tier stuff.)',
+			'HELP! This aggregator site is making me manually copy and paste chapters! this is slavery! call the police!',
 ]

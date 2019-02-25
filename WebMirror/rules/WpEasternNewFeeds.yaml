@@ -6,15 +6,31 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
-	'https://anargyatesting.home.blog',
-	'https://arunametta.asia',
 	'https://comonokomono.wordpress.com',
 	'https://hhknovels.wordpress.com',
-	'https://mayonaizeshrimp.com',
 	'https://weebsnoveltranslation.wordpress.com',
 	'https://wwaraitai.wordpress.com',
 	'https://evestranslations.wordpress.com',
 	'https://xiaxuenovels.wordpress.com',
+	'https://bujangtranslation.wordpress.com',
+	'https://fallentomtl.wordpress.com',
+	'https://greenlilytranslations.wordpress.com',
+	'https://uchuujitranslations.wordpress.com',
+
+	'https://anargyatesting.home.blog',
+	'https://naedatranslations.home.blog',
+	'https://rrrrhexiatranslation.home.blog',
+	'https://vodkatranslations.home.blog',
+
+	'https://arunametta.asia',
+	'https://mayonaizeshrimp.com',
+	'https://betwixtedbutterfly.com',
+	'https://emma.fanmily.org',
+	'http://passivetranslations.com',
+	'https://www.boredtl.com',
+	'https://www.maotln.com',
+	'https://www.xiaxuenovels.xyz',
+	'http://thenoobtranslator.epizy.com',
 
 	]
 
