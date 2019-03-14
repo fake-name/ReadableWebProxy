@@ -1944,6 +1944,7 @@ badwords: [
 		'/?profiletab=',
 		'/login?_next=',
 		'lightnovelstranslations.com/forum/ratethread.php',
+		'lightnovelstranslations.com/forum/',
 		'/?blackhole=',
 		'r.search.yahoo.com',
 

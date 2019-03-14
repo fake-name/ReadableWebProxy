@@ -173,6 +173,4 @@ titleTweakLut:  [
 
 
 special_case_filters : {
-	"mistycloudtranslations.com" : ["chrome_render_fetch"],
-	"www.mistycloudtranslations.com" : ["chrome_render_fetch"],
 }

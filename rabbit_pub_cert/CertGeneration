@@ -1,0 +1,39 @@
+# Notes about how these certs were generated.
+
+client@rabbit:/etc/rabbitmq/server$ ls
+cert.pem  keycert.p12  key.pem  req.pem
+client@rabbit:/etc/rabbitmq/server$
+
+
+# openssl req -x509 -config openssl.cnf -newkey rsa:4096 -days 3650 -out cacert.pem -outform PEM -subj /CN=MyTestCA/ -nodes
+# openssl x509 -in cacert.pem -out cacert.cer -outform DER
+
+
+openssl ca -config openssl.cnf -in ../server/req.pem -out ../server/cert.pem -notext -batch -extensions server_ca_extensions
+
+
+mkdir client
+cd client
+
+openssl genrsa -out key.pem 4096
+openssl req -new -key key.pem -out req.pem -outform PEM -subj /CN=$(hostname)/O=server/ -nodes
+cd ../testca
+openssl ca -config openssl.cnf -in ../server/req.pem -out ../server/cert.pem -notext -batch -extensions server_ca_extensions
+cd ../server
+openssl pkcs12 -export -out keycert.p12 -in cert.pem -inkey key.pem
+
+
+openssl genrsa -out key2.pem 4096
+openssl req -new -key key2.pem -out req2.pem -outform PEM -subj /CN=$(hostname)/O=client/ -nodes
+cd ../ca
+openssl ca -config openssl.cnf -in ../client/req2.pem -out ../client/cert2.pem -notext -batch -extensions client_ca_extensions
+cd ../client
+openssl pkcs12 -export -out keycert2.p12 -in cert2.pem -inkey key2.pem
+
+
+openssl genrsa -out key3.pem 4096
+openssl req -new -key key3.pem -out req3.pem -outform PEM -subj /CN=$(hostname)/O=client/ -nodes
+cd ../ca
+openssl ca -config openssl.cnf -in ../client/req3.pem -out ../client/cert3.pem -notext -batch -extensions client_ca_extensions
+cd ../client
+openssl pkcs12 -export -out keycert3.p12 -in cert3.pem -inkey key3.pem
