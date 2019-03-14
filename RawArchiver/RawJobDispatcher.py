@@ -179,9 +179,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 
 	def put_outbound_job(self, jobid, joburl, netloc=None):
-		self.active_jobs += 1
 		self.log.info("Dispatching new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
-		self.jobs_out += 1
 		raw_job = WebMirror.JobUtils.buildjob(
 			module         = 'WebRequest',
 			call           = 'getItem',
@@ -197,6 +195,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		while 1:
 			try:
 				self.rpc_interface.put_job(raw_job)
+				self.active_jobs += 1
+				self.jobs_out += 1
 				return
 			except TypeError:
 				self.open_rpc_interface()
@@ -262,6 +262,12 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			# understand the source of. anyways, if that happens, just reset the RPC interface.
 			try:
 				tmp = self.rpc_interface.get_job()
+
+				self.active_jobs -= 1
+				self.jobs_in += 1
+				if self.active_jobs < 0:
+					self.active_jobs = 0
+
 			except queue.Empty:
 				return
 
@@ -280,8 +286,6 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 			if tmp:
 
-
-
 				nl = None
 				if 'extradat' in tmp and 'netloc' in tmp['extradat']:
 					nl = tmp['extradat']['netloc']
@@ -296,11 +300,6 @@ class RawJobFetcher(LogBase.LoggerMixin):
 					self.log.warning("Missing netloc in response extradat!")
 
 
-
-				self.active_jobs -= 1
-				self.jobs_in += 1
-				if self.active_jobs < 0:
-					self.active_jobs = 0
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.active_jobs, self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
 				self.blocking_put_response(("processed", tmp))
@@ -363,7 +362,6 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		cursor = self.db_interface.cursor()
 
-		cursor.execute("""SET statement_timeout TO 900000;""")
 
 		# Hand-tuned query, I couldn't figure out how to
 		# get sqlalchemy to emit /exactly/ what I wanted.
@@ -408,6 +406,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		while self.run_flag.value == 1:
 			try:
+				cursor.execute("""SET statement_timeout TO 900000;""")
 				cursor.execute(raw_query)
 				rids = cursor.fetchall()
 				self.db_interface.commit()
