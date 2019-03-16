@@ -128,17 +128,26 @@ def saveFile(filecont, url, filename):
 	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
 	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
 
-	if os.path.exists(fqpath):
-		fname, ext = os.path.splitext(fqpath)
-		fhash = getHash(filecont)
-		# The "." is part of the ext.
-		fqpath = '{fname} - {fhash}{ext}'.format(fname=fname, fhash=fhash, ext=ext)
+	while 1:
+		try:
 
-	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
+			if os.path.exists(fqpath):
+				fname, ext = os.path.splitext(fqpath)
+				fhash = getHash(filecont)
+				# The "." is part of the ext.
+				fqpath = '{fname} - {fhash}{ext}'.format(fname=fname, fhash=fhash, ext=ext)
 
-	# print("Saving file to path: '{fqpath}'!".format(fqpath=fqpath))
-	with open(fqpath, "wb") as fp:
-		fp.write(filecont)
+			assert fqpath.startswith(C_RAW_RESOURCE_DIR)
+
+			# print("Saving file to path: '{fqpath}'!".format(fqpath=fqpath))
+			with open(fqpath, "wb") as fp:
+				fp.write(filecont)
+				break
+		except OSError as e:
+			if e.args[0] != 36:  ## File name too long
+				raise
+			root, ext = os.path.splitext(fqpath)
+			fqpath = root[:-1]+ext
 
 	locpath = fqpath[len(C_RAW_RESOURCE_DIR):]
 	if locpath.startswith("/"):
@@ -400,6 +409,8 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			pipe.incr('raw_filtered_links',      count=len(links))
 			pipe.incr('raw_upserted_links',      count=len(linksd))
 
+	def wg_proxy(self):
+		return self.wg
 
 	def fetch_job(self, job):
 
@@ -416,7 +427,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		module = RawArchiver.misc.getModuleForUrl(job.url)
 		self.log.info("Fetching %s", job.url)
-		should_continue = module.check_prefetch(job.url, self.wg)
+		should_continue = module.check_prefetch(job.url, self.wg_proxy)
 		if not should_continue:
 			self.log.error("Prefetch check returned unable to continue!")
 			return None
@@ -427,7 +438,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	def process_job(self, job, ctnt, fname, mimetype):
 
 		module = RawArchiver.misc.getModuleForUrl(job.url)
-		fname, ctnt, mimetype = module.check_postfetch(job.url, self.wg, fname, ctnt, mimetype)
+		fname, ctnt, mimetype = module.check_postfetch(job.url, self.wg_proxy, fname, ctnt, mimetype)
 		links = self.extractLinks(ctnt, mimetype, job.url)
 
 		if isinstance(ctnt, str):

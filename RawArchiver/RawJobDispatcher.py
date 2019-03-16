@@ -8,7 +8,17 @@ import random
 import datetime
 import signal
 import socket
-import runStatus
+
+import settings
+import WebMirror.JobUtils
+import RawArchiver.misc
+
+import common.NetlocThrottler
+import common.get_rpyc
+import common.util.urlFuncs
+import common.process
+import common.LogBase as LogBase
+
 
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
@@ -18,18 +28,6 @@ if '__pypy__' in sys.builtin_module_names:
 else:
 	import psycopg2
 
-import sys
-
-import settings
-import common.NetlocThrottler
-import common.LogBase as LogBase
-# import WebMirror.OutputFilters.AmqpInterface
-import RawArchiver.misc
-import common.get_rpyc
-
-import WebMirror.JobUtils
-import common.util.urlFuncs
-import common.process
 
 ########################################################################################################################
 #
@@ -42,7 +40,6 @@ import common.process
 #	##     ## ##     ## #### ##    ##     ######  ######## ##     ##  ######   ######
 #
 ########################################################################################################################
-
 
 
 NO_JOB_TIMEOUT_MINUTES = 15
@@ -66,41 +63,77 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	loggerPath = "Main.RawJobFetcher"
 
-	def __init__(self, start_thread=True):
+	def __init__(self):
 		# print("Job __init__()")
 		super().__init__()
 
 		self.last_rx = datetime.datetime.now()
 		self.active_jobs = 0
-		self.jobs_out = 0
-		self.jobs_in = 0
+		self.jobs_out    = 0
+		self.jobs_in     = 0
 
 		self.run_flag = multiprocessing.Value("b", 1, lock=False)
 
 		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(key_prefix='raw', fifo_limit = 100 * 1000)
 
-		self.db_interface = psycopg2.connect(
+		self.count_lock = threading.Lock()
+		self.limiter_lock = threading.Lock()
+		self.local = threading.local()
+
+		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
+		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
+		self.fetch_procs = [
+			threading.Thread(target=self.filler_run_shim, args=('priority', )),
+			threading.Thread(target=self.filler_run_shim, args=('new_fetch', )),
+			threading.Thread(target=self.filler_run_shim, args=('random', )),
+			threading.Thread(target=self.drainer_run_shim),
+		]
+
+		for proc in self.fetch_procs:
+			proc.start()
+
+		self.print_mod = 0
+
+
+	def filler_run_shim(self, mode):
+
+		self.local.db_interface = psycopg2.connect(
 				database = settings.DATABASE_DB_NAME,
 				user     = settings.DATABASE_USER,
 				password = settings.DATABASE_PASS,
 				host     = settings.DATABASE_IP,
 			)
 
-		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
-		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
-		self.j_fetch_proc = None
-		if start_thread:
-			self.j_fetch_proc = threading.Thread(target=self.run_shim)
-			self.j_fetch_proc.start()
+		try:
+			self.queue_filler_proc(mode)
 
-		self.print_mod = 0
+		except KeyboardInterrupt:
+			print("Saw keyboard interrupt. Breaking!")
+			return
+
+		except Exception:
+			print("Error!")
+			print("Error!")
+			print("Error!")
+			print("Error!")
+			traceback.print_exc()
+			with open("error %s - %s.txt" % ("rawjobdispatcher", time.time()), "w") as fp:
+				fp.write("Manager crashed?\n")
+				fp.write(traceback.format_exc())
+			raise
 
 
+	def drainer_run_shim(self):
 
-	def run_shim(self):
+		self.local.db_interface = psycopg2.connect(
+				database = settings.DATABASE_DB_NAME,
+				user     = settings.DATABASE_USER,
+				password = settings.DATABASE_PASS,
+				host     = settings.DATABASE_IP,
+			)
 
 		try:
-			self.queue_filler_proc()
+			self.queue_drainer_proc()
 
 		except KeyboardInterrupt:
 			print("Saw keyboard interrupt. Breaking!")
@@ -159,23 +192,28 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.run_flag.value = 0
 
 		for _ in range(60 * 5):
-			self.j_fetch_proc.join(timeout=1)
-			if self.j_fetch_proc.is_alive() is False:
-				return
-			self.log.info("Waiting for job dispatcher to join. Currently active jobs in queue: %s",
-					self.normal_out_queue.qsize()
-				)
+			for proc in self.fetch_procs:
+				proc.join(timeout=1)
+				if any([tmp.is_alive() for tmp in self.fetch_procs]) is False:
+					return
+				self.log.info("Waiting for job dispatcher to join. Currently active jobs in queue: %s, states: %s",
+						self.normal_out_queue.qsize(),
+						[tmp.is_alive() for tmp in self.fetch_procs]
+					)
 
 		while True:
-			self.j_fetch_proc.join(timeout=1)
-			if self.j_fetch_proc.is_alive() is False:
-				return
-			self.log.error("Timeout when waiting for join. Bulk consuming from intermediate queue.")
-			try:
-				while 1:
-					self.normal_out_queue.get_nowait()
-			except queue.Empty:
-				pass
+			for proc in self.fetch_procs:
+				proc.join(timeout=1)
+				if any([tmp.is_alive() for tmp in self.fetch_procs]) is False:
+					return
+				self.log.error("Timeout when waiting for join. Bulk consuming from intermediate queue. States: %s",
+						[tmp.is_alive() for tmp in self.fetch_procs],
+					)
+				try:
+					while 1:
+						self.normal_out_queue.get_nowait()
+				except queue.Empty:
+					pass
 
 
 	def put_outbound_job(self, jobid, joburl, netloc=None):
@@ -194,9 +232,10 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		# Recycle the rpc interface if it ded
 		while 1:
 			try:
-				self.rpc_interface.put_job(raw_job)
-				self.active_jobs += 1
-				self.jobs_out += 1
+				self.local.rpc_interface.put_job(raw_job)
+				with self.count_lock:
+					self.active_jobs += 1
+					self.jobs_out += 1
 				return
 			except TypeError:
 				self.open_rpc_interface()
@@ -207,20 +246,21 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			except ConnectionRefusedError:
 				self.open_rpc_interface()
 
-	def fill_jobs(self):
+	def fill_jobs(self, mode):
 
 		if 'drain' in sys.argv:
 			return
 		escape_count = 0
 		while self.active_jobs < MAX_IN_FLIGHT_JOBS and escape_count < 25:
 			old = self.normal_out_queue.qsize()
-			num_new = self._get_task_internal()
+			num_new = self._get_task_internal(mode)
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
 
 			if self.run_flag.value != 1:
 				return
 
-			new_j_l =self.ratelimiter.get_available_jobs()
+			with self.limiter_lock:
+				new_j_l =self.ratelimiter.get_available_jobs()
 
 			for rid, joburl, netloc in new_j_l:
 				self.put_outbound_job(rid, joburl, netloc)
@@ -231,17 +271,15 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 			escape_count += 1
 
-			self.process_responses()
-
 	def open_rpc_interface(self):
 		try:
-			self.rpc_interface.close()
-		except Exception:
+			self.local.rpc_interface.close()
+		except Exception:   # pylint: disable=W0703
 			pass
 
-		for x in range(100):
+		for _ in range(100):
 			try:
-				self.rpc_interface = common.get_rpyc.RemoteJobInterface("RawMirror")
+				self.local.rpc_interface = common.get_rpyc.RemoteJobInterface("RawMirror")
 				return
 
 			except TypeError:
@@ -261,12 +299,13 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			# Something in the RPC stuff is resulting in a typeerror I don't quite
 			# understand the source of. anyways, if that happens, just reset the RPC interface.
 			try:
-				tmp = self.rpc_interface.get_job()
+				tmp = self.local.rpc_interface.get_job()
 
-				self.active_jobs -= 1
-				self.jobs_in += 1
-				if self.active_jobs < 0:
-					self.active_jobs = 0
+				with self.count_lock:
+					self.active_jobs -= 1
+					self.jobs_in += 1
+					if self.active_jobs < 0:
+						self.active_jobs = 0
 
 			except queue.Empty:
 				return
@@ -291,11 +330,12 @@ class RawJobFetcher(LogBase.LoggerMixin):
 					nl = tmp['extradat']['netloc']
 
 				if nl:
-					if 'success' in tmp and tmp['success']:
-						self.ratelimiter.netloc_ok(nl)
-					else:
-						print("Success val: ", 'success' in tmp, list(tmp.keys()))
-						self.ratelimiter.netloc_error(nl)
+					with self.limiter_lock:
+						if 'success' in tmp and tmp['success']:
+							self.ratelimiter.netloc_ok(nl)
+						else:
+							print("Success val: ", 'success' in tmp, list(tmp.keys()))
+							self.ratelimiter.netloc_error(nl)
 				else:
 					self.log.warning("Missing netloc in response extradat!")
 
@@ -320,7 +360,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				self.log.warning("Response queue full (%s items). Sleeping", self.normal_out_queue.qsize())
 				time.sleep(1)
 
-	def queue_filler_proc(self):
+	def queue_filler_proc(self, mode):
 
 		common.process.name_process("raw job filler worker")
 		self.open_rpc_interface()
@@ -334,19 +374,17 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 		msg_loop = 0
 		while self.run_flag.value == 1:
-			self.fill_jobs()
-			self.process_responses()
+			self.fill_jobs(mode)
 
 			msg_loop += 1
 			time.sleep(0.2)
 			if msg_loop > 25:
 				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, self.run_flag.value==1)
 				msg_loop = 0
-				self.ratelimiter.job_reduce()
 
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
-		self.rpc_interface.close()
+		self.local.rpc_interface.close()
 
 		# Consume the remaining items in the output queue so it shuts down cleanly.
 		try:
@@ -358,48 +396,140 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		self.log.info("Job queue filler process. Current job queue size: %s. ", self.active_jobs)
 		self.log.info("Job queue fetcher halted.")
 
-	def _get_task_internal(self):
 
-		cursor = self.db_interface.cursor()
+	def queue_drainer_proc(self):
 
+		common.process.name_process("raw job filler worker")
+		self.open_rpc_interface()
+
+		try:
+			signal.signal(signal.SIGINT, signal.SIG_IGN)
+		except ValueError:
+			self.log.warning("Cannot configure job fetcher task to ignore SIGINT. May be an issue.")
+
+		self.log.info("Job queue fetcher starting.")
+
+		msg_loop = 0
+		while self.run_flag.value == 1:
+			self.process_responses()
+
+			msg_loop += 1
+			time.sleep(0.2)
+			if msg_loop > 25:
+				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, self.run_flag.value==1)
+				msg_loop = 0
+				with self.limiter_lock:
+					self.ratelimiter.job_reduce()
+
+
+		self.log.info("Job queue fetcher saw exit flag. Halting.")
+		self.local.rpc_interface.close()
+
+		# Consume the remaining items in the output queue so it shuts down cleanly.
+		try:
+			while 1:
+				self.normal_out_queue.get_nowait()
+		except queue.Empty:
+			pass
+
+		self.log.info("Job queue filler process. Current job queue size: %s. ", self.active_jobs)
+		self.log.info("Job queue fetcher halted.")
+
+	def _get_task_internal(self, mode):
+
+		cursor = self.local.db_interface.cursor()
 
 		# Hand-tuned query, I couldn't figure out how to
 		# get sqlalchemy to emit /exactly/ what I wanted.
 		# TINY changes will break the query optimizer, and
 		# the 10 ms query will suddenly take 10 seconds!
-		raw_query = '''
-				UPDATE
-				    raw_web_pages
-				SET
-				    state = 'fetching'
-				WHERE
-				    raw_web_pages.id IN (
-				        SELECT
-				            raw_web_pages.id
-				        FROM
-				            raw_web_pages
-				        WHERE
-				            raw_web_pages.state = 'new'
-				        AND
-				            raw_web_pages.priority <= (
-				               SELECT
-				                    min(priority)
-				                FROM
-				                    raw_web_pages
-				                WHERE
-				                    state = 'new'::dlstate_enum
-				                AND
-				                    raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				            ) + 1
-				        AND
-				            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
-				        LIMIT {in_flight}
-				    )
-				AND
-				    raw_web_pages.state = 'new'
-				RETURNING
-				    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
-			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
+		if mode == 'priority':
+			raw_query = '''
+					UPDATE
+					    raw_web_pages
+					SET
+					    state = 'fetching'
+					WHERE
+					    raw_web_pages.id IN (
+					        SELECT
+					            raw_web_pages.id
+					        FROM
+					            raw_web_pages
+					        WHERE
+					            raw_web_pages.state = 'new'
+					        AND
+					            raw_web_pages.priority <= (
+					               SELECT
+					                    min(priority)
+					                FROM
+					                    raw_web_pages
+					                WHERE
+					                    state = 'new'::dlstate_enum
+					                AND
+					                    raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+					            ) + 1
+					        AND
+					            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+					        LIMIT {in_flight}
+					    )
+					AND
+					    raw_web_pages.state = 'new'
+					RETURNING
+					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
+				'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
+
+		elif mode == 'new_fetch':
+			raw_query = '''
+					UPDATE
+					    raw_web_pages
+					SET
+					    state = 'fetching'
+					WHERE
+					    raw_web_pages.id IN (
+					        SELECT
+					            raw_web_pages.id
+					        FROM
+					            raw_web_pages
+					        WHERE
+					            raw_web_pages.state = 'new'
+					        AND
+					            raw_web_pages.fspath IS NULL
+					        AND
+					            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+					        LIMIT {in_flight}
+					    )
+					AND
+					    raw_web_pages.state = 'new'
+					RETURNING
+					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
+				'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
+
+		elif mode == 'random':
+			raw_query = '''
+					UPDATE
+					    raw_web_pages
+					SET
+					    state = 'fetching'
+					WHERE
+					    raw_web_pages.id IN (
+					        SELECT
+					            raw_web_pages.id
+					        FROM
+					            raw_web_pages
+					        WHERE
+					            raw_web_pages.state = 'new'
+					        AND
+					            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
+					        LIMIT {in_flight}
+					    )
+					AND
+					    raw_web_pages.state = 'new'
+					RETURNING
+					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
+				'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
+		else:
+			self.log.error("Unknown dispatch mode: '%s'" % mode)
+			return
 
 
 		start = time.time()
@@ -409,14 +539,14 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				cursor.execute("""SET statement_timeout TO 900000;""")
 				cursor.execute(raw_query)
 				rids = cursor.fetchall()
-				self.db_interface.commit()
+				self.local.db_interface.commit()
 				break
 			except psycopg2.Error:
 				delay = random.random() / 3
 				# traceback.print_exc()
 				self.log.warn("Error getting job (psycopg2.Error)! Delaying %s.", delay)
 				time.sleep(delay)
-				self.db_interface.rollback()
+				self.local.db_interface.rollback()
 
 		if self.run_flag.value != 1:
 			return 0
@@ -446,7 +576,6 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		else:
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
-
 		dispatched = 0
 		for rid, netloc, joburl in rids:
 			try:
@@ -466,7 +595,8 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 				threadn = RawArchiver.misc.thread_affinity(joburl, 1)
 				if threadn is True:
-					self.ratelimiter.put_job(rid, joburl, netloc)
+					with self.limiter_lock:
+						self.ratelimiter.put_job(rid, joburl, netloc)
 					# self.put_outbound_job(rid, joburl, netloc=netloc)
 				else:
 					self.blocking_put_response(("unfetched", rid))
@@ -475,7 +605,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				self.log.warning("Unwanted url in database? Url: '%s'", joburl)
 				self.log.warning("Deleting entry.")
 				cursor.execute("""DELETE FROM raw_web_pages WHERE url = %s AND id = %s;""", (joburl, rid))
-				self.db_interface.commit()
+				self.local.db_interface.commit()
 
 
 		cursor.execute("""RESET statement_timeout;""")
@@ -485,20 +615,30 @@ class RawJobFetcher(LogBase.LoggerMixin):
 
 	def delete_job(self, rid, joburl):
 		self.log.warning("Deleting job for url: '%s'", joburl)
-		cursor = self.db_interface.cursor()
+		cursor = self.local.db_interface.cursor()
 		cursor.execute("""DELETE FROM raw_web_pages WHERE raw_web_pages.id = %s AND raw_web_pages.url = %s;""", (rid, joburl))
-		self.db_interface.commit()
+		self.local.db_interface.commit()
 
 
 	def disable_job(self, rid, joburl):
 		self.log.warning("Disabling job for url: '%s'", joburl)
-		cursor = self.db_interface.cursor()
+		cursor = self.local.db_interface.cursor()
 		cursor.execute("""UPDATE raw_web_pages SET state = %s WHERE raw_web_pages.id = %s AND raw_web_pages.url = %s;""", ('disabled', rid, joburl))
-		self.db_interface.commit()
+		self.local.db_interface.commit()
 
 	def get_status(self):
-		if self.j_fetch_proc:
-			return "Worker: %s, alive: %s." % (self.j_fetch_proc.ident, self.j_fetch_proc.is_alive())
+		if any([tmp.is_alive() for tmp in self.fetch_procs]):
+			return "Worker: %s, alive: %s, control: %s, last_rx: %s, active_jobs: %s, jobs_out: %s, jobs_in: %s." % (
+					[tmp.ident for tmp in self.fetch_procs],
+					[tmp.is_alive() for tmp in self.fetch_procs],
+					self.run_flag.value,
+					self.last_rx,
+					self.active_jobs,
+					self.jobs_out,
+					self.jobs_in,
+				)
+
+
 
 		return "Worker is none! Error!"
 

@@ -34,14 +34,14 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 	optional.
 
 	`check_prefetch()` is called before each fetch for `url`, using webget instance
-	`wg`. This is intended to allow things like validating login state in the web
+	`wg_proxy`. This is intended to allow things like validating login state in the web
 	get instance, and other such functionality.
 	A return of `True` means everything is OK, a return of `False` means the prefetch
 	check cannot get the WebGet instance into the required state, for whatever reason.
 
 
 	`check_postfetch()` is called once content has been fetched, with the associated
-	data and metadata for the fetch (`url, wg, fname, fcontent, fmimetype`). This is
+	data and metadata for the fetch (`url, wg_proxy, fname, fcontent, fmimetype`). This is
 	intended to allow the module to modify the content or metadata before it is
 	fed through the link extraction system/saved-to-disk. It can also allow more
 	banal operations such as clarifying filenames.
@@ -70,7 +70,7 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 		pass
 
 	@classmethod
-	def check_prefetch(cls, url, wg):
+	def check_prefetch(cls, url, wg_proxy):
 		return True
 
 	@classmethod
@@ -78,5 +78,5 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 		return False
 
 	@classmethod
-	def check_postfetch(cls, url, wg, fname, fcontent, fmimetype):
+	def check_postfetch(cls, url, wg_proxy, fname, fcontent, fmimetype):
 		return fname, fcontent, fmimetype

@@ -96,7 +96,7 @@ class RollingRawRewalkTrigger(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseC
 				UPDATE
 					raw_web_pages
 				SET
-					state = 'new'
+					state = 'new', ignoreuntiltime = '0001-01-01 00:00:00'::timestamp
 				WHERE
 						state NOT IN ('new', 'error', 'removed', 'disabled', 'specialty_blocked', 'specialty_deferred')
 					AND
