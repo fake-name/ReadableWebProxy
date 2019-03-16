@@ -18,6 +18,7 @@ import common.get_rpyc
 import common.util.urlFuncs
 import common.process
 import common.LogBase as LogBase
+import common.StatsdMixin as StatsdMixin
 
 
 # import sqlalchemy.exc
@@ -58,10 +59,12 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 3000
 
 
+LOCAL_ENQUEUED_JOB_RESPONSES = 500
 
-class RawJobFetcher(LogBase.LoggerMixin):
+class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 	loggerPath = "Main.RawJobFetcher"
+	statsd_prefix = 'ReadableWebProxy.Proc.RawDispatcherManager'
 
 	def __init__(self):
 		# print("Job __init__()")
@@ -236,6 +239,13 @@ class RawJobFetcher(LogBase.LoggerMixin):
 				with self.count_lock:
 					self.active_jobs += 1
 					self.jobs_out += 1
+					with self.mon_con.pipeline() as pipe:
+						pipe.gauge('active_jobs', self.active_jobs)
+						pipe.gauge('jobs_out',    self.jobs_out)
+						pipe.gauge('jobs_in',     self.jobs_in)
+						pipe.gauge('qsize',       self.normal_out_queue.qsize())
+
+
 				return
 			except TypeError:
 				self.open_rpc_interface()
@@ -251,7 +261,7 @@ class RawJobFetcher(LogBase.LoggerMixin):
 		if 'drain' in sys.argv:
 			return
 		escape_count = 0
-		while self.active_jobs < MAX_IN_FLIGHT_JOBS and escape_count < 25:
+		while self.active_jobs < MAX_IN_FLIGHT_JOBS and escape_count < 25 and self.normal_out_queue.qsize() < LOCAL_ENQUEUED_JOB_RESPONSES:
 			old = self.normal_out_queue.qsize()
 			num_new = self._get_task_internal(mode)
 			self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
@@ -379,7 +389,13 @@ class RawJobFetcher(LogBase.LoggerMixin):
 			msg_loop += 1
 			time.sleep(0.2)
 			if msg_loop > 25:
-				self.log.info("Job queue filler process. Current job queue size: %s (out: %s, in: %s). Runstate: %s", self.active_jobs, self.jobs_out, self.jobs_in, self.run_flag.value==1)
+				self.log.info("Job queue filler process (%s). In-Flight: %s, waiting: %s (out: %s, in: %s). Runstate: %s",
+					mode,
+					self.active_jobs,
+					self.normal_out_queue.qsize(),
+					self.jobs_out,
+					self.jobs_in,
+					self.run_flag.value==1)
 				msg_loop = 0
 
 
