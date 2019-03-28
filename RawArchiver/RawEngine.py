@@ -12,7 +12,9 @@ import traceback
 import datetime
 import hashlib
 
+import sqlalchemy
 import sqlalchemy.exc
+from sqlalchemy.sql import exists
 import WebRequest
 from sqlalchemy_continuum_vendored.utils import version_table
 
@@ -259,9 +261,10 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	def checkHaveHistory(self, url):
 		ctbl = version_table(self.db.RawWebPages.__table__)
 
-		count = self.db_sess.query(ctbl) \
-			.filter(ctbl.c.url == url)   \
-			.count()
+		(count, ),  = self.db_sess.query(
+				exists().where(ctbl.c.url == url)
+			)
+
 		return count
 
 	def extractLinks(self, ctnt, mimetype, url):

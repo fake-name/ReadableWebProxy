@@ -100,12 +100,6 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 	def filler_run_shim(self, mode):
 
-		self.local.db_interface = psycopg2.connect(
-				database = settings.DATABASE_DB_NAME,
-				user     = settings.DATABASE_USER,
-				password = settings.DATABASE_PASS,
-				host     = settings.DATABASE_IP,
-			)
 
 		try:
 			self.queue_filler_proc(mode)
@@ -332,6 +326,9 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			except ConnectionRefusedError:
 				self.open_rpc_interface()
 				return
+			except OSError:
+				self.open_rpc_interface()
+				return
 
 			if tmp:
 
@@ -383,20 +380,38 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		self.log.info("Job queue fetcher starting.")
 
 		msg_loop = 0
+		retries = 0
 		while self.run_flag.value == 1:
-			self.fill_jobs(mode)
+			try:
+				self.local.db_interface = psycopg2.connect(
+						database = settings.DATABASE_DB_NAME,
+						user     = settings.DATABASE_USER,
+						password = settings.DATABASE_PASS,
+						host     = settings.DATABASE_IP,
+					)
 
-			msg_loop += 1
-			time.sleep(0.2)
-			if msg_loop > 25:
-				self.log.info("Job queue filler process (%s). In-Flight: %s, waiting: %s (out: %s, in: %s). Runstate: %s",
-					mode,
-					self.active_jobs,
-					self.normal_out_queue.qsize(),
-					self.jobs_out,
-					self.jobs_in,
-					self.run_flag.value==1)
-				msg_loop = 0
+				while self.run_flag.value == 1:
+					self.fill_jobs(mode)
+
+					msg_loop += 1
+					time.sleep(0.2)
+					if msg_loop > 25:
+						self.log.info("Job queue filler process (%s). In-Flight: %s, waiting: %s (out: %s, in: %s). Runstate: %s",
+							mode,
+							self.active_jobs,
+							self.normal_out_queue.qsize(),
+							self.jobs_out,
+							self.jobs_in,
+							self.run_flag.value==1)
+						retries  = 0
+						msg_loop = 0
+			except psycopg2.Error:
+				self.log.error("Exception in psycopg2 in filler process!")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+				retries += 1
+				if retries > 5:
+					raise
 
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")

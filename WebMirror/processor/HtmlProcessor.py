@@ -464,7 +464,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 			if len(str(contentstr)) > 1024 * 500:
 				continue
 
-			formatted = cmark.to_html(contentstr) #, extensions=["linkify"])
+			formatted = cmark.to_html(contentstr) #, extensions=["mdx_linkify"])
 			formatted = WebRequest.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()

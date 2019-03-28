@@ -30,7 +30,7 @@ class XiAiNovelPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			pre.name = "div"
 			contentstr = pre.encode_contents().decode("utf-8")
 
-			formatted = markdown.markdown(contentstr.strip(), extensions=["linkify"])
+			formatted = markdown.markdown(contentstr.strip(), extensions=["mdx_linkify"])
 			formatted = WebRequest.as_soup(formatted)
 			if formatted.find("html"):
 				formatted.html.unwrap()

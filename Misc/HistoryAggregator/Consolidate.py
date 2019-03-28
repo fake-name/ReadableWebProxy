@@ -193,7 +193,7 @@ class DbFlattener(object):
 				pass
 
 		if not high_incidence_items:
-			with db.session_context() as sess:
+			with db.session_context(override_timeout_ms=1000*60*60*24) as sess:
 				self.qlog.info("Querying for items with significant history size")
 				high_incidence_items = sess.execute("""
 						SELECT
@@ -203,7 +203,7 @@ class DbFlattener(object):
 						GROUP BY
 							url
 						HAVING
-							COUNT(*) > 10
+							COUNT(*) > 50
 
 					""")
 				high_incidence_items = [list(tmp) for tmp in high_incidence_items]
@@ -384,7 +384,7 @@ class DbFlattener(object):
 
 	def consolidate_history_new(self):
 
-		with db.session_context() as sess:
+		with db.session_context(override_timeout_ms=1000*60*60*6) as sess:
 			self.qlog.info("Querying for items with significant history size")
 			end = sess.execute("""
 					SELECT
@@ -410,7 +410,7 @@ class DbFlattener(object):
 
 		deleted = 0
 		for x in pbar:
-			with db.session_context() as sess:
+			with db.session_context(override_timeout_ms=1000*60*30) as sess:
 				pbar.set_description("Deleted %s. Processed %s urls" % (deleted, len(self.url_hit_list)))
 				try:
 					changed  = self.truncate_url_range(sess, x, x+step)
@@ -450,7 +450,7 @@ class DbFlattener(object):
 	def incremental_consolidate(self, batched):
 
 		for count, url in batched:
-			with db.session_context() as temp_sess:
+			with db.session_context(override_timeout_ms=1000*60*30) as temp_sess:
 				while 1:
 					try:
 						self.truncate_url_history(temp_sess, url)

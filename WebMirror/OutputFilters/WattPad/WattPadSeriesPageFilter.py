@@ -89,7 +89,7 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		# Apparently the description is rendered in a <pre> tag.
 		# Huh?
-		desc = markdown.markdown(desc, extensions=["linkify"])
+		desc = markdown.markdown(desc, extensions=["mdx_linkify"])
 
 		title = title.strip()
 

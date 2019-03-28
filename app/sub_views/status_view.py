@@ -51,6 +51,7 @@ def get_scheduled_tasks(session):
 		now = datetime.datetime.now(datetime.timezone.utc)
 		tgt = then - now
 		value['time_til_job'] = tgt
+
 	return ret
 
 

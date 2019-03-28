@@ -48,7 +48,7 @@ def build_item_summary(release_struct):
 	content         = d_s.new_tag("div")
 
 	main = release_struct['description'].replace("\n", "<br>")
-	main = markdown.markdown(main, extensions=["linkify"])
+	main = markdown.markdown(main, extensions=["mdx_linkify"])
 	for chunk in bs4.BeautifulSoup(main, "lxml").body:
 		content.append(chunk)
 	link            = d_s.new_tag("div")

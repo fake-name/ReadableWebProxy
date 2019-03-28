@@ -1,5 +1,6 @@
 
 import http.cookiejar
+import atexit
 import copy
 import logging
 import datetime
@@ -19,8 +20,13 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 		self.log = logging.getLogger("Main.DbCookieJar")
 
 		self.headers = None
-
 		self.db      = db
+
+		self.exit_saved = False
+		atexit.register(self._save_at_exit)
+
+	def __del__(self):
+		atexit.unregister(self._save_at_exit)
 
 	def init_agent(self, new_headers):
 		# self.log.info("Cookiejar inited with headers:")
@@ -96,11 +102,11 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				break
 			except sqlalchemy.exc.OperationalError:
 				tries += 1
-				print("Operational error")
+				self.log.warning("Operational error when saving cookies to database")
 				sess.rollback()
 			except sqlalchemy.exc.InvalidRequestError:
 				tries += 1
-				print("InvalidRequestError")
+				self.log.warning("InvalidRequestError when saving cookies to database")
 				sess.rollback()
 
 			except Exception as e:
@@ -165,6 +171,9 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 			sess.commit()
 
 	def save(self, filename=None, ignore_discard=False, ignore_expires=False):
+		if self.exit_saved:
+			return
+
 		assert self.headers != None
 		for _ in range(10):
 			try:
@@ -176,6 +185,9 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 				pass
 
 	def load(self, filename=None, ignore_discard=False, ignore_expires=False):
+		if self.exit_saved:
+			return
+
 		assert self.headers != None
 		for _ in range(10):
 			try:
@@ -189,3 +201,9 @@ class DatabaseCookieJar(http.cookiejar.CookieJar):
 
 	def revert(self, filename=None, ignore_discard=False, ignore_expires=False):
 		self.sync_cookies()
+
+
+	def _save_at_exit(self):
+		self.save()
+		self.exit_saved = True
+
