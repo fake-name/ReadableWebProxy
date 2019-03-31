@@ -4,7 +4,7 @@ git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
 
-webrequest==0.0.52
+webrequest==0.0.54
 setproctitle
 paka.cmark
 pillow==5.4.1
