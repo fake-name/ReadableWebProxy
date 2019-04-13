@@ -7,7 +7,7 @@ git+https://github.com/fake-name/ChromeController.git
 webrequest==0.0.55
 setproctitle==1.1.10
 paka.cmark==2.0.0
-pillow==5.4.1
+pillow==6.0.0
 json2html==1.2.1
 mprpc==0.1.16
 tqdm==4.29.1
