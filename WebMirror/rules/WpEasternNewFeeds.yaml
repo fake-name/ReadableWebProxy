@@ -6,6 +6,16 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+	'https://albert325translations.wordpress.com',
+	'https://bbmtls.wordpress.com',
+	'https://carnationscans.wordpress.com',
+	'https://chenxiangruxie.wordpress.com',
+	'https://crazedcookies.wordpress.com',
+	'https://mainichimaiban.wordpress.com',
+	'https://piperpickups.wordpress.com',
+	'https://radiantmelody.wordpress.com',
+
+
 	'https://comonokomono.wordpress.com',
 	'https://hhknovels.wordpress.com',
 	'https://weebsnoveltranslation.wordpress.com',
@@ -22,6 +32,12 @@ baseUrl: [
 	'https://skeletonqueen06.wordpress.com',
 	'https://yuenmetrans.wordpress.com',
 
+	'https://asocialtranscriptions.home.blog',
+	'https://cherrylight.home.blog',
+	'https://chichilations.home.blog',
+	'https://systemtranslation.home.blog',
+	'https://whiteemperortranslation.home.blog',
+	'https://xmtl.home.blog',
 	'https://anargyatesting.home.blog',
 	'https://naedatranslations.home.blog',
 	'https://rrrrhexiatranslation.home.blog',
@@ -38,6 +54,12 @@ baseUrl: [
 	'https://teatimetranslate.home.blog',
 	'https://xiaomushroom.home.blog',
 
+
+	'https://moonruneworks.com',
+	'https://potatotranslation.net',
+	'http://thenoobtranslator.xyz',
+	'https://thewordsofwisdom.in',
+	'http://yuriworld.000webhostapp.com',
 	'https://arunametta.asia',
 	'https://mayonaizeshrimp.com',
 	'https://betwixtedbutterfly.com',
@@ -51,6 +73,7 @@ baseUrl: [
 	'http://novelslanding.com',
 	'https://www.wangmamaread.com',
 	'https://evilations.com',
+	'https://www.100whitesalts.com',
 
 	'https://angeloflight360.home.blog',
 	'https://jackofalltastesconnoisseurofnone.wordpress.com',
@@ -86,6 +109,7 @@ badwords: [
 		'patreon_img.png',
 		'/images/discord.png',
 		'cdn.gravitytales.com',
+		'/calendar/action~agenda/',
 
 		'/wp-content/cache/',
 	]

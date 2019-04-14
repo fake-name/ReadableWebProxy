@@ -154,14 +154,15 @@
 </code></pre>
 
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('title-lut-snippet')">Insert</button>
-<pre><code id='title-lut-snippet'>	titlemap = [
-		('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
-		('Master of Dungeon',           'Master of Dungeon',               'oel'),
-	]
+<pre><code id='title-lut-snippet'>	if item['tags'] == ['Uncategorized']:
+		titlemap = [
+			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+		]
 
-	for titlecomponent, name, tl_type in titlemap:
-		if titlecomponent.lower() in item['title'].lower():
-			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+		for titlecomponent, name, tl_type in titlemap:
+			if titlecomponent.lower() in item['title'].lower():
+				return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 </code></pre>
 <button class="btn" style="z-index: 100; position: absolute; right: 0px;" onclick="insert_snippet('startswith-keyed-lut-snippet')">Insert</button>
 <pre><code id='startswith-keyed-lut-snippet'>

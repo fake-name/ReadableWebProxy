@@ -31,6 +31,7 @@ badwords: [
 			"/assets/assets/",
 			"/scripts/scripts/",
 			"/assets/scripts/",
+			'/user/block/',
 			"/scripts/assets/",
 			'/tinymce/',
 			'royalroadl.com/Scripts/',

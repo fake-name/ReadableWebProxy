@@ -52,6 +52,7 @@ baseUrl: [
 		'https://pucari.dreamwidth.org',
 		'https://shadow.dreamwidth.org',
 		'https://luukia.dreamwidth.org',
+		'https://idola.dreamwidth.org',
 
 		'http://uncommittedtranslations.bravesites.com',
 
@@ -98,6 +99,8 @@ baseUrl: [
 		'http://www.ssttranslations.com',
 		'https://veratales.com',
 		'http://vgperson.com',
+		'http://www.finalreads.com',
+		'https://duanshu.me',
 
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'https://pumanovels.com',

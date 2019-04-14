@@ -203,8 +203,7 @@ class DbFlattener(object):
 						GROUP BY
 							url
 						HAVING
-							COUNT(*) > 50
-
+							COUNT(*) > 100
 					""")
 				high_incidence_items = [list(tmp) for tmp in high_incidence_items]
 				self.qlog.info("Found %s items with more then 10 history entries. Processing", len(high_incidence_items))

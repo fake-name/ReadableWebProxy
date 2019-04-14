@@ -12,6 +12,11 @@ rewalk_interval_days: 30
 
 baseUrl: [
 
+	'https://ortatranslations.blogspot.com',
+	'https://pockysbookshelf.blogspot.com',
+	'https://quikernovel.blogspot.com',
+	'https://ryuxenji.blogspot.com',
+	'https://teotietranslation.blogspot.com',
 	'https://fringemanatee.blogspot.com',
 	'https://gudetranslation.blogspot.com',
 	'https://korahtls.blogspot.com',

@@ -137,7 +137,7 @@ sock_path = '/tmp/rwp-fetchagent-sock'
 
 
 
-def run_mprpc(interface_dict):
+def run_rpc(interface_dict):
 	print("MpRPC server Started.")
 	server_instance = FetchInterfaceClass(interface_dict, "MpRPC")
 	mprpc_server = StreamServer(('0.0.0.0', 4315), server_instance)
@@ -177,7 +177,7 @@ def run():
 
 	print("AMQP Interfaces have started. Launching RPC threads.")
 
-	t2 = threading.Thread(target=run_mprpc, args=(interface_dict, ))
+	t2 = threading.Thread(target=run_rpc, args=(interface_dict, ))
 
 	t2.start()
 
@@ -202,8 +202,7 @@ def run():
 
 
 	print("Joining on worker threads")
-
-	t2.join()
+	t2.join(timeout=60)
 
 	print("Terminating AMQP interface.")
 	amqp_interface.terminate()
@@ -215,14 +214,21 @@ def main():
 	# print("Testing reload")
 	# server.tree.tree.reloadTree()
 	# print("Starting RPC server")
+	try:
+		run()
 
-	run()
+	except:
+		# abort /hard/ if we exceptioned out of the main run.
+		# This should (hopeully) cause the OS to terminate any
+		# remaining threads.
+		# As it is, I've been having issues with the main thread failing
+		# with 'OSError: [Errno 24] Too many open files', killing the main thread
+		# and leaving some of the amqp interface threads dangling.
+		# Somehow, it's not being caught in the `except Exception:` handler
+		# in run(). NFI how.
+		import ctypes
+		ctypes.string_at(0)
 
-	# import server_reloader
-
-	# server_reloader.main(
-	# 	run
-	# )
 
 if __name__ == '__main__':
 	main()

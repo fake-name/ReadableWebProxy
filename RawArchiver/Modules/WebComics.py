@@ -244,6 +244,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'&_debug=',
 		'/help/styles/default/xenforo/',
 		r'\'!>\n',
+		'share=google-plus-',
 
 		'/topic/news&q=blog/',
 		'/topic/engineering&q=comic/topic/engineering&q=comic/',
