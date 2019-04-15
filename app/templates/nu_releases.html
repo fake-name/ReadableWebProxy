@@ -286,8 +286,11 @@
 						itm.find("input[value=rejected]").prop( "checked", true ).click();
 				}
 				else if (title_td.first().text().includes("not found - wuxiaworld")
+					|| title_td.first().text().includes(" error")
 					|| title_td.first().text().includes("page not found")
-					|| title_td.first().text().includes("404 not found")
+					|| title_td.first().text().includes("not found")
+					|| title_td.first().text().includes("404")
+					|| title_td.first().text().includes("500")
 					|| title_td.first().text().includes("Title: blog not found")
 					|| title_td.first().text().includes("Title: wordpress.com"))
 				{
