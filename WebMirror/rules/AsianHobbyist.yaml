@@ -76,7 +76,7 @@ decompose: [
 	{'class'  : 'screen-reader-text'},
 	{'class'  : 'site-footer'},
 	{'class'  : 'code-block-9'},
-	
+
 	{'class'  : 'menu-toggle'},
 	{'class'  : 'site-header'},
 	{'class'  : 'blog-sidebar'},
@@ -84,15 +84,18 @@ decompose: [
 	{'class'  : 'comments-area'},
 	{'class'  : 'osny-nightmode'},
 	{'class'  : 'mc4wp-form'},
+	{'class'  : 'osny-nightmode'},
 	{'itemscope' : 'itemscope'},
-	{'id' : "catapult-cookie-bar"},
-	{'id' : "headerwrap"},
-	{'id' : "nightmode-1"},
-	{'id' : "nightmode-2"},
-	
+	{'id'        : "catapult-cookie-bar"},
+	{'id'        : "headerwrap"},
+	{'id'        : "nightmode-1"},
+	{'id'        : "nightmode-2"},
+	{'href'      : 'https://www.asianhobbyist.com/android-mobile-app-live/'},
+
+
 	{'class' : "post-author-wrapper"},
-	
-	
+
+
 ]
 
 stripTitle: [

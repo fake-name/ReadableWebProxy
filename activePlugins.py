@@ -16,6 +16,7 @@ import WebMirror.PreProcessors.GravityTalesPreprocess
 import WebMirror.PreProcessors.WixsitePreprocess
 import WebMirror.PreProcessors.LiteroticaPreprocess
 import WebMirror.PreProcessors.CreativeNovelsPreprocess
+import WebMirror.PreProcessors.AsianHobbyist
 
 # Preprocessors are executed against fetched content first.
 # They're principally useful for doing page-rewriting for
@@ -30,6 +31,7 @@ PREPROCESSORS = [
 	WebMirror.PreProcessors.GravityTalesPreprocess.GravityTalesPreprocessor,
 	WebMirror.PreProcessors.WixsitePreprocess.JsRendererPreprocessor,
 	WebMirror.PreProcessors.CreativeNovelsPreprocess.CreativeNovelsPreprocessor,
+	WebMirror.PreProcessors.AsianHobbyist.AsianHobbyistPreprocessor,
 
 	WebMirror.PreProcessors.LiteroticaPreprocess.LiteroticaFavouritePreprocessor,
 

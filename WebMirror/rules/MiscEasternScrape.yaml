@@ -67,7 +67,6 @@ baseUrl: [
 		'http://www.wiseclock.ca',
 		'http://girlyboysalliance.mozello.com',
 
-		'https://asianhobbyist.com',
 
 		'https://www.fuyuneko.org',
 		'http://lyzo.eu',
@@ -161,6 +160,7 @@ badwords: [
 
 			'/search.php?',
 			'www.karasunovels.com/search?',
+			'www.everythingsweet.me/search?',
 
 			# I think I can conclude basically 85% of people who hand-roll
 			# their own HTML are completely incapable.
