@@ -1,0 +1,55 @@
+type: eastern
+
+
+rewalk_interval_days: 30
+
+send_raw_feed: True
+
+baseUrl: [
+
+
+		'https://read18.com',
+
+	]
+
+feeds: [
+	'https://read18.com/read/rss/',
+]
+
+extraStartUrls: [
+	]
+
+badwords: [
+			"?",
+			"&",
+			"/feed/",
+			"/login/",
+
+
+		]
+
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+	{'class' : "adsbygoogle"},
+]
+
+decompose: [
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'blog-sidebar'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: [
+]
+
+
+
