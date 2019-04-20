@@ -6,7 +6,7 @@ git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 
 webrequest==0.0.55
-setproctitle
+setproctitle==1.1.10
 paka.cmark
 pillow==5.4.1
 json2html==1.2.1
@@ -110,4 +110,4 @@ parsedatetime==2.4
 ## WTForms-JSON
 
 
-setproctitle
+setproctitle==1.1.10
