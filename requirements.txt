@@ -3,6 +3,7 @@ requests==2.21.0
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
+git+https://github.com/fake-name/semantic.git
 
 webrequest==0.0.52
 setproctitle
@@ -20,7 +21,6 @@ zerorpc==0.6.1
 cssutils==1.0.2
 tinycss2==0.6.1
 fontTools==3.36.0
-semantic==1.0.3
 fdict==0.8.1
 cachetools==3.0.0
 bleach==3.1.0
