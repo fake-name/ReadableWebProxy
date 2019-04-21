@@ -40,6 +40,7 @@ import common.util.DbCookieJar as dbCj
 import hashlib
 from common.Exceptions import GarbageDomainSquatterException
 from common.Exceptions import DownloadException
+from common.Exceptions import RetryProcessingException
 import WebMirror.Fetch
 import common.database as db
 import common.global_constants
@@ -1020,11 +1021,26 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				job.content = content
 				self.db_sess.commit()
 				self.log.error("Error in remote fetch.")
+		except psycopg2.InternalError:
+			self.log.error("Failure processing job!")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
+			raise RetryProcessingException
 
 		except KeyboardInterrupt:
 			runStatus.run = False
 			runStatus.run_state.value = 0
 			print("Keyboard Interrupt!")
+
+	def rpc_resp_retrier(self, job_item):
+		for try_attempt in range(4):
+			try:
+				self.process_rpc_response(job_item)
+				return
+			except RetryProcessingException:
+				self.log.error("Job failed processing on attempt %s.", try_attempt)
+
+		self.log.error("Job failed processing. Dropping!")
 
 
 	def taskProcess(self):
@@ -1041,7 +1057,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				mode = job_item.get("mode", "Unknown")
 
 				if mode == 'remote_fetch':
-					self.process_rpc_response(job_item)
+					self.rpc_resp_retrier(job_item)
 				elif mode == 'local_fetch':
 					self.synchronousJobRequest(job_item['joburl'], force=False)
 				else:

@@ -1,14 +1,13 @@
-requests==2.21.0
 ## git+https://github.com/fake-name/amqpstorm.git
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 
+requests==2.21.0
 webrequest==0.0.52
 setproctitle
 paka.cmark
-pillow==5.4.1
 json2html==1.2.1
 mprpc==0.1.16
 tqdm==4.29.1
@@ -60,18 +59,23 @@ Flask-SQLAlchemy==2.3.2
 flask-paginate==0.5.1
 Flask-WTF==0.14.2
 apscheduler==3.5.3
-## semantic
-## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
-git+https://github.com/kvesteri/sqlalchemy-continuum.git
 sqlalchemy_searchable==1.0.3
 
+## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
+git+https://github.com/kvesteri/sqlalchemy-continuum.git
+
+# Probably requires
+# sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev
+pillow==5.4.1
+
+# probably requires `sudo apt install libxml2-dev libxslt1-dev`
 BeautifulSoup4==4.7.1
 
 alembic==1.0.6
 
 redis==3.0.1
 
-hiredis==1.0.0
+## hiredis==1.0.0
 
 vmprof==0.4.12
 

@@ -6,7 +6,11 @@ class DownloadException(Exception):
 
 class CannotAccessGDocException(DownloadException):
 	pass
+
 class GarbageDomainSquatterException(DownloadException):
+	pass
+
+class RetryProcessingException(Exception):
 	pass
 
 
