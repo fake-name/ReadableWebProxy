@@ -10771,6 +10771,10 @@
   "def extractWhathasjesusdoneWordpressCom(item):\n\t'''\n\tParser for 'whathasjesusdone.wordpress.com'\n\t'''\n\n\treturn None",
   "2018-02-24T10:53:56.052283"
  ],
+ "whatsawhizzerwebnovels.com": [
+  "\ndef extractWhatsawhizzerwebnovelsCom(item):\n\t'''\n\tParser for 'whatsawhizzerwebnovels.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2019-04-22T00:17:36.869804"
+ ],
  "whiteemperortranslation.home.blog": [
   "\ndef extractWhiteemperortranslationHomeBlog(item):\n\t'''\n\tParser for 'whiteemperortranslation.home.blog'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2019-04-08T23:53:48.074294"

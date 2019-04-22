@@ -1,9 +1,9 @@
 
 import re
+import logging
 import urllib.parse
-import re
-import unshortenit
 
+import unshortenit
 import requests.exceptions
 
 import common.database as db
@@ -166,16 +166,26 @@ def isGFileUrl(url):
 ##############################################################################################################
 
 class CacheObject():
+	'''
+	Proxy object that looks like a dict, but actually uses redis for the backing store
+	'''
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.log = logging.getLogger("Main.RedisCache")
+
 	def __setitem__(self, key, item):
+		self.log.info("CacheObject setitem: %s -> %s", key, item)
 		db.set_in_db_key_value_store(key, item)
 
 	def __getitem__(self, key):
+		self.log.info("CacheObject getitem: %s", key)
 		return db.get_from_db_key_value_store(key)
 
 	def __delitem__(self, key):
 		db.set_in_db_key_value_store(key, {})
 
 	def get(self, key, default="super_sekrit_not_specified_value"):
+		self.log.info("Cache get for key %s", key)
 		ret = db.get_from_db_key_value_store(key)
 		if ret:
 			return ret
@@ -189,8 +199,9 @@ class CacheObject():
 	def copy(self):
 		raise ValueError("Cannot copy a CacheObject")
 
-	def has_key(self, k):
-		return db.get_from_db_key_value_store(k) != {}
+	def has_key(self, key):
+		self.log.info("Cache has_key for key %s", key)
+		return db.get_from_db_key_value_store(key) != {}
 
 SQUATTER_NETLOC_RE = re.compile(r"^www?\d+\.")
 
