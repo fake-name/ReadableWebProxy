@@ -55,7 +55,7 @@ webcolors==1.8.1
 pyparsing==2.4.0
 feedparser==5.2.1
 
-Flask-SQLAlchemy==2.3.2
+Flask-SQLAlchemy==2.4.0
 flask-paginate==0.5.1
 Flask-WTF==0.14.2
 apscheduler==3.5.3
