@@ -6,7 +6,7 @@ git+https://github.com/fake-name/semantic.git
 
 requests==2.21.0
 webrequest==0.0.55
-setproctitle
+setproctitle==1.1.10
 paka.cmark
 json2html==1.2.1
 mprpc==0.1.16
@@ -114,4 +114,4 @@ parsedatetime==2.4
 ## WTForms-JSON
 
 
-setproctitle
+setproctitle==1.1.10
