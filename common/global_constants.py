@@ -385,4 +385,5 @@ GLOBAL_INLINE_BULLSHIT = [
 			'(Thank you for reading at bayabuscotranslation.com)',
 			'(Ele note: Follow Supreme Tentacle’s site at Cardboard Translations. Top tier stuff.)',
 			'HELP! This aggregator site is making me manually copy and paste chapters! this is slavery! call the police!',
+			'Read the original translation in Wang Mama Read.',
 ]

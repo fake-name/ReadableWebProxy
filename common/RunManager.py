@@ -47,6 +47,10 @@ import RawArchiver.RawJobDispatcher
 import RawArchiver.RawRunner
 import WebMirror.Runner
 
+URL_UPSERTER_QUEUE_SIZE = 25000
+MAX_IN_FLIGHT_JOBS = 250
+
+
 
 class MultiJobManager(object):
 	def __init__(self, max_tasks, target, target_args=None, target_kwargs=None):
@@ -145,7 +149,7 @@ class Crawler(object):
 		self.raw_thread_count = raw_thread_count
 
 	def start_aggregator(self):
-		agg_queue = multiprocessing.Queue()
+		agg_queue = multiprocessing.Queue(maxsize=URL_UPSERTER_QUEUE_SIZE)
 		with logSetup.stdout_lock:
 			self.main_job_agg = multiprocessing.Process(target=WebMirror.UrlUpserter.UpdateAggregator.launch_agg, args=(agg_queue, ))
 			self.main_job_agg.start()
@@ -193,7 +197,7 @@ class Crawler(object):
 		assert self.raw_thread_count >= 1
 
 		# Dummy queues to shut up the teardown garbage
-		new_url_aggreator_queue = multiprocessing.Queue()
+		new_url_aggreator_queue = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
 		raw_new_job_queue       = self.start_raw_job_fetcher()
 
 		raw_kwargs = {

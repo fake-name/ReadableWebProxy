@@ -20,7 +20,7 @@ import common.db_types
 
 
 class WebPages(common.db_base.Base):
-	__versioned__ = {}
+	# __versioned__ = {}
 
 	__tablename__ = 'web_pages'
 	name = 'web_pages'

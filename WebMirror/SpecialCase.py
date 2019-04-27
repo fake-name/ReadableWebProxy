@@ -47,6 +47,10 @@ def handleRateLimiting(params, rid, joburl, netloc, job_aggregator_instance):
 		else:
 			if RATE_LIMIT_ITEMS[netloc]['ntime'] == -1:
 				RATE_LIMIT_ITEMS[netloc]['ntime'] = time.time()
+
+			if RATE_LIMIT_ITEMS[netloc]['queue'].qsize() > 50000:
+				print("Rate limiter queue is very large!")
+
 			RATE_LIMIT_ITEMS[netloc]['queue'].put((rid, joburl, netloc))
 
 
