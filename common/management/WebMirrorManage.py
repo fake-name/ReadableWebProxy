@@ -1072,6 +1072,12 @@ def exposed_flatten_fix_missing_history():
 	Misc.HistoryAggregator.Consolidate.consolidate_history()
 	Misc.HistoryAggregator.Consolidate.fix_missing_history()
 
+def exposed_clear_rss_history():
+	'''
+	Drop the RSS feeds from the history table (since they're empty anyways)
+	'''
+	Misc.HistoryAggregator.Consolidate.clear_rss_history()
+
 
 def exposed_test_new_job_queue():
 	'''

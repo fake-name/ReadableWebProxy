@@ -6,6 +6,7 @@ import logging
 import os.path
 import json
 import calendar
+import urllib.parse
 import tqdm
 
 # if '__pypy__' not in sys.builtin_module_names:
@@ -23,6 +24,7 @@ if '__pypy__' in sys.builtin_module_names:
 else:
 	import psycopg2
 
+import settings
 import WebMirror.rules
 import common.database as db
 from sqlalchemy_continuum_vendored.utils import version_table
@@ -180,6 +182,43 @@ class DbFlattener(object):
 			end_transaction_id = x.transaction_id
 
 		return dirty
+
+	def get_high_incidence_items(self):
+
+		db_interface = psycopg2.connect(
+				database = settings.DATABASE_DB_NAME,
+				user     = settings.DATABASE_USER,
+				password = settings.DATABASE_PASS,
+				host     = settings.DATABASE_IP,
+			)
+
+		first_cursor = db_interface.cursor()
+		first_cursor.execute("""SET statement_timeout = %s;""", (1000 * 60 * 60 * 8, ))
+		cursor = db_interface.cursor("high_incidence_items_cursor")
+
+		def dump_to_json(data):
+			with open("dump.json", "w") as fp:
+				json.dump(data, fp)
+
+		items = {}
+		cursor.execute("SELECT url FROM web_pages_version;")
+		loops = 0
+		for url, in tqdm.tqdm(cursor):
+			nl = urllib.parse.urlsplit(url).netloc
+			items.setdefault(url, 0)
+			items.setdefault(nl, 0)
+
+			items[url] += 1
+			items[nl]  += 1
+
+			loops += 1
+			if loops % (1000 * 1000) == 0:
+				print("Dumping to json file. Unique URLs: ", len(items))
+				dump_to_json(items)
+
+		dump_to_json(items)
+
+
 
 	def consolidate_history(self, use_cache=False):
 		high_incidence_items = None
@@ -551,6 +590,36 @@ class DbFlattener(object):
 				growth = objgraph.show_growth(limit=10)
 				print(growth)
 
+	def clear_rss_history(self):
+		self.log.info("Clearing RSS history")
+
+
+		with db.session_context(override_timeout_ms=15 * 60 * 1000) as sess:
+			for url_set in tqdm.tqdm(batch(self.feed_urls, n=2)):
+				end = sess.execute("""
+					DELETE FROM
+						web_pages_version
+					WHERE
+						url IN :urls
+					""", {'urls' : tuple(url_set)})
+				self.log.info("Removed %s entries for URLs %s", end.rowcount, url_set )
+				sess.commit()
+		# 	end = [tmp[0] for tmp in end]
+		# 	self.log.info("Found %s rows missing history content!", len(end))
+
+		# 	loop = 0
+		# 	remaining = len(end)
+		# 	for urlset in batch(end, 50):
+		# 		self.tickle_rows(sess, urlset)
+		# 		sess.expire_all()
+
+		# 		remaining = remaining - len(urlset)
+		# 		self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
+
+		# 		print("Growth:")
+		# 		growth = objgraph.show_growth(limit=10)
+		# 		print(growth)
+
 
 	def wat(self):
 		with db.session_context() as sess:
@@ -574,6 +643,10 @@ def fix_missing_history():
 	proc = DbFlattener()
 	proc.fix_missing_history()
 
+def clear_rss_history():
+	proc = DbFlattener()
+	proc.clear_rss_history()
+
 def test():
 	import logSetup
 	logSetup.initLogging()
@@ -584,8 +657,6 @@ def test():
 	# proc._go()
 
 def test_jt_big_page_flatten():
-	import logSetup
-	logSetup.initLogging()
 
 	print("Trying to flatten huge history")
 
@@ -596,5 +667,13 @@ def test_jt_big_page_flatten():
 	with db.session_context() as sess:
 		proc.truncate_url_history(sess, giant_history)
 
+def get_high_incidence():
+	proc = DbFlattener()
+	proc.get_high_incidence_items()
+
 if __name__ == '__main__':
-	test_jt_big_page_flatten()
+	import logSetup
+	logSetup.initLogging()
+
+	get_high_incidence()
+	# test_jt_big_page_flatten()
