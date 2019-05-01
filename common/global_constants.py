@@ -315,6 +315,8 @@ NU_NEW_MASK_NETLOCS = [
 			'webnovel.com',
 			'www.hostinger.co.uk',
 
+			'rtranslation.home.blog',
+			'retranslationsx.home.blog',
 
 			# Some extnu leaked through.
 			'www.novelupdates.com',

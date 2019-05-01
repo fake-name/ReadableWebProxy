@@ -6,6 +6,7 @@ import logging
 import os.path
 import json
 import calendar
+import pickle
 import urllib.parse
 import tqdm
 
@@ -197,8 +198,8 @@ class DbFlattener(object):
 		cursor = db_interface.cursor("high_incidence_items_cursor")
 
 		def dump_to_json(data):
-			with open("dump.json", "w") as fp:
-				json.dump(data, fp)
+			with open("dump.pik", "w") as fp:
+				pickle.dump(data, fp)
 
 		items = {}
 		cursor.execute("SELECT url FROM web_pages_version;")
@@ -213,7 +214,7 @@ class DbFlattener(object):
 
 			loops += 1
 			if loops % (1000 * 1000) == 0:
-				print("Dumping to json file. Unique URLs: ", len(items))
+				print("Dumping to pickle file. Unique URLs: ", len(items))
 				dump_to_json(items)
 
 		dump_to_json(items)

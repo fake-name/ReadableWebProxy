@@ -16,6 +16,7 @@ baseUrl: [
 		'http://www.tigresstranslations.com',
 		'http://novel-id.blognive.com',
 		'http://baka.exnaid.com',
+		'https://laescans.myportfolio.com',
 
 		# Dickish blocking garbage shit.
 		'https://nepustation.wordpress.com',
