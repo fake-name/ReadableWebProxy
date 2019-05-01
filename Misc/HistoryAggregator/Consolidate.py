@@ -197,8 +197,8 @@ class DbFlattener(object):
 		first_cursor.execute("""SET statement_timeout = %s;""", (1000 * 60 * 60 * 8, ))
 		cursor = db_interface.cursor("high_incidence_items_cursor")
 
-		def dump_to_json(data):
-			with open("dump.pik", "w") as fp:
+		def dump_to_file(data):
+			with open("dump.pik", "wb") as fp:
 				pickle.dump(data, fp)
 
 		items = {}
@@ -215,9 +215,9 @@ class DbFlattener(object):
 			loops += 1
 			if loops % (1000 * 1000) == 0:
 				print("Dumping to pickle file. Unique URLs: ", len(items))
-				dump_to_json(items)
+				dump_to_file(items)
 
-		dump_to_json(items)
+		dump_to_file(items)
 
 
 
