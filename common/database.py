@@ -2,7 +2,7 @@
 
 
 from sqlalchemy_continuum_vendored import make_versioned
-make_versioned(user_cls=None)
+# make_versioned(user_cls=None)
 
 # Import the DB things.
 from common.main_archive_db import WebPages

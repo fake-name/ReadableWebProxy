@@ -160,12 +160,24 @@ class RemoteContentObject(object):
 		assert self.job.file
 
 		itempath = os.path.join(app.config['RESOURCE_DIR'], self.job.file_item.fspath)
+		itempath2 = os.path.join(app.config['RESOURCE_DIR_2'], self.job.file_item.fspath)
 		fname = self.job.file_item.filename
 
-		with open(itempath, "rb") as fp:
-			contents = fp.read()
-
 		self.db_sess.commit()
+
+		if os.path.exists(itempath):
+			with open(itempath, "rb") as fp:
+				contents = fp.read()
+		elif os.path.exists(itempath2):
+			with open(itempath2, "rb") as fp:
+				contents = fp.read()
+		else:
+			msg  = "Failed to find file resource!\n"
+			msg += "Current job state: %s\n" % self.job.state
+			msg += "URL: %s\n" % self.job.url
+			img_dat = Misc.txt_to_img.text_to_png(msg)
+			return "image/png", "genimg.%s.png", img_dat
+
 
 		return self.job.mimetype, fname, contents
 

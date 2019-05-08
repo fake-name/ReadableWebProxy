@@ -7,6 +7,7 @@ from settings import DATABASE_PASS          as C_DATABASE_PASS
 
 from settings import RELINK_SECRET          as C_RELINK_SECRET
 from settings import RESOURCE_DIR           as C_RESOURCE_DIR
+from settings import RESOURCE_DIR_2         as C_RESOURCE_DIR_2
 from settings import RABBIT_ENABLED         as C_DO_RABBIT
 
 
@@ -74,7 +75,8 @@ class BaseConfig(object):
 	DATABASE_PASS          = C_DATABASE_PASS
 
 
-	RESOURCE_DIR = C_RESOURCE_DIR
+	RESOURCE_DIR   = C_RESOURCE_DIR
+	RESOURCE_DIR_2 = C_RESOURCE_DIR_2
 
 	# The WTF protection doesn't have to persist across
 	# execution sessions, since that'll break any

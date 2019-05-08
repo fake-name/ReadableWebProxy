@@ -25,9 +25,9 @@ if '__pypy__' in sys.builtin_module_names:
 else:
 	import psycopg2
 
+import common.database as db
 import settings
 import WebMirror.rules
-import common.database as db
 from sqlalchemy_continuum_vendored.utils import version_table
 
 # # # Do the delete from the versioning table now.
@@ -197,14 +197,16 @@ class DbFlattener(object):
 		first_cursor.execute("""SET statement_timeout = %s;""", (1000 * 60 * 60 * 8, ))
 		cursor = db_interface.cursor("high_incidence_items_cursor")
 
-		def dump_to_file(data):
-			with open("dump.pik", "wb") as fp:
+		def dump_to_file(data, idx):
+			with open("chunks/dump%s.pik" % idx, "wb") as fp:
 				pickle.dump(data, fp)
 
 		items = {}
 		cursor.execute("SELECT url FROM web_pages_version;")
 		loops = 0
-		for url, in tqdm.tqdm(cursor):
+		dumps = 0
+
+		for url, in tqdm.tqdm(cursor, total=395823513):
 			nl = urllib.parse.urlsplit(url).netloc
 			items.setdefault(url, 0)
 			items.setdefault(nl, 0)
@@ -213,49 +215,76 @@ class DbFlattener(object):
 			items[nl]  += 1
 
 			loops += 1
-			if loops % (1000 * 1000) == 0:
+			if loops % (1000 * 1000 * 3) == 0:
 				print("Dumping to pickle file. Unique URLs: ", len(items))
-				dump_to_file(items)
+				dump_to_file(items, dumps)
+				dumps += 1
+				items = {}
+		dump_to_file(items, "-all")
 
-		dump_to_file(items)
+	def process_high_incidence_items(self):
+		items = {}
+		for item in tqdm.tqdm(os.listdir("./chunks")):
+			with open(os.path.join("./chunks", item), "rb") as fp:
+				chunk = pickle.load(fp)
+			for entry, count in chunk.items():
+				items.setdefault(entry, 0)
+				items[entry] += count
 
+			# print(len(chunk))
+			# print(item)
 
+		print("Total entries:", len(items))
+
+		large_items = {
+			key : count for key, count  in items.items() if count > 20
+		}
+		print("Items with more then 20 history entries", len(large_items))
+
+		with open("high-incidence.pik", "wb") as fp:
+			pickle.dump(large_items, fp)
 
 	def consolidate_history(self, use_cache=False):
-		high_incidence_items = None
-		if use_cache:
-			try:
-				with open("high_incidence_items.json") as fp:
-					high_incidence_items = json.load(fp)
-					self.log.info("Using json cached query results!")
-			except Exception:
-				self.log.warning("No cached json results. Rerunning query.")
-				pass
+		# high_incidence_items = None
+		# if use_cache:
+		# 	try:
+		# 		with open("high_incidence_items.json") as fp:
+		# 			high_incidence_items = json.load(fp)
+		# 			self.log.info("Using json cached query results!")
+		# 	except Exception:
+		# 		self.log.warning("No cached json results. Rerunning query.")
+		# 		pass
 
-		if not high_incidence_items:
-			with db.session_context(override_timeout_ms=1000*60*60*24) as sess:
-				self.qlog.info("Querying for items with significant history size")
-				high_incidence_items = sess.execute("""
-						SELECT
-							count(*), url
-						FROM
-							web_pages_version
-						GROUP BY
-							url
-						HAVING
-							COUNT(*) > 100
-					""")
-				high_incidence_items = [list(tmp) for tmp in high_incidence_items]
-				self.qlog.info("Found %s items with more then 10 history entries. Processing", len(high_incidence_items))
+		# if not high_incidence_items:
+		# 	with db.session_context(override_timeout_ms=1000*60*60*24) as sess:
+		# 		self.qlog.info("Querying for items with significant history size")
+		# 		high_incidence_items = sess.execute("""
+		# 				SELECT
+		# 					count(*), url
+		# 				FROM
+		# 					web_pages_version
+		# 				GROUP BY
+		# 					url
+		# 				HAVING
+		# 					COUNT(*) > 100
+		# 			""")
+		# 		high_incidence_items = [list(tmp) for tmp in high_incidence_items]
+		# 		self.qlog.info("Found %s items with more then 10 history entries. Processing", len(high_incidence_items))
 
-				sess.flush()
-				sess.expire_all()
+		# 		sess.flush()
+		# 		sess.expire_all()
 
-			self.log.info("Writing items to json file.")
-			with open("high_incidence_items.json", "w") as fp:
-				json.dump(high_incidence_items, fp)
+		# 	self.log.info("Writing items to json file.")
+		# 	with open("high_incidence_items.json", "w") as fp:
+		# 		json.dump(high_incidence_items, fp)
 
-		self.log.info("Processing in chunks")
+		# self.log.info("Processing in chunks")
+
+
+		with open("high-incidence.pik", "rb") as fp:
+			dat = pickle.load(fp)
+
+		high_incidence_items = list((count, item) for item, count in dat.items() if item.startswith("http"))
 
 		# high_incidence_items.sort()
 		high_incidence_items.sort(reverse=True)
@@ -270,13 +299,12 @@ class DbFlattener(object):
 
 	def truncate_url_history(self, sess, url):
 
-		last_check = db.get_from_version_check_table(sess, url)
-
-		if last_check > datetime.datetime.now() - FLATTEN_SCAN_INTERVAL:
-			self.log.info("Url %s checked within the check interval (%s, %s). Skipping.", url, FLATTEN_SCAN_INTERVAL, last_check)
-			return 0
-		else:
-			self.log.info("Url %s last checked %s.", url, last_check)
+		# last_check = db.get_from_version_check_table(sess, url)
+		# if last_check > datetime.datetime.now() - FLATTEN_SCAN_INTERVAL:
+		# 	self.log.info("Url %s checked within the check interval (%s, %s). Skipping.", url, FLATTEN_SCAN_INTERVAL, last_check)
+		# 	return 0
+		# else:
+		# 	self.log.info("Url %s last checked %s.", url, last_check)
 
 
 		ctbl = version_table(db.WebPages.__table__)
@@ -670,7 +698,9 @@ def test_jt_big_page_flatten():
 
 def get_high_incidence():
 	proc = DbFlattener()
-	proc.get_high_incidence_items()
+	# proc.get_high_incidence_items()
+	# proc.process_high_incidence_items()
+	proc.consolidate_history()
 
 if __name__ == '__main__':
 	import logSetup
