@@ -11,7 +11,10 @@ send_raw_feed: True
 rewalk_interval_days: 30
 
 baseUrl: [
-
+	'https://dawninfinity.blogspot.com',
+	'https://dummytranslations.blogspot.com',
+	'https://echoesfromanotherlife.blogspot.com',
+	'https://hero-translation.blogspot.com',
 	'https://ortatranslations.blogspot.com',
 	'https://pockysbookshelf.blogspot.com',
 	'https://quikernovel.blogspot.com',
