@@ -94,6 +94,7 @@ badwords: [
 			'www.nifty.org/nifty/gay/',
 
 			'/stories/report_story.php?',
+			'literotica.com/editors/',
 
 			'/files/Utilities/',
 
