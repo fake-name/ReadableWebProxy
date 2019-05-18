@@ -750,7 +750,11 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		# Seen cache.
 		for link_url, _ in items:
-			SEEN_CACHE[link_url] = True
+			try:
+				SEEN_CACHE[link_url] = True
+			except KeyError:
+				# Handle concurrent inserts causing the key-to-pop going away
+				pass
 
 
 		assert all([tmp['url'].startswith("http") for tmp in batch_items])

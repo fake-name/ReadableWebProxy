@@ -255,7 +255,7 @@ def initLogging(logLevel=logging.INFO):
 	if not os.path.exists(os.path.join("./logs")):
 		os.mkdir(os.path.join("./logs"))
 
-	mainLogger = logging.getLogger("Main")			# Main logger
+	mainLogger = logging.getLogger()			# Main logger
 	mainLogger.setLevel(logLevel)
 
 	ch = ColourHandler()
@@ -277,6 +277,15 @@ def initLogging(logLevel=logging.INFO):
 	logtst.info("Logging Active")
 
 	print("done")
+
+
+	# print("Enumerating loggers:")
+	# for k,v in  logging.Logger.manager.loggerDict.items()  :
+	# 	print('+ [%s] {%s} ' % (str.ljust( k, 20)  , str(v.__class__)[8:-2]) )
+	# 	if not isinstance(v, logging.PlaceHolder):
+	# 		for h in v.handlers:
+	# 			print('     +++',str(h.__class__)[8:-2] )
+	# print("Done listing")
 
 
 if __name__ == "__main__":

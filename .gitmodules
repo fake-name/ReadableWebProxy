@@ -1,0 +1,3 @@
+[submodule "ndscheduler"]
+	path = ndscheduler
+	url = git@github.com:fake-name/ndscheduler.git

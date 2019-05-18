@@ -74,7 +74,7 @@ class TransactionTruncator(object):
 			sess.execute("COMMIT;")
 			self.qlog.info("Table truncated!")
 
-	def _go(self):
+	def go(self):
 		self.truncate_transaction_table()
 
 

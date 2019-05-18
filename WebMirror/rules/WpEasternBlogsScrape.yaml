@@ -1949,6 +1949,8 @@ badwords: [
 		'r.search.yahoo.com',
 
 		'/wp-content/cache/',
+
+		'https://www.deadlynovels.com/community/',
 	]
 
 compound_badwords: [
