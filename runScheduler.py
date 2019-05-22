@@ -75,7 +75,7 @@ target_jobs = {
 		"minute"           : '*/25',
 	},
 	'scheduled_jobs.python_job.RollingRawRewalkTriggerJob' : {
-		"name"             : 'AUTO: Rolling Rewalk Trigger job',
+		"name"             : 'AUTO: Rolling Raw Rewalk Trigger job',
 		"minute"           : '10',
 		"hour"             : '*/12',
 	},

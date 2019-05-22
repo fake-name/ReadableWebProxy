@@ -29,8 +29,6 @@ from common.misc_db import set_in_version_check_table
 from common.cookie_db import WebCookieDb
 
 from common.db_engine import get_engine
-from common.db_engine import checkout_session
-from common.db_engine import release_session
 from common.db_engine import get_db_session
 from common.db_engine import delete_db_session
 from common.db_engine import session_context

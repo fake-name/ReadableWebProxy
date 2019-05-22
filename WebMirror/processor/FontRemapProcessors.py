@@ -219,10 +219,7 @@ class BaseFontRemapProcessor(HtmlProcessor.HtmlPageProcessor):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.sess = db.checkout_session()
 
-	def __del__(self):
-		db.release_session(self.sess)
 
 	def _getFontUrl(self, soup):
 		ss = soup.find_all('link', rel='stylesheet')
@@ -276,18 +273,19 @@ class BaseFontRemapProcessor(HtmlProcessor.HtmlPageProcessor):
 			ret[key] = []
 			for fonturl in fonturl_list:
 				self.log.info("Building font remap LUT for font at %s", fonturl)
-				with WebMirror.API.getPageRow(fonturl, ignore_cache=False, session=self.sess) as page:
-					try:
-						page.fetch(ignore_cache=False)
-						_, _, content = page.getResource()
-					except AssertionError:
-						page.fetch(ignore_cache=True)
-						_, _, content = page.getResource()
+				with db.session_context() as sess:
+					with WebMirror.API.getPageRow(fonturl, ignore_cache=False, session=sess) as page:
+						try:
+							page.fetch(ignore_cache=False)
+							_, _, content = page.getResource()
+						except AssertionError:
+							page.fetch(ignore_cache=True)
+							_, _, content = page.getResource()
 
-					cmap = defont(io.BytesIO(content), fonturl)
-					if cmap:
-						# self.log.info("Font remap contains %s remapped code-points", len(cmap))
-						ret[key].append(cmap)
+						cmap = defont(io.BytesIO(content), fonturl)
+						if cmap:
+							# self.log.info("Font remap contains %s remapped code-points", len(cmap))
+							ret[key].append(cmap)
 
 
 		# I'm unclear why just this one char is being missed.
@@ -304,9 +302,10 @@ class BaseFontRemapProcessor(HtmlProcessor.HtmlPageProcessor):
 		cssUrl = self._getFontUrl(soup)
 		if not cssUrl:
 			return []
-		with WebMirror.API.getPageRow(cssUrl, ignore_cache=False, session=self.sess) as page:
-			assert page
-			mimetype, fname, content = page.getResource()
+		with db.session_context() as sess:
+			with WebMirror.API.getPageRow(cssUrl, ignore_cache=False, session=sess) as page:
+				assert page
+				mimetype, fname, content = page.getResource()
 
 		assert mimetype.lower() == "text/css"
 
@@ -404,9 +403,10 @@ class EccentricTranslationsFontRemapProcessor(BaseFontRemapProcessor):
 			return []
 
 		for cssUrl in cssUrls:
-			with WebMirror.API.getPageRow(cssUrl, ignore_cache=False, session=self.sess) as page:
-				assert page
-				mimetype, fname, content = page.getResource()
+			with db.session_context() as sess:
+				with WebMirror.API.getPageRow(cssUrl, ignore_cache=False, session=sess) as page:
+					assert page
+					mimetype, fname, content = page.getResource()
 
 			assert mimetype.lower() == "text/css"
 

@@ -164,8 +164,16 @@ def resetInProgress():
 
 def do_link_batch_update(logger, link_batch, max_pri=None, show_progress=False):
 	try:
-		with db.session_context() as sess:
-			do_link_batch_update_sess(logger, sess, link_batch)
+		for x in range(10):
+			try:
+				with db.session_context(name='sess-{}'.format(x)) as sess:
+					do_link_batch_update_sess(logger, sess, link_batch)
+				return
+			except psycopg2.DatabaseError:
+				print("Psycopg2 error. Retrying!")
+				if x > 3:
+					raise
+
 	except Exception:
 		print("ERROR")
 		print("ERROR")
@@ -262,7 +270,12 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 	logger.info("Inserting %s items into DB in batch.", len(link_batch))
 	# This is kind of horrible.
 	# Reach down through sqlalchemy and pull out the raw cursor directly.
-	raw_cur = interface.connection().connection.cursor()
+	try:
+		raw_cur = interface.connection().connection.cursor()
+	except sqlalchemy.exc.InvalidRequestError:
+		interface.rollback()
+		raw_cur = interface.connection().connection.cursor()
+
 
 	per_cmd = """
 	SELECT upsert_link(

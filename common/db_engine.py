@@ -64,27 +64,6 @@ def get_engine():
 
 	return ENGINES[csid]
 
-def checkout_session():
-	global POOL
-	if not POOL:
-		log.info("Creating pool")
-		POOL = queue.Queue()
-		for dummy_x in range(10):
-			POOL.put(scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))())
-
-
-	cpid = multiprocessing.current_process().name
-	ctid = threading.current_thread().name
-	csid = "{}-{}".format(cpid, ctid)
-
-	log.info("Getting DB session (avail: %s, ID: '%s')" % (POOL.qsize(), csid))
-	sess = POOL.get()
-	return sess
-
-def release_session(session):
-	POOL.put(session)
-	log.info("Returning db handle to pool. Handles available: %s" % (POOL.qsize(), ))
-
 
 
 def get_db_session(postfix="", flask_sess_if_possible=True):
@@ -109,7 +88,12 @@ def get_db_session(postfix="", flask_sess_if_possible=True):
 			if csid in SESSIONS:
 				# Reset the "last used" time on the handle
 				SESSIONS[csid][0] = time.time()
-				return SESSIONS[csid][1]
+				ret = SESSIONS[csid][1]
+
+				# Attempt to probe the connection to make sure it's alive before returning it.
+				_ = ret.connection().connection.isolation_level
+				assert ret.connection().connection.closed == 0
+				return ret
 
 			SESSIONS[csid] = [time.time(), scoped_session(sessionmaker(bind=get_engine(), autoflush=False, autocommit=False))()]
 			# print("Creating database interface:", SESSIONS[csid])

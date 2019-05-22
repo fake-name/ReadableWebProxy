@@ -39,7 +39,7 @@ import app.sub_views.ebook_view    as ebook_view
 @app.before_request
 def before_request():
 	g.locale = 'en'
-	g.session = database.checkout_session()
+	g.session = database.get_db_session(flask_sess_if_possible=False)
 	print("Checked out session")
 
 
@@ -50,7 +50,7 @@ def teardown_request(response):
 			g.session.commit()
 		except Exception:
 			g.session.rollback()
-		database.release_session(g.session)
+		database.delete_db_session(flask_sess_if_possible=False)
 	except Exception:
 		print("Failure in teardown_request()!")
 		traceback.print_exc()

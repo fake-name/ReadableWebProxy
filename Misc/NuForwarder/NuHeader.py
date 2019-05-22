@@ -764,6 +764,9 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		self.retriggerUrlList(release_urls)
 
+	def go(self):
+		self.run()
+
 	def run(self):
 
 
