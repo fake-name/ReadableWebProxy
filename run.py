@@ -1,4 +1,4 @@
-#!flask/bin/python
+#!/usr/bin/python3
 
 import settings
 if __name__ == "__main__":

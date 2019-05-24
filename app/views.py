@@ -7,6 +7,7 @@ import os.path
 
 from flask import render_template
 from flask import send_file
+from flask import request
 from flask import g
 
 import traceback
@@ -50,6 +51,9 @@ def teardown_request(response):
 			g.session.commit()
 		except Exception:
 			g.session.rollback()
+
+		print("Returned session")
+
 		database.delete_db_session(flask_sess_if_possible=False)
 	except Exception:
 		print("Failure in teardown_request()!")
@@ -58,7 +62,7 @@ def teardown_request(response):
 
 @app.errorhandler(404)
 def not_found_error(dummy_error):
-	print("404. Wat?")
+	print("404 for '{}'. Wat?".format(request.path))
 	return render_template('404.html'), 404
 
 
