@@ -90,27 +90,27 @@ def exposed_delete_spcnet_invalid_url_pages():
 	So the spcnet.tv forum software generates THOUSANDS of garbage links somehow.
 	Anyways, delete those.
 	'''
-	sess = db.get_db_session()
-	tables = [
-		db.WebPages.__table__,
-		version_table(db.WebPages.__table__)
-	]
+	with db.session_context() as sess:
+		tables = [
+			db.WebPages.__table__,
+			version_table(db.WebPages.__table__)
+		]
 
-	for ctbl in tables:
-		# Print Querying for affected rows
-		q = sess.query(ctbl.c.id) \
-			.filter(ctbl.c.netloc == "www.spcnet.tv") \
-			.filter(ctbl.c.content.like('%Invalid Forum specified. If you followed a valid link, please notify the%'))
-		print("Query:")
-		print(q)
-		ids = q.all()
+		for ctbl in tables:
+			# Print Querying for affected rows
+			q = sess.query(ctbl.c.id) \
+				.filter(ctbl.c.netloc == "www.spcnet.tv") \
+				.filter(ctbl.c.content.like('%Invalid Forum specified. If you followed a valid link, please notify the%'))
+			print("Query:")
+			print(q)
+			ids = q.all()
 
-		ids = set(ids)
+			ids = set(ids)
 
-		# Returned list of IDs is each ID packed into a 1-tuple. Unwrap those tuples so it's just a list of integer IDs.
-		ids = [tmp[0] for tmp in ids]
+			# Returned list of IDs is each ID packed into a 1-tuple. Unwrap those tuples so it's just a list of integer IDs.
+			ids = [tmp[0] for tmp in ids]
 
-		print("Fount %s rows requring deletion. Deleting." % len(ids))
-		delete_internal(sess, ids)
-		sess.commit()
+			print("Fount %s rows requring deletion. Deleting." % len(ids))
+			delete_internal(sess, ids)
+			sess.commit()
 

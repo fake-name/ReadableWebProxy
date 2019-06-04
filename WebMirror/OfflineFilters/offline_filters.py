@@ -126,15 +126,15 @@ def exposed_delete_old_nu_root_outbound():
 	'''
 
 
-	sess = db.get_db_session()
+	with db.session_context() as sess:
 
-	for row in sess.query(db.NuReleaseItem) \
-		.filter(not_(db.NuReleaseItem.referrer.like("%novelupdates.com/series%"))) \
-		.yield_per(50).all():
-		if not len(list(row.resolved)):
-			print(row.id, row.referrer)
-			sess.delete(row)
-			sess.commit()
+		for row in sess.query(db.NuReleaseItem) \
+			.filter(not_(db.NuReleaseItem.referrer.like("%novelupdates.com/series%"))) \
+			.yield_per(50).all():
+			if not len(list(row.resolved)):
+				print(row.id, row.referrer)
+				sess.delete(row)
+				sess.commit()
 
 def exposed_delete_nu_unresolved():
 	'''
@@ -144,29 +144,29 @@ def exposed_delete_nu_unresolved():
 	nu changes their extnu ids, or if the url masking
 	mechanism has significant changes.
 	'''
-	sess = db.get_db_session()
+	with db.session_context() as sess:
 
-	count = 0
-	print("Loading rows....")
-	rows = sess.query(db.NuReleaseItem) \
-		.options(joinedload('resolved'))    \
-		.all()
-	print("Loaded %s rows. Scanning." % len(rows))
-	for row in rows:
+		count = 0
+		print("Loading rows....")
+		rows = sess.query(db.NuReleaseItem) \
+			.options(joinedload('resolved'))    \
+			.all()
+		print("Loaded %s rows. Scanning." % len(rows))
+		for row in rows:
 
-		if len(list(row.resolved)) == 0 and row.reviewed == 'unverified':
+			if len(list(row.resolved)) == 0 and row.reviewed == 'unverified':
 
-			print(row.id, len(list(row.resolved)), row.referrer)
-			for bad in row.resolved:
-				sess.delete(bad)
-			sess.delete(row)
-			count += 1
-			if count % 500 == 0:
-				print("Committing!")
-				sess.commit()
+				print(row.id, len(list(row.resolved)), row.referrer)
+				for bad in row.resolved:
+					sess.delete(bad)
+				sess.delete(row)
+				count += 1
+				if count % 500 == 0:
+					print("Committing!")
+					sess.commit()
 
-	print("Committing!")
-	sess.commit()
+		print("Committing!")
+		sess.commit()
 
 
 
@@ -177,57 +177,56 @@ def exposed_process_nu_pages(transmit=True):
 
 
 	wg = WebRequest.WebGetRobust()
-	sess = db.get_db_session()
+	with db.session_context() as sess:
 
-	if transmit == True:
-		print("Transmitting processed results")
-		rm = common.RunManager.Crawler(1, 1)
-		message_q = rm.start_aggregator()
-	else:
-		print("Not translating processed results")
-		message_q = queue.Queue()
+		if transmit == True:
+			print("Transmitting processed results")
+			rm = common.RunManager.Crawler(1, 1)
+			message_q = rm.start_aggregator()
+		else:
+			print("Not translating processed results")
+			message_q = queue.Queue()
 
-	pages = []
-	print("Beginning DB retreival")
-	for row in sess.query(db.WebPages) \
-		.filter(db.WebPages.netloc == "www.novelupdates.com") \
-		.filter(db.WebPages.url.ilike("%/series/%")) \
-		.yield_per(50).all():
+		pages = []
+		print("Beginning DB retreival")
+		for row in sess.query(db.WebPages) \
+			.filter(db.WebPages.netloc == "www.novelupdates.com") \
+			.filter(db.WebPages.url.ilike("%/series/%")) \
+			.yield_per(50).all():
 
-		rowtmp = {
-			"pageUrl"   : row.url,
-			"pgContent" : row.content,
-			"type"      : row.mimetype,
-			"wg"        : wg,
-			"message_q" : message_q,
-		}
-		pages.append(rowtmp)
+			rowtmp = {
+				"pageUrl"   : row.url,
+				"pgContent" : row.content,
+				"type"      : row.mimetype,
+				"wg"        : wg,
+				"message_q" : message_q,
+			}
+			pages.append(rowtmp)
 
-		if len(pages) % 100 == 0:
-			print("Loaded %s pages..." % len(pages))
-	sess.flush()
-	sess.commit()
-	for row in pages:
-		try:
-			# print(row, row.url, row.state)
-			if row['pgContent'] and NuSeriesPageFilter.NUSeriesPageFilter.wantsUrl(row['pageUrl']):
-				proc = NuSeriesPageFilter.NUSeriesPageFilter(db_sess=sess, **row)
-				proc.extractContent()
-		except Exception:
-			print("")
-			print("ERROR!")
-			for line in traceback.format_exc().split("\n"):
-				print(line.rstrip())
-			print("")
-		except KeyboardInterrupt:
-			break
+			if len(pages) % 100 == 0:
+				print("Loaded %s pages..." % len(pages))
+		sess.flush()
+		sess.commit()
+		for row in pages:
+			try:
+				# print(row, row.url, row.state)
+				if row['pgContent'] and NuSeriesPageFilter.NUSeriesPageFilter.wantsUrl(row['pageUrl']):
+					proc = NuSeriesPageFilter.NUSeriesPageFilter(db_sess=sess, **row)
+					proc.extractContent()
+			except Exception:
+				print("")
+				print("ERROR!")
+				for line in traceback.format_exc().split("\n"):
+					print(line.rstrip())
+				print("")
+			except KeyboardInterrupt:
+				break
 
-	runStatus.run_state.value = 0
+		runStatus.run_state.value = 0
 
-	if transmit == True:
-		rm.join_aggregator()
+		if transmit == True:
+			rm.join_aggregator()
 
-	print(sess)
 
 
 def exposed_retransmit_nu_releases(all_releases=False):

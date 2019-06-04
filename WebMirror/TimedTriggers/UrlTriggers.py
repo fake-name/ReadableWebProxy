@@ -33,7 +33,6 @@ class RssTriggerBase(UrlTrigger):
 
 	def retriggerRssFeeds(self, feedurls):
 		self.log.info("Retriggering RSS feed URLs")
-		sess = self.db.get_db_session()
 
 		self.retriggerUrlList(feedurls, ignoreignore=True)
 

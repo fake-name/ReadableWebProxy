@@ -100,7 +100,6 @@ def exposed_import_feed_parse_funcs():
 	Import the feed parsing functions into the database.
 	'''
 
-	sess = db.get_db_session()
 
 	# parse_map = WebMirror.OutputFilters.rss.FeedDataParser.RSS_PARSE_FUNCTION_MAP
 	# for key, func in parse_map.items():
@@ -109,8 +108,9 @@ def exposed_import_feed_parse_funcs():
 
 	name_map = WebMirror.OutputFilters.util.feedNameLut.mapper
 
-	for key, val in name_map.items():
-		add_name(sess, key, val)
+	with common.database.session_context() as sess:
+		for key, val in name_map.items():
+			add_name(sess, key, val)
 
 def ret_to_dict_list(keys, iterable):
 
@@ -136,11 +136,11 @@ def exposed_dump_raw_feed_data():
 	'''
 	import json
 
-	sess = db.get_db_session()
-	print("Selecting 1")
-	feed_pages = sess.execute("SELECT * FROM feed_pages;")
-	print("Selecting 2")
-	nu_outbound_wrappers = sess.execute("SELECT * FROM nu_outbound_wrappers;")
+	with common.database.session_context() as sess:
+		print("Selecting 1")
+		feed_pages = sess.execute("SELECT * FROM feed_pages;")
+		print("Selecting 2")
+		nu_outbound_wrappers = sess.execute("SELECT * FROM nu_outbound_wrappers;")
 
 	ret = {}
 	print("processing ret 1")
@@ -172,34 +172,33 @@ def exposed_astor_roundtrip_parser_functions():
 	Mostly, this homogenizes the indentation, and reformats the function.
 	'''
 
-	sess = db.get_db_session()
-	res = sess.query(db.RssFeedEntry) \
-		.all()
+	with db.session_context() as sess:
+		res = sess.query(db.RssFeedEntry) \
+			.all()
 
-	for row in res:
-		func = row.get_func()
-		_ast = row._get_ast()
-		src = astor.to_source(_ast, indent_with="	", pretty_source=better_pretty_source)
+		for row in res:
+			func = row.get_func()
+			_ast = row._get_ast()
+			src = astor.to_source(_ast, indent_with="	", pretty_source=better_pretty_source)
 
-		if src.strip() != row.func.strip():
-			try:
-				rfdb.str_to_function(src, "testing_compile")
-				print("Compiled OK")
-				row.func = src
-			except Exception:
-				print("Compilation failed?")
-	sess.commit()
+			if src.strip() != row.func.strip():
+				try:
+					rfdb.str_to_function(src, "testing_compile")
+					print("Compiled OK")
+					row.func = src
+				except Exception:
+					print("Compilation failed?")
+		sess.commit()
 
 def do_db_sync():
+	with db.session_context() as sess:
+		res = sess.query(db.RssFeedEntry) \
+			.all()
+		have_funcs = {row.feed_name : (row.func, row.last_changed) for row in res}
+		sess.commit()
 
-	sess = db.get_db_session()
-	res = sess.query(db.RssFeedEntry) \
-		.all()
-	have_funcs = {row.feed_name : (row.func, row.last_changed) for row in res}
-	sess.commit()
-
-	this_dir = os.path.dirname(__file__)
-	func_json_path = os.path.join(this_dir, "function_database.json")
+		this_dir = os.path.dirname(__file__)
+		func_json_path = os.path.join(this_dir, "function_database.json")
 
 	file_funcs = {}
 	try:
@@ -248,16 +247,15 @@ def exposed_underp_rss_functions():
 	bad = '''buildReleaseMessage('''
 	good = '''buildReleaseMessageWithType('''
 
-	sess = db.get_db_session()
+	with db.session_context() as sess:
+		rows = sess.query(db.RssFeedEntry).all()
+		for row in rows:
+			if bad in row.func:
+				row.func = row.func.replace(bad, good)
+				print(row)
+				print(row.func)
+		sess.commit()
 
-	rows = sess.query(db.RssFeedEntry).all()
-	for row in rows:
-		if bad in row.func:
-			row.func = row.func.replace(bad, good)
-			print(row)
-			print(row.func)
-	sess.commit()
-	pass
 
 
 def exposed_validate_feed_url_mimetypes():

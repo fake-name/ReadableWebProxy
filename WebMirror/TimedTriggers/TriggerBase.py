@@ -74,15 +74,11 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if ignoreignore:
 			self.log.warning("Doing high-priority URL upsert!")
 
-		sess = self.db.get_db_session()
-
-		priority = db.DB_HIGH_PRIORITY if ignoreignore else db.DB_IDLE_PRIORITY
-
-		dictlinks = [self.__url_to_dict(url, ignoreignore) for url in urlList]
-
-		show_progress = len(dictlinks) > 500
-
-		WebMirror.UrlUpserter.do_link_batch_update_sess(self.log, sess, dictlinks, priority, show_progress=show_progress)
+		with self.db.session_context() as sess:
+			priority = db.DB_HIGH_PRIORITY if ignoreignore else db.DB_IDLE_PRIORITY
+			dictlinks = [self.__url_to_dict(url, ignoreignore) for url in urlList]
+			show_progress = len(dictlinks) > 500
+			WebMirror.UrlUpserter.do_link_batch_update_sess(self.log, sess, dictlinks, priority, show_progress=show_progress)
 
 
 	def retriggerUrl(self, url, conditional=None, ignoreignore=False):

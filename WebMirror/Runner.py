@@ -37,20 +37,14 @@ class RunInstance(object):
 		db.delete_db_session()
 
 	def do_task(self):
-
-		db_handle = db.get_db_session()
-
 		hadjob = False
-		try:
+
+		with common.database.session_context() as db_handle:
 			self.archiver = WebMirror.Engine.SiteArchiver(self.cookie_lock, new_job_queue=self.new_job_queue, response_queue=self.resp_queue, db_interface=db_handle)
-			for x in range(500):
+			for _ in range(500):
 				hadjob = self.archiver.taskProcess()
 				if not hadjob:
 					return hadjob
-		finally:
-			# Clear out the sqlalchemy state
-			db_handle.expunge_all()
-			db.delete_db_session()
 
 		return hadjob
 

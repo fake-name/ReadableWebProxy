@@ -58,23 +58,23 @@ class MetaUpdater(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass):
 		return pack_message("system-feed-counts", data)
 
 	def get_times(self):
-		conn = database.get_db_session()
-		aps = conn.execute("SELECT job_state FROM apscheduler_jobs;")
+		with common.database.session_context() as conn:
+			aps = conn.execute("SELECT job_state FROM apscheduler_jobs;")
 
-		update_times = []
-		for blob, in aps:
-			job_dict = pickle.loads(blob)
-			update_times.append((
-					job_dict['id'],
-					job_dict['next_run_time'].isoformat()
-				))
+			update_times = []
+			for blob, in aps:
+				job_dict = pickle.loads(blob)
+				update_times.append((
+						job_dict['id'],
+						job_dict['next_run_time'].isoformat()
+					))
 
-		data = {
-			"update-times" : update_times,
-		}
-		database.delete_db_session()
+			data = {
+				"update-times" : update_times,
+			}
+			database.delete_db_session()
 
-		return pack_message("system-update-times", data)
+			return pack_message("system-update-times", data)
 
 	def go(self):
 		feeds = self.get_feed_count_message()

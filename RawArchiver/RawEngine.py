@@ -665,73 +665,73 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 def test():
 
 	import common.database
-	sess = common.database.get_db_session()
+
+	with common.database.session_context() as sess:
+
+		try:
+
+			job = common.database.RawWebPages(
+				state    = 'new',
+				url      = 'http://somethingpositive.net',
+				starturl = 'http://somethingpositive.net',
+				netloc   = 'somethingpositive.net',
+				priority = common.database.DB_LOW_PRIORITY,
+				distance = 0,
+				)
+			sess.add(job)
+			sess.commit()
+
+		except sqlalchemy.exc.IntegrityError:
+			sess.rollback()
+			r = sess.query(common.database.RawWebPages) \
+				.filter(common.database.RawWebPages.url == 'http://somethingpositive.net') \
+				.update({'state' : 'new', 'ignoreuntiltime' : datetime.datetime.min })
+			sess.commit()
+			print("Did update?")
+			print(r)
+
+			job = sess.query(common.database.RawWebPages) \
+				.filter(common.database.RawWebPages.url == 'http://somethingpositive.net').one()
 
 
-	try:
+		archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=None, cookie_lock=None, response_queue=None, db_interface=sess, db=common.database)
 
-		job = common.database.RawWebPages(
-			state    = 'new',
-			url      = 'http://somethingpositive.net',
-			starturl = 'http://somethingpositive.net',
-			netloc   = 'somethingpositive.net',
-			priority = common.database.DB_LOW_PRIORITY,
-			distance = 0,
-			)
-		sess.add(job)
-		sess.commit()
-
-	except sqlalchemy.exc.IntegrityError:
-		sess.rollback()
-		r = sess.query(common.database.RawWebPages) \
-			.filter(common.database.RawWebPages.url == 'http://somethingpositive.net') \
-			.update({'state' : 'new', 'ignoreuntiltime' : datetime.datetime.min })
-		sess.commit()
-		print("Did update?")
-		print(r)
-
-		job = sess.query(common.database.RawWebPages) \
-			.filter(common.database.RawWebPages.url == 'http://somethingpositive.net').one()
-
-
-	archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=None, cookie_lock=None, response_queue=None, db_interface=sess, db=common.database)
-
-	print(job)
-	archiver.do_local_job(job)
-	print("doing")
+		print(job)
+		archiver.do_local_job(job)
+		print("doing")
 
 	pass
 
 
 def test2():
 	fetcher = RawArchiver.RawJobDispatcher.RawJobFetcher()
-	sess = common.database.get_db_session()
 
-	try:
+	with common.database.session_context() as sess:
+		try:
 
-		job = common.database.RawWebPages(
-			state    = 'new',
-			url      = 'http://somethingpositive.net',
-			starturl = 'http://somethingpositive.net',
-			netloc   = 'somethingpositive.net',
-			priority = common.database.DB_LOW_PRIORITY,
-			distance = 0,
-			)
-		sess.add(job)
-		sess.commit()
+			job = common.database.RawWebPages(
+				state    = 'new',
+				url      = 'http://somethingpositive.net',
+				starturl = 'http://somethingpositive.net',
+				netloc   = 'somethingpositive.net',
+				priority = common.database.DB_LOW_PRIORITY,
+				distance = 0,
+				)
+			sess.add(job)
+			sess.commit()
 
-	except sqlalchemy.exc.IntegrityError:
-		sess.rollback()
-		r = sess.query(common.database.RawWebPages) \
-			.filter(common.database.RawWebPages.url == 'http://somethingpositive.net') \
-			.update({'state' : 'new', 'ignoreuntiltime' : datetime.datetime.min })
-		sess.commit()
-		print("Did update?")
-		print(r)
+		except sqlalchemy.exc.IntegrityError:
+			sess.rollback()
+			r = sess.query(common.database.RawWebPages) \
+				.filter(common.database.RawWebPages.url == 'http://somethingpositive.net') \
+				.update({'state' : 'new', 'ignoreuntiltime' : datetime.datetime.min })
+			sess.commit()
+			print("Did update?")
+			print(r)
 
 
-	archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=fetcher.get_queue(), cookie_lock=None, response_queue=None, db_interface=sess, db=common.database)
-	archiver.taskProcess()
+		archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=fetcher.get_queue(), cookie_lock=None, response_queue=None, db_interface=sess, db=common.database)
+		archiver.taskProcess()
 
 
 def test3():

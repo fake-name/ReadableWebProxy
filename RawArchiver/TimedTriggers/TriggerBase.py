@@ -109,33 +109,33 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		self.log.info("Triggering %s URLs from list", len(urlList))
 
-		sess = self.db.get_db_session()
+		with common.database.session_context() as sess:
 
-		raw_cur = sess.connection().connection.cursor()
-		commit_each = False
-		changed = 0
-		while 1:
-			loopcnt = 0
+			raw_cur = sess.connection().connection.cursor()
+			commit_each = False
 			changed = 0
-			try:
-				for url in urlList:
-					loopcnt += 1
-					changed += self.__raw_retrigger_with_cursor(url, raw_cur)
-					if commit_each or (loopcnt % 250) == 0:
-						self.log.info("Committing!")
-						raw_cur.execute("COMMIT;")
-				raw_cur.execute("COMMIT;")
-				break
+			while 1:
+				loopcnt = 0
+				changed = 0
+				try:
+					for url in urlList:
+						loopcnt += 1
+						changed += self.__raw_retrigger_with_cursor(url, raw_cur)
+						if commit_each or (loopcnt % 250) == 0:
+							self.log.info("Committing!")
+							raw_cur.execute("COMMIT;")
+					raw_cur.execute("COMMIT;")
+					break
 
-			except psycopg2.Error:
-				if commit_each is False:
-					self.log.warning("psycopg2.Error - Retrying with commit each.")
-				else:
-					self.log.warning("psycopg2.Error - Retrying.")
-					traceback.print_exc()
+				except psycopg2.Error:
+					if commit_each is False:
+						self.log.warning("psycopg2.Error - Retrying with commit each.")
+					else:
+						self.log.warning("psycopg2.Error - Retrying.")
+						traceback.print_exc()
 
-				raw_cur.execute("ROLLBACK;")
-				commit_each = True
+					raw_cur.execute("ROLLBACK;")
+					commit_each = True
 
 		self.log.info("Retrigger changed %s rows", changed)
 

@@ -15,20 +15,20 @@ class Clean(object):
 
 	def clean_files(self):
 
-		session = db.get_db_session()
-		q = session.query(db.WebFiles) \
-			.filter(db.WebFiles.fspath != None)
+		with db.session_context() as sess:
+			q = sess.query(db.WebFiles) \
+				.filter(db.WebFiles.fspath != None)
 
-		self.log.info("Querying for non-null filepaths...")
-		have = q.all()
-		self.log.info("Have %s local files.", len(have))
-		count = 0
-		for file in have:
-			fpath = os.path.join(settings.RESOURCE_DIR, file.fspath)
-			if not os.path.exists(fpath):
-				self.log.error("Missing file: %s", fpath)
+			self.log.info("Querying for non-null filepaths...")
+			have = q.all()
+			self.log.info("Have %s local files.", len(have))
+			count = 0
+			for file in have:
+				fpath = os.path.join(settings.RESOURCE_DIR, file.fspath)
+				if not os.path.exists(fpath):
+					self.log.error("Missing file: %s", fpath)
 
-			count += 1
-			if count % 1000 == 0:
-				self.log.info("Scanned %s files.", count)
+				count += 1
+				if count % 1000 == 0:
+					self.log.info("Scanned %s files.", count)
 

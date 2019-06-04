@@ -119,7 +119,6 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		super().__init__()
 
 		self.name_lut, self.group_lut = load_lut()
-		# db_sess = db.get_db_session(postfix='nu_header')
 
 		if connect:
 			self.check_open_rpc_interface()
@@ -564,7 +563,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				if relurl:
 					release_urls.append(relurl)
 
-		db_sess.commit()
+			db_sess.commit()
 
 		self.retriggerUrlList(release_urls)
 

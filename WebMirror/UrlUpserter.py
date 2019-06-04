@@ -48,55 +48,35 @@ import common.process
 
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
-	sess = db.get_db_session()
-	for ruleset in [rset for rset in rules if rset['starturls'] and rset['rewalk_disabled'] is False]:
-		for starturl in ruleset['starturls']:
-			have = sess.query(db.WebPages) \
-				.filter(db.WebPages.url == starturl)   \
-				.count()
-			if not have:
-				netloc = urlFuncs.getNetLoc(starturl)
-				new = db.WebPages(
-						url               = starturl,
-						starturl          = starturl,
-						netloc            = netloc,
-						type              = ruleset['type'],
-						priority          = db.DB_IDLE_PRIORITY,
-						distance          = db.DB_DEFAULT_DIST,
-						normal_fetch_mode = ruleset['normal_fetch_mode'],
-					)
-				print("Missing start-url for address: '{}'".format(starturl))
-				sess.add(new)
-			try:
-				sess.commit()
-			except sqlalchemy.SQLAlchemyError:
-				print("Failure inserting start url for address: '{}'".format(starturl))
+	with common.database.session_context() as db_handle:
+		for ruleset in [rset for rset in rules if rset['starturls'] and rset['rewalk_disabled'] is False]:
+			for starturl in ruleset['starturls']:
+				have = sess.query(db.WebPages) \
+					.filter(db.WebPages.url == starturl)   \
+					.count()
+				if not have:
+					netloc = urlFuncs.getNetLoc(starturl)
+					new = db.WebPages(
+							url               = starturl,
+							starturl          = starturl,
+							netloc            = netloc,
+							type              = ruleset['type'],
+							priority          = db.DB_IDLE_PRIORITY,
+							distance          = db.DB_DEFAULT_DIST,
+							normal_fetch_mode = ruleset['normal_fetch_mode'],
+						)
+					print("Missing start-url for address: '{}'".format(starturl))
+					sess.add(new)
+				try:
+					sess.commit()
+				except sqlalchemy.SQLAlchemyError:
+					print("Failure inserting start url for address: '{}'".format(starturl))
 
-				sess.rollback()
-	sess.close()
-	db.delete_db_session()
-
-# def resetInProgress():
-# 	print("Resetting any stalled downloads from the previous session.")
-
-# 	sess = db.get_db_session()
-# 	sess.query(db.WebPages) \
-# 		.filter(
-# 				(db.WebPages.state == "fetching")           |
-# 				(db.WebPages.state == "processing")         |
-# 				(db.WebPages.state == "specialty_deferred") |
-# 				(db.WebPages.state == "specialty_ready")
-# 				)   \
-# 		.update({db.WebPages.state : "new"})
-# 	sess.commit()
-# 	sess.close()
-# 	db.delete_db_session()
-
+					sess.rollback()
 
 
 def resetInProgress():
 
-	sess = db.get_db_session()
 
 	commit_interval =  50000
 	step            =  50000
@@ -159,7 +139,6 @@ def resetInProgress():
 			pass
 			# sess.execute('''SET enable_bitmapscan TO on;''')
 
-	db.delete_db_session()
 
 
 def do_link_batch_update(logger, link_batch, max_pri=None, show_progress=False):
@@ -661,10 +640,11 @@ class UpdateAggregator(object):
 		# Misc.install_vmprof.install_vmprof("update_aggregator")
 
 		try:
-			agg_db = db.get_db_session()
-			instance = cls(agg_queue, agg_db)
-			instance.run()
-			instance.close()
+			with common.database.session_context() as add_db:
+				instance = cls(agg_queue, agg_db)
+				instance.run()
+				instance.close()
+
 		except Exception as e:
 			import traceback
 			print()

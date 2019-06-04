@@ -44,29 +44,29 @@ def exposed_test_qidian_fetch():
 	Trigger the qidian remote feed resolving system.
 	'''
 
-	sess = common.database.get_db_session()
+	with common.database.session_context() as sess:
 
-	rpc_interface = common.get_rpyc.RemoteJobInterface("Test_Interface!")
-	rpc_interface.check_ok()
-	print("RPC:", rpc_interface)
+		rpc_interface = common.get_rpyc.RemoteJobInterface("Test_Interface!")
+		rpc_interface.check_ok()
+		print("RPC:", rpc_interface)
 
-	print("Dispatching job engine")
+		print("Dispatching job engine")
 
-	WebMirror.SpecialCase.qidianSmartFeedFetch(None, -1, 'https://www.webnovel.com/feed/', None, job_aggregator_instance=rpc_interface)
+		WebMirror.SpecialCase.qidianSmartFeedFetch(None, -1, 'https://www.webnovel.com/feed/', None, job_aggregator_instance=rpc_interface)
 
-	for x in range(60 * 60):
+		for x in range(60 * 60):
 
-		try:
-			tmp = rpc_interface.get_job()
-			if tmp:
-				print("response!")
-				process_fetch_response(tmp, sess)
-				return
-			else:
-				print("No tmp:", tmp, x, end="\r")
+			try:
+				tmp = rpc_interface.get_job()
+				if tmp:
+					print("response!")
+					process_fetch_response(tmp, sess)
+					return
+				else:
+					print("No tmp:", tmp, x, end="\r")
+					time.sleep(1)
+			except queue.Empty:
 				time.sleep(1)
-		except queue.Empty:
-			time.sleep(1)
 
 def exposed_load_urls_from_file(file_path):
 	'''
@@ -78,15 +78,15 @@ def exposed_load_urls_from_file(file_path):
 
 	print(content)
 
-	sess = common.database.get_db_session()
-	c_lok = cookie_lock = multiprocessing.Lock()
-	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok, new_job_queue=None, db_interface=sess)
+	with common.database.session_context() as sess:
+		c_lok = cookie_lock = multiprocessing.Lock()
+		engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok, new_job_queue=None, db_interface=sess)
 
-	job = testJobFromUrl("https://www.webnovel.com/feed/")
+		job = testJobFromUrl("https://www.webnovel.com/feed/")
 
-	engine.upsertResponseLinks(job, plain=content, debug=True)
+		engine.upsertResponseLinks(job, plain=content, debug=True)
 
-	print(engine)
+		print(engine)
 
 def testJobFromUrl(url):
 	netloc = urllib.parse.urlsplit(url).netloc

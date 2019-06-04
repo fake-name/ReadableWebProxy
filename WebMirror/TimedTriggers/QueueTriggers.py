@@ -19,12 +19,12 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, WebMirr
 		# self.instance = WebMirror.JobDispatcher.RpcJobDispatcherInternal(None, None)
 		self.check_open_rpc_interface()
 
-		self.sess = self.db.get_db_session()
 
 
-	def get_create_job(self, url):
 
-		have = self.sess.query(self.db.WebPages).filter(self.db.WebPages.url == url).scalar()
+	def get_create_job(self, sess, url):
+
+		have = sess.query(self.db.WebPages).filter(self.db.WebPages.url == url).scalar()
 		if have:
 			return have
 		else:
@@ -42,16 +42,16 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, WebMirr
 				type      = 'unknown',
 				fetchtime = datetime.datetime.now(),
 				)
-			self.sess.add(new)
-			self.sess.commit()
+			sess.add(new)
+			sess.commit()
 			return new
 
-	def enqueue_url(self, url):
+	def enqueue_url(self, sess, url):
 
 		print("Enqueueing ")
-		job = self.get_create_job(url)
+		job = self.get_create_job(sess, url)
 		job.state = 'fetching'
-		self.sess.commit()
+		sess.commit()
 
 		raw_job = WebMirror.JobUtils.buildjob(
 			module         = 'WebRequest',
@@ -67,8 +67,10 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, WebMirr
 		self.rpc_interface.put_job(raw_job)
 
 	def go(self):
-		for url in self.get_urls():
-			self.enqueue_url(url)
+
+		with self.db.session_context() as sess:
+			for url in self.get_urls():
+				self.enqueue_url(sess, url)
 
 
 	@abc.abstractmethod

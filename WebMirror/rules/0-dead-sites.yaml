@@ -367,6 +367,7 @@ baseUrl: [
 	'http://www.asstr.org',
 
 	'http://koalasplayground.com',
+	'http://goodwifetranslation.com',
 
 	'http://raisingthedead.ninja',
 	'http://www.raisingthedead.ninja',
@@ -410,8 +411,9 @@ badwords: [
 
 		# Fucking trailing space
 		'http://koalasplayground.com ',
+		'goodwifetranslation.com/?ga=',
 
-
+		'chasingadreamtranslations.com/trf?',
 		'/buydomains/',
 		'hexonet',
 		'/hexonet_public/',

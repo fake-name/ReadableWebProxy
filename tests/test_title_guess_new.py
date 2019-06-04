@@ -497,25 +497,6 @@ def merge_in_fixed_mismatch():
 		comment_mismatches(good_lines, mismatch=True)
 		create_set_files_for_values(good_sets)
 
-# def load_items():
-# 	feed_items = db.get_db_session().query(db.RssFeedPost) \
-# 			.order_by(db.RssFeedPost.srcname)           \
-# 			.order_by(db.RssFeedPost.title)           \
-# 			.all()
-
-# 	with open("tests/title_test_data_two.py", 'w') as fp:
-# 		fp.write("data = [\n")
-# 		for row in feed_items:
-# 			title = row.title
-
-# 			try:
-# 				p = TPO(title)
-# 				fp.write(format_row(title, p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()))
-# 			except ValueError:
-# 				fp.write(format_row(title, 0, 0, 0, ''))
-
-# 		fp.write("]\n")
-
 if __name__ == "__main__":
 	import sys
 	# if 'regenerate' in sys.argv:

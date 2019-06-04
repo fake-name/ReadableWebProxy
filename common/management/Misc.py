@@ -15,18 +15,18 @@ def exposed_print_scheduled_jobs():
 	'''
 
 	'''
-	sess = db.get_db_session()
+	with db.session_context() as sess:
 
-	items = sess.execute("""
-		SELECT
-			id, next_run_time , job_state
-		FROM
-			apscheduler_jobs
-	""")
-	items = list(items)
-	for tid, nextcall, content in items:
-		print("Job: ", tid.ljust(30), str(nextcall).rjust(20))
+		items = sess.execute("""
+			SELECT
+				id, next_run_time , job_state
+			FROM
+				apscheduler_jobs
+		""")
+		items = list(items)
+		for tid, nextcall, content in items:
+			print("Job: ", tid.ljust(30), str(nextcall).rjust(20))
 
-		dat = pickle.loads(content)
-		pprint.pprint(dat)
+			dat = pickle.loads(content)
+			pprint.pprint(dat)
 

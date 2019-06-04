@@ -163,6 +163,23 @@ baseUrl: [
 	'https://www.miraslation.net',
 	'https://zlatamtl.home.blog',
 
+	'https://cottoncandytea.com',
+	'https://dolionsapathy.wordpress.com',
+	'https://fourslimes.home.blog',
+	'https://franshishou.home.blog',
+	'https://imemotranslations.com',
+	'https://koi-translations.com',
+	'https://lastfenix.wordpress.com',
+	'https://peachblossomdreams.home.blog',
+	'https://rosyspell.wordpress.com',
+	'https://silentfish.home.blog',
+	'https://sunflowerpenguin.wordpress.com',
+	'https://themaunderingpoet.wordpress.com',
+	'https://willmakeyoucry.home.blog',
+	'https://yanyantls.wordpress.com',
+	'https://yhatranslation.home.blog',
+
+
 	]
 
 
@@ -189,6 +206,10 @@ badwords: [
 		'/calendar/action~agenda/',
 
 		'/wp-content/cache/',
+		'betwixtedbutterfly.com/translations/calendar/',
+		'/calendar/action~month/',
+		'f-w-o.com/community/',
+		'f-w-o.com/login/?redirect_to=',
 	]
 
 compound_badwords: [
