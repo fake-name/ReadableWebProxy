@@ -455,6 +455,10 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			try:
 				self.db_sess.add(new)
 				self.db_sess.commit()
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+				self.db_sess.add(new)
+				self.db_sess.commit()
 			except sqlalchemy.exc.InvalidRequestError:
 				local_object = self.db_sess.merge(new)
 				self.db_sess.add(local_object)

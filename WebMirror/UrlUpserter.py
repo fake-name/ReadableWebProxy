@@ -48,7 +48,7 @@ import common.process
 
 def initializeStartUrls(rules):
 	print("Initializing all start URLs in the database")
-	with common.database.session_context() as db_handle:
+	with common.database.session_context() as sess:
 		for ruleset in [rset for rset in rules if rset['starturls'] and rset['rewalk_disabled'] is False]:
 			for starturl in ruleset['starturls']:
 				have = sess.query(db.WebPages) \

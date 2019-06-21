@@ -456,25 +456,23 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
 
-		while True:
-			history_size = self.checkHaveHistory(job.url)
-			if history_size > 0:
-				break
-			try:
-				self.log.info("Need to push content into history table (current length: %s).", history_size)
-				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
+		# while True:
+		# 	history_size = self.checkHaveHistory(job.url)
+		# 	if history_size > 0:
+		# 		break
+		# 	try:
+		# 		self.log.info("Need to push content into history table (current length: %s).", history_size)
+		# 		job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
 
+		# 		job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
 
-
-				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
-
-				self.db_sess.commit()
-				self.log.info("Pushing old job content into history table!")
-				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
+		# 		self.db_sess.commit()
+		# 		self.log.info("Pushing old job content into history table!")
+		# 		break
+		# 	except sqlalchemy.exc.OperationalError:
+		# 		self.db_sess.rollback()
+		# 	except sqlalchemy.exc.InvalidRequestError:
+		# 		self.db_sess.rollback()
 
 		while 1:
 			try:
