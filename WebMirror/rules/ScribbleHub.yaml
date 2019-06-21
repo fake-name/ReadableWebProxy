@@ -1,0 +1,76 @@
+type: western
+
+
+rewalk_interval_days: 30
+
+send_raw_feed: False
+
+baseUrl: [
+		'https://www.scribblehub.com',
+
+	]
+
+feeds: [
+	'https://www.scribblehub.com/rssfeed.php?type=main',
+
+]
+
+extraStartUrls: [
+	]
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			'/assets/css/assets/',
+			'/js/assets/js/',
+			'/assets/js/assets/',
+			'/js/assets/js/images/',
+			'/js/images/assets/',
+			'cms/download.php?auth=',
+			'/<cms:show k_page_link',
+
+			'/images/images/',
+			'/css/images/assets/',
+			'/images/images/',
+			'/images/assets/css/images/',
+			'/assets/js/images/',
+
+			'/css/images/css/',
+			'/css/css/',
+			'/images/css/images/',
+
+			'/search.php?',
+
+			'stardancer.org/art',
+			'www.addergoole.com/forum/',
+			'www.addergoole.com/wiki/',
+			]
+
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+]
+
+decompose: [
+
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: [
+]
+
+
+

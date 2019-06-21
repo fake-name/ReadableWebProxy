@@ -51,7 +51,6 @@ baseUrl: [
 		'https://fiction.live',
 
 		'http://www.meejee.net',
-		'https://www.scribblehub.com',
 
 		# Needs more checking.
 		# 'https://www.eviscerati.org'
@@ -59,6 +58,7 @@ baseUrl: [
 	]
 
 feeds: [
+	'https://www.scribblehub.com/rssfeed.php?type=main',
 
 ]
 
