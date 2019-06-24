@@ -9,6 +9,7 @@ import WebMirror.TimedTriggers.LocalFetchTriggers
 import Misc.HistoryAggregator.Consolidate
 import WebMirror.util.StatusUpdater.Updater
 import WebMirror.management.FeedDbManage
+import common.stuck
 
 import Misc.NuForwarder.NuHeader
 import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
@@ -27,8 +28,11 @@ class PythonJob():
 
 	def run(self):
 		assert self.invokable
+		common.stuck.install_pystuck()
+
 		instance = self.invokable()
 		instance.go()
+		print("Job %s has finished executing %s" % (self.__class__, self.invokable))
 		return
 
 

@@ -102,6 +102,8 @@ class RunInstance(object):
 		logSetup.resetLoggingLocks()
 		common.process.name_process("proc fetcher processing worker")
 
+		common.stuck.install_pystuck()
+
 
 		# Misc.install_vmprof.install_vmprof("runner")
 

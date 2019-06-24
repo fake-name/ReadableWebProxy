@@ -699,11 +699,13 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				.filter(db.NuReleaseItem.reviewed == 'valid')        \
 				.filter(db.NuReleaseItem.validated == True)       \
 				.yield_per(1000)
-			validated = [tmp for tmp in tqdm.tqdm(validated, total=count)]
+			validated = [tmp for tmp in validated]
+			# validated = [tmp for tmp in tqdm.tqdm(validated, total=count)]
 
 		print("Found %s releases" % len(validated))
 
-		for row in tqdm.tqdm(validated):
+		# for row in tqdm.tqdm(validated):
+		for row in validated:
 			if row.seriesname.endswith("..."):
 				dotted_series.append((row.seriesname.strip(), row.actual_target))
 			if row.groupinfo.endswith("..."):

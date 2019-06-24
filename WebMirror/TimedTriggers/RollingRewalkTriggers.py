@@ -120,7 +120,9 @@ class RollingRewalkTriggersBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseC
 			self.log.info("Have to process from ID %s to %s", minid, maxid)
 			chunk_size = 50000
 			affected = 0
-		pbar = tqdm.tqdm(range(minid, maxid, chunk_size), desc="Retriggering non-rule URLs")
+
+		# pbar = tqdm.tqdm(range(minid, maxid, chunk_size), desc="Retriggering non-rule URLs")
+		pbar = range(minid, maxid, chunk_size)
 
 		with self.db.session_context() as sess:
 			for chunk in pbar:
