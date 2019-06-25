@@ -14,7 +14,7 @@ from sqlalchemy import inspect
 import random
 import settings
 import pprint
-import tqdm
+# import tqdm
 
 from sqlalchemy import desc
 
@@ -574,10 +574,11 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	def filterContentLinks(self, job_netloc, links, badwords, badcompounds, debug=False, interactive=False):
 		ret = set()
 
-		if interactive:
-			iterator = tqdm.tqdm(links, desc="Filtering content links.")
-		else:
-			iterator = links
+		# if interactive:
+		# 	iterator = tqdm.tqdm(links, desc="Filtering content links.")
+		# else:
+		# 	iterator = links
+		iterator = links
 
 		for link in iterator:
 			link = self.generalLinkClean(link, badwords, badcompounds)

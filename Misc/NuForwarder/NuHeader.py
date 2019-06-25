@@ -7,7 +7,7 @@ import traceback
 import os.path
 import json
 import calendar
-import tqdm
+# import tqdm
 
 import sqlalchemy.exc
 from sqlalchemy.orm import joinedload

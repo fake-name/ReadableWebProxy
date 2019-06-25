@@ -30,6 +30,10 @@ badwords: [
 			'/rank-graph/',
 			'/feed/',
 
+			'status=111',
+			'status=311',
+			'status=211',
+			'111111',
 
 			# Don't actually spider the site, just let the update triggers
 			# do their thing.

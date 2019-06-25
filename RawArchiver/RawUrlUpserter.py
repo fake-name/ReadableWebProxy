@@ -11,7 +11,7 @@ import sys
 import queue
 
 import cachetools
-import tqdm
+# import tqdm
 
 # from pympler.tracker import SummaryTracker, summary, muppy
 # import tracemalloc

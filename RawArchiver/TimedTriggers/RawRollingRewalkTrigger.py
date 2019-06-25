@@ -5,7 +5,7 @@ import urllib.parse
 import datetime
 import traceback
 import time
-import tqdm
+# import tqdm
 import zlib
 import settings
 import datetime
