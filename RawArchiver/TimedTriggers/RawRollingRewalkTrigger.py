@@ -129,7 +129,7 @@ class RollingRawRewalkTrigger(RawArchiver.TimedTriggers.TriggerBase.TriggerBaseC
 						affected += ret.rowcount
 						sess.commit()
 						desc = 'Retriggered: %10i' % (affected, )
-						pbar.set_description(desc)
+						# pbar.set_description(desc)
 
 						break
 

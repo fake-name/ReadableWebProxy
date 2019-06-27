@@ -622,7 +622,7 @@ def exposed_retrigger_feed_urls():
 
 				urls.update(plainLinks)
 				urls.update(imageLinks)
-			pbar.set_description("Links: %s" % len(urls))
+			# pbar.set_description("Links: %s" % len(urls))
 
 	urls = list(urls)
 

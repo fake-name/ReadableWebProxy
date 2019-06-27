@@ -19,9 +19,9 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='psycopg2')
 
 
-
 import ndscheduler
 import ndscheduler.server.server
+import common.stuck
 
 
 target_jobs = {
@@ -149,6 +149,7 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 
 
 def run_scheduler():
+	common.stuck.install_pystuck()
 	SimpleServer.run()
 
 

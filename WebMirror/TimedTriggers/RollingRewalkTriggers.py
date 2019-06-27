@@ -140,7 +140,7 @@ class RollingRewalkTriggersBase(WebMirror.TimedTriggers.TriggerBase.TriggerBaseC
 						affected += ret.rowcount
 						sess.commit()
 						desc = 'Changed: %10i' % (affected, )
-						pbar.set_description(desc)
+						# pbar.set_description(desc)
 
 						break
 

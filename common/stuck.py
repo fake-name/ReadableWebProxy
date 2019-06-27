@@ -4,6 +4,9 @@ import threading
 import traceback
 import sys
 
+import os
+import signal
+
 def install_pystuck():
 	import pystuck
 	stuck_port = 6666
@@ -16,6 +19,8 @@ def install_pystuck():
 			stuck_port += 1
 		if stuck_port > 7000:
 			raise RuntimeError("wat?")
+
+			# os.kill(os.getpid(), signal.SIGINT)
 
 def halt_exc(x, y):
 	if runStatus.run_state.value == 0:
