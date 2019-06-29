@@ -12,6 +12,7 @@ import traceback
 import datetime
 import threading
 import time
+import apscheduler.triggers.interval
 import apscheduler.triggers.cron
 
 # Shut up fucking annoying psycopg2 vomit every exec.
@@ -23,68 +24,105 @@ import ndscheduler
 import ndscheduler.server.server
 import common.stuck
 
+# Convenience functions to make intervals clearer.
+def days(num):
+	return 60*60*24*num
+def hours(num):
+	return 60*60*num
+def minutes(num):
+	return 60*num
+
+'''
+	 0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                            minutes(45)),
+	 1  : (WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggersBase,          hours(4)),
+	 2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                         minutes(60)),
+	 3  : (WebMirror.TimedTriggers.UrlTriggers.EverySixHoursPageTrigger,                     hours(4)),
+	4  : (WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger,                      days(3)),
+	# 5  : (WebMirror.util.StatusUpdater.Updater.MetaUpdater,                              minutes(10)),
+	 6  : (WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger,                          minutes(45)),
+
+	 7  : (WebMirror.TimedTriggers.LocalFetchTriggers.HourlyLocalFetchTrigger,               hours(1)),
+
+	 8  : (Misc.HistoryAggregator.Consolidate.DbFlattener,                                    days(3)),
+	 9  : (WebMirror.management.FeedDbManage.RssFunctionSaver,                              hours(12)),
+	10  : (Misc.HistoryAggregator.Consolidate.TransactionTruncator,                       minutes(20)),
+	11  : (RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRawRewalkTrigger,       hours(12)),
+'''
+
 
 target_jobs = {
 
 	'scheduled_jobs.python_job.RssTriggerJob' : {
 		"name"             : 'AUTO: Rss Feeds Trigger job',
-		"minute"           : '*/42',
+		"interval"         : minutes(45),
+		# "minute"           : '*/42',
 	},
 	'scheduled_jobs.python_job.RollingRewalkTriggersBaseJob' : {
 		"name"             : 'AUTO: Rolling Rewalk Trigger job',
-		"minute"           : '15',
-		"hour"             : '*/4',
+		"interval"         : hours(4),
+		# "minute"           : '15',
+		# "hour"             : '*/4',
 	},
 	'scheduled_jobs.python_job.HourlyPageTriggerJob' : {
 		"name"             : 'AUTO: Hourly Page Trigger job',
-		"minute"           : '0',
-		"hour"             : '*',
+		"interval"         : minutes(60),
+		# "minute"           : '0',
+		# "hour"             : '*',
 	},
 	'scheduled_jobs.python_job.EverySixHoursPageTriggerJob' : {
-		"name"             : 'AUTO: Every Six Hours Trigger job',
-		"minute"           : '45',
-		"hour"             : '*/6',
+		"name"             : 'AUTO: Every Four Hours Trigger job',
+		"interval"         : hours(4),
+		# "minute"           : '45',
+		# "hour"             : '*/6',
 	},
 	'scheduled_jobs.python_job.EveryOtherDayPageTriggerJob' : {
 		"name"             : 'AUTO: Every other day Trigger job',
-		"day"              : '*/2',
-		"minute"           : '30',
-		"hour"             : '15',
-	},
-	'scheduled_jobs.python_job.NuQueueTriggerJob' : {
-		"name"             : 'AUTO: NU Homepage Fetch',
-		"minute"           : '*/40',
+		"interval"         : days(3),
+		# "day"              : '*/2',
+		# "minute"           : '30',
+		# "hour"             : '15',
 	},
 	'scheduled_jobs.python_job.HourlyLocalFetchTriggerJob' : {
 		"name"             : 'AUTO: Hourly local fetch trigger job',
-		"minute"           : '0',
+		"interval"         : hours(1),
+		# "minute"           : '0',
 	},
 	'scheduled_jobs.python_job.DbFlattenerJob' : {
 		"name"             : 'AUTO: DB Flattener job',
-		"day"              : '*/3',
-		"minute"           : '30',
-		"hour"             : '5',
+		"interval"         : days(3),
+		# "day"              : '*/3',
+		# "minute"           : '30',
+		# "hour"             : '5',
 	},
 	'scheduled_jobs.python_job.RssFunctionSaverJob' : {
 		"name"             : 'AUTO: Function Saver job',
-		"minute"           : '50',
-		"hour"             : '*/12',
+		"interval"         : hours(12),
+		# "minute"           : '50',
+		# "hour"             : '*/12',
 	},
 	'scheduled_jobs.python_job.TransactionTruncatorJob' : {
 		"name"             : 'AUTO: Transaction table truncator job',
-		"minute"           : '*/25',
+		"interval"         : minutes(20),
+		# "minute"           : '*/25',
 	},
 	'scheduled_jobs.python_job.RollingRawRewalkTriggerJob' : {
 		"name"             : 'AUTO: Rolling Raw Rewalk Trigger job',
-		"minute"           : '10',
-		"hour"             : '*/12',
+		"interval"         : hours(12),
+		# "minute"           : '10',
+		# "hour"             : '*/12',
 	},
 	'scheduled_jobs.python_job.NuHeaderJob' : {
 		"name"             : 'AUTO: NuHeader job',
-		"minute"           : '*/22',
-		"hour"             : '*',
+		"interval"         : minutes(45),
+		# "minute"           : '*/22',
+		# "hour"             : '*',
 	},
 
+	'scheduled_jobs.python_job.NuQueueTriggerJob' : {
+		"name"             : 'AUTO: NU Homepage Fetch',
+		"interval"         : minutes(60),
+		# "minute"           : '*/40',
+	},
 
 }
 
@@ -99,6 +137,8 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 
 		# import pdb
 		# pdb.set_trace()
+
+		start_date = datetime.datetime.now()
 
 		for job in current_jobs:
 			job_str, job_id = job.args
@@ -115,13 +155,20 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 
 			else:
 				job_params = target_jobs[job_str]
-				trig = apscheduler.triggers.cron.CronTrigger(
-						month       = job_params.get('month', None),
-						day         = job_params.get('day', None),
-						day_of_week = job_params.get('day_of_week', None),
-						hour        = job_params.get('hour', None),
-						minute      = job_params.get('minute', None),
-					)
+				if job_params.get('interval'):
+					trig = apscheduler.triggers.interval.IntervalTrigger(
+							seconds    = job_params.get('interval'),
+							start_date = start_date,
+						)
+					start_date = start_date + datetime.timedelta(minutes=5)
+				else:
+					trig = apscheduler.triggers.cron.CronTrigger(
+							month       = job_params.get('month', None),
+							day         = job_params.get('day', None),
+							day_of_week = job_params.get('day_of_week', None),
+							hour        = job_params.get('hour', None),
+							minute      = job_params.get('minute', None),
+						)
 
 				if job.name != job_params['name']:
 					self.scheduler_manager.remove_job(job_id)
@@ -129,22 +176,37 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 				# So the apscheduler CronTrigger class doesn't provide the equality
 				# operator, so we compare the stringified version. Gah.
 				elif str(job.trigger) != str(trig):
+					print("Removing trigger:", str(job.trigger), str(trig))
 					self.scheduler_manager.remove_job(job_id)
 
+
+		start_date = datetime.datetime.now()
 
 		current_jobs = self.scheduler_manager.get_jobs()
 		for job_name, params in target_jobs.items():
 			if job_name not in active_jobs:
 				assert params['name'].startswith("AUTO: ")
 				print("Adding job: %s" % job_name)
-				self.scheduler_manager.add_job(
+
+				if params.get('interval'):
+					trig = apscheduler.triggers.interval.IntervalTrigger(
+							seconds    = params.get('interval'),
+							start_date = start_date,
+						)
+					start_date = start_date + datetime.timedelta(minutes=5)
+				else:
+					trig = apscheduler.triggers.cron.CronTrigger(
+							month       = params.get('month', None),
+							day         = params.get('day', None),
+							day_of_week = params.get('day_of_week', None),
+							hour        = params.get('hour', None),
+							minute      = params.get('minute', None),
+						)
+
+				self.scheduler_manager.add_trigger_job(
 						job_class_string = job_name,
 						name             = params['name'],
-						month            = params.get('month', None),
-						day_of_week      = params.get('day_of_week', None),
-						minute           = params.get('minute', None),
-						hour             = params.get('hour', None),
-						day              = params.get('day', None),
+						trigger          = trig,
 					)
 
 
