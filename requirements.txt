@@ -77,7 +77,7 @@ redis==3.2.1
 
 ## hiredis==1.0.0
 
-vmprof==0.4.12
+vmprof==0.4.15
 
 parsedatetime==2.4
 
