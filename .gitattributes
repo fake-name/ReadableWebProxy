@@ -1,0 +1,6 @@
+app/static/ext/* linguist-vendored=true
+app/static/css/bootstrap.css linguist-vendored=true
+app/static/css/bootstrap-theme.css linguist-vendored=true
+app/static/js/jquery* linguist-vendored=true
+app/static/js/bootstrap* linguist-vendored=true
+app/static/js/ace/* linguist-vendored=true
