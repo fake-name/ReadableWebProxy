@@ -182,6 +182,7 @@ GLOBAL_BAD_URLS = [
 			'&returnto=',
 			'Special:WhatLinksHere',
 			'/User:',
+			'.cfm?fp=',
 	]
 
 

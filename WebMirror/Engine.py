@@ -447,7 +447,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					contents   = entry['contents'],
 
 					author     = authors,
-					tags       = list(tags.values()),
+					tags       = list(tags.keys()),
 
 					updated    = datetime.datetime.fromtimestamp(entry['updated']),
 					published  = datetime.datetime.fromtimestamp(entry['published'])

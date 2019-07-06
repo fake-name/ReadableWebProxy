@@ -81,8 +81,24 @@ def get_db_session(postfix="", flask_sess_if_possible=True):
 
 
 	if not csid in SESSIONS:
-		with SESSION_LOCK:
+		acquired = False
 
+		# This is horrible, but it works around a context holding the lock going away.
+		# Apparently that has actually happened.
+		while True:
+			acquired = SESSION_LOCK.acquire(timeout=5)
+			if acquired:
+				break
+			else:
+				print("Error!")
+				print("Error!")
+				print("SESSION_LOCK TIMEOUT!")
+				print("Error!")
+				print("Error!")
+				print("Clearing lock as last-resort!")
+				SESSION_LOCK.release()
+
+		try:
 			# check if the session was created while
 			# we were waiting for the lock
 			if csid in SESSIONS:
@@ -109,6 +125,8 @@ def get_db_session(postfix="", flask_sess_if_possible=True):
 						maxsz = value[0]
 				if to_delete:
 					del SESSIONS[to_delete]
+		finally:
+			SESSION_LOCK.release()
 
 	# Reset the "last used" time on the handle
 	SESSIONS[csid][0] = time.time()
