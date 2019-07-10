@@ -502,11 +502,27 @@ def netloc_send_feed(netloc):
 ##############################################################################################################
 
 
+def import_from_path(path):
+	"""Import a module / class from a path string.
+
+	:param str path: class path, e.g., ndscheduler.core.job
+	:return: class object
+	:rtype: class
+	"""
+
+	components = path.split('.')
+	module = __import__('.'.join(components[:-1]))
+	for comp in components[1:-1]:
+		module = getattr(module, comp)
+	return getattr(module, components[-1])
+
+
 def get_triggered_urls():
 	import WebMirror.TimedTriggers.UrlTriggers
 	import activeScheduledTasks
 	ret = []
-	for plugin, dummy_interval in activeScheduledTasks.scrapePlugins.values():
+	for job in activeScheduledTasks.target_jobs:
+		plugin = import_from_path(job).invokable
 		if issubclass(plugin, WebMirror.TimedTriggers.UrlTriggers.UrlTrigger):
 			instance = plugin()
 			urls = instance.get_urls()

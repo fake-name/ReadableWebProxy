@@ -1,5 +1,13 @@
 """A sample job that prints string."""
 
+import sys
+import os.path
+
+os.environ['NDSCHEDULER_SETTINGS_MODULE'] = 'settings_sched'
+addpath = os.path.abspath("./ndscheduler")
+if addpath not in sys.path:
+	sys.path.append(os.path.abspath("./ndscheduler"))
+
 from ndscheduler import job
 
 import WebMirror.TimedTriggers.RollingRewalkTriggers
@@ -27,7 +35,6 @@ class PythonJob():
 
 	def run(self):
 		assert self.invokable
-
 
 		instance = self.invokable()
 		instance.go()

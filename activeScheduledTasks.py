@@ -9,23 +9,7 @@ def hours(num):
 def minutes(num):
 	return 60*num
 
-# Plugins in this dictionary are the active plugins. Comment out a plugin to disable it.
-# plugin keys specify when plugins will start, and cannot be duplicates.
-# All they do is specify the order in which plugins
-# are run, initially, starting after 1-minue*{key} intervals
-
-import WebMirror.TimedTriggers.RollingRewalkTriggers
-import WebMirror.TimedTriggers.UrlTriggers
-import WebMirror.TimedTriggers.QueueTriggers
-import WebMirror.TimedTriggers.LocalFetchTriggers
-import Misc.HistoryAggregator.Consolidate
-import WebMirror.util.StatusUpdater.Updater
-import WebMirror.management.FeedDbManage
-
-import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
-
-
-scrapePlugins = {
+'''
 	 0  : (WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase,                            minutes(45)),
 	 1  : (WebMirror.TimedTriggers.RollingRewalkTriggers.RollingRewalkTriggersBase,          hours(4)),
 	 2  : (WebMirror.TimedTriggers.UrlTriggers.HourlyPageTrigger,                         minutes(60)),
@@ -40,17 +24,84 @@ scrapePlugins = {
 	 9  : (WebMirror.management.FeedDbManage.RssFunctionSaver,                              hours(12)),
 	10  : (Misc.HistoryAggregator.Consolidate.TransactionTruncator,                       minutes(20)),
 	11  : (RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRawRewalkTrigger,       hours(12)),
+'''
+
+
+# Plugins in this dictionary are the active plugins. Comment out a plugin to disable it.
+
+
+target_jobs = {
+
+	'scheduled_jobs.python_job.RssTriggerJob' : {
+		"name"             : 'AUTO: Rss Feeds Trigger job',
+		"interval"         : minutes(45),
+		# "minute"           : '*/42',
+	},
+	'scheduled_jobs.python_job.RollingRewalkTriggersBaseJob' : {
+		"name"             : 'AUTO: Rolling Rewalk Trigger job',
+		"interval"         : hours(4),
+		# "minute"           : '15',
+		# "hour"             : '*/4',
+	},
+	'scheduled_jobs.python_job.HourlyPageTriggerJob' : {
+		"name"             : 'AUTO: Hourly Page Trigger job',
+		"interval"         : minutes(60),
+		# "minute"           : '0',
+		# "hour"             : '*',
+	},
+	'scheduled_jobs.python_job.EverySixHoursPageTriggerJob' : {
+		"name"             : 'AUTO: Every Four Hours Trigger job',
+		"interval"         : hours(4),
+		# "minute"           : '45',
+		# "hour"             : '*/6',
+	},
+	'scheduled_jobs.python_job.EveryOtherDayPageTriggerJob' : {
+		"name"             : 'AUTO: Every other day Trigger job',
+		"interval"         : days(3),
+		# "day"              : '*/2',
+		# "minute"           : '30',
+		# "hour"             : '15',
+	},
+	'scheduled_jobs.python_job.HourlyLocalFetchTriggerJob' : {
+		"name"             : 'AUTO: Hourly local fetch trigger job',
+		"interval"         : hours(1),
+		# "minute"           : '0',
+	},
+	'scheduled_jobs.python_job.DbFlattenerJob' : {
+		"name"             : 'AUTO: DB Flattener job',
+		"interval"         : days(3),
+		# "day"              : '*/3',
+		# "minute"           : '30',
+		# "hour"             : '5',
+	},
+	'scheduled_jobs.python_job.RssFunctionSaverJob' : {
+		"name"             : 'AUTO: Function Saver job',
+		"interval"         : hours(12),
+		# "minute"           : '50',
+		# "hour"             : '*/12',
+	},
+	'scheduled_jobs.python_job.TransactionTruncatorJob' : {
+		"name"             : 'AUTO: Transaction table truncator job',
+		"interval"         : minutes(20),
+		# "minute"           : '*/25',
+	},
+	'scheduled_jobs.python_job.RollingRawRewalkTriggerJob' : {
+		"name"             : 'AUTO: Rolling Raw Rewalk Trigger job',
+		"interval"         : hours(12),
+		# "minute"           : '10',
+		# "hour"             : '*/12',
+	},
+	'scheduled_jobs.python_job.NuHeaderJob' : {
+		"name"             : 'AUTO: NuHeader job',
+		"interval"         : minutes(20),
+		# "minute"           : '*/22',
+		# "hour"             : '*',
+	},
+
+	'scheduled_jobs.python_job.NuQueueTriggerJob' : {
+		"name"             : 'AUTO: NU Homepage Fetch',
+		"interval"         : minutes(60),
+		# "minute"           : '*/40',
+	},
 
 }
-
-
-import Misc.NuForwarder.NuHeader
-
-autoscheduler_plugins = {
-	Misc.NuForwarder.NuHeader.do_schedule,
-
-}
-
-print("Trigger plugins: %s, autoscheduler plugins: %s" % (len(scrapePlugins), len(autoscheduler_plugins)))
-
-
