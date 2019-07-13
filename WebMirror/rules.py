@@ -192,11 +192,6 @@ def getAllImages(ruleset):
 		return False
 	return ruleset['allImages']
 
-def getCloudflare(ruleset):
-	if not 'cloudflare' in ruleset:
-		return False
-	return ruleset['cloudflare']
-
 def getTrigger(ruleset):
 	if not 'trigger' in ruleset:
 		return True
@@ -300,7 +295,6 @@ def validateRuleKeys(dat, fname):
 		'tld',
 		'FOLLOW_GOOGLE_LINKS',
 		'allImages',
-		'cloudflare',
 		'fileDomains',
 		'destyle',
 		'preserveAttrs',
@@ -345,7 +339,6 @@ def load_validate_rules(fname, dat):
 
 	rules['allImages']                         = getAllImages(dat)
 	rules['fileDomains']                       = getFileDomains(dat, rules['netlocs'])
-	rules['cloudflare']                        = getCloudflare(dat)
 	rules['IGNORE_MALFORMED_URLS']             = getIgnoreMalformed(dat)
 	rules['type']                              = getGenreType(dat)
 

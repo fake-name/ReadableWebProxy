@@ -265,13 +265,13 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		Example response:
 
 		{
-			'call': 'getHeadPhantomJS',
+			'call': 'getHeadTitleChromium',
 			'cancontinue': True,
 			'dispatch_key': 'fetcher',
 			'extradat': {'mode': 'fetch'},
 			'jobid': -1,
 			'jobmeta': {'sort_key': 'a269f164a16e11e6891500163ef6fe07'},
-			'module': 'NUWebRequest',
+			'module': 'WebRequest',
 			'ret': 'http://lightnovels.world/the-nine-godheads/nine-godheads-chapter-74/',
 			'success': True,
 			'user': 'scrape-worker-2',

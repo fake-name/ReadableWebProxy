@@ -1,33 +1,28 @@
 
 
-if __name__ == "__main__":
-	import logSetup
-	logSetup.initLogging()
 
-import WebMirror.rules
-import common.LogBase as LogBase
 
-import datetime
-import traceback
 import sys
-
-import common.util.urlFuncs as url_util
+import time
 import urllib.parse
+
+import statsd
 import WebRequest
 import bs4
 
-import WebMirror.rules
-import WebMirror.SpecialCase
-import WebMirror.processor.ProcessorBase
 
+import settings
 from activePlugins import PREPROCESSORS
 from activePlugins import PLUGINS
 from activePlugins import FILTERS
 
+import WebMirror.rules
+import WebMirror.SpecialCase
+import WebMirror.processor.ProcessorBase
+import WebMirror.JobUtils
+import common.get_rpyc
+import common.LogBase
 from common.Exceptions import DownloadException
-import statsd
-import settings
-import time
 
 ########################################################################################################################
 #
@@ -42,7 +37,7 @@ import time
 ########################################################################################################################
 
 
-class ItemFetcher(LogBase.LoggerMixin):
+class ItemFetcher(common.LogBase.LoggerMixin):
 
 
 	loggerPath = "Main.SiteArchiver"
@@ -207,42 +202,60 @@ class ItemFetcher(LogBase.LoggerMixin):
 
 
 	def cr_fetch(self, itemUrl):
-		wg = self.wg_proxy()
-		self.log.info("Synchronous rendered chromium fetch!")
-		content = None
-		with wg.chromiumContext(itemUrl) as cr:
-			try:
-				content = cr.blocking_navigate_and_get_source(itemUrl)
-				if content:
-					if content['binary'] is False:
-						# If the content isn't binary, retreive the rendered version.
-						content = cr.get_rendered_page_source()
-					else:
-						self.log.error("Binary content!")
+		itemUrl = itemUrl.strip().replace(" ", "%20")
+		error = None
+		ret = {'success' : False}
+		try:
+			rpc_interface = common.get_rpyc.RemoteFetchInterface()
+			rpc_interface.check_ok()
+			raw_job = WebMirror.JobUtils.buildjob(
+				module                 = 'WebRequest',
+				call                   = 'chromiumGetRenderedItem',
+				dispatchKey            = "fetcher",
+				jobid                  = -1,
+				args                   = [itemUrl],
+				kwargs                 = {},
+				additionalData         = {'mode' : 'fetch'},
+				postDelay              = 0,
+			)
+			ret = rpc_interface.dispatch_request(raw_job)
+			rpc_interface.close()
 
-			except Exception:
-				pass
+		except:
+			self.log.error("Failure fetching content!")
+			raise
 
-			if not content:
-				for x in range(99):
-					try:
-						content = cr.get_rendered_page_source()
-					except Exception as e:
-						self.log.error("Failure extracting source (%s)! Retrying %s..." % (e, x))
-						if x > 3:
-							raise
+		if ret['success']:
+			content, fileN, mType = ret['ret']
+
+		else:
+			self.log.error("Failed to fetch page!")
+
+			for line in ret['traceback']:
+				self.log.error(line)
+
+			error = "\n".join(ret['traceback'])
+			content, mType = None, None
 
 
-			if itemUrl.endswith("/feed/"):
-				mType = "application/rss+xml"
-			else:
-				mType = 'text/html'
+		if not content or not mType:
+			if error:
+				raise DownloadException("Failed to retreive file from page '%s'!\n\nFetch traceback:\n%s\n\nEnd fetch traceback." % (itemUrl, error))
+			raise DownloadException("Failed to retreive file from page '%s'!" % itemUrl)
 
-			raw_url = cr.get_current_url()
-			fileN = urllib.parse.unquote(urllib.parse.urlparse(raw_url)[2].split("/")[-1])
-			fileN = bs4.UnicodeDammit(fileN).unicode_markup
+		# If there is an encoding in the content-type (or any other info), strip it out.
+		# We don't care about the encoding, since WebRequest will already have handled that,
+		# and returned a decoded unicode object.
+		if mType and ";" in mType:
+			mType = mType.split(";")[0].strip()
 
-			title, cur_url = cr.get_page_url_title()
+		# *sigh*. So minus.com is fucking up their http headers, and apparently urlencoding the
+		# mime type, because apparently they're shit at things.
+		# Anyways, fix that.
+		if '%2F' in  mType:
+			mType = mType.replace('%2F', '/')
+
+		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
 
 		if "debug" in sys.argv:
 			self.log.info("Title: %s", title)
@@ -266,38 +279,46 @@ class ItemFetcher(LogBase.LoggerMixin):
 			return self.__plain_local_fetch(itemUrl)
 
 	def __plain_local_fetch(self, itemUrl):
+		itemUrl = itemUrl.strip().replace(" ", "%20")
 		error = None
+		ret = {'success' : False}
 		try:
-			itemUrl = itemUrl.strip()
-			itemUrl = itemUrl.replace(" ", "%20")
-			content, handle = self.wg_proxy().getpage(itemUrl, returnMultiple=True)
-		except WebRequest.FetchFailureError:
+			rpc_interface = common.get_rpyc.RemoteFetchInterface()
+			rpc_interface.check_ok()
+			raw_job = WebMirror.JobUtils.buildjob(
+				module                 = 'WebRequest',
+				call                   = 'getItem',
+				dispatchKey            = "fetcher",
+				jobid                  = -1,
+				args                   = [itemUrl],
+				kwargs                 = {},
+				additionalData         = {'mode' : 'fetch'},
+				postDelay              = 0,
+			)
+			ret = rpc_interface.dispatch_request(raw_job)
+			rpc_interface.close()
+
+		except:
+			self.log.error("Failure fetching content!")
+			raise
+
+		if ret['success']:
+			content, fileN, mType = ret['ret']
+
+		else:
 			self.log.error("Failed to fetch page!")
-			for line in traceback.format_exc().split("\n"):
+
+			for line in ret['traceback']:
 				self.log.error(line)
 
-			error = traceback.format_exc()
-			content, handle = None, None
-		except:
-			print("Failure?")
-			if self.rules['cloudflare']:
-				if not self.wg_proxy().stepThroughCloudFlare(itemUrl, titleNotContains='Just a moment...'):
-					raise ValueError("Could not step through cloudflare!")
-				# Cloudflare cookie set, retrieve again
-				content, handle = self.wg_proxy().getpage(itemUrl, returnMultiple=True)
-			else:
-				raise
+			error = "\n".join(ret['traceback'])
+			content, mType = None, None
 
 
-
-		if not content or not handle:
+		if not content or not mType:
 			if error:
 				raise DownloadException("Failed to retreive file from page '%s'!\n\nFetch traceback:\n%s\n\nEnd fetch traceback." % (itemUrl, error))
 			raise DownloadException("Failed to retreive file from page '%s'!" % itemUrl)
-
-		fileN = urllib.parse.unquote(urllib.parse.urlparse(handle.geturl())[2].split("/")[-1])
-		fileN = bs4.UnicodeDammit(fileN).unicode_markup
-		mType = handle.info()['Content-Type']
 
 		# If there is an encoding in the content-type (or any other info), strip it out.
 		# We don't care about the encoding, since WebRequest will already have handled that,
@@ -310,8 +331,6 @@ class ItemFetcher(LogBase.LoggerMixin):
 		# Anyways, fix that.
 		if '%2F' in  mType:
 			mType = mType.replace('%2F', '/')
-
-		self.wg_proxy().cj.save()
 
 		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
 		return content, fileN, mType

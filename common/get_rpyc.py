@@ -85,45 +85,54 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		del self.rpc_client
 
 
-def main():
-	import logSetup
-	from WebMirror.JobDispatcher import buildjob
-	logSetup.initLogging()
+class RemoteFetchInterface(LogBase.LoggerMixin):
 
-	raw_job = buildjob(
-		module                 = 'WebRequest',
-		call                   = 'getItem',
-		dispatchKey            = "fetcher",
-		jobid                  = -1,
-		args                   = ['http://www.google.com'],
-		kwargs                 = {},
-		additionalData         = {'mode' : 'fetch'},
-		postDelay              = 0,
-		response_routing_key   = 'response',
-	)
+	loggerPath = "Main.RemoteFetchInterface"
 
-	rint = RemoteJobInterface("wat")
-	print(rint.put_job(raw_job))
-	print(rint)
-	while 1:
+	def __init__(self):
+		# Execute in self.rpc_client:
+		for x in range(99999):
+			try:
+				self.log.info("Creating rpc_client")
+				mp_conf = {"use_bin_type" : True}
+				self.rpc_client = mprpc.RPCClient(settings.SYNC_RPC_SERVER, 4315, pack_params=mp_conf, timeout=30)
+				self.log.info("Validating RPC connection")
+
+				self.check_ok()
+				return
+			except AttributeError as e:
+				self.log.error("Failed to create RPC interface?")
+				if x > 3:
+					raise e
+
+			except Exception as e:
+				if x > 3:
+					raise e
+
+	def __del__(self):
+		if hasattr(self, 'rpc_client'):
+			try:
+				self.rpc_client.close() # Closes the socket 's' also
+			except AttributeError:
+				pass
+
+	def dispatch_request(self, *args, **kwargs):
 		try:
-			j = rint.get_job()
-			if j:
-				print("Got job!", j)
-		except queue.Empty:
-			time.sleep(1)
-			print("No message")
+			j = self.rpc_client.call('dispatch_request', *args, **kwargs)
+			return j
 		except Exception as e:
-		# except pyjsonrpc.JsonRpcError as err:
-			print("type", type(e))
-			print("instance", issubclass(type(e), queue.Empty))
-
-			import inspect
-			print(inspect.getmro(type(e)))
-
 			raise e
 
-	remote.close()
-if __name__ == '__main__':
-	main()
+
+	def check_ok(self):
+		ret, bstr = self.rpc_client.call('checkOk')
+		assert ret is True
+		assert len(bstr) > 0
+
+		return ret
+
+	def close(self):
+		self.rpc_client.close()
+		del self.rpc_client
+
 

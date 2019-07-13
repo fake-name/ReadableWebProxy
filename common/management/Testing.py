@@ -33,16 +33,6 @@ def exposed_test_chromium_fetch():
 
 	print("Dispatching job engine")
 
-	raw_job_1 = buildjob(
-		module         = 'NUWebRequest',
-		call           = 'getHeadTitlePhantomJS',
-		dispatchKey    = "lolwattttt",
-		jobid          = "lolwat",
-		args           = ['http://www.google.com', 'http://www.goat.com'],
-		kwargs         = {},
-		additionalData = {'herp' : 'derp'},
-		postDelay      = 0
-	)
 	raw_job_2 = buildjob(
 		module         = 'WebRequest',
 		call           = 'getHeadTitleChromium',
@@ -77,7 +67,7 @@ def exposed_test_chromium_fetch():
 	)
 
 	# rpc_interface.put_job(raw_job_1)
-	# rpc_interface.put_job(raw_job_2)
+	rpc_interface.put_job(raw_job_2)
 	rpc_interface.put_job(raw_job_3)
 	rpc_interface.put_job(raw_job_4)
 
@@ -95,3 +85,88 @@ def exposed_test_chromium_fetch():
 			time.sleep(1)
 
 
+def exposed_test_local_rpc_fetch():
+	'''
+	Run a test-fetch with the chromium remote
+	rendering system
+
+	'''
+	print("Chromium Test")
+
+	rpc_interface = common.get_rpyc.RemoteFetchInterface()
+	rpc_interface.check_ok()
+
+	print("RPC:", rpc_interface)
+
+	print("Dispatching job engine")
+
+	# raw_job1 = buildjob(
+	# 	module                 = 'WebRequest',
+	# 	call                   = 'getItem',
+	# 	dispatchKey            = "fetcher",
+	# 	jobid                  = -1,
+	# 	args                   = ['http://raptorjes.us/'],
+	# 	kwargs                 = {},
+	# 	additionalData         = {'mode' : 'fetch'},
+	# 	postDelay              = 0,
+	# )
+
+	# ret1 = rpc_interface.dispatch_request(raw_job1)
+
+	# print("Return 1: ")
+	# pprint.pprint(ret1)
+
+
+	# rpc_interface.check_ok()
+	# raw_job2 = buildjob(
+	# 	module                 = 'WebRequest',
+	# 	call                   = 'getItem',
+	# 	dispatchKey            = "fetcher",
+	# 	jobid                  = -1,
+	# 	args                   = ['http://www.asdasdasdasdasdgoogle.com'],
+	# 	kwargs                 = {},
+	# 	additionalData         = {'mode' : 'fetch'},
+	# 	postDelay              = 0,
+	# )
+
+	# ret2 = rpc_interface.dispatch_request(raw_job2)
+
+	# print("Return 2: ")
+	# pprint.pprint(ret2)
+
+
+	rpc_interface.check_ok()
+	raw_job3 = WebMirror.JobUtils.buildjob(
+		module                 = 'WebRequest',
+		call                   = 'chromiumGetRenderedItem',
+		dispatchKey            = "fetcher",
+		jobid                  = -1,
+		args                   = ["http://raptorjes.us/"],
+		kwargs                 = {},
+		additionalData         = {'mode' : 'fetch'},
+		postDelay              = 0,
+	)
+	ret3 = rpc_interface.dispatch_request(raw_job3)
+
+
+	print("Return 3: ")
+	pprint.pprint(ret3)
+
+	rpc_interface.check_ok()
+	raw_job4 = WebMirror.JobUtils.buildjob(
+		module                 = 'WebRequest',
+		call                   = 'chromiumGetRenderedItem',
+		dispatchKey            = "fetcher",
+		jobid                  = -1,
+		args                   = ["http://raptorjes.us//raptorjesus.jpg"],
+		kwargs                 = {},
+		additionalData         = {'mode' : 'fetch'},
+		postDelay              = 0,
+	)
+	ret4 = rpc_interface.dispatch_request(raw_job4)
+
+
+	print("Return 4: ")
+	pprint.pprint(ret4)
+
+	rpc_interface.close()

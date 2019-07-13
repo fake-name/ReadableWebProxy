@@ -43,8 +43,8 @@ def exposed_head(url, ref):
 
 
 	raw_job = buildjob(
-		module         = 'NUWebRequest',
-		call           = 'getHeadPhantomJS',
+		module         = 'WebRequest',
+		call           = 'getHeadTitleChromium',
 		dispatchKey    = "fetcher",
 		jobid          = -1,
 		args           = [url, ref],

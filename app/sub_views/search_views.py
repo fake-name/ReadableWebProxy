@@ -1,23 +1,16 @@
 
+import json
+import urllib.parse
+import traceback
+
 from flask import g
 from flask import render_template
 from flask import request
-import json
-import urllib.parse
+import pymysql
 
 from app import app
-
-import traceback
-import common.database as db
-
-from app.utilities import paginate
-import sqlalchemy.exc
-from sqlalchemy.sql.expression import func
-from sqlalchemy.dialects import postgresql
-
 import WebMirror.rules
 
-import pymysql
 import settings
 
 
@@ -53,7 +46,7 @@ def fetch_content(query_text, scope, sources, page_no):
 	print("query text: ", dbg)
 
 	db = pymysql.connect(host   = settings.SPHINX_SERVER_IP,
-						port    = settings.SPHINX_SERVER_port,
+						port    = settings.SPHINX_SERVER_PORT,
 						user    = settings.SPHINX_SERVER_USER,
 						passwd  = settings.SPHINX_SERVER_PASS,
 						charset = 'utf8',
