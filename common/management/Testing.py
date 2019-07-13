@@ -34,7 +34,7 @@ def exposed_test_chromium_fetch():
 	print("Dispatching job engine")
 
 	raw_job_2 = buildjob(
-		module         = 'WebRequest',
+		module         = 'SmartWebRequest',
 		call           = 'getHeadTitleChromium',
 		dispatchKey    = "lolwattttt",
 		jobid          = "lolwat",
@@ -45,7 +45,7 @@ def exposed_test_chromium_fetch():
 	)
 
 	raw_job_3 = buildjob(
-		module         = 'WebRequest',
+		module         = 'SmartWebRequest',
 		call           = 'getItemChromium',
 		dispatchKey    = "lolwattttt",
 		jobid          = "lolwat",
@@ -56,7 +56,7 @@ def exposed_test_chromium_fetch():
 	)
 
 	raw_job_4 = buildjob(
-		module         = 'WebRequest',
+		module         = 'SmartWebRequest',
 		call           = 'getItem',
 		dispatchKey    = "lolwattttt",
 		jobid          = "lolwat",
@@ -137,8 +137,8 @@ def exposed_test_local_rpc_fetch():
 
 	rpc_interface.check_ok()
 	raw_job3 = WebMirror.JobUtils.buildjob(
-		module                 = 'WebRequest',
-		call                   = 'chromiumGetRenderedItem',
+		module                 = 'PreprocessFetch',
+		call                   = 'smartGetItem',
 		dispatchKey            = "fetcher",
 		jobid                  = -1,
 		args                   = ["http://raptorjes.us/"],
@@ -154,8 +154,8 @@ def exposed_test_local_rpc_fetch():
 
 	rpc_interface.check_ok()
 	raw_job4 = WebMirror.JobUtils.buildjob(
-		module                 = 'WebRequest',
-		call                   = 'chromiumGetRenderedItem',
+		module                 = 'PreprocessFetch',
+		call                   = 'smartGetItem',
 		dispatchKey            = "fetcher",
 		jobid                  = -1,
 		args                   = ["http://raptorjes.us//raptorjesus.jpg"],

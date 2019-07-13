@@ -58,7 +58,7 @@ def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance
 	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
 
 	raw_job = WebMirror.JobUtils.buildjob(
-		module         = 'WebRequest',
+		module         = 'SmartWebRequest',
 		call           = 'chromiumGetRenderedItem',
 		dispatchKey    = "fetcher",
 		jobid          = rid,
@@ -75,7 +75,7 @@ def handleRemoteChromeFetch(params, rid, joburl, netloc, job_aggregator_instance
 	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
 
 	raw_job = WebMirror.JobUtils.buildjob(
-		module         = 'WebRequest',
+		module         = 'SmartWebRequest',
 		call           = 'chromiumGetRenderedItem',
 		dispatchKey    = "fetcher",
 		jobid          = rid,

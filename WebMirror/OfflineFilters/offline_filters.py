@@ -43,7 +43,7 @@ def exposed_head(url, ref):
 
 
 	raw_job = buildjob(
-		module         = 'WebRequest',
+		module         = 'SmartWebRequest',
 		call           = 'getHeadTitleChromium',
 		dispatchKey    = "fetcher",
 		jobid          = -1,

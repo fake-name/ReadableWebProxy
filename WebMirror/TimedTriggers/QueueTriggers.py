@@ -54,8 +54,8 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, WebMirr
 		sess.commit()
 
 		raw_job = WebMirror.JobUtils.buildjob(
-			module         = 'WebRequest',
-			call           = 'getItem',
+			module         = 'SmartFetch',
+			call           = 'smartGetItem',
 			dispatchKey    = "fetcher",
 			jobid          = job.id,
 			args           = [job.url],

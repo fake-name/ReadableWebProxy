@@ -428,8 +428,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 	def put_fetch_job(self, jobid, joburl, netloc=None):
 		# module='WebRequest', call='getItem'
 		raw_job = WebMirror.JobUtils.buildjob(
-			module         = 'WebRequest',
-			call           = 'getItem',
+			module         = 'PreprocessFetch',
+			call           = 'smartGetItem',
 			dispatchKey    = "fetcher",
 			jobid          = jobid,
 			args           = [joburl],

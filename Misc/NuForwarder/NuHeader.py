@@ -216,7 +216,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 
 				raw_job = buildjob(
-					module         = 'WebRequest',
+					module         = 'SmartWebRequest',
 					call           = 'getHeadTitleChromium',
 					dispatchKey    = "fetcher",
 					jobid          = -1,
