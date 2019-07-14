@@ -941,7 +941,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			 'dispatch_key': 'fetcher',
 			 'extradat': {'mode': 'fetch'},
 			 'jobid': 547397438,
-			 'module': 'WebRequest',
+			 'module': 'SmartWebRequest',
 			 'ret': (item_content, item_filename, item_mimetype),
 			 'success': True,
 			 'user': 'client_2'

@@ -101,7 +101,7 @@ def exposed_test_local_rpc_fetch():
 	print("Dispatching job engine")
 
 	# raw_job1 = buildjob(
-	# 	module                 = 'WebRequest',
+	# 	module                 = 'SmartWebRequest',
 	# 	call                   = 'getItem',
 	# 	dispatchKey            = "fetcher",
 	# 	jobid                  = -1,
@@ -119,7 +119,7 @@ def exposed_test_local_rpc_fetch():
 
 	# rpc_interface.check_ok()
 	# raw_job2 = buildjob(
-	# 	module                 = 'WebRequest',
+	# 	module                 = 'SmartWebRequest',
 	# 	call                   = 'getItem',
 	# 	dispatchKey            = "fetcher",
 	# 	jobid                  = -1,
@@ -137,7 +137,7 @@ def exposed_test_local_rpc_fetch():
 
 	rpc_interface.check_ok()
 	raw_job3 = WebMirror.JobUtils.buildjob(
-		module                 = 'PreprocessFetch',
+		module                 = 'SmartWebRequest',
 		call                   = 'smartGetItem',
 		dispatchKey            = "fetcher",
 		jobid                  = -1,
@@ -154,7 +154,7 @@ def exposed_test_local_rpc_fetch():
 
 	rpc_interface.check_ok()
 	raw_job4 = WebMirror.JobUtils.buildjob(
-		module                 = 'PreprocessFetch',
+		module                 = 'SmartWebRequest',
 		call                   = 'smartGetItem',
 		dispatchKey            = "fetcher",
 		jobid                  = -1,

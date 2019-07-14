@@ -54,7 +54,7 @@ class HtmlPageProcessor(ProcessorBase.PageProcessor):
 		self._fileDomains   = set()
 
 		assert bool(pgContent) == True
-		assert isinstance(pgContent, str), "Content for url %s is not a string" % pageUrl
+		assert isinstance(pgContent, str), "Content for url %s is not a string. Actual type: %s" % (pageUrl, type(pgContent))
 
 		self.content = pgContent
 		self.pageUrl = pageUrl

@@ -103,7 +103,7 @@ def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 
 
 	raw_job = WebMirror.JobUtils.buildjob(
-		module         = 'PreprocessFetch',
+		module         = 'SmartWebRequest',
 		call           = 'qidianSmartFeedFetch',
 		dispatchKey    = "fetcher",
 		jobid          = rid,

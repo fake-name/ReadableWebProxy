@@ -113,8 +113,8 @@ def resetRawInProgress():
 
 			changed = 0
 			tot_changed = 0
-			# for idx in tqdm.tqdm(range(start, stop, step), desc="Resetting raw URLs"):
-			for idx in range(start, stop, step):
+			# for idx in range(start, stop, step):
+			for idx in tqdm.tqdm(range(start, stop, step), desc="Resetting raw URLs"):
 				try:
 					# SQL String munging! I'm a bad person!
 					# Only done because I can't easily find how to make sqlalchemy

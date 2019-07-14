@@ -1,4 +1,3 @@
-## git+https://github.com/fake-name/amqpstorm.git
 git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
@@ -113,5 +112,5 @@ parsedatetime==2.4
 ## WTForms
 ## WTForms-JSON
 
-
+influxdb==5.2.2
 setproctitle==1.1.10

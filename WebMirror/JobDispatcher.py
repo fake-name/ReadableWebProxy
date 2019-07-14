@@ -127,8 +127,10 @@ class RpcMixin():
 
 		raise RuntimeError("RPC interface appears to not be active. Nothing to do?")
 
-class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
-	loggerPath = "Main.JobConsumer"
+class RpcJobConsumerInternal(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin, RpcMixin):
+	loggerPath                = "Main.JobConsumer"
+	influxdb_type             = "fetch_responses"
+	influxdb_measurement_name = "rpc_job_consumer"
 
 	def __init__(self, job_queue, run_flag, system_state, state_lock, test_mode):
 		# print("Job __init__()")
@@ -210,6 +212,16 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, RpcMixin):
 							self.log.warning("Missing netloc in response extradat!")
 					else:
 						self.log.error("Failure acquiring lock when handling job response!")
+
+				# Ship fetch sizes to influxdb.
+				if nl and 'success' in tmp and tmp['success'] and 'ret' in tmp:
+					content, fName, mimeType = tmp['ret']
+					self.put_measurement(
+							measurement_name = 'file_size',
+							measurement      = len(content),
+							fields           = {"netloc" : nl, "mimetype" : mimeType, "filename" : fName},
+							extra_tags       = {},
+						)
 
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()
@@ -426,9 +438,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				self.check_open_rpc_interface()
 
 	def put_fetch_job(self, jobid, joburl, netloc=None):
-		# module='WebRequest', call='getItem'
+		# module='SmartWebRequest', call='getItem'
 		raw_job = WebMirror.JobUtils.buildjob(
-			module         = 'PreprocessFetch',
+			module         = 'SmartWebRequest',
 			call           = 'smartGetItem',
 			dispatchKey    = "fetcher",
 			jobid          = jobid,

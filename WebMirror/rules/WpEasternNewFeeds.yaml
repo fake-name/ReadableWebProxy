@@ -245,6 +245,7 @@ badwords: [
 		'/calendar/action~month/',
 		'f-w-o.com/community/',
 		'f-w-o.com/login/?redirect_to=',
+		'www.oyensblog.com/search/',
 	]
 
 compound_badwords: [

@@ -209,7 +209,7 @@ class ItemFetcher(common.LogBase.LoggerMixin):
 			rpc_interface = common.get_rpyc.RemoteFetchInterface()
 			rpc_interface.check_ok()
 			raw_job = WebMirror.JobUtils.buildjob(
-				module                 = 'WebRequest',
+				module                 = 'SmartWebRequest',
 				call                   = 'chromiumGetRenderedItem',
 				dispatchKey            = "fetcher",
 				jobid                  = -1,
@@ -286,7 +286,7 @@ class ItemFetcher(common.LogBase.LoggerMixin):
 			rpc_interface = common.get_rpyc.RemoteFetchInterface()
 			rpc_interface.check_ok()
 			raw_job = WebMirror.JobUtils.buildjob(
-				module                 = 'WebRequest',
+				module                 = 'SmartWebRequest',
 				call                   = 'getItem',
 				dispatchKey            = "fetcher",
 				jobid                  = -1,
