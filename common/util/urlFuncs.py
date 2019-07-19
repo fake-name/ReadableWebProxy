@@ -224,6 +224,10 @@ def cleanUrl(urlin):
 	if SQUATTER_NETLOC_RE.match(parsed.netloc):
 		return None
 
+
+	if 'tumblr.com' in parsed.netloc and urlin.endswith("/amp"):
+		return None
+
 	if 'wp.me' in parsed.netloc:
 		resolve_redirects = True
 	if 'feedproxy.google.com' in parsed.netloc:
