@@ -936,7 +936,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		"""
 		Expected response structure:
 			{
-			 'call': 'getItem',
+			 'call': 'smartGetItem',
 			 'cancontinue': True,
 			 'dispatch_key': 'fetcher',
 			 'extradat': {'mode': 'fetch'},
@@ -964,7 +964,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 						  '    return self.classCache[module].calls[call](*call_args, '
 						  '**call_kwargs)\n'
 						  '  File "/root/AutoTriever/util/WebRequest.py", line 543, in '
-						  'getItem\n'
+						  'smartGetItem\n'
 						  '    raise urllib.error.URLError("Failed to retreive file from '
 						  'page \'%s\'!" % itemUrl)\n'
 						  'urllib.error.URLError: <urlopen error Failed to retreive file '

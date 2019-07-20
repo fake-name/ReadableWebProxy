@@ -287,7 +287,7 @@ class ItemFetcher(common.LogBase.LoggerMixin):
 			rpc_interface.check_ok()
 			raw_job = WebMirror.JobUtils.buildjob(
 				module                 = 'SmartWebRequest',
-				call                   = 'getItem',
+				call                   = 'smartGetItem',
 				dispatchKey            = "fetcher",
 				jobid                  = -1,
 				args                   = [itemUrl],

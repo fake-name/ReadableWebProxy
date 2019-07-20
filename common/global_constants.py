@@ -30,6 +30,7 @@ GLOBAL_BAD_URLS = [
 			'www.cpm20.com',
 			'gprofiles.js',
 			'javascript:void',
+			'wordfence_syncAttackData',
 			'netvibes.com',
 			'newsgator.com',
 			'paypal.com',

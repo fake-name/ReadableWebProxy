@@ -217,7 +217,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		self.log.info("Dispatching new job (active jobs: %s of %s)", self.active_jobs, MAX_IN_FLIGHT_JOBS)
 		raw_job = WebMirror.JobUtils.buildjob(
 			module         = 'SmartWebRequest',
-			call           = 'getItem',
+			call           = 'smartGetItem',
 			dispatchKey    = "fetcher",
 			jobid          = jobid,
 			args           = [joburl],
