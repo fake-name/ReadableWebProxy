@@ -4,7 +4,7 @@ git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 
 requests==2.22.0
-webrequest==0.0.55
+webrequest==0.0.58
 setproctitle==1.1.10
 paka.cmark==2.0.0
 json2html==1.2.1
