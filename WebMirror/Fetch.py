@@ -12,7 +12,6 @@ import bs4
 
 
 import settings
-from activePlugins import PREPROCESSORS
 from activePlugins import PLUGINS
 from activePlugins import FILTERS
 
@@ -86,10 +85,6 @@ class ItemFetcher(common.LogBase.LoggerMixin):
 		for item in FILTERS:
 			self.filter_modules.append(item)
 
-
-		self.preprocessor_modules = []
-		for item in PREPROCESSORS:
-			self.preprocessor_modules.append(item)
 
 		baseRules = [ruleset for ruleset in rules if ruleset['netlocs'] is None].pop(0)
 
@@ -342,16 +337,6 @@ class ItemFetcher(common.LogBase.LoggerMixin):
 
 
 		assert mimeType, "Mimetype must not be none. URL: '%s'" % (self.target_url)
-
-		# Do preprocessing:
-		preprocess_counts = 0
-		for filter_plg in self.preprocessor_modules:
-			if filter_plg.wantsUrl(self.target_url):
-				content = filter_plg.preprocess(self.target_url, mimeType, content, wg_proxy=self.wg_proxy)
-				preprocess_counts += 1
-
-		if preprocess_counts > 1:
-			raise ValueError("Multiple preprocess executions for the same content (%s, %s, %s). Wat?" % (self.target_url, fName, mimeType))
 
 		# Feed content through filters that want it (if any):
 		for filter_plg in self.filter_modules:

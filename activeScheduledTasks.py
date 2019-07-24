@@ -103,5 +103,10 @@ target_jobs = {
 		"interval"         : minutes(60),
 		# "minute"           : '*/40',
 	},
+	'scheduled_jobs.python_job.WebMirrorPriorityDropper' : {
+		"name"             : 'AUTO: WebMirror Priority Dropper',
+		"interval"         : hours(4),
+		# "minute"           : '*/40',
+	},
 
 }

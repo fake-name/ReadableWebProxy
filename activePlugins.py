@@ -2,45 +2,10 @@
 # pylint: disable=C0413
 
 # The processing pipeline has three stages.
-# Preprocessors have access to the page content before it's fed through the filters
+# Preprocessors have access to the page content before it's fed through the
+#     filters (they're located in the remote AutoTreiver instances)
 # Filters are for extracting additional information from the in-flight pages.
 # Plugins rewrite the page content for more pleasant consumption.
-
-import WebMirror.PreProcessors.LiveJournalPreprocess
-import WebMirror.PreProcessors.RedditPreprocess
-import WebMirror.PreProcessors.WattPadPreprocess
-import WebMirror.PreProcessors.TgStoryTimePreprocess
-import WebMirror.PreProcessors.RRLPreprocess
-import WebMirror.PreProcessors.QidianPreprocess
-import WebMirror.PreProcessors.GravityTalesPreprocess
-import WebMirror.PreProcessors.WixsitePreprocess
-import WebMirror.PreProcessors.LiteroticaPreprocess
-import WebMirror.PreProcessors.CreativeNovelsPreprocess
-import WebMirror.PreProcessors.AsianHobbyist
-
-# Preprocessors are executed against fetched content first.
-# They're principally useful for doing page-rewriting for
-# sites with annoying shit like click-wrappers or injecting
-# better navigation components into a page before processing.
-PREPROCESSORS = [
-	WebMirror.PreProcessors.LiveJournalPreprocess.LJPreprocessor,
-	WebMirror.PreProcessors.RedditPreprocess.RedditPreprocessor,
-	WebMirror.PreProcessors.WattPadPreprocess.WattPadPreprocessor,
-	WebMirror.PreProcessors.TgStoryTimePreprocess.TgStoryTimePreprocessor,
-	WebMirror.PreProcessors.QidianPreprocess.QidianPreprocessor,
-	WebMirror.PreProcessors.GravityTalesPreprocess.GravityTalesPreprocessor,
-	WebMirror.PreProcessors.WixsitePreprocess.JsRendererPreprocessor,
-	WebMirror.PreProcessors.CreativeNovelsPreprocess.CreativeNovelsPreprocessor,
-	WebMirror.PreProcessors.AsianHobbyist.AsianHobbyistPreprocessor,
-
-	WebMirror.PreProcessors.LiteroticaPreprocess.LiteroticaFavouritePreprocessor,
-
-	# Disable the RRL Preprocessor since they rolled back the site.
-	# WebMirror.PreProcessors.RRLPreprocess.RRLListPagePreprocessor,
-	# WebMirror.PreProcessors.RRLPreprocess.RRLSeriesPagePreprocessor,
-	# WebMirror.PreProcessors.RRLPreprocess.RRLChapterPagePreprocessor,
-]
-
 
 import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesPageFilter
 import WebMirror.OutputFilters.RoyalRoadL.RRLSeriesUpdateFilter

@@ -1218,12 +1218,17 @@ def exposed_block_special_case_netlocs():
 
 		sess.commit()
 
+
+
 def exposed_drop_priorities():
 	'''
 	Reset the priority of every row in the table to the IDLE_PRIORITY level
 	'''
 
-	step  = 50000
+	# We have a maximum commit interval so we don't hold a transaction open for extremely long periods of time,
+	# as doing so can cause other portions of the system to time out.
+	commit_interval_s  = 30
+	step               = 50000
 
 	with db.session_context(override_timeout_ms=30*60*1000) as sess:
 		print("Getting minimum row in need or update..")
@@ -1246,6 +1251,7 @@ def exposed_drop_priorities():
 
 		changed = 0
 		changed_tot = 0
+		last_commit = time.time()
 		pb = tqdm.tqdm(range(start, stop, step), desc='Dropping priorities.')
 		for idx in pb:
 			try:
@@ -1264,11 +1270,12 @@ def exposed_drop_priorities():
 				# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
 				changed += have.rowcount
 				changed_tot += have.rowcount
-				if changed > step:
+				if changed > step or (time.time() - last_commit) > commit_interval_s:
 					print("Committing (%s changed rows)...." % changed, end=' ')
 					sess.commit()
 					print("done")
 					changed = 0
+					last_commit = time.time()
 
 			except sqlalchemy.exc.OperationalError:
 				sess.rollback()
@@ -1277,6 +1284,7 @@ def exposed_drop_priorities():
 
 
 		sess.commit()
+
 
 
 def unwrap_ret(ret):

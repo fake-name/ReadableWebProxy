@@ -513,7 +513,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			assert 'module' in response, "No module in response message? Response: %s" % response
 			assert 'call' in response, "No call in response message? Response: %s" % response
 
-			assert response['module'] == 'WebRequest', "Incorrect module? Module: '%s'" % response['module']
+			assert response['module'] == 'SmartWebRequest', "Incorrect module? Module: '%s'" % response['module']
 			assert response['call'] == 'getItem', "Incorrect call? Call: '%s'" % response['call']
 			content, fileN, mType = response['ret']
 			self.process_job(job, content, fileN, mType)

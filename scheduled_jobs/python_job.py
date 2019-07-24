@@ -17,6 +17,7 @@ import WebMirror.TimedTriggers.LocalFetchTriggers
 import Misc.HistoryAggregator.Consolidate
 import WebMirror.util.StatusUpdater.Updater
 import WebMirror.management.FeedDbManage
+import common.management.WebMirrorManage
 
 import Misc.NuForwarder.NuHeader
 import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
@@ -40,6 +41,10 @@ class PythonJob():
 		instance.go()
 		print("Job %s has finished executing %s" % (self.__class__, self.invokable))
 		return
+
+class PriorityDropper():
+	def go(self):
+		common.management.WebMirrorManage.exposed_drop_priorities()
 
 
 class RssTriggerJob(PythonJob, job.JobBase):
@@ -77,4 +82,7 @@ class RollingRawRewalkTriggerJob(PythonJob, job.JobBase):
 
 class NuHeaderJob(PythonJob, job.JobBase):
 	invokable = Misc.NuForwarder.NuHeader.NuHeader
+
+class WebMirrorPriorityDropper(PythonJob, job.JobBase):
+	invokable = PriorityDropper
 
