@@ -630,15 +630,11 @@ class RuleManager():
 		else:
 			return any([badword in url for badword in self.global_bad])
 
-def exposed_streaming_purge_invalid_urls(selected_netloc=None):
+def exposed_streaming_purge_invalid_urls():
 	'''
-	Iterate over each ruleset in the rules directory, and generate a compound query that will
-	delete any matching rows.
-	For rulesets with a large number of rows, or many badwords, this
-	can be VERY slow.
+	Stream the URLs in the database, and filter them on the fly.
 
-	Similar in functionality to `clear_bad`, except it results in many fewer queries,
-	and is therefore likely much more performant.
+	The resulting row IDs and URLs are then dumped to a json file for further processing.
 	'''
 
 	print("Purge invalid URLs called with netloc param: '%s'" % selected_netloc)

@@ -11,6 +11,9 @@ baseUrl: [
 		'http://www.ultimaguil.org',
 		'http://ultimaguil.org',
 
+		# Disabled until I can work around their garbage "protection"
+		# 'https://www.foxteller.com',
+
 		'https://work.nwong.net',
 		'http://www.gundamwingtales.com',
 		'http://www.tigresstranslations.com',

@@ -323,6 +323,19 @@ NU_NEW_MASK_NETLOCS = [
 			# Some extnu leaked through.
 			'www.novelupdates.com',
 
+			# now 404
+			'bluedreams99.wixsite.com',
+			'bumtranslations.weebly.com',
+			'elyssiamc.com',
+			'forum.babelchain.org',
+			'ilovecandies123.simplesite.com',
+			'ilover18novel.com',
+			'lp.supergaminator.com',
+			'myemtranslations.blogspot.com',
+			'www.alphapolis.co',
+			'www.muabeyond.com',
+			'www.weebly.com',
+
 
 		]
 

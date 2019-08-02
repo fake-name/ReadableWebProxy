@@ -213,6 +213,7 @@ def unwrap_redirect(urlin, resolve_redirects=True):
 		return None
 
 
+fuyukai_squatter_re = re.compile(r'www\.fuyukai\.club/[a-z]\d+[A-Z]/')
 def cleanUrl(urlin):
 	# Fucking tumblr redirects.
 	if urlin.startswith("https://www.tumblr.com/login"):
@@ -224,6 +225,10 @@ def cleanUrl(urlin):
 	if SQUATTER_NETLOC_RE.match(parsed.netloc):
 		return None
 
+
+	if 'www.fuyukai.club' in parsed.netloc:
+		if fuyukai_squatter_re.search(urlin):
+			return None
 
 	if 'tumblr.com' in parsed.netloc and urlin.endswith("/amp"):
 		return None
