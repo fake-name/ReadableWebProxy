@@ -51,15 +51,14 @@ if "twoprocess" in largv or "oneprocess" in largv:
 	MAX_IN_FLIGHT_JOBS = 2
 else:
 	# MAX_IN_FLIGHT_JOBS = 5
-	MAX_IN_FLIGHT_JOBS = 250
-	# MAX_IN_FLIGHT_JOBS = 75
+	MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 500
 	# MAX_IN_FLIGHT_JOBS = 1000
 	# MAX_IN_FLIGHT_JOBS = 3000
 
 
-LOCAL_ENQUEUED_JOB_RESPONSES = 500
+LOCAL_ENQUEUED_JOB_RESPONSES = 50
 
 class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
