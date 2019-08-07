@@ -67,15 +67,15 @@ class FetchInterfaceClass(mprpc.RPCServer):
 				pack_params  = {
 						"use_bin_type":True
 					},
-				unpack_param = {
-						'raw'             : True,
-						'max_buffer_size' : sys.maxint,
-						'max_str_len'     : sys.maxint,
-						'max_bin_len'     : sys.maxint,
-						'max_array_len'   : sys.maxint,
-						'max_map_len'     : sys.maxint,
-						'max_ext_len'     : sys.maxint,
-					},
+				# unpack_param = {
+				# 		'raw'             : True,
+				# 		'max_buffer_size' : sys.maxint,
+				# 		'max_str_len'     : sys.maxint,
+				# 		'max_bin_len'     : sys.maxint,
+				# 		'max_array_len'   : sys.maxint,
+				# 		'max_map_len'     : sys.maxint,
+				# 		'max_ext_len'     : sys.maxint,
+				# 	},
 			)
 
 		self.log = logging.getLogger("Main.{}-Interface".format(rpc_prefix))
