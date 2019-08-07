@@ -3,7 +3,7 @@
 import logging
 import threading
 import queue
-import threading
+import sys
 import pickle
 import sys
 import queue
@@ -63,7 +63,20 @@ class FetchInterfaceClass(mprpc.RPCServer):
 	def __init__(self, interface_dict, rpc_prefix):
 
 		mp_conf = {"use_bin_type":True}
-		super().__init__(pack_params=mp_conf)
+		super().__init__(
+				pack_params  = {
+						"use_bin_type":True
+					},
+				unpack_param = {
+						'raw'             : True,
+						'max_buffer_size' : sys.maxint,
+						'max_str_len'     : sys.maxint,
+						'max_bin_len'     : sys.maxint,
+						'max_array_len'   : sys.maxint,
+						'max_map_len'     : sys.maxint,
+						'max_ext_len'     : sys.maxint,
+					},
+			)
 
 		self.log = logging.getLogger("Main.{}-Interface".format(rpc_prefix))
 		self.mdict = interface_dict

@@ -1,6 +1,7 @@
 
 import datetime
 import logging
+import threading
 import copy
 
 from sqlalchemy import Column
@@ -43,7 +44,8 @@ def get_from_db_key_value_store(key):
 	if key in KV_META_CACHE:
 		return KV_META_CACHE[key]
 
-	with session_context('kv_store') as sess:
+	thread_id = "kv_store_{}".format(threading.get_ident())
+	with session_context(thread_id) as sess:
 		have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
 		if have:
 			kv_log.info("KV store had entry")
@@ -69,7 +71,9 @@ def set_in_db_key_value_store(key, new_data):
 		if KV_META_CACHE[key] == new_data:
 			return
 
-	with session_context('kv_store') as sess:
+	thread_id = "kv_store_{}".format(threading.get_ident())
+
+	with session_context(thread_id) as sess:
 		have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()
 		if have:
 			if have.value != new_data:

@@ -158,7 +158,9 @@ def delete_db_session(postfix="", flask_sess_if_possible=True):
 
 @contextlib.contextmanager
 def session_context(name="", override_timeout_ms=False):
-	sess = get_db_session(postfix=name + 'context-sess')
+	postfix_name = name + 'context-sess'
+	sess = get_db_session(postfix=postfix_name)
+
 	try:
 		if override_timeout_ms:
 			log.warning("Query timeout overridden to be %0.2f seconds!", override_timeout_ms / 1000.0, )
@@ -166,19 +168,19 @@ def session_context(name="", override_timeout_ms=False):
 		yield sess
 
 	except sqlalchemy.exc.InternalError:
-		log.warning("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
+		log.warning("(session_context) -> Transaction error (sqlalchemy.exc.InternalError).")
 		sess.rollback()
 		raise
 	except sqlalchemy.exc.OperationalError:
-		log.warning("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
+		log.warning("(session_context) -> Transaction error (sqlalchemy.exc.OperationalError).")
 		sess.rollback()
 		raise
 	except sqlalchemy.exc.IntegrityError:
-		log.warning("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
+		log.warning("(session_context) -> Transaction error (sqlalchemy.exc.IntegrityError).")
 		sess.rollback()
 		raise
 	except sqlalchemy.exc.InvalidRequestError:
-		log.warning("Transaction error (sqlalchemy.exc.InvalidRequestError). Retrying.")
+		log.warning("(session_context) -> Transaction error (sqlalchemy.exc.InvalidRequestError).")
 		traceback.print_exc()
 		sess.rollback()
 		raise
@@ -186,7 +188,7 @@ def session_context(name="", override_timeout_ms=False):
 	finally:
 		if override_timeout_ms:
 			sess.execute("""RESET statement_timeout;""")
-		delete_db_session(postfix='context-sess')
+		delete_db_session(postfix=postfix_name)
 
 
 # import traceback

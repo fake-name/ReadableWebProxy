@@ -13,6 +13,7 @@ import settings
 
 
 
+
 class RemoteJobInterface(LogBase.LoggerMixin):
 
 	loggerPath = "Main.RemoteJobInterface"
@@ -24,8 +25,24 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		for x in range(99999):
 			try:
 				self.log.info("Creating rpc_client")
-				mp_conf = {"use_bin_type":True}
-				self.rpc_client = mprpc.RPCClient(settings.RPC_AGENT_HOST, 4315, pack_params=mp_conf)
+
+				self.rpc_client = mprpc.RPCClient(
+					host         = settings.RPC_AGENT_HOST,
+					port         = 4315,
+					pack_params  = {
+							"use_bin_type":True
+						},
+					unpack_param = {
+							'raw'             : True,
+							'max_buffer_size' : sys.maxsize,
+							'max_str_len'     : sys.maxsize,
+							'max_bin_len'     : sys.maxsize,
+							'max_array_len'   : sys.maxsize,
+							'max_map_len'     : sys.maxsize,
+							'max_ext_len'     : sys.maxsize,
+						},
+					)
+
 				self.log.info("Validating RPC connection")
 
 				# self.rpc_client = self.rpc.get_peer_proxy(timeout=10)
