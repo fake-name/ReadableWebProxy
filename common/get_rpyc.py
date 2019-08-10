@@ -32,15 +32,15 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 					pack_params  = {
 							"use_bin_type":True
 						},
-					unpack_param = {
-							'raw'             : True,
-							'max_buffer_size' : sys.maxsize,
-							'max_str_len'     : sys.maxsize,
-							'max_bin_len'     : sys.maxsize,
-							'max_array_len'   : sys.maxsize,
-							'max_map_len'     : sys.maxsize,
-							'max_ext_len'     : sys.maxsize,
-						},
+					# unpack_param = {
+					# 		'raw'             : True,
+					# 		'max_buffer_size' : sys.maxsize,
+					# 		'max_str_len'     : sys.maxsize,
+					# 		'max_bin_len'     : sys.maxsize,
+					# 		'max_array_len'   : sys.maxsize,
+					# 		'max_map_len'     : sys.maxsize,
+					# 		'max_ext_len'     : sys.maxsize,
+					# 	},
 					)
 
 				self.log.info("Validating RPC connection")

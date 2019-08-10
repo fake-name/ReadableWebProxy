@@ -1132,7 +1132,7 @@ def exposed_delete_error_versions():
 
 					# processed  = idx - start
 					# total_todo = stop - start
-					desc = '%6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
+					desc = '(delete_error_versions) %6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
 					pb.set_description(desc)
 
 					# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
@@ -1194,7 +1194,7 @@ def exposed_block_special_case_netlocs():
 
 				# processed  = idx - start
 				# total_todo = stop - start
-				desc = '%6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
+				desc = '(block_special_case_netlocs) %6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
 				pb.set_description(desc)
 
 				# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
@@ -1260,7 +1260,7 @@ def exposed_drop_priorities():
 
 				# processed  = idx - start
 				# total_todo = stop - start
-				desc = '%6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
+				desc = '(drop_priorities) -> %6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
 				pb.set_description(desc)
 
 				# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
