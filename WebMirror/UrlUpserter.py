@@ -79,9 +79,9 @@ def initializeStartUrls(rules):
 def resetInProgress():
 
 
-	commit_interval =  50000
-	step            =  50000
-	commit_every    =  30
+	commit_interval =   50000
+	step            =  150000
+	commit_every    =      30
 	last_commit     = time.time()
 
 	with db.session_context(override_timeout_ms=60 * 1000 * 15) as sess:
