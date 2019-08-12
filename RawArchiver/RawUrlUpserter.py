@@ -2,6 +2,7 @@
 
 import os
 import datetime
+import time
 import cProfile
 import traceback
 import pprint
@@ -90,6 +91,8 @@ def resetRawInProgress():
 
 	commit_interval =  50000
 	step            =  50000
+	commit_every    =  30
+	last_commit     = time.time()
 
 	with db.session_context(override_timeout_ms=60 * 1000 * 15) as sess:
 		try:
@@ -142,6 +145,16 @@ def resetRawInProgress():
 						sess.commit()
 						print("done")
 						changed = 0
+						last_commit     = time.time()
+
+					if time.time() > last_commit + commit_every:
+						last_commit     = time.time()
+						print("Committing (%s changed rows, timed out)...." % changed, end=' ')
+						sess.commit()
+						print("done")
+						changed = 0
+
+
 
 				except sqlalchemy.exc.OperationalError:
 					sess.rollback()
