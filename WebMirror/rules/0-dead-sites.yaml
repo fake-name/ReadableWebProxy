@@ -417,6 +417,7 @@ badwords: [
 		'/buydomains/',
 		'hexonet',
 		'/hexonet_public/',
+		'#comment-',
 	]
 
 decompose: [

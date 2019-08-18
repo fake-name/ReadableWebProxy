@@ -323,25 +323,29 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		assert interval > 7
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
-		# while True:
-		# 	history_size = self.checkHaveHistory(job.url)
-		# 	if history_size > 0:
-		# 		break
-		# 	try:
-		# 		self.log.info("Need to push content into history table (current length: %s).", history_size)
-		# 		job.state     = "complete"
-		# 		job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=1)
+		while True:
+			history_size = self.checkHaveHistory(job.url)
+			if history_size > 0:
+				break
+			try:
+				self.log.info("Need to push content into history table (current length: %s).", history_size)
+				job.state     = "complete"
+				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=1)
 
-		# 		self.db_sess.commit()
-		# 		self.log.info("Pushing old job content into history table!")
-		# 		break
-		# 	except sqlalchemy.exc.OperationalError:
-		# 		self.db_sess.rollback()
-		# 	except sqlalchemy.exc.InvalidRequestError:
-		# 		self.db_sess.rollback()
+				self.db_sess.commit()
+				self.log.info("Pushing old job content into history table!")
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
+
+
+		tries = 0
 
 		while 1:
 			try:
+				tries += 1
 
 				job.title           = response['title']
 				job.content         = response['contents']
@@ -364,7 +368,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 
 				if job not in self.db_sess:
-					# I haven't figured out exactly why this happens, but it seems to only be an issue in
+					# I haven't figured out exactly why this happens, but it seems to only be an issue in the web views
 					inss = inspect(job)
 					sd = {
 						"transient"  : inss.transient,
@@ -390,10 +394,13 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			except sqlalchemy.exc.OperationalError:
 				self.log.warning("sqlalchemy.exc.OperationalError!")
 				self.db_sess.rollback()
-				traceback.print_exc()
+				if tries > 5:
+					traceback.print_exc()
 			except sqlalchemy.exc.InvalidRequestError:
 				self.log.warning("sqlalchemy.exc.InvalidRequestError!")
 				self.db_sess.rollback()
+				if tries > 5:
+					traceback.print_exc()
 			except Exception as e:
 				print("Exception!")
 				print(traceback.print_exc())
@@ -513,14 +520,17 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					break
 
 				except sqlalchemy.exc.InvalidRequestError:
-					print("InvalidRequest error!")
+					self.log.error("InvalidRequest error!")
 					self.db_sess.rollback()
 					traceback.print_exc()
 				except sqlalchemy.exc.OperationalError:
-					print("OperationalError error!")
+					self.log.error("OperationalError error!")
+					self.db_sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					self.log.error("InvalidRequestError error!")
 					self.db_sess.rollback()
 				except sqlalchemy.exc.IntegrityError:
-					print("[upsertRssItems] -> Integrity error!")
+					self.log.error("[upsertRssItems] -> Integrity error!")
 					traceback.print_exc()
 					self.db_sess.rollback()
 					self.db_sess.expire_all()
