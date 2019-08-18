@@ -1,0 +1,79 @@
+type: eastern
+
+
+rewalk_interval_days: 30
+
+send_raw_feed: True
+
+baseUrl: [
+		"https://www.foxteller.com"
+
+	]
+
+feeds: [
+
+	'http://girlyboysalliance.mozello.com/blog/rss/',
+	'http://novel.oddsquad.org/feeds/posts/default',
+	'http://www.everythingsweet.me/feeds/posts/default',
+	'http://www.heavenlyenchantress.com/feeds/posts/default',
+	'http://www.karasunovels.com/feeds/posts/default',
+	'http://www.lionmask.pro/feeds/posts/default',
+	'http://www.novellatranslation.com/feed',
+	'http://www.ultimaguil.org/base/news_rss.xml',
+	'http://www.ultimaguil.org/base/novelupdates_rss.xml',
+	'https://lightnovelbastion.com/rss.php',
+	'https://work.nwong.net/rss',
+	'https://www.lightnovelbastion.com/rss.php',
+	'https://www.wuxiaworld.com/feed',
+	'https://www.wuxiaworld.com/feed/chapters',
+	'https://lesyt.xyz/rss/chapters/regular',
+	'http://weletranslation.com/atom.xml',
+	'http://novel-id.blognive.com/rss.xml',
+]
+
+extraStartUrls: [
+	]
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			'/assets/css/assets/',
+			'/js/assets/js/',
+			'/assets/js/assets/',
+			'/js/assets/js/images/',
+			'/js/images/assets/',
+			'cms/download.php?auth=',
+			'/<cms:show k_page_link',
+
+
+		]
+
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+	{'class' : "adsbygoogle"},
+]
+
+decompose: [
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'blog-sidebar'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: [
+]
+
+
+
