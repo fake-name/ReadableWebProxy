@@ -1631,7 +1631,14 @@ def filter_get_have_url(netloc_dict, fetch_title):
 					]):
 				continue
 
-			if netloc.startswith("http://www.novelupdates.com/") or netloc.startswith("https://www.novelupdates.com/"):
+			if "www.novelupdates.com" in netloc:
+				continue
+
+			if netloc.endswith("files.wordpress.com"):
+				continue
+			if netloc.endswith("media.tumblr.com"):
+				continue
+			if netloc.endswith("bp.blogspot.com"):
 				continue
 
 			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc):
