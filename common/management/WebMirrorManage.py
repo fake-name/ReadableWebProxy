@@ -1552,6 +1552,47 @@ def get_nu_head_urls():
 
 	return mapdict
 
+
+def get_high_priority_urls():
+	print("Loading high priority netlocs")
+	with db.session_context() as sess:
+
+		page_items = sess.query(db.WebPages.url)                 \
+			.filter(db.WebPages.priority <= db.DB_HIGH_PRIORITY) \
+			.yield_per(10000)                                    \
+			.all()
+
+		mapdict = {}
+		for row, in tqdm.tqdm(page_items):
+			itemnl = WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(row).netloc)
+			mapdict.setdefault(itemnl, set())
+			mapdict[itemnl].add(row)
+
+
+	print("High Priority outbound items: ", len(mapdict))
+
+	return mapdict
+
+def get_distance_of_zero_urls():
+	print("Loading short-distance netlocs")
+	with db.session_context() as sess:
+
+		page_items = sess.query(db.WebPages.url)                 \
+			.filter(db.WebPages.distance <= db.DB_DEFAULT_DIST) \
+			.yield_per(10000)                                    \
+			.all()
+
+		mapdict = {}
+		for row, in tqdm.tqdm(page_items):
+			itemnl = WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(row).netloc)
+			mapdict.setdefault(itemnl, set())
+			mapdict[itemnl].add(row)
+
+
+	print("short-distance items: ", len(mapdict))
+
+	return mapdict
+
 def filter_get_have_url(netloc_dict, fetch_title):
 
 
@@ -1632,16 +1673,29 @@ def exposed_new_from_all_feeds(fetch_title=False):
 	any sites that are not known in the feednamelut.
 	'''
 
-	nlfilter = get_wln_release_urls()
 	mapdict = get_nu_head_urls()
+	mapdict_1 = get_wln_release_urls()
+	mapdict_2 = get_high_priority_urls()
+	mapdict_3 = get_distance_of_zero_urls()
 
-	print("NU Header urls: %s, wln URLs: %s" % (len(mapdict), len(nlfilter)))
+	print("NU Header urls: %s, wln URLs: %s, %s high priority items, %s with a distance of zero." % (len(mapdict), len(mapdict_1), len(mapdict_2), len(mapdict_3)))
 
-	for key, value in nlfilter.items():
+	for key, value in mapdict_1.items():
 		mapdict.setdefault(key, set())
 		mapdict[key].update(value)
 
+	for key, value in mapdict_2.items():
+		mapdict.setdefault(key, set())
+		mapdict[key].update(value)
+
+	for key, value in mapdict_3.items():
+		mapdict.setdefault(key, set())
+		mapdict[key].update(value)
+
+	print("Total items: %s" % (len(mapdict), ))
+
 	filter_get_have_url(mapdict, fetch_title)
+
 
 
 def exposed_purge_squatter_content():

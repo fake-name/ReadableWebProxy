@@ -106,6 +106,27 @@ def saveFile(filecont, url, filename):
 	nlpath.reverse()
 	nlpath = "/".join(nlpath)
 
+	segments = []
+
+	# Insert padding directories so we don't have too many items in one folder.
+	for segment in urlpath.split("/"):
+		if len(segment) > 5:
+			segments.append(segment[:1])
+			segments.append(segment[:3])
+			segments.append(segment[:5])
+			segments.append(segment)
+		elif len(segment) > 3:
+			segments.append(segment[:1])
+			segments.append(segment[:3])
+			segments.append(segment)
+		elif len(segment) > 1:
+			segments.append(segment[:1])
+			segments.append(segment)
+		else:
+			segments.append(segment)
+
+	urlpath = "/".join(segments)
+
 	urlpath = "./"+nlpath+urlpath
 
 	dirPath = os.path.join(C_RAW_RESOURCE_DIR, urlpath)

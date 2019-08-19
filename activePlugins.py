@@ -54,7 +54,7 @@ import WebMirror.processor.RoyalRoadLSeriesPageProcessor
 import WebMirror.processor.NuProcessor
 import WebMirror.processor.FontRemapProcessors
 import WebMirror.processor.GarbageInlineProcessors
-import WebMirror.processor.XiAiNovelProcessor
+import WebMirror.processor.ProtectionProcessor
 
 # Finally, plugins handle fully extracting the content from a page. They can also do
 # rewriting like how preprocessors work, but they're intended for more general use.
@@ -87,7 +87,8 @@ PLUGINS = [
 	WebMirror.processor.GarbageInlineProcessors.AfterAugustMakingProcessor,
 	WebMirror.processor.GarbageInlineProcessors.CreativeNovelsPageProcessor,
 
-	WebMirror.processor.XiAiNovelProcessor.XiAiNovelPageProcessor,
+	WebMirror.processor.ProtectionProcessor.XiAiNovelPageProcessor,
+	WebMirror.processor.ProtectionProcessor.FoxTellerPageProcessor,
 ]
 
 
