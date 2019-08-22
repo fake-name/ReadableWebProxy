@@ -12,6 +12,7 @@ from flask import jsonify
 # from flask.ext.babel import gettext
 # from guess_language import guess_language
 from app import app
+from app import auth
 
 import WebMirror.API
 from sqlalchemy import desc
@@ -35,6 +36,7 @@ from WebMirror.processor.RssProcessor import RssProcessor
 @app.route('/feeds/<page>')
 @app.route('/feeds/<int:page>')
 @app.route('/feeds/')
+@auth.login_required
 def renderFeedsTable(page=1):
 
 	feeds = g.session.query(db.RssFeedPost)       \
@@ -63,6 +65,7 @@ def renderFeedsTable(page=1):
 @app.route('/feeds/tag/<tag>/<page>')
 @app.route('/feeds/tag/<tag>/<int:page>')
 @app.route('/feeds/tag/<tag>/')
+@auth.login_required
 def renderFeedsTagTable(tag, page=1):
 	query = g.session.query(db.RssFeedPost)
 	# query = query.join(db.Tags)
@@ -86,6 +89,7 @@ def renderFeedsTagTable(tag, page=1):
 @app.route('/feeds/source/<source>/<page>')
 @app.route('/feeds/source/<source>/<int:page>')
 @app.route('/feeds/source/<source>/')
+@auth.login_required
 def renderFeedsSourceTable(source, page=1):
 	feeds = g.session.query(db.RssFeedPost) \
 		.filter(db.RssFeedPost.srcname == source)  \
@@ -107,6 +111,7 @@ def renderFeedsSourceTable(source, page=1):
 
 
 @app.route('/feeds/postid/<int:postid>')
+@auth.login_required
 def renderFeedEntry(postid):
 	post = g.session.query(db.RssFeedPost) \
 		.filter(db.RssFeedPost.id == postid)    \
@@ -198,6 +203,7 @@ def proto_process_releases(feed_releases, disable_range_limit=False):
 	return ret_dict
 
 @app.route('/feed-filters/feedid-process-results/<int:feedid>')
+@auth.login_required
 def feedLoadFilteredData(feedid):
 
 	print("Loading data")
@@ -224,6 +230,7 @@ def feedLoadFilteredData(feedid):
 
 
 @app.route('/feed-filters/feedid/<int:feedid>')
+@auth.login_required
 def feedIdView(feedid):
 
 	feed = g.session.query(db.RssFeedEntry)   \
@@ -252,6 +259,7 @@ def feedIdView(feedid):
 
 
 @app.route('/feed-filters/')
+@auth.login_required
 def feedFiltersRoot():
 
 	feeds_in = g.session.query(db.RssFeedEntry) \
@@ -333,6 +341,7 @@ def feedFiltersRoot():
 
 
 @app.route('/feed-filters/merge-parsers')
+@auth.login_required
 def mergeFeedParsers():
 
 	if not "f1" in request.args and "f2" in request.args:
@@ -371,6 +380,7 @@ def mergeFeedParsers():
 
 
 @app.route('/feed-filters/recent')
+@auth.login_required
 def feedFiltersRecent():
 
 	valid_scopes = ["day", "week", "month", "all"]
@@ -553,6 +563,7 @@ def merge_feeds(params):
 	}
 
 @app.route('/feed-filters/api/', methods=['GET', 'POST'])
+@auth.login_required
 def feedFiltersApi():
 	if not request.json:
 		# print("Non-JSON request!")

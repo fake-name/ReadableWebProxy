@@ -47,3 +47,8 @@ RAW_NO_PROCESSES = 10
 MAX_DB_SESSIONS  = 10
 NO_PROCESSES     = 10
 
+web_logins = {
+	"herp" : "wattttttt"
+}
+
+

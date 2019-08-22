@@ -16,6 +16,7 @@ from calendar import timegm
 
 from sqlalchemy.sql import text
 from app import app
+from app import auth
 
 from Misc.NuForwarder import NuHeader
 
@@ -170,6 +171,7 @@ ops = {
 
 
 @app.route('/nu_releases/', methods=['GET'])
+@auth.login_required
 def nu_view():
 
 	release_selector = request.args.get('view')
@@ -214,6 +216,7 @@ def nu_view():
 
 
 @app.route('/nu_heads/', methods=['GET'])
+@auth.login_required
 def nu_heads():
 
 
@@ -253,6 +256,7 @@ def nu_heads():
 
 
 @app.route('/nu_api/', methods=['GET', 'POST'])
+@auth.login_required
 def nu_api():
 	if not request.json:
 		# print("Non-JSON request!")

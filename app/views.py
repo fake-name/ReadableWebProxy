@@ -11,8 +11,9 @@ from flask import request
 from flask import g
 
 import traceback
-from app import app
 
+from app import app
+from app import auth
 from common import database
 
 
@@ -25,16 +26,6 @@ import app.sub_views.status_view   as status_view
 import app.sub_views.misc_views    as misc_views
 import app.sub_views.nu_views      as nu_views
 import app.sub_views.ebook_view    as ebook_view
-
-
-# @lm.user_loader
-# def load_user(id):
-# 	return AnonUser()
-
-
-# @babel.localeselector
-# def get_locale():
-# 	return 'en'
 
 
 @app.before_request
@@ -79,6 +70,7 @@ def internal_error(dummy_error):
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
+@auth.login_required
 def index():
 
 	interesting = ""

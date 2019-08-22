@@ -11,6 +11,7 @@ from calendar import timegm
 
 from sqlalchemy.sql import text
 from app import app
+from app import auth
 
 
 import common.database as db
@@ -57,6 +58,7 @@ def get_scheduled_tasks(session):
 
 
 @app.route('/status/', methods=['GET'])
+@auth.login_required
 def status_view():
 
 	session = g.session

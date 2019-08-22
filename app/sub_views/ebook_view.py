@@ -13,6 +13,7 @@ from flask import send_file
 import settings
 
 from app import app
+from app import auth
 
 
 import common.database as db
@@ -67,6 +68,7 @@ def render_ebook_error(fpath):
 @app.route('/epub-content/<path:fpath>', methods=['GET'])
 @app.route('/static/ext/bib/bookshelf/epub-content/<path:fpath>', methods=['GET'])
 @app.route('/static/ext/bib/bookshelf//epub-content/<path:fpath>', methods=['GET'])
+@auth.login_required
 def ebook_file_content(fpath=None):
 	if fpath is None:
 		fpath = ""
@@ -90,6 +92,7 @@ def ebook_file_content(fpath=None):
 
 @app.route('/epub-reader/', methods=['GET'])
 @app.route('/epub-reader/<path:fpath>', methods=['GET'])
+@auth.login_required
 def ebook_root_view(fpath=None):
 	if fpath is None:
 		fpath = ""

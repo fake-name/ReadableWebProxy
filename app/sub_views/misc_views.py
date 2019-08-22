@@ -4,6 +4,7 @@ from flask import render_template
 from flask import request
 
 from app import app
+from app import auth
 
 
 import urllib.parse
@@ -89,6 +90,7 @@ def get_random_raw_url_group(num_items):
 
 
 @app.route('/random-urls/', methods=['GET'])
+@auth.login_required
 def random_urls_view():
 	entries = get_random_url_group(0.007)
 
@@ -98,6 +100,7 @@ def random_urls_view():
 						   )
 
 @app.route('/random-raw-urls/', methods=['GET'])
+@auth.login_required
 def random_raw_urls_view():
 	entries = get_random_raw_url_group(0.01)
 

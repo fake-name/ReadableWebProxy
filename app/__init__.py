@@ -8,7 +8,8 @@ from babel.dates import format_datetime
 
 import urllib.parse
 
-
+from flask_httpauth import HTTPBasicAuth
+from settings import web_logins
 
 app = Flask(__name__)
 
@@ -17,6 +18,16 @@ if "debug" in sys.argv:
 	print("Flask running in debug mode!")
 	app.debug = True
 app.config.from_object('config.BaseConfig')
+
+
+
+auth = HTTPBasicAuth()
+@auth.get_password
+def get_pw(username):
+	if username in web_logins:
+		return web_logins.get(username)
+	return None
+
 
 CSRFProtect(app)
 

@@ -9,6 +9,7 @@ from flask import request
 import pymysql
 
 from app import app
+from app import auth
 import WebMirror.rules
 
 import settings
@@ -106,6 +107,7 @@ def render_search_page():
 
 @app.route('/search/', methods=['GET'])
 @app.route('/search/<int:page>', methods=['GET'])
+@auth.login_required
 def search(page=1):
 	scope = request.args.get('scope')
 	query = request.args.get('query')
