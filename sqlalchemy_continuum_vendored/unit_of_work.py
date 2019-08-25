@@ -270,7 +270,6 @@ class UnitOfWork(object):
                         )
                     )
                 )
-
                 query.update(
                     {
                         end_tx_column_name(version_obj):
