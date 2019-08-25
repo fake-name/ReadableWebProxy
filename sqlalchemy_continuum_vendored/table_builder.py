@@ -66,7 +66,7 @@ class ColumnReflector(object):
             sa.BigInteger,
             primary_key=True,
             index=True,
-            autoincrement=False  # This is needed for MySQL
+            autoincrement=True  # This is needed for MySQL
         )
 
     @property

@@ -43,8 +43,8 @@ def set_in_table(tablename):
     if start is None:
         print("No items to set!")
         return
-    step_size = 1000
 
+    step_size = 1000
     commit_every_seconds = 30
     last_commit = time.time()
     for x in tqdm.tqdm(range(start-1, stop+1, step_size)):
