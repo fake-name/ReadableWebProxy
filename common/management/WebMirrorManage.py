@@ -1617,6 +1617,9 @@ def filter_get_have_url(netloc_dict, fetch_title):
 
 			if not netloc:
 				continue
+
+			netloc = netloc.lower()
+
 			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
 				continue
 			if any([tmp in netloc for tmp in common.global_constants.GLOBAL_BAD_URLS]):
@@ -1643,6 +1646,11 @@ def filter_get_have_url(netloc_dict, fetch_title):
 
 			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc):
 				continue
+
+			# Try to check www./non-www. URLs
+			if netloc.startswith("www."):
+				if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc[4:]):
+					continue
 
 			if netloc in starturldict:
 				continue

@@ -35,55 +35,72 @@ ischema_names['citext'] = citext.CIText
 
 
 def set_in_table(tablename):
-    conn = op.get_bind()
+	conn = op.get_bind()
 
-    ret = conn.execute("SELECT min(id), max(id) FROM %s WHERE is_delta IS NULL;" % (tablename, ))
-    (start, stop),  = list(ret)
-    print("ID Range: ", start, stop)
-    if start is None:
-        print("No items to set!")
-        return
+	ret = conn.execute("SELECT min(id) FROM %s WHERE is_delta IS NULL;" % (tablename, ))
+	(start, ),  = list(ret)
+	ret = conn.execute("SELECT max(id) FROM %s WHERE is_delta IS NULL;" % (tablename, ))
+	(stop, ),  = list(ret)
+	print("ID Range: ", start, stop)
+	if start is None:
+		print("No items to set!")
+		return
 
-    step_size = 1000
-    commit_every_seconds = 30
-    last_commit = time.time()
-    for x in tqdm.tqdm(range(start-1, stop+1, step_size)):
-        op.execute("UPDATE %s SET is_delta=false WHERE is_delta IS NULL AND id >= %s AND id <= %s;" % (tablename, x, x+step_size+1))
-        if time.time() > (last_commit + commit_every_seconds):
-            last_commit = time.time()
-            print("Incremental Commit!")
-            op.execute("COMMIT")
+	step_size = 2500
+	commit_every_seconds = 30
+	last_commit = time.time()
+	changed = 0
+	changed_tot = 0
+	pbar = tqdm.tqdm(range(start-1, stop+1, step_size))
+	for x in pbar:
+		ret = conn.execute("UPDATE %s SET is_delta=false WHERE is_delta IS NULL AND id >= %s AND id <= %s;" % (tablename, x, x+step_size+1))
+
+
+		# processed  = idx - start
+		# total_todo = stop - start
+		desc = '(set_in_table) -> %6i, %6i, %6i' % (ret.rowcount, changed, changed_tot)
+		pbar.set_description(desc)
+
+		# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
+		changed += ret.rowcount
+		changed_tot += ret.rowcount
+
+		if time.time() > (last_commit + commit_every_seconds):
+			changed = 0
+			last_commit = time.time()
+			print("Incremental Commit!")
+			conn.execute("COMMIT")
 
 
 def upgrade():
-    op.execute("SET statement_timeout TO 14400000;")
+	op.execute("SET statement_timeout TO 14400000;")
 
-    print("Setting nulls in rss_parser_feed_name_lut_version")
-    set_in_table("rss_parser_feed_name_lut_version")
+	print("Setting nulls in rss_parser_feed_name_lut_version")
+	set_in_table("rss_parser_feed_name_lut_version")
 
-    print("Setting nulls in rss_parser_funcs_version")
-    set_in_table("rss_parser_funcs_version")
+	print("Setting nulls in rss_parser_funcs_version")
+	set_in_table("rss_parser_funcs_version")
 
-    print("Setting nulls in web_pages_version")
-    set_in_table("web_pages_version")
+	print("Setting nulls in web_pages_version")
+	set_in_table("web_pages_version")
 
-    print("Setting nulls in raw_web_pages_version")
-    set_in_table("raw_web_pages_version")
+	print("Setting nulls in raw_web_pages_version")
+	set_in_table("raw_web_pages_version")
 
-    raise
+	raise
 
-    print("adding nullable constraing on rss_parser_feed_name_lut_version")
-    op.alter_column('rss_parser_feed_name_lut_version', 'is_delta', nullable=False)
+	print("adding nullable constraing on rss_parser_feed_name_lut_version")
+	op.alter_column('rss_parser_feed_name_lut_version', 'is_delta', nullable=False)
 
-    print("adding nullable constraing on rss_parser_funcs_version")
-    op.alter_column('rss_parser_funcs_version',         'is_delta', nullable=False)
+	print("adding nullable constraing on rss_parser_funcs_version")
+	op.alter_column('rss_parser_funcs_version',         'is_delta', nullable=False)
 
-    print("adding nullable constraing on web_pages_version")
-    op.alter_column('web_pages_version',                'is_delta', nullable=False)
+	print("adding nullable constraing on web_pages_version")
+	op.alter_column('web_pages_version',                'is_delta', nullable=False)
 
-    print("adding nullable constraing on raw_web_pages_version")
-    op.alter_column('raw_web_pages_version',            'is_delta', nullable=False)
-    print("Done!")
+	print("adding nullable constraing on raw_web_pages_version")
+	op.alter_column('raw_web_pages_version',            'is_delta', nullable=False)
+	print("Done!")
 
 def downgrade():
-    pass
+	pass

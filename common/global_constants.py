@@ -184,6 +184,9 @@ GLOBAL_BAD_URLS = [
 			'Special:WhatLinksHere',
 			'/User:',
 			'.cfm?fp=',
+
+			'automattic.com',
+			'avatars.jurko.net',
 	]
 
 
