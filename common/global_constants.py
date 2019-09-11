@@ -56,6 +56,7 @@ GLOBAL_BAD_URLS = [
 			'box5113.temp.domains',
 			'attorneykings.gdn',
 			's2ba7sw2d.us-02.live-paas.net',
+			'getcopyfight.com',
 
 			# Tumblr can seriously go fuck itself with a rusty stake
 			'tumblr.com/widgets/',

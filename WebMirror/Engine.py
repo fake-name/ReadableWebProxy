@@ -21,6 +21,7 @@ from sqlalchemy import desc
 from sqlalchemy.sql import text
 from sqlalchemy import distinct
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.sql.expression import exists
 
 import common.util.urlFuncs
 import urllib.parse
@@ -306,10 +307,9 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		ctbl = version_table(db.WebPages.__table__)
 
-		count = self.db_sess.query(ctbl) \
-			.filter(ctbl.c.url == url)   \
-			.count()
-		return count
+		query = self.db_sess.query(exists().where(ctbl.c.url == url))
+
+		return query.scalar()
 
 
 	# Update the row with the item contents
@@ -323,22 +323,22 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		assert interval > 7
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
-		# while True:
-		# 	history_size = self.checkHaveHistory(job.url)
-		# 	if history_size > 0:
-		# 		break
-		# 	try:
-		# 		self.log.info("Need to push content into history table (current length: %s).", history_size)
-		# 		job.state     = "complete"
-		# 		job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=1)
+		while True:
+			have_history = self.checkHaveHistory(job.url)
+			if have_history:
+				break
+			try:
+				self.log.info("Need to push content into history table.")
+				job.state     = "complete"
+				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=1)
 
-		# 		self.db_sess.commit()
-		# 		self.log.info("Pushing old job content into history table!")
-		# 		break
-		# 	except sqlalchemy.exc.OperationalError:
-		# 		self.db_sess.rollback()
-		# 	except sqlalchemy.exc.InvalidRequestError:
-		# 		self.db_sess.rollback()
+				self.db_sess.commit()
+				self.log.info("Pushing old job content into history table!")
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
 
 
 		tries = 0
@@ -1298,12 +1298,26 @@ def test3():
 	# 	pipe.incr('filtered_links',      count=filtered)
 	# 	pipe.incr('upserted_links',      count=batch_items)
 
+def test_4():
+
+	with common.database.session_context() as db_handle:
+		archiver = SiteArchiver(
+				None,       # cookie_lock
+				db_handle,  # db_interface
+				None,       # new_job_queue
+			)
+		print(archiver)
+		url = 'http://www.aihristdreamtranslations.com/feed/'
+
+		archiver.checkHaveHistory(url)
+
+
 
 
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
-	test3()
+	test_4()
 
 

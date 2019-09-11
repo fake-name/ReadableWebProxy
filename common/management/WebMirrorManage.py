@@ -630,7 +630,7 @@ class RuleManager():
 		else:
 			return any([badword in url for badword in self.global_bad])
 
-def exposed_streaming_purge_invalid_urls():
+def exposed_streaming_save_invalid_urls():
 	'''
 	Stream the URLs in the database, and filter them on the fly.
 
@@ -672,6 +672,35 @@ def exposed_streaming_purge_invalid_urls():
 		# 	del_sess.commit()
 		# deleted += len(badids)
 		# badids = []
+
+
+def exposed_streaming_purge_invalid_urls_from_file():
+	'''
+	Stream the URLs in the database, and filter them on the fly.
+
+	The resulting row IDs and URLs are then dumped to a json file for further processing.
+	'''
+
+	print("Loading from json file")
+	with open("bad-ids.json", "r") as fp:
+		ids_list = json.load(fp)
+	print("Bad items: ", len(ids_list))
+
+	badids = [rowid for rowid, url in ids_list]
+
+	print("Deleting rows.")
+	with db.session_context(name="del_sess", override_timeout_ms = 5 * 60 * 1000) as del_sess:
+		delete_internal(
+				sess         = del_sess,
+				ids          = badids,
+				netloc       = "None",
+				badwords     = [],
+				show_badword = False,
+				chunk_size   = 50,
+			)
+		del_sess.commit()
+
+
 
 def exposed_purge_invalid_url_history():
 	'''
@@ -1067,6 +1096,12 @@ def exposed_flatten_fix_missing_history():
 	'''
 	Misc.HistoryAggregator.Consolidate.consolidate_history()
 	Misc.HistoryAggregator.Consolidate.fix_missing_history()
+
+def exposed_delta_compress_history():
+	'''
+	Do delta compression on history items.
+	'''
+	Misc.HistoryAggregator.Consolidate.do_delta_compression()
 
 def exposed_clear_rss_history():
 	'''
@@ -1559,6 +1594,7 @@ def get_high_priority_urls():
 
 		page_items = sess.query(db.WebPages.url)                 \
 			.filter(db.WebPages.priority <= db.DB_HIGH_PRIORITY) \
+			.filter(db.WebPages.is_text  == True)                \
 			.yield_per(10000)                                    \
 			.all()
 
@@ -1577,9 +1613,10 @@ def get_distance_of_zero_urls():
 	print("Loading short-distance netlocs")
 	with db.session_context() as sess:
 
-		page_items = sess.query(db.WebPages.url)                 \
+		page_items = sess.query(db.WebPages.url)                \
 			.filter(db.WebPages.distance <= db.DB_DEFAULT_DIST) \
-			.yield_per(10000)                                    \
+			.filter(db.WebPages.is_text  == True)               \
+			.yield_per(10000)                                   \
 			.all()
 
 		mapdict = {}

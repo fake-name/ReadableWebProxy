@@ -1,8 +1,10 @@
 
 
+import sys
 
 from sqlalchemy_continuum_vendored import make_versioned
-# make_versioned(user_cls=None, options={'strategy' : 'subquery'})
+
+make_versioned(user_cls=None, options={'strategy' : 'subquery'})
 
 # Import the DB things.
 from common.main_archive_db import WebPages

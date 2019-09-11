@@ -1,12 +1,14 @@
 import sqlalchemy as sa
 from sqlalchemy_utils import get_column_key
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class ColumnReflector(object):
-    def __init__(self, manager, parent_table, model=None):
+    def __init__(self, manager, parent_table, model, table_name):
         self.parent_table = parent_table
         self.model = model
         self.manager = manager
+        self.table_name = table_name
 
     def option(self, name):
         try:
@@ -99,16 +101,23 @@ class ColumnReflector(object):
         # Only yield internal version columns if parent model is not using
         # single table inheritance
         if not self.model or not sa.inspect(self.model).single:
+
             yield self.transaction_column
             if self.option('strategy') == 'validity':
                 yield self.end_transaction_column
             yield self.operation_type_column
+
             yield sa.Column(
-                "is_delta",
-                sa.Boolean,
-                nullable=False,
-                default=False,
-                index=False
+                "data_hash",
+                UUID,
+                index=True,
+                unique=True
+            )
+            yield sa.Column(
+                "parent_hash",
+                UUID,
+                sa.ForeignKey("{}.data_hash".format(self.table_name)),
+                index=True
             )
 
 
@@ -144,7 +153,7 @@ class TableBuilder(object):
     def columns(self):
         return list(
             column for column in
-            ColumnReflector(self.manager, self.parent_table, self.model)
+            ColumnReflector(self.manager, self.parent_table, self.model, self.table_name)
         )
 
     def __call__(self, extends=None):

@@ -46,6 +46,10 @@ class PriorityDropper():
 	def go(self):
 		common.management.WebMirrorManage.exposed_drop_priorities()
 
+class RssHistoryPurgerRunner():
+	def go(self):
+		common.management.WebMirrorManage.exposed_clear_rss_history()
+
 
 class RssTriggerJob(PythonJob, job.JobBase):
 	invokable = WebMirror.TimedTriggers.UrlTriggers.RssTriggerBase
@@ -85,4 +89,7 @@ class NuHeaderJob(PythonJob, job.JobBase):
 
 class WebMirrorPriorityDropper(PythonJob, job.JobBase):
 	invokable = PriorityDropper
+
+class RssHistoryPurger(PythonJob, job.JobBase):
+	invokable = RssHistoryPurgerRunner
 

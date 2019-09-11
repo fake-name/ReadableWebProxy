@@ -279,14 +279,18 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			outname = "unknown"
 		return pgctnt, outname+newext, mime if mime else "application/octet-stream"
 
+
+
 	def checkHaveHistory(self, url):
+		# Only do version fiddling if versioning is enabled.
+		if not settings.DO_VERSIONING:
+			return 99
+
 		ctbl = version_table(self.db.RawWebPages.__table__)
 
-		(count, ),  = self.db_sess.query(
-				exists().where(ctbl.c.url == url)
-			)
+		query = self.db_sess.query(exists().where(ctbl.c.url == url))
 
-		return count
+		return query.scalar()
 
 	def extractLinks(self, ctnt, mimetype, url):
 
@@ -477,23 +481,23 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
 
-		# while True:
-		# 	history_size = self.checkHaveHistory(job.url)
-		# 	if history_size > 0:
-		# 		break
-		# 	try:
-		# 		self.log.info("Need to push content into history table (current length: %s).", history_size)
-		# 		job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
+		while True:
+			have_history = self.checkHaveHistory(job.url)
+			if have_history:
+				break
+			try:
+				self.log.info("Need to push content into history table.")
+				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
 
-		# 		job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
+				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
 
-		# 		self.db_sess.commit()
-		# 		self.log.info("Pushing old job content into history table!")
-		# 		break
-		# 	except sqlalchemy.exc.OperationalError:
-		# 		self.db_sess.rollback()
-		# 	except sqlalchemy.exc.InvalidRequestError:
-		# 		self.db_sess.rollback()
+				self.db_sess.commit()
+				self.log.info("Pushing old job content into history table!")
+				break
+			except sqlalchemy.exc.OperationalError:
+				self.db_sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				self.db_sess.rollback()
 
 		while 1:
 			try:

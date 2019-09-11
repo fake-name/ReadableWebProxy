@@ -297,6 +297,7 @@ class DbFlattener(object):
 			# self.log.info("Printing memory deltas.")
 			# m_tracker.print_diff()
 
+
 	def truncate_url_history(self, sess, url):
 
 		# last_check = db.get_from_version_check_table(sess, url)
@@ -312,16 +313,16 @@ class DbFlattener(object):
 		if url in self.feed_urls:
 			self.log.info("Feed URL (%s)! Deleting history wholesale!", url)
 
-			res = sess.execute(
-					ctbl.delete() \
-					.where(ctbl.c.url == url)
-				)
-			self.log.info("Modified %s rows", res.rowcount)
-			sess.commit()
-			self.log.info("Committed. Setting version log.")
-			db.set_in_version_check_table(sess, url, datetime.datetime.now())
-			new_val = db.get_from_version_check_table(sess, url)
-			self.log.info("New value from DB: %s", new_val)
+			# res = sess.execute(
+			# 		ctbl.delete() \
+			# 		.where(ctbl.c.url == url)
+			# 	)
+			# self.log.info("Modified %s rows", res.rowcount)
+			# sess.commit()
+			# self.log.info("Committed. Setting version log.")
+			# db.set_in_version_check_table(sess, url, datetime.datetime.now())
+			# new_val = db.get_from_version_check_table(sess, url)
+			# self.log.info("New value from DB: %s", new_val)
 
 			return
 
@@ -530,6 +531,24 @@ class DbFlattener(object):
 						temp_sess.rollback()
 						traceback.print_exc()
 
+
+	def delta_compress_batch(self, batched):
+
+		for count, url in batched:
+			print("Count, url: %s, %s" % (count, url))
+			# with db.session_context(override_timeout_ms=1000*60*30) as temp_sess:
+			# 	while 1:
+			# 		try:
+			# 			self.truncate_url_history(temp_sess, url)
+			# 			break
+			# 		except psycopg2.InternalError:
+			# 			temp_sess.rollback()
+			# 		except sqlalchemy.exc.OperationalError:
+			# 			temp_sess.rollback()
+			# 		except Exception:
+			# 			temp_sess.rollback()
+			# 			traceback.print_exc()
+
 	def tickle_rows(self, sess, urlset):
 		jobs = []
 		self.log.info("Querying for records")
@@ -623,8 +642,8 @@ class DbFlattener(object):
 		self.log.info("Clearing RSS history")
 
 
-		with db.session_context(override_timeout_ms=15 * 60 * 1000) as sess:
-			for url_set in tqdm.tqdm(batch(self.feed_urls, n=2)):
+		with db.session_context(override_timeout_ms=30 * 60 * 1000) as sess:
+			for url_set in tqdm.tqdm(list(batch(self.feed_urls, n=5))):
 				end = sess.execute("""
 					DELETE FROM
 						web_pages_version
@@ -633,21 +652,6 @@ class DbFlattener(object):
 					""", {'urls' : tuple(url_set)})
 				self.log.info("Removed %s entries for URLs %s", end.rowcount, url_set )
 				sess.commit()
-		# 	end = [tmp[0] for tmp in end]
-		# 	self.log.info("Found %s rows missing history content!", len(end))
-
-		# 	loop = 0
-		# 	remaining = len(end)
-		# 	for urlset in batch(end, 50):
-		# 		self.tickle_rows(sess, urlset)
-		# 		sess.expire_all()
-
-		# 		remaining = remaining - len(urlset)
-		# 		self.log.info("Processed %s of %s (%s%%)", len(end)-remaining, len(end), 100-((remaining/len(end)) * 100) )
-
-		# 		print("Growth:")
-		# 		growth = objgraph.show_growth(limit=10)
-		# 		print(growth)
 
 
 	def wat(self):
@@ -667,6 +671,7 @@ def incremental_history_consolidate(batched):
 def consolidate_history():
 	proc = DbFlattener()
 	proc.consolidate_history()
+
 
 def fix_missing_history():
 	proc = DbFlattener()
