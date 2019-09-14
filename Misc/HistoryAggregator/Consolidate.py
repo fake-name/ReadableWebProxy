@@ -5,6 +5,7 @@ import traceback
 import logging
 import os.path
 import json
+import random
 import calendar
 import pickle
 import urllib.parse
@@ -641,17 +642,48 @@ class DbFlattener(object):
 	def clear_rss_history(self):
 		self.log.info("Clearing RSS history")
 
+		for url_set in tqdm.tqdm(list(batch(self.feed_urls, n=3))):
+			try:
+				with db.session_context(override_timeout_ms=30 * 60 * 1000) as sess:
+						end = sess.execute("""
+							DELETE FROM
+								web_pages_version
+							WHERE
+								url IN :urls
+							""", {'urls' : tuple(url_set)})
+						self.log.info("Removed %s entries for URLs %s", end.rowcount, url_set )
+						sess.commit()
+			except Exception:
+				traceback.print_exc()
+				raise
 
-		with db.session_context(override_timeout_ms=30 * 60 * 1000) as sess:
-			for url_set in tqdm.tqdm(list(batch(self.feed_urls, n=5))):
-				end = sess.execute("""
-					DELETE FROM
-						web_pages_version
-					WHERE
-						url IN :urls
-					""", {'urls' : tuple(url_set)})
-				self.log.info("Removed %s entries for URLs %s", end.rowcount, url_set )
-				sess.commit()
+
+		# with concurrent.futures.ThreadPoolExecutor(max_workers=4) as tpe:
+		# 	def proc(url_set):
+		# 		try:
+		# 			with db.session_context(override_timeout_ms=30 * 60 * 1000) as sess:
+		# 					end = sess.execute("""
+		# 						DELETE FROM
+		# 							web_pages_version
+		# 						WHERE
+		# 							url IN :urls
+		# 						""", {'urls' : tuple(url_set)})
+		# 					self.log.info("Removed %s entries for URLs %s", end.rowcount, url_set )
+		# 					sess.commit()
+		# 		except Exception:
+		# 			traceback.print_exc()
+		# 			raise
+
+		# 	chunks = list(batch(self.feed_urls, n=3))
+		# 	random.shuffle(chunks)
+		# 	res = tpe.map(proc, tqdm.tqdm(chunks))
+
+		# 	print("Flushing")
+		# 	pbar = tqdm.tqdm(total=len(chunks))
+		# 	print("Pbar: ", pbar)
+		# 	for item in res:
+		# 		pbar.update()
+		# 		print(pbar)
 
 
 	def wat(self):

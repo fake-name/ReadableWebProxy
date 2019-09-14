@@ -1,14 +1,14 @@
-"""Add sha1 function
+"""Add has function and dependent pgcrpyto
 
-Revision ID: cae040b30571
-Revises: ddbe2cea4c72
-Create Date: 2019-08-25 04:13:54.565994
+Revision ID: 5552dfae2cb0
+Revises: c225ea8fbf5e
+Create Date: 2019-09-14 06:19:36.520447
 
 """
 
 # revision identifiers, used by Alembic.
-revision = 'cae040b30571'
-down_revision = 'ddbe2cea4c72'
+revision = '5552dfae2cb0'
+down_revision = 'c225ea8fbf5e'
 branch_labels = None
 depends_on = None
 
@@ -30,13 +30,17 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import TSVECTOR
 ischema_names['citext'] = citext.CIText
 
+# We use a UUID column because it's a performant in-table 8-byte storage mechanism with nice printing facilities.
+# SHA-1 has a 160 bit output, so we need to truncate the input
+
 SQL_FUNC = '''
-CREATE OR REPLACE FUNCTION sha1(bytea) returns text AS $$
-    SELECT encode(digest($1, 'sha1'), 'hex')
+CREATE OR REPLACE FUNCTION sha_row_hash(bytea) returns uuid AS $$
+    SELECT substring(encode(digest($1, 'sha1'), 'hex') from 0 for 33)::uuid;
 $$ LANGUAGE SQL STRICT IMMUTABLE;
 '''
 
 def upgrade():
+    op.execute("""CREATE EXTENSION IF NOT EXISTS pgcrypto""")
     op.execute(SQL_FUNC)
 
 

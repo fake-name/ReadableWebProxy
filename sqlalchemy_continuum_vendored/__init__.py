@@ -25,12 +25,13 @@ versioning_manager = VersioningManager()
 
 
 def make_versioned(
-    mapper=sa.orm.mapper,
-    session=sa.orm.session.Session,
-    manager=versioning_manager,
-    plugins=None,
-    options=None,
-    user_cls='User'
+    mapper              = sa.orm.mapper,
+    session             = sa.orm.session.Session,
+    manager             = versioning_manager,
+    plugins             = None,
+    options             = None,
+    user_cls            = 'User',
+    cares_about_checker = None,
 ):
     """
     This is the public API function of SQLAlchemy-Continuum for making certain
@@ -58,6 +59,9 @@ def make_versioned(
 
     if options is not None:
         manager.options.update(options)
+
+    if cares_about_checker:
+        versioning_manager.set_check_func(cares_about_checker)
 
     manager.user_cls = user_cls
     manager.apply_class_configuration_listeners(mapper)

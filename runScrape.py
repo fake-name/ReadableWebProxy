@@ -6,8 +6,6 @@ if __name__ == "__main__":
 	logSetup.initLogging()
 	# logSetup.initLogging(logging.WARNING)
 
-
-
 	# Shut up fucking annoying psycopg2 vomit every exec.
 	import warnings
 	warnings.filterwarnings("ignore", category=UserWarning, module='psycopg2')
@@ -28,6 +26,7 @@ import common.process
 import Misc.ls_open_file_handles
 
 import common.redis
+import common.management.WebMirrorManage
 
 from settings import NO_PROCESSES
 from settings import RAW_NO_PROCESSES
@@ -64,6 +63,15 @@ def go():
 			WebMirror.UrlUpserter.resetInProgress()
 		else:
 			print("Not resetting in-progress downloads.")
+
+		if not "noreset" in largv:
+			print("Dropping fetch priority levels.")
+			common.management.WebMirrorManage.exposed_drop_priorities()
+
+		else:
+			print("Not resetting fetch priority levels.")
+
+
 		WebMirror.UrlUpserter.initializeStartUrls(rules)
 
 

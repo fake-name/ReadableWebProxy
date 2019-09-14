@@ -100,5 +100,5 @@ class Operations(object):
         if state_copy:
             self.add(Operation(target, Operation.UPDATE))
 
-    def add_delete(self, target):
-        self.add(Operation(target, Operation.DELETE))
+    # def add_delete(self, target):
+    #     self.add(Operation(target, Operation.DELETE))

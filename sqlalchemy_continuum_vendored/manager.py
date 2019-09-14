@@ -14,6 +14,9 @@ from .unit_of_work import UnitOfWork
 from .utils import is_modified, is_versioned
 
 
+def internal_cares_about_change(op, row):
+    return True
+
 def tracked_operation(func):
     @wraps(func)
     def wrapper(self, mapper, connection, target):
@@ -70,6 +73,8 @@ class VersioningManager(object):
         builder=None
     ):
         self.uow_class = unit_of_work_cls
+        self.__cares_func = internal_cares_about_change
+
         if builder is None:
             self.builder = Builder()
         else:
@@ -111,6 +116,9 @@ class VersioningManager(object):
     @plugins.setter
     def plugins(self, plugin_collection):
         self._plugins = PluginCollection(plugin_collection)
+
+    def set_check_func(self, func):
+        self.__cares_func = func
 
     def fetcher(self, obj):
         if self.option(obj, 'strategy') == 'subquery':
@@ -284,6 +292,9 @@ class VersioningManager(object):
         Track object insert operations. Whenever object is inserted it is
         added to this UnitOfWork's internal operations dictionary.
         """
+        if not self.__cares_func('insert', target):
+            return
+
         uow.operations.add_insert(target)
 
     @tracked_operation
@@ -294,6 +305,10 @@ class VersioningManager(object):
         """
         if not is_modified(target):
             return
+
+        if not self.__cares_func('update', target):
+            return
+
         uow.operations.add_update(target)
 
     @tracked_operation
@@ -302,6 +317,9 @@ class VersioningManager(object):
         Track object deletion operations. Whenever object is deleted it is
         added to this UnitOfWork's internal operations dictionary.
         """
+        if not self.__cares_func('delete', target):
+            return
+
         uow.operations.add_delete(target)
 
     def unit_of_work(self, session):
