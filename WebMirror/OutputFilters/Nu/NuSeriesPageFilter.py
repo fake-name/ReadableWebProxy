@@ -174,6 +174,8 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 		data_sets['title'] = title
 		data_sets['altnames'] = [tmp.strip() for tmp in altnametg.contents if isinstance(tmp, bs4.NavigableString)]
 
+		data_sets['altnames'] = [tmp for tmp in data_sets['altnames'] if tmp.lower() != 'n/a']
+
 		# Scrub incoming markup
 		for key in list(data_sets.keys()):
 			if isinstance(data_sets[key], list):

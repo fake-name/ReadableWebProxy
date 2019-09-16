@@ -52,7 +52,7 @@ $$ LANGUAGE SQL STRICT IMMUTABLE;
 def set_in_table(tablename):
 	conn = op.get_bind()
 
-	ret = conn.execute("SELECT min(id), max(id) FROM %s;" % (tablename, ))
+	ret = conn.execute("SELECT min(id), max(id) FROM %s WHERE (content IS NOT NULL AND data_hash IS NULL);" % (tablename, ))
 	start, stop = list(ret)[0]
 	print("Total Range: ", start, stop)
 
@@ -74,7 +74,7 @@ def set_in_table(tablename):
 	# start, stop = 2062433413, 8023669082
 
 
-	step_size = 10
+	step_size = 100
 	commit_every_seconds = 30
 	last_commit = time.time()
 	changed = 0
