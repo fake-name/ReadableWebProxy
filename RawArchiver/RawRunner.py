@@ -54,17 +54,16 @@ class RawRunInstance(object):
 
 	def do_task(self):
 
-		with common.database.session_context() as db_handle:
-			hadjob = False
-			archiver = RawArchiver.RawEngine.RawSiteArchiver(
-					total_worker_count = self.total_worker_count,
-					worker_num         = self.worker_num,
-					cookie_lock        = self.cookie_lock,
-					new_job_queue      = self.new_job_queue,
-					response_queue     = self.resp_queue,
-					db_interface       = db_handle
-				)
-			hadjob = archiver.taskProcess()
+
+		hadjob = False
+		archiver = RawArchiver.RawEngine.RawSiteArchiver(
+				total_worker_count = self.total_worker_count,
+				worker_num         = self.worker_num,
+				cookie_lock        = self.cookie_lock,
+				new_job_queue      = self.new_job_queue,
+				response_queue     = self.resp_queue,
+			)
+		hadjob = archiver.taskProcess()
 
 
 		return hadjob

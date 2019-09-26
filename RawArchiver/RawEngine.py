@@ -11,6 +11,7 @@ import urllib.parse
 import traceback
 import datetime
 import hashlib
+import contextlib
 
 import sqlalchemy
 import sqlalchemy.exc
@@ -29,6 +30,7 @@ import RawArchiver.RawJobDispatcher
 import RawArchiver.RawUrlUpserter
 import common.StatsdMixin as StatsdMixin
 import runStatus
+import settings
 from config import C_RAW_RESOURCE_DIR
 
 if '__pypy__' in sys.builtin_module_names:
@@ -219,7 +221,6 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					worker_num,
 					new_job_queue,
 					cookie_lock,
-					db_interface,
 					response_queue,
 					db        = None,
 					use_socks = False):
@@ -239,7 +240,6 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 
 		self.cookie_lock = cookie_lock
-		self.db_sess = db_interface
 		self.db      = db
 
 
@@ -281,22 +281,21 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 
 
-	def checkHaveHistory(self, url):
+	def checkHaveHistory(self, sess, url):
 		# Only do version fiddling if versioning is enabled.
 		if not settings.DO_VERSIONING:
 			return 99
 
 		ctbl = version_table(self.db.RawWebPages.__table__)
-
-		query = self.db_sess.query(exists().where(ctbl.c.url == url))
-
+		query = sess.query(exists().where(ctbl.c.url == url))
 		return query.scalar()
+
 
 	def extractLinks(self, ctnt, mimetype, url):
 
 		# No links in non-textual content.
 		if not isinstance(ctnt, str):
-			return
+			return []
 		if mimetype == "text/html":
 			return self.extractHtml(ctnt, url)
 
@@ -351,7 +350,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			ret.add(link)
 		return ret
 
-	def upsertResponseLinks(self, job, links):
+	def upsertResponseLinks(self, job, links, starturl, distance, priority):
 		self.log.info("Updating database with response links")
 		links           = set(links)
 		orig_link_cnt   = len(links)
@@ -360,12 +359,12 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		self.log.info("Upserting %s links (%s filtered)" % (filter_link_cnt, orig_link_cnt-filter_link_cnt))
 
-		new_starturl = job.starturl
-		new_distance = job.distance+1
+		new_starturl = starturl
+		new_distance = distance+1
 
 		# Priority decays with distance.
 		# That basically results in breadth-first fetches.
-		new_priority = job.priority+1
+		new_priority = priority+1
 
 
 		if links:
@@ -410,7 +409,8 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		linksd = RawArchiver.RawUrlUpserter.links_to_dicts(links, new_starturl, new_distance, new_priority)
 
 		try:
-			RawArchiver.RawUrlUpserter.do_link_batch_update_sess(self.log, self.db_sess, linksd)
+			with self.db.session_context() as sess:
+				RawArchiver.RawUrlUpserter.do_link_batch_update_sess(self.log, sess, linksd)
 		except Exception:
 			# A barf here getting all the way out is a BIG ISSUE.
 			print("ERROR")
@@ -440,99 +440,105 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	def wg_proxy(self):
 		return self.wg
 
-	def fetch_job(self, job):
+	def fetch_job(self, jobid):
 
-		# Don't dump old jobs that have been accidentally reset.
-		if job.state == 'new':
+		with self.job_context(jobid) as (_, job):
+			# Don't dump old jobs that have been accidentally reset.
+			if job.state == 'new':
+				job.state = 'fetching'
+
+			if job.state != 'fetching':
+				self.log.warning("Job not in expected state (state: %s).", job.state)
+
 			job.state = 'fetching'
-			self.db_sess.commit()
+			joburl = job.url
 
-		if job.state != 'fetching':
-			self.db_sess.commit()
-			self.log.info("Job not in expected state (state: %s).", job.state)
-			return None
-
-
-		module = RawArchiver.misc.getModuleForUrl(job.url)
-		self.log.info("Fetching %s", job.url)
-		should_continue = module.check_prefetch(job.url, self.wg_proxy)
+		module = RawArchiver.misc.getModuleForUrl(joburl)
+		self.log.info("Fetching %s", joburl)
+		should_continue = module.check_prefetch(joburl, self.wg_proxy)
 		if not should_continue:
 			self.log.error("Prefetch check returned unable to continue!")
 			return None
 
-		ctnt, fname, mimetype = self.get_file_name_mime(job.url)
+		ctnt, fname, mimetype = self.get_file_name_mime(joburl)
 		return ctnt, fname, mimetype
 
-	def process_job(self, job, ctnt, fname, mimetype):
+	def process_job(self, jobid, ctnt, fname, mimetype, joburl=None):
+		if not joburl:
+			with self.job_context(jobid) as (sess, job):
+				joburl = job.url
 
-		module = RawArchiver.misc.getModuleForUrl(job.url)
-		fname, ctnt, mimetype = module.check_postfetch(job.url, self.wg_proxy, fname, ctnt, mimetype)
-		links = self.extractLinks(ctnt, mimetype, job.url)
+		module = RawArchiver.misc.getModuleForUrl(joburl)
+		fname, ctnt, mimetype = module.check_postfetch(joburl, self.wg_proxy, fname, ctnt, mimetype)
+		links = self.extractLinks(ctnt, mimetype, joburl)
 
 		if isinstance(ctnt, str):
 			ctnt = ctnt.encode("utf-8")
-		saved_to = saveFile(ctnt, job.url, fname)
+
+		print("Saving....")
+		saved_to = saveFile(ctnt, joburl, fname)
+		print("Saved!")
 
 		self.log.info("Saved file to path: %s", saved_to)
 
-		interval = RawArchiver.misc.getModuleForUrl(job.url).rewalk_interval
+		interval = RawArchiver.misc.getModuleForUrl(joburl).rewalk_interval
 
 		assert interval > 7
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
 
-		while True:
-			have_history = self.checkHaveHistory(job.url)
-			if have_history:
-				break
-			try:
-				self.log.info("Need to push content into history table.")
-				job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
+		with self.job_context(jobid) as (sess, job):
 
-				job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
+			starturl = job.starturl
+			distance = job.distance
+			priority = job.priority
 
-				self.db_sess.commit()
-				self.log.info("Pushing old job content into history table!")
-				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
+			while True:
+				have_history = self.checkHaveHistory(sess, job.url)
+				if have_history:
+					break
+				try:
+					self.log.info("Need to push content into history table.")
+					job.mimetype        = (job.mimetype + " ") if job.mimetype else " "
 
-		while 1:
-			try:
-				job.state           = 'complete'
-				job.fetchtime       = datetime.datetime.now()
-				job.ignoreuntiltime = ignoreuntiltime
-				job.fspath          = saved_to
-				job.mimetype        = mimetype
+					job.fetchtime = datetime.datetime.now() - datetime.timedelta(days=7)
 
-				self.db_sess.commit()
-				self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
-				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
+
+					sess.commit()
+					self.log.info("Pushing old job content into history table!")
+					break
+				except sqlalchemy.exc.OperationalError:
+					sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					sess.rollback()
+
+			while True:
+				try:
+					job.state           = 'complete'
+					job.fetchtime       = datetime.datetime.now()
+					job.ignoreuntiltime = ignoreuntiltime
+					job.fspath          = saved_to
+					job.mimetype        = mimetype
+
+					sess.commit()
+					self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
+					break
+
+				except sqlalchemy.exc.OperationalError:
+					sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					sess.rollback()
 
 		if links:
-			self.upsertResponseLinks(job, links)
+			self.upsertResponseLinks(job, links, starturl, distance, priority)
 
 	# Update the row with the item contents
-	def do_local_job(self, job):
-		ctnt, fname, mimetype = self.fetch_job(job)
-		self.process_job(job, ctnt, fname, mimetype)
+	def do_local_job(self, jobid, joburl):
+		ctnt, fname, mimetype = self.fetch_job(jobid)
+		self.process_job(jobid, ctnt, fname, mimetype, joburl=joburl)
 
 	def do_remote_job(self, response):
-		jid = response['jobid']
-		job = self.get_job_from_id(jid)
-		if not job:
-			self.log.error("Missing job for jobid!")
-			self.log.error("Job data: '%s'", response)
-			self.log.info("Missing jobid: '%s'", jid)
-			return
-
-
+		jobid = response['jobid']
 
 		if 'ret' in response and 'success' in response and response['success'] is True:
 			assert 'module' in response, "No module in response message? Response: %s" % response
@@ -541,58 +547,53 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			assert response['module'] == 'SmartWebRequest', "Incorrect module? Module: '%s'" % response['module']
 			assert response['call'] == 'smartGetItem', "Incorrect call? Call: '%s'" % response['call']
 			content, fileN, mType = response['ret']
-			self.process_job(job, content, fileN, mType)
+			self.process_job(jobid, content, fileN, mType)
 
 		else:
-			job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
-			job.state = 'error'
-			job.errno = -4
+			with self.job_context(jobid) as (_, job):
+				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
+				job.state = 'error'
+				job.errno = -4
 
-			content = "DOWNLOAD FAILED"
-			content += "<br>"
-			if 'traceback' in response:
-				content += "<pre>"
-				content += "<br>".join(response['traceback'])
-				content += "</pre>"
+				content = "DOWNLOAD FAILED"
+				content += "<br>"
+				if 'traceback' in response:
+					content += "<pre>"
+					content += "<br>".join(response['traceback'])
+					content += "</pre>"
 
-				log_func = self.log.error
+					log_func = self.log.error
 
-				if '<FetchFailureError 410 -> ' in content:
-					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
-					log_func = self.log.warning
-					job.errno = 410
-				elif '<FetchFailureError 404 -> ' in content:
-					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
-					log_func = self.log.warning
-					job.errno = 404
-				elif '<FetchFailureError 403 -> ' in content:
-					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
-					job.errno = 403
-				elif '<FetchFailureError 500 -> ' in content:
-					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
-					job.errno = 500
-				else:
-					job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
-					job.errno = -1
-
-				max_len_trunc = 450
-
-				for line in response['traceback']:
-					if len(line) > max_len_trunc:
-						log_func("Remote traceback: %s [...snip...]", line[:max_len_trunc])
+					if '<FetchFailureError 410 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+						log_func = self.log.warning
+						job.errno = 410
+					elif '<FetchFailureError 404 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+						log_func = self.log.warning
+						job.errno = 404
+					elif '<FetchFailureError 403 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
+						job.errno = 403
+					elif '<FetchFailureError 500 -> ' in content:
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
+						job.errno = 500
 					else:
-						log_func("Remote traceback: %s", line)
-			else:
-				self.log.error("No traceback in response?")
-				self.log.error("Response: %s", response)
+						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
+						job.errno = -1
 
-			self.db_sess.commit()
+					max_len_trunc = 450
+
+					for line in response['traceback']:
+						if len(line) > max_len_trunc:
+							log_func("Remote traceback: %s [...snip...]", line[:max_len_trunc])
+						else:
+							log_func("Remote traceback: %s", line)
+				else:
+					self.log.error("No traceback in response?")
+					self.log.error("Response: %s", response)
+
 			self.log.error("Error in remote fetch.")
-
-
-
-
-
 
 
 		# {
@@ -624,19 +625,49 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	#
 	########################################################################################################################
 
-	def get_job_from_id(self, jobid):
+	@contextlib.contextmanager
+	def job_context(self, jobid=None, joburl=None):
+		assert jobid or joburl, "JobID and JobURL are both None!"
+		tries = 0
 
-		self.db_sess.flush()
-		self.db_sess.commit()
-		job = self.db_sess.query(self.db.RawWebPages) \
-			.filter(self.db.RawWebPages.id == jobid)    \
-			.scalar()
-		self.db_sess.commit()
+		while 1:
+			tries += 1
 
-		if not job:
-			return False
+			with self.db.session_context() as sess:
 
-		return job
+				try:
+					if jobid:
+						job = sess.query(self.db.RawWebPages) \
+							.filter(self.db.RawWebPages.id == jobid)    \
+							.scalar()
+					elif joburl:
+						job = sess.query(self.db.RawWebPages) \
+							.filter(self.db.RawWebPages.url == joburl)    \
+							.scalar()
+					else:
+						raise RuntimeError("You need to pass either a JobID or a JobURL")
+
+					yield sess, job
+					sess.commit()
+
+					return
+
+				except sqlalchemy.exc.OperationalError:
+					self.log.warning("sqlalchemy.exc.OperationalError!")
+					sess.rollback()
+					if tries > 5:
+						traceback.print_exc()
+
+				except sqlalchemy.exc.InvalidRequestError:
+					self.log.warning("sqlalchemy.exc.InvalidRequestError!")
+					sess.rollback()
+					if tries > 5:
+						traceback.print_exc()
+				except Exception as e:
+					print("Exception!")
+					print(traceback.print_exc())
+					raise e
+
 
 
 	def taskProcess(self):
@@ -654,21 +685,15 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 						self.do_remote_job(data)
 					elif mode == 'unfetched':
 						jobid = data
-						job = self.get_job_from_id(jobid)
-						if job and RawArchiver.misc.thread_affinity(job.url, self.total_worker_count) == self.worker_num:
+						with self.job_context(jobid) as (sess, job):
+							joburl = job.url if job else None
+
+						if joburl and RawArchiver.misc.thread_affinity(joburl, self.total_worker_count) == self.worker_num:
 							try:
-								self.do_local_job(job)
+								self.do_local_job(jobid, joburl)
 							except Exception:
-								while True:
-									try:
-										job.state = 'error'
-										self.db_sess.commit()
-										self.log.info("Pushing old job content into history table!")
-										break
-									except sqlalchemy.exc.OperationalError:
-										self.db_sess.rollback()
-									except sqlalchemy.exc.InvalidRequestError:
-										self.db_sess.rollback()
+								with self.job_context(jobid) as (sess, job):
+									job.state = 'error'
 								raise
 
 							return True
@@ -689,41 +714,21 @@ def test():
 
 	import common.database
 
-	with common.database.session_context() as sess:
-
-		try:
-
-			job = common.database.RawWebPages(
-				state    = 'new',
-				url      = 'http://somethingpositive.net',
-				starturl = 'http://somethingpositive.net',
-				netloc   = 'somethingpositive.net',
-				priority = common.database.DB_LOW_PRIORITY,
-				distance = 0,
-				)
-			sess.add(job)
-			sess.commit()
-
-		except sqlalchemy.exc.IntegrityError:
-			sess.rollback()
-			r = sess.query(common.database.RawWebPages) \
-				.filter(common.database.RawWebPages.url == 'http://somethingpositive.net') \
-				.update({'state' : 'new', 'ignoreuntiltime' : datetime.datetime.min })
-			sess.commit()
-			print("Did update?")
-			print(r)
-
-			job = sess.query(common.database.RawWebPages) \
-				.filter(common.database.RawWebPages.url == 'http://somethingpositive.net').one()
+	archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=None, cookie_lock=None, response_queue=None, db=common.database)
 
 
-		archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=None, cookie_lock=None, response_queue=None, db_interface=sess, db=common.database)
+	with archiver.job_context(joburl='http://somethingpositive.net') as (_, job):
+		# Don't dump old jobs that have been accidentally reset.
+		if job.state == 'new':
+			job.state = 'fetching'
+		joburl = job.url
+		jobid  = job.id
 
-		print(job)
-		archiver.do_local_job(job)
-		print("doing")
 
-	pass
+	print(jobid)
+	archiver.do_local_job(jobid, joburl)
+	print("doing")
+
 
 
 def test2():
@@ -731,6 +736,7 @@ def test2():
 
 	with common.database.session_context() as sess:
 		try:
+
 
 			job = common.database.RawWebPages(
 				state    = 'new',
@@ -766,10 +772,12 @@ def test3():
 		print("Resolved out to path %s" % ret)
 
 if __name__ == "__main__":
+	import logSetup
+	logSetup.initLogging()
 	# resetInProgress()
-	# test()
+	test()
 	# test2()
-	test3()
+	# test3()
 
 
 

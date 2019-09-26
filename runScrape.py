@@ -64,12 +64,12 @@ def go():
 		else:
 			print("Not resetting in-progress downloads.")
 
-		if not "noreset" in largv:
-			print("Dropping fetch priority levels.")
-			common.management.WebMirrorManage.exposed_drop_priorities()
+		#if not "noreset" in largv:
+		#	print("Dropping fetch priority levels.")
+		#	common.management.WebMirrorManage.exposed_drop_priorities()
 
-		else:
-			print("Not resetting fetch priority levels.")
+		#else:
+		#	print("Not resetting fetch priority levels.")
 
 
 		WebMirror.UrlUpserter.initializeStartUrls(rules)

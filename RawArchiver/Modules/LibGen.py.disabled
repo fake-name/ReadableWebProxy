@@ -124,6 +124,8 @@ class LibGenRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		"~Russian",
 		"~Brazilian",
 
+		"_AMER_TRANSL_TO_EURO",
+
 	]
 
 	@classmethod
