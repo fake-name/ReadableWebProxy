@@ -1659,6 +1659,13 @@ def filter_get_have_url(netloc_dict, fetch_title):
 
 			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
 				continue
+
+			if netloc.endswith(".photobucket.com"):
+				continue
+			if netloc.endswith(".postimg.org"):
+				continue
+
+
 			if any([tmp in netloc for tmp in common.global_constants.GLOBAL_BAD_URLS]):
 				continue
 
