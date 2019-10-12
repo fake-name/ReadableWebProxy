@@ -112,5 +112,5 @@ parsedatetime==2.4
 ## WTForms
 ## WTForms-JSON
 
-influxdb==5.2.2
+influxdb==5.2.3
 setproctitle==1.1.10
