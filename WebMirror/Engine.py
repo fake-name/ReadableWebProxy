@@ -335,9 +335,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				self.db_sess.commit()
 				self.log.info("Pushing old job content into history table!")
 				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
+			except (sqlalchemy.exc.InvalidRequestError, sqlalchemy.exc.OperationalError, sqlalchemy.exc.IntegrityError):
 				self.db_sess.rollback()
 
 
@@ -396,11 +394,13 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				self.db_sess.rollback()
 				if tries > 5:
 					traceback.print_exc()
+					raise
 			except sqlalchemy.exc.InvalidRequestError:
 				self.log.warning("sqlalchemy.exc.InvalidRequestError!")
 				self.db_sess.rollback()
 				if tries > 5:
 					traceback.print_exc()
+					raise
 			except Exception as e:
 				print("Exception!")
 				print(traceback.print_exc())
@@ -480,7 +480,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		if start in self.netloc_rewalk_times:
 			interval = self.netloc_rewalk_times[start]
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
-		print("[upsertFileResponse] Ignore until: ", ignoreuntiltime)
+		print("[upsertRssItems] Ignore until: ", ignoreuntiltime)
 
 		while 1:
 			try:
@@ -812,8 +812,11 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 		print("[upsertFileResponse] Ignore until: ", ignoreuntiltime)
 
+		tries = 0
+
 		while 1:
 			try:
+				tries += 1
 				# Look for existing files with the same MD5sum. If there are any, just point the new file at the
 				# fsPath of the existing one, rather then creating a new file on-disk.
 				have = self.db_sess.query(self.db.WebFiles) \
@@ -858,10 +861,12 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 				job.mimetype = response['mimeType']
 				self.db_sess.commit()
-				break
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.InvalidRequestError:
+				return
+			except (sqlalchemy.exc.InvalidRequestError, sqlalchemy.exc.OperationalError, sqlalchemy.exc.IntegrityError):
+				if tries > 5:
+					self.db_sess.expire_all()
+				if tries > 10:
+					raise
 				self.db_sess.rollback()
 		# print("have:", have)
 
@@ -1122,11 +1127,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 				self.db_sess.commit()
 				break
-			except sqlalchemy.exc.InvalidRequestError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.OperationalError:
-				self.db_sess.rollback()
-			except sqlalchemy.exc.IntegrityError:
+			except (sqlalchemy.exc.InvalidRequestError, sqlalchemy.exc.OperationalError, sqlalchemy.exc.IntegrityError):
 				self.db_sess.rollback()
 
 

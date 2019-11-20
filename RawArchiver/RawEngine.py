@@ -507,9 +507,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					sess.commit()
 					self.log.info("Pushing old job content into history table!")
 					break
-				except sqlalchemy.exc.OperationalError:
-					sess.rollback()
-				except sqlalchemy.exc.InvalidRequestError:
+				except (sqlalchemy.exc.InvalidRequestError, sqlalchemy.exc.OperationalError, sqlalchemy.exc.IntegrityError):
 					sess.rollback()
 
 			while True:
@@ -524,9 +522,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
 					break
 
-				except sqlalchemy.exc.OperationalError:
-					sess.rollback()
-				except sqlalchemy.exc.InvalidRequestError:
+				except (sqlalchemy.exc.InvalidRequestError, sqlalchemy.exc.OperationalError, sqlalchemy.exc.IntegrityError):
 					sess.rollback()
 
 		if links:

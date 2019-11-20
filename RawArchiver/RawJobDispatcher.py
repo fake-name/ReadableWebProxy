@@ -192,7 +192,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		for _ in range(60 * 5):
 			for proc in self.fetch_procs:
-				proc.join(timeout=1)
+				proc.join(1)
 				if any([tmp.is_alive() for tmp in self.fetch_procs]) is False:
 					return
 				self.log.info("Waiting for job dispatcher to join. Currently active jobs in queue: %s, states: %s",
@@ -202,7 +202,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		while True:
 			for proc in self.fetch_procs:
-				proc.join(timeout=1)
+				proc.join(1)
 				if any([tmp.is_alive() for tmp in self.fetch_procs]) is False:
 					return
 				self.log.error("Timeout when waiting for join. Bulk consuming from intermediate queue. States: %s",

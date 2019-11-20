@@ -86,6 +86,7 @@ PLUGINS = [
 	WebMirror.processor.GarbageInlineProcessors.ConvallariasLibraryProcessor,
 	WebMirror.processor.GarbageInlineProcessors.AfterAugustMakingProcessor,
 	WebMirror.processor.GarbageInlineProcessors.CreativeNovelsPageProcessor,
+	WebMirror.processor.GarbageInlineProcessors.KujoRestAreaPageProcessor,
 
 	WebMirror.processor.ProtectionProcessor.XiAiNovelPageProcessor,
 	WebMirror.processor.ProtectionProcessor.FoxTellerPageProcessor,

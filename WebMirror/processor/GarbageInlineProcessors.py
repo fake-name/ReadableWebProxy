@@ -137,6 +137,33 @@ class ZenithNovelsPageProcessor(HtmlProcessor.HtmlPageProcessor):
 			bad.decompose()
 
 		return soup
+		
+
+class KujoRestAreaPageProcessor(HtmlProcessor.HtmlPageProcessor):
+
+	wanted_mimetypes = ['text/html']
+	want_priority    = 80
+
+
+	loggerPath = "Main.Text.KujoRestArea"
+
+	@staticmethod
+	def wantsUrl(url):
+		if re.search(r"^https?://(?:www\.)?kujourestarea\.wordpress\.com", url):
+			print("kujo Wants url: '%s'" % url)
+			return True
+		# print("zenith novels doesn't want url: '%s'" % url)
+		return False
+
+	def preprocessBody(self, soup):
+
+		# Decompose the annoying inline shit.
+		# ex: <span style="color:#ffffff;">the truth is out!</span>
+		badspans = soup.find_all("p", class_='has-text-color')
+		for bad in badspans:
+			bad.decompose()
+
+		return soup
 
 class LightNovelsWorldPageProcessor(HtmlProcessor.HtmlPageProcessor):
 
