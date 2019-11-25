@@ -51,7 +51,8 @@ if "twoprocess" in largv or "oneprocess" in largv:
 	MAX_IN_FLIGHT_JOBS = 2
 else:
 	# MAX_IN_FLIGHT_JOBS = 5
-	MAX_IN_FLIGHT_JOBS = 40
+	MAX_IN_FLIGHT_JOBS = 15
+	# MAX_IN_FLIGHT_JOBS = 40
 	# MAX_IN_FLIGHT_JOBS = 75
 	# MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 500
@@ -59,7 +60,7 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 3000
 
 
-LOCAL_ENQUEUED_JOB_RESPONSES = 50
+LOCAL_ENQUEUED_JOB_RESPONSES = 5
 
 class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
@@ -191,22 +192,22 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		self.run_flag.value = 0
 
 		for _ in range(60 * 5):
-			for proc in self.fetch_procs:
+			for proc in self.fetch_procs.values():
 				proc.join(1)
-				if any([tmp.is_alive() for tmp in self.fetch_procs]) is False:
+				if any([tmp.is_alive() for tmp in self.fetch_procs.values()]) is False:
 					return
 				self.log.info("Waiting for job dispatcher to join. Currently active jobs in queue: %s, states: %s",
 						self.normal_out_queue.qsize(),
-						[tmp.is_alive() for tmp in self.fetch_procs]
+						[tmp.is_alive() for tmp in self.fetch_procs.values()]
 					)
 
 		while True:
-			for proc in self.fetch_procs:
+			for proc in self.fetch_procs.values():
 				proc.join(1)
-				if any([tmp.is_alive() for tmp in self.fetch_procs]) is False:
+				if any([tmp.is_alive() for tmp in self.fetch_procs.values()]) is False:
 					return
 				self.log.error("Timeout when waiting for join. Bulk consuming from intermediate queue. States: %s",
-						[tmp.is_alive() for tmp in self.fetch_procs],
+						[tmp.is_alive() for tmp in self.fetch_procs.values()],
 					)
 				try:
 					while 1:
@@ -673,12 +674,12 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		self.local.db_interface.commit()
 
 	def get_status(self):
-		if any([tmp.is_alive() for tmp in self.fetch_procs]):
+		if any([tmp.is_alive() for tmp in self.fetch_procs.values()]):
 
 			with self.count_lock:
 				return "Worker: %s, alive: %s, control: %s, last_rx: %s, active_jobs: %s, jobs_out: %s, jobs_in: %s." % (
-						[tmp.ident for tmp in self.fetch_procs],
-						[tmp.is_alive() for tmp in self.fetch_procs],
+						[tmp.ident for tmp in self.fetch_procs.values()],
+						[tmp.is_alive() for tmp in self.fetch_procs.values()],
 						self.run_flag.value,
 						self.last_rx,
 						self.active_jobs,
