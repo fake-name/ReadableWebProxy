@@ -164,7 +164,7 @@ def getPossibleNetLocs(ruleset):
 			pass
 
 		else:
-
+			assert "." in netloc, "No period in netloc: '%s'" % netloc
 			base, dummy_tld = netloc.rsplit(".", 1)
 			for tld in TLDs:
 				ret.add("{main}.{tld}".format(main=base, tld=tld))

@@ -226,14 +226,18 @@ def cleanUrl(urlin):
 		return None
 
 
-	if 'www.fuyukai.club' in parsed.netloc:
+	if parsed.netloc.endswith('www.fuyukai.club'):
+		if fuyukai_squatter_re.search(urlin):
+			return None
+
+	if  parsed.netloc.endswith('.cloudfront.net'):
 		if fuyukai_squatter_re.search(urlin):
 			return None
 
 	if 'tumblr.com' in parsed.netloc and urlin.endswith("/amp"):
 		return None
 
-	if 'wp.me' in parsed.netloc:
+	if parsed.netloc.endswith('wp.me'):
 		resolve_redirects = True
 	if 'feedproxy.google.com' in parsed.netloc:
 		resolve_redirects = True

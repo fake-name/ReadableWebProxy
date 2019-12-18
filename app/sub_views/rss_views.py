@@ -33,6 +33,8 @@ import common.rss_func_db as rfdb
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 from WebMirror.processor.RssProcessor import RssProcessor
 
+QIDIAN_FEED_ID = 2578
+
 @app.route('/feeds/<page>')
 @app.route('/feeds/<int:page>')
 @app.route('/feeds/')
@@ -159,7 +161,6 @@ def proto_process_releases(feed_releases, disable_range_limit=False):
 			type=None,
 			)
 
-	QIDIAN_FEED_ID = 2578
 	futures = []
 	with concurrent.futures.ThreadPoolExecutor(max_workers=8) as tpe:
 		for item in feed_releases:

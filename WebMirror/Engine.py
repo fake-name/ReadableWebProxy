@@ -76,7 +76,7 @@ def getHash(fCont):
 NETLOC_BADWORDS_LOOKUP_CACHE = cachetools.LRUCache(maxsize=1000)
 
 
-def saveCoverFile(filecont, fHash, filename):
+def save_binary_file(filecont, fHash, filename):
 	# use the first 3 chars of the hash for the folder name.
 	# Since it's hex-encoded, that gives us a max of 2^12 bits of
 	# directories, or 4096 dirs.
@@ -89,10 +89,6 @@ def saveCoverFile(filecont, fHash, filename):
 
 	ext = os.path.splitext(filename)[-1]
 	ext   = ext.lower()
-
-	# The "." is part of the ext.
-	filename = '{filename}{ext}'.format(filename=fHash, ext=ext)
-
 
 	# The "." is part of the ext.
 	filename = '{filename}{ext}'.format(filename=fHash, ext=ext)
@@ -842,7 +838,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 						self.db_sess.commit()
 						job.file = new.id
 				else:
-					savedpath = saveCoverFile(response['content'], fHash, response['fName'])
+					savedpath = save_binary_file(response['content'], fHash, response['fName'])
 					new = self.db.WebFiles(
 						filename = response['fName'],
 						fhash    = fHash,

@@ -24,6 +24,9 @@ import sqlalchemy.exc
 import sqlalchemy.orm.exc
 from sqlalchemy_continuum_vendored.utils import version_table
 
+from WebMirror.processor.RssProcessor import RssProcessor
+
+
 if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
@@ -49,6 +52,7 @@ import Misc.HistoryAggregator.Consolidate
 import Misc.NuForwarder.NuHeader
 import flags
 
+import common.util.urlFuncs as urlFuncs
 
 from common.Exceptions import GarbageDomainSquatterException
 import WebMirror.processor.HtmlProcessor
@@ -56,6 +60,7 @@ import WebMirror.TimedTriggers.RollingRewalkTriggers
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.SiteSync.fetch
 import WebMirror.OutputFilters.rss.FeedDataParser
+from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
 
 
@@ -1657,6 +1662,9 @@ def filter_get_have_url(netloc_dict, fetch_title):
 
 			netloc = netloc.lower()
 
+			if urlFuncs.SQUATTER_NETLOC_RE.match(netloc):
+				continue
+
 			if netloc in common.global_constants.NU_NEW_MASK_NETLOCS:
 				continue
 
@@ -1758,8 +1766,6 @@ def exposed_new_from_all_feeds(fetch_title=False):
 
 
 def exposed_purge_squatter_content():
-
-
 	proc = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(
 			baseUrls        = None,
 			pageUrl         = None,
@@ -1770,10 +1776,8 @@ def exposed_purge_squatter_content():
 			destyle         = None,
 			preserveAttrs   = None,
 			decompose_svg   = None,
-
 			decompose       = [],
 			decomposeBefore = [],
-
 		)
 
 	engine = WebMirror.Engine.SiteArchiver(None, None, None)

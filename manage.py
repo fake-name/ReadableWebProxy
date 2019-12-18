@@ -6,6 +6,7 @@ if __name__ == "__main__":
 import inspect
 import sys
 import common.management.WebMirrorManage
+import common.management.CrNManage
 import common.management.RawMirrorManage
 import common.management.Misc
 import common.management.Testing
@@ -33,6 +34,7 @@ func_prefix = "exposed_"
 SCANNED_MODULES = [
 	common.management.WebMirrorManage,
 	common.management.RawMirrorManage,
+	common.management.CrNManage,
 	common.management.Misc,
 	common.management.Testing,
 

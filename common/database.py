@@ -4,6 +4,7 @@ import sys
 
 from sqlalchemy_continuum_vendored import make_versioned
 
+from settings import DO_VERSIONING
 
 def cares_about_change(op, row):
 	table_name = row.__tablename__
@@ -100,8 +101,8 @@ def cares_about_change(op, row):
 		print("Unknown table: ", table_name)
 		return True
 
-
-make_versioned(user_cls=None, options={'strategy' : 'subquery'}, cares_about_checker=cares_about_change)
+if DO_VERSIONING:
+	make_versioned(user_cls=None, options={'strategy' : 'subquery'}, cares_about_checker=cares_about_change)
 
 # Import the DB things.
 from common.main_archive_db import WebPages

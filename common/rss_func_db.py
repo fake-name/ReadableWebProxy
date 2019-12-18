@@ -238,7 +238,7 @@ def str_to_function(instr, name):
 
 	# Use the loaded function when possible.
 	if instr in PARSED_FUNCTION_CACHE:
-		print("Using LRU cached function (%s items)" % len(PARSED_FUNCTION_CACHE))
+		# print("Using LRU cached function (%s items)" % len(PARSED_FUNCTION_CACHE))
 		return PARSED_FUNCTION_CACHE[instr]
 
 	print("Compiling function from DB (str_to_function) for '%s'" % name)
