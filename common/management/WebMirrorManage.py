@@ -252,11 +252,11 @@ def exposed_longest_rows():
 	Return is limited to the biggest 50 rows.
 	VERY SLOW (has to scan the entire table)
 	'''
-	with db.session_context() as sess:
+	with db.session_context(override_timeout_ms=1000 * 60 * 60 * 12) as sess:
 		print("Getting longest rows from database")
 		have = sess.execute("""
 			SELECT
-				id, url, length(content), content
+				id, url, length(content)
 			FROM
 				web_pages
 			ORDER BY
@@ -271,18 +271,18 @@ def exposed_longest_rows():
 			json.dump(have, fp, indent=4)
 
 		savepath = "./large_files/"
-		for row in have[50:]:
-			print(row[0], row[1])
-			try:
-				os.makedirs(savepath)
-			except FileExistsError:
-				pass
-			with open(os.path.join(savepath, "file %s.txt" % row[0]), "wb") as fp:
-				urlst = "URL: %s\n\n" % row[1]
-				size = "Length: %s\n\n" % row[2]
-				fp.write(urlst.encode("utf-8"))
-				fp.write(size.encode("utf-8"))
-				fp.write("{}".format(row[3]).encode("utf-8"))
+		for row in have[150:]:
+			print(row[0], row[1], row[2])
+			# try:
+			# 	os.makedirs(savepath)
+			# except FileExistsError:
+			# 	pass
+			# with open(os.path.join(savepath, "file %s.txt" % row[0]), "wb") as fp:
+			# 	urlst = "URL: %s\n\n" % row[1]
+			# 	size = "Length: %s\n\n" % row[2]
+			# 	fp.write(urlst.encode("utf-8"))
+			# 	fp.write(size.encode("utf-8"))
+			# 	fp.write("{}".format(row[3]).encode("utf-8"))
 
 def exposed_fix_null():
 	'''

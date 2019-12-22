@@ -244,6 +244,40 @@ def getSkipFilters(ruleset):
 			ret.append((netloc, comp))
 	return ret
 
+def get_www_remap_lut(ruleset):
+	ret = {}
+
+	if "www_no_www_same" in ruleset:
+		if isinstance(ruleset['www_no_www_same'], bool) and ruleset['www_no_www_same']:
+			pass
+		elif isinstance(ruleset['www_no_www_same'], list):
+			for netloc in ruleset['www_no_www_same']:
+				pass
+		else:
+			raise RuntimeError("'www_no_www_same' must be a list. Passed %s (%s)" % (type(ruleset['www_no_www_same']), ruleset['www_no_www_same']))
+
+	# 	for netloc, regex, ignorecase in ruleset['skip_filters']:
+	# 		comp = re.compile(regex, re.I if ignorecase else None)
+	# 		ret.append((netloc, comp))
+	return ret
+
+def get_http_s_remap_lut(ruleset):
+	ret = {}
+	if "http_https_same" in ruleset:
+		if isinstance(ruleset['http_https_same'], bool) and ruleset['http_https_same']:
+			pass
+		elif isinstance(ruleset['http_https_same'], list):
+			for netloc in ruleset['http_https_same']:
+				pass
+		else:
+			raise RuntimeError("'http_https_same' must be a list. Passed %s (%s)" % (type(ruleset['http_https_same']), ruleset['http_https_same']))
+
+	# if "http_https_same" in ruleset:
+	# 	for netloc, regex, ignorecase in ruleset['skip_filters']:
+	# 		comp = re.compile(regex, re.I if ignorecase else None)
+	# 		ret.append((netloc, comp))
+	return ret
+
 def getAttributeRewriteRules(ruleset):
 	if not 'rewriteAttrs' in ruleset:
 		return False
@@ -313,6 +347,9 @@ def validateRuleKeys(dat, fname):
 		'disallow_duplicate_path_segments',
 		'skip_filters',
 
+		'www_no_www_same',
+		'http_https_same',
+
 		# Not currently implemented, but useful
 		'titleTweakLut',
 		]
@@ -352,6 +389,9 @@ def load_validate_rules(fname, dat):
 	rules['maximum_priority']                  = getMaximumFetchPriority(dat)
 	rules['skip_filters']                      = getSkipFilters(dat)
 
+	rules['www_no_www_same']                   = get_www_remap_lut(dat)
+	rules['http_https_same']                   = get_http_s_remap_lut(dat)
+
 	rules['trigger']                           = getTrigger(dat)
 	if not rules['trigger']:
 		rules['starturls']                     = []
@@ -381,7 +421,7 @@ def get_rules():
 				# Also, single-space indentation discontinuity in
 				# YAML causes the whole file to load wrong.
 				text = text.replace("	", "    ")
-				dat = yaml.load(text)
+				dat = yaml.load(text, Loader=yaml.SafeLoader)
 				rules, special = load_validate_rules(item, dat)
 				if rules:
 					ret.append(rules)

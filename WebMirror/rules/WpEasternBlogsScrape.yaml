@@ -1787,6 +1787,10 @@ baseUrl: [
 
 
 
+www_no_www_same: True
+
+
+
 feedPostfix: "/feed/"
 
 feeds: [

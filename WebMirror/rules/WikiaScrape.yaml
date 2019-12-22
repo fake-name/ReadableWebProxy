@@ -11,6 +11,7 @@ baseUrl: [
 		"http://re-monster.wikia.com/wiki/Novel",
 		"http://re-monster.wikia.com/wiki/Day_1-10/Day_1",
 		"http://re-monster.wikia.com/",
+		"https://re-monster.fandom.com/",
 
 		"http://mahou-shoujo-ikusei-keikaku.wikia.com/",
 
@@ -22,6 +23,8 @@ baseUrl: [
 
 
 badwords: [
+			"/wiki/Module:Unit/",
+
 			"/viewtopic.php",
 			"/memberlist.php",
 			"/search.php",

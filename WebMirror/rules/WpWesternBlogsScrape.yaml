@@ -319,6 +319,7 @@ baseUrl: [
 
 # http://www.blazingtranslations.com/?feed=rss2
 
+www_no_www_same: True
 
 feedPostfix: "/feed/"
 

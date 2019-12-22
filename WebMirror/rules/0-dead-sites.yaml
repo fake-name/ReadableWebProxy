@@ -372,6 +372,12 @@ baseUrl: [
 	'http://raisingthedead.ninja',
 	'http://www.raisingthedead.ninja',
 
+	'https://frostetranslations.wordpress.com',
+	'https://idleturtle.wordpress.com',
+	'https://itsgellisalinhome.wordpress.com',
+	'https://springwindsyonder.wordpress.com',
+	'https://kondeesite.wordpress.com',
+	'http://www.wizsnovels.com',
 
 	]
 
@@ -408,6 +414,12 @@ badwords: [
 		'www.asstr.com/rg-erdr.php?_rpo=',
 		'giraffecorps.liamak.net/?ga=',
 		'nippleless.nl/feed/',
+		'/Stories_on_MP3/',
+
+		# Let's cheat a bit and exploit how wildcarsds in postgresql work.
+		'www.asstr.org/%.mp3',
+		'www.asstr.org/%.mp4',
+
 
 		# Fucking trailing space
 		'http://koalasplayground.com ',
@@ -418,6 +430,11 @@ badwords: [
 		'hexonet',
 		'/hexonet_public/',
 		'#comment-',
+
+		# Why is this one plage 13 megabytes?
+		'koalasplayground.com/?p=5281',
+		'www.asstr.org/files/Site_Info/filelist.zip',
+
 	]
 
 decompose: [

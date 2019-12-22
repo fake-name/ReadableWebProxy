@@ -392,6 +392,25 @@ baseUrl: [
 	'https://solotranslation.home.blog',
 	'https://somewherewinter.home.blog',
 
+	'https://anomaly1218.home.blog',
+	'https://dragonsraja.home.blog',
+	'https://grimtranslations.home.blog',
+	'https://inoveltranslation2.home.blog',
+	'https://nekotranslation.home.blog',
+
+	'https://anykatranslation.wordpress.com',
+	'https://littleajummas.wordpress.com',
+	'https://lizonkanovels.wordpress.com',
+	'https://motimotibeans.wordpress.com',
+	'https://oootrans.wordpress.com',
+	'https://tintin504936383.wordpress.com',
+	'https://vandeztranslations.wordpress.com',
+
+	'https://dlhaine.com',
+	'https://otakubu.com',
+	'http://translationnoob.com',
+
+
 
 	]
 
@@ -401,6 +420,7 @@ feedPostfix: "/feed/"
 feeds: [
 ]
 
+www_no_www_same: True
 
 # Any url containing any of the words in the `badwords` list will be ignored.
 badwords: [
