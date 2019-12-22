@@ -34,6 +34,22 @@ Quick installation overview:
  - Setup virtualhost by running `build-venv.sh`
  - Activate vhost: `source flask/bin/activate`
  - Bootstrap DB: `create_db.sh`
+ - Run local fetch RPC server `run_local.sh` from 
+ 	https://github.com/fake-name/AutoTriever
  - Run server: `python3 run.py`
- - (Optional): Scraper is started by `python runScrape.py`
- - (Optional): Scraper periodic scheduler is started by `python runScrape.py scheduler`
+ - If you want to run the spider, it has a LOT more complicated components:
+	 - Main scraper is started by `python runScrape.py`
+	 - Scraper periodic scheduler is started by `python runScrape.py scheduler`
+	 - The scraper requires substantial RPC infrastructure. You will need:
+	 	+ A RabbitMQ instance with a public DNS address
+	 	+ A machine running saltstack + salt-master with a public DNS address
+	 		On the salt machine, run 
+	 		https://github.com/fake-name/AutoTriever/marshaller/salt_scheduler.py
+	 	+ A variable number of RPC workers to execute fetch tasks. The 
+	 		AutoTriever project can be used to manage these.
+	 	+ A machine to run the RPC local agent (`run_agent.sh`)
+	    The RPC agent allows multiple projects to use the RPC system 
+	    simultaneously. Since the RPC system basically allows executing 
+	    either predefined jobs, or arbitrary code on the worker swarm. This 
+	    is fairly useful in general, so I've implemented it as a service
+	    that multiple of my projects then use.
