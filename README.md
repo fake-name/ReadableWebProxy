@@ -44,7 +44,7 @@ Quick installation overview:
 	 	+ A RabbitMQ instance with a public DNS address
 	 	+ A machine running saltstack + salt-master with a public DNS address
 	 		On the salt machine, run 
-	 		https://github.com/fake-name/AutoTriever/marshaller/salt_scheduler.py
+	 		https://github.com/fake-name/AutoTriever/tree/master/marshaller/salt_scheduler.py
 	 	+ A variable number of RPC workers to execute fetch tasks. The 
 	 		AutoTriever project can be used to manage these.
 	 	+ A machine to run the RPC local agent (`run_agent.sh`)
