@@ -279,6 +279,8 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 			else:
 				reldate = datetime.datetime.fromtimestamp(calendar.timegm(rel.timetuple()))
 
+			print("Release date: ", reldate)
+
 			release_info  = chp_tg.get_text().strip()
 			group_name = group_tg.get_text().strip()
 			group_name = msgpackers.fixSmartQuotes(group_name)
@@ -296,6 +298,10 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 					if group_name == 'Qidian International':
 						self.log.info("Qidian item. Skipping.")
+
+					elif group_name == 'Webnovel':
+						self.log.info("Qidian item. Skipping.")
+
 					else:
 
 						changed = upsertNuItem(self.raw_cur,
@@ -350,36 +356,4 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 		self.processPage(self.pageUrl, self.content)
 
-
-
-def test():
-	print("Test mode!")
-	import logSetup
-	import WebMirror.rules
-	import WebMirror.Engine
-	import WebMirror.Runner
-	import multiprocessing
-	logSetup.initLogging()
-
-	crawler = WebMirror.Runner.Crawler()
-	crawler.start_aggregator()
-
-
-	c_lok = cookie_lock = multiprocessing.Lock()
-	engine = WebMirror.Engine.SiteArchiver(cookie_lock=c_lok, response_queue=crawler.agg_queue)
-
-
-
-	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/sendai-yuusha-wa-inkyou-shitai'))
-	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/when-he-comes-close-your-eyes'))
-	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu'))
-	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/night-ranger/'))
-	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/mythical-tyrant/'))
-	engine.dispatchRequest(testJobFromUrl('http://www.novelupdates.com/series/kenkyo-kenjitsu-o-motto-ni-ikite-orimasu/'))
-
-
-	crawler.join_aggregator()
-
-if __name__ == "__main__":
-	test()
 

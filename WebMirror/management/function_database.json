@@ -12303,6 +12303,10 @@
   "\ndef extractWwwNormalpandaCom(item):\n\t'''\n\tParser for 'www.normalpanda.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
   "2019-06-28T16:43:21.799025"
  ],
+ "www.novicetranslations.com": [
+  "\ndef extractWwwNovicetranslationsCom(item):\n\t'''\n\tParser for 'www.novicetranslations.com'\n\t'''\n\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol) or \"preview\" in item['title'].lower():\n\t\treturn None\n\n\ttagmap = [\n\t\t('PRC',       'PRC',                      'translated'),\n\t\t('Loiterous', 'Loiterous',                'oel'),\n\t]\n\n\tfor tagname, name, tl_type in tagmap:\n\t\tif tagname in item['tags']:\n\t\t\treturn buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)\n\n\n\treturn False\n\t",
+  "2019-12-24T22:48:26.379344"
+ ],
  "www.pridesfamiliarsmaidens.com": [
   "def extractPridesFamiliarsMaidens(item):\n\t\"\"\"\n\n\t\"\"\"\n\tvol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])\n\tif not (chp or vol or frag) or 'preview' in item['title'].lower():\n\t\treturn None\n\treturn False\n",
   "2017-03-08T04:59:21.700134"

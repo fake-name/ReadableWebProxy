@@ -19,6 +19,7 @@ import time
 import json
 import cssutils
 import WebRequest
+import parsedatetime
 import common.util.urlFuncs
 
 ########################################################################################################################
@@ -34,6 +35,14 @@ import common.util.urlFuncs
 ########################################################################################################################
 
 
+
+# Convenience functions to make intervals clearer.
+def days(num):
+	return 60*60*24*num
+def hours(num):
+	return 60*60*num
+def minutes(num):
+	return 60*num
 
 
 class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
@@ -124,7 +133,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 								referrer         = item['referrer'],
 								outbound_wrapper = item['outbound_wrapper'],
 								first_seen       = datetime.datetime.now(),
-								release_date     = datetime.datetime.now(),
+								release_date     = item['release_date'],
 								fetch_attempts   = 0,
 							)
 						self.db_sess.add(have)
@@ -133,6 +142,13 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 							self.db_sess.commit()
 
 						self.mon_con.incr('new-urls', 1)
+					else:
+						delta = have.release_date - item['release_date']
+						if delta.total_seconds() > days(2):
+							self.log.info("Item release date looks invalid. Fixing (%s, %s)", delta, delta.total_seconds())
+							have.release_date = item['release_date']
+							if commit_each:
+								self.db_sess.commit()
 
 				self.db_sess.commit()
 				break
@@ -166,9 +182,18 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 
 		release_tables = container.find_all('table', class_='tablesorter')
 
+		current_date = datetime.datetime.now()
+
 		ref_pages = set()
 		releases = []
 		for table_div in release_tables:
+
+			date_tag = table_div.find_previous_sibling("b")
+			if date_tag:
+				time_struct, status = parsedatetime.Calendar().parse(date_tag.get_text(strip=True))
+				if status:
+					current_date = datetime.datetime(*time_struct[:6])
+
 			for item in table_div.find_all("tr"):
 				tds = item.find_all('td')
 				if len(tds) == 3:
@@ -192,8 +217,8 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 					for link in linkas:
 						bad = any([tmp in masked_classes for tmp in link['class']])
 						if not bad:
-							self.log.info("Using %s for referrer for %s -> %s -> %s, %s, %s", referrer, sname, gname, link.get_text().strip(), link['class'], bad)
-							self.log.info("Intermediate URL: %s", link['href'])
+							# self.log.info("Using %s for referrer for %s -> %s -> %s, %s, %s", referrer, sname, gname, link.get_text().strip(), link['class'], bad)
+							# self.log.info("Intermediate URL: %s", link['href'])
 
 							linkfq = link['href']
 							if linkfq.startswith("//"):
@@ -207,11 +232,12 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 								'groupinfo'        : gname,
 								'referrer'         : referrer,
 								'outbound_wrapper' : linkfq,
+								'release_date'     : current_date,
 								'actual_target'    : None,
 							}
 
 							# Don't bother triggering qidian stuff, I track that better externally.
-							if 'Qidian International' not in gname:
+							if 'Qidian International' not in gname and "Webnovel" not in gname:
 								releases.append(release)
 
 							ref_pages.add(referrer)
@@ -235,4 +261,31 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 		# print(self.amqpint)
 
 		self.processPage(self.pageUrl, self.content)
+
+
+def reset_homepages():
+	import tqdm
+	import common.database as db
+
+	sess = db.get_db_session()
+	for pageno in tqdm.trange(1, 1001):
+		url = "https://www.novelupdates.com/?pg=%d" % pageno
+		have = sess.query(db.WebPages)                                     \
+			.filter(db.WebPages.url==url) \
+			.scalar()
+
+		if have:
+			have.state = 'new'
+			have.ignoreuntiltime = datetime.datetime.min
+			sess.commit()
+
+
+
+
+if __name__ == "__main__":
+	print("Test mode!")
+	import logSetup
+	import multiprocessing
+	logSetup.initLogging()
+	reset_homepages()
 

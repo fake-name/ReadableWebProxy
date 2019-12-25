@@ -19,7 +19,7 @@ def cares_about_change(op, row):
 
 		# Also ignore history where things aren't complete.
 		if row.state != 'complete':
-			print("Ignoring row update to not-complete")
+			# print("Ignoring row update to not-complete")
 			return False
 
 		rss_mimetypes = [
