@@ -229,6 +229,10 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 			assert 'maximum_priority' in item
 			assert 'ignore_ignore_time' in item
 
+			# psycopg2cffi._impl.exceptions.OperationalError: index row size 3192 exceeds maximum 2712 for index "ix_web_pages_url"
+			assert len(item['url']) < 2712, "URL Too long for postgres. Length %s for url '%s'" % (
+				len(item['url']), item['url'])
+
 			if max_pri is None:
 				max_pri = db.DB_LOW_PRIORITY
 
