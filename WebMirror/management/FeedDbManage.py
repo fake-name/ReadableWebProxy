@@ -1,10 +1,9 @@
 
-import calendar
 import datetime
-import json
+import re
 import os
 import os.path
-import shutil
+import tqdm
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 
@@ -197,31 +196,18 @@ def do_db_sync():
 		have_funcs = {row.feed_name : (row.func, row.last_changed) for row in res}
 		sess.commit()
 
-		this_dir = os.path.dirname(__file__)
-		func_json_path = os.path.join(this_dir, "function_database.json")
+	this_dir = os.path.dirname(__file__)
+	save_dir = os.path.join(this_dir, "rss_parser_funcs")
+	if not os.path.exists(save_dir):
+		os.mkdir(save_dir)
 
-	file_funcs = {}
-	try:
-		if os.path.exists(func_json_path):
-			with open(func_json_path, "r") as fp:
-				data = fp.read()
-				if data:
-					file_funcs = json.loads(data)
-	except json.JSONDecodeError:
-		pass
 
-	if have_funcs == file_funcs:
-		print("Function storage file is up-to-date. Nothing to do!")
-		return
+	for fname, (funcs, changed) in tqdm.tqdm(have_funcs.items()):
+		func_name = re.search(r"def (\w+)\(", funcs)
 
-	print("Updating function database file.")
-	def datetime_handler(x):
-		if isinstance(x, datetime.datetime):
-			return x.isoformat()
-		raise TypeError("Unknown type")
-
-	with open(func_json_path, "w") as fp:
-		json.dump(have_funcs, fp, indent=True, sort_keys=True, default=datetime_handler)
+		fname = "feed_parse_%s.py" % (func_name.group(1), )
+		with open(os.path.join(save_dir, fname), "w") as fp:
+			fp.write(funcs)
 
 
 

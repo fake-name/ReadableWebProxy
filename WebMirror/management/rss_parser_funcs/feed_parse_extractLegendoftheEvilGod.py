@@ -1,0 +1,8 @@
+def extractLegendoftheEvilGod(item):
+	"""
+	Legend of the Evil God
+	"""
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	if not (chp or vol or frag) or 'preview' in item['title'].lower():
+		return None
+	return False
