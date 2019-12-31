@@ -40,7 +40,7 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 		start_date = datetime.datetime.now()
 
 		for job in current_jobs:
-			job_str, job_id = job.args
+			job_str, job_id = job.args[:2]
 			active_jobs.add(job_str)
 
 			# We only actively manage jobs that start with "AUTO". That lets us

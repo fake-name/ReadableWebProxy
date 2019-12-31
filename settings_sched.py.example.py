@@ -69,7 +69,7 @@ AUDIT_LOGS_TABLENAME = 'scheduler_jobauditlog'
 # }
 
 # Postgres
-DATABASE_CLASS = 'ndscheduler.core.datastore.providers.postgresql.DatastorePostgresql'
+DATABASE_CLASS = 'ndscheduler.corescheduler.datastore.providers.postgres.DatastorePostgres'
 DATABASE_CONFIG_DICT = {
     'user'     : DATABASE_USER,
     'password' : DATABASE_PASS,
