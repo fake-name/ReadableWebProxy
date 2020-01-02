@@ -7,6 +7,7 @@ rewalk_disabled: True
 rewalk_interval_days: 50000
 
 baseUrl: [
+	'http://www.silversrise.com',
 
 	'http://www.deadlylegends.com/translations/',
 	'https://webnoveltranslations.blogspot.com',
@@ -298,6 +299,7 @@ baseUrl: [
 	'https://gyihuhusmtl.wordpress.com',
 
 	'http://mynerves.tk',
+	'http://novel.gilegati.com',
 	'http://onequality.tk',
 	'http://turtleme.me',
 

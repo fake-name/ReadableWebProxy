@@ -45,6 +45,9 @@ import common.StatsdMixin as StatsdMixin
 # import mem_top
 # from pympler.tracker import SummaryTracker
 
+class RestartConnectionError(Exception):
+	pass
+
 ########################################################################################################################
 #
 #	##     ##    ###    #### ##    ##     ######  ##          ###     ######   ######
@@ -351,12 +354,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		self.last_rx = datetime.datetime.now()
 
-		self.db_interface = psycopg2.connect(
-				database = settings.DATABASE_DB_NAME,
-				user     = settings.DATABASE_USER,
-				password = settings.DATABASE_PASS,
-				host     = settings.DATABASE_IP,
-			)
+		self.open_database_connection()
 
 		# We need the job queue because the special case system can skip the rpc stuff entirely.
 		self.normal_out_queue = job_queue
@@ -391,6 +389,15 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		with state_lock:
 			self.system_state['ratelimiters'][self.mode] = common.NetlocThrottler.NetlockThrottler(key_prefix='processed', fifo_limit = 1000 * 1000)
+
+	def open_database_connection(self):
+
+		self.db_interface = psycopg2.connect(
+				database = settings.DATABASE_DB_NAME,
+				user     = settings.DATABASE_USER,
+				password = settings.DATABASE_PASS,
+				host     = settings.DATABASE_IP,
+			)
 
 	def blocking_put_response(self, item):
 		assert 'mode' in item, "Response items must have a mode key!"
@@ -459,6 +466,11 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 	def generalLinkClean(self, link, badwords, badcompounds):
 		if link.startswith("data:"):
 			return None
+
+		link = common.util.urlFuncs.cleanUrl(link)
+		if not link:
+			return None
+
 		linkl = link.lower()
 		if any([badword in linkl for badword in badwords]):
 			print("Filtered:", link, [badword for badword in badwords if badword in linkl ])
@@ -587,12 +599,20 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 	def queue_filler_proc(self):
 
-
+		connection_errors = 0
 		while self.run_flag.value == 1:
 			print("Queue filler looping!")
 			try:
 
 				self.__queue_fillter_internal()
+				connection_errors = 0
+
+			except RestartConnectionError:
+				connection_errors += 1
+				self.open_database_connection()
+				if connection_errors > 10:
+					raise
+
 			except ConnectionRefusedError:
 				self.log.warning("(ConnectionRefusedError) RPC Remote appears to not be listening!")
 				time.sleep(1)
@@ -753,6 +773,14 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 				cursor.execute("COMMIT;")
 				break
+			except psycopg2.InterfaceError:
+				self.log.info("Trying to reopen connection")
+				try:
+					cursor = self.db_interface.cursor()
+					cursor.execute("""SET statement_timeout = 60000;""")
+				except psycopg2.Error:
+					raise RestartConnectionError
+
 			except psycopg2.Error:
 				delay = random.random() / 3
 				traceback.print_exc()
@@ -802,7 +830,6 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			if netloc == "archiveofourown.org":
 				# Do nothing, these are being handled by an out-of-process deletion interface
 				del_count += 1
-
 				continue
 
 			processed += 1

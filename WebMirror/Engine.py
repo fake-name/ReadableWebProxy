@@ -537,6 +537,12 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			return None
 		if link.startswith("clsid:"):
 			return None
+
+		link = common.util.urlFuncs.cleanUrl(link)
+		if not link:
+			return None
+
+
 		linkl = link.lower()
 		if any([badword in linkl for badword in badwords]):
 			return None

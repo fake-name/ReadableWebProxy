@@ -214,6 +214,8 @@ def unwrap_redirect(urlin, resolve_redirects=True):
 
 
 fuyukai_squatter_re = re.compile(r'www\.fuyukai\.club/[a-z]\d+[A-Z]/')
+gilegati_squatter_re = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9]+\.(html|php|xml)')
+silversrise_squatter_re = re.compile(r'www\.silversrise\.com/[a-zA-Z0-9]+/([a-zA-Z0-9]+/|[a-z0-9]+\.html)')
 def cleanUrl(urlin):
 	# Fucking tumblr redirects.
 	if urlin.startswith("https://www.tumblr.com/login"):
@@ -228,6 +230,14 @@ def cleanUrl(urlin):
 
 	if parsed.netloc.endswith('www.fuyukai.club'):
 		if fuyukai_squatter_re.search(urlin):
+			return None
+
+	if parsed.netloc.endswith('novel.gilegati.com'):
+		if gilegati_squatter_re.search(urlin):
+			return None
+
+	if parsed.netloc.endswith('www.silversrise.com'):
+		if silversrise_squatter_re.search(urlin):
 			return None
 
 	if  parsed.netloc.endswith('.cloudfront.net'):
