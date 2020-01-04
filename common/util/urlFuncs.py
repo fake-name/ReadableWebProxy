@@ -366,7 +366,7 @@ def hasDuplicateSegments(url):
 				try:
 					idx = pathchunks.index(bad_chunk)
 					if len(pathchunks) - idx > 2:
-						print("Bad:", pathchunks, idx)
+						# print("Bad:", pathchunks, idx)
 						return True
 				except ValueError:
 					pass

@@ -113,7 +113,6 @@ GLOBAL_BAD_URLS = [
 			'app3.letitbefaster.world',
 			'app4.letitbefaster.world',
 			'install.shopping-day.com',
-			'pastebin.com',
 			'ww1.absurdtl.com',
 			'ww1.avertranslation.org',
 			'ww1.catingham-palace.com',
