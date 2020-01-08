@@ -19,6 +19,7 @@ badwords: [
 			"wpmp_switcher=mobile",
 			"account/begin_password_reset",
 			"/comment-page-",
+			"/alsolike/",
 
 			# Why do people think they need a fucking comment system?
 			'/?replytocom=',

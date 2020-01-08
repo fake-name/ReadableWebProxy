@@ -214,7 +214,7 @@ def unwrap_redirect(urlin, resolve_redirects=True):
 
 
 fuyukai_squatter_re = re.compile(r'www\.fuyukai\.club/[a-z]\d+[A-Z]/')
-gilegati_squatter_re = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9]+\.(html|php|xml)')
+gilegati_squatter_re = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9_]+\.(html|php|xml)')
 silversrise_squatter_re = re.compile(r'www\.silversrise\.com/[a-zA-Z0-9]+/([a-zA-Z0-9]+/|[a-z0-9]+\.html)')
 def cleanUrl(urlin):
 	# Fucking tumblr redirects.

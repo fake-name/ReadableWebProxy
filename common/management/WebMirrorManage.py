@@ -63,7 +63,6 @@ import WebMirror.OutputFilters.rss.FeedDataParser
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
 
 
-
 class TestQueueTrigger(WebMirror.TimedTriggers.QueueTriggers.QueueTrigger):
 
 	loggerPath = 'TestTrigger'
@@ -100,8 +99,6 @@ def get_job_from_url(sess, url, starturl, netloc):
 	sess.commit()
 
 	return job
-
-
 
 
 def exposed_remote_fetch_enqueue(url):
@@ -395,11 +392,44 @@ def delete_internal_urls(sess, urls, chunk_size=1000):
 
 				pbar.write("Example removed URL: '%s'" % (chunk[0], ))
 
-				q1 = sess.query(db.WebPages).filter(db.WebPages.url.in_(chunk))
-				affected_rows_main = q1.delete(synchronize_session=False)
 
-				q2 = sess.query(ctbl).filter(ctbl.c.url.in_(chunk))
-				affected_rows_ver = q2.delete(synchronize_session=False)
+				affected_rows_main = sess.execute("""
+					WITH deleted AS (
+						DELETE FROM
+							web_pages
+						WHERE
+							url IN :urls
+						RETURNING
+							id
+						)
+					SELECT
+						count(*)
+					FROM
+						deleted;
+					""", {'urls' : tuple(chunk), })
+
+				affected_rows_ver = sess.execute("""
+					WITH deleted AS (
+						DELETE FROM
+							web_pages_version
+						WHERE
+							url IN :urls
+						RETURNING
+							id
+						)
+					SELECT
+						count(*)
+					FROM
+						deleted;
+					""", {'urls' : tuple(chunk), })
+				affected_rows_main = list(affected_rows_main)[0][0]
+				affected_rows_ver = list(affected_rows_ver)[0][0]
+
+				# q1 = sess.query(db.WebPages).filter(db.WebPages.url.in_(chunk))
+				# affected_rows_main = q1.delete(synchronize_session=False)
+
+				# q2 = sess.query(ctbl).filter(ctbl.c.url.in_(chunk))
+				# affected_rows_ver = q2.delete(synchronize_session=False)
 
 				sess.commit()
 				pbar.set_description("Deleted %s rows (%s version table rows). %0.2f%% done." %
@@ -1583,6 +1613,53 @@ def exposed_nu_retrigger_series_pages():
 			have = sess.execute("""UPDATE web_pages SET state='new', priority=50000 WHERE url LIKE 'http://www.novelupdates.com/series/%%/' AND id < %s AND id >= %s AND state != 'new';""" % (x, x-step))
 
 			print('%10i, %7.4f, %6i, %6i' % (x, x/end * 100, have.rowcount, changed))
+			changed += have.rowcount
+			if changed > 100:
+				print("Committing (%s changed rows)...." % changed, end=' ')
+				sess.commit()
+				print("done")
+				changed = 0
+		sess.commit()
+
+
+def exposed_delete_gilegati_squatter():
+	'''
+
+	'''
+	step = 10000
+
+	with db.session_context() as sess:
+		end = sess.execute("""SELECT MAX(id) FROM web_pages;""")
+		end = list(end)[0][0]
+
+		start = sess.execute("""SELECT MIN(id) FROM web_pages;""")
+		start = list(start)[0][0]
+
+		changed = 0
+
+		if not start:
+			print("No null rows to fix!")
+			return
+
+		start = start - (start % step)
+
+		for x in range(end, start, -step):
+
+			have = sess.execute("""
+						DELETE
+						FROM
+							web_pages
+						WHERE
+							netloc = 'novel.gilegati.com'
+						AND
+							url SIMILAR TO '%%novel.gilegati.com/[a-zA-Z0-9]+.(html|php|xml)%%'
+						AND
+							id < %s
+						AND
+							id >= %s
+						;""" % (x, x-step))
+
+			print('\r%10i, %7.4f, %6i, %6i             ' % (x, x/end * 100, have.rowcount, changed), end='')
 			changed += have.rowcount
 			if changed > 100:
 				print("Committing (%s changed rows)...." % changed, end=' ')

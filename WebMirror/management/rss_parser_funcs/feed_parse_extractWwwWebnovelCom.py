@@ -2,6 +2,9 @@ def extractWwwWebnovelCom(item):
 	'''
 	Parser for 'www.webnovel.com'
 	'''
+	
+	return False
+	
 	import traceback
 	import WebRequest
 

@@ -24,7 +24,8 @@ baseUrl: [
 
 badwords: [
 			"/wiki/Module:Unit/",
-
+			're-monster.fandom.com/ru/',
+			':RecentChanges',
 			"/viewtopic.php",
 			"/memberlist.php",
 			"/search.php",
