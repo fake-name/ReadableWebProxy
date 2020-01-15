@@ -4,10 +4,6 @@ def extractReLibrary(item):
 	"""
 	if item['tags'] == ['rhapsody of mulan']:
 		return None
-	if item['tags'] == ['~News~']:
-		return None
-	if item['tags'] == ['news']:
-		return None
 
 	
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -45,6 +41,7 @@ def extractReLibrary(item):
 		('not sure, another world reincarnation',  'Not Sure, But It Looks Like I Got Reincarnated in Another World',        'translated'),
 		('the ancestor of our sect',               'The Ancestor of our Sect Isn’t Acting like an Elder',                    'translated'),
 		('hero\'s daughter',                       'Reborn as the Hero\'s Daughter! Time to Become the Hero Once More!',     'translated'),
+		('life with a tail',                       'life with a tail',                                                       'translated'),
 		('Levelmaker',                             'Levelmaker',                                                             'translated'),
 		('Demon Sword Maiden',                     'Demon Sword Maiden',                                                     'translated'),
 		('Stained Red',                            'Stained Red',                                                            'oel'),

@@ -1,4 +1,3 @@
-
 def extractLittleajummasWordpressCom(item):
 	'''
 	Parser for 'littleajummas.wordpress.com'
@@ -9,6 +8,11 @@ def extractLittleajummasWordpressCom(item):
 		return None
 
 	tagmap = [
+		('imtmlip',       'I met the male lead in prison',                                'translated'),
+		('smvb',          'the system for mentoring villain bosses',                      'translated'),
+		('ladybaby',      'lady baby',                                                    'translated'),
+		('ihtdd',         'i hid the duke\'s daughter',                                   'translated'),
+		('isinqtbe',      'i\'m sorry i\'m not qualified to be empress',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +23,3 @@ def extractLittleajummasWordpressCom(item):
 
 
 	return False
-	

@@ -24,6 +24,7 @@ def extractSystemtranslationHomeBlog(item):
 			('Crazy Leveling System Chapter',  'Crazy Leveling System',                      'translated'),
 			('I.D.W.A.T.S Chapter ',           'I Don\'t Want To Go Against The Sky',        'translated'),
 			('S.S Chapter ',                   'System Supplier',                            'translated'),
+			('S.O.M Chapter ',                 'Summoner of Miracles',                       'translated'),
 		]
 	
 		for titlecomponent, name, tl_type in titlemap:

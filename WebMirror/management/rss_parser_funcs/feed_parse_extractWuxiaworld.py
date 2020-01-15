@@ -126,6 +126,8 @@ def extractWuxiaworld(item):
 		('heaven\'s devourer',                              'Swallowing the Heavens',                            'translated'),
 		('physician’s odyssey',                             'Physician\'s Odyssey',                              'translated'),
 		('The Sword and The Shadow',                        'The Sword and The Shadow',                          'translated'),
+		('everyone is young except for me',                 'everyone is young except for me',                   'translated'),
+		('dungeon predator',                                'dungeon predator',                                  'translated'),
 		('almighty sword domain',                           'almighty sword domain',                             'translated'),
 		('The Unrivaled Tang Sect',                         'The Unrivaled Tang Sect',                           'translated'),
 		('A Record of a Mortal’s Journey to Immortality',   'A Record of a Mortal’s Journey to Immortality',     'translated'),

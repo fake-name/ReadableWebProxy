@@ -1,4 +1,3 @@
-
 def extractElentiyalaeWordpressCom(item):
 	'''
 	Parser for 'elentiyalae.wordpress.com'
@@ -9,6 +8,7 @@ def extractElentiyalaeWordpressCom(item):
 		return None
 
 	tagmap = [
+		('legendoffei',       'Legend of Fei',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractElentiyalaeWordpressCom(item):
 
 
 	return False
-	

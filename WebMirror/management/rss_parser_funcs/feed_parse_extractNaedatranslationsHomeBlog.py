@@ -10,6 +10,7 @@ def extractNaedatranslationsHomeBlog(item):
 	tagmap = [
 		('TBAFIAHM',       'To Be a Heartthrob in a Horror Movie',                      'translated'),
 		('TBAHIAHM',       'To Be a Heartthrob in a Horror Movie',                      'translated'),
+		('sscf',           'Sand Sculpture Childhood Friends Are the Most Lethal',      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

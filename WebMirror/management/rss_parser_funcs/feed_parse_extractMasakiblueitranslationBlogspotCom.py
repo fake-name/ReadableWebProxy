@@ -1,4 +1,3 @@
-
 def extractMasakiblueitranslationBlogspotCom(item):
 	'''
 	Parser for 'masakiblueitranslation.blogspot.com'
@@ -9,6 +8,10 @@ def extractMasakiblueitranslationBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('chichi wa eiyuu',                                      'My Father is a Hero, My Mother is a Spirit, the Daughter (Me) is a Reincarnator.',                               'translated'),
+		('i want to be a receptionist of the magic world',       'I Want to Be a Receptionist in the Magic World',                                                                 'translated'),
+		('Hazure Skill',                                         'Hazure Skill \'Mapping\' wo Te ni Shita Ore wa, Saikyou Party to Tomo ni Dungeon ni Idomu',                      'translated'),
+		('mapping skill',                                        'Hazure Skill \'Mapping\' wo Te ni Shita Ore wa, Saikyou Party to Tomo ni Dungeon ni Idomu',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractMasakiblueitranslationBlogspotCom(item):
 
 
 	return False
-	

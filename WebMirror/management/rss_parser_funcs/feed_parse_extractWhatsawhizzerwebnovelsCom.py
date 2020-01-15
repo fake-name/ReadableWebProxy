@@ -29,6 +29,8 @@ def extractWhatsawhizzerwebnovelsCom(item):
 		('moth',                            'The Man of the House',                                                     'oel'),
 		('Power of Creation',               'Power of Creation',                                                        'oel'),
 		('std',                             'Sex Trafficking for Dummies',                                              'oel'),
+		('vampires kiss',                   'The Vampire’s Kiss',                                                       'oel'),
+		('Requiem to the Stars',            'Requiem to the Stars',                                                     'oel'),
 		('Loiterous',                       'Loiterous',                                                                'oel'),
 	]
 
@@ -38,6 +40,7 @@ def extractWhatsawhizzerwebnovelsCom(item):
 
 	chp_prefixes = [
 			('My Dungeon Life – Chapter ',  'My Dungeon Life',               'oel'),
+			('Sex Trafficking for Dummies',                             'Sex Trafficking for Dummies',                                              'oel'),
 		]
 
 	for prefix, series, tl_type in chp_prefixes:

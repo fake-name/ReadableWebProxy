@@ -11,6 +11,7 @@ def extractKeztranslationsWordpressCom(item):
 		('FOD',     'Quickly Wear the Face of the Devil',      'translated'), 
 		('ABO',     'ABO Cadets',                              'translated'), 
 		('dfc',     'The First Dragon Convention',             'translated'), 
+		('ogu',     'My Family’s Omega Has Just Grown Up',     'translated'), 
 	]
 
 	for tagname, name, tl_type in tagmap:

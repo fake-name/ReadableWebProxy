@@ -1,4 +1,3 @@
-
 def extractAngleanuwordsWordpressCom(item):
 	'''
 	Parser for 'angleanuwords.wordpress.com'
@@ -9,6 +8,7 @@ def extractAngleanuwordsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('rebirth of medicine',       'rebirth of medicine',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractAngleanuwordsWordpressCom(item):
 
 
 	return False
-	

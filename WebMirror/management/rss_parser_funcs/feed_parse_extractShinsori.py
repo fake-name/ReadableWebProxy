@@ -63,10 +63,12 @@ def extractShinsori(item):
 		('Mezametara Chikashitsu!?',                                    'Mezametara Chikashitsu!? ~Tensei Shoujo no Yume no Saki~',                                 'translated'),
 		('Mezametara Chikashitsu!? ~Tensei Shoujo no Yume no Saki~',    'Mezametara Chikashitsu!? ~Tensei Shoujo no Yume no Saki~',                                 'translated'),
 		('Shomin no Aji',                                               'Tensei Reijou wa Shomin no Aji ni Uete Iru',                                               'translated'),
+		('tensei reijou ha shomin no aji ni ueteiru',                   'tensei reijou ha shomin no aji ni ueteiru',                                                'translated'),
 		('Akuyaku ni Nari Sugita',                                      'Akuyaku ni Nari Sugita',                                                                   'translated'),
 		('demon lord wants to laze',                                    'Demon Lord Wants to Laze',                                                                 'translated'),
 		('Heroine of the Broken Engagement',                            'Heroine of the Broken Engagement',                                                         'translated'),
 		('Child Rearing Hero',                                          'Child Rearing Hero and Children of the Demon King',                                        'translated'),
+		('akuyaku reijou ni nanka narimasen. watashi wa『futsuu』no koushaku reijou desu!',    'akuyaku reijou ni nanka narimasen. watashi wa『futsuu』no koushaku reijou desu!',                                 'translated'),
 	]
 
 	for tag, sname, tl_type in tag_map:

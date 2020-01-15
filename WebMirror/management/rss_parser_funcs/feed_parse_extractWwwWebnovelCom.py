@@ -3,11 +3,6 @@ def extractWwwWebnovelCom(item):
 	Parser for 'www.webnovel.com'
 	'''
 	
-	return False
-	
-	import traceback
-	import WebRequest
-
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
@@ -31,6 +26,9 @@ def extractWwwWebnovelCom(item):
 	
 	have = get_feed_article_meta(item['guid'])
 	haveold = {key : value for key, value in have.items()}
+	
+	
+	have['language'] = "unknown"
 	
 	if 'content' in item and item['content']:
 		
@@ -57,7 +55,8 @@ def extractWwwWebnovelCom(item):
 			if series_type:
 				have['type'] = series_type
 	
-	
+			
+			have['language'] = metadata.get("bookInfo", {}).get("languageName", "unknown")
 			
 
 	if not 'ad_free' in have:
@@ -89,7 +88,9 @@ def extractWwwWebnovelCom(item):
 		
 	item['linkUrl'] = have['resolved_url']
 	
-
+	if have['language'] != 'en':
+		print("Non english content (%s). Ignoring" % (have['language'], ))
+		return False
 	
 	if 'type' in have and 'series_name' in have:
 	

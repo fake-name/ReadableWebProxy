@@ -25,6 +25,7 @@ def extractYurikatransWordpressCom(item):
 		('I Reincarnated',                               'I Was Reincarnated but I Don\'t Know Why',                                                                      'translated'),
 		('Vampire Yukine',                               'Vampire Yukine\'s Otherworld Journey',                                                                          'translated'),
 		('Fief Strengthening',                           'Fief Strengthening',                                                                                            'translated'),
+		('Vampire Princess',                             'Vampire Princess',                                                                                              'translated'),
 		('Arms Otome',                                   'Arms Otome',                                                                                                    'translated'),
 		('Eiyuu Musume',                                 'Eiyuu no Musume to Shite Umarekawatta Eiyuu wa Futatabi Eiyuu o Mezasu (WN)',                                   'translated'),
 		('eiyuu no musume',                              'Eiyuu no Musume to Shite Umarekawatta Eiyuu wa Futatabi Eiyuu o Mezasu (WN)',                                   'translated'),

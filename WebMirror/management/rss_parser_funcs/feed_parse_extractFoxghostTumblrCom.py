@@ -1,4 +1,3 @@
-
 def extractFoxghostTumblrCom(item):
 	'''
 	Parser for 'foxghost.tumblr.com'
@@ -9,6 +8,7 @@ def extractFoxghostTumblrCom(item):
 		return None
 
 	tagmap = [
+		('imperial uncle',       'imperial uncle',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFoxghostTumblrCom(item):
 
 
 	return False
-	

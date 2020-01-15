@@ -1,4 +1,3 @@
-
 def extractWwwFanstranslationsCom(item):
 	'''
 	Parser for 'www.fanstranslations.com'
@@ -9,6 +8,9 @@ def extractWwwFanstranslationsCom(item):
 		return None
 
 	tagmap = [
+		('i help the richest man spend money to prevent disasters',       'i help the richest man spend money to prevent disasters',                      'translated'),
+		('the widow "misses" her villainous late husband',                'the widow "misses" her villainous late husband',                               'translated'),
+		('endless plunder in high school dxd',                            'endless plunder in high school dxd',                                           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractWwwFanstranslationsCom(item):
 
 
 	return False
-	

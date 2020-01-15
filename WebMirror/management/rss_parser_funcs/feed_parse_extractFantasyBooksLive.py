@@ -248,16 +248,18 @@ def extractFantasyBooksLive(item):
 		('61242',                      'Sovereign of the Gates',                                                          'oel'),    
 		('70384',                      'I Have A Manor In The Post-Apocalyptic Era',                                      'translated'),    
 		('73971',                      'Champion is Playing',                                                             'translated'),    
-		
-		
-		('136557',                                                                   'Sovereign of Blood',                                                                      'oel'),
-		('135015',                                                                   'Entertainment Industry',                                                                      'oel'),
-		('137046',                                                                   'Crossing the Divide',                                                                      'oel'),
-		('130032',                                                                   'My Wife Spoils Me Too Much',                                                                      'translated'),
-		('130701',                                                                   'Cursed Heroine',                                                                      'oel'),
-		('134049',                                                                   'Dracula',                                                                      'oel'),
+		('136557',                     'Sovereign of Blood',                                                              'oel'),
+		('135015',                     'Entertainment Industry',                                                          'oel'),
+		('137046',                     'Crossing the Divide',                                                             'oel'),
+		('130032',                     'My Wife Spoils Me Too Much',                                                      'translated'),
+		('130701',                     'Cursed Heroine',                                                                  'oel'),
+		('134049',                     'Dracula',                                                                         'oel'),
+		('143956',                     'Chronicles of Fate',                                                              'oel'),
+		('144700',                     'Welcome to Freak Class!',                                                         'translated'),
+		('140483',                     'Undying Empire',                                                                  'oel'),
+		('139605',                     'The betrayal',                                                                    'oel'),
+		('56681',                      'A Hero Returns',                                                                  'oel'),
 
-		
 		
 
 	]

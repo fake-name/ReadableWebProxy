@@ -9,6 +9,7 @@ def extractSoloTranslationCom(item):
 
 	tagmap = [
 		('tscm',       'The Strongest Clan\'s Master is the Weakest and Most Evil Support Class',                      'translated'),
+		('Foreigner',  'The Foreigner, Explores the Dungeon',                                                          'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

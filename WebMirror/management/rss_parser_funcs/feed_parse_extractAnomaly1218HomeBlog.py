@@ -1,4 +1,3 @@
-
 def extractAnomaly1218HomeBlog(item):
 	'''
 	Parser for 'anomaly1218.home.blog'
@@ -9,6 +8,8 @@ def extractAnomaly1218HomeBlog(item):
 		return None
 
 	tagmap = [
+		('di daughter’s rebirth: sheng shi wang fei',       'di daughter’s rebirth: sheng shi wang fei',                      'translated'),
+		('PRC',       'PRC',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractAnomaly1218HomeBlog(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractPbtlsWordpressCom(item):
 	'''
 	Parser for 'pbtls.wordpress.com'
@@ -9,6 +8,8 @@ def extractPbtlsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('ore wo suki',            'Ore wo Suki Nano wa Omae Dake ka yo',                      'translated'),
+		('ore wo suki nano',       'Ore wo Suki Nano wa Omae Dake ka yo',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractPbtlsWordpressCom(item):
 
 
 	return False
-	

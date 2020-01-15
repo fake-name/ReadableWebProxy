@@ -381,9 +381,9 @@ def delete_internal(sess, ids, netloc, badwords, show_badword=True, chunk_size=1
 				sess.rollback()
 
 
-def delete_internal_urls(sess, urls, chunk_size=1000):
+def delete_internal_urls(sess, urls, chunk_size=1000, pbar=True):
 
-	pbar = tqdm.tqdm(range(0, len(urls), chunk_size))
+	pbar = tqdm.tqdm(range(0, len(urls), chunk_size), position=1)
 	for chunk_idx in pbar:
 		chunk = urls[chunk_idx:chunk_idx+chunk_size]
 		while 1:
@@ -801,6 +801,90 @@ def exposed_streaming_purge_invalid_urls_from_file():
 					chunk_size   = 100,
 				)
 			del_sess.commit()
+
+
+
+
+def exposed_streaming_incremental_delete_invalid_urls():
+	'''
+	Stream the URLs in the database, and delete them on the fly.
+	'''
+
+	print("Purge invalid URLs")
+
+	rulemgr = RuleManager()
+
+	bad_tot = 1
+
+
+
+	step        = 2500
+	bad_tot     = 1
+	out_sampler = 1
+
+	try:
+		with db.session_context(name="query_sess", override_timeout_ms=1000 * 60 * 60 * 12) as sess:
+			print("Counting items in table")
+			# total_items = 1156178620
+
+
+			# sess.execute('''SET enable_bitmapscan TO off;''')
+			print("Getting minimum row in need or update..")
+			start = sess.execute("""SELECT min(id),  max(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing')""")
+			# start = sess.execute("""SELECT min(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing') OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+			start, stop = list(start)[0]
+			if start is None:
+				print("No rows to reset!")
+				return
+			print("Minimum row ID: ", start, "Maximum row ID: ", stop)
+
+
+			# for idx in range(start, stop, step):
+			pbar = tqdm.tqdm(range(start, stop, step), position=0)
+			for idx in pbar:
+
+
+				ids = sess.query(db.WebPages.id, db.WebPages.url) \
+					.filter(db.WebPages.id >= idx)                \
+					.filter(db.WebPages.id <= idx+step)           \
+					.all()
+
+
+				bad_urls = []
+
+				for _, url in ids:
+					if not urlFuncs.cleanUrl(url):
+						# print("Bad:", url)
+						bad_urls.append(url)
+						if out_sampler == 5000:
+							pbar.write("Unclean URL: %s" % (url, ))
+							out_sampler = 0
+						bad_tot += 1
+						out_sampler += 1
+					else:
+						parsed = urllib.parse.urlparse(url)
+						nl = parsed.netloc
+						if rulemgr.is_bad(nl, url):
+							# print("Bad URL: ", url)
+							bad_urls.append(url)
+							if out_sampler == 5000:
+								pbar.write("Bad URL: %s" % (url, ))
+								out_sampler = 0
+							bad_tot += 1
+							out_sampler += 1
+
+				if bad_urls:
+					delete_internal_urls(
+							sess         = sess,
+							urls         = bad_urls,
+							chunk_size   = 100,
+						)
+					sess.commit()
+
+
+	except KeyboardInterrupt:
+		print("Interrupt!")
+
 
 
 

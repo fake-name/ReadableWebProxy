@@ -93,6 +93,11 @@ def extractDanmeiMelimeliartsCom(item):
 		('the seeing eye dog',                                                     'the seeing eye dog',                                                                    'translated'),
 		('quick transmigration: i\'m almost dead',                                 'quick transmigration: i\'m almost dead',                                                'translated'),
 		('reborn into a slash game',                                               'reborn into a slash game',                                                              'translated'),
+		('discussing the correct posture to enjoy dog food',                       'discussing the correct posture to enjoy dog food',                                      'translated'),
+		('my underachieving seatmate doesn\'t need any comforting',                'my underachieving seatmate doesn\'t need any comforting',                               'translated'),
+		('sweet, although short',                                                  'sweet, although short',                                                                 'translated'),
+		('those years in quest of honor mine',                                     'those years in quest of honor mine',                                                    'translated'),
+		('when an alien is bound to a world saving system',                        'when an alien is bound to a world saving system',                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

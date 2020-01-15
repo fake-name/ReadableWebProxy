@@ -1,4 +1,3 @@
-
 def extractAnykatranslationWordpressCom(item):
 	'''
 	Parser for 'anykatranslation.wordpress.com'
@@ -9,6 +8,7 @@ def extractAnykatranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('face slapping the slag gong system',       'face slapping the slag gong system',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractAnykatranslationWordpressCom(item):
 
 
 	return False
-	

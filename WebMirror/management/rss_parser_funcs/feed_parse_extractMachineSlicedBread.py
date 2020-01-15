@@ -54,6 +54,7 @@ def extractMachineSlicedBread(item):
 		('world of martial porn',              'World of Martial Porn',                                                                                                                  'oel'),
 		('World of Women',                     'World of Women',                                                                                                                         'oel'),
 		('Power of Creation',                  'Power of Creation',                                                                                                                      'oel'),
+		('lover\'s lifeline system',           'lover\'s lifeline system',                                                                                                               'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:
@@ -79,6 +80,7 @@ def extractMachineSlicedBread(item):
 		('Dragon Magic Chapter ',                                                    'Dragon Magic',                                                                                                                'oel'),
 		('Just a Guy in Space – ',                                                   'Just a Guy in Space',                                                                                                         'oel'),
 		('Just a Guy in Space – ',                                                   'Just a Guy in Space',                                                                                                         'oel'),
+		('Tales of a Enchantress ',                                                  'Tales of an Enchantress',                                                                                                     'oel'),
 		('Tales of an Enchantress – Chapter',                                        'Tales of an Enchantress',                                                                                                     'oel'),
 		('Min’s Story – Chapter ',                                                   'Min’s Story',                                                                                                                 'oel'),
 		('ISSL Chapter',                                                             'International Sex Slave Law',                                                                                                 'oel'),
@@ -90,7 +92,10 @@ def extractMachineSlicedBread(item):
 		('FeralHeart ',                                                              'FeralHeart',                                                                                                                  'oel'),
 		('Kama-sutra Chapter ',                                                      'Kama-sutra',                                                                                                                  'oel'),
 		('Evil Prophet Chapter ',                                                    'The Evil Prophet',                                                                                                            'oel'),
+		('The Xperiment – Chapter ',                                                 'The Xperiment',                                                                                                               'oel'),
 		('STC Chapter ',                                                             'Swayamvar: Tamer Chronicles',                                                                                                 'oel'),
+		('FPD Chapter ',                                                             'Fourth Prince’s Debauchery',                                                                                                  'oel'),
+		('Fourth Prince ',                                                           'Fourth Prince’s Debauchery',                                                                                                  'oel'),
 		('The World of Women – Chapter ',                                            'The World of Women',                                                                                                          'oel'),
 		('Bonded Goddess – Chapter ',                                                'I Went To Another World and Bonded With a Goddess So I Might As Well Have Lots of Sex and Rub it In My Ex-wife’s Face',       'oel'),
 		('I Will Cuck Every God and Fuck Every Goddess For My Revenge! Chapter ',    'I Will Cuck Every God and Fuck Every Goddess For My Revenge!',                                                                'oel'),

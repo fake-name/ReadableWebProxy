@@ -1,4 +1,3 @@
-
 def extractFillertranslationsWordpressCom(item):
 	'''
 	Parser for 'fillertranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractFillertranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('vermillion',       'Vermillion',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFillertranslationsWordpressCom(item):
 
 
 	return False
-	

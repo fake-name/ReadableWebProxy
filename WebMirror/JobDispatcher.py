@@ -756,7 +756,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		while self.run_flag.value == 1:
 			try:
-				cursor.execute("""SET statement_timeout = 60000;""")
+				cursor.execute("""SET statement_timeout = 120000;""")
 				if self.jq_mode == 'priority':
 					cursor.execute(raw_query_ordered)
 					rids = cursor.fetchall()

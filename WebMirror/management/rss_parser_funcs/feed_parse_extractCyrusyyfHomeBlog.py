@@ -1,4 +1,3 @@
-
 def extractCyrusyyfHomeBlog(item):
 	'''
 	Parser for 'cyrusyyf.home.blog'
@@ -9,6 +8,8 @@ def extractCyrusyyfHomeBlog(item):
 		return None
 
 	tagmap = [
+		('ghostly masked prince xiao',       'ghostly masked prince xiao',                      'translated'),
+		('Accompanying the Phoenix',         'Accompanying the Phoenix',                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractCyrusyyfHomeBlog(item):
 
 
 	return False
-	

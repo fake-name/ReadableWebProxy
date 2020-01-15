@@ -377,7 +377,8 @@ GLOBAL_INLINE_BULLSHIT = [
 			'(trytranslations.com at your service!)',
 			'Please do not host elsewhere but volare and Yumeabyss',
 			'[Follow the latest chapter at wuxiadream.com]',
-
+			'This chapter came from stabbingwithasyringe.home.blog. If you are reading this note, then you are reading from an unauthorized aggregator site. Support the translator by reading it from the site itself. Thank you.',
+			'This chapter came from stabbingwithasyringe.home.blog. Support the translator by reading it from the site itself. Thank you.',
 			'I slid my penis inside her. She squirmed a bit but YOU SICK FUCK STOP STEALING MY TRANSLATIONS',   # siiiiigh
 			'I kissed her sweet anus once more before leaving',   # siiiiiiiiiiiiigh
 

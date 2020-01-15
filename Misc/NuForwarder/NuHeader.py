@@ -127,20 +127,22 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 	def put_job(self, put=3):
 		with db.session_context() as db_sess:
 			self.log.info("Loading rows to fetch..")
-			recent_d = datetime.datetime.now() - datetime.timedelta(hours=72)
-			recentq = db_sess.query(db.NuReleaseItem)                \
+			recent_d_1 = datetime.datetime.now() - datetime.timedelta(hours=72)
+			recentq = db_sess.query(db.NuReleaseItem)                     \
 				.outerjoin(db.NuResolvedOutbound)                         \
 				.filter(db.NuReleaseItem.validated == False)              \
-				.filter(db.NuReleaseItem.first_seen >= recent_d)          \
+				.filter(db.NuReleaseItem.release_date >= recent_d_1)        \
 				.options(joinedload('resolved'))                          \
 				.order_by(desc(db.NuReleaseItem.first_seen))              \
 				.group_by(db.NuReleaseItem.id)                            \
 				.limit(max(100, put*10))
 
 
-			bulkq = db_sess.query(db.NuReleaseItem)                  \
+			recent_d_2 = datetime.datetime.now() - datetime.timedelta(hours=24*14)
+			bulkq = db_sess.query(db.NuReleaseItem)                       \
 				.outerjoin(db.NuResolvedOutbound)                         \
 				.filter(db.NuReleaseItem.validated == False)              \
+				.filter(db.NuReleaseItem.release_date >= recent_d_2)        \
 				.options(joinedload('resolved'))                          \
 				.order_by(desc(db.NuReleaseItem.first_seen))              \
 				.group_by(db.NuReleaseItem.id)                            \

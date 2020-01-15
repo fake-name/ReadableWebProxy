@@ -1,17 +1,15 @@
-def extractBoredmtlWordpressCom(item):
+def extractCanemfurryWordpressCom(item):
 	'''
-	Parser for 'boredmtl.wordpress.com'
+	Parser for 'canemfurry.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
-	if item['tags'] == ['Uncategorized']:
+	if item['tags'] == ['Releases'] or item['tags'] == ['Uncategorized'] :
 		titlemap = [
-			('Why The King Needs A Secretary ',  'Why The King Needs A Secretary',      'translated'),
-			('Villainesses Never Die ',          'Villainesses Never Die',              'translated'),
-			('She was sent by God ',             'She was sent by God',                 'translated'),
+			('TDD – Chapter ',              'The Defeated Dragon',             'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

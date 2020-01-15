@@ -6,14 +6,18 @@ def buildjob(
 			call,
 			dispatchKey,
 			jobid,
-			args           = [],
-			kwargs         = {},
-			additionalData = None,
-			postDelay      = 0,
-			unique_id      = None,
-			serialize      = False,
+			args                 = [],
+			kwargs               = {},
+			additionalData       = None,
+			postDelay            = 0,
+			unique_id            = None,
+			early_ack            = False,
+			serialize            = False,
+			response_routing_key = False,
 		):
 
+	if response_routing_key is None:
+		response_routing_key = 'response'
 	job = {
 			'call'                 : call,
 			'module'               : module,
@@ -24,7 +28,8 @@ def buildjob(
 			'dispatch_key'         : dispatchKey,
 			'postDelay'            : postDelay,
 			'serialize'            : serialize,
-			'response_routing_key' : 'response'
+			'response_routing_key' : response_routing_key,
+			'early_ack'            : early_ack,
 			# 'response_routing_key' : 'lowrate_response' if serialize else 'response'
 		}
 

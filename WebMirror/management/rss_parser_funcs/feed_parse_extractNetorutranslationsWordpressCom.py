@@ -11,7 +11,7 @@ def extractNetorutranslationsWordpressCom(item):
 		('pilgrimage',       'Netorare Pilgrimage of the Saint',                                                                                                                      'translated'),
 		('production',       'Perfect & Virtuous Girlfriend’s NTR Production',                                                                                                        'translated'),
 		('Alicia',           'NTR Fantasy – The Empire’s Saint Alicia –',                                                                                                             'translated'),
-		('Pleasant',         'Omae no neechan no ma〇Ko kimochiyo sugi.',                                                                                                              'translated'),
+		('Pleasant',         'Omae no neechan no ma〇Ko kimochiyo sugi.',                                                                                                             'translated'),
 		('prostitution',     'Childhood friend and student council who traveled to a prostitution harem RPG! -Heroines who sell their bodies and become bitches while loving me-',    'translated'),
 		('obscene',          'For whom did she become obscene',                                                                                                                       'translated'),
 		('overthrow',        'It seems that innocent prayers and funny friends will overthrow the thousand-years-long reign of the Demon Lord',                                       'translated'),
@@ -22,6 +22,10 @@ def extractNetorutranslationsWordpressCom(item):
 		('Sword',            'Sexual swordsmanship dojo ~Naughty practice with beloved disciples with crotch sword~',                                                                 'translated'),
 		('actress',          'My girlfriend is an AV actress',                                                                                                                        'translated'),
 		('dualism',          'Dualism ~She is embraced by a male friend while loving her boyfriend~',                                                                                 'translated'),
+		('propensity',       'The girls who cooperate with my propensity for netorare',                                                                                               'translated'),
+		('lend',             'Today, I lent her out as a thing',                                                                                                                      'translated'),
+		('dedicated',        'Dedicated to my beloved and bewitching white-haired loli',                                                                                              'translated'),
+		('666',              'My childhood friend who was engraved with an indecent crest in the magic book I found in the storehouse, and the almost 666 men who held her',          'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

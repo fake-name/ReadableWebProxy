@@ -23,6 +23,7 @@ def extractExiledrebelsscanlationsCom(item):
 		('The Legendary Master\'s Wife',                                'The Legendary Master\'s Wife',                                     'translated'),
 		('i heard that my fiance is super fierce',                      'i heard that my fiance is super fierce',                           'translated'),
 		('Sickly Tyrannical',                                           'Sickly Tyrannical',                                                'translated'),
+		('forced estrus [abo]',                                         'forced estrus [abo]',                                              'translated'),
 		('ageless seducer',                                             'ageless seducer',                                                  'translated'),
 		('A Heart of a Smith',                                          'A Heart of a Smith',                                               'translated'),
 		('beast store no. 138',                                         'Cute Beast Store No. 138',                                         'translated'),

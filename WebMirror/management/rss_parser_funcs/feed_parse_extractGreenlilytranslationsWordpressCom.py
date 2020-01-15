@@ -9,6 +9,8 @@ def extractGreenlilytranslationsWordpressCom(item):
 
 	tagmap = [
 		('MDWTTMED',       'My Disciple Wants to Tease Me Every Day',                      'translated'),
+		('SVSSS',          'Scum Villain’s Self Saving System',                            'translated'),
+		('ncpe',           'The Noble Consort’s Pet Empress',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

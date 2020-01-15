@@ -8,13 +8,15 @@ def extractAsadatranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('npc town building game',                   'NPC Town-building Game',                   'translated'),
-		('reader',                                   'reader',                                   'translated'),
-		('horror game escape guide',                 'horror game escape guide',                 'translated'),
-		('PRC',                                      'PRC',                                      'translated'),
-		('i am a summoning master',                  'I am a Summoning Master',                  'translated'),
-		('the villain happy being a father',         'The Villain is Happy being a Father',      'translated'),
-		('Loiterous',                                'Loiterous',                                'oel'),
+		('npc town building game',                          'NPC Town-building Game',                          'translated'),
+		('reader',                                          'reader',                                          'translated'),
+		('horror game escape guide',                        'horror game escape guide',                        'translated'),
+		('PRC',                                             'PRC',                                             'translated'),
+		('i am a summoning master',                         'I am a Summoning Master',                         'translated'),
+		('the villain happy being a father',                'The Villain is Happy being a Father',             'translated'),
+		('graduated from witchcraft institute',             'graduated from witchcraft institute',             'translated'),
+		('the prince\'s battle to concede the throne',      'the prince\'s battle to concede the throne',      'translated'),
+		('Loiterous',                                       'Loiterous',                                       'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:
@@ -23,9 +25,12 @@ def extractAsadatranslationsWordpressCom(item):
 
 	if item['tags'] == ['Announcements']:
 		titlemap = [
-			('[ISM] Chapter ',   'I am a Summoning Master',                  'translated'),
-			('[VHBF] Chapter ',  'The Villain is Happy being a Father',      'translated'),
-			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('[ISM] Chapter ',                                                              'I am a Summoning Master',                         'translated'),
+			('[VHBF] Chapter ',                                                             'The Villain is Happy being a Father',             'translated'),
+			('[Reader] Chapter ',                                                           'Reader',                                          'translated'),
+			('Tensei Shoujo no Rirekisho',                                                  'Tensei Shoujo no Rirekisho',                      'translated'),
+			('[HGEG] Chapter ',                                                             'Horror Game Escape Guide',                        'translated'),
+			('The Worst Princes\' Battle Over Giving Up the Imperial Throne Chapter ',      'the prince\'s battle to concede the throne',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]
 

@@ -1,4 +1,3 @@
-
 def extractCyptranslationsWordpressCom(item):
 	'''
 	Parser for 'cyptranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractCyptranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('sealed lips',       'Sealed Lips',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractCyptranslationsWordpressCom(item):
 
 
 	return False
-	

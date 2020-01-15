@@ -1,4 +1,3 @@
-
 def extractPatchworknovelsWordpressCom(item):
 	'''
 	Parser for 'patchworknovels.wordpress.com'
@@ -9,6 +8,8 @@ def extractPatchworknovelsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the little prince in the ossuary',       'the little prince in the ossuary',                      'translated'),
+		('second life ranker',                     'second life ranker',                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractPatchworknovelsWordpressCom(item):
 
 
 	return False
-	

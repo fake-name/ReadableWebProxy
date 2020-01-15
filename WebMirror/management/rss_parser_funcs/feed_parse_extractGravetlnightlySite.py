@@ -1,26 +1,14 @@
-def extractChocolateotakuWordpressCom(item):
-	'''
-	Parser for 'chocolateotaku.wordpress.com'
-	'''
-	
-	
-	badwords = [
-			'Rant',
-			'Rants',
-			'review',
-		]
-	if any([bad in item['tags'] for bad in badwords]):
-		return None
 
-
+def extractGravetlnightlySite(item):
+	'''
+	Parser for 'gravetlnightly.site'
+	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
-		('ihha',       'Quick Wear: I Have a Heroine Aura',                      'translated'),
-		('ccgdd',      'Civil Servant Gets a Gentle Dream',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -31,3 +19,4 @@ def extractChocolateotakuWordpressCom(item):
 
 
 	return False
+	

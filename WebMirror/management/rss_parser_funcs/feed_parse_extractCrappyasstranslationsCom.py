@@ -1,4 +1,3 @@
-
 def extractCrappyasstranslationsCom(item):
 	'''
 	Parser for 'crappyasstranslations.com'
@@ -9,6 +8,12 @@ def extractCrappyasstranslationsCom(item):
 		return None
 
 	tagmap = [
+		('The Civil Officer Can Have Sweet Dreams',       'The Civil Officer Can Have Sweet Dreams',                      'translated'),
+		('Konyaku-sha ga Akuyaku de Komattemasu',         'Konyaku-sha ga Akuyaku de Komattemasu',                        'translated'),
+		('wants normality but ain\'t normal magician',    'The Sorcerer Wants Normality',                                 'translated'),
+		('Lady Philia D\'la Love\'s Mistakes',            'Lady Philia D\'la Love\'s Mistakes',                           'translated'),
+		('The Me Who Wants To Escape The Princess Training',       'The Me Who Wants To Escape The Princess Training',                      'translated'),
+		('The Black Cat Prince Laughed At The Moon',       'The Black Cat Prince Laughed At The Moon',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +24,3 @@ def extractCrappyasstranslationsCom(item):
 
 
 	return False
-	

@@ -18,6 +18,7 @@ def extractPlumliziWordpressCom(item):
 		('Life After Marriage',                            'Life After Marriage',                                              'translated'),
 		('Pampering My Cute Pet',                          'Pampering My Cute Pet',                                            'translated'),
 		('I Am a Matchmaker on Taobao',                    'I Am a Matchmaker on Taobao',                                      'translated'),
+		('film empress\'s daily face slapping',            'film empress\'s daily face slapping',                              'translated'),
 		('No Protection Tonight',                          'No Protection Tonight',                                            'translated'),
 		('he\'s mine, no objections allowed',              'He\'s Mine, No Objections Allowed',                                'translated'),
 		('rebirth',                                        'Rebirth: Noble Woman, Poisonous Concubine',                        'translated'),

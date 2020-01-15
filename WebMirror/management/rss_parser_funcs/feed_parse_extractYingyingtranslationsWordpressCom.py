@@ -1,4 +1,3 @@
-
 def extractYingyingtranslationsWordpressCom(item):
 	'''
 	Parser for 'yingyingtranslations.wordpress.com'
@@ -9,6 +8,8 @@ def extractYingyingtranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Midnight Offering',       'Midnight Offering: Hades’s Little Pet',                      'translated'),
+		('nwwnl',                   'Noble Wife Wants No Love',                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractYingyingtranslationsWordpressCom(item):
 
 
 	return False
-	

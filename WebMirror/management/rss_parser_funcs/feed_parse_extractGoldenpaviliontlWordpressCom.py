@@ -1,4 +1,3 @@
-
 def extractGoldenpaviliontlWordpressCom(item):
 	'''
 	Parser for 'goldenpaviliontl.wordpress.com'
@@ -9,6 +8,7 @@ def extractGoldenpaviliontlWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Amorous Slave Girl',       'Amorous Slave Girl',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractGoldenpaviliontlWordpressCom(item):
 
 
 	return False
-	

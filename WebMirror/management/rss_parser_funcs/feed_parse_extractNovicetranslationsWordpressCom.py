@@ -24,6 +24,8 @@ def extractNovicetranslationsWordpressCom(item):
 		('this princess punishes your nine generations',               'this princess punishes your nine generations',                      'translated'),
 		('the villain has blackened again',                            'the villain has blackened again',                                   'translated'),
 		("don't be jealous, i will bend myself",                       "don't be jealous, i will bend myself",                              'translated'),
+		('next door theres memeda',                                    'Next Door There\'s Memeda',                                         'translated'),
+		('willingly baited',                                           'Willingly Baited',                                                  'translated'),
 		('who moved my ashes',                                         'who moved my ashes',                                                'translated'),
 		('seeking good temptation',                                    'seeking good temptation',                                           'translated'),
 		('Lovable Beauty',                                             'Lovable Beauty',                                                    'translated'),

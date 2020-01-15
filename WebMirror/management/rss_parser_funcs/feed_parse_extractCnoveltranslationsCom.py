@@ -1,4 +1,3 @@
-
 def extractCnoveltranslationsCom(item):
 	'''
 	Parser for 'cnoveltranslations.com'
@@ -9,6 +8,8 @@ def extractCnoveltranslationsCom(item):
 		return None
 
 	tagmap = [
+		('what if my brother is too good?',       'What if My Brother is Too Good?',                      'translated'),
+		('i am this type of woman',               'I Am This Type of Woman',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractCnoveltranslationsCom(item):
 
 
 	return False
-	

@@ -10,6 +10,7 @@ def extractXiaxuenovelsWordpressCom(item):
 	tagmap = [
 		('Bleach: Secret Intentions',                                        'Bleach: Secret Intentions',                                                        'translated'),
 		('The Black Technology Chat Group of the Ten Thousand Realms',       'The Black Technology Chat Group of the Ten Thousand Realms',                      'translated'),
+		('my star teacher',                                                  'my star teacher',                                                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

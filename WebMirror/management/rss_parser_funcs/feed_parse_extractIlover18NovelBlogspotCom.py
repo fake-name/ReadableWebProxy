@@ -34,6 +34,9 @@ def extractIlover18NovelBlogspotCom(item):
 		('It\'s Purely an Accident to Love Again',                      'It\'s Purely an Accident to Love Again',                      'translated'),
 		('The Sparrow Reluctantly Upon The Branch',                     'The Sparrow Reluctantly Upon The Branch',                     'translated'),
 		('Who Allowed You to Get on the Bed',                           'Who Allowed You to Get on the Bed',                           'translated'),
+		('rebirth of the great favor',                                  'rebirth of the great favor',                                  'translated'),
+		('oni to majiwaru oumagatoki ~dame! nando mo surikomanaide...', 'oni to majiwaru oumagatoki ~dame! nando mo surikomanaide...', 'translated'),
+		('do s shikkoukan - himo no onna no shitsuke ke hou -',         'do s shikkoukan - himo no onna no shitsuke ke hou -',         'translated'),
 		('PRC',                                                         'PRC',                                                         'translated'),
 		('Loiterous', 'Loiterous',                                      'oel'),
 	]

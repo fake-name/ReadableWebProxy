@@ -19,6 +19,8 @@ def extractJstranslations1WordpressCom(item):
 		('rebirth of a counterattack: godly doctor shizi fei',            'rebirth of a counterattack: godly doctor shizi fei',                          'translated'),
 		('congratulations, empress',                                      'congratulations, empress',                                                    'translated'),
 		('descent of the phoenix – 13-year-old princess consort',         'descent of the phoenix – 13-year-old princess consort',                       'translated'),
+		('Rebirth of the Marquis’ Di Daughter',                           'Rebirth of the Marquis’ Di Daughter',                                         'translated'),
+		('young master jun’s 100 techniques to spoil his wife',           'young master jun’s 100 techniques to spoil his wife',                         'translated'),
 		('PRC',        'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

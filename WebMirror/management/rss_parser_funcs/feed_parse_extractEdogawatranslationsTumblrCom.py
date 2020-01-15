@@ -1,4 +1,3 @@
-
 def extractEdogawatranslationsTumblrCom(item):
 	'''
 	Parser for 'edogawatranslations.tumblr.com'
@@ -9,6 +8,8 @@ def extractEdogawatranslationsTumblrCom(item):
 		return None
 
 	tagmap = [
+		('danganronpa kirigiri',       'danganronpa kirigiri',                      'translated'),
+		('nine hours nine persons nine doors',       'nine hours nine persons nine doors',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractEdogawatranslationsTumblrCom(item):
 
 
 	return False
-	

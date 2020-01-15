@@ -1,4 +1,3 @@
-
 def extractThepoormanscansWordpressCom(item):
 	'''
 	Parser for 'thepoormanscans.wordpress.com'
@@ -9,6 +8,7 @@ def extractThepoormanscansWordpressCom(item):
 		return None
 
 	tagmap = [
+		('shakugan no shana',       'shakugan no shana',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractThepoormanscansWordpressCom(item):
 
 
 	return False
-	

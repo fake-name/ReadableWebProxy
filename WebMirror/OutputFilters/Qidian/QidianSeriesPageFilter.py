@@ -13,7 +13,9 @@ import parsedatetime
 import bleach
 
 import urllib.parse
+
 import WebRequest
+from guess_language import guess_language
 
 import common.util.urlFuncs
 
@@ -152,11 +154,34 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		return False
 
+	def get_language(self, soup):
+		rawsoupstr = str(soup)
+
+		book_info = re.search(r"g_data.book = ({.*?});", rawsoupstr)
+		book_info_str = book_info.group(1)
+
+		# Qidian does a bunch of escaping I don't understand, that breaks shit.
+		book_info_str = book_info_str.replace("\\ ", " ")
+		book_info_str = book_info_str.replace("\\'", "'")
+		book_info_str = book_info_str.replace("\\/", "/")
+		book_info_str = book_info_str.replace("\\<", "<")
+		book_info_str = book_info_str.replace("\\>", ">")
+
+		self.log.info("Extracting!")
+		cont = json.loads(book_info_str)
+		# self.log.info("Extracted meta: %s", cont)
+
+
+		title_desc_blob = cont['bookInfo']['bookName'] + "\n\n" + cont['bookInfo']['description']
+
+		lang = guess_language(title_desc_blob)
+		self.log.info("Guessed language: %s", lang)
+
+		return lang
+
 
 	def processPage(self, url, content):
 		# Ignore 404 chapters
-		if "<title>Not Found | RoyalRoadL</title>" in content:
-			return
 
 		if '<a href="#contents" title="Table of Contents" class="j_show_contents" data-report-eid' not in content:
 			return
@@ -166,12 +191,24 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		soup = WebRequest.as_soup(self.content)
 
-		if not self.check_translated(soup):
-			return
+		try:
 
-		releases = self.extractSeriesReleases(self.pageUrl, soup)
-		if releases:
-			self.sendReleases(releases)
+			lang = self.get_language(soup)
+			if lang != 'en':
+				self.log.info("Non english content (%s). Skipping", lang)
+
+			if not self.check_translated(soup):
+				self.log.info("Non-translated content! Ignoring.")
+				return
+
+			releases = self.extractSeriesReleases(self.pageUrl, soup)
+			if releases:
+				self.sendReleases(releases)
+		except Exception:
+
+			self.log.error("Error processing qidian page '%s'", url)
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
 
 
 

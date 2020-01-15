@@ -1,4 +1,3 @@
-
 def extractSads07WordpressCom(item):
 	'''
 	Parser for 'sads07.wordpress.com'
@@ -9,6 +8,7 @@ def extractSads07WordpressCom(item):
 		return None
 
 	tagmap = [
+		('forbidden master',       'Breakthrough with the Forbidden Master – So what if the Hero’s son is the Demon King’s disciple~',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSads07WordpressCom(item):
 
 
 	return False
-	

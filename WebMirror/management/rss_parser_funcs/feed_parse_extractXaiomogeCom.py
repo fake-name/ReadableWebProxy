@@ -8,11 +8,12 @@ def extractXaiomogeCom(item):
 		return None
 
 	tagmap = [
-		('Mechanical God Emperor',       'Mechanical God Emperor',                      'translated'),
-		('Unfathomable Doomsday',        'Unfathomable Doomsday',                       'translated'),
-		('The Defeated Dragon',          'The Defeated Dragon',                         'translated'),
-		('Age of Collapse',              'Age of Collapse',                             'translated'),
-		('Loiterous',                    'Loiterous',                                   'oel'),
+		('Mechanical God Emperor',                                           'Mechanical God Emperor',                                                          'translated'),
+		('Unfathomable Doomsday',                                            'Unfathomable Doomsday',                                                           'translated'),
+		('The Defeated Dragon',                                              'The Defeated Dragon',                                                             'translated'),
+		('the ancestor of our sect isn’t acting like an elder',              'the ancestor of our sect isn’t acting like an elder',                             'translated'),
+		('Age of Collapse',                                                  'Age of Collapse',                                                                 'translated'),
+		('Loiterous',                                                        'Loiterous',                                                                       'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:

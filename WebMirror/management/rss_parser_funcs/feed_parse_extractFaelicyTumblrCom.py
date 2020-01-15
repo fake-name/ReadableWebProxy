@@ -1,4 +1,3 @@
-
 def extractFaelicyTumblrCom(item):
 	'''
 	Parser for 'faelicy.tumblr.com'
@@ -9,6 +8,7 @@ def extractFaelicyTumblrCom(item):
 		return None
 
 	tagmap = [
+		('the scum villain\'s self saving system',       'the scum villain\'s self saving system',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFaelicyTumblrCom(item):
 
 
 	return False
-	

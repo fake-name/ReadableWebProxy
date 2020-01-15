@@ -19,7 +19,8 @@ def extractTigertranslationsOrg(item):
 		('Lioncourt War',                                                            'A History of the Lioncourt War',                                                          'translated'),
 		('realist demon king',                                                       'The Legendary Rebuilding of a World by a Realist Demon King',                             'translated'),
 		('Koko wa Ore ni Makasete Saki ni Ike to Itte kara 10 Nen ga Tattara Densetsu ni Natteita',       'Koko wa Ore ni Makasete Saki ni Ike to Itte kara 10 Nen ga Tattara Densetsu ni Natteita',                      'translated'),
-		('Tensei Kenja no Isekai Raifu ~Daini no Shokugyo wo Ete, Sekai Saikyou ni Narimashita',          'Tensei Kenja no Isekai Raifu ~Daini no Shokugyo wo Ete, Sekai Saikyou ni Narimashita~',                      'translated'),
+		('Tensei Kenja no Isekai Raifu ~Daini no Shokugyo wo Ete, Sekai Saikyou ni Narimashita',          'Tensei Kenja no Isekai Raifu ~Daini no Shokugyo wo Ete, Sekai Saikyou ni Narimashita~',                        'translated'),
+		('the legendary rebuilding of a world by a realist demon king',                                   'the legendary rebuilding of a world by a realist demon king',                                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

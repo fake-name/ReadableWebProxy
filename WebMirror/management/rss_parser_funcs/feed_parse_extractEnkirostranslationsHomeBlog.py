@@ -1,4 +1,3 @@
-
 def extractEnkirostranslationsHomeBlog(item):
 	'''
 	Parser for 'enkirostranslations.home.blog'
@@ -9,6 +8,7 @@ def extractEnkirostranslationsHomeBlog(item):
 		return None
 
 	tagmap = [
+		('arafoo kenja',       'Arafoo Kenja no Isekai Seikatsu Nikki',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractEnkirostranslationsHomeBlog(item):
 
 
 	return False
-	
