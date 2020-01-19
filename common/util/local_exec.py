@@ -2,11 +2,11 @@
 import logging
 import msgpack
 
-from . import serialize
+from . import rpc_serialize
 import WebRequest
 
 
-class PluginInterface_RemoteExec():
+class PluginInterface_RemoteExecLocalProxy():
 
 	name = 'RemoteExec'
 	can_send_partials = True
@@ -22,11 +22,12 @@ class PluginInterface_RemoteExec():
 
 	def call_code(self, code_struct, extra_env=None, *call_args, **call_kwargs):
 		self.log.info("RPC Call for %s byte class!" , len(code_struct['source']))
-		class_def, call_name = serialize.deserialize_class(code_struct)
+		class_def, call_name = rpc_serialize.deserialize_class(code_struct)
 
 		call_env = {
 			'wg'     : self.wg,
 		}
+
 		if extra_env:
 			for key, value in extra_env.items():
 				extra_env[key] = value
@@ -35,4 +36,8 @@ class PluginInterface_RemoteExec():
 		self.log.info("Instantiated instance of %s. Calling member function %s.", class_def, call_name)
 		self.log.info("Call args: '%s', kwargs: '%s'.", call_args, call_kwargs)
 
-		return getattr(instantiated, call_name)(*call_args, **call_kwargs)
+		call_kwargs['partial_resp_interface'] = None
+
+		ret = getattr(instantiated, call_name)(*call_args, **call_kwargs)
+
+		return ret

@@ -61,6 +61,7 @@ def go():
 		if not "noreset" in largv:
 			print("Resetting any in-progress downloads.")
 			WebMirror.UrlUpserter.resetInProgress()
+			WebMirror.UrlUpserter.resetRedisQueues()
 		else:
 			print("Not resetting in-progress downloads.")
 

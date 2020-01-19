@@ -112,7 +112,7 @@ class RemoteFetchInterface(LogBase.LoggerMixin):
 			try:
 				self.log.info("Creating rpc_client")
 				mp_conf = {"use_bin_type" : True}
-				self.rpc_client = mprpc.RPCClient(settings.SYNC_RPC_SERVER, 4315, pack_params=mp_conf, timeout=30)
+				self.rpc_client = mprpc.RPCClient(settings.SYNC_RPC_SERVER, 4315, pack_params=mp_conf, timeout=90)
 				self.log.info("Validating RPC connection")
 
 				self.check_ok()

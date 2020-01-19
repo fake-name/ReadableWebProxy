@@ -3,6 +3,7 @@ type: eastern
 send_raw_feed: True
 
 rewalk_interval_days: 90
+max_active_jobs:      10
 
 baseUrl: [
 
@@ -34,16 +35,18 @@ badwords: [
 		'/images/discord.png',
 		'cdn.gravitytales.com',
 		'/calendar/action~agenda/',
-
 		'/wp-content/cache/',
-		'betwixtedbutterfly.com/translations/calendar/',
-		'/calendar/action~month/',
-		'f-w-o.com/community/',
-		'f-w-o.com/login/?redirect_to=',
-		'www.oyensblog.com/search/',
-		'www.oyensblog.com/search?',
+
 		'?sort=author_reputation',
 		'?sort=trending',
+		'?sort=new',
+		'?sort=author_reputation',
+
+		# Ugh
+		'steemit.com/weedcash/',
+		'steemit.com/drugwars/',
+		'steemit.com/kryptohodler/',
+		'steemit.com/indonesia/',
 	]
 
 compound_badwords: [

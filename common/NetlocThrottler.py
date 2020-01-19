@@ -15,7 +15,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 
 	loggerPath = "Main.RateLimiter"
 
-	def __init__(self, key_prefix, fifo_limit=None):
+	def __init__(self, key_prefix, fifo_limit=None, netloc_max=None):
 		super().__init__()
 
 		self.fifo_limit      = fifo_limit
@@ -28,18 +28,12 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		self.jobl = []
 		self.key_prefix = key_prefix
 
+		assert isinstance(netloc_max, dict)
+		self.netloc_max = netloc_max
+
 		# There should only be a few of these, so we can just
 		# keep connections forever in each.
 		self.redis = common.redis.get_redis_queue_conn()
-
-		# Since we restarted, clear the url queues.
-		self.log.info("Flushing redis queues")
-		dropped = 0
-		for key in self.redis.scan_iter(match=self.__netloc_to_key("*")):
-			self.redis.delete(key)
-			dropped += 1
-		self.log.info("Queues flushed. Deleted %s netlocs", dropped)
-
 
 	def __netloc_to_key(self, netloc):
 		return self.key_prefix + "_" + netloc
@@ -88,8 +82,10 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		self.__check_init_nl(netloc)
 
 		self.url_throttler[netloc]['status_accumulator'] += 1
+		accumulator_max = self.netloc_max.get(netloc, self.accumulator_max)
+		print("MAx for netloc: %s -> %s" % (netloc, accumulator_max))
 		self.url_throttler[netloc]['status_accumulator'] = min(
-			self.url_throttler[netloc]['status_accumulator'], self.accumulator_max)
+			self.url_throttler[netloc]['status_accumulator'], accumulator_max)
 
 		self.log.info("Ok: Limiter status for netloc %s: %s (active %s)", netloc,
 			self.url_throttler[netloc]['status_accumulator'], self.url_throttler[netloc]['active_fetches'])

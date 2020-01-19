@@ -147,8 +147,9 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 		if not titletg:
 			self.log.warn("Could not find item title!")
-			print(soup)
+			self.log.warn("%s", soup)
 			return []
+
 		if not altnametg:
 			self.log.warn("Could not find alt-name container tag!")
 			return []

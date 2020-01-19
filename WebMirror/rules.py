@@ -295,6 +295,13 @@ def getRewalkIntervalDays(ruleset):
 	assert ret > 3
 	return ret
 
+def getMaxActiveJobs(ruleset):
+	if not 'max_active_jobs' in ruleset:
+		return 100
+	ret = ruleset['max_active_jobs']
+	assert ret > 0
+	return ret
+
 
 def transmitFeeds(ruleset):
 	assert 'send_raw_feed' in ruleset, "'send_raw_feed' flag missing from ruleset!"
@@ -349,6 +356,7 @@ def validateRuleKeys(dat, fname):
 
 		'www_no_www_same',
 		'http_https_same',
+		'max_active_jobs',
 
 		# Not currently implemented, but useful
 		'titleTweakLut',
@@ -385,6 +393,7 @@ def load_validate_rules(fname, dat):
 	rules['decompose_svg']                     = getDecomposeSvg(dat)
 
 	rules['rewalk_interval_days']              = getRewalkIntervalDays(dat)
+	rules['max_active_jobs']                   = getMaxActiveJobs(dat)
 	rules['disallow_duplicate_path_segments']  = getDisallowDuplicatePathComponents(dat)
 	rules['maximum_priority']                  = getMaximumFetchPriority(dat)
 	rules['skip_filters']                      = getSkipFilters(dat)

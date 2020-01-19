@@ -9,6 +9,7 @@ import datetime
 import time
 import json
 import os.path
+import traceback
 import parsedatetime
 import bleach
 
@@ -166,6 +167,7 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		book_info_str = book_info_str.replace("\\/", "/")
 		book_info_str = book_info_str.replace("\\<", "<")
 		book_info_str = book_info_str.replace("\\>", ">")
+		book_info_str = book_info_str.replace("\\&", "&")
 
 		self.log.info("Extracting!")
 		cont = json.loads(book_info_str)

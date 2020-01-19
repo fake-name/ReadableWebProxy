@@ -6,8 +6,10 @@ import datetime
 import traceback
 import os.path
 import json
+import random
+import uuid
+
 import calendar
-# import tqdm
 
 import sqlalchemy.exc
 from sqlalchemy.orm import joinedload
@@ -15,17 +17,17 @@ from sqlalchemy import desc
 from sqlalchemy import func
 
 
-import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 
-from WebMirror.JobUtils import buildjob
 import common.database as db
 
 import common.get_rpyc
-import common.LogBase as LogBase
+import common.util.rpc_base as rpc_base
 import common.StatsdMixin as StatsdMixin
-import random
+from common.util.remote_base import RpcBaseClass
 
+from WebMirror.JobUtils import buildjob
 import WebMirror.TimedTriggers.TriggerBase
+import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 from WebMirror.OutputFilters.util.MessageConstructors import fix_string
 from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
 from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentPostfix
@@ -83,7 +85,7 @@ def load_lut():
 	lut = json.loads(jctnt)
 	return lut
 
-class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin.StatsdMixin):
+class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin.StatsdMixin, rpc_base.RpcMixin):
 	'''
 		NU Updates are batched and only forwarded to the output periodically,
 		to make timing attacks somewhat more difficult.
@@ -108,6 +110,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 	'''
 
 	pluginName = "Nu Header"
+	pluginName = "NuRpcGet"
 
 
 	loggerPath = "Main.Header.Nu"
@@ -124,7 +127,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			self.check_open_rpc_interface()
 
 
-	def put_job(self, put=3):
+	def put_head_jobs(self, put=3):
 		with db.session_context() as db_sess:
 			self.log.info("Loading rows to fetch..")
 			recent_d_1 = datetime.datetime.now() - datetime.timedelta(hours=72)
@@ -243,6 +246,144 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		return put
 
+
+
+	def get_rpc_head_lists(self, chunks=7, chunklength=15, chunkdupes=2):
+		put = chunks * chunklength
+
+		with db.session_context() as db_sess:
+			self.log.info("Loading rows to fetch..")
+			recent_d_1 = datetime.datetime.now() - datetime.timedelta(hours=72)
+			recentq = db_sess.query(db.NuReleaseItem)                     \
+				.outerjoin(db.NuResolvedOutbound)                         \
+				.filter(db.NuReleaseItem.validated == False)              \
+				.filter(db.NuReleaseItem.release_date >= recent_d_1)        \
+				.options(joinedload('resolved'))                          \
+				.order_by(desc(db.NuReleaseItem.first_seen))              \
+				.group_by(db.NuReleaseItem.id)                            \
+				.limit(max(100, put*10))
+
+
+			recent_d_2 = datetime.datetime.now() - datetime.timedelta(hours=24*14)
+			bulkq = db_sess.query(db.NuReleaseItem)                       \
+				.outerjoin(db.NuResolvedOutbound)                         \
+				.filter(db.NuReleaseItem.validated == False)              \
+				.filter(db.NuReleaseItem.release_date >= recent_d_2)        \
+				.options(joinedload('resolved'))                          \
+				.order_by(desc(db.NuReleaseItem.first_seen))              \
+				.group_by(db.NuReleaseItem.id)                            \
+				.limit(max(100, put*6))
+
+			bulkset   = bulkq.all()
+			recentset = recentq.all()
+
+			self.log.info("Have %s recent items, %s long-term items to fetch", len(recentset), len(bulkset))
+			haveset   = bulkset + recentset
+			filtered = {tmp.id : tmp for tmp in haveset}
+			haveset = list(filtered.values())
+			self.log.info("Total items after filtering for uniqueness %s", len(haveset))
+
+			if not haveset:
+				self.log.info("No jobs to remote HEAD.")
+				return
+
+			# We pick a large number of items, and randomly choose one of them.
+			# This lets us weight the fetch preferentially to the recent items, but still
+			# have some variability.
+			# We prefer to fetch items that'll resolve as fast as possible.
+			preferred_2 = [tmp for tmp in haveset if len(tmp.resolved) == 2]
+			preferred_1 = [tmp for tmp in haveset if len(tmp.resolved) == 1]
+			fallback    = [tmp for tmp in haveset if len(tmp.resolved) == 0]
+
+
+			haveset = random.sample(preferred_2, min(put, len(preferred_2)))
+			if len(haveset) < put:
+				haveset.extend(random.sample(preferred_1, min(put-len(haveset), len(preferred_1))))
+			if len(haveset) < put:
+				haveset.extend(random.sample(fallback, min(put-len(haveset), len(fallback))))
+
+			put = 0
+			active = set()
+			chunks = []
+
+			chunk = ()
+			for have in haveset:
+
+				if len(list(have.resolved)) >= 3:
+					raise RuntimeError("Overresolved item that's not valid.")
+
+				if (have.referrer == "http://www.novelupdates.com" or
+					have.referrer == "https://www.novelupdates.com" or
+					have.referrer == "https://www.novelupdates.com/" or
+					have.referrer == "http://www.novelupdates.com/"):
+					self.log.error("Wat?")
+					self.log.error("Bad Referrer URL got into the input queue!")
+					self.log.error("Id: %s, ref: %s", have.id, have.referrer)
+					for bad_resolve in have.resolved:
+						db_sess.delete(bad_resolve)
+					db_sess.delete(have)
+					db_sess.commit()
+					continue
+
+				if have.fetch_attempts > MAX_TOTAL_FETCH_ATTEMPTS:
+					self.log.error("Wat?")
+					self.log.error("Item fetched too many times!")
+					self.log.error("Id: %s", have.id)
+					self.log.error("Attempted more then %s resolves. Disabling.", MAX_TOTAL_FETCH_ATTEMPTS)
+					have.reviewed = 'rejected'
+					have.validated = True
+					db_sess.commit()
+					continue
+
+				if have.outbound_wrapper in active:
+					self.log.warning("Duplicates for outbound '%s' -> '%s'", have.outbound_wrapper, have.referrer)
+					continue
+
+				active.add(have.outbound_wrapper)
+
+				have.fetch_attempts += chunkdupes
+				db_sess.commit()
+
+				self.log.info("Putting job for url '%s', with %s resolves so far", have.outbound_wrapper, len(have.resolved))
+				self.log.info("Referring page '%s'", have.referrer)
+
+				chunk = chunk + ({'wrapper' : have.outbound_wrapper, 'referrer' : have.referrer}, )
+				if len(chunk) > chunklength:
+					for _ in range(chunkdupes):
+						chunks.append(chunk)
+					chunk = ()
+
+
+			# 	raw_job = buildjob(
+			# 		module         = 'SmartWebRequest',
+			# 		call           = 'getHeadTitleChromium',
+			# 		dispatchKey    = "fetcher",
+			# 		jobid          = -1,
+			# 		args           = [],
+			# 		kwargs         = {
+			# 			"url"           : have.outbound_wrapper,
+			# 			"referrer"      : have.referrer,
+			# 			"title_timeout" : 30,
+			# 		},
+			# 		additionalData = {
+			# 			'mode'        : 'fetch',
+			# 			'wrapper_url' : have.outbound_wrapper,
+			# 			'referrer'    : have.referrer
+			# 			},
+			# 		postDelay      = 0,
+			# 		unique_id      = have.outbound_wrapper,
+			# 		serialize      = 'Nu-Header',
+			# 	)
+
+			# 	self.rpc.put_job(raw_job)
+			# 	put += 1
+		if chunk:
+			for _ in range(chunkdupes):
+				chunks.append(chunk)
+		self.log.info("Attempting to fetch %s url chunks!")
+		return chunks
+
+
 	def process_avail(self):
 		received = 0
 		while self.process_single_avail():
@@ -261,6 +402,113 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			except Exception:
 				pass
 			self.rpc = common.get_rpyc.RemoteJobInterface("NuHeader")
+
+	def process_single_source_target_mapping(
+				self,
+				from_outbound_wrapper,
+				from_outbound_referrer,
+				to_url,
+				to_url_title,
+				client_id,
+				client_key
+			):
+
+		if to_url.endswith("?m=1"):
+			to_url = to_url[:-len("?m=1")]
+		if "?utm_source=" in to_url:
+			to_url = to_url.split("?utm_source=")[0]
+
+
+
+		self.log.info("Processing remote head response: %s", (from_outbound_wrapper, from_outbound_referrer))
+		self.log.info("Resolved job to URL: %s", to_url)
+		self.log.info("Page title: %s", to_url_title)
+
+		# Handle the 301/2 not resolving properly.
+		netloc = urllib.parse.urlsplit(to_url).netloc
+		if "novelupdates" in netloc:
+			self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
+			return True
+
+		if 'm.wuxiaworld.com' in to_url:
+			to_url = to_url.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
+		if 'tseirptranslations.blogspot.com' in to_url:
+			to_url = to_url.replace('tseirptranslations.blogspot.com', 'tseirptranslations.com')
+		if 'm.xianxiaworld.net' in to_url:
+			to_url = to_url.replace('m.xianxiaworld.net', 'www.xianxiaworld.net')
+		if 'shikkakutranslations.wordpress.com' in to_url:
+			to_url = to_url.replace('shikkakutranslations.wordpress.com', 'shikkakutranslations.com')
+
+		if any([tmp in to_url for tmp in BAD_RESOLVES]):
+			self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", to_url)
+			return True
+
+		if not to_url.lower().startswith("http"):
+			self.log.warning("URL '%s' does not start with 'http'. Not inserting into DB.", to_url)
+			return True
+
+		if '/?utm_source=feedburner' in to_url:
+			to_url = to_url.split('/?utm_source=feedburner')[0] + "/"
+
+		while True:
+			with db.session_context() as db_sess:
+				try:
+					self.log.info("Trying for upsert")
+					have = db_sess.query(db.NuReleaseItem)                                   \
+						.options(joinedload('resolved'))                                     \
+						.filter(db.NuReleaseItem.outbound_wrapper == from_outbound_wrapper)  \
+						.filter(db.NuReleaseItem.referrer         == from_outbound_referrer) \
+						.scalar()
+
+					if not have:
+						self.log.error("Base row deleted from resolve?")
+						return
+
+					if to_url_title.strip().lower() == to_url.strip().lower():
+						self.log.warning("Item didn't resolve to a name properly!")
+						return
+
+					new = db.NuResolvedOutbound(
+							client_id      = client_id,
+							client_key     = client_key,
+							actual_target  = to_url,
+							resolved_title = to_url_title,
+							fetched_on     = datetime.datetime.now(),
+						)
+
+					have.resolved.append(new)
+					db_sess.commit()
+					return False
+
+				except sqlalchemy.exc.InvalidRequestError as e:
+					self.log.error("Exception: %s!", e)
+
+					db_sess.rollback()
+				except sqlalchemy.exc.OperationalError as e:
+					self.log.error("Exception: %s!", e)
+
+					db_sess.rollback()
+				except sqlalchemy.exc.IntegrityError as e:
+					self.log.error("Exception: %s!", e)
+					db_sess.rollback()
+					return False
+
+
+				except Exception:
+					self.mon_con.incr('head-failed', 1)
+					self.log.error("Error when processing job response!")
+					for line in traceback.format_exc().split("\n"):
+						self.log.error(line)
+
+					self.log.error("Contents of head response:")
+
+					for line in pprint.pformat(new).split("\n"):
+						self.log.error(line)
+					return True
+
+		return False
+
+
 
 	def process_single_avail(self):
 		'''
@@ -299,108 +547,51 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		expected_keys = ['call', 'cancontinue', 'dispatch_key', 'extradat', 'jobid',
 					'jobmeta', 'module', 'ret', 'success', 'user', 'user_uuid']
-		while True:
-			with db.session_context() as db_sess:
-				try:
-					assert all([key in new for key in expected_keys])
+		try:
+			assert all([key in new for key in expected_keys])
 
-					assert 'referrer'    in new['extradat']
-					assert 'wrapper_url' in new['extradat']
+			assert 'referrer'    in new['extradat']
+			assert 'wrapper_url' in new['extradat']
 
-					if new['call'] == 'getHeadPhantomJS':
-						respurl, title = new['ret'], ""
-					elif new['call'] == 'getHeadTitlePhantomJS' or new['call'] == 'getHeadTitleChromium':
-						if isinstance(new['ret'], (tuple, list)):
-							respurl, title = new['ret']
-						elif isinstance(new['ret'], dict):
-							respurl = new['ret']['url']
-							title   = new['ret']['title']
-						else:
-							raise RuntimeError("Don't know what the return type of `getHeadTitlePhantomJS` is! Type: %s" % type(new['ret']))
+			if new['call'] == 'getHeadPhantomJS':
+				respurl, title = new['ret'], ""
+			elif new['call'] == 'getHeadTitlePhantomJS' or new['call'] == 'getHeadTitleChromium':
+				if isinstance(new['ret'], (tuple, list)):
+					respurl, title = new['ret']
+				elif isinstance(new['ret'], dict):
+					respurl = new['ret']['url']
+					title   = new['ret']['title']
+				else:
+					raise RuntimeError("Don't know what the return type of `getHeadTitlePhantomJS` is! Type: %s" % type(new['ret']))
 
-					else:
-						raise RuntimeError("Response to unknown call: %s!" % new)
-
-					if respurl.endswith("?m=1"):
-						respurl = respurl[:-len("?m=1")]
-
-					self.log.info("Processing remote head response: %s", new)
-					self.log.info("Resolved job to URL: %s", respurl)
-					self.log.info("Page title: %s", title)
-
-					# Handle the 301/2 not resolving properly.
-					netloc = urllib.parse.urlsplit(respurl).netloc
-					if "novelupdates" in netloc:
-						self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
-						return True
-
-					if 'm.wuxiaworld.com' in respurl:
-						respurl = respurl.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
-					if 'tseirptranslations.blogspot.com' in respurl:
-						respurl = respurl.replace('tseirptranslations.blogspot.com', 'tseirptranslations.com')
-					if 'm.xianxiaworld.net' in respurl:
-						respurl = respurl.replace('m.xianxiaworld.net', 'www.xianxiaworld.net')
-					if 'shikkakutranslations.wordpress.com' in respurl:
-						respurl = respurl.replace('shikkakutranslations.wordpress.com', 'shikkakutranslations.com')
-
-					if any([tmp in respurl for tmp in BAD_RESOLVES]):
-						self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", respurl)
-						return True
-
-					if not respurl.lower().startswith("http"):
-						self.log.warning("URL '%s' does not start with 'http'. Not inserting into DB.", respurl)
-						return True
-
-					if '/?utm_source=feedburner' in respurl:
-						respurl = respurl.split('/?utm_source=feedburner')[0] + "/"
-
-					have = db_sess.query(db.NuReleaseItem)                                    \
-						.options(joinedload('resolved'))                                           \
-						.filter(db.NuReleaseItem.outbound_wrapper==new['extradat']['wrapper_url']) \
-						.filter(db.NuReleaseItem.referrer==new['extradat']['referrer'])            \
-						.scalar()
-
-					if not have:
-						self.log.error("Base row deleted from resolve?")
-						return
-
-					if title.strip().lower() == respurl.strip().lower():
-						self.log.warning("Item didn't resolve to a name properly!")
-						return
-
-					new = db.NuResolvedOutbound(
-							client_id      = new['user'],
-							client_key     = new['user_uuid'],
-							actual_target  = respurl,
-							resolved_title = title,
-							fetched_on     = datetime.datetime.now(),
-						)
-
-					have.resolved.append(new)
-					db_sess.commit()
-
-					self.mon_con.incr('head-received', 1)
-					return True
-				except sqlalchemy.exc.InvalidRequestError:
-					db_sess.rollback()
-				except sqlalchemy.exc.OperationalError:
-					db_sess.rollback()
-				except sqlalchemy.exc.IntegrityError:
-					db_sess.rollback()
+			else:
+				raise RuntimeError("Response to unknown call: %s!" % new)
 
 
-				except Exception:
-					self.mon_con.incr('head-failed', 1)
-					self.log.error("Error when processing job response!")
-					for line in traceback.format_exc().split("\n"):
-						self.log.error(line)
+			self.process_single_source_target_mapping(
+					from_outbound_wrapper  = new['extradat']['wrapper_url'],
+					from_outbound_referrer = new['extradat']['referrer'],
+					to_url                 = respurl,
+					to_url_title           = title,
+					client_id              = new['user'],
+					client_key             = new['user_uuid'],
+				)
 
-					self.log.error("Contents of head response:")
+			self.mon_con.incr('head-received', 1)
+			return True
 
-					for line in pprint.pformat(new).split("\n"):
-						self.log.error(line)
-					return True
-			return False
+		except Exception:
+			self.mon_con.incr('head-failed', 1)
+			self.log.error("Error when processing job response!")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
+
+			self.log.error("Contents of head response:")
+
+			for line in pprint.pformat(new).split("\n"):
+				self.log.error(line)
+			return True
+		return False
 
 
 	def validate_from_new(self):
@@ -691,15 +882,15 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		with db.session_context() as db_sess:
 			print("Counting items to load.")
-			count = db_sess.query(db.NuReleaseItem)      \
-				.filter(db.NuReleaseItem.reviewed == 'valid')        \
-				.filter(db.NuReleaseItem.validated == True)       \
+			count = db_sess.query(db.NuReleaseItem)           \
+				.filter(db.NuReleaseItem.reviewed == 'valid') \
+				.filter(db.NuReleaseItem.validated == True)   \
 				.count()
 
 			print("Loading")
-			validated = db_sess.query(db.NuReleaseItem)      \
-				.filter(db.NuReleaseItem.reviewed == 'valid')        \
-				.filter(db.NuReleaseItem.validated == True)       \
+			validated = db_sess.query(db.NuReleaseItem)       \
+				.filter(db.NuReleaseItem.reviewed == 'valid') \
+				.filter(db.NuReleaseItem.validated == True)   \
 				.yield_per(1000)
 			validated = [tmp for tmp in validated]
 			# validated = [tmp for tmp in tqdm.tqdm(validated, total=count)]
@@ -749,11 +940,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		release_urls = []
 		with db.session_context() as db_sess:
-			validated = db_sess.query(db.NuReleaseItem)      \
-				.filter(db.NuReleaseItem.reviewed == 'valid')        \
+			validated = db_sess.query(db.NuReleaseItem)        \
+				.filter(db.NuReleaseItem.reviewed  == 'valid') \
 				.filter(db.NuReleaseItem.validated == True)       \
 				.all()
-
 
 			for row in validated:
 				if not row.releaseinfo:
@@ -771,8 +961,6 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.run()
 
 	def run(self):
-
-
 		self.process_avail()
 
 		self.validate_from_new()
@@ -784,12 +972,13 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		ago = datetime.datetime.now() - datetime.timedelta(days=3)
 		self.transmit_since(ago)
 
-
-
 		self.validate_from_new()
 		self.timestamp_validated()
-		active_jobs = self.put_job(put=100)
-		self.block_for_n_responses(active_jobs)
+
+		self.do_chunk_rpc_heads()
+
+		# active_jobs = self.put_head_jobs(put=100)
+		# self.block_for_n_responses(active_jobs)
 
 		self.validate_from_new()
 		self.timestamp_validated()
@@ -799,6 +988,53 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		ago = datetime.datetime.now() - datetime.timedelta(days=3)
 		self.transmit_since(ago)
+
+
+	def do_chunk_rpc_heads(self):
+
+		items = self.get_rpc_head_lists()
+		if not items:
+			return
+
+		jobids = [
+				self.put_job(
+					remote_cls    = RemoteHeaderClass,
+					call_kwargs   = {'urls_to_head' : item},
+					job_unique_id = str(item),
+					)
+			for
+				item
+			in
+				items
+
+		]
+
+		for everything, ret in self.process_response_items(jobids):
+			for item in ret:
+				fetch_params, resp_params = item
+				try:
+					self.process_single_source_target_mapping(
+							from_outbound_wrapper  = fetch_params['wrapper'],
+							from_outbound_referrer = fetch_params['referrer'],
+							to_url                 = resp_params['url'],
+							to_url_title           = resp_params['title'],
+							client_id              = everything['user'],
+							client_key             = everything['user_uuid'],
+						)
+
+
+				except Exception as e:
+					print()
+					print(e)
+					traceback.print_exc()
+					print()
+
+
+		# jobid = self.put_job(remote_cls, call_kwargs, meta, job_uid=job_uid)
+		# ret = self.process_response_items([jobid], expect_partials)
+		# if not expect_partials:
+		# 	ret = next(ret)
+		# return ret
 
 
 def fetch_and_flush():
@@ -834,6 +1070,76 @@ def do_nu_sync(scheduler):
 		print("NU Sync executed. Next exec at ", next_exec)
 
 
+class RemoteHeaderClass(RpcBaseClass):
+	logname = "Main.RemoteExec.TestClass"
+
+	def do_head_sequence(self, lock_interface, urls_to_head):
+		import random
+
+		ret = []
+		if not urls_to_head:
+			return ret
+
+		with self.wg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+			cr.navigate_to(urls_to_head[0]['referrer'])
+
+		sleeptime = random.triangular(2,6,10)
+		self.log.info("Sleeping %s seconds", sleeptime)
+		time.sleep(sleeptime)
+
+		with self.wg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+			self.log.info("Current URL: %s", cr.get_current_url())
+
+
+		for url_set in urls_to_head:
+			try:
+				self.log.info("%s", url_set)
+
+				if lock_interface.seen_item(url_set['wrapper']):
+					self.log.warning("Have seen URL %s. Skipping!", url_set['wrapper'])
+					continue
+
+				lock_interface.add_item(url_set['wrapper'])
+
+				with self.wg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+					cr.navigate_to(url_set['referrer'])
+
+				sleeptime = random.triangular(2,6,10)
+				self.log.info("Sleeping %s seconds", sleeptime)
+				time.sleep(sleeptime)
+
+				val = self.wg.getHeadTitleChromium(url=url_set['wrapper'], referrer=url_set['referrer'])
+				self.log.info("Head for %s -> %s", url_set['wrapper'], val)
+				ret.append((url_set, val))
+
+				sleeptime = random.triangular(2,6,10)
+				self.log.info("Sleeping %s seconds", sleeptime)
+				time.sleep(sleeptime)
+
+			except Exception as e:
+				self.log.error("Exception: %s", e)
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+
+		return ret
+
+	def _go(self, partial_resp_interface, lock_interface, urls_to_head):
+		print("%s" % (urls_to_head, ))
+		self.log.info("%s", urls_to_head, )
+		self.log.info("WG: %s", self.wg)
+		self.log.info("partial_resp_interface: %s", partial_resp_interface)
+		self.log.info("lock_interface: %s", lock_interface)
+		self.log.info("WG.twocaptcha_api_key: %s", self.wg.twocaptcha_api_key)
+		self.log.info("WG.anticaptcha_api_key: %s", self.wg.anticaptcha_api_key)
+		self.log.info("Using shared chrome: %s", self.wg.borg_chrome_pool)
+
+		self.log.info("lock_interface dir: %s", dir(lock_interface))
+		self.log.info("lock_interface seen: %s", lock_interface.get_seen())
+		# self.log.info(str(dir(lock_interface)))
+
+		# return "Lolwat"
+
+		return self.do_head_sequence(lock_interface, urls_to_head)
 
 def do_schedule(scheduler):
 	print("Autoscheduler!")
@@ -857,18 +1163,48 @@ def test_all_the_same():
 	print("Set 2: ", urls_the_same(set2))
 
 
-if __name__ == '__main__':
-	import logSetup
-	logSetup.initLogging()
-
-	# test_all_the_same()
+def test():
+	pass
 
 	hdl = NuHeader()
+	hdl.do_chunk_rpc_heads()
+	hdl.validate_from_new()
+
+	return
+
 	# hdl.trigger_all_urls()
 	# hdl.put_job()
-	hdl.run()
+	# hdl.run()
+	items = hdl.get_rpc_head_lists(chunklength=15)
+	pprint.pprint(items[0])
+
+
+	everything, resp = hdl.blocking_dispatch_call(remote_cls=RemoteHeaderClass, call_kwargs={'urls_to_head' : items[0]})
+
+	# print("Everything:", everything)
+
+	pprint.pprint(everything)
+
+	for fetch_params, (fetch_params, resp_params) in resp:
+		hdl.process_single_source_target_mapping(
+				from_outbound_wrapper  = fetch_params['wrapper'],
+				from_outbound_referrer = fetch_params['referrer'],
+				to_url                 = resp_params['url'],
+				to_url_title           = resp_params['title'],
+				client_id              = everything['user'],
+				client_key             = everything['user_uuid'],
+			)
+
 	# hdl.review_probable_validated()
 
 	# ago = datetime.datetime.now() - datetime.timedelta(days=30)
 	# hdl.transmit_since(ago)
 	# hdl.get_dotted()
+
+
+if __name__ == '__main__':
+	import logSetup
+	logSetup.initLogging()
+
+	# test_all_the_same()
+	test()

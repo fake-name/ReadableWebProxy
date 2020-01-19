@@ -18,6 +18,7 @@ import WebMirror.OutputFilters.Twitter.TwitterFilter
 import WebMirror.OutputFilters.Nu.NUHomepageFilter
 import WebMirror.OutputFilters.Nu.NuSeriesPageFilter
 import WebMirror.OutputFilters.Qidian.QidianSeriesPageFilter
+import WebMirror.OutputFilters.FoxTeller.FoxTellerReleasesFilter
 
 
 # Filters are executed against fetched content after preprocessing. They cannot modify content, but they can
@@ -35,6 +36,7 @@ FILTERS = [
 	WebMirror.OutputFilters.LNDB.LNDBSeriesPageFilter.LNDBSeriesPageFilter,
 	WebMirror.OutputFilters.Twitter.TwitterFilter.TwitterFilter,
 	WebMirror.OutputFilters.Qidian.QidianSeriesPageFilter.QidianSeriesPageFilter,
+	WebMirror.OutputFilters.FoxTeller.FoxTellerReleasesFilter.FoxTellerSeriesPageFilter,
 ]
 
 

@@ -25,10 +25,10 @@ import WebRequest
 
 # Note: The imports in *this* file determine what's available when
 # a rpc call is executed.
-
 def serialize_class(tgt_class, exec_method='go'):
+	from common.util import remote_base
 	ret = {
-		'source'      : dill.source.getsource(tgt_class),
+		'source'      : dill.source.getsource(remote_base.RpcBaseClass) + "\n\n" + dill.source.getsource(tgt_class),
 		'callname'    : tgt_class.__name__,
 		'exec_method' : exec_method,
 	}
@@ -40,7 +40,7 @@ def deserialize_class(class_blob):
 	assert 'exec_method' in class_blob
 
 	code = compile(class_blob['source'], "no filename", "exec")
-	exec(code)
+	exec(code)   # pylint: disable=W0122
 
 	cls_def = locals()[class_blob['callname']]
 	# This call relies on the source that was exec()ed having defined the class

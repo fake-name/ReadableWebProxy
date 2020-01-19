@@ -370,25 +370,36 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		self.triggerUrls    = set(WebMirror.rules.load_triggered_url_list())
 
 		self.feed_urls_list = []
-		for tmp in self.ruleset:
-			if 'feedurls' in tmp and tmp['feedurls']:
-				self.feed_urls_list.extend(tmp['feedurls'])
+		netloc_max = {}
 
 		self.feed_urls = set(self.feed_urls_list)
-
 		self.rate_limit_skip = {}
+
 		for rules in self.ruleset:
+			if 'feedurls' in rules and rules['feedurls']:
+				self.feed_urls_list.extend(rules['feedurls'])
+
 			for key, regex in rules['skip_filters']:
 				assert key not in self.rate_limit_skip, "Multiple definition of skip filter for netloc '%s'" % key
 				self.rate_limit_skip[key] = regex
+
+			if 'netlocs' in rules and rules['netlocs']:
+				for netloc in rules['netlocs']:
+					netloc_max[netloc] = rules['max_active_jobs']
+
 
 		self.log.info("Have %s RSS feed URLS", len(self.feed_urls))
 		self.log.info("Have %s netloc-filtered skip-limit regexes.", len(self.rate_limit_skip))
 
 		self.print_mod = 0
 
+
+
 		with state_lock:
-			self.system_state['ratelimiters'][self.mode] = common.NetlocThrottler.NetlockThrottler(key_prefix='processed', fifo_limit = 1000 * 1000)
+			self.system_state['ratelimiters'][self.mode] = common.NetlocThrottler.NetlockThrottler(
+					key_prefix = 'processed', fifo_limit = 1000 * 1000,
+					netloc_max = netloc_max,
+				)
 
 	def open_database_connection(self):
 

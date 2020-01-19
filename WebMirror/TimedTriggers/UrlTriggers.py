@@ -87,6 +87,7 @@ class HourlyPageTrigger(PageTriggerBase):
 		'https://www.royalroad.com/fictions/latest-updates',
 		# 'https://www.royalroad.com/fictions/active-popular',
 		# 'https://www.royalroad.com/fictions/best-rated/',
+		'https://www.foxteller.com/releases',
 
 		# Japtem bits
 		'http://japtem.com/fanfic.php?action=last_updated',

@@ -20,6 +20,7 @@ import tqdm
 # from pympler.tracker import SummaryTracker, summary, muppy
 # import tracemalloc
 
+import sqlalchemy
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 from sqlalchemy.sql import func
@@ -44,6 +45,7 @@ import common.database as db
 import common.stuck
 import common.get_rpyc
 import common.process
+import common.redis
 
 
 
@@ -74,6 +76,21 @@ def initializeStartUrls(rules):
 					print("Failure inserting start url for address: '{}'".format(starturl))
 
 					sess.rollback()
+
+
+def resetRedisQueues():
+
+	redis = common.redis.get_redis_queue_conn()
+
+	# Since we restarted, clear the url queues.
+	print("Flushing redis queues")
+	dropped = 0
+	for key in redis.scan_iter(match="*"):
+		redis.delete(key)
+		dropped += 1
+	print("Queues flushed. Deleted %s netlocs" % dropped)
+
+
 
 
 def resetInProgress():
@@ -657,7 +674,7 @@ class UpdateAggregator(object):
 		# Misc.install_vmprof.install_vmprof("update_aggregator")
 
 		try:
-			with common.database.session_context() as add_db:
+			with common.database.session_context() as agg_db:
 				instance = cls(agg_queue, agg_db)
 				instance.run()
 				instance.close()
