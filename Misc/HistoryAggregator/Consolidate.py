@@ -186,6 +186,7 @@ class DbFlattener(object):
 		return dirty
 
 	def get_high_incidence_items(self):
+		print("get_high_incidence_items()")
 
 		db_interface = psycopg2.connect(
 				database = settings.DATABASE_DB_NAME,
@@ -196,36 +197,51 @@ class DbFlattener(object):
 
 		first_cursor = db_interface.cursor()
 		first_cursor.execute("""SET statement_timeout = %s;""", (1000 * 60 * 60 * 8, ))
+
+		print("Counting...")
+		first_cursor.execute("SELECT count(*) FROM web_pages_version;")
+
+		item_count = first_cursor.fetchall()[0][0]
+		print("Table has %s rows!" % (item_count, ))
+
+
 		cursor = db_interface.cursor("high_incidence_items_cursor")
 
 		def dump_to_file(data, idx):
 			with open("chunks/dump%s.pik" % idx, "wb") as fp:
 				pickle.dump(data, fp)
 
+
+
 		items = {}
+		netlocs = {}
 		cursor.execute("SELECT url FROM web_pages_version;")
 		loops = 0
 		dumps = 0
 
-		for url, in tqdm.tqdm(cursor, total=395823513):
+		for url, in tqdm.tqdm(cursor, total=item_count):
 			nl = urllib.parse.urlsplit(url).netloc
-			items.setdefault(url, 0)
+			# items.setdefault(url, 0)
 			items.setdefault(nl, 0)
 
 			items[url] += 1
-			items[nl]  += 1
+			netlocs[nl]  += 1
 
 			loops += 1
 			if loops % (1000 * 1000 * 3) == 0:
 				print("Dumping to pickle file. Unique URLs: ", len(items))
 				dump_to_file(items, dumps)
+				dump_to_file(netlocs, "-netlocs")
 				dumps += 1
 				items = {}
-		dump_to_file(items, "-all")
+
+		dump_to_file(items, "-last")
+
 
 	def process_high_incidence_items(self):
+		print("process_high_incidence_items()")
 		items = {}
-		for item in tqdm.tqdm(os.listdir("./chunks")):
+		for item in tqdm.tqdm(os.listdir("./chunks"), desc="Loading chunk files."):
 			with open(os.path.join("./chunks", item), "rb") as fp:
 				chunk = pickle.load(fp)
 			for entry, count in chunk.items():
@@ -708,9 +724,9 @@ def test_jt_big_page_flatten():
 
 def get_high_incidence():
 	proc = DbFlattener()
-	# proc.get_high_incidence_items()
+	proc.get_high_incidence_items()
 	# proc.process_high_incidence_items()
-	proc.consolidate_history()
+	# proc.consolidate_history()
 
 if __name__ == '__main__':
 	import logSetup

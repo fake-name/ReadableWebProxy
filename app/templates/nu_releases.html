@@ -260,7 +260,8 @@
 
 				var set = itm.find("input[name=review-state]:checked").length != 0
 
-				if (itm.data().seriesName && itm.data().seriesName.endsWith && itm.data().seriesName.endsWith('...'))
+				if ((itm.data().seriesName && itm.data().seriesName.endsWith && itm.data().seriesName.endsWith('...'))
+					|| title_td.first().text().includes("https://www.tumblr.com/privacy/consent"))
 				{
 
 				}
@@ -290,8 +291,12 @@
 					|| title_td.first().text().includes("page not found")
 					|| title_td.first().text().includes("not found")
 					|| title_td.first().text().includes("404")
+					|| title_td.first().text().includes("nothing found for")
+					|| title_td.first().text().includes("this website is for sale!")
 					|| title_td.first().text().includes("500")
+					|| title_td.first().text().includes("babelnovel.com used cloudflare to restrict access")
 					|| title_td.first().text().includes("Title: blog not found")
+
 					|| title_td.first().text().includes("Title: wordpress.com"))
 				{
 					if (include_false)

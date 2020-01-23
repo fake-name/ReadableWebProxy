@@ -47,6 +47,9 @@ def include_object(object, name, type_, reflected, compare_to):
 		'ix_web_pages_distance_filtered_wp',
 		'ix_web_pages_url_ops',
 		'apscheduler',
+		'scheduler_jobauditlog',
+		'scheduler_jobs',
+		'scheduler_execution',
 	]
 
 	# Allow items with null names (it was an issue).
@@ -84,3 +87,6 @@ def run_migrations_online():
 			context.run_migrations()
 
 run_migrations_online()
+
+
+

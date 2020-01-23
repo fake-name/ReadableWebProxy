@@ -252,6 +252,14 @@ def cleanUrl(urlin):
 	if 'feedproxy.google.com' in parsed.netloc:
 		resolve_redirects = True
 
+	# Tumblr garbage
+	if urlin.startswith("https://www.tumblr.com/privacy/consent?"):
+		if parsed.query:
+			qs = urllib.parse.parse_qs(parsed.query)
+			if 'redirect' in qs:
+				urlin = qs['redirect'][0]
+
+
 	return unwrap_redirect(urlin, resolve_redirects)
 
 
@@ -483,8 +491,9 @@ if __name__ == "__main__":
 	# print(isGFileUrl('https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web'))
 	# print(urlClean('http://inmydaydreams.com/?p=6128&share=tumblr'))
 	# print(urlClean('http://inmydaydreams.com/?p=6091&share=tumblr'))
+	print(urlClean('https://www.tumblr.com/privacy/consent?redirect=https%3a%2f%2ffoxghost.tumblr.com%2fpost%2f190325087867'))
 
-	print(hasDuplicateSegments('http://www.spcnet.tv/forums/showthread.php/23450-i-ve-decided-to-learn-chinese/index/images/misc/image.php?s=1129386e978631b0771a226dba5a82e5&u=65&dateline=1358455669'))
+	# print(hasDuplicateSegments('http://www.spcnet.tv/forums/showthread.php/23450-i-ve-decided-to-learn-chinese/index/images/misc/image.php?s=1129386e978631b0771a226dba5a82e5&u=65&dateline=1358455669'))
 	# print(hasDuplicateSegments('http://inmydaydreams.com/?p=6091&share=tumblr'))
 
 	# print(hasDuplicateSegments(

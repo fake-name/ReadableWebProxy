@@ -25,6 +25,7 @@ import WebMirror.management.Testing
 # Moar
 import WebMirror.management.FeedDbManage
 import WebMirror.management.UrlManage
+import WebMirror.OfflineFilters.NewNetlocTracker
 
 import RawArchiver.TimedTriggers.TriggerManage
 
@@ -50,6 +51,8 @@ SCANNED_MODULES = [
 	WebMirror.management.RssManage,
 	WebMirror.management.UrlManage,
 	WebMirror.management.Testing,
+
+	WebMirror.OfflineFilters.NewNetlocTracker,
 
 	RawArchiver.TimedTriggers.TriggerManage,
 

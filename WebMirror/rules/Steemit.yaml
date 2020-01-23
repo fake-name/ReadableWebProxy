@@ -308,4 +308,6 @@ titleTweakLut:  [
 
 
 special_case_filters : {
+	"www.steemit.com" : ["rate_limit", 5],
+	"steemit.com"     : ["rate_limit", 5],
 }

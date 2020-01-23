@@ -310,7 +310,7 @@ class RpcMixin():
 
 	def process_response_items(self, jobids, preload_rets = []):
 		self.log.info("Waiting for remote response (preloaded: %s)", len(preload_rets))
-		timeout = self.rpc_timeout_s * 12
+		timeout = self.rpc_timeout_s
 
 		assert isinstance(jobids, list)
 
@@ -353,10 +353,10 @@ class RpcMixin():
 					with open('rerr-{}.json'.format(time.time()), 'w', encoding='utf-8') as fp:
 						fp.write(json.dumps(ret, indent=4, sort_keys=True))
 					self.pprint_resp(ret)
-					raise RpcExceptionError("RPC Call has no ret value. Probably encountered a remote exception: %s" % ret)
+					self.log.error("RPC Call has no ret value. Probably encountered a remote exception: %s", ret)
 
 			time.sleep(1)
-			print("\r`fetch_and_flush` sleeping for {} (%s items remaining)\r".format(str((timeout)).rjust(7), len(jobids)), end='', flush=True)
+			print("\r`fetch_and_flush` sleeping for {} ({} items remaining)\r".format(str((timeout)).rjust(7), len(jobids)), end='', flush=True)
 
 		raise RpcTimeoutError("No RPC Response within timeout period (%s sec)" % self.rpc_timeout_s)
 

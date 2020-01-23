@@ -1,3 +1,6 @@
+rewalk_disabled: True
+
+rewalk_interval_days: 50000
 
 
 FOLLOW_GOOGLE_LINKS: False
@@ -62,6 +65,7 @@ preserveAttrs : [
 special_case_filters : {
 
 	# # Apparently they don't like bots. Well, too bad.
+	"www.novelupdates.com" : ["c_web_request_fetch", ],
 	# "www.novelupdates.com" : ["rate_limit", 1],
 	# "novelupdates.com"     : ["rate_limit", 1],
 

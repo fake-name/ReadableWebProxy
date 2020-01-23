@@ -27,10 +27,11 @@ import WebRequest
 class RpcBaseClass():
 	logname = "Main.RemoteExec.Base"
 
-	def __init__(self, wg):
+	def __init__(self, wg, cwg):
 		self.out_buffer = []
 		self.local_logger = logging.getLogger(self.logname)
 		self.wg = wg
+		self.cwg = cwg
 
 		self.__install_logproxy()
 		self.log.info("RemoteExecClass Instantiated")
@@ -58,8 +59,9 @@ class RpcBaseClass():
 			def warn(self, msg, *args):
 				self.parent_logger._warning (" [{}] -> ".format(self.log_prefix) + msg, *args)
 
-		self.wg.log = LogProxy(self, "WebGet")
-		self.log    = LogProxy(self, "MainRPCAgent")
+		self.wg.log  = LogProxy(self, "WebGet")
+		self.cwg.log = LogProxy(self, "CWebGet")
+		self.log     = LogProxy(self, "MainRPCAgent")
 
 
 	def _debug(self, msg, *args):

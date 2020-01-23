@@ -88,6 +88,23 @@ def handleRemoteChromeFetch(params, rid, joburl, netloc, job_aggregator_instance
 
 	job_aggregator_instance.put_job(raw_job)
 
+def cWebRequestFetch(params, rid, joburl, netloc, job_aggregator_instance):
+	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
+
+	raw_job = WebMirror.JobUtils.buildjob(
+		module         = 'PersistentSmartWebRequest',
+		call           = 'smartGetItem',
+		dispatchKey    = "fetcher",
+		jobid          = rid,
+		args           = [joburl],
+		kwargs         = {'extra_tid' : True},
+		additionalData = {'mode' : 'fetch'},
+		postDelay      = 0,
+		# serialize      = True,
+	)
+
+	job_aggregator_instance.put_job(raw_job)
+
 def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	print('qidianSmartFeedFetch', params, rid, joburl, netloc)
 
@@ -135,6 +152,7 @@ dispatchers = {
 	'chrome_render_fetch'   : handleRemoteRenderFetch,
 	'qidian_feed_forward'   : qidianSmartFeedFetch,
 	'local_fetch'           : localContentFetch,
+	'c_web_request_fetch'   : cWebRequestFetch,
 }
 
 

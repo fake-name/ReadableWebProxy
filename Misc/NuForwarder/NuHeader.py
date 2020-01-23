@@ -27,6 +27,7 @@ from common.util.remote_base import RpcBaseClass
 
 from WebMirror.JobUtils import buildjob
 import WebMirror.TimedTriggers.TriggerBase
+import WebMirror.OfflineFilters.NewNetlocTracker as nnt
 import WebMirror.OutputFilters.util.feedNameLut as feedNameLut
 from WebMirror.OutputFilters.util.MessageConstructors import fix_string
 from WebMirror.OutputFilters.util.MessageConstructors import createReleasePacket
@@ -380,7 +381,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		if chunk:
 			for _ in range(chunkdupes):
 				chunks.append(chunk)
-		self.log.info("Attempting to fetch %s url chunks!")
+		self.log.info("Attempting to fetch %s url chunks!", len(chunks))
 		return chunks
 
 
@@ -427,6 +428,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		# Handle the 301/2 not resolving properly.
 		netloc = urllib.parse.urlsplit(to_url).netloc
 		if "novelupdates" in netloc:
+			self.mon_con.incr('head-failed', 1)
 			self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
 			return True
 
@@ -441,10 +443,12 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		if any([tmp in to_url for tmp in BAD_RESOLVES]):
 			self.log.warning("Bad resolve in url: '%s'. Not inserting into DB.", to_url)
+			self.mon_con.incr('head-failed', 1)
 			return True
 
 		if not to_url.lower().startswith("http"):
 			self.log.warning("URL '%s' does not start with 'http'. Not inserting into DB.", to_url)
+			self.mon_con.incr('head-failed', 1)
 			return True
 
 		if '/?utm_source=feedburner' in to_url:
@@ -462,10 +466,12 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 					if not have:
 						self.log.error("Base row deleted from resolve?")
+						self.mon_con.incr('head-failed', 1)
 						return
 
 					if to_url_title.strip().lower() == to_url.strip().lower():
 						self.log.warning("Item didn't resolve to a name properly!")
+						self.mon_con.incr('head-failed', 1)
 						return
 
 					new = db.NuResolvedOutbound(
@@ -478,6 +484,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 					have.resolved.append(new)
 					db_sess.commit()
+					self.mon_con.incr('head-received', 1)
 					return False
 
 				except sqlalchemy.exc.InvalidRequestError as e:
@@ -491,11 +498,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				except sqlalchemy.exc.IntegrityError as e:
 					self.log.error("Exception: %s!", e)
 					db_sess.rollback()
+					self.mon_con.incr('head-failed', 1)
 					return False
 
-
 				except Exception:
-					self.mon_con.incr('head-failed', 1)
 					self.log.error("Error when processing job response!")
 					for line in traceback.format_exc().split("\n"):
 						self.log.error(line)
@@ -504,8 +510,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 					for line in pprint.pformat(new).split("\n"):
 						self.log.error(line)
+					self.mon_con.incr('head-failed', 1)
 					return True
 
+		self.mon_con.incr('head-failed', 1)
 		return False
 
 
@@ -990,6 +998,13 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.transmit_since(ago)
 
 
+		# Update the netloc tracker
+		mapdict = nnt.get_nu_head_urls()
+		nnt.push_urls_into_table(mapdict)
+		nnt.filter_get_have_urls()
+
+
+
 	def do_chunk_rpc_heads(self):
 
 		items = self.get_rpc_head_lists()
@@ -1012,16 +1027,36 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		for everything, ret in self.process_response_items(jobids):
 			for item in ret:
 				fetch_params, resp_params = item
-				try:
-					self.process_single_source_target_mapping(
-							from_outbound_wrapper  = fetch_params['wrapper'],
-							from_outbound_referrer = fetch_params['referrer'],
-							to_url                 = resp_params['url'],
-							to_url_title           = resp_params['title'],
-							client_id              = everything['user'],
-							client_key             = everything['user_uuid'],
-						)
 
+				try:
+					if resp_params == "skipped":
+						self.log.info("De-incrementing fetch counter for %s -> %s", fetch_params['wrapper'], fetch_params['referrer'])
+						with db.session_context() as db_sess:
+							have = db_sess.query(db.NuReleaseItem)                                   \
+								.options(joinedload('resolved'))                                     \
+								.filter(db.NuReleaseItem.outbound_wrapper == fetch_params['wrapper'])  \
+								.filter(db.NuReleaseItem.referrer         == fetch_params['referrer']) \
+								.scalar()
+							if have:
+								have.fetch_attempts = max(0, have.fetch_attempts - 1)
+								db_sess.commit()
+
+					elif resp_params == "failed":
+						self.log.error("Fetch for %s -> %s failed", fetch_params['wrapper'], fetch_params['referrer'])
+						# Do nothing, since the fetch failed
+						self.mon_con.incr('head-failed', 1)
+					elif isinstance(resp_params, str):
+						self.log.error("What? Unhandled string type: %s", resp_params)
+
+					else:
+						self.process_single_source_target_mapping(
+								from_outbound_wrapper  = fetch_params['wrapper'],
+								from_outbound_referrer = fetch_params['referrer'],
+								to_url                 = resp_params['url'],
+								to_url_title           = resp_params['title'],
+								client_id              = everything['user'],
+								client_key             = everything['user_uuid'],
+							)
 
 				except Exception as e:
 					print()
@@ -1075,20 +1110,44 @@ class RemoteHeaderClass(RpcBaseClass):
 
 	def do_head_sequence(self, lock_interface, urls_to_head):
 		import random
+		self.log.info("RemoteHeaderClass entry!")
 
 		ret = []
 		if not urls_to_head:
 			return ret
 
-		with self.wg.chromiumContext(urls_to_head[0]['referrer']) as cr:
-			cr.navigate_to(urls_to_head[0]['referrer'])
+		try:
+			try:
+				self.cwg.borg_chrome_pool.close_tabs()
+			except AttributeError:
+				pass
 
-		sleeptime = random.triangular(2,6,10)
-		self.log.info("Sleeping %s seconds", sleeptime)
-		time.sleep(sleeptime)
+			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+				cr.navigate_to("http://www.google.com")
 
-		with self.wg.chromiumContext(urls_to_head[0]['referrer']) as cr:
-			self.log.info("Current URL: %s", cr.get_current_url())
+			sleeptime = random.triangular(2,6,10)
+			self.log.info("Sleeping %s seconds", sleeptime)
+			time.sleep(sleeptime)
+
+			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+				self.log.info("Current URL: %s", cr.get_current_url())
+
+			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+				cr.navigate_to(urls_to_head[0]['referrer'])
+
+			sleeptime = random.triangular(2,6,10)
+			self.log.info("Sleeping %s seconds", sleeptime)
+			time.sleep(sleeptime)
+
+			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+				self.log.info("Current URL: %s", cr.get_current_url())
+
+		except Exception as e:
+			self.log.error("Chromium not responding!")
+			for url_set in urls_to_head:
+				ret.append((url_set, "skipped"))
+			return ret
+
 
 
 		for url_set in urls_to_head:
@@ -1097,18 +1156,19 @@ class RemoteHeaderClass(RpcBaseClass):
 
 				if lock_interface.seen_item(url_set['wrapper']):
 					self.log.warning("Have seen URL %s. Skipping!", url_set['wrapper'])
+					ret.append((url_set, "skipped"))
 					continue
 
 				lock_interface.add_item(url_set['wrapper'])
 
-				with self.wg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+				with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
 					cr.navigate_to(url_set['referrer'])
 
 				sleeptime = random.triangular(2,6,10)
 				self.log.info("Sleeping %s seconds", sleeptime)
 				time.sleep(sleeptime)
 
-				val = self.wg.getHeadTitleChromium(url=url_set['wrapper'], referrer=url_set['referrer'])
+				val = self.cwg.getHeadTitleChromium(url=url_set['wrapper'], referrer=url_set['referrer'])
 				self.log.info("Head for %s -> %s", url_set['wrapper'], val)
 				ret.append((url_set, val))
 
@@ -1118,10 +1178,18 @@ class RemoteHeaderClass(RpcBaseClass):
 
 			except Exception as e:
 				self.log.error("Exception: %s", e)
+				ret.append((url_set, "failed"))
 				for line in traceback.format_exc().split("\n"):
 					self.log.error(line)
 
 		return ret
+
+	def close_other_tabs(self):
+		self.log.info("Closing chrome tabs!")
+		borgp = self.cwg.borg_chrome_pool.get()
+		self.log.info("Currently active chrome tabs:", )
+
+
 
 	def _go(self, partial_resp_interface, lock_interface, urls_to_head):
 		print("%s" % (urls_to_head, ))
@@ -1133,8 +1201,8 @@ class RemoteHeaderClass(RpcBaseClass):
 		self.log.info("WG.anticaptcha_api_key: %s", self.wg.anticaptcha_api_key)
 		self.log.info("Using shared chrome: %s", self.wg.borg_chrome_pool)
 
-		self.log.info("lock_interface dir: %s", dir(lock_interface))
-		self.log.info("lock_interface seen: %s", lock_interface.get_seen())
+		# self.log.info("lock_interface dir: %s", dir(lock_interface))
+		# self.log.info("lock_interface seen: %s", lock_interface.get_seen())
 		# self.log.info(str(dir(lock_interface)))
 
 		# return "Lolwat"

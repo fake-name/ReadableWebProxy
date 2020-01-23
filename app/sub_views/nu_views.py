@@ -31,7 +31,7 @@ from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
 from sqlalchemy.orm import joinedload
 
-
+import common.util.urlFuncs as urlFuncs
 
 def abbreviate(instr):
 	instr = "".join([char for char in instr if char in string.ascii_letters + " "])
@@ -73,7 +73,6 @@ def get_nu_items(sess, selector):
 	intf = NuHeader.NuHeader(connect=False)
 	intf.fix_names()
 
-
 	new_items = sess.query(db.NuReleaseItem)
 
 	if selector == "verified":
@@ -94,6 +93,26 @@ def get_nu_items(sess, selector):
 
 	new_items = new_items.order_by(desc(db.NuReleaseItem.first_seen))
 	new_items = new_items.limit(500).all()
+
+	for row in new_items:
+		dirty = False
+
+		if row.actual_target:
+			cleaned = urlFuncs.cleanUrl(row.actual_target)
+			if cleaned and cleaned != row.actual_target:
+				print("Fixing %s to %s" % (row.actual_target, cleaned))
+				dirty = True
+				row.actual_target = cleaned
+		for release in row.resolved:
+			if release.actual_target:
+				cleaned = urlFuncs.cleanUrl(release.actual_target)
+				if cleaned and cleaned != release.actual_target:
+					print("Fixing %s to %s" % (release.actual_target, cleaned))
+					dirty = True
+					release.actual_target = cleaned
+
+		if dirty:
+			sess.commit()
 
 	have_dots_series = list(set([tmp.seriesname for tmp in new_items if '...' in tmp.seriesname]))
 	have_dots_author = list(set([tmp.groupinfo for tmp in new_items if '...' in tmp.groupinfo]))

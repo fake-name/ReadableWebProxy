@@ -44,14 +44,14 @@ from WebMirror.OutputFilters.util.TitleParsers import extractVolChapterFragmentP
 feed_tags_link = Table(
 		'feed_tags_link', common.db_base.Base.metadata,
 		Column('releases_id', BigInteger, ForeignKey('feed_pages.id'), nullable=False),
-		Column('tags_id',     BigInteger, ForeignKey('feed_tags.id'),     nullable=False),
+		Column('tags_id',     BigInteger, ForeignKey('feed_tags.id'),  nullable=False),
 		PrimaryKeyConstraint('releases_id', 'tags_id')
 	)
 
 feed_author_link = Table(
 		'feed_authors_link', common.db_base.Base.metadata,
-		Column('releases_id', BigInteger, ForeignKey('feed_pages.id'), nullable=False),
-		Column('author_id',   BigInteger, ForeignKey('feed_author.id'),     nullable=False),
+		Column('releases_id', BigInteger, ForeignKey('feed_pages.id'),  nullable=False),
+		Column('author_id',   BigInteger, ForeignKey('feed_author.id'), nullable=False),
 		PrimaryKeyConstraint('releases_id', 'author_id')
 	)
 

@@ -7,12 +7,14 @@ import copy
 from sqlalchemy import Column
 from sqlalchemy import Text
 from sqlalchemy import DateTime
+from sqlalchemy import Boolean
 from sqlalchemy import BigInteger
 
 from sqlalchemy.dialects.postgresql import JSONB
 
 import cachetools
 
+import citext
 import common.db_base
 import common.db_types
 
@@ -98,6 +100,24 @@ def set_in_db_key_value_store(key, new_data):
 	except KeyError:
 		KV_META_CACHE = cachetools.TTLCache(maxsize=5000, ttl=60 * 5)
 		KV_META_CACHE[key] = copy.copy(new_data)
+
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+
+
+class NewNetlocTracker(common.db_base.Base):
+	__tablename__ = 'seen_netloc_tracker'
+
+	id          = Column(BigInteger, primary_key=True)
+
+	netloc       = Column(citext.CIText, nullable=False, index=True, unique=True)
+	example_url  = Column(citext.CIText, nullable=False, index=True, unique=True)
+	ignore       = Column(Boolean, default=False)
+	have         = Column(Boolean, default=False)
+	extra        = Column(JSONB)
 
 
 
