@@ -221,11 +221,13 @@ class DbFlattener(object):
 
 		for url, in tqdm.tqdm(cursor, total=item_count):
 			nl = urllib.parse.urlsplit(url).netloc
-			# items.setdefault(url, 0)
+			items.setdefault(url, 0)
 			items.setdefault(nl, 0)
+			netlocs.setdefault(nl, 0)
 
 			items[url] += 1
 			netlocs[nl]  += 1
+			items[nl]  += 1
 
 			loops += 1
 			if loops % (1000 * 1000 * 3) == 0:
@@ -240,64 +242,102 @@ class DbFlattener(object):
 
 	def process_high_incidence_items(self):
 		print("process_high_incidence_items()")
-		items = {}
-		for item in tqdm.tqdm(os.listdir("./chunks"), desc="Loading chunk files."):
-			with open(os.path.join("./chunks", item), "rb") as fp:
-				chunk = pickle.load(fp)
-			for entry, count in chunk.items():
-				items.setdefault(entry, 0)
-				items[entry] += count
+
+		import os.path
+		import json
+		from wiredtiger import wiredtiger_open
+		WT_NOT_FOUND = -31803
+
+		class WTDict(object):
+			"""Create a wiredtiger backed dictionary"""
+
+			def __init__(self, path, config='create'):
+				path = os.path.abspath(os.path.expanduser(path))
+				print("WT Path:", path)
+				self._cnx = wiredtiger_open(path, config)
+				self._session = self._cnx.open_session()
+				# define key value table
+				self._session.create('table:keyvalue', 'key_format=S,value_format=I')
+				self._keyvalue = self._session.open_cursor('table:keyvalue')
+
+			def __enter__(self):
+				return self
+
+			def close(self):
+				self._cnx.close()
+
+			def __exit__(self, *args, **kwargs):
+				self.close()
+
+			def _loads(self, value):
+				return json.loads(value)
+
+			def _dumps(self, value):
+				return json.dumps(value)
+
+			def increment_key(self, key, value):
+				self._session.begin_transaction()
+				self._keyvalue.set_key(key)
+				if self._keyvalue.search() == WT_NOT_FOUND:
+					out = 0
+				else:
+					out = self._keyvalue.get_value()
+
+				out += value
+
+				self._keyvalue.set_value(out)
+				self._keyvalue.insert()
+				self._session.commit_transaction()
+
+			def items(self):
+				return self
+
+			def __iter__(self):
+				self._keyvalue.reset()
+				while self._keyvalue.next() == 0:
+					yield self._keyvalue.get_key(), self._keyvalue.get_value()
+
+			def __getitem__(self, key):
+				self._session.begin_transaction()
+				self._keyvalue.set_key(key)
+				if self._keyvalue.search() == WT_NOT_FOUND:
+					raise KeyError()
+				out = self._keyvalue.get_value()
+				self._session.commit_transaction()
+				return out
+
+			def __setitem__(self, key, value):
+				self._session.begin_transaction()
+				self._keyvalue.set_key(key)
+				self._keyvalue.set_value(value)
+				self._keyvalue.insert()
+				self._session.commit_transaction()
+
+		with WTDict('~/wt_chunks') as items_db:
+			for item in tqdm.tqdm(os.listdir("./chunks"), desc="Chunk files."):
+				with open(os.path.join("./chunks", item), "rb") as fp:
+					chunk = pickle.load(fp)
+				for entry, count in tqdm.tqdm(chunk.items(), desc="Chunk Items"):
+					items_db.increment_key(entry, count)
+
+				# items_db.commit()
+
 
 			# print(len(chunk))
 			# print(item)
 
-		print("Total entries:", len(items))
 
-		large_items = {
-			key : count for key, count  in items.items() if count > 20
-		}
+		with WTDict('~/wt_chunks') as items_db:
+			large_items = {
+				key : count for key, count  in tqdm.tqdm(items_db.items()) if count > 50
+			}
+
 		print("Items with more then 20 history entries", len(large_items))
 
 		with open("high-incidence.pik", "wb") as fp:
 			pickle.dump(large_items, fp)
 
 	def consolidate_history(self, use_cache=False):
-		# high_incidence_items = None
-		# if use_cache:
-		# 	try:
-		# 		with open("high_incidence_items.json") as fp:
-		# 			high_incidence_items = json.load(fp)
-		# 			self.log.info("Using json cached query results!")
-		# 	except Exception:
-		# 		self.log.warning("No cached json results. Rerunning query.")
-		# 		pass
-
-		# if not high_incidence_items:
-		# 	with db.session_context(override_timeout_ms=1000*60*60*24) as sess:
-		# 		self.qlog.info("Querying for items with significant history size")
-		# 		high_incidence_items = sess.execute("""
-		# 				SELECT
-		# 					count(*), url
-		# 				FROM
-		# 					web_pages_version
-		# 				GROUP BY
-		# 					url
-		# 				HAVING
-		# 					COUNT(*) > 100
-		# 			""")
-		# 		high_incidence_items = [list(tmp) for tmp in high_incidence_items]
-		# 		self.qlog.info("Found %s items with more then 10 history entries. Processing", len(high_incidence_items))
-
-		# 		sess.flush()
-		# 		sess.expire_all()
-
-		# 	self.log.info("Writing items to json file.")
-		# 	with open("high_incidence_items.json", "w") as fp:
-		# 		json.dump(high_incidence_items, fp)
-
-		# self.log.info("Processing in chunks")
-
-
 		with open("high-incidence.pik", "rb") as fp:
 			dat = pickle.load(fp)
 
@@ -309,10 +349,6 @@ class DbFlattener(object):
 		# m_tracker = tracker.SummaryTracker()
 		for batchset in tqdm.tqdm(batch(high_incidence_items, 50)):
 			self.incremental_consolidate(batchset)
-			# self.incremental_consolidate(paramset)
-			# incremental_history_consolidate(paramset);
-			# self.log.info("Printing memory deltas.")
-			# m_tracker.print_diff()
 
 
 	def truncate_url_history(self, sess, url):
@@ -724,9 +760,9 @@ def test_jt_big_page_flatten():
 
 def get_high_incidence():
 	proc = DbFlattener()
-	proc.get_high_incidence_items()
+	# proc.get_high_incidence_items()
 	# proc.process_high_incidence_items()
-	# proc.consolidate_history()
+	proc.consolidate_history()
 
 if __name__ == '__main__':
 	import logSetup

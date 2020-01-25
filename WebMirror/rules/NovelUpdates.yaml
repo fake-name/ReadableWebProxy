@@ -1,6 +1,6 @@
-rewalk_disabled: True
 
-rewalk_interval_days: 50000
+# rewalk_disabled: True
+# rewalk_interval_days: 50000
 
 
 FOLLOW_GOOGLE_LINKS: False

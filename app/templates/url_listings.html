@@ -1,0 +1,218 @@
+<!-- extend base layout -->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		{%- if title -%}
+			<title>ReadProxy - {{ title }}</title>
+		{%- else -%}
+			<title>ReadProxy</title>
+		{%- endif -%}
+
+		<!-- Base template header -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<!-- Sub template header -->
+
+		<style>
+			#segment_container
+			{
+				max-width: none !important;
+			}
+			body
+			{
+				max-width: none !important;
+			}
+			table, th, td {
+			    border: 1px solid black !important;
+			}
+			th, td
+			{
+				padding : 2px !important;
+			}
+		</style>
+		<!-- template header end -->
+	</head>
+	<body>
+		<div id='segment_container'>
+			<div id='segment_body'>
+				<div class="container-fluid">
+					<div class="row" style='display: flex;'>
+						<div  style='width:180px !important'>
+							{%- include '_block_nav.html' -%}
+						</div>
+						<div style='flex-grow: 1;'>
+
+							<div class="well">
+								{% include '_block_flash.html' %}
+								<h2>Netlocs:</h2>
+								<div class="pull-right">
+									Scope:
+									<a href='/urls/?scope=missing'>Missing</a>,
+									<a href='/urls/?scope=all'>All</a>
+									<br />
+									Ignored:
+									<a href='/urls/?ignore=exclude'>Hide</a>,
+									<a href='/urls/?ignore=include'>Show</a>
+
+								</div>
+								<h4 class="pull-left">
+									Items: {{release_selector}} ({{netloc_items | length}})
+								</h4>
+								<div class="clearfix"></div>
+								<button onclick="apply_changes()">Apply changes</button>
+								<div class="clearfix"></div>
+
+								<div>
+									<table class='table-striped' style='width:100%'>
+										<colgroup>
+											<col style='width: 30px;'>
+											<col style='width: 30px;'>
+											<col>
+											<col>
+											<col>
+											<col>
+										</colgroup>
+										<tr>
+											<th>Ign</th>
+											<th>Hav</th>
+											<th>Netloc</th>
+											<th>Example URL</th>
+											<th>Fetched Title</th>
+											<th>WP?</th>
+											<th>Orig?</th>
+
+										</tr>
+										{%- for row_item in netloc_items -%}
+											<tr class='release-row'>
+													<td>
+														<form class='row-state' data-row-id="{{row_item.id}}" data-original-state={{'true' if row_item.ignore else 'false'}}>
+															<input type="checkbox" name="ignore-state" value="valid" {{'checked="true"' if row_item.ignore else ''}}>
+														</form>
+													</td>
+													<td>
+														<input disabled type="checkbox" name="have-state" value="rejected" {{'checked="true"' if row_item.have else ''}}>
+													</td>
+												<td>{{row_item.netloc}}</td>
+												<td>{{row_item.example_url}}</td>
+												<td>
+													{%- if row_item.extra -%}
+														{%- if 'err' in row_item.extra-%}
+															{{row_item.extra['err']}}
+														{% else %}
+															{{row_item.extra['title']}}
+														{% endif %}
+													{% endif %}
+												</td>
+												<td>
+													{%- if row_item.extra and row_item.extra.get('is-wp', False) -%}
+															<input disabled type="checkbox" name="review-state" value="rejected" checked="true">
+													{% else %}
+															<input disabled type="checkbox" name="review-state" value="rejected">
+													{% endif %}
+												</td>
+												<td>
+													{%- if row_item.extra and row_item.extra.get('is-orig', False) -%}
+															<input disabled type="checkbox" name="review-state" value="rejected" checked="true">
+													{% else %}
+															<input disabled type="checkbox" name="review-state" value="rejected">
+													{% endif %}
+												</td>
+
+											</tr>
+										{%- endfor -%}
+									</table>
+								</div>
+								<button onclick="apply_changes()">Apply changes</button>
+								<button onclick="check_rows()">Check rows</button>
+								<div class="clearfix"></div>
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+
+
+	</body>
+
+	<!-- Base template footer -->
+	<link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/static/css/custom.css" rel="stylesheet" media="screen">
+	<script src="/static/js/jquery-latest.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script>
+
+		var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				console.log("Ajax setup!", csrftoken);
+				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken)
+				}
+			}
+		})
+
+		function content_load_cb(data, textStatus, jqXHR)
+		{
+			console.log("Response: ", data)
+			if (data['error'] == false)
+				location.reload();
+			else
+				alert("Non-False error response!\nError: " + textStatus + "\nStatus text: " + data);
+		};
+
+		function content_load_fail(jqXHR, textStatus, errorThrown)
+		{
+			alert("Failed to fetch content!\nError: " + errorThrown + "\nStatus text: " + textStatus);
+		}
+
+
+		function apply_changes()
+		{
+			var rows = $(".row-state");
+
+			var changes = [];
+			rows.each(function( index, value ) {
+				var itm = $(this);
+				var ignore_checked = itm.find("input[name=ignore-state]").is(":checked")
+				var original_checked = itm.data("original-state")
+
+				if (ignore_checked != original_checked)
+				{
+					changes.push({
+						'id'         : itm.data('row-id'),
+						'old-ignore' : itm.data("original-state"),
+						'new-ignore' : ignore_checked,
+					});
+				}
+			});
+			console.log("Changes:", changes.length, changes)
+
+
+			if (changes.length)
+			{
+				console.log("Making request")
+				$.ajax({
+					url         : '/url_api/',
+					data        : JSON.stringify({'op' : 'update url states', 'data' : changes}),
+					success     : content_load_cb,
+					error       : content_load_fail,
+					method      : "POST",
+					dataType    : 'json',
+					contentType : "application/json;",
+				})
+			}
+
+		}
+
+	</script>
+	<!-- Template footer end -->
+</html>
+
+

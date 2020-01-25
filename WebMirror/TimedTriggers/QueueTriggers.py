@@ -46,7 +46,7 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, WebMirr
 			sess.commit()
 			return new
 
-	def enqueue_url(self, sess, url):
+	def enqueue_url(self, sess, url, module="SmartWebRequest"):
 
 		print("Enqueueing ")
 		job = self.get_create_job(sess, url)
@@ -54,7 +54,7 @@ class QueueTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, WebMirr
 		sess.commit()
 
 		raw_job = WebMirror.JobUtils.buildjob(
-			module         = 'SmartWebRequest',
+			module         = 'PersistentSmartWebRequest',
 			call           = 'smartGetItem',
 			dispatchKey    = "fetcher",
 			jobid          = job.id,

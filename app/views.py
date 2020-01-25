@@ -19,13 +19,14 @@ from common import database
 
 import WebMirror.API
 
-import app.sub_views.content_views as content_views
-import app.sub_views.rss_views     as rss_views
-import app.sub_views.search_views  as search_views
-import app.sub_views.status_view   as status_view
-import app.sub_views.misc_views    as misc_views
-import app.sub_views.nu_views      as nu_views
-import app.sub_views.ebook_view    as ebook_view
+import app.sub_views.content_views       as content_views
+import app.sub_views.rss_views           as rss_views
+import app.sub_views.search_views        as search_views
+import app.sub_views.status_view         as status_view
+import app.sub_views.misc_views          as misc_views
+import app.sub_views.nu_views            as nu_views
+import app.sub_views.ebook_view          as ebook_view
+import app.sub_views.scrape_targets_view as scrape_targets_view
 
 
 @app.before_request

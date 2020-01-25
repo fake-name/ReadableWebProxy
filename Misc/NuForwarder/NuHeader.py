@@ -222,7 +222,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 
 				raw_job = buildjob(
-					module         = 'SmartWebRequest',
+					module         = 'PersistentSmartWebRequest',
 					call           = 'getHeadTitleChromium',
 					dispatchKey    = "fetcher",
 					jobid          = -1,
@@ -983,10 +983,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.validate_from_new()
 		self.timestamp_validated()
 
-		self.do_chunk_rpc_heads()
+		# self.do_chunk_rpc_heads()
 
-		# active_jobs = self.put_head_jobs(put=100)
-		# self.block_for_n_responses(active_jobs)
+		active_jobs = self.put_head_jobs(put=100)
+		self.block_for_n_responses(active_jobs)
 
 		self.validate_from_new()
 		self.timestamp_validated()
@@ -1235,8 +1235,9 @@ def test():
 	pass
 
 	hdl = NuHeader()
-	hdl.do_chunk_rpc_heads()
-	hdl.validate_from_new()
+	hdl.go()
+	# hdl.do_chunk_rpc_heads()
+	# hdl.validate_from_new()
 
 	return
 

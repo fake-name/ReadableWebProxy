@@ -258,6 +258,16 @@ def cleanUrl(urlin):
 			qs = urllib.parse.parse_qs(parsed.query)
 			if 'redirect' in qs:
 				urlin = qs['redirect'][0]
+	if urlin.startswith("http://www.livejournal.com/login.bml?"):
+		if parsed.query:
+			qs = urllib.parse.parse_qs(parsed.query)
+			if 'returnto' in qs:
+				urlin = qs['returnto'][0]
+	if urlin.startswith("https://t.umblr.com/redirect?"):
+		if parsed.query:
+			qs = urllib.parse.parse_qs(parsed.query)
+			if 'z' in qs:
+				urlin = qs['z'][0]
 
 
 	return unwrap_redirect(urlin, resolve_redirects)

@@ -177,6 +177,11 @@ def filter_get_have_urls():
 			if netloc.endswith("bp.blogspot.com"):
 				bad = True
 
+			cleaned = urlFuncs.cleanUrl(row.example_url)
+			if cleaned != row.example_url:
+				row.example_url = cleaned
+				sess.commit()
+
 			if WebMirror.OutputFilters.util.feedNameLut.getNiceName(sess, srcurl=None, netloc=netloc):
 				row.ignore = False
 				row.have = True

@@ -120,10 +120,12 @@ def exposed_remote_fetch_test(url):
 	Requires the FetchAgent service to be running.
 	'''
 
-	print("Enqueueing ")
+	print("Enqueueing ", url)
 	trig = TestQueueTrigger()
 	print(trig)
-	trig.enqueue_url(url)
+
+	with db.session_context() as sess:
+		trig.enqueue_url(sess, url)
 
 	for timeout in range(60 * 60):
 		resp = trig.rpc_interface.get_job_nowait()

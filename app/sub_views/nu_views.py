@@ -26,7 +26,6 @@ from app.utilities import paginate
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import func
 from tzlocal import get_localzone
-import WebMirror.API
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
 from sqlalchemy.orm import joinedload
