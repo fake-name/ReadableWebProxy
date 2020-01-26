@@ -8,8 +8,9 @@ def extractSteambunlightnovelCom(item):
 		return None
 
 	tagmap = [
-		('tang yin\'s adventure in another world',       'Tang Yin\'s Adventure In Another World',        'translated'),
-		('devil\'s son-in-law',                          'Devil\'s Son-in-Law',                           'translated'),
+		('tang yin\'s adventure in another world',       'Tang Yin\'s Adventure In Another World',                      'translated'),
+		('devil\'s son-in-law',                          'Devil\'s Son-in-Law',                                         'translated'),
+		('the cold reagent keeps a fox as a consort',    'the cold reagent keeps a fox as a consort',                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

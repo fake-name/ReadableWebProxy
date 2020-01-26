@@ -8,11 +8,12 @@ def extractExperimentaltranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('Harrasing Thief Girl',       'Harrasing Thief Girl',                                          'translated'),
-		('Armored Girl Monette',       'Armored Girl Monette',                                          'translated'),
-		('Lucy Blanchett Remembered',  'Lucy Blanchett Remembered',                                     'translated'),
-		('Slow Prison Life',           'Slow Prison Life',                                              'translated'),
-		('grimoire master',            'Grimoire Master of an Everchanging World',                      'translated'),
+		('Harrasing Thief Girl',                  'Harrasing Thief Girl',                                 'translated'),
+		('Armored Girl Monette',                  'Armored Girl Monette',                                 'translated'),
+		('Lucy Blanchett Remembered',             'Lucy Blanchett Remembered',                            'translated'),
+		('Slow Prison Life',                      'Slow Prison Life',                                     'translated'),
+		('grimoire master',                       'Grimoire Master of an Everchanging World',             'translated'),
+		('villainess wants to live freely',       'villainess wants to live freely',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

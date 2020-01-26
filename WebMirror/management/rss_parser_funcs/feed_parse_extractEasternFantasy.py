@@ -8,6 +8,7 @@ def extractEasternFantasy(item):
 		
 	tagmap = [
 		('The Alma Chronicles',       'The Alma Chronicles',                      'translated'),
+		('fluffy cultivation',        'A Martial Odyssey 2',                      'translated'),
 		('A Martial Odyssey 2',       'A Martial Odyssey 2',                      'translated'),
 		('A Martial Odyssey',         'A Martial Odyssey',                        'translated'),
 		('Loiterous', 'Loiterous',                'oel'),

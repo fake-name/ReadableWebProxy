@@ -1,4 +1,3 @@
-
 def extractKeevareadsBlogspotCom(item):
 	'''
 	Parser for 'keevareads.blogspot.com'
@@ -9,6 +8,7 @@ def extractKeevareadsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('bbhi',       'Black Bellied Husband’s Indulgence: His Wife is not Allowed to Hide',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractKeevareadsBlogspotCom(item):
 
 
 	return False
-	

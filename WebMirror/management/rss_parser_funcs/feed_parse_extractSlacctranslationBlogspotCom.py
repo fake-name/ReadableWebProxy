@@ -1,4 +1,3 @@
-
 def extractSlacctranslationBlogspotCom(item):
 	'''
 	Parser for 'slacctranslation.blogspot.com'
@@ -9,6 +8,7 @@ def extractSlacctranslationBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('Debt Girl',       'The Noble Girl Living in Debt',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSlacctranslationBlogspotCom(item):
 
 
 	return False
-	

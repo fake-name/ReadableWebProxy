@@ -14,6 +14,8 @@ def extractDominantprogrammerWordpressCom(item):
 		('Eroge Reincarnation ~Please Don\'t Collect Onee-chan\'s CGs~',                                  'Eroge Reincarnation ~Please Don\'t Collect Onee-chan\'s CGs~',                          'translated'),
 		('Saimin Regulation',                                                                             'Saimin Regulation',                                                                     'translated'),
 		('As The Spirit-Sama Says',                                                                       'As The Spirit-Sama Says',                                                               'translated'), 
+		('i am in the middle of being hypnotised',                                                        'I Am In The Middle Of Being Hypnotised',                                                'translated'), 
+		('tatsumi nanami can\'t stop hypnotic masturbation',                                              'Tatsumi Nanami Can\'t Stop Hypnotic Masturbation',                                      'translated'), 
 	]
 
 	for tagname, name, tl_type in tagmap:

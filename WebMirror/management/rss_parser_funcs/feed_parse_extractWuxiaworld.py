@@ -129,6 +129,7 @@ def extractWuxiaworld(item):
 		('everyone is young except for me',                 'everyone is young except for me',                   'translated'),
 		('dungeon predator',                                'dungeon predator',                                  'translated'),
 		('almighty sword domain',                           'almighty sword domain',                             'translated'),
+		('ranker\'s return',                                'ranker\'s return',                                  'translated'),
 		('The Unrivaled Tang Sect',                         'The Unrivaled Tang Sect',                           'translated'),
 		('A Record of a Mortal’s Journey to Immortality',   'A Record of a Mortal’s Journey to Immortality',     'translated'),
 		

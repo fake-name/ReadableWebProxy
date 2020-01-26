@@ -20,6 +20,8 @@ import concurrent.futures
 
 import sqlalchemy.exc
 import sqlalchemy.orm
+from sqlalchemy import or_
+from sqlalchemy import and_
 
 if '__pypy__' in sys.builtin_module_names:
 	import psycopg2cffi as psycopg2
@@ -394,23 +396,29 @@ class DbFlattener(object):
 		datevec = self.snap_times
 		attachments = {}
 
+		deletes = []
+
 		for item in tqdm.tqdm(
 			sess.query(ctbl)                               \
 			.filter(ctbl.c.url == url)                     \
 			.order_by(ctbl.c.id, ctbl.c.transaction_id)    \
-			.yield_per(50), total=orig_cnt):
+			.yield_per(10), total=orig_cnt):
 
 			if item.state != "complete" and item.state != 'error':
 				deleted_1 += 1
 				self.log.info("Deleting incomplete item for url: %s (state: %s)!", url, item.state)
-				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				# sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				deletes.append(and_(ctbl.c.id == item.id, ctbl.c.transaction_id == item.transaction_id))
 			elif item.content is None and item.file is None:
 				self.log.info("Deleting item without a file and no content for url: %s!", url)
 				# print(type(item), item.mimetype, item.file, item.content)
 				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
-				sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				# sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
+				deletes.append(and_(ctbl.c.id == item.id, ctbl.c.transaction_id == item.transaction_id))
+
+
 				deleted_1 += 1
-			elif item.content != None:
+			elif item.content is not None:
 				closest = min(datevec, key=self.diff_func(item))
 				if not closest in attachments:
 					attachments[closest] = []
@@ -428,7 +436,6 @@ class DbFlattener(object):
 				print("Wat?")
 
 
-
 		self.log.info("Found %s items missing both file reference and content", deleted_1)
 		keys = list(attachments.keys())
 		keys.sort()
@@ -444,12 +451,17 @@ class DbFlattener(object):
 				# print(superset[0].fetchtime, superset[0].id, superset[0].transaction_id)
 				self.log.info("Deleting %s items (out of %s) from date-segment %s", len(superset)-1, len(superset), key)
 				for tmp in superset[1:]:
-					sess.execute(ctbl.delete().where(ctbl.c.id == tmp['id']).where(ctbl.c.transaction_id == tmp['transaction_id']))
+					deletes.append(and_(ctbl.c.id == tmp['id'], ctbl.c.transaction_id == tmp['transaction_id']))
+					# sess.execute(ctbl.delete().where(ctbl.c.id == tmp['id']).where(ctbl.c.transaction_id == tmp['transaction_id']))
 					deleted_2 += 1
 			elif len(superset) == 1:
 				out.append(superset[0])
 			else:
 				raise ValueError("Wat? Key with no items!")
+
+		if deletes:
+			self.log.info("Deleting %s entries from history table!", len(deletes))
+			sess.execute(ctbl.delete().where(or_(*deletes)))
 
 		deleted = deleted_1 + deleted_2
 		# seq_dirty = self.relink_row_sequence(sess, out)

@@ -8,7 +8,8 @@ def extractXixistranslationsBlogspotCom(item):
 		return None
 
 	tagmap = [
-		('a lifetime of peace and care',       'a lifetime of peace and care',                      'translated'),
+		('a lifetime of peace and care',        'a lifetime of peace and care',                       'translated'),
+		('it\'s not easy being a master',       'it\'s not easy being a master',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

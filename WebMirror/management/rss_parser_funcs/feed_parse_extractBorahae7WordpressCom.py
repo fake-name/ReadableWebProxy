@@ -8,6 +8,8 @@ def extractBorahae7WordpressCom(item):
 		return None
 
 	tagmap = [
+		('Prophet',       'The Strongest Prophet Who Had Trained 100 Heroes is Admired By His Apprentices Around The World Even As An Adventurer',                      'translated'),
+		('fbcbtr',          'Fiancee Be Chosen By The Ring',      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

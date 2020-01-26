@@ -11,6 +11,7 @@ def extractRainyTranslations(item):
 		('F',                      'F ーエフー',                            'translated'),
 		('Light and Shadow',       'Light and Shadow',                      'translated'),
 		('The Daybreak',           'The Daybreak',                          'translated'),
+		('adonis',                 'Adonis: Reminiscence',                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

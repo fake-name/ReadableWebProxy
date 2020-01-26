@@ -1,6 +1,6 @@
-def extractDewandfrostHomeBlog(item):
+def extractHappymeowxWordpressCom(item):
 	'''
-	Parser for 'dewandfrost.home.blog'
+	Parser for 'happymeowx.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,9 +8,9 @@ def extractDewandfrostHomeBlog(item):
 		return None
 
 	tagmap = [
-		('I Have Amnesia, Don\'t Be Noisy!',       'I Have Amnesia, Don\'t Be Noisy!',                      'translated'),
-		('holy institution',                       'holy institution',                                      'translated'),
-		('PRC',       'PRC',                      'translated'),
+		('generous poor & really stingy',       'generous poor & really stingy',          'translated'),
+		('heart has ling xi',                   'Heart has Ling Xi',                      'translated'),
+		('your husband\'s leg is broken',       'Your Husband\'s Leg is Broken',          'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

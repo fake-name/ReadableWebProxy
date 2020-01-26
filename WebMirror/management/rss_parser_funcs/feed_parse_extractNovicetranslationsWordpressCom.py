@@ -32,6 +32,8 @@ def extractNovicetranslationsWordpressCom(item):
 		('never dare to abuse the female protagonist again',           'never dare to abuse the female protagonist again',                  'translated'),
 		('the little princess imprisoned by the demon brothers',       'the little princess imprisoned by the demon brothers',              'translated'),
 		('my husband with scholar syndrome',                           'my husband with scholar syndrome',                                  'translated'),
+		('chasing a flower blossom',                                   'chasing a flower blossom',                                          'translated'),
+		('ah, senior brother is actually a sister!',                   'ah, senior brother is actually a sister!',                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -14,6 +14,8 @@ def extractNegaTranslations(item):
 		'Tanpa kategori'                   : 'Takami no Kago',
 		'The Story of Hero Among Heroes'   : 'The Story of Hero Among Heroes ~The Founding Chronicles of Arestia',
 		'Sono Mono, Nochi Ni'              : 'Sono Mono, Nochi Ni',
+		'29-sai dokushin wa isekai'        : '29-sai dokushin wa isekai',
+		'sono mono, nochi ni... 2'         : 'sono mono, nochi ni... Part 2',
 		'Arifureta'                        : 'Arifureta',
 		'One-eyed female General'          : 'One-eyed Female General and the Harem',
 	}

@@ -8,9 +8,10 @@ def extractThepotatoroomCom(item):
 		return None
 
 	tagmap = [
-		('non-human sub-district office',       'non-human sub-district office',                      'translated'),
-		('as the demon king, i am very distressed because the hero is too weak 1.0',       'as the demon king, i am very distressed because the hero is too weak 1.0',                      'translated'),
-		("please respect the occupation 'evil spirit'",       "please respect the occupation 'evil spirit'",                      'translated'),
+		('non-human sub-district office',                                                  'non-human sub-district office',                                                  'translated'),
+		('as the demon king, i am very distressed because the hero is too weak 1.0',       'as the demon king, i am very distressed because the hero is too weak 1.0',       'translated'),
+		("please respect the occupation 'evil spirit'",                                    "please respect the occupation 'evil spirit'",                                    'translated'),
+		('there\'s something wrong with this development!',                                'there\'s something wrong with this development!',                                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

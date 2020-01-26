@@ -8,9 +8,10 @@ def extractSabishiidesuCom(item):
 		return None
 
 	tagmap = [
-		('Isekai Sagishi',       'The Other World Con Artist’s Management Techniques',                      'translated'),
-		('Saikyou no Budouka',   'Saikyou no Budouka',                                                      'translated'),
-		('Saikyou no Butouka',   'Saikyou no Budouka',                                                      'translated'),
+		('Isekai Sagishi',                 'The Other World Con Artist’s Management Techniques',                      'translated'),
+		('Saikyou no Budouka',             'Saikyou no Budouka',                                                      'translated'),
+		('Saikyou no Butouka',             'Saikyou no Budouka',                                                      'translated'),
+		('maou-sama kansatsu nikki',       'maou-sama kansatsu nikki',                                                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

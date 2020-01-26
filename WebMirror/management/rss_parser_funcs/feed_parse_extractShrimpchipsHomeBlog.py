@@ -1,6 +1,6 @@
-def extractDewandfrostHomeBlog(item):
+def extractShrimpchipsHomeBlog(item):
 	'''
-	Parser for 'dewandfrost.home.blog'
+	Parser for 'shrimpchips.home.blog'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +8,7 @@ def extractDewandfrostHomeBlog(item):
 		return None
 
 	tagmap = [
-		('I Have Amnesia, Don\'t Be Noisy!',       'I Have Amnesia, Don\'t Be Noisy!',                      'translated'),
-		('holy institution',                       'holy institution',                                      'translated'),
+		('Record of the Missing Sect Master',       'Record of the Missing Sect Master',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
