@@ -40,6 +40,7 @@ badwords: [
 		'?sort=author_reputation',
 		'?sort=trending',
 		'?sort=new',
+		'?sort=votes',
 		'?sort=author_reputation',
 
 		# Ugh
@@ -47,6 +48,10 @@ badwords: [
 		'steemit.com/drugwars/',
 		'steemit.com/kryptohodler/',
 		'steemit.com/indonesia/',
+
+		'bitcoin',
+		'litecoin',
+
 	]
 
 compound_badwords: [

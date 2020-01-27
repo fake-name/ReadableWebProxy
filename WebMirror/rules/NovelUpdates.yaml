@@ -39,6 +39,11 @@ badwords: [
 			'status=211',
 			'111111',
 
+			'?sort=',
+			'&order=',
+			'&status=',
+
+
 			# Don't actually spider the site, just let the update triggers
 			# do their thing.
 			# 'www.novelupdates.com',

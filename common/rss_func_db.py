@@ -3,6 +3,7 @@ import code
 import ast
 import re
 import json
+import time
 import datetime
 
 from sqlalchemy import Table
@@ -224,16 +225,18 @@ class RssFeedUrlMapper(common.db_base.Base):
 
 
 def str_to_ast(instr, name):
-	print("Compiling function from DB (str_to_ast) for '%s'" % name)
-
 	# So compile needs a trailing newline to properly terminate (or something?)
 	# anyways, stick some extra on to be safe.
 	func_str = instr+"\n\n"
+
+	print("Compiling function from DB (str_to_ast) for '%s' (%s bytes)" % (name, len(instr)))
 
 	func_container = ast.parse(func_str, "<db_for_<{}>>".format(name), "exec")
 	return func_container
 
 def str_to_function(instr, name):
+
+	start = time.time()
 	instr = instr.strip()
 
 	# Use the loaded function when possible.
@@ -241,11 +244,11 @@ def str_to_function(instr, name):
 		# print("Using LRU cached function (%s items)" % len(PARSED_FUNCTION_CACHE))
 		return PARSED_FUNCTION_CACHE[instr]
 
-	print("Compiling function from DB (str_to_function) for '%s'" % name)
-
 	# So compile needs a trailing newline to properly terminate (or something?)
 	# anyways, stick some extra on to be safe.
 	func_str = instr+"\n\n"
+
+	print("Compiling function from DB (str_to_function) for '%s' (%s bytes)" % (name, len(instr)))
 
 	func_container = compile(func_str, "<db_for_<{}>>".format(name), "exec")
 
@@ -275,7 +278,15 @@ def str_to_function(instr, name):
 
 	# Push processed function into the cache
 	PARSED_FUNCTION_CACHE[instr] = func[0]
-
+	stop = time.time()
+	if stop - start > 0.5:
+		print("######################################################################")
+		print("Long function load time!")
+		print("Function name: '%s' (%s bytes)" % (name, len(instr)))
+		print("Function Body:")
+		print("")
+		print(instr)
+		print("######################################################################")
 	return func[0]
 
 class RssFeedEntry(common.db_base.Base):

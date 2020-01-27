@@ -1,5 +1,16 @@
 
+
 import concurrent.futures
+import traceback
+import datetime
+import collections
+import ast
+import inspect
+import astor
+
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import subqueryload
+from sqlalchemy import desc
 
 from flask import g
 from flask import render_template
@@ -15,14 +26,6 @@ from app import app
 from app import auth
 
 import WebMirror.API
-from sqlalchemy import desc
-
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import subqueryload
-import traceback
-import datetime
-import collections
-import astor
 
 from app.utilities import paginate
 import app.sub_views.content_views as content_views
@@ -281,44 +284,8 @@ def feedFiltersRoot():
 		# Feed sources that are either dead or not actually a feed.
 		# Don't show these as "missing", to not clutter up the missing-name interface.
 		skip_missing = [
-			'sincere.dreamwidth.org',
-			'sakuraidreader.com',
-			'ruzetranslations.org',
-			'm.xianxiaworld.net',
-			'm.wuxiaworld.com',
-			'mahou-shoujo-ikusei-keikaku.wikia.com',
-			'madsnail.ru',
-			'hereticlnt.blogspot.com',   # Private
-			'elwiki.net',
-			'egscans.com',
-			'docs.google.com',
-			'avertranslation.blogspot.com',
-			'noveltoread.com',
-			'wuxiasociety.freeforums.net',
-			'archiveofourown.org',
-			'ftp.liberspark.com',
-			'www.bestwebnovel.com',
-			'178.128.155.123',
-			'github.com',
-			'qntm.org',
-			'www.arcgames.com',
-			'www.jcafe24.net',
-			'www.addergoole.com',
-			'fictionaut.com',
-			'mayancalendargirls.com',
-			'littlefairyalice.wordpress.com',
-			'readermegane.wordpress.com',
-			'stardancer.org',
-			'teresagarciaserials.weebly.com',
-			'thenewscifi.com',
-			'themanmademessiah.com',
-			'www.kapitbisig.com',
-			'www.thekingdomsofevil.com',
-			'www.wastedproductions.com',
-
-			'nenglengli.wordpress.com',      # Ded
-			'zer0translations.blogspot.com',
 		]
+
 		for item in common.global_constants.RSS_SKIP_FILTER:
 			skip_missing.append(item)
 		for item in common.global_constants.GLOBAL_BAD_URLS:
@@ -327,6 +294,14 @@ def feedFiltersRoot():
 			skip_missing.append(item)
 
 		for feed in feeds_in:
+
+			# Skip items which have their docstring start with "DISABLED"
+			func = feed.get_func()
+			ds = str(inspect.getdoc(func))
+			if ds.strip().startswith("DISABLED"):
+				print(ds)
+				continue
+
 			if feed.feed_name in [tmp.feed_netloc for tmp in feed.urls]:
 				if feed.feed_name not in skip_missing:
 					if len(feed.releases) > 1:

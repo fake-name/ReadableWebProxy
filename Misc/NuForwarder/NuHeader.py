@@ -249,7 +249,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 
 
-	def get_rpc_head_lists(self, chunks=7, chunklength=15, chunkdupes=2):
+	def get_rpc_head_lists(self, chunks=7, chunklength=15, chunkdupes=3):
 		put = chunks * chunklength
 
 		with db.session_context() as db_sess:
@@ -983,10 +983,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.validate_from_new()
 		self.timestamp_validated()
 
-		# self.do_chunk_rpc_heads()
+		self.do_chunk_rpc_heads()
 
-		active_jobs = self.put_head_jobs(put=100)
-		self.block_for_n_responses(active_jobs)
+		# active_jobs = self.put_head_jobs(put=100)
+		# self.block_for_n_responses(active_jobs)
 
 		self.validate_from_new()
 		self.timestamp_validated()
@@ -1118,7 +1118,7 @@ class RemoteHeaderClass(RpcBaseClass):
 
 		try:
 			try:
-				self.cwg.borg_chrome_pool.close_tabs()
+				self.cwg.chrome_pool.get().close_tabs()
 			except AttributeError:
 				pass
 
@@ -1147,8 +1147,6 @@ class RemoteHeaderClass(RpcBaseClass):
 			for url_set in urls_to_head:
 				ret.append((url_set, "skipped"))
 			return ret
-
-
 
 		for url_set in urls_to_head:
 			try:
@@ -1184,22 +1182,22 @@ class RemoteHeaderClass(RpcBaseClass):
 
 		return ret
 
-	def close_other_tabs(self):
-		self.log.info("Closing chrome tabs!")
-		borgp = self.cwg.borg_chrome_pool.get()
-		self.log.info("Currently active chrome tabs:", )
+	# def close_other_tabs(self):
+	# 	self.log.info("Closing chrome tabs!")
+	# 	borgp = self.cwg.borg_chrome_pool.get()
+	# 	self.log.info("Currently active chrome tabs:", )
 
 
 
 	def _go(self, partial_resp_interface, lock_interface, urls_to_head):
 		print("%s" % (urls_to_head, ))
 		self.log.info("%s", urls_to_head, )
-		self.log.info("WG: %s", self.wg)
+		self.log.info("WG: %s", self.cwg)
 		self.log.info("partial_resp_interface: %s", partial_resp_interface)
 		self.log.info("lock_interface: %s", lock_interface)
-		self.log.info("WG.twocaptcha_api_key: %s", self.wg.twocaptcha_api_key)
-		self.log.info("WG.anticaptcha_api_key: %s", self.wg.anticaptcha_api_key)
-		self.log.info("Using shared chrome: %s", self.wg.borg_chrome_pool)
+		self.log.info("WG.twocaptcha_api_key: %s", self.cwg.twocaptcha_api_key)
+		self.log.info("WG.anticaptcha_api_key: %s", self.cwg.anticaptcha_api_key)
+		self.log.info("Using shared chrome: %s", self.cwg.chrome_pool)
 
 		# self.log.info("lock_interface dir: %s", dir(lock_interface))
 		# self.log.info("lock_interface seen: %s", lock_interface.get_seen())
@@ -1235,8 +1233,8 @@ def test():
 	pass
 
 	hdl = NuHeader()
-	hdl.go()
-	# hdl.do_chunk_rpc_heads()
+	# hdl.go()
+	hdl.do_chunk_rpc_heads()
 	# hdl.validate_from_new()
 
 	return

@@ -461,7 +461,9 @@ class DbFlattener(object):
 
 		if deletes:
 			self.log.info("Deleting %s entries from history table!", len(deletes))
-			sess.execute(ctbl.delete().where(or_(*deletes)))
+			chunks = list(batch(deletes, 50))
+			for chunk in tqdm.tqdm(chunks):
+				sess.execute(ctbl.delete().where(or_(*chunk)))
 
 		deleted = deleted_1 + deleted_2
 		# seq_dirty = self.relink_row_sequence(sess, out)
