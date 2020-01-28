@@ -1,4 +1,3 @@
-
 def extractLittlesleepysheepBlogspotCom(item):
 	'''
 	Parser for 'littlesleepysheep.blogspot.com'
@@ -9,6 +8,8 @@ def extractLittlesleepysheepBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('transmigrated to another world where only men exist～bl isn\'t allowed!～',       'Transmigrated to Another World Where Only Men Exist ～BL isn\'t allowed!～',        'translated'),
+		('this cannon fodder is covered by me!',                                            'This Cannon Fodder is Covered by Me!',                                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractLittlesleepysheepBlogspotCom(item):
 
 
 	return False
-	

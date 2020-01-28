@@ -1,4 +1,3 @@
-
 def extractHaphazardtranslationsWordpressCom(item):
 	'''
 	Parser for 'haphazardtranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractHaphazardtranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('elf court magician',       'Elf no Kuni no Kyuutei Madoushi ni Naretanode, Toriaezu Himesama ni Seitekina Itazura wo Shitemimashita',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractHaphazardtranslationsWordpressCom(item):
 
 
 	return False
-	

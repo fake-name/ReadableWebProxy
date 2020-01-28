@@ -14,10 +14,11 @@ import WebMirror.TimedTriggers.RollingRewalkTriggers
 import WebMirror.TimedTriggers.UrlTriggers
 import WebMirror.TimedTriggers.QueueTriggers
 import WebMirror.TimedTriggers.LocalFetchTriggers
-import Misc.HistoryAggregator.Consolidate
 import WebMirror.util.StatusUpdater.Updater
 import WebMirror.management.FeedDbManage
+import Misc.HistoryAggregator.Consolidate
 import common.management.WebMirrorManage
+import common.management.RawMirrorManage
 
 import Misc.NuForwarder.NuHeader
 import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
@@ -45,6 +46,10 @@ class PythonJob():
 class PriorityDropper():
 	def go(self):
 		common.management.WebMirrorManage.exposed_drop_priorities()
+
+class RawPriorityDropper():
+	def go(self):
+		common.management.RawMirrorManage.exposed_drop_priorities()
 
 class RssHistoryPurgerRunner():
 	def go(self):
@@ -89,6 +94,9 @@ class NuHeaderJob(PythonJob, job.JobBase):
 
 class WebMirrorPriorityDropper(PythonJob, job.JobBase):
 	invokable = PriorityDropper
+
+class RawMirrorPriorityDropper(PythonJob, job.JobBase):
+	invokable = RawPriorityDropper
 
 class RssHistoryPurger(PythonJob, job.JobBase):
 	invokable = RssHistoryPurgerRunner

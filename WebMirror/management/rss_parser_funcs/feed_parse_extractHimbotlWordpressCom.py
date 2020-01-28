@@ -1,4 +1,3 @@
-
 def extractHimbotlWordpressCom(item):
 	'''
 	Parser for 'himbotl.wordpress.com'
@@ -9,6 +8,7 @@ def extractHimbotlWordpressCom(item):
 		return None
 
 	tagmap = [
+		('regressor instruction manual',       'Regressor Instruction Manual',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractHimbotlWordpressCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractInoveltranslationsWordpressCom(item):
 	'''
 	Parser for 'inoveltranslations.wordpress.com'
@@ -8,7 +7,20 @@ def extractInoveltranslationsWordpressCom(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
+	if item['tags'] == ['Uncategorized']:
+		titlemap = [
+			('Dual Life Chapter ',          'Dual Life～in day with the Hero party, in night with the Demon king Army～',      'translated'),
+			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+		]
+
+		for titlecomponent, name, tl_type in titlemap:
+			if titlecomponent.lower() in item['title'].lower():
+				return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+
 	tagmap = [
+		('dual life',       'dual life',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +31,3 @@ def extractInoveltranslationsWordpressCom(item):
 
 
 	return False
-	

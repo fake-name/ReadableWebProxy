@@ -13,6 +13,7 @@ def extractMulotranslationsWordpressCom(item):
 		('I was just an only child boy, Now I became one of a four quadruplet sisters.',       'I was just an only child boy, Now I became one of a four quadruplet sisters.',                      'translated'),
 		('When I became a Girl, an Unexpected Love Quarrel Occurred!',                         'When I became a Girl, an Unexpected Love Quarrel Occurred!',                                        'translated'),
 		('They Said My Status Stayed the Same Even Though I Reincarnated in Another World!?',  'They Said My Status Stayed the Same Even Though I Reincarnated in Another World!?',                 'translated'),
+		('emergency adaptation for a male high school put into ts.',                           'emergency adaptation for a male high school put into ts.',                                          'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

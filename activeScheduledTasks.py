@@ -109,6 +109,11 @@ target_jobs = {
 		"interval"         : hours(4),
 		# "minute"           : '*/40',
 	},
+	'scheduled_jobs.python_job.RawMirrorPriorityDropper' : {
+		"name"             : 'AUTO: Raw WebMirror Priority Dropper',
+		"interval"         : hours(48),
+		# "minute"           : '*/40',
+	},
 
 	# 'scheduled_jobs.python_job.RssHistoryPurger' : {
 	# 	"name"             : 'AUTO: Purge RSS Entries from history table',

@@ -1,4 +1,3 @@
-
 def extractGaulishtranslationsWordpressCom(item):
 	'''
 	Parser for 'gaulishtranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractGaulishtranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('assassin-aristocrat',       'The Best Assassin, Incarnated into a Different World’s Aristocrat',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractGaulishtranslationsWordpressCom(item):
 
 
 	return False
-	

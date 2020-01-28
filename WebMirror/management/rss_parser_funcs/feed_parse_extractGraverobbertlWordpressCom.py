@@ -8,8 +8,9 @@ def extractGraverobbertlWordpressCom(item):
 		return None
 
 	tagmap = [
-		('mge',       'Magical★Explorer',                      'translated'),
-		('spt',       'The strongest dull prince secret battle for the throne.～I don’t care about the throne but since I don’t want to die, I think I will make my little brother the emperor～',                      'translated'),
+		('mge',       'Magical★Explorer',                                                                                                                                                               'translated'),
+		('spt',       'The strongest dull prince secret battle for the throne.～I don’t care about the throne but since I don’t want to die, I think I will make my little brother the emperor～',       'translated'),
+		('dah',       'Magical Devices Craftsman Dahlia Won’t Hang Her Head Down Anymore',                                                                                                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -2,12 +2,9 @@
 import os
 import os.path
 import shutil
-from tqdm import tqdm
-
-if __name__ == "__main__":
-	import logSetup
-	logSetup.initLogging()
-
+import time
+import tqdm
+import sqlalchemy.exc
 
 import RawArchiver.RawActiveModules
 import RawArchiver.RawEngine
@@ -15,11 +12,10 @@ import RawArchiver.RawEngine
 import common.database as db
 import common.Exceptions
 import common.management.file_cleanup
+import common.global_constants
 
 from config import C_RAW_RESOURCE_DIR
 from sqlalchemy_continuum_vendored.utils import version_table
-import common.global_constants
-
 
 
 def exposed_purge_raw_invalid_urls():
@@ -44,7 +40,7 @@ def exposed_purge_raw_invalid_urls():
 	maxlen = 0
 	changed_rows = 0
 	total_rows = 0
-	with tqdm(total=res) as pbar:
+	with tqdm.tqdm(total=res) as pbar:
 		bad = 0
 		for row in sess1.query(db.RawWebPages).yield_per(1000):
 			modules_wants_url = any([mod.cares_about_url(row.url) for mod in RawArchiver.RawActiveModules.ACTIVE_MODULES])
@@ -102,7 +98,7 @@ def exposed_purge_raw_invalid_urls_from_history():
 	last_commit = 0
 	maxlen = 0
 	changed_rows = 0
-	with tqdm(total=res) as pbar:
+	with tqdm.tqdm(total=res) as pbar:
 		bad = 0
 
 		for rurl, rnetloc in sess1.query(ctbl.c.url, ctbl.c.netloc).yield_per(1000):
@@ -214,3 +210,71 @@ def exposed_delete_unattached_raw_files():
 	This also resets the dlstate of for addresses where the file is missing.
 	'''
 	common.management.file_cleanup.sync_raw_with_filesystem()
+
+
+
+
+def exposed_drop_raw_priorities():
+	'''
+	Reset the priority of every row in the table to the IDLE_PRIORITY level
+	'''
+
+	# We have a maximum commit interval so we don't hold a transaction open for extremely long periods of time,
+	# as doing so can cause other portions of the system to time out.
+	commit_interval_s  = 30
+	step               = 10000
+
+	with db.session_context(override_timeout_ms=30*60*1000) as sess:
+		print("Getting minimum row in need or update..")
+		start = sess.execute("""SELECT min(id) FROM raw_web_pages WHERE priority != 9""")
+		start = list(start)[0][0]
+		if start is None:
+			print("No rows to reset!")
+			return
+		print("Minimum row ID: ", start, "getting maximum row...")
+		stop = sess.execute("""SELECT max(id) FROM raw_web_pages WHERE priority != 9""")
+		stop = list(stop)[0][0]
+		print("Maximum row ID: ", stop)
+
+		if not start:
+			print("No null rows to fix!")
+			return
+
+		print("Need to fix rows from %s to %s" % (start, stop))
+		start = start - (start % step)
+
+		changed = 0
+		changed_tot = 0
+		last_commit = time.time()
+		pb = tqdm.tqdm(range(start, stop, step), desc='Dropping raw priorities.')
+		for idx in pb:
+			try:
+				# SQL String munging! I'm a bad person!
+				# Only done because I can't easily find how to make sqlalchemy
+				# bind parameters ignore the postgres specific cast
+				# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+				have = sess.execute("""update raw_web_pages set priority = 9 where priority != 9 AND id > {} AND id <= {};""".format(idx, idx+step))
+				# print()
+
+				# processed  = idx - start
+				# total_todo = stop - start
+				desc = '(drop_priorities) -> %6i, %6i, %6i' % (have.rowcount, changed, changed_tot)
+				pb.set_description(desc)
+
+				# print('\r%10i, %10i, %7.4f, %6i, %6i, %6i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, changed, changed_tot), end="", flush=True)
+				changed += have.rowcount
+				changed_tot += have.rowcount
+				if changed > step * 10 or (time.time() - last_commit) > commit_interval_s:
+					print("Committing (%s changed rows)...." % changed, end=' ')
+					sess.commit()
+					print("done")
+					changed = 0
+					last_commit = time.time()
+
+			except sqlalchemy.exc.OperationalError:
+				sess.rollback()
+			except sqlalchemy.exc.InvalidRequestError:
+				sess.rollback()
+
+
+		sess.commit()

@@ -461,7 +461,7 @@ class DbFlattener(object):
 
 		if deletes:
 			self.log.info("Deleting %s entries from history table!", len(deletes))
-			chunks = list(batch(deletes, 50))
+			chunks = list(batch(deletes, 3))
 			for chunk in tqdm.tqdm(chunks):
 				sess.execute(ctbl.delete().where(or_(*chunk)))
 

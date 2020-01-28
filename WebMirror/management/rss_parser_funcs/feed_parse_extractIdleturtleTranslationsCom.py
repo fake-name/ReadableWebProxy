@@ -1,4 +1,3 @@
-
 def extractIdleturtleTranslationsCom(item):
 	'''
 	Parser for 'idleturtle-translations.com'
@@ -9,6 +8,8 @@ def extractIdleturtleTranslationsCom(item):
 		return None
 
 	tagmap = [
+		('clwp',       'Crossing to Live in the Wilderness Plains',                      'translated'),
+		('Bad',        'Back to the Age of Dinosaurs',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractIdleturtleTranslationsCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractHarunomasuBlogspotCom(item):
 	'''
 	Parser for 'harunomasu.blogspot.com'
@@ -7,6 +6,18 @@ def extractHarunomasuBlogspotCom(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
+
+	if item['tags'] == []:
+		titlemap = [
+			('Put Your Head on My Shoulder (致我们暖暖的小时光) - Chapter ',  'Put Your Head on My Shoulder',      'translated'),
+			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+		]
+
+		for titlecomponent, name, tl_type in titlemap:
+			if titlecomponent.lower() in item['title'].lower():
+				return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
@@ -19,4 +30,3 @@ def extractHarunomasuBlogspotCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractGrimtranslationsHomeBlog(item):
 	'''
 	Parser for 'grimtranslations.home.blog'
@@ -9,6 +8,7 @@ def extractGrimtranslationsHomeBlog(item):
 		return None
 
 	tagmap = [
+		('htdwt',       'How to Deal with a Tsundere Gong',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractGrimtranslationsHomeBlog(item):
 
 
 	return False
-	

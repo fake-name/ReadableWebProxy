@@ -564,6 +564,7 @@ def get_triggered_urls():
 	import activeScheduledTasks
 	ret = []
 	for job in activeScheduledTasks.target_jobs:
+		print("Job:", (type(job), job, ))
 		plugin = import_from_path(job).invokable
 		if issubclass(plugin, WebMirror.TimedTriggers.UrlTriggers.UrlTrigger):
 			instance = plugin()
@@ -583,21 +584,6 @@ def load_triggered_url_list():
 ##############################################################################################################
 ##############################################################################################################
 ##############################################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -642,8 +628,11 @@ def test():
 	# for key, value in ctnt_filters.items():
 	# 	print(key, value)
 
-	import pdb
-	pdb.set_trace()
+	load_triggered_url_list()
+
+
+	# import pdb
+	# pdb.set_trace()
 
 
 if __name__ == "__main__":

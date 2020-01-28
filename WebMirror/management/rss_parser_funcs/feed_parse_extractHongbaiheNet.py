@@ -1,4 +1,3 @@
-
 def extractHongbaiheNet(item):
 	'''
 	Parser for 'hongbaihe.net'
@@ -9,6 +8,7 @@ def extractHongbaiheNet(item):
 		return None
 
 	tagmap = [
+		('sflqt',       'Sweet Finale to a Lifetime of Quick Transmigrations',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractHongbaiheNet(item):
 
 
 	return False
-	

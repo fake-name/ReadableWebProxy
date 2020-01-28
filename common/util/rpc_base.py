@@ -51,7 +51,7 @@ class RpcMixin():
 		self.rpc_interfaces = {}
 		self.job_map = {}
 		self.job_counter = 0
-		self.rpc_timeout_s = 60 * 15
+		self.rpc_timeout_s = 60 * 30
 
 		self.remote_log = logging.getLogger("Main.RPC.Remote")
 
@@ -308,9 +308,11 @@ class RpcMixin():
 					log_call(line)
 
 
-	def process_response_items(self, jobids, preload_rets = []):
+	def process_response_items(self, jobids, preload_rets = [], timeout=None):
 		self.log.info("Waiting for remote response (preloaded: %s)", len(preload_rets))
-		timeout = self.rpc_timeout_s
+
+		if not timeout:
+			timeout = self.rpc_timeout_s
 
 		assert isinstance(jobids, list)
 

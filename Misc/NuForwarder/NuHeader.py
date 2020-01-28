@@ -113,11 +113,8 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 	pluginName = "Nu Header"
 	pluginName = "NuRpcGet"
 
-
 	loggerPath = "Main.Header.Nu"
 	statsd_prefix = 'ReadableWebProxy.Nu.Header'
-
-	go = None
 
 	def __init__(self, connect=True):
 		super().__init__()
@@ -249,7 +246,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 
 
-	def get_rpc_head_lists(self, chunks=7, chunklength=15, chunkdupes=3):
+	def get_rpc_head_lists(self, chunks=12, chunklength=20, chunkdupes=3):
 		put = chunks * chunklength
 
 		with db.session_context() as db_sess:
@@ -965,66 +962,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		self.retriggerUrlList(release_urls)
 
-	def go(self):
-		self.run()
 
-	def run(self):
-		self.process_avail()
+	def process_rpc_responses(self, jobids=None, timeout=None):
 
-		self.validate_from_new()
-		self.timestamp_validated()
-		self.fix_names()
-
-		self.review_probable_validated()
-
-		ago = datetime.datetime.now() - datetime.timedelta(days=3)
-		self.transmit_since(ago)
-
-		self.validate_from_new()
-		self.timestamp_validated()
-
-		self.do_chunk_rpc_heads()
-
-		# active_jobs = self.put_head_jobs(put=100)
-		# self.block_for_n_responses(active_jobs)
-
-		self.validate_from_new()
-		self.timestamp_validated()
-		self.fix_names()
-
-		self.review_probable_validated()
-
-		ago = datetime.datetime.now() - datetime.timedelta(days=3)
-		self.transmit_since(ago)
-
-
-		# Update the netloc tracker
-		mapdict = nnt.get_nu_head_urls()
-		nnt.push_urls_into_table(mapdict)
-		nnt.filter_get_have_urls()
-
-
-
-	def do_chunk_rpc_heads(self):
-
-		items = self.get_rpc_head_lists()
-		if not items:
-			return
-
-		jobids = [
-				self.put_job(
-					remote_cls    = RemoteHeaderClass,
-					call_kwargs   = {'urls_to_head' : item},
-					job_unique_id = str(item),
-					)
-			for
-				item
-			in
-				items
-
-		]
-
-		for everything, ret in self.process_response_items(jobids):
+		for everything, ret in self.process_response_items(jobids=jobids, timeout=timeout):
 			for item in ret:
 				fetch_params, resp_params = item
 
@@ -1072,6 +1013,73 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		# return ret
 
 
+	def do_chunk_rpc_heads(self):
+
+		items = self.get_rpc_head_lists()
+		if not items:
+			return
+
+		jobids = [
+				self.put_job(
+					remote_cls    = RemoteHeaderClass,
+					call_kwargs   = {'urls_to_head' : item},
+					job_unique_id = str(item),
+					)
+			for
+				item
+			in
+				items
+
+		]
+
+		self.process_rpc_responses(jobids)
+
+	def go(self):
+		self.run()
+
+	def run(self):
+		self.process_avail()
+
+		try:
+			self.process_rpc_responses(["1"], timeout=5)
+		except rpc_base.RpcTimeoutError:
+			pass
+
+
+		self.validate_from_new()
+		self.timestamp_validated()
+		self.fix_names()
+
+		self.review_probable_validated()
+
+		ago = datetime.datetime.now() - datetime.timedelta(days=3)
+		self.transmit_since(ago)
+
+		self.validate_from_new()
+		self.timestamp_validated()
+
+		self.do_chunk_rpc_heads()
+
+		# active_jobs = self.put_head_jobs(put=100)
+		# self.block_for_n_responses(active_jobs)
+
+		self.validate_from_new()
+		self.timestamp_validated()
+		self.fix_names()
+
+		self.review_probable_validated()
+
+		ago = datetime.datetime.now() - datetime.timedelta(days=3)
+		self.transmit_since(ago)
+
+
+		# Update the netloc tracker
+		mapdict = nnt.get_nu_head_urls()
+		nnt.push_urls_into_table(mapdict)
+		nnt.filter_get_have_urls()
+
+
+
 def fetch_and_flush():
 	hd = NuHeader()
 	hd.run()
@@ -1116,6 +1124,17 @@ class RemoteHeaderClass(RpcBaseClass):
 		if not urls_to_head:
 			return ret
 
+		if all(
+					[
+							lock_interface.seen_item(url_set['wrapper'])
+						for
+							url_set
+						in
+							urls_to_head
+					]
+				):
+			return ret
+
 		try:
 			try:
 				self.cwg.chrome_pool.get().close_tabs()
@@ -1131,6 +1150,12 @@ class RemoteHeaderClass(RpcBaseClass):
 
 			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
 				self.log.info("Current URL: %s", cr.get_current_url())
+
+
+			self.log.info("Attempting to access homepage")
+			self.cwg.getHeadTitleChromium(url=urls_to_head[0]['referrer'])
+			self.log.info("On NU homepage")
+
 
 			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
 				cr.navigate_to(urls_to_head[0]['referrer'])
@@ -1210,7 +1235,7 @@ class RemoteHeaderClass(RpcBaseClass):
 def do_schedule(scheduler):
 	print("Autoscheduler!")
 
-	exec_at = datetime.datetime.now() + datetime.timedelta(seconds=5)
+	exec_at = datetime.datetime.now() + datetime.timedelta(seconds=15)
 	schedule_next_exec(scheduler, exec_at)
 
 def test_all_the_same():
@@ -1233,8 +1258,23 @@ def test():
 	pass
 
 	hdl = NuHeader()
+
+	hdl.process_avail()
+
+	try:
+		hdl.process_rpc_responses(["1"], timeout=5)
+	except rpc_base.RpcTimeoutError:
+		pass
+
+
+	hdl.validate_from_new()
+	hdl.timestamp_validated()
+	hdl.fix_names()
+
+	hdl.review_probable_validated()
+
 	# hdl.go()
-	hdl.do_chunk_rpc_heads()
+	# hdl.do_chunk_rpc_heads()
 	# hdl.validate_from_new()
 
 	return

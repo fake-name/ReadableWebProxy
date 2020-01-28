@@ -1,5 +1,7 @@
 def extractBrinkPress(item):
 	'''
+	DISABLED
+	
 	Parser for 'brink.press'
 	'''
 	

@@ -1,4 +1,3 @@
-
 def extractFabletranslationWordpressCom(item):
 	'''
 	Parser for 'fabletranslation.wordpress.com'
@@ -9,6 +8,7 @@ def extractFabletranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('flower master in the city',       'Flower Master in the City',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -17,6 +17,9 @@ def extractFabletranslationWordpressCom(item):
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
-
-	return False
 	
+	if item['tags'] == ["Chapters"] and item['title'].startswith("Chapter "):
+		return buildReleaseMessageWithType(item, "Flower Master in the City", vol, chp, frag=frag, postfix=postfix)
+		
+	
+	return False

@@ -1,5 +1,7 @@
 def extractArchiveofourownOrg(item):
 	'''
+	DISABLED
+	
 	Parser for 'archiveofourown.org'
 	'''
 	

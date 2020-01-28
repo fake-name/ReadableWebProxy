@@ -14,8 +14,8 @@ class HourlyLocalFetchTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseCla
 
 	loggerPath = 'HourlyLocalFetchTrigger'
 
-
 	urls = [
+		'https://www.novelupdates.com',
 		'https://royalroad.com/api/fiction/updates?apiKey='     + settings.RRL_API_KEY,
 		'https://royalroad.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
 	]

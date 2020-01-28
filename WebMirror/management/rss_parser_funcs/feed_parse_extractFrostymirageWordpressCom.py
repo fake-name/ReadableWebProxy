@@ -1,4 +1,3 @@
-
 def extractFrostymirageWordpressCom(item):
 	'''
 	Parser for 'frostymirage.wordpress.com'
@@ -9,6 +8,8 @@ def extractFrostymirageWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the general loves to collect little red flowers',       'the general loves to collect little red flowers',                      'translated'),
+		('queens husband',                                        'queens husband',                                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractFrostymirageWordpressCom(item):
 
 
 	return False
-	

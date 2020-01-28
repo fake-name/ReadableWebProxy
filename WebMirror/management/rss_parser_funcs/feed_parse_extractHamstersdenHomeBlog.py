@@ -1,4 +1,3 @@
-
 def extractHamstersdenHomeBlog(item):
 	'''
 	Parser for 'hamstersden.home.blog'
@@ -9,6 +8,7 @@ def extractHamstersdenHomeBlog(item):
 		return None
 
 	tagmap = [
+		('teihengyo tamer',       '~About Making the Low-Tier Tamer Profession Top-Tier Using My Previous Life’s Knowledge~',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractHamstersdenHomeBlog(item):
 
 
 	return False
-	
