@@ -10,6 +10,8 @@ def extractTaekanWordpressCom(item):
 	tagmap = [
 		('Seiken Tsukai no World Break',       'Seiken Tsukai no World Break',                      'translated'),
 		('rakudai kishi no eiyuutan',          'Rakudai Kishi no Cavalry',                          'translated'),
+		('unbreakable machine-doll',           'unbreakable machine-doll',                          'translated'),
+		('Ecstas Online',                      'Ecstas Online',                                     'translated'),
 		('Hundred',       'Hundred',                      'translated'),
 	]
 

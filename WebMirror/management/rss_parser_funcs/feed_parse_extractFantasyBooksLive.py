@@ -259,6 +259,8 @@ def extractFantasyBooksLive(item):
 		('140483',                     'Undying Empire',                                                                  'oel'),
 		('139605',                     'The betrayal',                                                                    'oel'),
 		('56681',                      'A Hero Returns',                                                                  'oel'),
+		('126985',                                                                   'Final Boss',                                                                      'translated'),
+		('140463',                                                                   'Emperor NPC',                                                                      'oel'),
 
 		
 

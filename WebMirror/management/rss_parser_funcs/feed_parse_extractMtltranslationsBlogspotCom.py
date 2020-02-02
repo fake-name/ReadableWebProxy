@@ -1,4 +1,3 @@
-
 def extractMtltranslationsBlogspotCom(item):
 	'''
 	Parser for 'mtltranslations.blogspot.com'
@@ -9,6 +8,8 @@ def extractMtltranslationsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('mr. ernest is my boyfriend',       'Mr. Earnest Is My Boyfriend',                      'translated'),
+		('Once We Come Across Love',         'Once We Come Across Love',                         'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractMtltranslationsBlogspotCom(item):
 
 
 	return False
-	

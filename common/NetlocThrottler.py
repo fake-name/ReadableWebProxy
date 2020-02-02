@@ -28,6 +28,9 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		self.jobl = []
 		self.key_prefix = key_prefix
 
+		if netloc_max is None:
+			netloc_max = {}
+
 		assert isinstance(netloc_max, dict)
 		self.netloc_max = netloc_max
 

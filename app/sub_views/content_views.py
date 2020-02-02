@@ -262,7 +262,7 @@ def render_resource():
 
 	response = make_response(content)
 	response.headers['Content-Type'] = mimetype
-	response.headers["Content-Disposition"] = "attachment; filename={}".format(fname)
+	response.headers["Content-Disposition"] = "attachment; filename=\"{}\"".format(fname)
 
 
 	return set_cache_control_headers(response)

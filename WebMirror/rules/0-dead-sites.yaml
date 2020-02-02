@@ -381,7 +381,9 @@ baseUrl: [
 	'https://kondeesite.wordpress.com',
 	'http://www.wizsnovels.com',
 	'https://hiraethtranslationshome.wordpress.com',
-
+	'https://www.lazybuntl.com',
+	'https://isecainovels.wujigege.com',
+	'http://fierydragonbreath.tumblr.com',
 	]
 
 # select count(*) from web_pages where netloc = 'www.asstr.com';

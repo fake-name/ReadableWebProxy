@@ -63,6 +63,7 @@ def extractRaisingTheDead(item):
 		('A Tails Misfortune',                                      'A Tail\'s Misfortune',                                                                     'oel'),
 		('A Tail\'s Misfortune',                                    'A Tail\'s Misfortune',                                                                     'oel'),
 		('The Search for Knowledge',                                'The Search for Knowledge',                                                                 'oel'),
+		('attack 0 crit all',                                       'My attack stat is negligible, so I can’t help but rely on critical attacks to succeed',    'oel'),
 		('ascension',                                               'Ascension',                                                                                'oel'),
 		('Talentless Beast Knight',                                 'Talentless Beast Knight',                                                                  'oel'),
 		('The Search for Knowledge',                                'The Search for Knowledge',                                                                 'oel'),

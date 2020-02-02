@@ -53,3 +53,7 @@ Quick installation overview:
 	    either predefined jobs, or arbitrary code on the worker swarm. This 
 	    is fairly useful in general, so I've implemented it as a service
 	    that multiple of my projects then use.
+
+Ubuntu dependencies
+ - postgresql-common libpq-dev libenchant-dev
+

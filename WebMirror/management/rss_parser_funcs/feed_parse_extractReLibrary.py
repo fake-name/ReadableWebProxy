@@ -44,8 +44,11 @@ def extractReLibrary(item):
 		('life with a tail',                       'life with a tail',                                                       'translated'),
 		('Levelmaker',                             'Levelmaker',                                                             'translated'),
 		('Demon Sword Maiden',                     'Demon Sword Maiden',                                                     'translated'),
-		('Stained Red',                            'Stained Red',                                                            'oel'),
-		('Truth & Myth - The Awakening',           'Truth & Myth - The Awakening',                                           'oel'),
+		('the saintess',                           'How can the Saintess be a Boy!?',                                                                                                 'translated'),
+		('disappointing princesses',               'Two as One Disappointing Princesses Want to Live Free ',                                                                          'translated'),
+		('Vampire Princess',                       'I Became a Vampire Princess after Reincarnation!? Building The Strongest Yuri Harem Using the Cheat Skill 【Demon Lord】!',       'translated'),
+		('Stained Red',                            'Stained Red',                                                                                                                     'oel'),
+		('Truth & Myth - The Awakening',           'Truth & Myth - The Awakening',                                                                                                    'oel'),
 		
 	]
 

@@ -11,6 +11,9 @@ def extractSteambunlightnovelCom(item):
 		('tang yin\'s adventure in another world',       'Tang Yin\'s Adventure In Another World',                      'translated'),
 		('devil\'s son-in-law',                          'Devil\'s Son-in-Law',                                         'translated'),
 		('the cold reagent keeps a fox as a consort',    'the cold reagent keeps a fox as a consort',                   'translated'),
+		('Martial God Space',                            'Martial God Space',                                           'translated'),
+		('Demon\'s Diary',                               'Demon\'s Diary',                                              'translated'),
+		('the king of hell\'s genius pampered wife',     'the king of hell\'s genius pampered wife',                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

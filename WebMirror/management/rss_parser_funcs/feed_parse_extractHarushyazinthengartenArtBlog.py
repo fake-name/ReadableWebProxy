@@ -11,6 +11,7 @@ def extractHarushyazinthengartenArtBlog(item):
 
 	tagmap = [
 		('a villain is a good match for a tyrant',       'a villain is a good match for a tyrant',                      'translated'),
+		('the hero is standing in my way',               'the hero is standing in my way',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

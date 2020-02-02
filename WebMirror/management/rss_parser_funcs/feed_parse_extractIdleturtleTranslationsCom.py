@@ -10,6 +10,8 @@ def extractIdleturtleTranslationsCom(item):
 	tagmap = [
 		('clwp',       'Crossing to Live in the Wilderness Plains',                      'translated'),
 		('Bad',        'Back to the Age of Dinosaurs',                      'translated'),
+		('rse',        '[Rebirth] Sword Edge',                      'translated'),
+		('rtf',        '[Rebirth] Sword Edge',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

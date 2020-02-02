@@ -100,6 +100,9 @@ def extractDanmeiMelimeliartsCom(item):
 		('sweet, although short',                                                  'sweet, although short',                                                                 'translated'),
 		('those years in quest of honor mine',                                     'those years in quest of honor mine',                                                    'translated'),
 		('when an alien is bound to a world saving system',                        'when an alien is bound to a world saving system',                                       'translated'),
+		('pubg online romance of the century',                                     'PUBG Online Romance of the Century',                                                    'translated'),
+		('rpg',                                                                    'RPG',                                                                                   'translated'),
+		('Unlimited Cycles of Death',                                              'Unlimited Cycles of Death',                                                             'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

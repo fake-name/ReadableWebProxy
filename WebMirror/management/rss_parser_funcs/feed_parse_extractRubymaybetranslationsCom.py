@@ -1,4 +1,3 @@
-
 def extractRubymaybetranslationsCom(item):
 	'''
 	Parser for 'rubymaybetranslations.com'
@@ -9,6 +8,8 @@ def extractRubymaybetranslationsCom(item):
 		return None
 
 	tagmap = [
+		('lucia',        'You’ve Got the Wrong House, Villain',                      'translated'),
+		('ygtwhv',       'You’ve Got the Wrong House, Villain',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractRubymaybetranslationsCom(item):
 
 
 	return False
-	
