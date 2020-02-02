@@ -116,6 +116,6 @@ influxdb==5.2.3
 setproctitle==1.1.10
 flask_httpauth==3.3.0
 hiredis==1.0.1
-guess_language-spirit
+guess_language-spirit==0.5.3
 PyEnchant
 dill
