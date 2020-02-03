@@ -47,8 +47,8 @@ def upsertNuItem(raw_cur, itemparams):
 
 
 	assert all([key in itemparams for key in required_args])
-	assert itemparams['referrer'] != 'http://www.novelupdates.com/'
-	assert itemparams['referrer'] != 'http://www.novelupdates.com'
+	assert itemparams['referrer'] != 'https://www.novelupdates.com/'
+	assert itemparams['referrer'] != 'https://www.novelupdates.com'
 
 	#  Fucking huzzah for ON CONFLICT!
 	cmd = """

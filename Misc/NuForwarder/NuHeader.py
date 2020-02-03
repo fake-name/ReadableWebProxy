@@ -101,7 +101,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			    "nu_release": {
 			        "actual_target": "http://shiroyukitranslations.com/the-strongest-dan-god-chapter-63-dominating-business-channels/",
 			        "seriesname": "The Strongest Dan God",
-			        "outbound_wrapper": "http://www.novelupdates.com/extnu/134595/",
+			        "outbound_wrapper": "https://www.novelupdates.com/extnu/134595/",
 			        "groupinfo": "Shiroyukineko Translations",
 			        "releaseinfo": "c63",
 			        "addtime": "2016-05-30T04:16:41.351430",
@@ -184,10 +184,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				if len(list(have.resolved)) >= 3:
 					raise RuntimeError("Overresolved item that's not valid.")
 
-				if (have.referrer == "http://www.novelupdates.com" or
+				if (have.referrer == "https://www.novelupdates.com" or
 					have.referrer == "https://www.novelupdates.com" or
 					have.referrer == "https://www.novelupdates.com/" or
-					have.referrer == "http://www.novelupdates.com/"):
+					have.referrer == "https://www.novelupdates.com/"):
 					self.log.error("Wat?")
 					self.log.error("Bad Referrer URL got into the input queue!")
 					self.log.error("Id: %s, ref: %s", have.id, have.referrer)
@@ -310,10 +310,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				if len(list(have.resolved)) >= 3:
 					raise RuntimeError("Overresolved item that's not valid.")
 
-				if (have.referrer == "http://www.novelupdates.com" or
+				if (have.referrer == "https://www.novelupdates.com" or
 					have.referrer == "https://www.novelupdates.com" or
 					have.referrer == "https://www.novelupdates.com/" or
-					have.referrer == "http://www.novelupdates.com/"):
+					have.referrer == "https://www.novelupdates.com/"):
 					self.log.error("Wat?")
 					self.log.error("Bad Referrer URL got into the input queue!")
 					self.log.error("Id: %s, ref: %s", have.id, have.referrer)

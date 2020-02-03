@@ -240,7 +240,7 @@ def haveSpecialCase(specialcase, joburl, netloc):
 
 	# Short circuit for the homepage root, so it
 	# always gets fetched immediately.
-	if joburl == "http://www.novelupdates.com/" or joburl == "http://www.novelupdates.com":
+	if joburl == "https://www.novelupdates.com/" or joburl == "https://www.novelupdates.com" or joburl == "https://www.novelupdates.com/" or joburl == "https://www.novelupdates.com":
 		return False
 
 	if netloc in specialcase:

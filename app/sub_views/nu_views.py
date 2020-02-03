@@ -202,7 +202,7 @@ def nu_view():
 	session.commit()
 	new.sort(key=lambda x: x.first_seen, reverse=True)
 	new.sort(key=lambda x: '...' in x.seriesname)
-	new.sort(key=lambda x: ('http://www.novelupdates.com' in x.actual_target if x.actual_target else False))
+	new.sort(key=lambda x: ('https://www.novelupdates.com' in x.actual_target if x.actual_target else False))
 
 	new_with_markup = []
 	for row in new:

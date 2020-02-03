@@ -1,4 +1,3 @@
-
 def extractWuxiawanderingsCom(item):
 	'''
 	Parser for 'wuxiawanderings.com'
@@ -9,8 +8,10 @@ def extractWuxiawanderingsCom(item):
 		return None
 
 	tagmap = [
-		('PRC',       'PRC',                      'translated'),
-		('Loiterous', 'Loiterous',                'oel'),
+		('jade tiger',       'The Jade Tiger',                      'translated'),
+		('rain of blood',    'A Rain of Blood Stains Flowers Red',  'translated'),
+		('PRC',              'PRC',                                 'translated'),
+		('Loiterous',        'Loiterous',                           'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:
@@ -19,4 +20,3 @@ def extractWuxiawanderingsCom(item):
 
 
 	return False
-	

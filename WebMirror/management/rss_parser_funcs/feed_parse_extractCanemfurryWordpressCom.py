@@ -20,6 +20,7 @@ def extractCanemfurryWordpressCom(item):
 
 
 	tagmap = [
+		('The Defeated Dragon',       'The Defeated Dragon',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

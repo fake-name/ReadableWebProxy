@@ -87,7 +87,7 @@ class NuQueueTrigger(QueueTrigger):
 		return [
 
 			# Fetch the new NovelUpdates stuff.
-			'http://www.novelupdates.com/',
+			'https://www.novelupdates.com/',
 		]
 
 

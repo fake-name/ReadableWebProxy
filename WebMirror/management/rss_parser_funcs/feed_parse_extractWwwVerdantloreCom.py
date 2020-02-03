@@ -13,6 +13,7 @@ def extractWwwVerdantloreCom(item):
 		('BUSS',                                         'As Beautiful as Ever, the Bells Sound under the Starry Sky',  'translated'),
 		('My Wife is the Martial Alliance Leader',       'My Wife is the Martial Alliance Leader',                      'translated'),
 		('tvhss',                                        'The Villain Has Something to Say',                            'translated'),
+		('the final theocracy',                          'The Final Theocracy',                                         'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

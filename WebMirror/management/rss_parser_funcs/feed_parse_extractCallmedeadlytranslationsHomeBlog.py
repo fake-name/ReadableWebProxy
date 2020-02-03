@@ -19,6 +19,7 @@ def extractCallmedeadlytranslationsHomeBlog(item):
 	if item['tags'] == ['Uncategorized']:
 		titlemap = [
 			('Supernatural Clairvoyant Chapter',  'Supernatural Clairvoyant',      'translated'),
+			('Physician’s Odyssey',               'Physician’s Odyssey',      'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

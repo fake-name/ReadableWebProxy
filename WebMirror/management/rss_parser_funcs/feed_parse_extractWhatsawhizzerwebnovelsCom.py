@@ -26,11 +26,13 @@ def extractWhatsawhizzerwebnovelsCom(item):
 		('World of Women',                  'World of Women',                                                           'oel'),
 		('getting lucky',                   'getting lucky',                                                            'oel'),
 		('Tales of an Enchantress',         'Tales of an Enchantress',                                                  'oel'),
+		('toae',                            'Tales of an Enchantress',                                                  'oel'),
 		('moth',                            'The Man of the House',                                                     'oel'),
 		('Power of Creation',               'Power of Creation',                                                        'oel'),
 		('std',                             'Sex Trafficking for Dummies',                                              'oel'),
 		('vampires kiss',                   'The Vampire’s Kiss',                                                       'oel'),
 		('Requiem to the Stars',            'Requiem to the Stars',                                                     'oel'),
+		('guy on a spaceship',              'Guy on a Spaceship',                                                       'oel'),
 		('Loiterous',                       'Loiterous',                                                                'oel'),
 	]
 

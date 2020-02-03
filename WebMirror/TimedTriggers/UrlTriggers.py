@@ -81,13 +81,13 @@ class HourlyPageTrigger(PageTriggerBase):
 	pages = [
 		# RoyalRoadL
 
-
 		'https://www.royalroad.com/fictions/new-releases',
 		# 'https://www.royalroad.com/fictions/weekly-popular',
 		'https://www.royalroad.com/fictions/latest-updates',
 		# 'https://www.royalroad.com/fictions/active-popular',
 		# 'https://www.royalroad.com/fictions/best-rated/',
 		'https://www.foxteller.com/releases',
+		'https://www.scribblehub.com/latest-series/',
 
 		# Japtem bits
 		'http://japtem.com/fanfic.php?action=last_updated',
@@ -106,7 +106,7 @@ class HourlyPageTrigger(PageTriggerBase):
 class EverySixHoursPageTrigger(PageTriggerBase):
 	pages = [
 		# NovelUpdates
-		# 'http://www.novelupdates.com',
+		# 'https://www.novelupdates.com',
 
 	]
 

@@ -1305,7 +1305,7 @@ def exposed_test_new_job_queue():
 
 	instance = WebMirror.JobDispatcher.JobAggregatorInternal(None, None)
 
-	want = instance.outbound_job_wanted("www.novelupdates.com", "http://www.novelupdates.com/")
+	want = instance.outbound_job_wanted("www.novelupdates.com", "https://www.novelupdates.com/")
 	print(want)
 	want = instance.outbound_job_wanted("twitter.com", "https://twitter.com/Baka_Tsuki")
 	print(want)
@@ -1696,7 +1696,7 @@ def exposed_nu_retrigger_series_pages():
 
 		for x in range(start, end, step):
 
-			have = sess.execute("""UPDATE web_pages SET state='new', priority=50000 WHERE url LIKE 'http://www.novelupdates.com/series/%%/' AND id < %s AND id >= %s AND state != 'new';""" % (x, x-step))
+			have = sess.execute("""UPDATE web_pages SET state='new', priority=50000 WHERE url LIKE 'https://www.novelupdates.com/series/%%/' AND id < %s AND id >= %s AND state != 'new';""" % (x, x-step))
 
 			print('%10i, %7.4f, %6i, %6i' % (x, x/end * 100, have.rowcount, changed))
 			changed += have.rowcount

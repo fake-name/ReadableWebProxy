@@ -1,4 +1,3 @@
-
 def extractRaykuchanHomeBlog(item):
 	'''
 	Parser for 'raykuchan.home.blog'
@@ -9,6 +8,8 @@ def extractRaykuchanHomeBlog(item):
 		return None
 
 	tagmap = [
+		('spoiled',             'Spoiled',                            'translated'),
+		('[rebirth] fox',       '[Rebirth] Fox',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractRaykuchanHomeBlog(item):
 
 
 	return False
-	

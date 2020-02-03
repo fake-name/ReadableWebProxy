@@ -219,12 +219,12 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin, Rpc
 				# Ship fetch sizes to influxdb.
 				if nl and 'success' in tmp and tmp['success'] and 'ret' in tmp:
 					content, fName, mimeType = tmp['ret']
-					self.put_measurement(
-							measurement_name = 'file_size',
-							measurement      = len(content),
-							fields           = {"netloc" : nl, "mimetype" : mimeType, "filename" : fName},
-							extra_tags       = {},
-						)
+					# self.put_measurement(
+					# 		measurement_name = 'file_size',
+					# 		measurement      = len(content),
+					# 		fields           = {"netloc" : nl, "mimetype" : mimeType, "filename" : fName},
+					# 		extra_tags       = {},
+					# 	)
 
 				self.log.info("Job response received. Jobs in-flight: %s (qsize: %s)", self.system_state['active_jobs'], self.normal_out_queue.qsize())
 				self.last_rx = datetime.datetime.now()

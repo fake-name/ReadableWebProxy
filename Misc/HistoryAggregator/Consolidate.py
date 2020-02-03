@@ -383,12 +383,12 @@ class DbFlattener(object):
 
 
 
-		self.log.info("Counting rows for url %s.", url)
+		self.log.info("Counting rows for url '%s'.", url)
 		orig_cnt = sess.query(ctbl)           \
 			.filter(ctbl.c.url == url)     \
 			.count()
 
-		self.log.info("Found %s results for url %s. Fetching rows", orig_cnt, url)
+		self.log.info("Found %s results for url '%s'. Fetching rows", orig_cnt, url)
 
 		deleted_1 = 0
 		deleted_2 = 0
@@ -402,15 +402,15 @@ class DbFlattener(object):
 			sess.query(ctbl)                               \
 			.filter(ctbl.c.url == url)                     \
 			.order_by(ctbl.c.id, ctbl.c.transaction_id)    \
-			.yield_per(10), total=orig_cnt):
+			.yield_per(2), total=orig_cnt):
 
 			if item.state != "complete" and item.state != 'error':
 				deleted_1 += 1
-				self.log.info("Deleting incomplete item for url: %s (state: %s)!", url, item.state)
+				self.log.info("Deleting incomplete item for url: '%s' (state: %s)!", url, item.state)
 				# sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 				deletes.append(and_(ctbl.c.id == item.id, ctbl.c.transaction_id == item.transaction_id))
 			elif item.content is None and item.file is None:
-				self.log.info("Deleting item without a file and no content for url: %s!", url)
+				self.log.info("Deleting item without a file and no content for url: '%s'!", url)
 				# print(type(item), item.mimetype, item.file, item.content)
 				# print(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
 				# sess.execute(ctbl.delete().where(ctbl.c.id == item.id).where(ctbl.c.transaction_id == item.transaction_id))
@@ -461,7 +461,7 @@ class DbFlattener(object):
 
 		if deletes:
 			self.log.info("Deleting %s entries from history table!", len(deletes))
-			chunks = list(batch(deletes, 3))
+			chunks = list(batch(deletes, 15))
 			for chunk in tqdm.tqdm(chunks):
 				sess.execute(ctbl.delete().where(or_(*chunk)))
 

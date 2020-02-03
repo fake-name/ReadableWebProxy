@@ -29,6 +29,7 @@ def extractMwmtranslationsWordpressCom(item):
 		('Since I’ve Reincarnated as the Villainess’ Father, I’ll Shower My Wife and Daughter in Love',       'Since I’ve Reincarnated as the Villainess\' Father, I\'ll Shower My Wife and Daughter in Love',                      'translated'),
 		('The Earl\'s Daughter was Suddenly Employed as the Crown Prince\'s Fiancée',                         'The Earl\'s Daughter was Suddenly Employed as the Crown Prince\'s Fiancée',                                          'translated'),
 		('auto assigned villainess',                                                                          'auto assigned villainess',                                                                                           'translated'),
+		('magical revolution',                                                                                'The Magical Revolution of the Reincarnated Princess and the Genius Young Lady',                                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

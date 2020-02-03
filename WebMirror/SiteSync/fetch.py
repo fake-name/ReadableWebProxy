@@ -27,7 +27,7 @@ class NovelUpdatesFetch(SiteSyncFetch):
 		ret = []
 
 		for x in range(500000):
-			url = 'http://www.novelupdates.com/groupslist/?pg={num}'.format(num=x)
+			url = 'https://www.novelupdates.com/groupslist/?pg={num}'.format(num=x)
 
 			soup = self.wg.getSoup(url)
 			main = soup.find("div", class_='g-cols')
@@ -67,7 +67,7 @@ class NovelUpdatesFetch(SiteSyncFetch):
 			raise ValueError("Watt?")
 
 	def go(self):
-		# self.urlFromGroupPage('http://www.novelupdates.com/group/anon-empire/')
+		# self.urlFromGroupPage('https://www.novelupdates.com/group/anon-empire/')
 
 		ret = []
 		sp = self.getGroupSubpages()

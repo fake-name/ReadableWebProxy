@@ -92,22 +92,22 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 		    'seriesname': 'Gate of Revelation',
 		    'releaseinfo': 'c203',
 		    'groupinfo': 'daoseekerblog',
-		    'referrer': 'http://www.novelupdates.com/',
-		    'outbound_wrapper': 'http://www.novelupdates.com/extnu/327682/',
+		    'referrer': 'https://www.novelupdates.com/',
+		    'outbound_wrapper': 'https://www.novelupdates.com/extnu/327682/',
 		    'actual_target': None
 		}, {
 		    'seriesname': 'Mai Kitsune Waifu',
 		    'releaseinfo': 'c174',
 		    'groupinfo': 'subudai11',
-		    'referrer': 'http://www.novelupdates.com/',
-		    'outbound_wrapper': 'http://www.novelupdates.com/extnu/327678/',
+		    'referrer': 'https://www.novelupdates.com/',
+		    'outbound_wrapper': 'https://www.novelupdates.com/extnu/327678/',
 		    'actual_target': None
 		}, {
 		    'seriesname': 'Mai Kitsune Waifu',
 		    'releaseinfo': 'c174',
 		    'groupinfo': 'subudai11',
-		    'referrer': 'http://www.novelupdates.com/',
-		    'outbound_wrapper': 'http://www.novelupdates.com/extnu/327674/',
+		    'referrer': 'https://www.novelupdates.com/',
+		    'outbound_wrapper': 'https://www.novelupdates.com/extnu/327674/',
 		    'actual_target': None
 		}
 
@@ -200,10 +200,10 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 					series, release, group = tds
 					referrer = series.a['href']
 
-					assert not (referrer == "http://www.novelupdates.com" or
+					assert not (referrer == "https://www.novelupdates.com" or
 						referrer == "https://www.novelupdates.com" or
 						referrer == "https://www.novelupdates.com/" or
-						referrer == "http://www.novelupdates.com/")
+						referrer == "https://www.novelupdates.com/")
 
 					linkas = release.find_all('a', class_='chp-release')
 
