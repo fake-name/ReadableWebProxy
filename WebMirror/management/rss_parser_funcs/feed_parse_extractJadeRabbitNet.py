@@ -11,6 +11,7 @@ def extractJadeRabbitNet(item):
 		('His Royal Highness, Wants A Divorce',       'His Royal Highness, Wants A Divorce',                      'translated'),
 		('Nan Chan',                                  'Nan Chan',                                                 'translated'),
 		('Fox Demon Cultivation Manual',              'Fox Demon Cultivation Manual',                             'translated'),
+		('qiang jin jiu',                             'Qiang Jin Jiu',                                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

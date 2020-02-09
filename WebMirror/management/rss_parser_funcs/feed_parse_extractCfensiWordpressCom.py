@@ -6,6 +6,7 @@ def extractCfensiWordpressCom(item):
 	
 	bad = [
 			'general news',
+			'Photoshoot',
 			'Drama',
 			'mainland china',
 		]

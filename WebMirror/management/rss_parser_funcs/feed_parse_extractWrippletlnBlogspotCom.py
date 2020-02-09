@@ -1,4 +1,3 @@
-
 def extractWrippletlnBlogspotCom(item):
 	'''
 	Parser for 'wrippletln.blogspot.com'
@@ -9,6 +8,8 @@ def extractWrippletlnBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('great wish',       'The Great Wish',                      'translated'),
+		('Moonlight',        'Moonlight Drawn by Clouds',           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractWrippletlnBlogspotCom(item):
 
 
 	return False
-	

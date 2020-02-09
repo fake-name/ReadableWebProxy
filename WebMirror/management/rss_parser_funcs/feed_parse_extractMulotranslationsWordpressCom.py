@@ -14,6 +14,7 @@ def extractMulotranslationsWordpressCom(item):
 		('When I became a Girl, an Unexpected Love Quarrel Occurred!',                         'When I became a Girl, an Unexpected Love Quarrel Occurred!',                                        'translated'),
 		('They Said My Status Stayed the Same Even Though I Reincarnated in Another World!?',  'They Said My Status Stayed the Same Even Though I Reincarnated in Another World!?',                 'translated'),
 		('emergency adaptation for a male high school put into ts.',                           'emergency adaptation for a male high school put into ts.',                                          'translated'),
+		('the struggles of a young ts yuki-onna.',                                             'the struggles of a young ts yuki-onna.',                                                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

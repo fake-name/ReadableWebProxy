@@ -36,6 +36,7 @@ def extractRadiantTranslations(item):
 		('Village Girl as Family Head',                  'Village Girl as Family Head',                            'translated'),
 		('Lord Xue Ying',                                'Xue Ying Ling Zhu',                                      'translated'),
 		('Child of Light',                               'Guang Zhi Zi',                                           'translated'),
+		('Celestial Emperor Han',                        'Celestial Emperor Han',                                  'translated'),
 		('Guang Zhi Zi',                                 'Guang Zhi Zi',                                           'translated'),
 		('Bing Huo Mo Chu',                              'Bing Huo Mo Chu',                                        'translated'),
 		('Magic Chef of Ice and Fire',                   'Bing Huo Mo Chu',                                        'translated'),

@@ -10,6 +10,7 @@ def extractPizzilationsCom(item):
 	tagmap = [
 		('Liu Yao',                                  'Liu Yao: The Revitalization of Fuyao Sect',               'translated'),
 		('Scum Villain\'s Self-Saving System',       'Scum Villain\'s Self-Saving System',                      'translated'),
+		('Feng Yu Jiu Tian',                         'Feng Yu Jiu Tian',                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

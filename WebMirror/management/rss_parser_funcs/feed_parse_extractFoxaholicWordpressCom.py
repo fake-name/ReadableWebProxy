@@ -89,6 +89,8 @@ def extractFoxaholicWordpressCom(item):
 		('becoming the male lead\'s white moonlight',                                               'becoming the male lead\'s white moonlight',                                                              'translated'),
 		('Yang Shu Mei Ying',                                                                       'Yang Shu Mei Ying',                                                                                      'translated'),
 		('Rebirth into an Interstellar Marriage',                                                   'Rebirth into an Interstellar Marriage',                                                                  'translated'),
+		('World Strongest Rearguard',                                                               'World Strongest Rearguard',                                                                              'translated'),
+		('5 big shots kneeled and called me mom',                                                   '5 big shots kneeled and called me mom',                                                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

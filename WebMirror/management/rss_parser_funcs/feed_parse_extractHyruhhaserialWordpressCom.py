@@ -1,4 +1,3 @@
-
 def extractHyruhhaserialWordpressCom(item):
 	'''
 	Parser for 'hyruhhaserial.wordpress.com'
@@ -11,6 +10,7 @@ def extractHyruhhaserialWordpressCom(item):
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
+		('edict chapters', 'edict',                'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:
@@ -19,4 +19,3 @@ def extractHyruhhaserialWordpressCom(item):
 
 
 	return False
-	

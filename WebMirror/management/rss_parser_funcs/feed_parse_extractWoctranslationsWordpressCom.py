@@ -1,4 +1,3 @@
-
 def extractWoctranslationsWordpressCom(item):
 	'''
 	Parser for 'woctranslations.wordpress.com'
@@ -9,8 +8,9 @@ def extractWoctranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('PRC',       'PRC',                      'translated'),
-		('Loiterous', 'Loiterous',                'oel'),
+		('the way of the evil',       'the way of the evil',                      'translated'),
+		('PRC',                       'PRC',                                      'translated'),
+		('Loiterous',                 'Loiterous',                                'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:
@@ -19,4 +19,3 @@ def extractWoctranslationsWordpressCom(item):
 
 
 	return False
-	

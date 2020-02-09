@@ -12,6 +12,7 @@ def extractSumtlmanCom(item):
 			('Super Dimensional Wizard Ch.',       'Super Dimensional Wizard',        'translated'),
 			('SDW Ch. ',                           'Super Dimensional Wizard',        'translated'),
 			('Tensei Shoujo no Rirekisho',         'Tensei Shoujo no Rirekisho',      'translated'),
+			('MDT Ch. ',                           'My Doomsday Territory',           'translated'),
 			('EC Ch. ',                            'Eternal Country',                 'translated'),
 			('Master of Dungeon',                  'Master of Dungeon',               'oel'),
 		]

@@ -115,6 +115,12 @@ target_jobs = {
 		# "minute"           : '*/40',
 	},
 
+	'scheduled_jobs.python_job.NewUrlExtractor' : {
+		"name"             : 'AUTO: New URL Extractor',
+		"interval"         : hours(8),
+		# "minute"           : '*/40',
+	},
+
 	# 'scheduled_jobs.python_job.RssHistoryPurger' : {
 	# 	"name"             : 'AUTO: Purge RSS Entries from history table',
 	# 	"interval"         : hours(8),

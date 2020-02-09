@@ -1,6 +1,6 @@
-def extractMnq93BlogspotCom(item):
+def extractSnowbuntranslatesTumblrCom(item):
 	'''
-	Parser for 'mnq93.blogspot.com'
+	Parser for 'snowbuntranslates.tumblr.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,9 +8,7 @@ def extractMnq93BlogspotCom(item):
 		return None
 
 	tagmap = [
-		('dududiary',              'Dudu\'s Diary',                                               'translated'),
-		('tenthousandmiles',       'Ten Thousand Miles in Search of Honour',                      'translated'),
-		('ruochunjingming',        'Ruo Chun and Jing Ming',                                      'translated'),
+		('cecilia silvy',       'The villainess, Cecilia Silvy, doesn’t want to die, so she decided to crossdress.',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

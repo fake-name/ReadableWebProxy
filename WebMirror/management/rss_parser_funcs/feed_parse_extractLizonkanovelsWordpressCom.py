@@ -1,4 +1,3 @@
-
 def extractLizonkanovelsWordpressCom(item):
 	'''
 	Parser for 'lizonkanovels.wordpress.com'
@@ -9,6 +8,9 @@ def extractLizonkanovelsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('bestial blade by priest',                                     'bestial blade',                      'translated'),
+		('creatures of habit by meat in the shell',                     'creatures of habit',                      'translated'),
+		('seal cultivation for self-improvement by mo xiao xian',       'seal cultivation for self-improvement',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractLizonkanovelsWordpressCom(item):
 
 
 	return False
-	

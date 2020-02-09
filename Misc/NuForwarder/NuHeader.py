@@ -1116,6 +1116,43 @@ def do_nu_sync(scheduler):
 class RemoteHeaderClass(RpcBaseClass):
 	logname = "Main.RemoteExec.TestClass"
 
+	def poke_chrome(self, ref):
+		self.log.info("Probing chromium")
+		goog = "https://www.novelupdates.com"
+		try:
+			with self.cwg.chromiumContext(ref) as cr:
+				cr.navigate_to(goog)
+
+			with self.cwg.chromiumContext(ref) as cr:
+				self.log.info("Current URL: %s", cr.get_current_url())
+
+			self.log.info("Attempting to access google")
+			self.cwg.getHeadTitleChromium(url=goog)
+			self.log.info("On google.com homepage")
+
+			self.log.info("Chrome appears to be responsive!")
+			return
+
+		except Exception as e:
+			self.log.error("Chrome not responding. Restarting")
+
+		self.cwg.chrome_pool.close()
+		import os
+		ret_1 = os.system("killall chrome")
+		ret_2 = os.system("killall google-chrome")
+		ret_3 = os.system("killall chromium")
+		self.log.info("Killall return codes: %s, %s, %s", ret_1, ret_2, ret_3)
+
+
+		self.log.info("Restarting chrome")
+		self.cwg.chrome_pool.close()
+		pool = self.cwg.chrome_pool.get()
+		self.log.info("Restarted: %s", pool)
+
+
+
+
+
 	def do_head_sequence(self, lock_interface, urls_to_head):
 		import random
 		self.log.info("RemoteHeaderClass entry!")
@@ -1135,40 +1172,43 @@ class RemoteHeaderClass(RpcBaseClass):
 				):
 			return ret
 
+		url_base = urls_to_head[0]['referrer']
 		try:
 			try:
 				self.cwg.chrome_pool.get().close_tabs()
 			except AttributeError:
 				pass
 
-			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
-				cr.navigate_to("http://www.google.com")
+			self.poke_chrome(url_base)
 
 			sleeptime = random.triangular(2,6,10)
 			self.log.info("Sleeping %s seconds", sleeptime)
 			time.sleep(sleeptime)
 
-			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+			with self.cwg.chromiumContext(url_base) as cr:
 				self.log.info("Current URL: %s", cr.get_current_url())
 
 
 			self.log.info("Attempting to access homepage")
-			self.cwg.getHeadTitleChromium(url=urls_to_head[0]['referrer'])
+			self.cwg.getHeadTitleChromium(url=url_base)
 			self.log.info("On NU homepage")
 
 
-			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
-				cr.navigate_to(urls_to_head[0]['referrer'])
+			with self.cwg.chromiumContext(url_base) as cr:
+				cr.navigate_to(url_base)
 
 			sleeptime = random.triangular(2,6,10)
 			self.log.info("Sleeping %s seconds", sleeptime)
 			time.sleep(sleeptime)
 
-			with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+			with self.cwg.chromiumContext(url_base) as cr:
 				self.log.info("Current URL: %s", cr.get_current_url())
 
 		except Exception as e:
 			self.log.error("Chromium not responding!")
+			for line in traceback.format_exc().split("\n"):
+				self.log.error(line)
+
 			for url_set in urls_to_head:
 				ret.append((url_set, "skipped"))
 			return ret
@@ -1184,7 +1224,7 @@ class RemoteHeaderClass(RpcBaseClass):
 
 				lock_interface.add_item(url_set['wrapper'])
 
-				with self.cwg.chromiumContext(urls_to_head[0]['referrer']) as cr:
+				with self.cwg.chromiumContext(url_base) as cr:
 					cr.navigate_to(url_set['referrer'])
 
 				sleeptime = random.triangular(2,6,10)
@@ -1262,45 +1302,68 @@ def test():
 	hdl.process_avail()
 
 	try:
-		hdl.process_rpc_responses(["1"], timeout=5)
+		hdl.process_rpc_responses(["1"], timeout=15)
 	except rpc_base.RpcTimeoutError:
 		pass
 
 
-	hdl.validate_from_new()
-	hdl.timestamp_validated()
-	hdl.fix_names()
+	# hdl.validate_from_new()
+	# hdl.timestamp_validated()
+	# hdl.fix_names()
 
-	hdl.review_probable_validated()
+	# hdl.review_probable_validated()
 
 	# hdl.go()
 	# hdl.do_chunk_rpc_heads()
 	# hdl.validate_from_new()
 
-	return
 
 	# hdl.trigger_all_urls()
 	# hdl.put_job()
 	# hdl.run()
-	items = hdl.get_rpc_head_lists(chunklength=15)
-	pprint.pprint(items[0])
+
+	items = hdl.get_rpc_head_lists(
+		chunks      = 1,
+		chunkdupes  = 1,
+		chunklength = 15
+		)
+
+	if not items:
+		return
+
+	jobids = [
+			hdl.put_job(
+				remote_cls    = RemoteHeaderClass,
+				call_kwargs   = {'urls_to_head' : item},
+				job_unique_id = str(item),
+				)
+		for
+			item
+		in
+			items
+
+	]
+
+	hdl.process_rpc_responses(jobids)
+
+	# pprint.pprint(items[0])
 
 
-	everything, resp = hdl.blocking_dispatch_call(remote_cls=RemoteHeaderClass, call_kwargs={'urls_to_head' : items[0]})
+	# everything, resp = hdl.blocking_dispatch_call(remote_cls=RemoteHeaderClass, call_kwargs={'urls_to_head' : items[0]})
 
-	# print("Everything:", everything)
+	# # print("Everything:", everything)
 
-	pprint.pprint(everything)
+	# # pprint.pprint(everything)
 
-	for fetch_params, (fetch_params, resp_params) in resp:
-		hdl.process_single_source_target_mapping(
-				from_outbound_wrapper  = fetch_params['wrapper'],
-				from_outbound_referrer = fetch_params['referrer'],
-				to_url                 = resp_params['url'],
-				to_url_title           = resp_params['title'],
-				client_id              = everything['user'],
-				client_key             = everything['user_uuid'],
-			)
+	# for fetch_params, (fetch_params, resp_params) in resp:
+	# 	hdl.process_single_source_target_mapping(
+	# 			from_outbound_wrapper  = fetch_params['wrapper'],
+	# 			from_outbound_referrer = fetch_params['referrer'],
+	# 			to_url                 = resp_params['url'],
+	# 			to_url_title           = resp_params['title'],
+	# 			client_id              = everything['user'],
+	# 			client_key             = everything['user_uuid'],
+	# 		)
 
 	# hdl.review_probable_validated()
 

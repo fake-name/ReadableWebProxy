@@ -2,6 +2,16 @@ def extractBananas(item):
 	"""
 	Parser for 'Bananas'
 	"""
+	
+	
+	badwords = [
+			'iya na kao manga chapters',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
+	
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or 'preview' in item['title'].lower():
 		return None
@@ -9,6 +19,7 @@ def extractBananas(item):
 		
 	tagmap = [
 		('isekai joushu chapters',                 'Struggling Hard As The Lord Of A Castle In A Different World',                                      'translated'), 
+		('dungeon harem wn chapters',              'The Dungeon Harem I Built With My Elf Sex Slave',                      'translated'),
 		('erufu seidorei wn',                      'The Dungeon Harem I Built With My Elf Sex Slave',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),

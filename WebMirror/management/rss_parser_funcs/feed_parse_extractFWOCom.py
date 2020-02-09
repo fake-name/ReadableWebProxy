@@ -27,6 +27,10 @@ def extractFWOCom(item):
 		('travel to a primitive world to build infrastructure',       'travel to a primitive world to build infrastructure',                      'translated'),
 		('Midnight Cinderella',                                       'Midnight Cinderella',                                                      'translated'),
 		('the last cat in the universe',                              'the last cat in the universe',                                             'translated'),
+		('genius fundamentals',                                       'Genius Fundamentals',                                                      'translated'),
+		('ancient rome: from slaveholder to supreme emperor',         'ancient rome: from slaveholder to supreme emperor',                        'translated'),
+		('Apocalyptic Rebirth: Earth’s Vast Changes',                 'Apocalyptic Rebirth: Earth’s Vast Changes',                                'translated'),
+		('watch me eat fish',                                         'Watch me eat fish it’s exciting!',                                         'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

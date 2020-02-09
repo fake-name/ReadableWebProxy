@@ -20,6 +20,7 @@ def extractShainagtranslationsWordpressCom(item):
 			('IDATIAC Ch. ',                       'I Died And Turned Into A Cat',            'translated'),
 			('TCVCF Ch.',                          'The CEO’s Villainess Childhood Friend',   'translated'),
 			('TTID Ch.',                           'Trapped in a Typical Idol Drama',         'translated'),
+			('HSAG Ch.',                           'Heroine Saves A Gentleman',               'translated'),
 			('Master of Dungeon',                  'Master of Dungeon',                       'oel'),
 		]
 	

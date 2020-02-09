@@ -103,6 +103,9 @@ def extractDanmeiMelimeliartsCom(item):
 		('pubg online romance of the century',                                     'PUBG Online Romance of the Century',                                                    'translated'),
 		('rpg',                                                                    'RPG',                                                                                   'translated'),
 		('Unlimited Cycles of Death',                                              'Unlimited Cycles of Death',                                                             'translated'),
+		('non-human seeking re-employment',                                        'non-human seeking re-employment',                                                       'translated'),
+		('the king\'s return',                                                     'the king\'s return',                                                                    'translated'),
+		('i have a pair of yin-yuan eyes',                                         'i have a pair of yin-yuan eyes',                                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

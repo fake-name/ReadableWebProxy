@@ -12,11 +12,12 @@ def extractKirikoTranslations(item):
 		
 
 	tagmap = [
-		('Shinwa Densetsu',                                                          'Shinwa Densetsu no Eiyuu no Isekaitan',                                  'translated'),
-		('Common Sense of a Warrior House',                                          'Common Sense of a Warrior House',                                        'translated'),
-		('AkaHoshi',                                                                 'The Different World with the Red Star Chapters',                         'translated'),
-		('The Magnificent Battle Records of a Former Noble Lady',                    'The Magnificent Battle Records of a Former Noble Lady',                  'translated'),
-		('After the Ending the Magical Girl Earnestly Hides Her True Identity',      'After the Ending the Magical Girl Earnestly Hides Her True Identity',    'translated'),
+		('Shinwa Densetsu',                                                          'Shinwa Densetsu no Eiyuu no Isekaitan',                                                        'translated'),
+		('Common Sense of a Warrior House',                                          'Common Sense of a Warrior House',                                                              'translated'),
+		('AkaHoshi',                                                                 'The Different World with the Red Star Chapters',                                               'translated'),
+		('The Magnificent Battle Records of a Former Noble Lady',                    'The Magnificent Battle Records of a Former Noble Lady',                                        'translated'),
+		('After the Ending the Magical Girl Earnestly Hides Her True Identity',      'After the Ending the Magical Girl Earnestly Hides Her True Identity',                          'translated'),
+		('mt. hororyuu',                                                             'The Life of Mt. Dragonends: The Forefather of all Life and Magic at 4.6 Billion Years Old',    'translated'),
 		
 	]
 

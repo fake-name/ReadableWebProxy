@@ -1,4 +1,3 @@
-
 def extractShizunMoe(item):
 	'''
 	Parser for 'shizun.moe'
@@ -9,6 +8,7 @@ def extractShizunMoe(item):
 		return None
 
 	tagmap = [
+		('stains of filth',       'stains of filth',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractShizunMoe(item):
 
 
 	return False
-	

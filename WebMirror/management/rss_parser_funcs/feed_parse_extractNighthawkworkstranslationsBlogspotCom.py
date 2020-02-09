@@ -1,6 +1,6 @@
-def extractMocchinotranslationsHomeBlog(item):
+def extractNighthawkworkstranslationsBlogspotCom(item):
 	'''
-	Parser for 'mocchinotranslations.home.blog'
+	Parser for 'nighthawkworkstranslations.blogspot.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -15,13 +15,11 @@ def extractMocchinotranslationsHomeBlog(item):
 	for tagname, name, tl_type in tagmap:
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
-
-	if item['tags'] == ['Uncategorized']:
+			
+	if item['tags'] == []:
 		titlemap = [
-			('Sonata: fleeing from arranged marriage chapter ',  'Sonata: Fleeing to Avoid an Arranged Marriage',      'translated'),
-			('TLMWIILWY: C',                                     'The Little Moments When I’m In Love With You',       'translated'),
-			('SCQM: C',                                          'The Stupidly Cute Black Bellied Childhood Friend',   'translated'),
-			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('S.C.I Mystery Vol',          'S.C.I Mystery Series',      'translated'),
+			('S.C.I. Mystery Vol',          'S.C.I Mystery Series',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]
 

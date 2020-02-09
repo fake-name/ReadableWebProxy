@@ -260,22 +260,22 @@ class RpcMixin():
 		return ret
 
 
-	def __blocking_dispatch_call_remote(self, remote_cls, call_kwargs, meta=None, expect_partials=False, job_uid=None):
+	def __blocking_dispatch_call_remote(self, remote_cls, call_kwargs, meta=None, expect_partials=False, job_unique_id=None):
 
 
 
-		jobid = self.put_job(remote_cls, call_kwargs, meta, job_uid=job_uid)
+		jobid = self.put_job(remote_cls, call_kwargs, meta, job_unique_id=job_unique_id)
 		ret = self.process_response_items([jobid], expect_partials)
 		if not expect_partials:
 			ret = next(ret)
 		return ret
 
 
-	def blocking_dispatch_call(self, remote_cls, call_kwargs, meta=None, expect_partials=False, local=DO_LOCAL, job_uid=None):
+	def blocking_dispatch_call(self, remote_cls, call_kwargs, meta=None, expect_partials=False, local=DO_LOCAL, job_unique_id=None):
 		if local:
 			return self.__blocking_dispatch_call_local(remote_cls=remote_cls, call_kwargs=call_kwargs, meta=meta, expect_partials=expect_partials)
 		else:
-			return self.__blocking_dispatch_call_remote(remote_cls=remote_cls, call_kwargs=call_kwargs, meta=meta, expect_partials=expect_partials, job_uid=job_uid)
+			return self.__blocking_dispatch_call_remote(remote_cls=remote_cls, call_kwargs=call_kwargs, meta=meta, expect_partials=expect_partials, job_unique_id=job_unique_id)
 
 
 	def pprint_resp(self, resp):
@@ -309,7 +309,7 @@ class RpcMixin():
 
 
 	def process_response_items(self, jobids, preload_rets = [], timeout=None):
-		self.log.info("Waiting for remote response (preloaded: %s)", len(preload_rets))
+		self.log.info("Waiting for remote response (preloaded: %s)", len(preload_rets) if preload_rets else "None")
 
 		if not timeout:
 			timeout = self.rpc_timeout_s

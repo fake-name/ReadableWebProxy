@@ -1,19 +1,17 @@
 <!-- extend base layout -->
-{% set title = "Loading" %}
 {% extends "__base.html" %}
 
 {% block content %}
 	{% include '_block_flash.html' %}
 	<div class="well breakword">
-
 		<div>
 			<p>
 				<a href='/view-rendered?{{ {"url" : req_url} | urlencode }}'>Rendered</a> |
 				<a href='{{req_url}}'>Original content</a> |
 				<a href='/history?{{ {"url" : req_url} | urlencode }}'>Historical Versions</a> |
 				<a href="javascript:void(0)" id="refetch_link_1">Re-Fetch</a>
-				| Age: <span class='cachestate'>loading...</span>
-				| Filter: <span class='filterstate'>loading...</span>
+				| Age: <span class='cachestate'>{{cachestate}}</span>
+				| Filter: <span class='filterstate'>{{filterstate}}</span>
 			</p>
 
 			<p>
@@ -22,13 +20,7 @@
 		</div>
 		<hr>
 		<div id='content' class='easyreading'>
-			<div class="center-block text-center">
-				<h4>Loading</h4>
-				<p>Please Wait.</p>
-				<img src="/static/loading.gif">
-				<br>
-				<br>
-			</div>
+			{{contents | safe}}
 		</div>
 		<hr>
 		<div>
@@ -40,8 +32,8 @@
 				<a href='{{req_url}}'>Original content</a> |
 				<a href='/history?{{ {"url" : req_url} | urlencode }}'>Historical Versions</a> |
 				<a href="javascript:void(0)" id="refetch_link_2">Re-Fetch</a>
-				| Age: <span class='cachestate'>loading...</span>
-				| Filter: <span class='filterstate'>loading...</span>
+				| Age: <span class='cachestate'>{{cachestate}}</span>
+				| Filter: <span class='filterstate'>{{filterstate}}</span>
 			</p>
 
 		</div>
@@ -79,7 +71,6 @@
 		};
 		function content_load_fail(jqXHR, textStatus, errorThrown)
 		{
-
 			$('#refetch_link_1').click(load_nocache);
 			$('#refetch_link_2').click(load_nocache);
 
@@ -89,7 +80,6 @@
 
 		function load_cache()
 		{
-
 			var url = "/render?{{ {"url" : req_url, "version" : version} | urlencode | safe }}";
 
 			$.ajax({
@@ -98,10 +88,10 @@
 				error    : content_load_cb,
 				dataType : "json",
 				cache    : false,
-
-			})
+			});
 
 		}
+
 		function load_nocache()
 		{
 			var url = "/render?{{ {"url" : req_url, "nocache" : "true", "version" : None} | urlencode | safe }}";

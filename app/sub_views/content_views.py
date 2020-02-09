@@ -1,7 +1,12 @@
 
 
 import io
+import traceback
 import urllib.parse
+import pprint
+import ast
+
+from PIL import Image
 
 from flask import render_template
 from flask import make_response
@@ -14,8 +19,6 @@ from sqlalchemy_continuum_vendored.utils import version_table
 import common.database as db
 from app import app
 from app import utilities
-import pprint
-import ast
 
 
 import WebMirror.rules
@@ -23,7 +26,6 @@ import common.global_constants
 
 import WebMirror.API
 
-from PIL import Image
 
 def build_error_response(message):
 	response = jsonify(
@@ -64,6 +66,65 @@ def view():
 	response = make_response(render_template('view.html', title = 'Rendering Content', req_url = req_url, version=None))
 	return set_cache_control_headers(response, allow_inline=True)
 
+
+@app.route('/view-rendered', methods=['GET'])
+def view_rendered():
+	req_url = request.args.get('url')
+	if not req_url:
+		return render_template('error.html', title = 'Error', message = "Error! No page specified!")
+
+	req_url      = request.args.get('url')
+	version      = request.args.get('version')
+	ignore_cache = request.args.get("nocache")
+
+	filterstate  = get_filter_state_for_url(req_url)
+
+	try:
+		if version == "None" or version is None:
+			version = None
+		else:
+			version = ast.literal_eval(version)
+	except ValueError:
+		traceback.print_exc()
+		return render_template('error.html', title = 'Error', message = "Error! Historical version number must be an integer!")
+
+
+	if version and ignore_cache:
+		return render_template('error.html', title = 'Error', message = "Error! Cannot render a historical version with nocache!")
+
+	if version:
+		rid, tid = version
+
+		print("Historical row id: ", rid, tid)
+
+		ctbl = version_table(db.WebPages.__table__)
+
+		rows = g.session.query(ctbl.c.title, ctbl.c.content) \
+			.filter(ctbl.c.id == rid)                        \
+			.filter(ctbl.c.transaction_id == tid)            \
+			.all()
+
+		if rows:
+			row = rows.pop()
+			title, content = row
+			content = utilities.replace_links(content)
+			cachestate = "Historical version: %s" % (version, )
+	else:
+		title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache, version=version)
+
+
+	response = make_response(render_template(
+			'view-rendered.html',
+			req_url     = req_url,
+			version     = version,
+			title       = title,
+			contents    = content,
+			cachestate  = cachestate,
+			filterstate = filterstate,
+		)
+	)
+	return set_cache_control_headers(response, allow_inline=True)
+
 def do_history_delete(versions, version, delete_id, delete):
 
 	ctbl = version_table(db.WebPages.__table__)
@@ -84,10 +145,10 @@ def do_history_delete(versions, version, delete_id, delete):
 	if delete_id == -1 and version == -1:
 		maxid = max(versions.keys())
 
-		for vid, version in versions.items():
+		for vid, version_row in versions.items():
 			if vid != maxid:
-				rid, tid = version.id, version.transaction_id
-				print("Deleting:", version, rid, tid)
+				rid, tid = version_row.id, version_row.transaction_id
+				print("Deleting:", version_row, rid, tid)
 				g.session.query(ctbl)                     \
 					.filter(ctbl.c.id             == rid) \
 					.filter(ctbl.c.transaction_id == tid) \
@@ -96,7 +157,7 @@ def do_history_delete(versions, version, delete_id, delete):
 		return render_template('error.html', title = 'All old versions deleted', message = "All old versions deleted")
 
 	else:
-		if not version in versions:
+		if version not in versions:
 			return render_template('error.html', title = 'Error when deleting!', message = "Version value doesn't exist? ('%s', '%s')" % (version, type(version) ))
 		target = versions[version]
 		if not target.id == delete_id:

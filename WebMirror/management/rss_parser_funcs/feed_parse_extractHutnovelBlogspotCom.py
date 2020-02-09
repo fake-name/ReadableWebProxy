@@ -1,6 +1,6 @@
-def extractMnq93BlogspotCom(item):
+def extractHutnovelBlogspotCom(item):
 	'''
-	Parser for 'mnq93.blogspot.com'
+	Parser for 'hutnovel.blogspot.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,9 +8,8 @@ def extractMnq93BlogspotCom(item):
 		return None
 
 	tagmap = [
-		('dududiary',              'Dudu\'s Diary',                                               'translated'),
-		('tenthousandmiles',       'Ten Thousand Miles in Search of Honour',                      'translated'),
-		('ruochunjingming',        'Ruo Chun and Jing Ming',                                      'translated'),
+		('True Star',                    'True Star',                                   'translated'),
+		('please start your show',       'please start your show',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -42,6 +42,7 @@ def extractReLibrary(item):
 		('the ancestor of our sect',               'The Ancestor of our Sect Isn’t Acting like an Elder',                    'translated'),
 		('hero\'s daughter',                       'Reborn as the Hero\'s Daughter! Time to Become the Hero Once More!',     'translated'),
 		('life with a tail',                       'life with a tail',                                                       'translated'),
+		('pupil of the wiseman',                   'She Professed Herself The Pupil Of The Wiseman',                         'translated'),
 		('Levelmaker',                             'Levelmaker',                                                             'translated'),
 		('Demon Sword Maiden',                     'Demon Sword Maiden',                                                     'translated'),
 		('the saintess',                           'How can the Saintess be a Boy!?',                                                                                                 'translated'),

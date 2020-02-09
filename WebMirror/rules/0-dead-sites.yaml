@@ -416,7 +416,7 @@ badwords: [
 		'/nifty/authors.html/bisexual/',
 
 		'www.asstr.com/?ga=',
-		'www.asstr.com/rg-erdr.php?_rpo=',
+		'/rg-erdr.php?_rpo=',
 		'giraffecorps.liamak.net/?ga=',
 		'nippleless.nl/feed/',
 		'/Stories_on_MP3/',
@@ -439,6 +439,21 @@ badwords: [
 		# Why is this one plage 13 megabytes?
 		'koalasplayground.com/?p=5281',
 		'www.asstr.org/files/Site_Info/filelist.zip',
+
+
+
+		"http://novel.gilegati.com/beian",
+		"http://novel.gilegati.com/bsfw",
+		"http://novel.gilegati.com/contact",
+		"http://novel.gilegati.com/mlzg",
+		"http://novel.gilegati.com/news",
+		"http://novel.gilegati.com/tzzg",
+		"http://novel.gilegati.com/wechat",
+		"http://novel.gilegati.com/weibo",
+		"http://novel.gilegati.com/wzdt",
+		"http://novel.gilegati.com/ywdt",
+		"http://novel.gilegati.com/zmhd",
+		"http://novel.gilegati.com/zwgk",
 
 	]
 
