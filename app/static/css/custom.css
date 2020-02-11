@@ -1,9 +1,43 @@
+div.scroll-panel-right {
+	position           : fixed;
+	overflow           : hidden;
+	z-index            : 2400;
+	right              : 10px;
+	bottom             : 0px !important;
+}
+
+div.scroll-panel-left {
+	position           : fixed;
+	overflow           : hidden;
+	z-index            : 2400;
+	left               : 10px;
+	bottom             : 0px !important;
+}
+
+
+div.scroll-button
+{
+	font-size          : 40px;
+	opacity            : 0.70;
+	font-size          : 40px;
+	padding             : 5px;
+	margin             : 5px;
+	border-radius      : 10px;
+	background-color   : rgba(255,255,255,0.5);
+}
 
 .fullwidth {
 	width: 100%;
 }
-@media (min-width: 768px)
+
+@media (min-width: 992px)
 {
+	div.easyreading
+	{
+		font-size   : large !important;
+		max-width   : 500px !important;
+	}
+
 	.imgDiv {
 		height     : 615px !important;
 		width      : 400px !important;
@@ -21,17 +55,71 @@
 	}
 }
 
+@media (min-width: 600px) and (max-width: 991px)
+{
+
+	div.easyreading
+	{
+		font-size   : x-large !important;
+		max-width   : 600px !important;
+	}
+
+	.imgDiv {
+		display: block;
+		height     : 600px !important;
+		padding-top: 10px;
+
+	}
+	.info-item
+	{
+		/*overflow : hidden;*/
+	}
+}
+
+@media (max-width: 599px)
+{
+	div.scroll-panel-right
+	{
+		display : none;
+	}
+	div.scroll-panel-left
+	{
+		display : none;
+	}
+
+	div.easyreading
+	{
+		font-size   : large !important;
+		max-width   : 500px !important;
+	}
+
+	.imgDiv {
+		display: block;
+		height     : 500px !important;
+		padding-top: 10px;
+
+	}
+	.info-item
+	{
+		/*overflow : hidden;*/
+	}
+}
+
 
 div.easyreading
 {
 	/* Force override any css that slipped through
 	the preprocessor system */
 	margin      : 0 auto !important;
-	max-width   : 500px !important;
 	font-family : Arial !important;
-	font-size   : large !important;
 	word-wrap   : break-word !important;
 }
+
+
+div.easyreading img {
+   max-width: 100% !important;
+}
+
 div.easyreading table, td, tr
 {
 	/* Force override any css that slipped through
@@ -55,19 +143,6 @@ pre {
 	word-wrap: break-word;
 }
 
-@media (max-width: 767px)
-{
-	.imgDiv {
-		display: block;
-		height     : 600px !important;
-		padding-top: 10px;
-
-	}
-	.info-item
-	{
-		/*overflow : hidden;*/
-	}
-}
 
 
 table:not(.noborder), td:not(table.noborder), th:not(table.noborder)
@@ -258,7 +333,7 @@ div.imgDiv {
 }
 
 
-@media (min-width: 768px)
+@media (min-width: 992px)
 {
 	div.cvr-btn-div, div.cvr-edit-div
 	{
@@ -267,7 +342,7 @@ div.imgDiv {
 }
 
 
-@media (max-width: 767px)
+@media (max-width: 991px)
 {
 	div.cvr-btn-div, div.cvr-edit-div
 	{
@@ -309,7 +384,7 @@ body {
 }
 
 
-@media (max-width: 767px)
+@media (max-width991)
 {
 	#segment_body {
 		padding:10px;
@@ -324,7 +399,7 @@ body {
 	}
 }
 
-@media (min-width: 768px)
+@media (min-width: 992px)
 {
 	#segment_body {
 		padding:10px;

@@ -1,0 +1,47 @@
+
+
+<div class="scroll-panel-left">
+	<div class="scroll-button scroll-up-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
+		</center>
+	</div>
+	<div class="scroll-button scroll-down-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+		</center>
+	</div>
+</div>
+
+<div class="scroll-panel-right">
+	<div class="scroll-button scroll-up-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
+		</center>
+	</div>
+	<div class="scroll-button scroll-down-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+		</center>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+
+	function page_down()
+	{
+		window.scrollTo(0,window.scrollY+window.innerHeight*.9);
+	}
+
+
+	function page_up()
+	{
+		window.scrollTo(0,window.scrollY-window.innerHeight*.9);
+	}
+
+	$('.scroll-up-btn').click(page_up);
+	$('.scroll-down-btn').click(page_down);
+
+
+</script>
