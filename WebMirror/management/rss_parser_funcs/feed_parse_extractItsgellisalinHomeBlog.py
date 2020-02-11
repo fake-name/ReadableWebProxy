@@ -1,6 +1,6 @@
 def extractItsgellisalinHomeBlog(item):
 	'''
-	DISABLE
+	DISABLED
 	
 	Parser for 'itsgellisalin.home.blog'
 	'''

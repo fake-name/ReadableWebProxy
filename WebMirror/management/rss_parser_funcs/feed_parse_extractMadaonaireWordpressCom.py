@@ -1,4 +1,3 @@
-
 def extractMadaonaireWordpressCom(item):
 	'''
 	Parser for 'madaonaire.wordpress.com'
@@ -9,6 +8,7 @@ def extractMadaonaireWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the strongest sect of all time',       'the strongest sect of all time',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMadaonaireWordpressCom(item):
 
 
 	return False
-	

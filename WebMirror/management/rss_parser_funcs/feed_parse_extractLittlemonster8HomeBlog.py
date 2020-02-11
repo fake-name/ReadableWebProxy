@@ -1,4 +1,3 @@
-
 def extractLittlemonster8HomeBlog(item):
 	'''
 	Parser for 'littlemonster8.home.blog'
@@ -9,6 +8,7 @@ def extractLittlemonster8HomeBlog(item):
 		return None
 
 	tagmap = [
+		('the chronicle of the oriole island',       'the chronicle of the oriole island',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLittlemonster8HomeBlog(item):
 
 
 	return False
-	

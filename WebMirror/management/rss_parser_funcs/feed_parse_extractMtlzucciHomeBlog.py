@@ -1,4 +1,3 @@
-
 def extractMtlzucciHomeBlog(item):
 	'''
 	Parser for 'mtlzucci.home.blog'
@@ -9,6 +8,7 @@ def extractMtlzucciHomeBlog(item):
 		return None
 
 	tagmap = [
+		('hgeg',       'Horror Game Escape Guide',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMtlzucciHomeBlog(item):
 
 
 	return False
-	

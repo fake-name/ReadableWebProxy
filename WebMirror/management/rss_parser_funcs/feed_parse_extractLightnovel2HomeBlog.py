@@ -1,4 +1,3 @@
-
 def extractLightnovel2HomeBlog(item):
 	'''
 	Parser for 'lightnovel2.home.blog'
@@ -9,6 +8,8 @@ def extractLightnovel2HomeBlog(item):
 		return None
 
 	tagmap = [
+		('ring ring eiyuu kishi to isekai no otome',       'ring ring',                      'translated'),
+		('ring ring',                                      'ring ring',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractLightnovel2HomeBlog(item):
 
 
 	return False
-	

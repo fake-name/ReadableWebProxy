@@ -774,8 +774,8 @@ def test_jt_big_page_flatten():
 
 def get_high_incidence():
 	proc = DbFlattener()
-	# proc.get_high_incidence_items()
-	# proc.process_high_incidence_items()
+	proc.get_high_incidence_items()
+	proc.process_high_incidence_items()
 	proc.consolidate_history()
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
-
 def extractMairumairimasuBlogspotCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'mairumairimasu.blogspot.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractMairumairimasuBlogspotCom(item):
 
 
 	return False
-	

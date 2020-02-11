@@ -1,4 +1,3 @@
-
 def extractLiliesareflowersBlogspotCom(item):
 	'''
 	Parser for 'liliesareflowers.blogspot.com'
@@ -9,6 +8,7 @@ def extractLiliesareflowersBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('reijou wa mattari wo goshomou',       'reijou wa mattari wo goshomou',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLiliesareflowersBlogspotCom(item):
 
 
 	return False
-	

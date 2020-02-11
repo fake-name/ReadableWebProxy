@@ -1,4 +1,3 @@
-
 def extractLazyhoomantlWordpressCom(item):
 	'''
 	Parser for 'lazyhoomantl.wordpress.com'
@@ -9,6 +8,7 @@ def extractLazyhoomantlWordpressCom(item):
 		return None
 
 	tagmap = [
+		('survival game (unlimited)',       'survival game (unlimited)',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLazyhoomantlWordpressCom(item):
 
 
 	return False
-	

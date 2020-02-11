@@ -1,4 +1,3 @@
-
 def extractMuseinsongsWordpressCom(item):
 	'''
 	Parser for 'museinsongs.wordpress.com'
@@ -9,6 +8,8 @@ def extractMuseinsongsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('httdh',                                 'how to tame a dangerous husband',                      'translated'),
+		('how to tame a dangerous husband',       'how to tame a dangerous husband',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractMuseinsongsWordpressCom(item):
 
 
 	return False
-	

@@ -1,5 +1,7 @@
 def extractEgscansCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'egscans.com'
 	'''
 

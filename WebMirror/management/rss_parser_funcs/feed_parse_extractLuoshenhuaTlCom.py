@@ -1,4 +1,3 @@
-
 def extractLuoshenhuaTlCom(item):
 	'''
 	Parser for 'luoshenhua-tl.com'
@@ -9,6 +8,8 @@ def extractLuoshenhuaTlCom(item):
 		return None
 
 	tagmap = [
+		('miww',                        'Mistress, I was wrong',                      'translated'),
+		('Mistress, I was wrong',       'Mistress, I was wrong',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractLuoshenhuaTlCom(item):
 
 
 	return False
-	

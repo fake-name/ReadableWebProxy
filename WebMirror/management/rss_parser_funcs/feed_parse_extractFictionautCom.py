@@ -1,6 +1,7 @@
-
 def extractFictionautCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'fictionaut.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractFictionautCom(item):
 
 
 	return False
-	
