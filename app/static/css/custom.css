@@ -1,17 +1,32 @@
-div.scroll-panel-right {
+div.scroll-panel-right-top {
 	position           : fixed;
 	overflow           : hidden;
 	z-index            : 2400;
 	right              : 10px;
-	bottom             : 0px !important;
+	top                : 50px !important;
 }
 
-div.scroll-panel-left {
+div.scroll-panel-left-top {
 	position           : fixed;
 	overflow           : hidden;
 	z-index            : 2400;
 	left               : 10px;
-	bottom             : 0px !important;
+	top                : 50px !important;
+}
+div.scroll-panel-right-bottom {
+	position           : fixed;
+	overflow           : hidden;
+	z-index            : 2400;
+	right              : 10px;
+	bottom             : 150px !important;
+}
+
+div.scroll-panel-left-bottom {
+	position           : fixed;
+	overflow           : hidden;
+	z-index            : 2400;
+	left               : 10px;
+	bottom             : 150px !important;
 }
 
 
@@ -49,9 +64,15 @@ div.scroll-button
 		margin-left: 10px;
 		padding: 10px;
 	}
+
 	.info-item
 	{
 		overflow : hidden;
+	}
+
+	.scroll-panel-buttons
+	{
+		display: none;
 	}
 }
 
@@ -60,13 +81,13 @@ div.scroll-button
 
 	div.easyreading
 	{
-		font-size   : x-large !important;
+		font-size   : large !important;
 		max-width   : 600px !important;
 	}
 
 	.imgDiv {
 		display: block;
-		height     : 600px !important;
+		max-height     : 600px !important;
 		padding-top: 10px;
 
 	}
@@ -75,9 +96,18 @@ div.scroll-button
 		/*overflow : hidden;*/
 	}
 }
+@media (max-width: 749px)
+{
+	.scroll-panel-buttons
+	{
+		display: none;
+	}
+}
 
 @media (max-width: 599px)
 {
+
+
 	div.scroll-panel-right
 	{
 		display : none;
@@ -95,7 +125,7 @@ div.scroll-button
 
 	.imgDiv {
 		display: block;
-		height     : 500px !important;
+		max-height     : 500px !important;
 		padding-top: 10px;
 
 	}

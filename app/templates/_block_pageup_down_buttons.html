@@ -1,6 +1,6 @@
 
 
-<div class="scroll-panel-left">
+<div class="scroll-panel-buttons scroll-panel-left-top">
 	<div class="scroll-button scroll-up-btn">
 		<center>
 			<span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
@@ -13,7 +13,33 @@
 	</div>
 </div>
 
-<div class="scroll-panel-right">
+<div class="scroll-panel-buttons scroll-panel-right-top">
+	<div class="scroll-button scroll-up-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
+		</center>
+	</div>
+	<div class="scroll-button scroll-down-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+		</center>
+	</div>
+</div>
+
+<div class="scroll-panel-buttons scroll-panel-left-bottom">
+	<div class="scroll-button scroll-up-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
+		</center>
+	</div>
+	<div class="scroll-button scroll-down-btn">
+		<center>
+			<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+		</center>
+	</div>
+</div>
+
+<div class="scroll-panel-buttons scroll-panel-right-bottom">
 	<div class="scroll-button scroll-up-btn">
 		<center>
 			<span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
@@ -31,13 +57,22 @@
 
 	function page_down()
 	{
-		window.scrollTo(0,window.scrollY+window.innerHeight*.9);
+		var w = $(window);
+		var y = w.scrollTop() + w.height() - 10;
+		$("html, body").animate({ scrollTop: y }, 600);
+
+		// window.scrollTo(0,window.scrollY+window.innerHeight*.9);
 	}
 
 
 	function page_up()
 	{
-		window.scrollTo(0,window.scrollY-window.innerHeight*.9);
+
+		var w = $(window);
+		var y = w.scrollTop() - w.height() + 10;
+		$("html, body").animate({ scrollTop: y }, 600);
+
+		// window.scrollTo(0,window.scrollY-window.innerHeight*.9);
 	}
 
 	$('.scroll-up-btn').click(page_up);
