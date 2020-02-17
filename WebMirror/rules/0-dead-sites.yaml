@@ -384,6 +384,10 @@ baseUrl: [
 	'https://www.lazybuntl.com',
 	'https://isecainovels.wujigege.com',
 	'http://fierydragonbreath.tumblr.com',
+
+	# Now kissmanga?
+	'https://novelhub.co',
+
 	]
 
 # select count(*) from web_pages where netloc = 'www.asstr.com';

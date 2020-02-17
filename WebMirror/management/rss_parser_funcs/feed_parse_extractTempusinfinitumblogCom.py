@@ -1,4 +1,3 @@
-
 def extractTempusinfinitumblogCom(item):
 	'''
 	Parser for 'tempusinfinitumblog.com'
@@ -9,6 +8,7 @@ def extractTempusinfinitumblogCom(item):
 		return None
 
 	tagmap = [
+		('Maou Gakuin No Futekigousha',       'Maou Gakuin No Futekigousha',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTempusinfinitumblogCom(item):
 
 
 	return False
-	

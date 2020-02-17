@@ -8,8 +8,9 @@ def extractSpringraintranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('Shen Yi Di Nu',             'Shen Yi Di Nu',                                'translated'),
-		('Epoch of the Dragon',       'X – Epoch of the Dragon',                      'translated'),
+		('mary sue does not stick to the plot',             'mary sue does not stick to the plot',          'translated'),
+		('Shen Yi Di Nu',                                   'Shen Yi Di Nu',                                'translated'),
+		('Epoch of the Dragon',                             'X – Epoch of the Dragon',                      'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

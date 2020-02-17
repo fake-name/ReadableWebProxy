@@ -101,6 +101,8 @@ def extractDanmeiMelimeliartsCom(item):
 		('those years in quest of honor mine',                                     'those years in quest of honor mine',                                                    'translated'),
 		('when an alien is bound to a world saving system',                        'when an alien is bound to a world saving system',                                       'translated'),
 		('pubg online romance of the century',                                     'PUBG Online Romance of the Century',                                                    'translated'),
+		('little mushroom',                                                        'little mushroom',                                                                       'translated'),
+		('the villainâ€™s face-slapping counterattack',                            'The Villain\'s Face Slapping Counterattack',                                            'translated'),
 		('rpg',                                                                    'RPG',                                                                                   'translated'),
 		('Unlimited Cycles of Death',                                              'Unlimited Cycles of Death',                                                             'translated'),
 		('non-human seeking re-employment',                                        'non-human seeking re-employment',                                                       'translated'),

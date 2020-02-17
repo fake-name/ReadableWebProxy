@@ -8,6 +8,7 @@ def extractGrimtranslationsHomeBlog(item):
 		return None
 
 	tagmap = [
+		('how to deal with a tsundere gong',       'How to Deal with a Tsundere Gong',                      'translated'),
 		('htdwt',       'How to Deal with a Tsundere Gong',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),

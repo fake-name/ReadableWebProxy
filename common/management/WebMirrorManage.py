@@ -842,7 +842,7 @@ def exposed_streaming_incremental_delete_invalid_urls():
 
 
 			# for idx in range(start, stop, step):
-			pbar = tqdm.tqdm(range(start, stop, step), position=0)
+			pbar = tqdm.tqdm(range(stop, start, -step), position=0)
 			for idx in pbar:
 
 

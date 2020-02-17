@@ -261,6 +261,10 @@ def extractFantasyBooksLive(item):
 		('56681',                      'A Hero Returns',                                                                  'oel'),
 		('126985',                                                                   'Final Boss',                                                                      'translated'),
 		('140463',                                                                   'Emperor NPC',                                                                      'oel'),
+		('148541',                                                                   'Eden Virus',                                                                      'oel'),
+		('144977',                                                                   'The Echoes of Belecia',                                                                      'oel'),
+		('146964',                                                                   'Trust in Love',                                                                      'oel'),
+
 
 		
 

@@ -317,7 +317,6 @@ baseUrl: [
 	'https://asada28221898.wordpress.com',
 	'https://jblacktranslations.wordpress.com',
 	'https://meteor-strike.com',
-	'https://novelhub.co',
 	'http://www.xintranslations.com',
 
 	'https://asadatranslations.wordpress.com',
@@ -461,8 +460,14 @@ baseUrl: [
 
 	"https://fluffytranslations.home.blog",
 	"https://moonfloraphotography.photo.blog",
+	"https://subpartranslations.art.blog",
 	"https://adjacentaisle.home.blog",
 	"https://infool.data.blog",
+	"https://supercreativetranslations.art.blog",
+	'https://crazedplanet.wordpress.com',
+	'https://simplyrical.home.blog',
+	'https://miirakuru.wordpress.com',
+	'https://juicynovel.wordpress.com',
 
 	]
 

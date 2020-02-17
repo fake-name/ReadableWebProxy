@@ -21,6 +21,7 @@ def extractJstranslations1WordpressCom(item):
 		('descent of the phoenix – 13-year-old princess consort',         'descent of the phoenix – 13-year-old princess consort',                       'translated'),
 		('Rebirth of the Marquis’ Di Daughter',                           'Rebirth of the Marquis’ Di Daughter',                                         'translated'),
 		('young master jun’s 100 techniques to spoil his wife',           'young master jun’s 100 techniques to spoil his wife',                         'translated'),
+		('secret service princess: the cold prince’s black belly wife',   'secret service princess: the cold prince’s black belly wife',                 'translated'),
 		('PRC',        'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

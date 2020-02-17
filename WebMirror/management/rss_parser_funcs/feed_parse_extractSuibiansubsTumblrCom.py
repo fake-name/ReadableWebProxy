@@ -1,14 +1,25 @@
-
 def extractSuibiansubsTumblrCom(item):
 	'''
 	Parser for 'suibiansubs.tumblr.com'
 	'''
+
+
+	badwords = [
+			'audio drama',
+			'MKV',
+			'badword',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
+		('copper coins',       'copper coins',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +30,3 @@ def extractSuibiansubsTumblrCom(item):
 
 
 	return False
-	

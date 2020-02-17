@@ -8,7 +8,8 @@ def extractPiperpickupsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('ss',       'Support System: Leading Two Souls Together',                      'translated'),
+		('ss',       'Support System: Leading Two Souls Together',            'translated'),
+		('mstp',     'My Son is a Transmigrated Prince',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

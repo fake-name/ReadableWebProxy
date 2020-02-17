@@ -1323,9 +1323,9 @@ def test():
 	# hdl.run()
 
 	items = hdl.get_rpc_head_lists(
-		chunks      = 1,
-		chunkdupes  = 1,
-		chunklength = 15
+			# chunks      = 1,
+			# chunkdupes  = 1,
+			# chunklength = 15
 		)
 
 	if not items:

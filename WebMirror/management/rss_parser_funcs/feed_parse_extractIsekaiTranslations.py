@@ -7,9 +7,10 @@ def extractIsekaiTranslations(item):
 		return None
 		
 	tagmap = [
-		('dragon knight',           'Dragon Knight',                                                      'translated'),
-		('Maou-sama, Retry!',       'Maou-sama, Retry!',                                                  'translated'),
-		('QualiA',                  'QualiA – Simply wanting to meet you once more',                      'translated'),
+		('weakest mage',            'Clearing an Isekai with the Zero-Believers Goddess – The Weakest Mage among the Classmates',     'translated'),
+		('dragon knight',           'Dragon Knight',                                                                                  'translated'),
+		('Maou-sama, Retry!',       'Maou-sama, Retry!',                                                                              'translated'),
+		('QualiA',                  'QualiA – Simply wanting to meet you once more',                                                  'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

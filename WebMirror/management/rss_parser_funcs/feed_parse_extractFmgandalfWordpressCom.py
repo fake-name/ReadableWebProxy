@@ -8,9 +8,14 @@ def extractFmgandalfWordpressCom(item):
 		return None
 
 	chp_prefixes = [
-			('BS ',      'Black Summoner',                              'translated'),
-			('Mitsy',    'Makikomarete Isekai Teni suru Yatsu wa',      'translated'),
-			('GOGMS ',   'Gun-ota ga Majou Sekai ni Tensei Shitara',    'translated'),
+			('BS ',       'Black Summoner',                              'translated'),
+			('Mitsy',     'Makikomarete Isekai Teni suru Yatsu wa',      'translated'),
+			('Gun- Ota ', 'Gun-ota ga Majou Sekai ni Tensei Shitara',    'translated'),
+			('Gun OTA ',  'Gun-ota ga Majou Sekai ni Tensei Shitara',    'translated'),
+			('Gun-Ota ',  'Gun-ota ga Majou Sekai ni Tensei Shitara',    'translated'),
+			('GOGMS ',    'Gun-ota ga Majou Sekai ni Tensei Shitara',    'translated'),
+			('SS HH ',    'Self-proclaimed! An Ordinary Demonic Hero’s life ~ The Result of Creating a Cheat Dungeon Despite Being a B-class Demon',    'translated'),
+			('SSHH',      'Self-proclaimed! An Ordinary Demonic Hero’s life ~ The Result of Creating a Cheat Dungeon Despite Being a B-class Demon',    'translated'),
 		]
 
 	for prefix, series, tl_type in chp_prefixes:

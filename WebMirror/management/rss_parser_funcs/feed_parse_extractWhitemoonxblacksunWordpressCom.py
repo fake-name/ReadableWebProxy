@@ -8,6 +8,7 @@ def extractWhitemoonxblacksunWordpressCom(item):
 		return None
 
 	tagmap = [
+		('i have paid too much for this home',                 'i have paid too much for this home',                                'translated'),
 		('Reborn Otaku Code of Practice for Apocalypse',       'Reborn Otaku Code of Practice for Apocalypse',                      'translated'),
 		('Jumpchain',                                          'Jump Chain',                                                        'oel'),
 	]

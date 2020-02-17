@@ -8,7 +8,8 @@ def extractEndlessdream7TumblrCom(item):
 		return None
 
 	tagmap = [
-		('supreme soaring immortal',       'supreme soaring immortal',                      'translated'),
+		('supreme soaring immortal',       'supreme soaring immortal',           'translated'),
+		('kill that man',                  'Kill That Man',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
