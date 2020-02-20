@@ -1,4 +1,3 @@
-
 def extractShenhuatranslationsCom(item):
 	'''
 	Parser for 'shenhuatranslations.com'
@@ -9,6 +8,7 @@ def extractShenhuatranslationsCom(item):
 		return None
 
 	tagmap = [
+		('atapow',       'After being taken as a prisoner of war, the vampire queen turned me into a vampire and made me her daughter',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractShenhuatranslationsCom(item):
 
 
 	return False
-	

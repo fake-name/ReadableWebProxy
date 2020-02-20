@@ -1,6 +1,6 @@
-def extractRandomnoveltranslateWordpressCom(item):
+def extractJuicynovelWordpressCom(item):
 	'''
-	Parser for 'randomnoveltranslate.wordpress.com'
+	Parser for 'juicynovel.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,9 +8,7 @@ def extractRandomnoveltranslateWordpressCom(item):
 		return None
 
 	tagmap = [
-		('pen down a marriage',                       'pen down a marriage',                                      'translated'),
-		('transmigrating into a cannon fodder',       'transmigrating into a cannon fodder',                      'translated'),
-		('rebirth of a virtuous wife',                'rebirth of a virtuous wife',                               'translated'),
+		('i became the male lead\'s adopted daughter',       'i became the male lead\'s adopted daughter',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

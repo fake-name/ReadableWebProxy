@@ -1,6 +1,8 @@
-
 def extractNyankonyantranslationBlogspotCom(item):
 	'''
+	DISABLED 
+	
+	
 	Parser for 'nyankonyantranslation.blogspot.com'
 	'''
 
@@ -19,4 +21,3 @@ def extractNyankonyantranslationBlogspotCom(item):
 
 
 	return False
-	

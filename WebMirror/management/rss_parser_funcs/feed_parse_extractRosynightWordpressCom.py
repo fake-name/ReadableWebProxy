@@ -1,4 +1,3 @@
-
 def extractRosynightWordpressCom(item):
 	'''
 	Parser for 'rosynight.wordpress.com'
@@ -9,6 +8,8 @@ def extractRosynightWordpressCom(item):
 		return None
 
 	tagmap = [
+		('CC',          'Cāi Cāi',                      'translated'),
+		('tswwt',       'Those Steps We Walked Together',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractRosynightWordpressCom(item):
 
 
 	return False
-	

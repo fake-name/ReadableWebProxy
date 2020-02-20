@@ -1,4 +1,3 @@
-
 def extractTiramisuTranslationsTumblrCom(item):
 	'''
 	Parser for 'tiramisu-translations.tumblr.com'
@@ -9,6 +8,7 @@ def extractTiramisuTranslationsTumblrCom(item):
 		return None
 
 	tagmap = [
+		('the law of web novels',       'The Law of Web Novels',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTiramisuTranslationsTumblrCom(item):
 
 
 	return False
-	

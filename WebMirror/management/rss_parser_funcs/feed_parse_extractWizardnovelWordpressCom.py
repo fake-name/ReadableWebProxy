@@ -1,4 +1,3 @@
-
 def extractWizardnovelWordpressCom(item):
 	'''
 	Parser for 'wizardnovel.wordpress.com'
@@ -9,6 +8,7 @@ def extractWizardnovelWordpressCom(item):
 		return None
 
 	tagmap = [
+		('realistic mary sue',       'realistic mary sue',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractWizardnovelWordpressCom(item):
 
 
 	return False
-	

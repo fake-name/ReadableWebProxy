@@ -58,6 +58,7 @@ def extractIsohungrytlsCom(item):
 		('Rescuing the Blackened Male Lead',                                            'Rescuing the Blackened Male Lead',                                            'translated'), 
 		('Potatoes are the Only Thing Needed in This World!',                           'Potatoes are the Only Thing Needed in This World!',                           'translated'), 
 		('i swear i won’t bother you again!',                                           'i swear i won’t bother you again!',                                           'translated'), 
+		('my husband with scholar syndrome',                                            'my husband with scholar syndrome',                                            'translated'), 
 		('parallel lines',                                                              'parallel lines',                                                              'translated'), 
 		('The Fierce Illegitimate Miss',                                                'The Fierce Illegitimate Miss',                                                'translated'), 
 		('Wangye\'s Maid is the Sect Leader',                                           'Wangye\'s Maid is the Sect Leader',                                           'translated'), 

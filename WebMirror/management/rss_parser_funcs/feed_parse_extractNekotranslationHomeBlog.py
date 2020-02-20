@@ -1,4 +1,3 @@
-
 def extractNekotranslationHomeBlog(item):
 	'''
 	Parser for 'nekotranslation.home.blog'
@@ -9,6 +8,7 @@ def extractNekotranslationHomeBlog(item):
 		return None
 
 	tagmap = [
+		('a smile from the villain',       'a smile from the villain',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractNekotranslationHomeBlog(item):
 
 
 	return False
-	

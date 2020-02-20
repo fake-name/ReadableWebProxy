@@ -1,4 +1,3 @@
-
 def extractShuranomichiWordpressCom(item):
 	'''
 	Parser for 'shuranomichi.wordpress.com'
@@ -17,6 +16,15 @@ def extractShuranomichiWordpressCom(item):
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
+	if item['tags'] == ['Uncategorized']:
+		titlemap = [
+			('The Consequence of Being Summoned Simultaneously From Another World Chapter ',  'The Consequence of Being Summoned Simultaneously From Another World',      'translated'),
+			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+		]
+
+		for titlecomponent, name, tl_type in titlemap:
+			if titlecomponent.lower() in item['title'].lower():
+				return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 	return False
-	

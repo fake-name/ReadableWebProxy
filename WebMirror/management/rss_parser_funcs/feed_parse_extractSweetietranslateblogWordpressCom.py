@@ -1,4 +1,3 @@
-
 def extractSweetietranslateblogWordpressCom(item):
 	'''
 	Parser for 'sweetietranslateblog.wordpress.com'
@@ -9,6 +8,8 @@ def extractSweetietranslateblogWordpressCom(item):
 		return None
 
 	tagmap = [
+		('A Match Made in Heaven',           'A Match Made in Heaven',                          'translated'),
+		('the ultimate business lady',       'the ultimate business lady',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractSweetietranslateblogWordpressCom(item):
 
 
 	return False
-	

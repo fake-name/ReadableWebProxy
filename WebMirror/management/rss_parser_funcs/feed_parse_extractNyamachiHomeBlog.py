@@ -1,4 +1,3 @@
-
 def extractNyamachiHomeBlog(item):
 	'''
 	Parser for 'nyamachi.home.blog'
@@ -9,6 +8,7 @@ def extractNyamachiHomeBlog(item):
 		return None
 
 	tagmap = [
+		('why harem intrigue when you can just raise a dog instead?',       'why harem intrigue when you can just raise a dog instead?',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractNyamachiHomeBlog(item):
 
 
 	return False
-	

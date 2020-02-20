@@ -7,8 +7,14 @@ def extractKimamanitranslateTumblrCom(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 	
-	if 'ask' in item['tags']:
+	
+	badwords = [
+			'senyuu',
+			'ask',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
 		return None
+
 		
 	tagmap = [
 		('An Observation Record of my Fiancée - A Self-Proclaimed Villainess',                              'An Observation Record of my Fiancée - A Self-Proclaimed Villainess',                                             'translated'), 

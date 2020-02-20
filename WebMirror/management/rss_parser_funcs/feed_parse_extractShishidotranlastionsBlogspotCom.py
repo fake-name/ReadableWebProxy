@@ -1,4 +1,3 @@
-
 def extractShishidotranlastionsBlogspotCom(item):
 	'''
 	Parser for 'shishidotranlastions.blogspot.com'
@@ -9,6 +8,7 @@ def extractShishidotranlastionsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('i’m troubled by the prince’s love ~ reincarnated heroine~the otome game struggle',       'i’m troubled by the prince’s love ~ reincarnated heroine~the otome game struggle',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractShishidotranlastionsBlogspotCom(item):
 
 
 	return False
-	

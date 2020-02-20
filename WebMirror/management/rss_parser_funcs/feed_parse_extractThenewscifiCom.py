@@ -1,5 +1,7 @@
 def extractThenewscifiCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'thenewscifi.com'
 	'''
 	if 'film' in item['tags']:

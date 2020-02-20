@@ -1,6 +1,7 @@
-
 def extractWwwKapitbisigCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'www.kapitbisig.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractWwwKapitbisigCom(item):
 
 
 	return False
-	

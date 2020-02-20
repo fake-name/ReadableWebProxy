@@ -1,6 +1,6 @@
-def extractThenovelsireadBlogspotCom(item):
+def extractSubpartranslationsArtBlog(item):
 	'''
-	Parser for 'thenovelsiread.blogspot.com'
+	Parser for 'subpartranslations.art.blog'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -16,18 +16,16 @@ def extractThenovelsireadBlogspotCom(item):
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
-	if item['tags'] == []:
+	if item['tags'] == ['Uncategorized']:
 		titlemap = [
-			('Di Daughter: The Favoured medical Princess Ch ',  'The Favored Medical Princess',      'translated'),
-			('Di daughter : the favored medical princess ch ',  'The Favored Medical Princess',      'translated'),
-			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('RWSB Chapter ',             'The Rebirth Waste Strikes Back',      'translated'),
+			('Investment Life Chapter ',  'Investment Life',                     'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]
 
 		for titlecomponent, name, tl_type in titlemap:
 			if titlecomponent.lower() in item['title'].lower():
 				return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
-
 
 
 	return False

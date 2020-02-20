@@ -1,8 +1,16 @@
-
 def extractWwwThekingdomsofevilCom(item):
 	'''
 	Parser for 'www.thekingdomsofevil.com'
 	'''
+	
+	
+	badwords = [
+			'Book Review',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
@@ -19,4 +27,3 @@ def extractWwwThekingdomsofevilCom(item):
 
 
 	return False
-	

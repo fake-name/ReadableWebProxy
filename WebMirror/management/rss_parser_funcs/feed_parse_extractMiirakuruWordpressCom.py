@@ -1,23 +1,14 @@
-def extractSummertimewaterlilyWordpressCom(item):
+
+def extractMiirakuruWordpressCom(item):
 	'''
-	Parser for 'summertimewaterlily.wordpress.com'
+	Parser for 'miirakuru.wordpress.com'
 	'''
-
-
-	badwords = [
-			'badword',
-		]
-	if any([bad in item['tags'] for bad in badwords]):
-		return None
-
-
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
-		('Nirvana in Fire',       'Nirvana in Fire',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -28,3 +19,4 @@ def extractSummertimewaterlilyWordpressCom(item):
 
 
 	return False
+	

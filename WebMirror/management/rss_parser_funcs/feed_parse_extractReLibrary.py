@@ -41,6 +41,8 @@ def extractReLibrary(item):
 		('not sure, another world reincarnation',  'Not Sure, But It Looks Like I Got Reincarnated in Another World',        'translated'),
 		('the ancestor of our sect',               'The Ancestor of our Sect Isn’t Acting like an Elder',                    'translated'),
 		('hero\'s daughter',                       'Reborn as the Hero\'s Daughter! Time to Become the Hero Once More!',     'translated'),
+		('reborn as a transcendence',              'reborn as a transcendent',                                               'translated'),
+		('reborn as a transcendent',               'reborn as a transcendent',                                               'translated'),
 		('life with a tail',                       'life with a tail',                                                       'translated'),
 		('pupil of the wiseman',                   'She Professed Herself The Pupil Of The Wiseman',                         'translated'),
 		('Levelmaker',                             'Levelmaker',                                                             'translated'),

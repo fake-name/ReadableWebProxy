@@ -1,4 +1,3 @@
-
 def extractSubzerodynastyWordpressCom(item):
 	'''
 	Parser for 'subzerodynasty.wordpress.com'
@@ -9,6 +8,7 @@ def extractSubzerodynastyWordpressCom(item):
 		return None
 
 	tagmap = [
+		('sinmonger 贩罪',       'Sinmonger',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSubzerodynastyWordpressCom(item):
 
 
 	return False
-	

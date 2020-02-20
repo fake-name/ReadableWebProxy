@@ -1,8 +1,13 @@
-
 def extractSnowtimelineHomeBlog(item):
 	'''
 	Parser for 'snowtimeline.home.blog'
+	
+	Everything is protected
+	
 	'''
+	
+	return None
+	
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
@@ -19,4 +24,3 @@ def extractSnowtimelineHomeBlog(item):
 
 
 	return False
-	

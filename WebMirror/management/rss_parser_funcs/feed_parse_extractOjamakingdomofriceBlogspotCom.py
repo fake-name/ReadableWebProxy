@@ -1,4 +1,3 @@
-
 def extractOjamakingdomofriceBlogspotCom(item):
 	'''
 	Parser for 'ojamakingdomofrice.blogspot.com'
@@ -9,6 +8,7 @@ def extractOjamakingdomofriceBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('blazeblue bloodedge experience',       'blazeblue bloodedge experience',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractOjamakingdomofriceBlogspotCom(item):
 
 
 	return False
-	

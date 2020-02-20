@@ -1,6 +1,7 @@
-
 def extractThemanmademessiahCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'themanmademessiah.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractThemanmademessiahCom(item):
 
 
 	return False
-	

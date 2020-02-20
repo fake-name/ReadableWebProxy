@@ -1,4 +1,3 @@
-
 def extractFakeluffWordpressCom(item):
 	'''
 	Parser for 'fakeluff.wordpress.com'
@@ -9,6 +8,7 @@ def extractFakeluffWordpressCom(item):
 		return None
 
 	tagmap = [
+		('ABG30D',       'Agreement of Being Gay for 30 Days',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFakeluffWordpressCom(item):
 
 
 	return False
-	

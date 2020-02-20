@@ -1,6 +1,7 @@
-
 def extractSpringwindsyonderCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'springwindsyonder.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractSpringwindsyonderCom(item):
 
 
 	return False
-	

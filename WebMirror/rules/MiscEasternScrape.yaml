@@ -12,6 +12,8 @@ baseUrl: [
 		'http://ultimaguil.org',
 
 		'https://vivennovels.com',
+		'https://kudalakorn.club',
+		'https://www.mintwood.top',
 
 		# Disabled until I can work around their garbage "protection"
 		# 'https://www.foxteller.com',
@@ -59,6 +61,7 @@ baseUrl: [
 		'https://shadow.dreamwidth.org',
 		'https://luukia.dreamwidth.org',
 		'https://idola.dreamwidth.org',
+		'https://chiisai-hime.dreamwidth.org',
 
 		'http://uncommittedtranslations.bravesites.com',
 

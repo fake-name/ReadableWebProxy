@@ -1,4 +1,3 @@
-
 def extractSceluscelerisBlogspotCom(item):
 	'''
 	Parser for 'scelusceleris.blogspot.com'
@@ -9,6 +8,8 @@ def extractSceluscelerisBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('Tensei Shite Inaka de Slowlife wo Okuritai',       'Tensei shite Inaka de Slow Life wo Okuritai',                      'translated'),
+		('tensei shite',                                     'Tensei shite Inaka de Slow Life wo Okuritai',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractSceluscelerisBlogspotCom(item):
 
 
 	return False
-	

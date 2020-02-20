@@ -1,4 +1,3 @@
-
 def extractInfoolDataBlog(item):
 	'''
 	Parser for 'infool.data.blog'
@@ -9,6 +8,7 @@ def extractInfoolDataBlog(item):
 		return None
 
 	tagmap = [
+		('Apocalypse Cockroach',       'Apocalypse Cockroach',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractInfoolDataBlog(item):
 
 
 	return False
-	

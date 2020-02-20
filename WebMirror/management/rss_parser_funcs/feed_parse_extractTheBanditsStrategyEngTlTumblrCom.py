@@ -1,4 +1,3 @@
-
 def extractTheBanditsStrategyEngTlTumblrCom(item):
 	'''
 	Parser for 'the-bandits-strategy-eng-tl.tumblr.com'
@@ -9,6 +8,7 @@ def extractTheBanditsStrategyEngTlTumblrCom(item):
 		return None
 
 	tagmap = [
+		('the bandit\'s strategy',       'the bandit\'s strategy',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTheBanditsStrategyEngTlTumblrCom(item):
 
 
 	return False
-	

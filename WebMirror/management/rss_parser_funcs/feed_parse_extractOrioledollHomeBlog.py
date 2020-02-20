@@ -1,4 +1,3 @@
-
 def extractOrioledollHomeBlog(item):
 	'''
 	Parser for 'orioledoll.home.blog'
@@ -9,6 +8,7 @@ def extractOrioledollHomeBlog(item):
 		return None
 
 	tagmap = [
+		('sugar baby',       'Sugar Baby',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractOrioledollHomeBlog(item):
 
 
 	return False
-	

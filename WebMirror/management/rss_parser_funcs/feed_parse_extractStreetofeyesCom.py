@@ -1,6 +1,7 @@
-
 def extractStreetofeyesCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'streetofeyes.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractStreetofeyesCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractTsukikikyoWordpressCom(item):
 	'''
 	Parser for 'tsukikikyo.wordpress.com'
@@ -9,6 +8,7 @@ def extractTsukikikyoWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Legendary Moonlight Sculptor',       'Legendary Moonlight Sculptor',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTsukikikyoWordpressCom(item):
 
 
 	return False
-	

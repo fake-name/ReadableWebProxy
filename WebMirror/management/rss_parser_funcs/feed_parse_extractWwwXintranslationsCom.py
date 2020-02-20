@@ -1,4 +1,3 @@
-
 def extractWwwXintranslationsCom(item):
 	'''
 	Parser for 'www.xintranslations.com'
@@ -9,6 +8,7 @@ def extractWwwXintranslationsCom(item):
 		return None
 
 	tagmap = [
+		('quick transmigration second female lead is also black on the inside',       'quick transmigration second female lead is also black on the inside',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractWwwXintranslationsCom(item):
 
 
 	return False
-	

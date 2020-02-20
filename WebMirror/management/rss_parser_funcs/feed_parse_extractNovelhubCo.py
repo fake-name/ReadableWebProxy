@@ -1,6 +1,7 @@
-
 def extractNovelhubCo(item):
 	'''
+	DISABLED 
+	
 	Parser for 'novelhub.co'
 	'''
 
@@ -19,4 +20,3 @@ def extractNovelhubCo(item):
 
 
 	return False
-	

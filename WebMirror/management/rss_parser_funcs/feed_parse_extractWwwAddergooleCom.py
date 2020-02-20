@@ -1,6 +1,7 @@
-
 def extractWwwAddergooleCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'www.addergoole.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractWwwAddergooleCom(item):
 
 
 	return False
-	
