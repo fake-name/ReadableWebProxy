@@ -153,9 +153,10 @@ def saveFile(filecont, url, filename):
 	assert fqpath.startswith(C_RAW_RESOURCE_DIR)
 	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
 
+
+	saves = 0
 	while 1:
 		try:
-
 			if os.path.exists(fqpath):
 				fname, ext = os.path.splitext(fqpath)
 				fhash = getHash(filecont)
@@ -169,10 +170,29 @@ def saveFile(filecont, url, filename):
 				fp.write(filecont)
 				break
 		except OSError as e:
+			saves += 1
+
 			if e.args[0] != 36:  ## File name too long
 				raise
+
 			root, ext = os.path.splitext(fqpath)
 			fqpath = root[:-1]+ext
+
+			if saves > 25:
+
+				with open("error %s - %s.txt" % ('raw_file_saver', time.time()), "w") as fp:
+					fp.write("File saver hit exception!\n")
+					fp.write("\n")
+					fp.write("Exception args: %s\n" % (e.args, ))
+					fp.write("\n")
+					fp.write(traceback.format_exc())
+					fp.write("\n")
+				for line in traceback.format_exc().split("\n"):
+					self.log.error(line)
+
+				raise
+
+
 
 	locpath = fqpath[len(C_RAW_RESOURCE_DIR):]
 	if locpath.startswith("/"):
