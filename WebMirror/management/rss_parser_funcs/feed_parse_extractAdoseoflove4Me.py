@@ -21,6 +21,7 @@ def extractAdoseoflove4Me(item):
 		('swpf',                                                                            'Uncle’s Super Awesome: Sweet Wife, Pampered Fast',                                               'translated'),
 		('mycd',                                                                            'Madam, your vest dropped again',                                                                 'translated'),
 		('fymy',                                                                            'Familiarity Breeds Marriage: Mysterious Young Master, Super Cool ',                              'translated'),
+		('sfam',                                                                            'Sonata: Fleeing to Avoid an Arranged Marriage',                                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

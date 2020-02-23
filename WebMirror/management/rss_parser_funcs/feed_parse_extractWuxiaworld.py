@@ -134,6 +134,7 @@ def extractWuxiaworld(item):
 		('dungeon predator',                                'dungeon predator',                                  'translated'),
 		('almighty sword domain',                           'almighty sword domain',                             'translated'),
 		('ranker\'s return',                                'ranker\'s return',                                  'translated'),
+		('Rebirth of a Fashionista: This Life Is Soo Last Season',     'Rebirth of a Fashionista: This Life Is Soo Last Season',       'translated'),
 		('The Unrivaled Tang Sect',                         'The Unrivaled Tang Sect',                           'translated'),
 		('A Record of a Mortal’s Journey to Immortality',   'A Record of a Mortal’s Journey to Immortality',     'translated'),
 		

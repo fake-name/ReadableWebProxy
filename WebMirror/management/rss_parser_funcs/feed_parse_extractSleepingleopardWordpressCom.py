@@ -1,6 +1,7 @@
-def extractChiisaiHimeDreamwidthOrg(item):
+
+def extractSleepingleopardWordpressCom(item):
 	'''
-	Parser for 'chiisai-hime.dreamwidth.org'
+	Parser for 'sleepingleopard.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +9,6 @@ def extractChiisaiHimeDreamwidthOrg(item):
 		return None
 
 	tagmap = [
-		('the villains all fell in love with me',       'the villains all fell in love with me',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,3 +19,4 @@ def extractChiisaiHimeDreamwidthOrg(item):
 
 
 	return False
+	

@@ -1,4 +1,3 @@
-
 def extractGrasstranslatesBlogspotCom(item):
 	'''
 	Parser for 'grasstranslates.blogspot.com'
@@ -9,6 +8,8 @@ def extractGrasstranslatesBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('PGS',       'Peerless Genius System',                         'translated'),
+		('dkfod',     'Devil King from the Otherworldly Dimension',     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractGrasstranslatesBlogspotCom(item):
 
 
 	return False
-	

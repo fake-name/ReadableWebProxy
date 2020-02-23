@@ -265,8 +265,8 @@ def extractFantasyBooksLive(item):
 		('144977',                                                                   'The Echoes of Belecia',                                                                      'oel'),
 		('146964',                                                                   'Trust in Love',                                                                      'oel'),
 		('149753',                                                                   'Locking Horns, Breaking Teeth.',                                                                      'oel'),
+		('150147',                                                                   'Spark of Divinity',                                                                      'oel'),
 
-		
 
 	]
 

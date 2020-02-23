@@ -23,6 +23,8 @@ def extractAmericanFaux(item):
 		('Saikyou Mahoushi no Inton Keikaku',                                                                      'Saikyou Mahoushi no Inton Keikaku',                                                                                       'translated'),
 		('the noble girl who finds a nerdy and plain guy moe thinks that the arrogant prince is in the way',       'the noble girl who finds a nerdy and plain guy moe thinks that the arrogant prince is in the way',                        'translated'),
 		('the returnee noble lady attacks his majesty the dragon emperor',                                         'the returnee noble lady attacks his majesty the dragon emperor',                                                          'translated'),
+		('i don\'t want to break off my engagement...',                                                            'i don\'t want to break off my engagement...',                                                                             'translated'),
+		('the kingdom of everlasting night and the last ball',                                                     'the kingdom of everlasting night and the last ball',                                                                      'translated'),
 		('.hack//C.S.',                                                                                            '.hack//C.S.',                                                                                                             'translated'),
 		('The Wandering World',                                                'The Wandering World',                                                                 'oel'),
 	]

@@ -10,6 +10,9 @@ def extractLittlemonster8HomeBlog(item):
 	tagmap = [
 		('the chronicle of the oriole island',       'the chronicle of the oriole island',                      'translated'),
 		('jin wang dotes on his concubine',          'jin wang dotes on his concubine',                         'translated'),
+		('fight for peace and love',                 'fight for peace and love',                                'translated'),
+		('love story at starry night',               'love story at starry night',                              'translated'),
+		('未分类',                                   'Sunset Boulevard',                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

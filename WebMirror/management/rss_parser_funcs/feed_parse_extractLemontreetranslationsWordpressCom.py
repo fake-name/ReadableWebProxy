@@ -1,4 +1,3 @@
-
 def extractLemontreetranslationsWordpressCom(item):
 	'''
 	Parser for 'lemontreetranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractLemontreetranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Quick Transmigration Second Female Lead’s Counter Attack',       'Quick Transmigration Second Female Lead’s Counter Attack',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLemontreetranslationsWordpressCom(item):
 
 
 	return False
-	

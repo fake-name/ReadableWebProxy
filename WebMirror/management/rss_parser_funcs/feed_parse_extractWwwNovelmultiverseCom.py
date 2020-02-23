@@ -8,9 +8,11 @@ def extractWwwNovelmultiverseCom(item):
 		return None
 
 	tagmap = [
-		('elememtaryharem',              'After returning to elementary school with my memory the result was to create a harem',   'translated'),
-		('elementaryharem',              'After returning to elementary school with my memory the result was to create a harem',   'translated'),
-		('Parameter remote controller',  'Parameter remote controller',                                                            'translated'),
+		('elememtaryharem',                                         'After returning to elementary school with my memory the result was to create a harem',   'translated'),
+		('elementaryharem',                                         'After returning to elementary school with my memory the result was to create a harem',   'translated'),
+		('Parameter remote controller',                             'Parameter remote controller',                                                            'translated'),
+		('auto assigned villainess',                                'auto assigned villainess',                                                               'translated'),
+		('the reincarnated young lady aims to be an adventurer',    'the reincarnated young lady aims to be an adventurer',                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

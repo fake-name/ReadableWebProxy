@@ -108,6 +108,7 @@ def extractDanmeiMelimeliartsCom(item):
 		('non-human seeking re-employment',                                        'non-human seeking re-employment',                                                       'translated'),
 		('the king\'s return',                                                     'the king\'s return',                                                                    'translated'),
 		('i have a pair of yin-yuan eyes',                                         'i have a pair of yin-yuan eyes',                                                        'translated'),
+		('turing\'s code',                                                         'turing\'s code',                                                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

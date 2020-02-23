@@ -1,4 +1,3 @@
-
 def extractCrazedplanetWordpressCom(item):
 	'''
 	Parser for 'crazedplanet.wordpress.com'
@@ -9,6 +8,8 @@ def extractCrazedplanetWordpressCom(item):
 		return None
 
 	tagmap = [
+		('life after marrying my love rival',         'life after marrying my love rival',                        'translated'),
+		('Who Dares Slander My Senior Brother',       'Who Dares Slander My Senior Brother',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractCrazedplanetWordpressCom(item):
 
 
 	return False
-	
