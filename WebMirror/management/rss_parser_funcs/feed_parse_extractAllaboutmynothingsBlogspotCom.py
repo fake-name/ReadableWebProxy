@@ -17,7 +17,9 @@ def extractAllaboutmynothingsBlogspotCom(item):
 		('True and False Young Master',                 'True and False Young Master',                                               'translated'), 
 		('The Love Potion',                             'The Love Potion',                                                           'translated'), 
 		('Bunny Husband',                               'Bunny Husband',                                                             'translated'), 
+		('namjang secretary',                           'namjang secretary',                                                         'translated'), 
 		('Dark Empress',                                'Dark Empress',                                                              'translated'), 
+		('mo yan transmigrates',                        'Mo Yan\'s Transmigration Inside The Book',                                  'translated'), 
 	]
 
 	for tagname, name, tl_type in tagmap:

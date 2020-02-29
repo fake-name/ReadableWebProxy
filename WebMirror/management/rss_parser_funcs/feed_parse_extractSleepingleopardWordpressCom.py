@@ -1,4 +1,3 @@
-
 def extractSleepingleopardWordpressCom(item):
 	'''
 	Parser for 'sleepingleopard.wordpress.com'
@@ -9,6 +8,8 @@ def extractSleepingleopardWordpressCom(item):
 		return None
 
 	tagmap = [
+		('fffcbo',       'FFF-Class Building Owner',                      'translated'),
+		('fff-class building owner',       'FFF-Class Building Owner',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractSleepingleopardWordpressCom(item):
 
 
 	return False
-	

@@ -22,6 +22,7 @@ def extractAdoseoflove4Me(item):
 		('mycd',                                                                            'Madam, your vest dropped again',                                                                 'translated'),
 		('fymy',                                                                            'Familiarity Breeds Marriage: Mysterious Young Master, Super Cool ',                              'translated'),
 		('sfam',                                                                            'Sonata: Fleeing to Avoid an Arranged Marriage',                                                  'translated'),
+		('mar',                                                                             'Martial Arts Reigns',                                                                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

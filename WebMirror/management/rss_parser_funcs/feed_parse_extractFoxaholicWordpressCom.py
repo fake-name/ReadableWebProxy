@@ -91,6 +91,7 @@ def extractFoxaholicWordpressCom(item):
 		('Rebirth into an Interstellar Marriage',                                                   'Rebirth into an Interstellar Marriage',                                                                  'translated'),
 		('World Strongest Rearguard',                                                               'World Strongest Rearguard',                                                                              'translated'),
 		('5 big shots kneeled and called me mom',                                                   '5 big shots kneeled and called me mom',                                                                  'translated'),
+		('i have refined qi for 3000 years',                                                        'i have refined qi for 3000 years',                                                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

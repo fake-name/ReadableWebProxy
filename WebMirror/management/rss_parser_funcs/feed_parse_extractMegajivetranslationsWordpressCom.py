@@ -1,6 +1,6 @@
-def extractSporadicmtlWeeblyCom(item):
+def extractMegajivetranslationsWordpressCom(item):
 	'''
-	Parser for 'sporadicmtl.weebly.com'
+	Parser for 'megajivetranslations.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,6 +8,7 @@ def extractSporadicmtlWeeblyCom(item):
 		return None
 
 	tagmap = [
+		('a round trip to love',       'A Round Trip to Love',            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -18,7 +19,7 @@ def extractSporadicmtlWeeblyCom(item):
 
 	if item['tags'] == ['Uncategorized']:
 		titlemap = [
-			('MGC Chapter ',  'Miniature Garden Chemister',      'translated'),
+			('A Round Trip to Love ',       'A Round Trip to Love',            'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

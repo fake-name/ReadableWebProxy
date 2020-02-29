@@ -1,6 +1,6 @@
-def extractKudalakornClub(item):
+def extractTamagoyaki6903WordpressCom(item):
 	'''
-	Parser for 'kudalakorn.club'
+	Parser for 'tamagoyaki6903.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +8,8 @@ def extractKudalakornClub(item):
 		return None
 
 	tagmap = [
-		('Love Sick',       'Love Sick',                      'translated'),
+		('my teammates are all crazy!',       'My Teammates are All Crazy!',                      'translated'),
+		('mtaac',                             'My Teammates are All Crazy!',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

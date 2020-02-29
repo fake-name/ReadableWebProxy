@@ -12,7 +12,7 @@ def extractLittlemonster8HomeBlog(item):
 		('jin wang dotes on his concubine',          'jin wang dotes on his concubine',                         'translated'),
 		('fight for peace and love',                 'fight for peace and love',                                'translated'),
 		('love story at starry night',               'love story at starry night',                              'translated'),
-		('未分类',                                   'Sunset Boulevard',                                        'translated'),
+		('speciesism is not allowed',                'speciesism is not allowed',                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

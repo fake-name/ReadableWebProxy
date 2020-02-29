@@ -109,6 +109,7 @@ def extractDanmeiMelimeliartsCom(item):
 		('the king\'s return',                                                     'the king\'s return',                                                                    'translated'),
 		('i have a pair of yin-yuan eyes',                                         'i have a pair of yin-yuan eyes',                                                        'translated'),
 		('turing\'s code',                                                         'turing\'s code',                                                                        'translated'),
+		('the werewolf young master\'s caretaker',                                 'the werewolf young master\'s caretaker',                                                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

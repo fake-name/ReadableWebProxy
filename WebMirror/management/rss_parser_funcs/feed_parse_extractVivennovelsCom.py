@@ -1,4 +1,3 @@
-
 def extractVivennovelsCom(item):
 	'''
 	Parser for 'vivennovels.com'
@@ -9,6 +8,8 @@ def extractVivennovelsCom(item):
 		return None
 
 	tagmap = [
+		('trnac',         'The Return of the Noble abandoned consort',           'translated'),
+		('mmgmlfy',       'Make me give up my Love on you',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractVivennovelsCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractDeeyosarecommendationWordpressCom(item):
 	'''
 	Parser for 'deeyosarecommendation.wordpress.com'
@@ -9,6 +8,7 @@ def extractDeeyosarecommendationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('demon\'s sweetheart',       'demon\'s sweetheart',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractDeeyosarecommendationWordpressCom(item):
 
 
 	return False
-	

@@ -1,6 +1,6 @@
-def extractKudalakornClub(item):
+def extractDomhanmadraruaEu(item):
 	'''
-	Parser for 'kudalakorn.club'
+	Parser for 'domhanmadrarua.eu'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +8,7 @@ def extractKudalakornClub(item):
 		return None
 
 	tagmap = [
-		('Love Sick',       'Love Sick',                      'translated'),
+		('The Aloof Prince',       'The Aloof Prince Pampers His Wild First Rate Consort',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

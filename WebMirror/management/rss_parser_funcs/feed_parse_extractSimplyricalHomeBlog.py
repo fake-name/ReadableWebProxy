@@ -1,4 +1,3 @@
-
 def extractSimplyricalHomeBlog(item):
 	'''
 	Parser for 'simplyrical.home.blog'
@@ -9,6 +8,8 @@ def extractSimplyricalHomeBlog(item):
 		return None
 
 	tagmap = [
+		(';black eagle saint',      'Black Eagle’s Saint~ The Expelled Healer Masters Dark Magic from His Spare Magic Powers',                      'translated'),
+		('black eagle saint',       'Black Eagle’s Saint~ The Expelled Healer Masters Dark Magic from His Spare Magic Powers',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractSimplyricalHomeBlog(item):
 
 
 	return False
-	

@@ -11,6 +11,7 @@ def extractAsadatranslationsWordpressCom(item):
 		('npc town building game',                          'NPC Town-building Game',                          'translated'),
 		('reader',                                          'reader',                                          'translated'),
 		('horror game escape guide',                        'horror game escape guide',                        'translated'),
+		('study magic in my free time',                     'Study Magic In My Free Time',                     'translated'),
 		('PRC',                                             'PRC',                                             'translated'),
 		('i am a summoning master',                         'I am a Summoning Master',                         'translated'),
 		('the villain happy being a father',                'The Villain is Happy being a Father',             'translated'),

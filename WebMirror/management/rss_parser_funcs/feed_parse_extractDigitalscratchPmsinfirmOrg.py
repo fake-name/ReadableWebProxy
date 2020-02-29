@@ -1,14 +1,26 @@
-
 def extractDigitalscratchPmsinfirmOrg(item):
 	'''
 	Parser for 'digitalscratch.pmsinfirm.org'
 	'''
+	
+	
+	badwords = [
+			'drama CD',
+			'Lyrics',
+			'Scans',
+			'Game',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
+		('digimon adventure',       'digimon adventure',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +31,3 @@ def extractDigitalscratchPmsinfirmOrg(item):
 
 
 	return False
-	

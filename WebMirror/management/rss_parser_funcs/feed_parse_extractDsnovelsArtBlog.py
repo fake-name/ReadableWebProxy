@@ -1,6 +1,7 @@
-def extractKudalakornClub(item):
+
+def extractDsnovelsArtBlog(item):
 	'''
-	Parser for 'kudalakorn.club'
+	Parser for 'dsnovels.art.blog'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +9,6 @@ def extractKudalakornClub(item):
 		return None
 
 	tagmap = [
-		('Love Sick',       'Love Sick',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,3 +19,4 @@ def extractKudalakornClub(item):
 
 
 	return False
+	

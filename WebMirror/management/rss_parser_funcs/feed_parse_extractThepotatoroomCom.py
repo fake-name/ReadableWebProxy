@@ -12,6 +12,7 @@ def extractThepotatoroomCom(item):
 		('as the demon king, i am very distressed because the hero is too weak 1.0',       'as the demon king, i am very distressed because the hero is too weak 1.0',       'translated'),
 		("please respect the occupation 'evil spirit'",                                    "please respect the occupation 'evil spirit'",                                    'translated'),
 		('there\'s something wrong with this development!',                                'there\'s something wrong with this development!',                                'translated'),
+		('insider',                                                                        'Insider',                                                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

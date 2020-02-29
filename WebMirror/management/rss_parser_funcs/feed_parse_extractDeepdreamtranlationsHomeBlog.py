@@ -12,6 +12,7 @@ def extractDeepdreamtranlationsHomeBlog(item):
 		('TSSSG',                                           'The Scum Shou\'s Survival Guide',                      'translated'),
 		('TSWCSS',                                          'The Strategy of Washing Clean a Slag Shou',                      'translated'),
 		('The Strategy of Washing Clean a Slag Shou',       'The Strategy of Washing Clean a Slag Shou',                      'translated'),
+		('Heaven Official\'s Blessing',                     'Heaven Official\'s Blessing',                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

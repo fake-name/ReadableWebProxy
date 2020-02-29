@@ -16,6 +16,9 @@ def extractAstereadsWordpressCom(item):
 	for tagname, name, tl_type in tagmap:
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
-
+	
+	if 'level 99 villainous' in item['tags'] and chp != 99:
+		return buildReleaseMessageWithType(item, 'Level 99 Villainous Daughter', vol, chp, frag=frag, postfix=postfix, tl_type='translated')
+		
 
 	return False

@@ -6,6 +6,7 @@ def extractThefinalcinderellaTumblrCom(item):
 
 	badwords = [
 			'tsurune dvd translations',
+			'a3! anime',
 			'badword',
 		]
 	if any([bad in item['tags'] for bad in badwords]):
@@ -18,7 +19,8 @@ def extractThefinalcinderellaTumblrCom(item):
 		return None
 
 	tagmap = [
-		('tsurune',       'Tsurune: Kazemai Koukou Kyuudoubu',                      'translated'),
+		('tsurune',                        'Tsurune: Kazemai Koukou Kyuudoubu',             'translated'),
+		('kaze ga tsuyoku fuiteiru',       'kaze ga tsuyoku fuiteiru',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

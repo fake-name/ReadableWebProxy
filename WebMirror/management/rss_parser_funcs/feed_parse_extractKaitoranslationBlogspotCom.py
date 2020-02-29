@@ -12,6 +12,7 @@ def extractKaitoranslationBlogspotCom(item):
 
 	tagmap = [
 		('Keizoku wa Maryoku Nari',       'Keizoku wa Maryoku Nari',                      'translated'),
+		('nido tensei',                   'Nido Tensei Shita Shounen wa S Rank Boukensha Toshite Heion ni Sugosu ~ Zense ga kenja de eiyūdatta boku wa raisede wa jimi ni ikiru ~',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

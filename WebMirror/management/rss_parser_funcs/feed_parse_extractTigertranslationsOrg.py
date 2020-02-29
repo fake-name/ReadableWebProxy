@@ -22,6 +22,7 @@ def extractTigertranslationsOrg(item):
 		('Tensei Kenja no Isekai Raifu ~Daini no Shokugyo wo Ete, Sekai Saikyou ni Narimashita',          'Tensei Kenja no Isekai Raifu ~Daini no Shokugyo wo Ete, Sekai Saikyou ni Narimashita~',                        'translated'),
 		('the legendary rebuilding of a world by a realist demon king',                                   'the legendary rebuilding of a world by a realist demon king',                                                  'translated'),
 		('ohanabatake no maousama',                                                                       'ohanabatake no maousama',                                                                                      'translated'),
+		('Only with Your Heart',                                                                          'Only with Your Heart',                                                                                         'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

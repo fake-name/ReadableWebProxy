@@ -1,6 +1,7 @@
 def extractSub29TranslationWordpressCom(item):
 	'''
 	Parser for 'sub29translation.wordpress.com'
+	Parser for 'sub29translation.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])

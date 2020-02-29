@@ -32,6 +32,7 @@ def extractWuxiaworld(item):
 		("DD2: Unrivaled Tang Sect",                        'Douluo Dalu 2 - The Unrivaled Tang-Clan',           'translated'),
 		("Emperor's Domination",                            "Emperor's Domination",                              'translated'),
 		('A Record of a Mortal\'s Journey to Immortality',  'A Record of a Mortal\'s Journey to Immortality',    'translated'),
+		('refining the mountains and rivers',               'refining the mountains and rivers',                 'translated'),
 		('Archfiend',                                       'Archfiend',                                         'translated'),
 		('A Will Eternal',                                  'A Will Eternal',                                    'translated'),
 		('Absolute Choice',                                 'Absolute Choice',                                   'translated'),

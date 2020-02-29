@@ -1,6 +1,7 @@
-
 def extractDomhanmadraruaBlogspotCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'domhanmadrarua.blogspot.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractDomhanmadraruaBlogspotCom(item):
 
 
 	return False
-	

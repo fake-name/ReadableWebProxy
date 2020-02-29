@@ -1,4 +1,3 @@
-
 def extractVoidsnvlcornerWordpressCom(item):
 	'''
 	Parser for 'voidsnvlcorner.wordpress.com'
@@ -9,6 +8,7 @@ def extractVoidsnvlcornerWordpressCom(item):
 		return None
 
 	tagmap = [
+		('underworld restaurant',       'Underworld Restaurant',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractVoidsnvlcornerWordpressCom(item):
 
 
 	return False
-	

@@ -28,6 +28,7 @@ def extractExiledrebelsscanlationsCom(item):
 		('A Heart of a Smith',                                          'A Heart of a Smith',                                               'translated'),
 		('beast store no. 138',                                         'Cute Beast Store No. 138',                                         'translated'),
 		('delicious food got me famous across the galaxy',              'delicious food got me famous across the galaxy',                   'translated'),
+		('retirement life (ancient transmigration)',                    'Retirement Life (Ancient Transmigration)',                         'translated'),
 		('Mr. Fashionable',                                             'Mr. Fashionable',                                                  'translated'),
 		('Lessons on Raising a Partner',                                'Lessons on Raising a Partner',                                     'translated'),
 		('quick transmigration: lovers always on the counterattack',    'quick transmigration: lovers always on the counterattack',         'translated'),

@@ -7,6 +7,15 @@ def extractWhatsawhizzerwebnovelsCom(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 		
+	
+	badwords = [
+			'isekai no monogatari',        # Comic
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
+		
 	if 'To unlock this content' in item['contents']:
 		return None
 	if len(item['contents']) < 1000:
@@ -33,6 +42,9 @@ def extractWhatsawhizzerwebnovelsCom(item):
 		('vampires kiss',                   'The Vampire’s Kiss',                                                       'oel'),
 		('Requiem to the Stars',            'Requiem to the Stars',                                                     'oel'),
 		('guy on a spaceship',              'Guy on a Spaceship',                                                       'oel'),
+		('enslaved',                        'Enslaved Sister Harem',                                                    'oel'),
+		('the last dread pirate',           'The Last Dread Pirate',                                                    'oel'),
+		('zoo',                             'The Zoo',                                                                  'oel'),
 		('Loiterous',                       'Loiterous',                                                                'oel'),
 	]
 

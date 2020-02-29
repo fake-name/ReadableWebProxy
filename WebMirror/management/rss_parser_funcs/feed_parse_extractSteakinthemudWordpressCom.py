@@ -1,4 +1,3 @@
-
 def extractSteakinthemudWordpressCom(item):
 	'''
 	Parser for 'steakinthemud.wordpress.com'
@@ -9,6 +8,7 @@ def extractSteakinthemudWordpressCom(item):
 		return None
 
 	tagmap = [
+		('ditd',       'Delta In The Darkness',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSteakinthemudWordpressCom(item):
 
 
 	return False
-	
