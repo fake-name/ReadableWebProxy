@@ -43,7 +43,7 @@ colorama==0.4.3
 pyyaml==5.3
 natsort==7.0.1
 mdx_linkify==1.4
-ftfy==5.6
+ftfy==5.7
 lxml==4.4.2
 Flask==1.1.1
 Flask-DebugToolbar==0.10.1
