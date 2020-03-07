@@ -1061,17 +1061,38 @@ def comment_netloc(netloc):
 
 	items = os.listdir(rulepath)
 	items.sort()
-	ret = []
-	specials = {}
+
+	ret = None
+
 	for item_path in [os.path.join(rulepath, item) for item in items if item.endswith('.yaml')]:
+		if "0-dead-sites" in item_path:
+			continue
+
 		item_path = os.path.abspath(item_path)
 		with open(item_path, "r", encoding='utf-8') as fp:
 			cont = fp.read()
-			if netloc in cont:
-				print(netloc)
-				print(item_path)
+
+		if netloc in cont:
+			with open(item_path, "r") as fp:
+				lines = fp.readlines()
+
+			out = []
+			for line in lines:
+				line = line.rstrip()
+				if netloc in line:
+					if line.startswith("#"):
+						out.append(line)
+					else:
+						ret = line
+						out.append("# " + line)
+				else:
+					out.append(line)
 
 
+			with open(item_path, "w") as fp:
+				fp.write("\n".join(out))
+
+	return ret
 
 def exposed_update_from_dead_netlocs():
 	'''
@@ -1085,10 +1106,21 @@ def exposed_update_from_dead_netlocs():
 
 		items = json.loads(cont)
 
+	moved = []
 	for key, value in items.items():
 		if "code" in value and value['code'] == 410:
-			comment_netloc(key)
+			comment_line = comment_netloc(key)
+			moved.append(comment_line)
+		if "code" in value and value['code'] == 404:
+			comment_line = comment_netloc(key)
+			moved.append(comment_line)
+		if "code" in value and value['code'] == -1:
+			comment_line = comment_netloc(key)
+			moved.append(comment_line)
 
+	print("New dead: ")
+	for line in moved:
+		print(line)
 
 def exposed_dump_netlocs():
 	'''

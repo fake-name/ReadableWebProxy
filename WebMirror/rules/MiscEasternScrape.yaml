@@ -26,7 +26,7 @@ baseUrl: [
 		'https://laescans.myportfolio.com',
 
 		# Dickish blocking garbage shit.
-		'https://nepustation.wordpress.com',
+# 		'https://nepustation.wordpress.com',
 
 		'http://www.okanegahoshii.club',
 
@@ -227,6 +227,3 @@ decompose: [
 
 stripTitle: [
 ]
-
-
-
