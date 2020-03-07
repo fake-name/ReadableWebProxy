@@ -6,7 +6,7 @@ rewalk_interval_days: 30
 send_raw_feed: True
 
 baseUrl: [
-		'https://www.noveluniverse.com',
+# 		'https://www.noveluniverse.com',
 	]
 
 feeds: [
@@ -68,6 +68,4 @@ decompose: [
 
 stripTitle: [
 ]
-
-
 

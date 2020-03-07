@@ -9,7 +9,7 @@ baseUrl: [
 		'http://www.spcnet.tv/forums',
 		'http://forum.wuxiaworld.com',
 		'http://wuxiasociety.freeforums.net',
-		'http://www.jcafe24.net',
+# 		'http://www.jcafe24.net',
 		'https://elwiki.net',
 ]
 
@@ -281,6 +281,4 @@ decompose: [
 
 stripTitle: [
 ]
-
-
 

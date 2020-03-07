@@ -26,7 +26,7 @@ baseUrl: [
 		'http://www.wastedproductions.com',
 		'http://www.p-synd.com',
 		'http://mst.firstagent.net',
-		'http://www.riafritz.com',
+# 		'http://www.riafritz.com',
 		'http://www.vjchambers.com',
 		'http://www.daisytannenbaum.com',
 		'http://www.richardphilliphoffman.com',
@@ -44,7 +44,7 @@ baseUrl: [
 		'http://www.spearfishlaketales.com',
 		'http://arfer.net',
 		'http://pixelnyx.com',
-		'http://www.jimdunavant.com',
+# 		'http://www.jimdunavant.com',
 		'http://hfy-archive.org',
 		# Garbage drupal thing
 		'https://fiction.live',
@@ -117,6 +117,3 @@ decompose: [
 
 stripTitle: [
 ]
-
-
-

@@ -1120,7 +1120,8 @@ def exposed_update_from_dead_netlocs():
 
 	print("New dead: ")
 	for line in moved:
-		print(line)
+		if line:
+			print(line)
 
 def exposed_dump_netlocs():
 	'''

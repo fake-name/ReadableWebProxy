@@ -18,7 +18,7 @@ baseUrl:
      - "http://fleetingphoenix.weebly.com"
      - "https://sbapon-koreannovels.weebly.com"
      - "https://fizzhaztranslates.weebly.com"
-     - "https://procrastinationtranslation.weebly.com"
+#      - "https://procrastinationtranslation.weebly.com"
      - "https://sporadicmtl.weebly.com"
      - "https://sunasun-noveltranslations.weebly.com"
      - "https://lovelyteatranslation.weebly.com"
@@ -85,4 +85,3 @@ decompose:
 
 
 stripTitle: ['- Dearest Fairy']
-

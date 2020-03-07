@@ -7,7 +7,7 @@ type: eastern
 send_raw_feed: False
 
 baseUrl: [
-		'https://www.eanovel.com/',
+# 		'https://www.eanovel.com/',
 
 	]
 
@@ -62,6 +62,4 @@ decompose: [
 
 stripTitle: [
 ]
-
-
 

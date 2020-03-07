@@ -48,7 +48,7 @@ baseUrl: [
 	'http://fivedollarmail.blogspot.com',
 	'http://fusionthejourney.blogspot.com',
 	'http://herbadluck.blogspot.com',
-	'http://honor-and-truth.blogspot.com',
+# 	'http://honor-and-truth.blogspot.com',
 	'http://hugginglove.blogspot.com',
 	'http://humbugbistro.blogspot.com',
 	'http://huwlangridge.blogspot.com',
@@ -95,7 +95,7 @@ baseUrl: [
 	'http://thezombieknight.blogspot.co.uk',
 	'http://thezombieknight.blogspot.com',
 	'http://thistledowncopperbottom.blogspot.com',
-	'http://toadmila.blogspot.com',
+# 	'http://toadmila.blogspot.com',
 	'http://truthiscreation.blogspot.com',
 	'http://twist-exist.blogspot.com',
 	'http://underworlders.blogspot.com',
@@ -279,5 +279,3 @@ stripTitle: [
 	"Istian's Workshop:",
 
 ]
-
-

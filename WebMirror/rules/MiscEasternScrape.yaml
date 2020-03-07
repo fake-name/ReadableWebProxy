@@ -22,7 +22,7 @@ baseUrl: [
 		'http://www.gundamwingtales.com',
 		'http://www.tigresstranslations.com',
 		'http://novel-id.blognive.com',
-		'http://baka.exnaid.com',
+# 		'http://baka.exnaid.com',
 		'https://laescans.myportfolio.com',
 
 		# Dickish blocking garbage shit.
@@ -40,10 +40,10 @@ baseUrl: [
 
 		# On blogger
 		'http://novel.oddsquad.org',
-		'http://www.karasunovels.com',
-		'http://www.karasunovels.com',
+# 		'http://www.karasunovels.com',
+# 		'http://www.karasunovels.com',
 		'http://www.everythingsweet.me',
-		'http://www.whiteshark.tk',
+# 		'http://www.whiteshark.tk',
 		'http://www.fringeoctopus.com',
 		'https://www.zerothnovels.com',
 		'https://www.huntresstranslations.xyz',
@@ -63,12 +63,12 @@ baseUrl: [
 		'https://idola.dreamwidth.org',
 		'https://chiisai-hime.dreamwidth.org',
 
-		'http://uncommittedtranslations.bravesites.com',
+# 		'http://uncommittedtranslations.bravesites.com',
 
-		'http://www.heavenlyenchantress.com',
+# 		'http://www.heavenlyenchantress.com',
 		'http://lilith-art.de.tl',
 
-		'http://www.novellatranslation.com',
+# 		'http://www.novellatranslation.com',
 		'http://www.lionmask.pro',
 
 		'https://syzctranslations.github.io',
@@ -79,7 +79,7 @@ baseUrl: [
 
 		'https://www.fuyuneko.org',
 		'http://lyzo.eu',
-		'https://meejee.net',
+# 		'https://meejee.net',
 
 		'https://wuxiaworld.com',
 		'https://www.wuxiaworld.com',
@@ -99,29 +99,29 @@ baseUrl: [
 		'https://novel.babelchain.org',
 		'https://www.flying-lines.com',
 
-		'https://www.badnovels.com',
-		'https://badnovels.com',
+# 		'https://www.badnovels.com',
+# 		'https://badnovels.com',
 		'http://deadlynovels.tk',
-		'https://lovelyteatranslation.webnode.com',
+# 		'https://lovelyteatranslation.webnode.com',
 
 		'http://www.ssttranslations.com',
 		'https://veratales.com',
 		'http://vgperson.com',
 		'http://www.finalreads.com',
 		'https://duanshu.me',
-		'https://www.quikernovel.com',
+# 		'https://www.quikernovel.com',
 		'https://trashlation.tk',
 		'http://hbnhtranslations.com',
 		'https://bluedreamsblog.jimdofree.com',
 		'https://babelnovel.com',
 
-		'https://www.laundrybasket.xyz',
+# 		'https://www.laundrybasket.xyz',
 
 		# I /think/ these are aggregators, but I'm not totally sure.
-		'https://pumanovels.com',
+# 		'https://pumanovels.com',
 		'https://www.novelmultiverse.com',
 		'http://www.spaceofgod.com',
-		'https://fanovels.com',
+# 		'https://fanovels.com',
 		'http://novelfull.com',
 
 
@@ -132,10 +132,10 @@ feeds: [
 	'http://girlyboysalliance.mozello.com/blog/rss/',
 	'http://novel.oddsquad.org/feeds/posts/default',
 	'http://www.everythingsweet.me/feeds/posts/default',
-	'http://www.heavenlyenchantress.com/feeds/posts/default',
-	'http://www.karasunovels.com/feeds/posts/default',
+# 	'http://www.heavenlyenchantress.com/feeds/posts/default',
+# 	'http://www.karasunovels.com/feeds/posts/default',
 	'http://www.lionmask.pro/feeds/posts/default',
-	'http://www.novellatranslation.com/feed',
+# 	'http://www.novellatranslation.com/feed',
 	'http://www.ultimaguil.org/base/news_rss.xml',
 	'http://www.ultimaguil.org/base/novelupdates_rss.xml',
 	'https://lightnovelbastion.com/rss.php',

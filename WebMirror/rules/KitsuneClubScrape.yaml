@@ -1,8 +1,8 @@
 type: eastern
 
 baseUrl: [
-	"http://kitsune.club",
-	"https://readitt.com",
+# 	"http://kitsune.club",
+# 	"https://readitt.com",
 ]
 
 # THey don't seem to have RSS or anything. Annoying.
@@ -58,4 +58,3 @@ decomposeBefore: [
 ]
 
 stripTitle: []
-
