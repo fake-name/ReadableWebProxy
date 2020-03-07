@@ -1053,6 +1053,43 @@ def exposed_find_dead_netlocs():
 		cont = json.dumps(res, indent=4)
 		fp.write(cont)
 
+
+def comment_netloc(netloc):
+
+	cwd = os.path.split(__file__)[0]
+	rulepath = os.path.join(cwd, "../../WebMirror/rules")
+
+	items = os.listdir(rulepath)
+	items.sort()
+	ret = []
+	specials = {}
+	for item_path in [os.path.join(rulepath, item) for item in items if item.endswith('.yaml')]:
+		item_path = os.path.abspath(item_path)
+		with open(item_path, "r", encoding='utf-8') as fp:
+			cont = fp.read()
+			if netloc in cont:
+				print(netloc)
+				print(item_path)
+
+
+
+def exposed_update_from_dead_netlocs():
+	'''
+	Parse the bad_urls.json output file from the `find_dead_netlocs` command, and update the
+	scraper rules, commenting out any sources that are now failing to resolve.
+	'''
+
+
+	with open("bad_urls.json", "r") as fp:
+		cont = fp.read()
+
+		items = json.loads(cont)
+
+	for key, value in items.items():
+		if "code" in value and value['code'] == 410:
+			comment_netloc(key)
+
+
 def exposed_dump_netlocs():
 	'''
 	Dump the urls to a cache file for comparison purposes.

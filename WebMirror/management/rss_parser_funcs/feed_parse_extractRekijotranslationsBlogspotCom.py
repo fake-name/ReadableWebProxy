@@ -1,19 +1,14 @@
-def extractAnameescansWordpressCom(item):
+def extractRekijotranslationsBlogspotCom(item):
 	'''
-	Parser for 'anameescans.wordpress.com'
+	Parser for 'rekijotranslations.blogspot.com'
 	'''
-
-	if 'Manhua' in item['tags']:
-		return None
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
-		('Contract Marriage',         'Contract Marriage',                        'translated'),
-		('Nowhere to be Found',       'Nowhere to be Found',                      'translated'),
-		('broken bonds',              'broken bonds',                             'translated'),
+		('beyond time living in sengoku',       'beyond time living in sengoku',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

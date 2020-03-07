@@ -1,19 +1,16 @@
-def extractAnameescansWordpressCom(item):
+def extractTimelesstranslationsHomeBlog(item):
 	'''
-	Parser for 'anameescans.wordpress.com'
+	Parser for 'timelesstranslations.home.blog'
 	'''
-
-	if 'Manhua' in item['tags']:
-		return None
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
-		('Contract Marriage',         'Contract Marriage',                        'translated'),
-		('Nowhere to be Found',       'Nowhere to be Found',                      'translated'),
-		('broken bonds',              'broken bonds',                             'translated'),
+		('RM',        'Rivers and Mountains',                      'translated'),
+		('eow',       'The End of the World',                      'translated'),
+		('slg',       'Suspended Life Game',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

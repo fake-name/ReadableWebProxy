@@ -21,6 +21,8 @@ def extractShainagtranslationsWordpressCom(item):
 			('TCVCF Ch.',                          'The CEO’s Villainess Childhood Friend',   'translated'),
 			('TTID Ch.',                           'Trapped in a Typical Idol Drama',         'translated'),
 			('HSAG Ch.',                           'Heroine Saves A Gentleman',               'translated'),
+			('INYFL Ch.',                          'I\'m Not Your Female Lead',               'translated'),
+			('DLVM Ch.',                           'Daily Life of a Villain\'s Mother',       'translated'),
 			('Master of Dungeon',                  'Master of Dungeon',                       'oel'),
 		]
 	

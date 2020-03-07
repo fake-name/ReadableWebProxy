@@ -1,4 +1,3 @@
-
 def extractPenguinscanreadtooCom(item):
 	'''
 	Parser for 'penguinscanreadtoo.com'
@@ -9,6 +8,7 @@ def extractPenguinscanreadtooCom(item):
 		return None
 
 	tagmap = [
+		('basm',       'By A Slight Mistake',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractPenguinscanreadtooCom(item):
 
 
 	return False
-	

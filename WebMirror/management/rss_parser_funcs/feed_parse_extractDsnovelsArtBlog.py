@@ -1,4 +1,3 @@
-
 def extractDsnovelsArtBlog(item):
 	'''
 	Parser for 'dsnovels.art.blog'
@@ -9,6 +8,7 @@ def extractDsnovelsArtBlog(item):
 		return None
 
 	tagmap = [
+		('taming a munchkin',       'taming a munchkin',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractDsnovelsArtBlog(item):
 
 
 	return False
-	

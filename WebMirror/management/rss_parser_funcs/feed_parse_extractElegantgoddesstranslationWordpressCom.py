@@ -1,19 +1,26 @@
-def extractAnameescansWordpressCom(item):
+def extractElegantgoddesstranslationWordpressCom(item):
 	'''
-	Parser for 'anameescans.wordpress.com'
+	Parser for 'elegantgoddesstranslation.wordpress.com'
 	'''
-
-	if 'Manhua' in item['tags']:
+	
+	
+	badwords = [
+			'quotes',
+			'youtube',
+			'Music',
+			'badword',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
 		return None
+
+
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
-		('Contract Marriage',         'Contract Marriage',                        'translated'),
-		('Nowhere to be Found',       'Nowhere to be Found',                      'translated'),
-		('broken bonds',              'broken bonds',                             'translated'),
+		('the white-haired imperial consort',       'The White-Haired Imperial Concubine',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

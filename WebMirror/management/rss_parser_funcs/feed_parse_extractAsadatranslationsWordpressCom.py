@@ -12,11 +12,12 @@ def extractAsadatranslationsWordpressCom(item):
 		('reader',                                          'reader',                                          'translated'),
 		('horror game escape guide',                        'horror game escape guide',                        'translated'),
 		('study magic in my free time',                     'Study Magic In My Free Time',                     'translated'),
-		('PRC',                                             'PRC',                                             'translated'),
+		('delta in the darkness',                           'delta in the darkness',                           'translated'),
 		('i am a summoning master',                         'I am a Summoning Master',                         'translated'),
 		('the villain happy being a father',                'The Villain is Happy being a Father',             'translated'),
 		('graduated from witchcraft institute',             'graduated from witchcraft institute',             'translated'),
 		('the prince\'s battle to concede the throne',      'the prince\'s battle to concede the throne',      'translated'),
+		('PRC',                                             'PRC',                                             'translated'),
 		('Loiterous',                                       'Loiterous',                                       'oel'),
 	]
 

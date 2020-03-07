@@ -327,6 +327,16 @@ class MessageProcessor(object):
 						state_per_chunk = [(len(tmp['chunks']), tmp['chunk-count']) for tmp in worker_conf['chunk_cache'].values() if tmp and 'chunks' in tmp and 'chunk-count' in tmp]
 					)
 				)
+			self.log.info("	Worker states for {qname} ->".format(
+						qname           = worker_name.ljust(30),
+				)
+			)
+			for worker in worker_conf['workers']:
+				self.log.info("		{worker} ->".format(
+							worker = worker
+					)
+				)
+
 
 		for interface_group, queue_dict in self.interface_dict.items():
 			if isinstance(queue_dict, dict):

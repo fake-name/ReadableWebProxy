@@ -34,6 +34,7 @@ def extractYurikatransWordpressCom(item):
 		('Daybreak Summoner',                            'Daybreak Summoner ～I will protect that girl who summoned me into this world with everything I’ve got～!',      'translated'),
 		('Luggage Carrier Dragon Slayer',                'Luggage Carrier Dragon Slayer!',                                                                                'translated'),
 		('Kansutoppu',                                   'Kansutoppu!',                                                                                                   'translated'),
+		('saint mari',                                   'Emblem of the Incarnated Saint and the Dragon ～The Airheaded Goddess aims to be a top Adventurer～',           'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

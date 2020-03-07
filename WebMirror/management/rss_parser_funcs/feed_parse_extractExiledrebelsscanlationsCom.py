@@ -32,6 +32,8 @@ def extractExiledrebelsscanlationsCom(item):
 		('Mr. Fashionable',                                             'Mr. Fashionable',                                                  'translated'),
 		('Lessons on Raising a Partner',                                'Lessons on Raising a Partner',                                     'translated'),
 		('quick transmigration: lovers always on the counterattack',    'quick transmigration: lovers always on the counterattack',         'translated'),
+		('hnmsghml chapters',                                           'he\'s not my shadow guard, he\'s my lover',                        'translated'),
+		('he\'s not my shadow guard, he\'s my lover',                   'he\'s not my shadow guard, he\'s my lover',                        'translated'),
 		('Spirit Hotel',                                                'Spirit Hotel',                                                     'translated'),
 		('Never, My Alpha',                                             'Never, My Alpha',                                                  'oel'), 
 		('Fractured Moonlight',                                         'Fractured Moonlight',                                              'oel'), 

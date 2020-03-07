@@ -1,4 +1,3 @@
-
 def extractO3OtranslationsWordpressCom(item):
 	'''
 	Parser for 'o3otranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractO3OtranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('vos',       'Violant of the Silver',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractO3OtranslationsWordpressCom(item):
 
 
 	return False
-	

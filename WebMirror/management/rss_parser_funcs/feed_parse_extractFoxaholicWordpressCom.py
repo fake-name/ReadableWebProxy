@@ -92,6 +92,7 @@ def extractFoxaholicWordpressCom(item):
 		('World Strongest Rearguard',                                                               'World Strongest Rearguard',                                                                              'translated'),
 		('5 big shots kneeled and called me mom',                                                   '5 big shots kneeled and called me mom',                                                                  'translated'),
 		('i have refined qi for 3000 years',                                                        'i have refined qi for 3000 years',                                                                       'translated'),
+		('my sister told me to give up my fiancé',                                                  'my sister told me to give up my fiancé',                                                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

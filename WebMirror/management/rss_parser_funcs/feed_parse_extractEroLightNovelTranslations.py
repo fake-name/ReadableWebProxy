@@ -15,6 +15,7 @@ def extractEroLightNovelTranslations(item):
 
 
 	tagmap = [
+		('thunderclaps',                                       'Thunderclaps: Four Angels Trapped in a Sexual Prison',                'translated'),
 		('Makina',                                             'The Slutty Adventures of Magical Princess Makina',                    'translated'),
 		('Harem Castle',                                       'Harem Castle',                                                        'translated'),
 		('Harem Pirates',                                      'Harem Pirates',                                                       'translated'),
@@ -26,14 +27,16 @@ def extractEroLightNovelTranslations(item):
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 			
 	chp_prefixes = [
-			('Milk Princess',                                        'Milk Princess',                                            'translated'),
-			('Harem Dynast',                                         'Harem Dynast',                                             'translated'),
-			('Harem Engagement',                                     'Harem Engagement',                                         'translated'),
-			('Harem Sister',                                         'Harem Sister',                                             'translated'),
-			('Harem Caravan',                                        'Harem Caravan',                                            'translated'),
-			('Erogenous Beauty Salon by Succubus Girls: Chapter',    'Erogenous Beauty Salon by Succubus Girls',                 'translated'),
-			('Erogenous Beauty Salon by Succubus Girls 2: Chapter',  'Erogenous Beauty Salon by Succubus Girls 2',               'translated'),
-		]
+			('Flirting Sex Train: Chapter ',                         'Flirting Sex Train: I Accidentally Got on the Women-Only Car and Sex is Allowed!?',           'translated'),
+			('A Queen Disgraced: Chapter ',                          'A Queen Disgraced: Devilish Strategist',                                                      'translated'),
+			('Milk Princess',                                        'Milk Princess',                                                                               'translated'),
+			('Harem Dynast',                                         'Harem Dynast',                                                                                'translated'),
+			('Harem Engagement',                                     'Harem Engagement',                                                                            'translated'),
+			('Harem Sister',                                         'Harem Sister',                                                                                'translated'),
+			('Harem Caravan',                                        'Harem Caravan',                                                                               'translated'),
+			('Erogenous Beauty Salon by Succubus Girls: Chapter',    'Erogenous Beauty Salon by Succubus Girls',                                                    'translated'),
+			('Erogenous Beauty Salon by Succubus Girls 2: Chapter',  'Erogenous Beauty Salon by Succubus Girls 2',                                                  'translated'),
+		]                                   
 
 	for prefix, series, tl_type in chp_prefixes:
 		if item['title'].lower().startswith(prefix.lower()):

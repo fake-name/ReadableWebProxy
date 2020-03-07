@@ -378,6 +378,12 @@ class SingleAmqpConnection(object):
 		self.signal_stop()
 		self.__worker.join()
 
+	def __repr__(self):
+		return "<SingleAmqpConnection obect. Thread: {alive}, last heartbeat: {age:0.3f}s>".format(
+			alive = "alive" if self.worker_alive() else "dead",
+			age   = time.time() - self.last_heartbeat_received,
+			)
+
 	def __del__(self):
 		self.signal_stop()
 		try:

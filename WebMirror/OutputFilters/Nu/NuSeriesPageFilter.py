@@ -147,6 +147,7 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 		if not titletg:
 			self.log.warn("Could not find item title!")
+			self.log.warn("On URL: '%s'", seriesPageUrl)
 			self.log.warn("%s", soup)
 			return []
 

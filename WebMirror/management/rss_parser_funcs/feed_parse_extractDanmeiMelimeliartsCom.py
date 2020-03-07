@@ -5,6 +5,7 @@ def extractDanmeiMelimeliartsCom(item):
 	
 	
 	badwords = [
+			'tianbao fuyao lu [manhua]',
 			'[Audio Drama]',
 		]
 	tstr = str(item['tags'])

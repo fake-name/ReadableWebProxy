@@ -12,6 +12,7 @@ def extractDefiring(item):
 	tagmap = [
 		('Almadinos Eiyuuden',                        'Almadinos Eiyuuden',                       'translated'),
 		('Tsuyokute New Saga',                        'Tsuyokute New Saga (LN)',                  'translated'),
+		('population control',                        'population control',                       'translated'),
 		('World teacher',                             'World teacher',                            'translated'),
 		('My Death Flags Show No Sign of Ending',     'My Death Flags Show No Sign of Ending',    'translated'),
 	]

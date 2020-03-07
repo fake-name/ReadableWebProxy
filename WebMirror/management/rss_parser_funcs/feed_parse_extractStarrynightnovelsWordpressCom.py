@@ -8,12 +8,13 @@ def extractStarrynightnovelsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('Stepbrother\'s Diary',        'Lean Tuna and Her Stepbrother’s Plan to Become a Fatty Tuna',            'translated'),
-		('MaguToro',                    'Lean Tuna and Her Stepbrother’s Plan to Become a Fatty Tuna',            'translated'),
-		('Lewd Game',                   'I Decided to Participate in a Lewd Game in My Dream',                    'translated'),
-		('summoned hero',               'I Summoned the Hero, to the Present Age',                                'translated'),
-		('Seven Nobles',                'Duke\'s Daughter who is Liable to Die and the Seven Nobles',             'translated'),
-		('Erica',                       'Duke\'s Daughter who is Liable to Die and the Seven Nobles',             'translated'),
+		('Shini Yasui Kōshaku Reijō to Shichi-nin no Kikōshi',        'Shini Yasui Kōshaku Reijō to Shichi-nin no Kikōshi',                     'translated'),
+		('Stepbrother\'s Diary',                                      'Lean Tuna and Her Stepbrother’s Plan to Become a Fatty Tuna',            'translated'),
+		('MaguToro',                                                  'Lean Tuna and Her Stepbrother’s Plan to Become a Fatty Tuna',            'translated'),
+		('Lewd Game',                                                 'I Decided to Participate in a Lewd Game in My Dream',                    'translated'),
+		('summoned hero',                                             'I Summoned the Hero, to the Present Age',                                'translated'),
+		('Seven Nobles',                                              'Duke\'s Daughter who is Liable to Die and the Seven Nobles',             'translated'),
+		('Erica',                                                     'Duke\'s Daughter who is Liable to Die and the Seven Nobles',             'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

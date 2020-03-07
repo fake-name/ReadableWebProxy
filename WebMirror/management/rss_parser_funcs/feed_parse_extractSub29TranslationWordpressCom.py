@@ -10,6 +10,7 @@ def extractSub29TranslationWordpressCom(item):
 
 	tagmap = [
 		('Earth Dragon Dungeon',       'Earth Dragon Dungeon',                      'translated'), 
+		('mand',                       'Man of Dungeon',                            'translated'), 
 		('Doll Dungeon',               'Doll Dungeon',                              'translated'), 
 	]
 

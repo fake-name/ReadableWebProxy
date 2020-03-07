@@ -20,6 +20,7 @@ def extractTracan294231873WordpressCom(item):
 	chp_prefixes = [
 			('Medical Martial God chapter ',  'Medical Martial God',               'translated'),
 			('Omni Genius chapter ',          'Omni Genius',                       'translated'),
+			('I Know Everything chapter ',    'I Know Everything',                 'translated'),
 			('Manowa',  'Manowa Mamono Taosu Nouryoku Ubau Watashi Tsuyokunaru',               'translated'),
 			('Cat ',    'Me and My Beloved Cat (Girlfriend)',                                  'translated'),
 		]

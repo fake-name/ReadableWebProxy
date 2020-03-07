@@ -1,19 +1,15 @@
-def extractAnameescansWordpressCom(item):
+def extractOzfortunaWordpressCom(item):
 	'''
-	Parser for 'anameescans.wordpress.com'
+	Parser for 'ozfortuna.wordpress.com'
 	'''
-
-	if 'Manhua' in item['tags']:
-		return None
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
-		('Contract Marriage',         'Contract Marriage',                        'translated'),
-		('Nowhere to be Found',       'Nowhere to be Found',                      'translated'),
-		('broken bonds',              'broken bonds',                             'translated'),
+		('transmigrated canon fodder, please calm down!',       'transmigrated canon fodder, please calm down!',                      'translated'),
+		('married to the male lead\'s father',                  'married to the male lead\'s father',                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

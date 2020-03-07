@@ -213,9 +213,11 @@ def unwrap_redirect(urlin, resolve_redirects=True):
 		return None
 
 
-fuyukai_squatter_re = re.compile(r'www\.fuyukai\.club/[a-z]\d+[A-Z]/')
-gilegati_squatter_re = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9_]+\.(html|php|xml)')
+fuyukai_squatter_re     = re.compile(r'www\.fuyukai\.club/[a-z]\d+[A-Z]/')
+gilegati_squatter_re    = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9_]+\.(html|php|xml)')
 silversrise_squatter_re = re.compile(r'www\.silversrise\.com/[a-zA-Z0-9]+/([a-zA-Z0-9]+/|[a-z0-9]+\.html)')
+unknown_squatter_1_re   = re.compile(r'\?fp=[a-zA-Z0-9\+\/]{30,}')
+
 def cleanUrl(urlin):
 	# Fucking tumblr redirects.
 	if urlin.startswith("https://www.tumblr.com/login"):
@@ -244,11 +246,16 @@ def cleanUrl(urlin):
 		if fuyukai_squatter_re.search(urlin):
 			return None
 
+	if '?fp=' in urlin:
+		if unknown_squatter_1_re.search(urlin):
+			return None
+
 	if 'tumblr.com' in parsed.netloc and urlin.endswith("/amp"):
 		return None
 
 	if parsed.netloc.endswith('wp.me'):
 		resolve_redirects = True
+
 	if 'feedproxy.google.com' in parsed.netloc:
 		resolve_redirects = True
 

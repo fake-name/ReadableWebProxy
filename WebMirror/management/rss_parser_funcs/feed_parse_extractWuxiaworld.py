@@ -131,6 +131,7 @@ def extractWuxiaworld(item):
 		('everyone is young except for me',                 'everyone is young except for me',                   'translated'),
 		('demoness\'s art of vengeance',                    'demoness\'s art of vengeance',                      'translated'),
 		('fortunately, i met you',                          'fortunately, i met you',                            'translated'),
+		('Destroyer of Ice and Fire',                       'Destroyer of Ice and Fire',                         'translated'),
 		('genius detective',                                'genius detective',                                  'translated'),
 		('dungeon predator',                                'dungeon predator',                                  'translated'),
 		('almighty sword domain',                           'almighty sword domain',                             'translated'),

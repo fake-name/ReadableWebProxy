@@ -23,6 +23,7 @@ def extractTigertranslationsOrg(item):
 		('the legendary rebuilding of a world by a realist demon king',                                   'the legendary rebuilding of a world by a realist demon king',                                                  'translated'),
 		('ohanabatake no maousama',                                                                       'ohanabatake no maousama',                                                                                      'translated'),
 		('Only with Your Heart',                                                                          'Only with Your Heart',                                                                                         'translated'),
+		('ryusousha ha shizukani kurashitai',                                                             'ryusousha ha shizukani kurashitai',                                                                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

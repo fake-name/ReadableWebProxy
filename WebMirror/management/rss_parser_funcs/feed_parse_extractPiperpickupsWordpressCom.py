@@ -10,6 +10,7 @@ def extractPiperpickupsWordpressCom(item):
 	tagmap = [
 		('ss',       'Support System: Leading Two Souls Together',            'translated'),
 		('mstp',     'My Son is a Transmigrated Prince',                      'translated'),
+		('atmlwesm', 'All The Male Leads Want to Eat Swan Meat',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

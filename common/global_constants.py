@@ -354,8 +354,10 @@ RSS_TITLE_FILTER = [
 
 # Goooooo FUCK YOURSELF
 GLOBAL_INLINE_BULLSHIT = [
+			'Read this at Ashenfeather.wordpress.com',
 			'(This chapter is provided to you by Re:Library)',
-			'(Show us your support by paying Re:Library a visit!)'
+			'(Show us your support by paying Re:Library a visit!)',
+			'&lt;Translated at Simplyrical.home.blog&gt;',
 			'(If you are reading this, that means this content is stolen. Please support us by visiting our site.)',
 			"Read the original on https://dao.ist",
 			"Property of Fantasy-Books.live | outside of it, it is stolen.",
