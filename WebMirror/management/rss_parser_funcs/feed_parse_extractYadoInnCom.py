@@ -15,6 +15,8 @@ def extractYadoInnCom(item):
 		('MLW',                               'While killing slimes for 300 years, I became the MAX level unknowingly',                      'translated'),
 		('remake',                            'Remake Our Life!',                                                                            'translated'),
 		('aristocrat assassin',               'aristocrat assassin',                                                                         'translated'),
+		('reincarnated maid',                 'Reincarnated Maid is About To Be Captured by All Players',                                    'translated'),
+		('gorgeous beauty',                   'Transformed into a Gorgeous Beauty',                                                          'translated'),
 		('JUSCO',                             'JUSCO',                                                                                       'translated'),
 		('TGWSPUJ',                           'The Girl Who Spits Up Jewels',                                                                'translated'),
 		('ABM',                               'Akugyaku no Black Maria',                                                                     'translated'),
