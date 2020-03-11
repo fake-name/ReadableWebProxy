@@ -18,6 +18,8 @@ def extractWhatsawhizzerwebnovelsCom(item):
 		
 	if 'To unlock this content' in item['contents']:
 		return None
+	if 'This chapter can only be viewed' in item['contents']:
+		return None
 	if len(item['contents']) < 1000:
 		return None
 		

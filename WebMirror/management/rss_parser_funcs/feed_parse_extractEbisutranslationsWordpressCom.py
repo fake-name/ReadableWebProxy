@@ -29,6 +29,7 @@ def extractEbisutranslationsWordpressCom(item):
 		('In Search Of Love',                                                              'In Search Of Love',                                                                             'translated'),
 		('Unlimited Anime Works',                                                          'Unlimited Anime Works',                                                                         'translated'),
 		('Noble Reincarnation',                                                            'Noble Reincarnation~Blessed With the Strongest Power From Birth',                               'translated'),
+		('Star Martial God Technique',                                                     'Star Martial God Technique',                                                                    'translated'),
 		('Holistic Fantasy',                                                               'Holistic Fantasy',                                                                              'translated'),
 		('Little Husband, Little Wife, Little Immortal',                                   'Little Husband, Little Wife, Little Immortal',                                                  'translated'),
 		('Reborn as the Hero\'s Daughter! Time to Become the Hero Once More!',             'Reborn as the Hero\'s Daughter! Time to Become the Hero Once More!',                            'translated'),

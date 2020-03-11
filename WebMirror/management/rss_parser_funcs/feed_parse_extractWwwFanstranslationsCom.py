@@ -11,6 +11,8 @@ def extractWwwFanstranslationsCom(item):
 		('i help the richest man spend money to prevent disasters',       'i help the richest man spend money to prevent disasters',                      'translated'),
 		('the widow "misses" her villainous late husband',                'the widow "misses" her villainous late husband',                               'translated'),
 		('endless plunder in high school dxd',                            'endless plunder in high school dxd',                                           'translated'),
+		('the legitimate daughter doesn\'t care!',                        'the legitimate daughter doesn\'t care!',                                       'translated'),
+		('don\'t leave! i will lose weight for you!',                     'don\'t leave! i will lose weight for you!',                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

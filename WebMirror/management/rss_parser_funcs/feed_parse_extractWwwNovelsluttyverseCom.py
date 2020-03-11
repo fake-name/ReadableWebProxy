@@ -1,6 +1,7 @@
-def extractDontseeseekWordpressCom(item):
+
+def extractWwwNovelsluttyverseCom(item):
 	'''
-	Parser for 'dontseeseek.wordpress.com'
+	Parser for 'www.novelsluttyverse.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +9,6 @@ def extractDontseeseekWordpressCom(item):
 		return None
 
 	tagmap = [
-		('dads',       'Demonic Ancestor who desired supremacy ',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,3 +19,4 @@ def extractDontseeseekWordpressCom(item):
 
 
 	return False
+	

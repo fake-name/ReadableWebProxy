@@ -74,6 +74,7 @@ def extractVolareTranslations(item):
 		("Rebirth of a Fashionista: This Life Is Soo Last Season",      "Rebirth of a Fashionista: This Life Is Soo Last Season",                              'translated'),
 		("Fields of Gold",                                              "Fields of Gold",                                                                      'translated'),
 		("Consort of a Thousand Faces",                                 "Consort of a Thousand Faces",                                                         'translated'),
+		("adorable creature attacks!",                                  "Adorable Creature Attack! Beauty is Irresistible!",                                   'translated'),
 		("Song of Exile",                                               "Song of Exile",                                                                       'translated'),
 		("The Godking's Legacy",                                        "The Godking's Legacy",                                                                'translated'),
 		("Adorable Creature Attacks",                                   "Adorable Creature Attacks! The Beauty Surrenders!",                                   'translated'),
