@@ -23,6 +23,8 @@ def extractAdoseoflove4Me(item):
 		('fymy',                                                                            'Familiarity Breeds Marriage: Mysterious Young Master, Super Cool ',                              'translated'),
 		('sfam',                                                                            'Sonata: Fleeing to Avoid an Arranged Marriage',                                                  'translated'),
 		('mar',                                                                             'Martial Arts Reigns',                                                                            'translated'),
+		('bmec',                                                                            'Black-bellied Movie Emperor’s Clever Wife',                                                      'translated'),
+		('vd7fb',                                                                           'The Villain Daughter enjoys her seventh life as a free-spirited bride (hostage) in a former enemy country',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

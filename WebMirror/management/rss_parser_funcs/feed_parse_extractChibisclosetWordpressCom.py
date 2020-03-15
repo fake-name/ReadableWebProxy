@@ -1,25 +1,14 @@
-def extractDjurasicoHomeBlog(item):
+
+def extractChibisclosetWordpressCom(item):
 	'''
-	Parser for 'djurasico.home.blog'
+	Parser for 'chibiscloset.wordpress.com'
 	'''
-	
-	
-
-	badwords = [
-			'light novels français',
-			'badword',
-		]
-	if any([bad in item['tags'] for bad in badwords]):
-		return None
-
-
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
-		('the duchess of the attic',       'The Duchess of the attic',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -30,3 +19,4 @@ def extractDjurasicoHomeBlog(item):
 
 
 	return False
+	

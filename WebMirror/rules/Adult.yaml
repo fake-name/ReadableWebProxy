@@ -188,7 +188,11 @@ badwords: [
 			'literotica.com/search.php',
 
 			'/member/connect?',
+
 			'/log-out.html?',
+			'/bug_report.php?',
+			'/play_captcha.php?',
+			'/display_captcha.php?',
 
 			'/~BE_Games/',
 

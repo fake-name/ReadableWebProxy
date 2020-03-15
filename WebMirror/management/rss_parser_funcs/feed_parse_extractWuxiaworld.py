@@ -29,6 +29,7 @@ def extractWuxiaworld(item):
 		return None
 
 	tagmap = [
+		('Rebirth of a Fashionista: This Life Is Soo Last Season',     'Rebirth of a Fashionista: This Life Is Soo Last Season',       'translated'),
 		("DD2: Unrivaled Tang Sect",                        'Douluo Dalu 2 - The Unrivaled Tang-Clan',           'translated'),
 		("Emperor's Domination",                            "Emperor's Domination",                              'translated'),
 		('A Record of a Mortal\'s Journey to Immortality',  'A Record of a Mortal\'s Journey to Immortality',    'translated'),
@@ -136,7 +137,11 @@ def extractWuxiaworld(item):
 		('dungeon predator',                                'dungeon predator',                                  'translated'),
 		('almighty sword domain',                           'almighty sword domain',                             'translated'),
 		('ranker\'s return',                                'ranker\'s return',                                  'translated'),
-		('Rebirth of a Fashionista: This Life Is Soo Last Season',     'Rebirth of a Fashionista: This Life Is Soo Last Season',       'translated'),
+		('Overlord of Blood and Iron',                      'Overlord of Blood and Iron',                        'translated'),
+		('game of divine thrones',                          'game of divine thrones',                            'translated'),
+		('moon\'s labyrinth',                               'Moon\'s Labyrinths',                                'translated'),
+		('moon\'s labyrinths',                              'Moon\'s Labyrinths',                                'translated'),
+		('tomb raider king',                                'tomb raider king',                                  'translated'),
 		('The Unrivaled Tang Sect',                         'The Unrivaled Tang Sect',                           'translated'),
 		('A Record of a Mortal’s Journey to Immortality',   'A Record of a Mortal’s Journey to Immortality',     'translated'),
 		

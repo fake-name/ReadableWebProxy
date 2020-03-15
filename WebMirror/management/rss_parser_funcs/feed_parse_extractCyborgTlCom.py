@@ -11,6 +11,16 @@ def extractCyborgTlCom(item):
 		return None
 
 
+	badwords = [
+			'bleach: we do knot always love you',
+			'kochugunshikan boukensha ni naru',
+			'badword',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
+
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():

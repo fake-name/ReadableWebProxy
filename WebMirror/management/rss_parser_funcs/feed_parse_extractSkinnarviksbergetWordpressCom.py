@@ -20,6 +20,8 @@ def extractSkinnarviksbergetWordpressCom(item):
 
 
 	tagmap = [
+		('handsome friend',       'handsome friend',                      'translated'),
+		('before the divorce',       'before the divorce',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
