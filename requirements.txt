@@ -114,7 +114,7 @@ parsedatetime==2.5
 
 influxdb==5.2.3
 setproctitle==1.1.10
-flask_httpauth
+flask_httpauth==3.3.0
 hiredis
 guess_language-spirit
 PyEnchant
