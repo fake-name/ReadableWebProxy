@@ -1,4 +1,3 @@
-
 def extractChibisclosetWordpressCom(item):
 	'''
 	Parser for 'chibiscloset.wordpress.com'
@@ -9,6 +8,7 @@ def extractChibisclosetWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the reconciliation',       'The Reconciliation',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractChibisclosetWordpressCom(item):
 
 
 	return False
-	

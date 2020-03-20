@@ -1,4 +1,3 @@
-
 def extractHinjakuhonyakuWordpressCom(item):
 	'''
 	Parser for 'hinjakuhonyaku.wordpress.com'
@@ -9,6 +8,13 @@ def extractHinjakuhonyakuWordpressCom(item):
 		return None
 
 	tagmap = [
+		('hellmode',                               'Hellmode ~Gamer Who Likes to Speedrun Becomes Peerless in a Parallel World with Obsolete Setting~',               'translated'),
+		('the sole monster tamer in the world',    'The Sole Monster Tamer in the World ~I was Mistaken as the Demon King When I Changed My Job~',                    'translated'),
+		('smt',                                    'The Sole Monster Tamer in the World ~I was Mistaken as the Demon King When I Changed My Job~',                    'translated'),
+		('rose princess of hellrage',              'Rose Princess of Hellrage: Although I got Killed for Political Reasons, I got Revived as the Strongest Undead',   'translated'),
+		('rph',                                    'Rose Princess of Hellrage: Although I got Killed for Political Reasons, I got Revived as the Strongest Undead',   'translated'),
+		('my reality is a romance game',           'My Reality is a Romance Game',                                                                                    'translated'),
+		('rrg',                                    'My Reality is a Romance Game',                                                                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +25,3 @@ def extractHinjakuhonyakuWordpressCom(item):
 
 
 	return False
-	

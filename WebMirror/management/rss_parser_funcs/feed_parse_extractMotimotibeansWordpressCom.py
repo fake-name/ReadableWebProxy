@@ -1,4 +1,3 @@
-
 def extractMotimotibeansWordpressCom(item):
 	'''
 	Parser for 'motimotibeans.wordpress.com'
@@ -9,6 +8,7 @@ def extractMotimotibeansWordpressCom(item):
 		return None
 
 	tagmap = [
+		('can ci pin',       'can ci pin',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMotimotibeansWordpressCom(item):
 
 
 	return False
-	

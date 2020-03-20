@@ -8,9 +8,10 @@ def extractPiperpickupsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('ss',       'Support System: Leading Two Souls Together',            'translated'),
-		('mstp',     'My Son is a Transmigrated Prince',                      'translated'),
-		('atmlwesm', 'All The Male Leads Want to Eat Swan Meat',                      'translated'),
+		('ss',        'Support System: Leading Two Souls Together',            'translated'),
+		('mstp',      'My Son is a Transmigrated Prince',                      'translated'),
+		('atmlwesm',  'All The Male Leads Want to Eat Swan Meat',                      'translated'),
+		('MGCH',      'Quick Transmigration System: Male God, Come Here',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -20,7 +21,8 @@ def extractPiperpickupsWordpressCom(item):
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 	chp_prefixes = [
-			('MGCH Chapter ',  'Quick Transmigration System: Male God, Come Here',               'translated'),
+			('ATMLWESM Chapter ',   'All The Male Leads Want to Eat Swan Meat',                        'translated'),
+			('MGCH Chapter ',       'Quick Transmigration System: Male God, Come Here',                'translated'),
 			('Cat ',    'Me and My Beloved Cat (Girlfriend)',                                  'translated'),
 		]
 

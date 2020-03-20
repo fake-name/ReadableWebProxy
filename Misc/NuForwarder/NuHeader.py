@@ -1058,7 +1058,13 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.validate_from_new()
 		self.timestamp_validated()
 
-		self.do_chunk_rpc_heads()
+
+		try:
+			self.do_chunk_rpc_heads()
+		except rpc_base.RpcTimeoutError:
+			self.log.info("failed to receive some expected RPC Responses.")
+			pass
+
 
 		# active_jobs = self.put_head_jobs(put=100)
 		# self.block_for_n_responses(active_jobs)
@@ -1079,10 +1085,19 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		nnt.filter_get_have_urls()
 
 
-
 def fetch_and_flush():
 	hd = NuHeader()
 	hd.run()
+
+
+def consume_available():
+	hd = NuHeader()
+
+	try:
+		hd.process_rpc_responses(["1"], timeout=30)
+	except rpc_base.RpcTimeoutError:
+		pass
+
 
 def schedule_next_exec(scheduler, at_time):
 	# NU Sync system has to run with a memory jobstore, and a process pool executor,

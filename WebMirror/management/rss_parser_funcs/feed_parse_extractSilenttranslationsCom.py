@@ -1,4 +1,3 @@
-
 def extractSilenttranslationsCom(item):
 	'''
 	Parser for 'silenttranslations.com'
@@ -9,6 +8,7 @@ def extractSilenttranslationsCom(item):
 		return None
 
 	tagmap = [
+		('Legend',       'Legend',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSilenttranslationsCom(item):
 
 
 	return False
-	

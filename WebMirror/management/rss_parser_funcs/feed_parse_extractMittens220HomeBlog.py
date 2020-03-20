@@ -1,4 +1,3 @@
-
 def extractMittens220HomeBlog(item):
 	'''
 	Parser for 'mittens220.home.blog'
@@ -9,6 +8,7 @@ def extractMittens220HomeBlog(item):
 		return None
 
 	tagmap = [
+		('Shen Yi Di Nu',       'Shen Yi Di Nu',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMittens220HomeBlog(item):
 
 
 	return False
-	

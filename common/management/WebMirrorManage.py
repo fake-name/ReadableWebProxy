@@ -149,6 +149,12 @@ def exposed_do_nu_head_cycle():
 	'''
 	Misc.NuForwarder.NuHeader.fetch_and_flush()
 
+def exposed_consume_nu_available():
+	'''
+	Consume any available NU Header results.
+	'''
+	Misc.NuForwarder.NuHeader.consume_available()
+
 def exposed_fetch_no_special_case(url, debug=True):
 	'''
 	Do a normal fetch() operation, but skip any special case filters.

@@ -12,6 +12,7 @@ def extractDummytranslationsWordpressCom(item):
 		('The People Who’re Suppose to Kill Me All Fell for Me Instead',       'The People Who’re Suppose to Kill Me All Fell for Me Instead',                      'translated'),
 		('The target always thinks that I like him',                           'The target always thinks that I like him',                                          'translated'),
 		('The little flower god and the emperor',                              'The little flower god and the emperor',                                             'translated'),
+		('could you not tease me',                                             'could you not tease me',                                                            'translated'),
 		('i have a sickness',                                                  'i have a sickness',                                                                 'translated'),
 		('Number One Zombie Wife',                                             'Number One Zombie Wife',                                                            'translated'),
 		('The General\'s cat always wants to climb into my bed',               'The General\'s cat always wants to climb into my bed',                              'translated'),

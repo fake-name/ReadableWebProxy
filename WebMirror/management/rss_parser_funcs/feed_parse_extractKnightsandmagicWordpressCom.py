@@ -1,6 +1,7 @@
-def extractDaydropNowakiNet(item):
+
+def extractKnightsandmagicWordpressCom(item):
 	'''
-	Parser for 'daydrop.nowaki.net'
+	Parser for 'knightsandmagic.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +9,6 @@ def extractDaydropNowakiNet(item):
 		return None
 
 	tagmap = [
-		('Yes, No, or Maybe Half?',       'Yes, No, or Maybe Half?',                      'translated'),
-		('bloodlines ablaze',             'bloodlines ablaze',                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -20,3 +19,4 @@ def extractDaydropNowakiNet(item):
 
 
 	return False
+	

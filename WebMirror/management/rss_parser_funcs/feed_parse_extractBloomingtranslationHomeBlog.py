@@ -11,6 +11,7 @@ def extractBloomingtranslationHomeBlog(item):
 		('mdd',       'Marriage of the Di Daughter',                            'translated'),
 		('wmmm',      'Who Moved My Mountain!',                                 'translated'),
 		('rpimrm',    'The Random Passerby I Married Is The Richest Man!',      'translated'),
+		('tdff',       'Thinking of deer Fei Fei',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

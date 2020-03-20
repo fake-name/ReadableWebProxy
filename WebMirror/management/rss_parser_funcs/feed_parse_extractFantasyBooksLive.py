@@ -266,6 +266,13 @@ def extractFantasyBooksLive(item):
 		('146964',                                                                   'Trust in Love',                                                                      'oel'),
 		('149753',                                                                   'Locking Horns, Breaking Teeth.',                                                                      'oel'),
 		('150147',                                                                   'Spark of Divinity',                                                                      'oel'),
+		('150369',                                                                   '[ The Administrator ]',                                                                      'oel'),
+		('150980',                                                                   'Lord of Goblins',                                                                      'oel'),
+		('147392',                                                                   'Mechanical Mage',                                                                      'oel'),
+		('150369',                                                                   '[ The Administrator ]',                                                                      'oel'),
+		('150980',                                                                   'Lord of Goblins',                                                                      'oel'),
+		('147392',                                                                   'Mechanical Mage',                                                                      'oel'),
+
 
 
 	]

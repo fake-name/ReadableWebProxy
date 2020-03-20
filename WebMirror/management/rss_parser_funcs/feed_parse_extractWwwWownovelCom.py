@@ -1,6 +1,6 @@
-def extractDaydropNowakiNet(item):
+def extractWwwWownovelCom(item):
 	'''
-	Parser for 'daydrop.nowaki.net'
+	Parser for 'www.wownovel.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +8,7 @@ def extractDaydropNowakiNet(item):
 		return None
 
 	tagmap = [
-		('Yes, No, or Maybe Half?',       'Yes, No, or Maybe Half?',                      'translated'),
-		('bloodlines ablaze',             'bloodlines ablaze',                            'translated'),
+		('i work hard every day to make my husband bankrupt',       'I Work Hard Every Day To Make My Husband Bankrupt',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

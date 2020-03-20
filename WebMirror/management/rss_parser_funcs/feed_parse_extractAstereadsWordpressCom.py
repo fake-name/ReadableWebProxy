@@ -9,6 +9,7 @@ def extractAstereadsWordpressCom(item):
 
 	tagmap = [
 		('Thanks to a Different World Reincarnation',       'Thanks to a Different World Reincarnation',                      'translated'),
+		('s-rank appraiser',       'The Kicked Out S-rank Appraiser',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -17,6 +18,8 @@ def extractAstereadsWordpressCom(item):
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 	
+	if 'level 99 villainous daughter' in item['tags'] and chp != 99:
+		return buildReleaseMessageWithType(item, 'Level 99 Villainous Daughter', vol, chp, frag=frag, postfix=postfix, tl_type='translated')
 	if 'level 99 villainous' in item['tags'] and chp != 99:
 		return buildReleaseMessageWithType(item, 'Level 99 Villainous Daughter', vol, chp, frag=frag, postfix=postfix, tl_type='translated')
 		

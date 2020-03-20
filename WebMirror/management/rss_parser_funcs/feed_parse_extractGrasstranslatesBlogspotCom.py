@@ -10,6 +10,7 @@ def extractGrasstranslatesBlogspotCom(item):
 	tagmap = [
 		('PGS',       'Peerless Genius System',                         'translated'),
 		('dkfod',     'Devil King from the Otherworldly Dimension',     'translated'),
+		('fls',       'Full-time Lottery System',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

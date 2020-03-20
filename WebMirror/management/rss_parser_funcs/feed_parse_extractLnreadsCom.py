@@ -12,6 +12,7 @@ def extractLnreadsCom(item):
 		('special agent’s rebirth',                       'Special Agent’s Rebirth: The Almighty Goddess of Quick Transmigration',        'translated'),
 		('the almighty martial arts system',              'the almighty martial arts system',                                             'translated'),
 		('returning after 10000 years cultivation',       'returning after 10000 years cultivation',                      'translated'),
+		('super doctor',                                  'super doctor',                                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

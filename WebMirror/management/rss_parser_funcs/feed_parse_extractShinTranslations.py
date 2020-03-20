@@ -21,6 +21,7 @@ def extractShinTranslations(item):
 		('THE NEW GATE',                                                     'The New Gate',                                          'translated'),
 		('starting a new life for the discarded all-rounder',                'Starting a New Life for the Discarded All-Rounder',     'translated'),
 		('dar',                                                              'Starting a New Life for the Discarded All-Rounder',     'translated'),
+		('previous life was sword emperor. this life is trash prince.',      'Previous Life was Sword Emperor. This Life is Trash Prince.',                               'translated'),
 		('PRC',                'PRC',                               'translated'),
 		('Loiterous',          'Loiterous',                         'oel'),
 	]
