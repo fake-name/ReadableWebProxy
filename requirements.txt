@@ -40,7 +40,7 @@ bbcode==1.1.0
 pympler==0.8
 
 colorama==0.4.3
-pyyaml==5.3
+pyyaml==5.3.1
 natsort==7.0.0
 mdx_linkify==1.4
 ftfy==5.6
