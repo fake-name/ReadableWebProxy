@@ -118,13 +118,36 @@ def url_view():
 	items = query.all()
 	g.session.commit()
 
-
 	def keyf(item):
 		if not item.extra:
-			return False
-		return item.extra.get("is-wp", False)
+			return (False, )
+		is_wp = 1 if item.extra.get("is-wp", False) else 2
+		nlr = item.netloc.split(".")
+		nlr.reverse()
 
-	items.sort(key=keyf, reverse=True)
+		flag = 7
+		if "wordpress" in nlr:
+			flag = 1
+		if "blogspot" in nlr:
+			flag = 2
+		if "livejournal" in nlr:
+			flag = 3
+		if "dreamwidth" in nlr:
+			flag = 4
+		if "syosetu" in nlr:
+			flag = 5
+		if "wixsite" in nlr:
+			flag = 6
+		if "fandom" in nlr:
+			flag = 7
+		if "deviantart" in nlr:
+			flag = 8
+
+		ret = (is_wp, flag, nlr, item.example_url)
+		print(ret)
+		return ret
+
+	items.sort(key=keyf)
 	return render_template('url_listings.html',
 						   netloc_items          = items,
 						   # states         = states,

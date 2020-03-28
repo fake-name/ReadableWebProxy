@@ -94,7 +94,7 @@ target_jobs = {
 
 	'scheduled_jobs.python_job.NuHeaderJob' : {
 		"name"             : 'AUTO: NuHeader job',
-		"interval"         : minutes(30),
+		"interval"         : minutes(50),
 		# "minute"           : '*/22',
 		# "hour"             : '*',
 	},

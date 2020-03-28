@@ -51,7 +51,7 @@ class RpcMixin():
 		self.rpc_interfaces = {}
 		self.job_map = {}
 		self.job_counter = 0
-		self.rpc_timeout_s = 60 * 20
+		self.rpc_timeout_s = 60 * 40
 
 		self.remote_log = logging.getLogger("Main.RPC.Remote")
 

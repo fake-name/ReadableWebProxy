@@ -198,7 +198,7 @@ def floatToRatingStr(newRating):
 
 
 def isProbablyImage(fileName):
-	imageExtensions = [".jpeg", ".jpg", ".gif", ".png", ".apng", ".svg", ".bmp"]
+	imageExtensions = [".jpeg", ".jpg", ".gif", ".png", ".apng", ".svg", ".bmp", ".webp"]
 	fileName = fileName.lower()
 	for ext in imageExtensions:
 		if fileName.endswith(ext):

@@ -6,8 +6,14 @@ send_raw_feed: True
 
 baseUrl: [
 
-# 		'https://divinelink2.wixsite.com/dlscanlations',
+		'https://bonnieclydetranslate.wixsite.com/main',
+		'https://fatchicusualykool.wixsite.com/website',
+		'https://lsscans.wixsite.com/literarystrayscans',
+		'https://redmoonscan.wixsite.com/home',
+		'https://sengokutranslations.wixsite.com/home',
 		'https://www.catatopatch.com',
+
+# 		'https://divinelink2.wixsite.com/dlscanlations',
 # 		'http://meejeenovels.wixsite.com',
 # 		'https://flairv.wixsite.com',
 # 		'https://nimini067.wixsite.com',
