@@ -15,6 +15,7 @@ def extractDreamsOfJianghu(item):
 		('8TT',     'Eight Treasure Trousseau',                 'translated'),
 		('4.6',     '4.6 Billion Years Symphony of Evolution',  'translated'),
 		('Zuo Mo',  'World of Cultivation',                     'translated'),
+		('lpj',      'Like Pearl and Jade',                     'translated'),
 		('ZX',      'Zhui Xu',                                  'translated'),
 		('AUW',     'An Unyielding Wind',                       'translated'),
 		('ADND',    'Ascending, Do Not Disturb',                'translated'),

@@ -1,4 +1,3 @@
-
 def extractAlexanderwalesCom(item):
 	'''
 	Parser for 'alexanderwales.com'
@@ -10,6 +9,12 @@ def extractAlexanderwalesCom(item):
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
+		('worth the candle',           'worth the candle',                          'oel'),
+		('the dark wizard of donkerk', 'the dark wizard of donkerk',                'oel'),
+		('Glimwarden',                 'Glimwarden',                                'oel'),
+		('Shadows of the Limelight',   'Shadows of the Limelight',                  'oel'),
+		('The Last Christmas',         'The Last Christmas',                        'oel'),
+		('a bluer shade of white',     'a bluer shade of white',                    'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 
@@ -19,4 +24,3 @@ def extractAlexanderwalesCom(item):
 
 
 	return False
-	

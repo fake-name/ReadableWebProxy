@@ -14,6 +14,7 @@ def extractHiohbyeTranslations(item):
 		('Blood-Sucking Empress',                                                   'Blood-Sucking Empress',                                                                  'translated'),
 		('Seventh Imperial "Brother"',                                              'Seventh Imperial "Brother"',                                                             'translated'),
 		('Chang\'an Intoxicated',                                                   'Chang\'an Intoxicated',                                                                  'translated'),
+		('mistress, i want it',                                                     'mistress, i want it',                                                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

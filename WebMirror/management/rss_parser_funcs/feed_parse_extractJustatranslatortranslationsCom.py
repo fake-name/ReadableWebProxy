@@ -19,8 +19,9 @@ def extractJustatranslatortranslationsCom(item):
 
 	if item['tags'] == ['Uncategorized']:
 		titlemap = [
-			('A Sword Through the Nine Heavens',  'A Sword Through the Nine Heavens',      'translated'),
-			('Chaotic Sword God',                 'Chaotic Sword God',                     'translated'),
+			('A Sword Through the Nine Heavens',   'A Sword Through the Nine Heavens',      'translated'),
+			('Chaotic Sword God',                  'Chaotic Sword God',                     'translated'),
+			('Legend of the Great Sage Chapter ',  'Legend of the Great Sage',              'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

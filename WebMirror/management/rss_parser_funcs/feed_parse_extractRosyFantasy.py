@@ -2,6 +2,15 @@ def extractRosyFantasy(item):
 	"""
 
 	"""
+	
+	badwords = [
+			'review',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
+	
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or 'preview' in item['title'].lower():
 		return None
@@ -14,6 +23,7 @@ def extractRosyFantasy(item):
 		('White Calculation',                                     'White Calculation',                               'translated'),
 		("demon wang's gold medal status favorite fei",           "Demon Wang's Golden Favorite Fei",                'translated'),
 		("demon's wang golden favorite fei",                      "Demon Wang's Golden Favorite Fei",                'translated'),
+		("emperor is in trouble again",                           "emperor is in trouble again",                     'translated'),
 		("seeking happiness",                                     "Seeking Happiness",                               'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -43,6 +43,7 @@ def extractLightNovelsTranslations(item):
 		('100 things about my senpai',                                                 '100 Things I Don\'t Know About My Senior',                                                 'translated'),
 		('the dropout swordsman',                                                      'I Realised that I Became The Strongest After Spamming the 100 Million Years Button – The Dropout Swordsman that Became Unparalleled',           'translated'),
 		('shangrila frontier',                                                         'ShangriLa Frontier ~ Shitty Games Hunter Challenges Godly Game ~',                         'translated'),
+		('slave harem in fantasy world',                                               'slave harem in fantasy world',                                                             'translated'),
 		('Road to Kingdom',                                                            'Road to Kingdom',                                                                          'translated'),
 		('Different World Reincarnation as a Sage',                                    'Different World Reincarnation as a Sage',                                                  'translated'),
 		('The Hidden Dungeon Only I can Enter',                                        'The Hidden Dungeon Only I can Enter',                                                      'translated'),

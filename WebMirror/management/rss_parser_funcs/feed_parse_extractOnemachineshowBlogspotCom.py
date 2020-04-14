@@ -1,4 +1,3 @@
-
 def extractOnemachineshowBlogspotCom(item):
 	'''
 	Parser for 'onemachineshow.blogspot.com'
@@ -9,6 +8,7 @@ def extractOnemachineshowBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('amdtvba',       'After My Death, The Villain Blackened Again',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractOnemachineshowBlogspotCom(item):
 
 
 	return False
-	

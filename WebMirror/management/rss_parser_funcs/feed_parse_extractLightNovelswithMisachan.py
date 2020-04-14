@@ -16,6 +16,7 @@ def extractLightNovelswithMisachan(item):
 		
 	tagmap = [
 		('99th vampire princess',       '99th vampire princess ~The last vampire~',                      'translated'),
+		('land mines',                  'Transition to Another World, Land Mines Included',              'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

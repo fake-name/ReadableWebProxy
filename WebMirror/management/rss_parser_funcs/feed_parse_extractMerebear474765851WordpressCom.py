@@ -1,14 +1,16 @@
-
 def extractMerebear474765851WordpressCom(item):
 	'''
 	Parser for 'merebear474765851.wordpress.com'
 	'''
 
-	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
+	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(str(item['tags']) + " " + item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
-
+	
+	
 	tagmap = [
+		('Daomu Biji',                                              'Daomu Biji',                      'translated'),
+		('daomu biji, grave robbers\' chronicles, lost tomb',       'Daomu Biji',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractMerebear474765851WordpressCom(item):
 
 
 	return False
-	

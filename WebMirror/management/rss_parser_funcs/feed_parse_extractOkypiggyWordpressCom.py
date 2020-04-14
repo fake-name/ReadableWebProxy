@@ -8,6 +8,8 @@ def extractOkypiggyWordpressCom(item):
 		return None
 
 	tagmap = [
+		('tb',                      'Temporary Bodyguard',                      'translated'),
+		('my younger master',       'my younger master',                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -11,6 +11,7 @@ def extractFleetingPhoenixTranslations(item):
 		'Star Martial God Technique'                       : 'Star Martial God Technique',
 		'Assassin Farmer'                                  : 'Assassin Farmer',
 		'Forbidden Love'                                   : 'Forbidden Love',
+		'little phoenix'                                   : 'little phoenix',
 		'Ling Qi'                                          : 'Ling Qi',
 		'Tehe♪ Wolf'                                       : 'Tehe(*´∀`)♪ I Was Picked Up By a Wolf',
 

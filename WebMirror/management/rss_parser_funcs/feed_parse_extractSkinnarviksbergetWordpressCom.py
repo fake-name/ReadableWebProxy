@@ -12,6 +12,9 @@ def extractSkinnarviksbergetWordpressCom(item):
 			('Sinister Ex-Girlfriend',      'Sinister Ex-Girlfriend',          'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+			('Handsome Friend',             'Handsome Friend',                 'translated'),
+			('Strategy to Capture Men',     'Strategy to Capture Men',         'translated'),
+			('before the divorce',          'before the divorce',              'translated'),
 		]
 
 		for titlecomponent, name, tl_type in titlemap:
@@ -20,8 +23,9 @@ def extractSkinnarviksbergetWordpressCom(item):
 
 
 	tagmap = [
-		('handsome friend',       'handsome friend',                      'translated'),
+		('handsome friend',          'handsome friend',                         'translated'),
 		('before the divorce',       'before the divorce',                      'translated'),
+		('stcm',                     'Strategy to Capture Men',                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

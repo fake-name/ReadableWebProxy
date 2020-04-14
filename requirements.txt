@@ -79,6 +79,7 @@ redis==3.4.1
 vmprof==0.4.15
 
 parsedatetime==2.5
+psutil
 
 ## alembic
 ## Babel
@@ -98,7 +99,6 @@ parsedatetime==2.5
 ## MarkupSafe
 ## pbr
 ## pstat
-## psutil
 ## python-bcrypt
 ## pytz
 ## six

@@ -12,14 +12,14 @@ class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 
 	wanted_mimetypes = [
 						"image/gif",
+						"image/jpg",
 						"image/jpeg",
 						"image/pjpeg",
 						"image/png",
 						"image/svg+xml",
 						"image/vnd.djvu",
-						"application/octet-stream",
 						"image/webp",
-
+						"application/octet-stream",
 						"text/css",
 						"text/javascript",
 						"font/woff",

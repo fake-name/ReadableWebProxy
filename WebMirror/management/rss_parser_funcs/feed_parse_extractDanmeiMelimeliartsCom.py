@@ -111,6 +111,11 @@ def extractDanmeiMelimeliartsCom(item):
 		('i have a pair of yin-yuan eyes',                                         'i have a pair of yin-yuan eyes',                                                        'translated'),
 		('turing\'s code',                                                         'turing\'s code',                                                                        'translated'),
 		('the werewolf young master\'s caretaker',                                 'the werewolf young master\'s caretaker',                                                'translated'),
+		('do you remember my name?',                                               'do you remember my name?',                                                              'translated'),
+		('meeting a demonic cultivator, even god cries',                           'meeting a demonic cultivator, even god cries',                                          'translated'),
+		('i trick even the lames to stand up for me',                              'i trick even the lames to stand up for me',                                             'translated'),
+		('even until death, the scum gong thought i was a white lotus',            'even until death, the scum gong thought i was a white lotus',                           'translated'),
+		('the icy hero is yearning for love',                                      'the icy hero is yearning for love',                                                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

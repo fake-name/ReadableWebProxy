@@ -1,4 +1,3 @@
-
 def extractShizukasekaiWordpressCom(item):
 	'''
 	Parser for 'shizukasekai.wordpress.com'
@@ -9,6 +8,7 @@ def extractShizukasekaiWordpressCom(item):
 		return None
 
 	tagmap = [
+		('a boy raised by gods, will be the strongest',       'a boy raised by gods, will be the strongest',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractShizukasekaiWordpressCom(item):
 
 
 	return False
-	

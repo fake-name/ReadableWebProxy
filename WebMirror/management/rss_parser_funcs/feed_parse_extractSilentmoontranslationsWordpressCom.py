@@ -9,6 +9,8 @@ def extractSilentmoontranslationsWordpressCom(item):
 
 	tagmap = [
 		('MGCH',                        'Male God, Come Here',                        'translated'),
+		('when the golden finger lands in the hands of the villain',       'when the golden finger lands in the hands of the villain',                      'translated'),
+		('Rare Treasure',               'Rare Treasure',                              'translated'),
 		('Ostentatious Zhao Yao',       'Ostentatious Zhao Yao',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

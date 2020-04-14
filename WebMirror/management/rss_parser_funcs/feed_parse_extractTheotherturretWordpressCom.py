@@ -1,4 +1,3 @@
-
 def extractTheotherturretWordpressCom(item):
 	'''
 	Parser for 'theotherturret.wordpress.com'
@@ -7,6 +6,17 @@ def extractTheotherturretWordpressCom(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
+
+	if item['tags'] == ['Sin categoría']:
+		titlemap = [
+			('OWMB ',                       'Other World’s Monster Breeder',      'translated'),
+			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+		]
+
+		for titlecomponent, name, tl_type in titlemap:
+			if titlecomponent.lower() in item['title'].lower():
+				return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
@@ -18,5 +28,6 @@ def extractTheotherturretWordpressCom(item):
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 
+
+
 	return False
-	

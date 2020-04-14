@@ -8,7 +8,9 @@ def extractLemontreetranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('qt second female lead',                                          'Quick Transmigration Second Female Lead’s Counter Attack',                      'translated'),
 		('Quick Transmigration Second Female Lead’s Counter Attack',       'Quick Transmigration Second Female Lead’s Counter Attack',                      'translated'),
+		('Di Daughter\'s Rebirth: Sheng Shi Wang Fei',                     'Di Daughter\'s Rebirth: Sheng Shi Wang Fei',                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

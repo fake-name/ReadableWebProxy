@@ -1,4 +1,3 @@
-
 def extractJinzeffectWordpressCom(item):
 	'''
 	Parser for 'jinzeffect.wordpress.com'
@@ -9,8 +8,9 @@ def extractJinzeffectWordpressCom(item):
 		return None
 
 	tagmap = [
-		('PRC',       'PRC',                      'translated'),
-		('Loiterous', 'Loiterous',                'oel'),
+		('Eternal Reverence',       'Eternal Reverence',                      'translated'),
+		('PRC',                     'PRC',                                    'translated'),
+		('Loiterous',               'Loiterous',                              'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:
@@ -19,4 +19,3 @@ def extractJinzeffectWordpressCom(item):
 
 
 	return False
-	

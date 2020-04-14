@@ -118,14 +118,23 @@ def url_view():
 	items = query.all()
 	g.session.commit()
 
+	segs = max([item.netloc.count(".") for item in items])
+
+	print("Max segments:", segs)
+
 	def keyf(item):
 		if not item.extra:
 			return (False, )
 		is_wp = 1 if item.extra.get("is-wp", False) else 2
 		nlr = item.netloc.split(".")
+
+		if nlr[0] == "www":
+			nlr = nlr[1:]
+
 		nlr.reverse()
 
-		flag = 7
+
+		flag = 9001
 		if "wordpress" in nlr:
 			flag = 1
 		if "blogspot" in nlr:
@@ -143,7 +152,7 @@ def url_view():
 		if "deviantart" in nlr:
 			flag = 8
 
-		ret = (is_wp, flag, nlr, item.example_url)
+		ret = (is_wp, flag, 10 + segs - len(nlr), nlr, item.example_url)
 		print(ret)
 		return ret
 

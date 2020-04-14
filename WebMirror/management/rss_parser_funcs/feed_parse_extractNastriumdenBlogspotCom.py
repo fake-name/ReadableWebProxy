@@ -17,7 +17,8 @@ def extractNastriumdenBlogspotCom(item):
 		('Number One Zombie Wife',                                    'Number One Zombie Wife',                                                   'translated'),
 		('True Star',                                                 'True Star',                                                                'translated'),
 		('s.c.i mystery',                                             'S.C.I Mystery Series',                                                     'translated'),
-		('tharntype the series',       'tharntype the series',                      'translated'),
+		('tharntype the series',                                      'tharntype the series',                                                     'translated'),
+		('Dragon Flies Phoenix Dances',                               'Dragon Flies Phoenix Dances',                                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

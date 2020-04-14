@@ -10,6 +10,7 @@ def extractXinShouBlogspotCom(item):
 	tagmap = [
 		('A Match Made in Heaven',       'A Match Made in Heaven',                      'translated'),
 		('The Rebirth of Han Yuxi',      'The Rebirth of Han Yuxi',                     'translated'),
+		('Black Belly Wife',             'Black Belly Wife',                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

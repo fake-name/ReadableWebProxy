@@ -11,6 +11,7 @@ def extractWwwDivinedaolibraryCom(item):
 		('The Ring That Defies The Heavens',                                      'The Mightiest System',                                              'translated'), 
 		('The Mightiest System',                                                  'The Mightiest System',                                              'translated'), 
 		('My Amazing WeChat is Connected to the Three Realms',                    'My Amazing WeChat is Connected to the Three Realms',                'translated'), 
+		('unnamed memory',                                                        'unnamed memory',                                                    'translated'), 
 		('Pivot of the Sky',                                                      'Pivot of the Sky',                                                  'translated'), 
 		('live dungeon!',                                                         'live dungeon!',                                                     'translated'), 
 		('rebuild world',                                                         'rebuild world',                                                     'translated'), 

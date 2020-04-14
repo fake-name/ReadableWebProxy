@@ -1,4 +1,3 @@
-
 def extractBeanstranslationsBlogspotCom(item):
 	'''
 	Parser for 'beanstranslations.blogspot.com'
@@ -9,6 +8,7 @@ def extractBeanstranslationsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('pupillary master: peerless eldest miss',       'pupillary master: peerless eldest miss',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractBeanstranslationsBlogspotCom(item):
 
 
 	return False
-	

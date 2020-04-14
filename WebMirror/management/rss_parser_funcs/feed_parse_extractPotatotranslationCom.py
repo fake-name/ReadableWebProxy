@@ -11,6 +11,7 @@ def extractPotatotranslationCom(item):
 		('Saint Dragon Totem',   'Saint Dragon Totem',                  'translated'), 
 		('Super God Gene',       'Super God Gene',                      'translated'), 
 		('Master feels stifled', 'Master feels stifled',                'translated'), 
+		('master is sick',       'master is sick',                      'translated'), 
 	]
 
 	for tagname, name, tl_type in tagmap:

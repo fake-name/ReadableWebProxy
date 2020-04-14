@@ -6,19 +6,6 @@ send_raw_feed: False
 
 baseUrl: [
 
-	# "http://happythexceed.tumblr.com",
-	# "http://hisokasasss.tumblr.com",
-	# "http://imayooshi.tumblr.com",
-	# "http://marchen-v-friedhof.tumblr.com",
-	# "http://shou7.tumblr.com",
-	# "http://x0401x.tumblr.com",
-	# "http://yifanqini.tumblr.com",
-	# 'http://chendaere.tumblr.com',
-	# 'http://hisokasasss.tumblr.com',
-	# 'http://kiyoitsukikage.tumblr.com',
-	# 'http://shou7.tumblr.com',
-	# 'http://yifanqini.tumblr.com',
-
 	'https://faelicy.tumblr.com',
 	'https://kimamanitranslatesnovels.tumblr.com',
 
@@ -33,13 +20,11 @@ baseUrl: [
 	'http://blastron01.tumblr.com',
 	'http://booksnail.tumblr.com',
 	'http://chendaere.tumblr.com',
-# 	'http://ciaranhillock.tumblr.com',
 	'http://clock08.tumblr.com',
 	'http://closure-of-yellow.tumblr.com',
 	'http://cocobees.tumblr.com',
 	'http://doe-clotureofyellow.tumblr.com',
 	'http://doushinojikan.tumblr.com',
-# 	'http://gomigeemu.tumblr.com',
 	'http://happythexceed.tumblr.com',
 	'http://himegaminomiko.tumblr.com',
 	'http://hisokasasss.tumblr.com',
@@ -110,16 +95,13 @@ baseUrl: [
 	'https://clockworklily.tumblr.com',
 	'https://endlessdream7.tumblr.com',
 	'https://hyakuros.tumblr.com',
-# 	'https://lizonkawebnovels.tumblr.com',
 	'http://lolitive.tumblr.com',
 	'https://maotranslates.tumblr.com',
-# 	'https://tiramisu-translations.tumblr',
 
 	'https://edogawatranslations.tumblr.com',
 	'https://foxghost.tumblr.com',
 	'https://rosesquadscans.tumblr.com',
 	'https://soraratranslations.tumblr.com',
-# 	'https://tiramisu-translations.tumblr.com',
 	'http://tittwiht.tumblr.com',
 
 	'https://ineffableboyfriends.tumblr.com',
@@ -128,6 +110,8 @@ baseUrl: [
 	'http://trashbunny.tumblr.com',
 	'https://yulkoi.tumblr.com',
 	'https://suibiansubs.tumblr.com',
+	'http://h0b0naut.tumblr.com',
+	'https://mtlcbgc.tumblr.com',
 
 	# Low quality
 	'http://owari-owari.tumblr.com',

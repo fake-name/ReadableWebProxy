@@ -13,6 +13,7 @@ def extractWwwNovelmultiverseCom(item):
 		('Parameter remote controller',                             'Parameter remote controller',                                                            'translated'),
 		('auto assigned villainess',                                'auto assigned villainess',                                                               'translated'),
 		('the reincarnated young lady aims to be an adventurer',    'the reincarnated young lady aims to be an adventurer',                                   'translated'),
+		('the daily life of the fairy king',                        'the daily life of the fairy king',                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

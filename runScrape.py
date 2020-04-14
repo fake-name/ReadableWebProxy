@@ -15,6 +15,8 @@ if __name__ == "__main__":
 # import WebMirror.runtime_engines
 
 
+import multiprocessing
+import time
 import common.RunManager
 import WebMirror.rules
 import WebMirror.Runner
@@ -33,9 +35,9 @@ from settings import RAW_NO_PROCESSES
 from settings import MAX_DB_SESSIONS
 
 
-def go():
+def go(args):
 
-	largv = [tmp.lower() for tmp in sys.argv]
+	largv = [tmp.lower() for tmp in args]
 
 
 	rules = WebMirror.rules.load_rules()
@@ -82,6 +84,18 @@ def go():
 
 	# print("Thread halted. App exiting.")
 
+def run_in_subprocess():
+	pass
+
+	proc = multiprocessing.Process(target=go, args=(sys.argv, ))
+	proc.start()
+	while proc.is_alive():
+		time.sleep(1)
+
+	# If the subprocess has gone away, die hard.
+	import ctypes;ctypes.string_at(1)
+	import os;os.kill(0,4)
+
 if __name__ == "__main__":
 	import sys
 
@@ -95,4 +109,4 @@ if __name__ == "__main__":
 		started = False
 		if not started:
 			started = True
-			go()
+			run_in_subprocess()

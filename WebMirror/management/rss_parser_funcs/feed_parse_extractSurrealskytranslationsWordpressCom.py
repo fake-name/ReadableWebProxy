@@ -1,4 +1,3 @@
-
 def extractSurrealskytranslationsWordpressCom(item):
 	'''
 	Parser for 'surrealskytranslations.wordpress.com'
@@ -9,6 +8,10 @@ def extractSurrealskytranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('what to do when i become a koi and fall into the male god’s bathtub',       'what to do when i become a koi and fall into the male god’s bathtub',                      'translated'),
+		('wdbkfmgb',                                                                  'what to do when i become a koi and fall into the male god’s bathtub',                      'translated'),
+		('superstar aspiration',        'superstar aspirations',                      'translated'),
+		('superstar aspirations',       'superstar aspirations',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractSurrealskytranslationsWordpressCom(item):
 
 
 	return False
-	

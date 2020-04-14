@@ -1,4 +1,3 @@
-
 def extractIkidomaritranslationsWordpressCom(item):
 	'''
 	Parser for 'ikidomaritranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractIkidomaritranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('forest of drizzling rain',       'forest of drizzling rain',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractIkidomaritranslationsWordpressCom(item):
 
 
 	return False
-	

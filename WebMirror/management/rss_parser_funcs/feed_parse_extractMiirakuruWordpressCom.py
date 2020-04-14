@@ -1,4 +1,3 @@
-
 def extractMiirakuruWordpressCom(item):
 	'''
 	Parser for 'miirakuru.wordpress.com'
@@ -9,6 +8,7 @@ def extractMiirakuruWordpressCom(item):
 		return None
 
 	tagmap = [
+		('rett',       'The Story of Rett Pott',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMiirakuruWordpressCom(item):
 
 
 	return False
-	
