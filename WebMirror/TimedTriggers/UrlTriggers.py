@@ -108,6 +108,8 @@ class EverySixHoursPageTrigger(PageTriggerBase):
 		# NovelUpdates
 		# 'https://www.novelupdates.com',
 
+		'https://www.webnovel.com/feed/',
+
 	]
 
 class EveryOtherDayPageTrigger(PageTriggerBase):

@@ -116,6 +116,8 @@ def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	for row in have:
 		meta_dict[row.contentid] = row.meta
 
+	print(meta_dict)
+
 	sess.commit()
 
 
