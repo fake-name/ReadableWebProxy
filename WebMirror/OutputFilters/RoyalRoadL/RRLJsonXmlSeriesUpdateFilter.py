@@ -246,7 +246,6 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		seriesPageUrl = "https://www.royalroad.com/fiction/{sid}/".format(sid=series['id'])
 		rinfo = get_spage(self.wg, seriesPageUrl)
 
-
 		# print("Series", )
 		# pprint.pprint(series)
 		# print("Sinfo")
@@ -303,8 +302,10 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		for chapter in cinfo:
 
 			reldate = chapter['date']
-			chap_url = "https://www.royalroad.com/fiction/{sid}/rrls-api-doesnt-provide-the-series-slug/chapter/{cid}/apparently-this-needs-to-be-here-too".format(
-				sid = series['id'], cid=chapter['id'])
+			chap_url = "https://www.royalroad.com/fiction/chapter/{cid}".format(
+				sid = series['id'],
+				cid = chapter['id'],
+				)
 
 
 			chp_title = chapter['title']
@@ -423,15 +424,15 @@ def test():
 	logSetup.initLogging()
 
 
-	# urls = [
-	# 		'https://royalroadl.com/api/fiction/updates?apiKey=' + settings.RRL_API_KEY,
-	# 		# 'https://royalroadl.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
-	# ]
+	urls = [
+			'https://royalroadl.com/api/fiction/updates?apiKey=' + settings.RRL_API_KEY,
+			# 'https://royalroadl.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
+	]
 
-	# for url in urls:
-	# 	with db.session_context() as sess:
-	# 		archiver = SiteArchiver(None, sess, None)
-	# 		archiver.synchronousJobRequest(url, ignore_cache=True)
+	for url in urls:
+		with db.session_context() as sess:
+			archiver = SiteArchiver(None, sess, None)
+			archiver.synchronousJobRequest(url, ignore_cache=True)
 
 	# with open("fiction_updates.xml", "r") as fp:
 	# 	content = fp.read()

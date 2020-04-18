@@ -42,12 +42,13 @@ def exposed_crn_series_type_from_chapter_url(url):
 	spage = wg.getSoup(surl)
 
 
-	author_div = spage.find("div", class_='e45344-18')
+	author_div = spage.find("div", class_='e45344-14')
 	assert author_div
 
 	auth_href = author_div.a
 
 	auth_div_str = author_div.get_text(strip=True).lower()
+
 	if   "translator:" in auth_div_str and "author:" in auth_div_str:
 		log.info("Inferred series type: Translated")
 		return sname, "translated"
@@ -55,7 +56,7 @@ def exposed_crn_series_type_from_chapter_url(url):
 		log.info("Inferred series type: OEL")
 		return sname, "oel"
 	else:
-		raise RuntimeError("Unknown series type for item: '%s' with series page '%s'" % (url, surl) )
+		raise RuntimeError("Unknown series type for item: '%s' with series page '%s' (%s)" % (url, surl, auth_div_str) )
 
 
 
@@ -120,6 +121,14 @@ def proto_process_releases(sess, feed_releases):
 
 	return ret_dict
 
+
+def exposed_crn_new_series(fetch_title=False):
+	'''
+	Process items from Creative Novels/Fantasy-Books, and pull out the items
+	missing in the feed lookup tool. Then, try to get the series name for each
+	unique series ID.
+	'''
+	exposed_process_new_fb(fetch_title)
 
 def exposed_process_new_fb(fetch_title=False):
 	'''

@@ -246,6 +246,9 @@ def cleanUrl(urlin):
 		if fuyukai_squatter_re.search(urlin):
 			return None
 
+	if  parsed.netloc.endswith('.flying-lines.com'):
+		urlin = urlin.replace("www.flying-lines.com/nu/", 'www.flying-lines.com/chapter/')
+
 	if '?fp=' in urlin:
 		if unknown_squatter_1_re.search(urlin):
 			return None
