@@ -37,6 +37,11 @@ def fix_tag(tagtxt):
 
 def check_fix_numbering(log, releases, series_id):
 
+	if not isinstance(series_id, str):
+		log.warning("Series id is not a string: %s -> %s", series_id, type(series_id))
+		assert isinstance(series_id, (str, int))
+		series_id = str(series_id)
+
 	conf = load_lut()
 
 	must_renumber = series_id in conf['force_sequential_numbering']

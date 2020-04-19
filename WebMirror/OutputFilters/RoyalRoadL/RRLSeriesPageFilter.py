@@ -111,11 +111,8 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.log.error("Could not find author tag!")
 			return []
 
-
 		title  = titletg.get_text().strip()
 		author = authortg.get_text().strip()
-
-
 
 		title = bleach.clean(title, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
 		author = bleach.clean(author, tags=[], attributes=[], styles=[], strip=True, strip_comments=True)
@@ -225,7 +222,7 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_retval.append(raw_msg)
 
 
-		raw_retval = RRLCommon.check_fix_numbering(self.log, raw_retval, series['id'])
+		raw_retval = RRLCommon.check_fix_numbering(self.log, raw_retval, series_id)
 
 		# Do not add series without 3 chapters.
 		if len(raw_retval) < 3:

@@ -210,6 +210,13 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			self.log.warning("Series data for sid %s failed validation" % series['id'])
 			return
 
+		assert int(series['id']) == int(sinfo['id']), "Mismatchin series ID: %s -> %s (%s, %s)" % (
+			series['id'],
+			sinfo['id'],
+			type(series['id']),
+			type(sinfo['id']),
+			)
+
 		cinfo = get_json(self.wg, "https://www.royalroad.com/api/fiction/chapters/{sid}?apikey={key}".format(sid=series['id'], key=settings.RRL_API_KEY))
 		if not self.validate_cdata(cinfo):
 			return
