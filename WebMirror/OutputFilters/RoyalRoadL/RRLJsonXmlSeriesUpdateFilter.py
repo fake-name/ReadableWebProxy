@@ -20,7 +20,8 @@ import common.database as db
 
 import cachetools
 
-MIN_RATING   = 2.5
+# * 2 to convert from stars to 0-10 range actually used
+MIN_RATING   = 2.5 * 2
 MIN_RATE_CNT = 3
 MIN_CHAPTERS = 4
 
@@ -42,14 +43,6 @@ MIN_CHAPTERS = 4
 def get_json(wg, url):
 	accept_override = {'Accept' : 'application/json,*/*'}
 	return wg.getJson(url, addlHeaders=accept_override)
-
-
-
-@cachetools.cached(cachetools.TTLCache(100, 60*30), key=lambda wg, url: cachetools.keys.hashkey(url))
-def get_spage(wg, url):
-	accept_override = {'PlzAddRating' : 'I\'m only making these requests because the series statistics, url slug (for chapter links) and author name '
-		+ 'aren\'t available as part of the info or chapters API endpoints already! I just need `author`, chapter url slug, `ratingValue` and `ratingCount`.'}
-	return wg.getSoup(url, addlHeaders=accept_override)
 
 
 
@@ -170,22 +163,6 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 
 		return True
 
-	def validate_rdata(self, soup):
-		rtag = soup.find("meta", property='ratingValue')
-		ctag = soup.find("meta", property='ratingCount')
-
-		if not rtag and ctag:
-			return False
-
-		rating = float(rtag.get('content', 0))
-		rcnt   = float(ctag.get('content', 0))
-
-		if rating > MIN_RATING and rcnt > MIN_RATE_CNT:
-			return True
-
-		self.log.info("Failed validation due to low/few ratings: %s ratings, with a value of %s.", rcnt, rating)
-
-		return False
 
 
 
@@ -230,9 +207,6 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		# 	'lastUpdate': datetime.datetime(2018, 8, 28, 1, 55, 48)
 		#  }
 
-
-
-
 		sinfo = get_json(self.wg, "https://www.royalroad.com/api/fiction/info/{sid}?apikey={key}"    .format(sid=series['id'], key=settings.RRL_API_KEY))
 
 		if not self.validate_sdata(sinfo):
@@ -243,22 +217,14 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		if not self.validate_cdata(cinfo):
 			return
 
-		seriesPageUrl = "https://www.royalroad.com/fiction/{sid}/".format(sid=series['id'])
-		rinfo = get_spage(self.wg, seriesPageUrl)
-
-		# print("Series", )
-		# pprint.pprint(series)
-		# print("Sinfo")
-		# pprint.pprint(sinfo)
-		# print("Chapter")
-		# pprint.pprint(cinfo)
-
-		if not self.validate_rdata(rinfo):
+		# Order matters! If ratingCount is 0, ratingValue is None (not 0)
+		if sinfo.get('ratingCount', 0) > MIN_RATE_CNT and sinfo.get('ratingValue', 0) > MIN_RATING:
 			return
 
-		author_tag = rinfo.find(property="author")
-		if not author_tag and author_tag.a:
-			self.log.error("Could not find author tag on url '%s'", seriesPageUrl)
+		author = sinfo.get("authorName")
+
+		if not author:
+			self.log.error("Could not find author for series '%s'", series['id'])
 			return
 
 		if isinstance(sinfo['tags'], str):
@@ -269,16 +235,13 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			print("sinfo unknown type: ", sinfo['tags'])
 			print("Sinfo: ", sinfo)
 
-		# pprint.pprint(sinfo)
-		# pprint.pprint(cinfo)
-		# print(rinfo)
-
 		description = self.extract_description(sinfo['description'])
 
 		title = sinfo['title'].strip()
-		author = author_tag.a.get_text(strip=True)
 
 		seriesmeta = {}
+
+		seriesPageUrl = "https://www.royalroad.com/fiction/{sid}".format(sid=series['id'])
 
 		seriesmeta['title']       = msgpackers.fix_string(title)
 		seriesmeta['author']      = msgpackers.fix_string(author)
