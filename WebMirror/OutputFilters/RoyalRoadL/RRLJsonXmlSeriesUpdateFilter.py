@@ -20,10 +20,7 @@ import common.database as db
 
 import cachetools
 
-# * 2 to convert from stars to 0-10 range actually used
-MIN_RATING   = 2.5 * 2
-MIN_RATE_CNT = 3
-MIN_CHAPTERS = 4
+from . import RRLCommon
 
 ########################################################################################################################
 #
@@ -43,8 +40,6 @@ MIN_CHAPTERS = 4
 def get_json(wg, url):
 	accept_override = {'Accept' : 'application/json,*/*'}
 	return wg.getJson(url, addlHeaders=accept_override)
-
-
 
 
 def clean_parsed_data(d):
@@ -157,7 +152,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		if not isinstance(cinfo, list):
 			return False
 
-		if len(cinfo) < MIN_CHAPTERS:
+		if len(cinfo) < RRLCommon.MIN_CHAPTERS:
 			self.log.info("Too few chapters. Not adding.")
 			return False
 
@@ -181,6 +176,8 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 
 
 	def process_series(self, series):
+
+
 		expected_keys = ['chapters', 'cover', 'description', 'firstUpdate', 'id', 'lastUpdate', 'tags', 'title']
 		if not all([tmp in series for tmp in expected_keys]):
 			self.log.error("Missing key(s) %s from series %s. Cannot continue", [tmp for tmp in expected_keys if not tmp in series], series)
@@ -218,7 +215,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			return
 
 		# Order matters! If ratingCount is 0, ratingValue is None (not 0)
-		if sinfo.get('ratingCount', 0) > MIN_RATE_CNT and sinfo.get('ratingValue', 0) > MIN_RATING:
+		if sinfo.get('ratingCount', 0) > RRLCommon.MIN_RATE_CNT and sinfo.get('ratingValue', 0) > RRLCommon.MIN_RATING_FLOAT:
 			return
 
 		author = sinfo.get("authorName")
@@ -234,6 +231,8 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		else:
 			print("sinfo unknown type: ", sinfo['tags'])
 			print("Sinfo: ", sinfo)
+
+		tags = [RRLCommon.fix_tag(tag) for tag in tags]
 
 		description = self.extract_description(sinfo['description'])
 
@@ -253,7 +252,6 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		seriesmeta['create_tags'] = True
 		meta_pkt = msgpackers.createSeriesInfoPacket(seriesmeta, matchAuthor=True)
 
-		messages = [meta_pkt]
 		trigger_urls = [seriesPageUrl]
 
 		extra = {}
@@ -262,14 +260,14 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		extra['sourcesite']  = 'RoyalRoadL'
 
 
+		raw_retval = []
 		for chapter in cinfo:
 
 			reldate = chapter['date']
 			chap_url = "https://www.royalroad.com/fiction/chapter/{cid}".format(
-				sid = series['id'],
-				cid = chapter['id'],
+					# sid = series['id'],
+					cid = chapter['id'],
 				)
-
 
 			chp_title = chapter['title']
 			# print("Chp title: '{}'".format(chp_title))
@@ -280,13 +278,29 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			raw_item['published'] = float(reldate)
 			raw_item['linkUrl']   = chap_url
 
-			raw_msg = msgpackers._buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
-			release_msg = msgpackers.createReleasePacket(raw_msg)
+			raw_msg = msgpackers._buildReleaseMessage(
+					raw_item,
+					title,
+					vol,
+					chp,
+					frag,
+					author      = author,
+					postfix     = chp_title,
+					tl_type     = 'oel',
+					extraData   = extra,
+					matchAuthor = True
+				)
 
 			trigger_urls.append(chap_url)
-			messages.append(release_msg)
+			raw_retval.append(raw_msg)
 
-		self.amqp_put_many(messages)
+
+		raw_retval = RRLCommon.check_fix_numbering(self.log, raw_retval, series['id'])
+
+
+		self.amqp_put_item(meta_pkt)
+		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval]
+		self.amqp_put_many(retval)
 		self.low_priority_links_trigger(trigger_urls)
 
 

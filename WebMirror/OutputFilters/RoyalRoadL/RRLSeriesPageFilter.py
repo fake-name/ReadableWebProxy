@@ -20,32 +20,10 @@ import WebMirror.OutputFilters.FilterBase
 import WebMirror.OutputFilters.util.TitleParsers as titleParsers
 import WebMirror.OutputFilters.util.MessageConstructors as msgpackers
 
-MIN_RATING = 2.5
 
-########################################################################################################################
-#
-#	##     ##    ###    #### ##    ##     ######  ##          ###     ######   ######
-#	###   ###   ## ##    ##  ###   ##    ##    ## ##         ## ##   ##    ## ##    ##
-#	#### ####  ##   ##   ##  ####  ##    ##       ##        ##   ##  ##       ##
-#	## ### ## ##     ##  ##  ## ## ##    ##       ##       ##     ##  ######   ######
-#	##     ## #########  ##  ##  ####    ##       ##       #########       ##       ##
-#	##     ## ##     ##  ##  ##   ###    ##    ## ##       ##     ## ##    ## ##    ##
-#	##     ## ##     ## #### ##    ##     ######  ######## ##     ##  ######   ######
-#
-########################################################################################################################
-
-
-def load_lut():
-	outf = os.path.join(os.path.split(__file__)[0], 'royal_roadl_overrides.json')
-	jctnt = open(outf).read()
-	lut = json.loads(jctnt)
-	return lut
-
-
+from . import RRLCommon
 
 class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
-
-
 	wanted_mimetypes = [
 							'text/html',
 						]
@@ -53,7 +31,7 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	loggerPath = "Main.Filter.RoyalRoad.Page"
 
-	match_re = re.compile(r"^https?://(?:www\.)?royalroadl\.com/fiction/(\d+)(?:/?$|/[a-zA-Z0-9\-]+/?$)", flags=re.IGNORECASE)
+	match_re = re.compile(r"^https?://(?:www\.)?royalroadl?\.com/fiction/(\d+)(?:/?$|/[a-zA-Z0-9\-]+/?$)", flags=re.IGNORECASE)
 
 	@classmethod
 	def wantsUrl(cls, url):
@@ -88,12 +66,8 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		match = self.match_re.search(seriesPageUrl)
 		series_id = match.group(1)
-		conf = load_lut()
 
-		assert 'force_sequential_numbering' in conf
-
-		must_renumber = series_id in conf['force_sequential_numbering']
-
+		conf = RRLCommon.load_lut()
 
 		# print("")
 		# print("Match: ", match, match.groups(), series_id)
@@ -126,7 +100,7 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		# print("Float rating: ", rating)
 
-		if rating < MIN_RATING:
+		if rating < RRLCommon.MIN_RATING_STARS:
 			self.log.error("Item rating below upload threshold: %s", rating)
 			return []
 
@@ -167,8 +141,7 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		for tag in tagdiv.find_all('span', class_='label'):
 			tagtxt = tag.get_text().strip().lower().replace(" ", "-")
 			# print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
-			if tagtxt in conf['tag_rename']:
-				tagtxt = conf['tag_rename'][tagtxt]
+			tagtxt = RRLCommon.fix_tag(tagtxt)
 			tags.append(tagtxt)
 
 		info_div = soup.find("div", class_='fiction-info')
@@ -210,11 +183,15 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				continue
 			cname, cdate = chapter.find_all("td")
 
+			if not cdate.time:
+				self.log.error("No time entry?")
+				continue
 
-			timestr = cdate.get_text(strip=True)
+			timestr = cdate.time.get("title").strip()
 			itemDate, status = parsedatetime.Calendar().parse(timestr)
 
 			if status < 1:
+				self.log.warning("Failure processing date: %s", timestr)
 				continue
 
 			reldate = time.mktime(itemDate)
@@ -231,29 +208,24 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = float(reldate)
 			raw_item['linkUrl']   = relurl
 
-			raw_msg = msgpackers._buildReleaseMessage(raw_item, title, vol, chp, frag, author=author, postfix=chp_title, tl_type='oel', extraData=extra, matchAuthor=True)
-
+			raw_msg = msgpackers._buildReleaseMessage(
+				raw_item,
+				title,
+				vol,
+				chp,
+				frag,
+				author      = author,
+				postfix     = chp_title,
+				tl_type     = 'oel',
+				extraData   = extra,
+				matchAuthor = True
+				)
 
 			# print("Chapter:", raw_item)
 			raw_retval.append(raw_msg)
 
-		missing_chap = 0
-		for item in raw_retval:
-			if not (item['vol'] or item['chp']):
-				missing_chap += 1
 
-		if raw_retval:
-			unnumbered = (missing_chap/len(raw_retval)) * 100
-			if (len(raw_retval) >= 5 and unnumbered > 80) or must_renumber:
-				if must_renumber:
-					self.log.warning("Item numbering force-overridden! Adding simple sequential chapter numbers.")
-				else:
-					self.log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
-				chap = 1
-				for item in raw_retval:
-					item['vol'] = None
-					item['chp'] = chap
-					chap += 1
+		raw_retval = RRLCommon.check_fix_numbering(self.log, raw_retval, series['id'])
 
 		# Do not add series without 3 chapters.
 		if len(raw_retval) < 3:
@@ -267,13 +239,14 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.amqp_put_item(meta_pkt)
 
 		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval]
+
+		self.log.info("Found %s chapter releases on series page!", len(retval))
 		return retval
 
 
 	def sendReleases(self, releases):
 		self.log.info("Total releases found on page: %s. Emitting messages into AMQP local queue.", len(releases))
-		for release in releases:
-			self.amqp_put_item(release)
+		self.amqp_put_many(releases)
 
 
 
