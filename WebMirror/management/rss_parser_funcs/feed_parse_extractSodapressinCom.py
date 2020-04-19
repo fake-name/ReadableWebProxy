@@ -13,6 +13,7 @@ def extractSodapressinCom(item):
 		('On the Way Home I Got a Bride and Twin Daughters, Who Were Dragons',       'On the Way Home I Got a Bride and Twin Daughters, Who Were Dragons',                      'translated'),
 		('I’m Not Going to Be Bullied By a Girl',                                    'I’m Not Going to Be Bullied By a Girl',                                                   'translated'),
 		('Picked up a Demon King to be a Maid',                                      'Picked up a Demon King to be a Maid',                                                     'translated'),
+		('what should i do if i was forced to marry the elf queen',                  'what should i do if i was forced to marry the elf queen',                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

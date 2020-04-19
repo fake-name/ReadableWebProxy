@@ -272,7 +272,12 @@ def extractFantasyBooksLive(item):
 		('150369',                                                                   '[ The Administrator ]',                                                                      'oel'),
 		('150980',                                                                   'Lord of Goblins',                                                                      'oel'),
 		('147392',                                                                   'Mechanical Mage',                                                                      'oel'),
-
+		('136959',                                                                   'The Merchant of Death',                                                                      'oel'),
+		('152089',                                                                   'Dark Seas Leading Demise',                                                                      'oel'),
+		('153358',                                                                   'Starting With 100 Trillion Spirit Stones',                                                                      'translated'),
+		('150977',                                                                   'The System Wants Me Dead',                                                                      'oel'),
+		('150047',                                                                   'Deployed to Destiny',                                                                      'oel'),
+		('151022',                                                                   'The Hunters: Gaea',                                                                      'oel'),
 
 
 	]

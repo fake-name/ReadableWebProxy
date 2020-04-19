@@ -14,6 +14,8 @@ def extractCyborgTlCom(item):
 	badwords = [
 			'bleach: we do knot always love you',
 			'kochugunshikan boukensha ni naru',
+			'bahasa indonesia',
+			'a returner\'s magic should be special bahasa indonesia',
 			'badword',
 		]
 	if any([bad in item['tags'] for bad in badwords]):
@@ -27,6 +29,7 @@ def extractCyborgTlCom(item):
 		return None
 
 	tagmap = [
+		('duke\'s daughter (ln)',       'duke\'s daughter (ln)',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

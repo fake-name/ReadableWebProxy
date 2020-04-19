@@ -1,6 +1,7 @@
-def extractShallotnoodleWordpressCom(item):
+
+def extractLowqualitytranslationsWordpressCom(item):
 	'''
-	Parser for 'shallotnoodle.wordpress.com'
+	Parser for 'lowqualitytranslations.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +9,6 @@ def extractShallotnoodleWordpressCom(item):
 		return None
 
 	tagmap = [
-		('surrounded mob wants to quietly withdraw',       'surrounded mob wants to quietly withdraw',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,3 +19,4 @@ def extractShallotnoodleWordpressCom(item):
 
 
 	return False
+	

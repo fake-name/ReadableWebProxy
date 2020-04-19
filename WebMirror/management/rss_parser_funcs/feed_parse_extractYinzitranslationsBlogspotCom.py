@@ -1,4 +1,3 @@
-
 def extractYinzitranslationsBlogspotCom(item):
 	'''
 	Parser for 'yinzitranslations.blogspot.com'
@@ -9,6 +8,7 @@ def extractYinzitranslationsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('logical aesthetics',       'logical aesthetics',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractYinzitranslationsBlogspotCom(item):
 
 
 	return False
-	
