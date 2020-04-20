@@ -21,7 +21,7 @@ import WebMirror.OutputFilters.util.TitleParsers as titleParsers
 import WebMirror.OutputFilters.util.MessageConstructors as msgpackers
 
 
-from . import RRLCommon
+from .. import SeriesPageCommon
 
 class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	wanted_mimetypes = [
@@ -67,12 +67,6 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		match = self.match_re.search(seriesPageUrl)
 		series_id = match.group(1)
 
-		conf = RRLCommon.load_lut()
-
-		# print("")
-		# print("Match: ", match, match.groups(), series_id)
-		# print("series_id", series_id)
-		# print("Renumber:", must_renumber)
 
 
 		header   = soup.find("div", class_='fic-title')
@@ -87,8 +81,6 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		rating_val   = soup.find("meta", property='books:rating:value')
 		rating_scale = soup.find("meta", property='books:rating:scale')
 
-		# print("Rating value:", rating_val)
-		# print("Rating scale:", rating_scale)
 
 		if not rating_val or not rating_scale:
 			return []
@@ -98,9 +90,8 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		rating = 5 * (rval_f / rscale_f)
 
-		# print("Float rating: ", rating)
 
-		if rating < RRLCommon.MIN_RATING_STARS:
+		if rating < SeriesPageCommon.MIN_RATING_STARS:
 			self.log.error("Item rating below upload threshold: %s", rating)
 			return []
 
@@ -131,14 +122,12 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 					desc.append(segment.get_text().strip())
 
 		desc = ['<p>{}</p>'.format(line) for line in desc if line.strip()]
-		# print(desc)
 
 		tags = []
 		tagdiv = soup.find('span', class_='tags')
 		for tag in tagdiv.find_all('span', class_='label'):
 			tagtxt = tag.get_text().strip().lower().replace(" ", "-")
-			# print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
-			tagtxt = RRLCommon.fix_tag(tagtxt)
+			tagtxt = SeriesPageCommon.fix_tag(tagtxt)
 			tags.append(tagtxt)
 
 		info_div = soup.find("div", class_='fiction-info')
@@ -146,9 +135,7 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if warning_div:
 			for warning_tag in warning_div.find_all('li'):
 				tagtxt = warning_tag.get_text().strip().lower().replace(" ", "-")
-				# print("Tag: ", (tagtxt, tagtxt in conf['tag_rename']))
-				if tagtxt in conf['tag_rename']:
-					tagtxt = conf['tag_rename'][tagtxt]
+				tagtxt = SeriesPageCommon.fix_tag(tagtxt)
 				tags.append(tagtxt)
 
 
@@ -197,7 +184,6 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 			chp_title = cname.get_text().strip()
-			# print("Chp title: '{}'".format(chp_title))
 			vol, chp, frag, _ = titleParsers.extractTitle(chp_title + " " + title)
 
 			raw_item = {}
@@ -218,11 +204,10 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				matchAuthor = True
 				)
 
-			# print("Chapter:", raw_item)
 			raw_retval.append(raw_msg)
 
 
-		raw_retval = RRLCommon.check_fix_numbering(self.log, raw_retval, series_id)
+		raw_retval = SeriesPageCommon.check_fix_numbering(self.log, raw_retval, series_id, rrl=True)
 
 		# Do not add series without 3 chapters.
 		if len(raw_retval) < 3:
@@ -233,9 +218,7 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.log.info("Retval empty?!")
 			return []
 
-		self.amqp_put_item(meta_pkt)
-
-		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval]
+		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval] + [meta_pkt]
 
 		self.log.info("Found %s chapter releases on series page!", len(retval))
 		return retval
@@ -268,8 +251,6 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 
 	def extractContent(self):
-		# print("Call to extract!")
-		# print(self.amqpint)
 
 		self.processPage(self.pageUrl, self.content)
 

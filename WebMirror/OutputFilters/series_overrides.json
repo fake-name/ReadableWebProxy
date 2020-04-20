@@ -1,0 +1,39 @@
+
+{
+
+	"royalroadl" :
+	{
+		"force_sequential_numbering" : [
+			"8894",
+			"4981",
+			"1978",
+			"2785",
+			"7065",
+			"8175",
+			"9597",
+			"3610",
+			"17716",
+			"17917"
+		]
+	},
+	"scribblehub" :
+	{
+
+	},
+	"genre_rename" :
+	{
+
+	},
+	"tag_rename" :
+	{
+		"female lead" : "female-protagonist",
+		"male lead"   : "male-protagonist",
+		"female-lead" : "female-protagonist",
+		"male-lead"   : "male-protagonist"
+	}
+
+
+
+
+
+}

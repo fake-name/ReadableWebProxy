@@ -3,6 +3,13 @@ if __name__ == "__main__":
 	import logSetup
 	logSetup.initLogging()
 
+
+# Shut up fucking annoying psycopg2 vomit every exec.
+import warnings
+from sqlalchemy import exc as sa_exc
+warnings.filterwarnings("ignore", category=UserWarning, module='psycopg2')
+warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+
 import inspect
 import sys
 import common.management.WebMirrorManage

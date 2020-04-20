@@ -20,19 +20,7 @@ import common.database as db
 
 import cachetools
 
-from . import RRLCommon
-
-########################################################################################################################
-#
-#	##     ##    ###    #### ##    ##     ######  ##          ###     ######   ######
-#	###   ###   ## ##    ##  ###   ##    ##    ## ##         ## ##   ##    ## ##    ##
-#	#### ####  ##   ##   ##  ####  ##    ##       ##        ##   ##  ##       ##
-#	## ### ## ##     ##  ##  ## ## ##    ##       ##       ##     ##  ######   ######
-#	##     ## #########  ##  ##  ####    ##       ##       #########       ##       ##
-#	##     ## ##     ##  ##  ##   ###    ##    ## ##       ##     ## ##    ## ##    ##
-#	##     ## ##     ## #### ##    ##     ######  ######## ##     ##  ######   ######
-#
-########################################################################################################################
+from .. import SeriesPageCommon
 
 
 
@@ -152,7 +140,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		if not isinstance(cinfo, list):
 			return False
 
-		if len(cinfo) < RRLCommon.MIN_CHAPTERS:
+		if len(cinfo) < SeriesPageCommon.MIN_CHAPTERS:
 			self.log.info("Too few chapters. Not adding.")
 			return False
 
@@ -222,7 +210,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			return
 
 		# Order matters! If ratingCount is 0, ratingValue is None (not 0)
-		if sinfo.get('ratingCount', 0) > RRLCommon.MIN_RATE_CNT and sinfo.get('ratingValue', 0) > RRLCommon.MIN_RATING_FLOAT:
+		if sinfo.get('ratingCount', 0) > SeriesPageCommon.MIN_RATE_CNT and sinfo.get('ratingValue', 0) > SeriesPageCommon.MIN_RATING_FLOAT:
 			return
 
 		author = sinfo.get("authorName")
@@ -239,7 +227,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			print("sinfo unknown type: ", sinfo['tags'])
 			print("Sinfo: ", sinfo)
 
-		tags = [RRLCommon.fix_tag(tag) for tag in tags]
+		tags = [SeriesPageCommon.fix_tag(tag) for tag in tags]
 
 		description = self.extract_description(sinfo['description'])
 
@@ -302,7 +290,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			raw_retval.append(raw_msg)
 
 
-		raw_retval = RRLCommon.check_fix_numbering(self.log, raw_retval, series['id'])
+		raw_retval = SeriesPageCommon.check_fix_numbering(self.log, raw_retval, series['id'], rrl=True)
 
 
 		self.amqp_put_item(meta_pkt)

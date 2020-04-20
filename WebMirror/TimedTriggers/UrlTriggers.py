@@ -79,8 +79,12 @@ class PageTriggerBase(UrlTrigger):
 
 class HourlyPageTrigger(PageTriggerBase):
 	pages = [
-		# RoyalRoadL
 
+		# ScribbleHub
+		'https://www.scribblehub.com/latest-series/',
+		'https://www.scribblehub.com/series-ranking/?sort=3&order=1',
+
+		# RoyalRoadL
 		'https://www.royalroad.com/fictions/new-releases',
 		# 'https://www.royalroad.com/fictions/weekly-popular',
 		'https://www.royalroad.com/fictions/latest-updates',

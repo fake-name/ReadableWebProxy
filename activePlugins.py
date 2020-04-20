@@ -19,6 +19,8 @@ import WebMirror.OutputFilters.Nu.NUHomepageFilter
 import WebMirror.OutputFilters.Nu.NuSeriesPageFilter
 import WebMirror.OutputFilters.Qidian.QidianSeriesPageFilter
 import WebMirror.OutputFilters.FoxTeller.FoxTellerReleasesFilter
+import WebMirror.OutputFilters.ScribbleHub.SHSeriesUpdateFilter
+import WebMirror.OutputFilters.ScribbleHub.SHSeriesPageFilter
 
 
 # Filters are executed against fetched content after preprocessing. They cannot modify content, but they can
@@ -37,6 +39,8 @@ FILTERS = [
 	WebMirror.OutputFilters.Twitter.TwitterFilter.TwitterFilter,
 	WebMirror.OutputFilters.Qidian.QidianSeriesPageFilter.QidianSeriesPageFilter,
 	WebMirror.OutputFilters.FoxTeller.FoxTellerReleasesFilter.FoxTellerSeriesPageFilter,
+	WebMirror.OutputFilters.ScribbleHub.SHSeriesUpdateFilter.SHSeriesUpdateFilter,
+	WebMirror.OutputFilters.ScribbleHub.SHSeriesPageFilter.SHSeriesPageFilter,
 ]
 
 

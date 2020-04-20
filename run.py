@@ -8,7 +8,9 @@ if __name__ == "__main__":
 
 # Shut up fucking annoying psycopg2 vomit every exec.
 import warnings
+from sqlalchemy import exc as sa_exc
 warnings.filterwarnings("ignore", category=UserWarning, module='psycopg2')
+warnings.simplefilter("ignore", category=sa_exc.SAWarning)
 
 
 from app import app

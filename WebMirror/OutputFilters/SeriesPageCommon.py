@@ -17,32 +17,68 @@ MIN_CHAPTERS     = 4
 
 
 @cachetools.cached(cachetools.TTLCache(100, 60*5))
-def load_lut():
-	outf = os.path.join(os.path.split(__file__)[0], 'royal_roadl_overrides.json')
+def _load_lut_internal():
+	outf = os.path.join(os.path.split(__file__)[0], 'series_overrides.json')
 	with open(outf) as fp:
-		lut = json.load(fp)
+		cont = fp.read()
+
+	lut = json.loads(cont)
+
+	return lut
+
+def get_rrl_lut():
+
+	lut = _load_lut_internal()
+	lut = lut['royalroadl']
 
 	assert 'force_sequential_numbering' in lut
+	return lut
+
+def get_sh_lut():
+
+	lut = _load_lut_internal()
+	lut = lut['scribblehub']
 
 	return lut
 
 def fix_tag(tagtxt):
 	# This is literally only tolerable since load_lut is memoized
-	conf = load_lut()
+	conf = _load_lut_internal()
 
 	if tagtxt in conf['tag_rename']:
 		tagtxt = conf['tag_rename'][tagtxt]
 	return tagtxt
 
 
-def check_fix_numbering(log, releases, series_id):
+def fix_genre(genretxt):
+	# This is literally only tolerable since load_lut is memoized
+	conf = _load_lut_internal()
+
+	if genretxt in conf['genre_rename']:
+		genretxt = conf['genre_rename'][genretxt]
+	return genretxt
+
+
+def clean_tag(in_txt):
+	assert isinstance(in_txt, str), "Passed item is not a string! Type: '%s' -> '%s'" % (type(in_txt), in_txt, )
+	assert not "," in in_txt, "It looks like a tag list got submitted as a tag! String: '%s'" % (in_txt, )
+	in_txt = in_txt.strip().lower().replace(" ", "-")
+	return in_txt
+
+def check_fix_numbering(log, releases, series_id, rrl=False, sh=False):
+
+	assert rrl or sh
+	assert sum([rrl, sh]) == 1
 
 	if not isinstance(series_id, str):
 		log.warning("Series id is not a string: %s -> %s", series_id, type(series_id))
 		assert isinstance(series_id, (str, int))
 		series_id = str(series_id)
 
-	conf = load_lut()
+	if rrl:
+		conf = get_rrl_lut()
+	elif sh:
+		conf = get_sh_lut()
 
 	must_renumber = series_id in conf['force_sequential_numbering']
 
@@ -65,3 +101,9 @@ def check_fix_numbering(log, releases, series_id):
 				chap += 1
 
 	return releases
+
+def test():
+	get_rrl_lut()
+
+if __name__ == "__main__":
+	test()
