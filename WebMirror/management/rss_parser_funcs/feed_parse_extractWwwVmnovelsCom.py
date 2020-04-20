@@ -8,9 +8,10 @@ def extractWwwVmnovelsCom(item):
 		return None
 
 	tagmap = [
-		('The Big Landlord',                 'The Big Landlord',                                'translated'),
-		('Let Me Shoulder This Blame',       'Let Me Shoulder This Blame',                      'translated'),
+		('The Big Landlord',                         'The Big Landlord',                                        'translated'),
+		('Let Me Shoulder This Blame',               'Let Me Shoulder This Blame',                              'translated'),
 		('Quickly Wear The Face of The Devil',       'Quickly Wear The Face of The Devil',                      'translated'),
+		('didn’t love you enough',                   'didn\'t love you enough',                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

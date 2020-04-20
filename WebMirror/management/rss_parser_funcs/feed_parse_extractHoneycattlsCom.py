@@ -1,4 +1,3 @@
-
 def extractHoneycattlsCom(item):
 	'''
 	Parser for 'honeycattls.com'
@@ -9,6 +8,7 @@ def extractHoneycattlsCom(item):
 		return None
 
 	tagmap = [
+		('when a destructive wolf joins an escape game',       'When A Destructive Wolf Joins An Escape Game',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractHoneycattlsCom(item):
 
 
 	return False
-	

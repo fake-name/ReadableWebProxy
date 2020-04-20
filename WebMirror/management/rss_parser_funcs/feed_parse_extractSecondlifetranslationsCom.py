@@ -8,10 +8,14 @@ def extractSecondlifetranslationsCom(item):
 		return None
 
 	tagmap = [
-		('IH',        'Immoral Holidays',                            'translated'),
-		('ebpw',      'Everyday, Boss Is Pretending To Be Weak',     'translated'),
-		('icd',       'Indulging in Carnal Desire',                  'translated'),
-		('pcpm',      'Please Continue Protecting Me',               'translated'),
+		('IH',                                           'Immoral Holidays',                            'translated'),
+		('ebpw',                                         'Everyday, Boss Is Pretending To Be Weak',     'translated'),
+		('everyday, boss is pretending to be weak',      'Everyday, Boss Is Pretending To Be Weak',     'translated'),
+		('icd',                                          'Indulging in Carnal Desire',                  'translated'),
+		('pcpm',                                         'Please Continue Protecting Me',               'translated'),
+		('please continue protecting me',                'Please Continue Protecting Me',               'translated'),
+		('indulging in carnal desire',                   'Indulging in Carnal Desire',                  'translated'),
+		('kisses make me grow taller',                   'kisses make me grow taller',                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

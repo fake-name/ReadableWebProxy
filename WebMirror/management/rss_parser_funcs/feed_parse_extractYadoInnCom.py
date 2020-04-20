@@ -30,6 +30,8 @@ def extractYadoInnCom(item):
 		('rebirth',                           'Rebirth of the Heavenly Demon',                                                               'translated'),
 		('murabito',                          'Murabito Desuga Nanika',                                                                      'translated'),
 		('Dahlia',                            'Magical Devices Craftsman Dahlia Won’t Hang Her Head Down Anymore',                           'translated'),
+		('abandoned dragon',                  '[Urgent Request] How to Take Care of an Abandoned Dragon?',                                   'translated'),
+		('me&b',                              'Break Through in Another World With Magical Eyes and Bullets!!',                              'translated'),
 		('Goc',                               'God of Cooking',                                                                              'translated'),
 		('WSR',                               'World Strongest Rearguard',                                                                   'translated'),
 		('Imouto',                            'Reincarnated as My Little Sister',                                                            'translated'),

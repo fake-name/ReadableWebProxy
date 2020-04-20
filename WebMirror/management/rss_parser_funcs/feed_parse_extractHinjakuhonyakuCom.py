@@ -1,4 +1,3 @@
-
 def extractHinjakuhonyakuCom(item):
 	'''
 	Parser for 'hinjakuhonyaku.com'
@@ -9,6 +8,13 @@ def extractHinjakuhonyakuCom(item):
 		return None
 
 	tagmap = [
+		('hellmode',                                              'hellmode',                                                             'translated'),
+		('the sole monster tamer in the world',                   'the sole monster tamer in the world',                                  'translated'),
+		('the tale of the teapot hero\'s revenge',                'he tale of the teapot hero\'s revenge',                                'translated'),
+		('my reality is a romance game',                          'my reality is a romance game',                                         'translated'),
+		('rose princess of hellrage',                             'rose princess of hellrage',                                            'translated'),
+		('a maiden\'s unwanted heroic epic',                      'a maiden\'s unwanted heroic epic',                                     'translated'),
+		('transition to another world, landmines included',       'transition to another world, landmines included',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +25,3 @@ def extractHinjakuhonyakuCom(item):
 
 
 	return False
-	

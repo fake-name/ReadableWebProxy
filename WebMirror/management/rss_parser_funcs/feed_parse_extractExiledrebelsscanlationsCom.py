@@ -11,6 +11,7 @@ def extractExiledrebelsscanlationsCom(item):
 		return None
 
 	tagmap = [
+		("i’m using the interstellar live broadcast to raise cubs",     "i’m using the interstellar live broadcast to raise cubs",          'translated'),
 		("President isn’t ‘Mary Sue’",                                  "President isn’t 'Mary Sue'",                                       'translated'),
 		('I am a Chef in the Modern Era',                               'I am a Chef in the Modern Era',                                    'translated'),
 		('If Only Time Stopped at the Moment We First Met',             'If Only Time Stopped at the Moment We First Met',                  'translated'),

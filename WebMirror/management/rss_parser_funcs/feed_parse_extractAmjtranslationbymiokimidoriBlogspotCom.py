@@ -1,4 +1,3 @@
-
 def extractAmjtranslationbymiokimidoriBlogspotCom(item):
 	'''
 	Parser for 'amjtranslationbymiokimidori.blogspot.com'
@@ -9,6 +8,7 @@ def extractAmjtranslationbymiokimidoriBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('the male wife [男妻]',       'the male wife',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractAmjtranslationbymiokimidoriBlogspotCom(item):
 
 
 	return False
-	

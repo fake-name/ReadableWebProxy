@@ -1,4 +1,3 @@
-
 def extractPolinsesiBlNovelsBlogspotCom(item):
 	'''
 	Parser for 'polinsesi-bl-novels.blogspot.com'
@@ -9,6 +8,8 @@ def extractPolinsesiBlNovelsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('in the snow (bl)',         'in the snow',                        'translated'),
+		('amaki yumeshi (bl)',       'amaki yumeshi',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractPolinsesiBlNovelsBlogspotCom(item):
 
 
 	return False
-	
