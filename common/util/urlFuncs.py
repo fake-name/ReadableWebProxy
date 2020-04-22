@@ -167,7 +167,7 @@ def isGFileUrl(url):
 
 class CacheObject():
 	'''
-	Proxy object that looks like a dict, but actually uses redis for the backing store
+	Proxy object that looks like a dict, but actually uses postgres for the backing store
 	'''
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)

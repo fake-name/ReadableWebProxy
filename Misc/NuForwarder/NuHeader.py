@@ -7,9 +7,10 @@ import traceback
 import os.path
 import json
 import random
-import uuid
-
+import cachetools
+import WebRequest
 import calendar
+
 
 import sqlalchemy.exc
 from sqlalchemy.orm import joinedload
@@ -23,6 +24,7 @@ import common.database as db
 import common.get_rpyc
 import common.util.rpc_base as rpc_base
 import common.StatsdMixin as StatsdMixin
+import common.management.util
 from common.util.remote_base import RpcBaseClass
 
 from WebMirror.JobUtils import buildjob
@@ -51,6 +53,8 @@ GONE_RESOLVES = [
 
 MAX_TOTAL_FETCH_ATTEMPTS = 7
 
+
+URL_TITLE_CACHE = cachetools.LRUCache(maxsize=5000)
 
 # Remove blogspot garbage subdomains from the TLD (if present)
 def urls_the_same(url_list):
@@ -123,6 +127,111 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		if connect:
 			self.check_open_rpc_interface()
+			self.check_open_local_rpc_interface()
+
+
+	def __local_rpc_get_title(self, itemUrl):
+
+		# Whoa, super dumb search/replace bug for the mobile view. I'm an idiot
+		# 'm.wuxiaworld.com' is a substring of 'forum.wuxiaworld.com' despite also
+		# being a active subdomain
+		if 'foruwww.wuxiaworld.com' in itemUrl:
+			return None
+
+		url_key = "url-to-title:{}".format(itemUrl)
+		have_cache = db.get_from_db_key_value_store(url_key)
+
+		if have_cache and 'resolved' in have_cache:
+			return have_cache['resolved']
+
+		itemUrl = itemUrl.strip().replace(" ", "%20")
+
+		try:
+			self.check_open_local_rpc_interface()
+			raw_job = WebMirror.JobUtils.buildjob(
+				module                 = 'SmartWebRequest',
+				call                   = 'smartGetItem',
+				dispatchKey            = "fetcher",
+				jobid                  = -1,
+				args                   = [itemUrl],
+				kwargs                 = {},
+				additionalData         = {'mode' : 'fetch'},
+				postDelay              = 0,
+			)
+			ret = self.local_rpc.dispatch_request(raw_job)
+			self.local_rpc.close()
+
+		except:
+			self.log.error("Failure fetching content!")
+			raise
+
+		if ret['success']:
+			content, fileN, mType = ret['ret']
+
+		else:
+			self.log.error("Failed to fetch page at URL '%s'!", itemUrl)
+
+			for line in ret['traceback']:
+				self.log.error(line)
+
+			db.set_in_db_key_value_store(url_key, {'resolved': None})
+			return None
+
+		if not content or not mType:
+			db.set_in_db_key_value_store(url_key, {'resolved': None})
+			return None
+
+		# If there is an encoding in the content-type (or any other info), strip it out.
+		# We don't care about the encoding, since WebRequest will already have handled that,
+		# and returned a decoded unicode object.
+		if mType and ";" in mType:
+			mType = mType.split(";")[0].strip()
+
+		# *sigh*. So minus.com is fucking up their http headers, and apparently urlencoding the
+		# mime type, because apparently they're shit at things.
+		# Anyways, fix that.
+		if '%2F' in  mType:
+			mType = mType.replace('%2F', '/')
+
+		self.log.info("Retreived file of type '%s', name of '%s' with a size of %0.3f K", mType, fileN, len(content)/1000.0)
+
+		if 'text/html' not in mType:
+			self.log.warning("Fetched content not HTML, cannot extract title.")
+			db.set_in_db_key_value_store(url_key, {'resolved': None})
+			return None
+
+		soup = WebRequest.as_soup(content)
+
+		if not soup.title:
+			self.log.warning("No title on page!")
+			db.set_in_db_key_value_store(url_key, {'resolved': None})
+			return None
+
+		resolved_title = soup.title.get_text().strip()
+		self.log.info("title for content at '%s' resolved to '%s'.", itemUrl, resolved_title)
+		db.set_in_db_key_value_store(url_key, {'resolved': resolved_title})
+		return resolved_title
+
+
+	def check_resolve_locally(self, url, title):
+
+		if not ' used Cloudflare to restrict access' in title:
+			return title
+
+		resolve_locally = [
+			'www.wuxiaworld.com',
+			'babelnovel.com',
+		]
+
+		if not any([tmp in url for tmp in resolve_locally]):
+			return title
+
+
+		# get_page_title() does not raise exceptions
+		new_title = self.__local_rpc_get_title(url)
+		self.log.info("Using locally resolved title: '%s'!", new_title)
+		return new_title
+
 
 
 	def put_head_jobs(self, put=3):
@@ -401,6 +510,20 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				pass
 			self.rpc = common.get_rpyc.RemoteJobInterface("NuHeader")
 
+
+	def check_open_local_rpc_interface(self):
+		try:
+			if self.local_rpc.check_ok():
+				return
+
+		except Exception:
+			try:
+				self.local_rpc.close()
+			except Exception:
+				pass
+			self.local_rpc = common.get_rpyc.RemoteFetchInterface()
+
+
 	def process_single_source_target_mapping(
 				self,
 				from_outbound_wrapper,
@@ -422,6 +545,8 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.log.info("Resolved job to URL: %s", to_url)
 		self.log.info("Page title: %s", to_url_title)
 
+
+
 		# Handle the 301/2 not resolving properly.
 		netloc = urllib.parse.urlsplit(to_url).netloc
 		if "novelupdates" in netloc:
@@ -429,10 +554,17 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			self.log.warning("Failed to validate external URL. Either scraper is blocked, or phantomjs is failing.")
 			return True
 
-		if 'm.wuxiaworld.com' in to_url:
-			to_url = to_url.replace('m.wuxiaworld.com', 'www.wuxiaworld.com')
+		if '/m.wuxiaworld.com' in to_url:
+			to_url = to_url.replace('/m.wuxiaworld.com', '/www.wuxiaworld.com')
+
+		# So dumb
+		if '/foruwww.wuxiaworld.com' in to_url:
+			to_url = to_url.replace('/foruwww.wuxiaworld.com', '/forum.wuxiaworld.com')
+
 		if 'tseirptranslations.blogspot.com' in to_url:
 			to_url = to_url.replace('tseirptranslations.blogspot.com', 'tseirptranslations.com')
+		if 'babelnovel.com/rssbooks/' in to_url:
+			to_url = to_url.replace('babelnovel.com/rssbooks/', 'babelnovel.com/books/')
 		if 'm.xianxiaworld.net' in to_url:
 			to_url = to_url.replace('m.xianxiaworld.net', 'www.xianxiaworld.net')
 		if 'shikkakutranslations.wordpress.com' in to_url:
@@ -447,6 +579,12 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			self.log.warning("URL '%s' does not start with 'http'. Not inserting into DB.", to_url)
 			self.mon_con.incr('head-failed', 1)
 			return True
+
+
+
+		to_url_title = self.check_resolve_locally(to_url, to_url_title)
+
+
 
 		if '/?utm_source=feedburner' in to_url:
 			to_url = to_url.split('/?utm_source=feedburner')[0] + "/"
@@ -806,6 +944,23 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			db_sess.commit()
 
 	def review_probable_validated_row(self, row):
+		for resolved in row.resolved:
+
+			# Gahhhhh
+			if '/foruwww.wuxiaworld.com' in resolved.actual_target:
+				resolved.actual_target = resolved.actual_target.replace('/foruwww.wuxiaworld.com', '/forum.wuxiaworld.com')
+
+
+			if 'babelnovel.com/rssbooks/' in resolved.actual_target:
+				resolved.actual_target = resolved.actual_target.replace('babelnovel.com/rssbooks/', 'babelnovel.com/books/')
+
+
+			fixed = self.check_resolve_locally(resolved.actual_target, resolved.resolved_title)
+			if fixed != resolved.resolved_title and fixed:
+				self.log.info("Updating title!")
+				resolved.resolved_title = fixed
+
+
 		titles = [tmp.resolved_title for tmp in row.resolved]
 		tgts   = [tmp.actual_target for tmp in row.resolved]
 		if not all(titles):
@@ -827,6 +982,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		for title in titles:
 			if any([badword in title.lower() for badword in badwords]):
 				self.log.info("Badword in title: %s (%s)", titles, [badword for badword in badwords if badword in title.lower()])
+
 				return
 
 		if not all([tgts[0] == tgt for tgt in tgts]):
