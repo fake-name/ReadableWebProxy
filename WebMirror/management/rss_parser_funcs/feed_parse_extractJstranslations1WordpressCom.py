@@ -9,6 +9,7 @@ def extractJstranslations1WordpressCom(item):
 
 	tagmap = [        
 		('distressed young woman transmigrates: wangfei who defies the imperial edict',        'distressed young woman transmigrates: wangfei who defies the imperial edict',                      'translated'),
+		('quick transmigration system: male lead, don’t be anxious!',                          'quick transmigration system: male lead, don’t be anxious!',                                        'translated'),
 		('ordered to marry thrice, the mysterious wangfei',               'ordered to marry thrice, the mysterious wangfei',                             'translated'),
 		('rebirth of the general’s granddaughter',                        'rebirth of the general’s granddaughter',                                      'translated'),
 		('you can’t be fierce towards me!',                               'you can’t be fierce towards me!',                                             'translated'),
@@ -25,6 +26,7 @@ def extractJstranslations1WordpressCom(item):
 		('secret service princess: the cold prince’s black belly wife',   'secret service princess: the cold prince’s black belly wife',                 'translated'),
 		('cold palace’s abandoned consort',                               'cold palace’s abandoned consort',                                             'translated'),
 		('the demon king addicted to robbing the bride',                  'the demon king addicted to robbing the bride',                                'translated'),
+		('Empress Running Away with the Ball!',                           'Empress Running Away with the Ball!',                                         'translated'),
 		('PRC',        'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

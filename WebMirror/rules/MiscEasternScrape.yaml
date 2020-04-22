@@ -213,3 +213,15 @@ decompose: [
 
 stripTitle: [
 ]
+
+
+
+special_case_filters : {
+	"https://babelnovel.com"     : ["local_fetch", ],
+	'https://wuxiaworld.com'     : ["local_fetch", ],
+	'https://www.wuxiaworld.com' : ["local_fetch", ],
+}
+
+
+
+

@@ -19,6 +19,10 @@ def extractNastriumdenBlogspotCom(item):
 		('s.c.i mystery',                                             'S.C.I Mystery Series',                                                     'translated'),
 		('tharntype the series',                                      'tharntype the series',                                                     'translated'),
 		('Dragon Flies Phoenix Dances',                               'Dragon Flies Phoenix Dances',                                              'translated'),
+		('2gether the series',                                        '2gether the series',                                                       'translated'),
+		('the sleuth of the ming dynasty',                            'the sleuth of the ming dynasty',                                           'translated'),
+		('The Paternity Guard',                                       'The Paternity Guard',                                                      'translated'),
+		('Love is More Than a Word',                                  'Love is More Than a Word',                                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

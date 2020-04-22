@@ -1,4 +1,3 @@
-
 def extractKofitranslationsWordpressCom(item):
 	'''
 	Parser for 'kofitranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractKofitranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Tou no Madoushi',       'Tou no Madoushi',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractKofitranslationsWordpressCom(item):
 
 
 	return False
-	

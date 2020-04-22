@@ -1,6 +1,7 @@
-def extractSebastianorraWordpressCom(item):
+
+def extractCakesnorterBlogspotCom(item):
 	'''
-	Parser for 'sebastianorra.wordpress.com'
+	Parser for 'cakesnorter.blogspot.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +9,6 @@ def extractSebastianorraWordpressCom(item):
 		return None
 
 	tagmap = [
-		('warhead pet hamster',       'warhead pet hamster',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,3 +19,4 @@ def extractSebastianorraWordpressCom(item):
 
 
 	return False
+	

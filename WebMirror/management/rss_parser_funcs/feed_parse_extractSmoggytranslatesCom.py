@@ -14,6 +14,7 @@ def extractSmoggytranslatesCom(item):
 		('The Men at Her Feet',                              'The Men at Her Feet',                                             'translated'),
 		('anti-cheater strategies',                          'anti-cheater strategies',                                         'translated'),
 		('the imperial doctor belongs to the princess',      'the imperial doctor belongs to the princess',                     'translated'),
+		('kinky perfume system',                             'kinky perfume system',                                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

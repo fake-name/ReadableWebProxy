@@ -1,4 +1,3 @@
-
 def extractWwwMoojutranslationsCom(item):
 	'''
 	Parser for 'www.moojutranslations.com'
@@ -9,6 +8,7 @@ def extractWwwMoojutranslationsCom(item):
 		return None
 
 	tagmap = [
+		('reborn as the spirit king',       'reborn as the spirit king',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractWwwMoojutranslationsCom(item):
 
 
 	return False
-	

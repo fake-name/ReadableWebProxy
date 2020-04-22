@@ -143,12 +143,15 @@ def extractWwwAsianhobbyistCom(item):
 		('tilea’s worries',                                                                 'Tilea no Nayamigoto',                                                                         'translated'),
 		('kaleidoscope of death',                                                           'kaleidoscope of death',                                                                       'translated'),
 		('Magi’s Grandson',                                                                 'Magi’s Grandson',                                                                             'translated'),
+		('the man standing on top of the food chain',                                       'the man standing on top of the food chain',                                                   'translated'),
 		('Shinka no Mi',                                                                    'Shinka no Mi',                                                                                'translated'),
 		('Green Skin',                                                                      'Green Skin',                                                                                  'translated'),
 		('Chu Wang Fei',                                                                    'Chu Wang Fei',                                                                                'translated'),
 		('my castle my castellan',                                                          'my castle my castellan',                                                                      'translated'),
 		('Waiting For You Online',                                                          'Waiting For You Online',                                                                      'translated'),
 		('Liu Yao: The Revitalization of Fuyao Sect',                                       'Liu Yao: The Revitalization of Fuyao Sect',                                                   'translated'),
+		('The Simple Life of Killing Demons',                                               'The Simple Life of Killing Demons',                                                           'translated'),
+		('frontiers ~chronicles of bucket-san’s detailed pioneering~',                      'frontiers ~chronicles of bucket-san’s detailed pioneering~',                                  'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

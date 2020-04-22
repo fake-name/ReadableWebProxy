@@ -1,4 +1,3 @@
-
 def extractTomorrowstranslationsWordpressCom(item):
 	'''
 	Parser for 'tomorrowstranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractTomorrowstranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('s-ranked burden',       'S Ranked Burden Tamer',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTomorrowstranslationsWordpressCom(item):
 
 
 	return False
-	
