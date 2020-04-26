@@ -1,4 +1,3 @@
-
 def extractWwwTherovinggriotCom(item):
 	'''
 	Parser for 'www.therovinggriot.com'
@@ -8,7 +7,19 @@ def extractWwwTherovinggriotCom(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
+
+	badwords = [
+			'review',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
+
 	tagmap = [
+		('recapture the entertainment industry',       'recapture the entertainment industry',                      'translated'),
+		('recapturetheentertainmentindustry',          'recapture the entertainment industry',                      'translated'),
+		('rtei',                                       'recapture the entertainment industry',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +30,3 @@ def extractWwwTherovinggriotCom(item):
 
 
 	return False
-	

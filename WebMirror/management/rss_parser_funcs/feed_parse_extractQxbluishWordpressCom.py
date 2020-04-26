@@ -23,7 +23,8 @@ def extractQxbluishWordpressCom(item):
 		('tfwoiwm',       'The Former Wife of Invisible Wealthy Man',                                                      'translated'),
 		('fanshu',        'Crossing Into The Emperor’s Body At Night',                                                     'translated'),
 		('mdwmseipl',     'My Daughter Was My Sworn Enemy In Past Life',                                                   'translated'),
-		('tpmofbs',       'Transmigration: Petite Mother Of Four Big Shots',                                                   'translated'),
+		('tpmofbs',       'Transmigration: Petite Mother Of Four Big Shots',                                               'translated'),
+		('bhwatp',        'Become Husband and Wife According To Pleasure',                                                 'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

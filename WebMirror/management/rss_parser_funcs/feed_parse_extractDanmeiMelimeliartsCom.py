@@ -124,6 +124,13 @@ def extractDanmeiMelimeliartsCom(item):
 		('i trick even the lames to stand up for me',                              'i trick even the lames to stand up for me',                                             'translated'),
 		('even until death, the scum gong thought i was a white lotus',            'even until death, the scum gong thought i was a white lotus',                           'translated'),
 		('the icy hero is yearning for love',                                      'the icy hero is yearning for love',                                                     'translated'),
+		('dating the strongest boss',                                              'dating the strongest boss',                                                             'translated'),
+		('fog [e-sports]',                                                         'fog [e-sports]',                                                                        'translated'),
+		('ex-husband\'s call',                                                     'ex-husband\'s call',                                                                    'translated'),
+		('the daily life of being the campus idol\'s fake boyfriend',              'the daily life of being the campus idol\'s fake boyfriend',                             'translated'),
+		('the old gong is suffering from a terminal illness',                      'the old gong is suffering from a terminal illness',                                     'translated'),
+		('2013 (doomsday)',                                                        '2013',                                                                                  'translated'),
+		('tianbao fuyao lu',                                                       'tianbao fuyao lu',                                                                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

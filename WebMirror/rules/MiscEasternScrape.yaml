@@ -102,7 +102,7 @@ baseUrl: [
 		'http://hbnhtranslations.com',
 		'https://bluedreamsblog.jimdofree.com',
 		'https://babelnovel.com',
-
+		'https://www.pemudatunawisata.my.id',
 
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'https://www.novelmultiverse.com',
@@ -132,6 +132,7 @@ feeds: [
 	'https://lesyt.xyz/rss/chapters/regular',
 	'http://weletranslation.com/atom.xml',
 	'http://novel-id.blognive.com/rss.xml',
+	'https://www.pemudatunawisata.my.id/feeds/posts/default',
 ]
 
 extraStartUrls: [
@@ -178,6 +179,8 @@ badwords: [
 
 			'&reverse-paginate=true&',
 			'?like_comment=',
+			'wuxiaworld.com/account/',
+			'?returnUrl=/',
 
 			# Block mobile garbage.
 			'm.xianxiaworld.net',
@@ -220,6 +223,9 @@ special_case_filters : {
 	"https://babelnovel.com"     : ["local_fetch", ],
 	'https://wuxiaworld.com'     : ["local_fetch", ],
 	'https://www.wuxiaworld.com' : ["local_fetch", ],
+	"http://babelnovel.com"     : ["local_fetch", ],
+	'http://wuxiaworld.com'     : ["local_fetch", ],
+	'http://www.wuxiaworld.com' : ["local_fetch", ],
 }
 
 

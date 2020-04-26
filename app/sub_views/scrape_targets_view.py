@@ -20,6 +20,7 @@ from tzlocal import get_localzone
 from app import app
 from app import auth
 import common.database as db
+import WebMirror.rules
 import WebMirror.OfflineFilters.NewNetlocTracker as nnt
 
 def url_state_update(sess, parameters):
@@ -37,7 +38,6 @@ def url_state_update(sess, parameters):
 		row.ignore = row_updates['new-ignore']
 
 	sess.commit()
-
 
 	return {"error" : False,
 			'message' : "Changes applied!"}
@@ -100,6 +100,8 @@ def url_api():
 @app.route('/urls/', methods=['GET'])
 @auth.login_required
 def url_view():
+
+	WebMirror.rules.load_rules(override=True)
 
 	scope   = request.args.get('scope', 'missing')
 	ignored = request.args.get('ignore', 'exclude')

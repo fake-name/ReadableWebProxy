@@ -1,4 +1,3 @@
-
 def extractAerialrainWordpressCom(item):
 	'''
 	Parser for 'aerialrain.wordpress.com'
@@ -9,6 +8,8 @@ def extractAerialrainWordpressCom(item):
 		return None
 
 	tagmap = [
+		('mwfv',                               'my whole family are villains',                      'translated'),
+		('my whole family are villains',       'my whole family are villains',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractAerialrainWordpressCom(item):
 
 
 	return False
-	

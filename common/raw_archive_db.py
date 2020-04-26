@@ -41,5 +41,6 @@ class RawWebPages(common.db_base.Base):
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
 
 	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min, nullable=False)
+	epoch             = Column(Integer,  default=0)
 
 

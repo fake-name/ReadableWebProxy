@@ -54,6 +54,7 @@ class WebPages(common.db_base.Base):
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
 
 	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min, nullable=False)
+	epoch             = Column(Integer,  default=0)
 
 	# Items with `normal_fetch_mode` set to false are not retreived by the normal scheduling system
 	# in WebMirror\Engine.py. This is to allow external systems that need to manage their own

@@ -54,6 +54,7 @@ def extractLightNovelsTranslations(item):
 		('the advent of death’s daughter',                                             'The Advent of Death’s Daughter',                                                           'oel'),
 		('the demon lord’s redemption',                                                'The Demon Lord’s Redemption',                                                              'oel'),
 		('emotional defect',                                                           'Emotional Defect',                                                                         'oel'),
+		('mercenaries in apocalypse',                                                  'Mercenaries in Apocalypse',                                                                'oel'),
 		('The Pagemasters',                                                            'The Pagemasters',                                                                          'oel'),
 		('return of the fallen',                                                       'Return of the Fallen',                                                                     'oel'),
 	]

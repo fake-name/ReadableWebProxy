@@ -8,7 +8,8 @@ def extractJinzeffectWordpressCom(item):
 		return None
 
 	tagmap = [
-		('Eternal Reverence',       'Eternal Reverence',                      'translated'),
+		('Eternal Reverence',                             'Eternal Reverence',                                            'translated'),
+		('i\'m an olympic superstar',                     'i\'m an olympic superstar',                                    'translated'),
 		('PRC',                     'PRC',                                    'translated'),
 		('Loiterous',               'Loiterous',                              'oel'),
 	]

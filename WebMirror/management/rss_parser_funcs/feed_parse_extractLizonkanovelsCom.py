@@ -1,6 +1,7 @@
-def extractJunktranslatesWordpressCom(item):
+
+def extractLizonkanovelsCom(item):
 	'''
-	Parser for 'junktranslates.wordpress.com'
+	Parser for 'lizonkanovels.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +9,6 @@ def extractJunktranslatesWordpressCom(item):
 		return None
 
 	tagmap = [
-		('intl',       'It’s Not Too Late to Meet Again After Rebirth',                      'translated'),
-		('smwom',       'Second Marriage of a Wealthy Old Man',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -20,3 +19,4 @@ def extractJunktranslatesWordpressCom(item):
 
 
 	return False
+	

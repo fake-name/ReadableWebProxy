@@ -1,4 +1,3 @@
-
 def extractLazysakuratranslationsWordpressCom(item):
 	'''
 	Parser for 'lazysakuratranslations.wordpress.com'
@@ -9,6 +8,9 @@ def extractLazysakuratranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the interstellar male god',             'the interstellar male god',                      'translated'),
+		('the interstellar male god (img)',       'the interstellar male god',                      'translated'),
+		('img',                                   'the interstellar male god',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractLazysakuratranslationsWordpressCom(item):
 
 
 	return False
-	

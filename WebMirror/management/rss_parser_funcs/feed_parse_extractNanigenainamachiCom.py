@@ -1,4 +1,3 @@
-
 def extractNanigenainamachiCom(item):
 	'''
 	Parser for 'nanigenainamachi.com'
@@ -9,6 +8,7 @@ def extractNanigenainamachiCom(item):
 		return None
 
 	tagmap = [
+		('i was born as the seventh prince, what should i do?',       'i was born as the seventh prince, what should i do?',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractNanigenainamachiCom(item):
 
 
 	return False
-	

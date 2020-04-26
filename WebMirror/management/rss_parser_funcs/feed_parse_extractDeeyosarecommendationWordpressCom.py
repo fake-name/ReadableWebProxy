@@ -10,6 +10,8 @@ def extractDeeyosarecommendationWordpressCom(item):
 	tagmap = [
 		('demonssweetheart',          'demon\'s sweetheart',                      'translated'),
 		('demon\'s sweetheart',       'demon\'s sweetheart',                      'translated'),
+		('fylmt',                              'fortunately, you like me too',                      'translated'),
+		('fortunately, you like me too',       'fortunately, you like me too',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

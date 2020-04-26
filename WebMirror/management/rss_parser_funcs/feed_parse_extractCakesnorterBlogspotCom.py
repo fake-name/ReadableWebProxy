@@ -1,4 +1,3 @@
-
 def extractCakesnorterBlogspotCom(item):
 	'''
 	Parser for 'cakesnorter.blogspot.com'
@@ -9,6 +8,8 @@ def extractCakesnorterBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('back to before i married the tyrant',       'Back to Before I Married the Tyrant [Rebirth]',                      'translated'),
+		('bbmt',                                      'Back to Before I Married the Tyrant [Rebirth]',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractCakesnorterBlogspotCom(item):
 
 
 	return False
-	

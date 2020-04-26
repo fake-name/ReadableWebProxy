@@ -2,9 +2,19 @@ def extractFoxaholicWordpressCom(item):
 	'''
 	Parser for 'foxaholic.wordpress.com'
 	'''
+	
+	badwords = [
+			'preview',
+			'protected',
+		]
+	ltitle = item['title'].lower()
+	if any([bad in ltitle for bad in badwords]):
+		return None
+
+
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
-	if not (chp or vol) or "preview" in item['title'].lower():
+	if not (chp or vol):
 		return None
 
 	if item['tags'] == ['Uncategorized']:
@@ -97,9 +107,21 @@ def extractFoxaholicWordpressCom(item):
 		('brothel open for business (h)',                                                           'brothel open for business (h)',                                                                          'translated'),
 		('i have refined qi for 3000 years',                                                        'i have refined qi for 3000 years',                                                                       'translated'),
 		('my sister told me to give up my fiancé',                                                  'my sister told me to give up my fiancé',                                                                 'translated'),
+		('slag gong wants to kill me',                                                              'slag gong wants to kill me',                                                                             'translated'),
+		('CPVTTF',                                                                                  'The Counterattack Plan of A Villain With Ten Thousand Fans',                                             'translated'),
+		('transmigrated female support: male god, addicted to teasing',                             'transmigrated female support: male god, addicted to teasing',                                            'translated'),
+		('transmigrated female support: male god addicted to teasing',                              'transmigrated female support: male god, addicted to teasing',                                            'translated'),
+		('quick transmigration system: pounce on male gods which family’s stronger',                'quick transmigration system: pounce on male gods which family’s stronger',                               'translated'),
+		('quick transmigration: the villain\'s sweet wife',                                         'quick transmigration: the villain\'s sweet wife',                                                        'translated'),
+		('Winter Begonia',                                                                          'Winter Begonia',                                                                                         'translated'),
+		('fairyland lovers',                                                                        'fairyland lovers',                                                                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
+
+
+
+
 
 	for tagname, name, tl_type in tagmap:
 		if tagname in item['tags']:

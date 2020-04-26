@@ -16,6 +16,7 @@ def extractKktranslatesHomeBlog(item):
 		('i rely on kisses to clear survival games',            'i rely on kisses to clear survival games',                           'translated'),
 		('to be a heartthrob in a horror movie',                'to be a heartthrob in a horror movie',                               'translated'),
 		('global university entrance examination',              'global university entrance examination',                             'translated'),
+		('Misplacement Game',                                   'Misplacement Game',                                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
