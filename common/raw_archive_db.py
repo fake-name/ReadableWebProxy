@@ -34,13 +34,12 @@ class RawWebPages(common.db_base.Base):
 	# raw_content       = Column(Text)
 
 	filename     = Column(Text)
-
 	fspath       = Column(Text)
 
 	fetchtime         = Column(DateTime, default=datetime.datetime.min)
 	addtime           = Column(DateTime, default=datetime.datetime.utcnow)
 
-	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min, nullable=False)
+	ignoreuntiltime   = Column(DateTime, default=datetime.datetime.min)
 	epoch             = Column(Integer,  default=0)
 
 

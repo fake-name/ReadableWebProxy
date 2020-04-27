@@ -54,6 +54,7 @@ import common.stuck
 
 import common.get_rpyc
 import RawArchiver.RawActiveModules
+import RawArchiver.misc as raw_misc
 
 
 
@@ -185,22 +186,22 @@ def links_to_dicts(links_in, starturl, distance, priority):
 		SEEN_CACHE[link] = True
 
 		# print("Doing insert", commit_each, link)
-		start = urllib.parse.urlsplit(link).netloc
+		netloc = urllib.parse.urlsplit(link).netloc
 
 		assert link.startswith("http"), "Link %s doesn't seem to be HTTP content?" % link
-		assert start
+		assert netloc
 
 		data = {
 			'url'             : link,
 			'starturl'        : starturl,
-			'netloc'          : start,
+			'netloc'          : netloc,
 			'distance'        : distance,
 			'priority'        : priority,
 			'state'           : "new",
 			'addtime'         : datetime.datetime.now(),
 
 			# Don't retrigger unless the ignore time has elaped.
-			'ignoreuntiltime' : datetime.datetime.now(),
+			'epoch' : raw_misc.get_epoch_for_url(link, netloc),
 			}
 
 		ret.append(data)
@@ -218,7 +219,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			'priority',
 			'state',
 			'addtime',
-			'ignoreuntiltime',
+			'epoch',
 		])
 
 
@@ -231,7 +232,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			assert 'priority'         in item
 			assert 'state'            in item
 			assert 'addtime'          in item
-			assert 'ignoreuntiltime'  in item
+			assert 'epoch'  in item
 
 		except AssertionError:
 			logger.error("Missing key from raw entry: ")
@@ -266,7 +267,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			%(priority)s,
 			%(addtime)s,
 			%(state)s,
-			%(ignoreuntiltime)s
+			%(epoch)s
 			);
 			""".replace("	", " ")
 
@@ -392,16 +393,16 @@ def check_init_func():
 					priority_v integer,
 					addtime_v timestamp without time zone,
 					state_v dlstate_enum,
-					ignoreuntiltime_v timestamp without time zone
+					upsert_epoch_v integer
 					)
 				RETURNS VOID AS $$
 
 				INSERT INTO
 					raw_web_pages
-					(url, starturl, netloc, distance, priority, addtime, state, ignoreuntiltime)
-				-- 	 (url, starturl, netloc, distance, priority, addtime, state, ignoreuntiltime)
+					(url, starturl, netloc, distance, priority, addtime, state, epoch)
+				-- 	 (url, starturl, netloc, distance, priority, addtime, state, epoch)
 				VALUES
-					(     url_v,   starturl_v,   netloc_v,   distance_v,   priority_v,   addtime_v,   state_v, ignoreuntiltime_v)
+					(     url_v,   starturl_v,   netloc_v,   distance_v,   priority_v,   addtime_v,   state_v, upsert_epoch_v)
 				ON CONFLICT (url) DO
 					UPDATE
 						SET
@@ -415,11 +416,11 @@ def check_init_func():
 							addtime         = LEAST(EXCLUDED.addtime, raw_web_pages.addtime)
 						WHERE
 						(
-								raw_web_pages.ignoreuntiltime < ignoreuntiltime_v
+								(raw_web_pages.epoch IS NULL or raw_web_pages.epoch < upsert_epoch_v)
 							AND
 								raw_web_pages.url = EXCLUDED.url
 							AND
-								(raw_web_pages.state = 'complete' OR raw_web_pages.state = 'error')
+								(raw_web_pages.state = 'complete' OR raw_web_pages.state = 'error' OR raw_web_pages.state = 'skipped')
 						)
 					;
 

@@ -333,6 +333,7 @@ baseUrl: [
 	'https://cakesnorter.blogspot.com',
 	'https://budgettranslations.blogspot.com',
 	'https://hammytranslations.blogspot.com',
+	'https://austincrustranslation.blogspot.com',
 ]
 
 feedPostfix: "/feeds/posts/default"

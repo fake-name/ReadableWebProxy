@@ -13,6 +13,7 @@ import common.database as db
 import common.Exceptions
 import common.management.file_cleanup
 import common.global_constants
+import common.util.urlFuncs as urlFuncs
 
 from config import C_RAW_RESOURCE_DIR
 from sqlalchemy_continuum_vendored.utils import version_table
@@ -148,6 +149,135 @@ def exposed_reset_raw_in_progress():
 	Reset raw downloads that are in progress.
 	'''
 	RawArchiver.RawUrlUpserter.resetRawInProgress()
+
+
+
+
+
+def set_new_to_skipped():
+	print("Resetting any stalled downloads from the previous session.")
+
+
+	commit_interval =  50000
+	step            =  50000
+	commit_every    =  30
+	last_commit     = time.time()
+
+	with db.session_context(override_timeout_ms=60 * 1000 * 15) as sess:
+		try:
+			# sess.execute('''SET enable_bitmapscan TO off;''')
+			print("Getting minimum row in need or update..")
+			start = sess.execute("""SELECT min(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'new'""")
+			# start = sess.execute("""SELECT min(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'new' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+			start = list(start)[0][0]
+			if start is None:
+				print("No rows to reset!")
+				return
+			print("Minimum row ID:", start, "getting maximum row...")
+			stop = sess.execute("""SELECT max(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'new'""")
+			# stop = sess.execute("""SELECT max(id) FROM raw_web_pages WHERE state = 'fetching' OR state = 'processing' OR state = 'new' OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
+			stop = list(stop)[0][0]
+			print("Maximum row ID: ", stop)
+
+
+			print("Need to fix rows from %s to %s" % (start, stop))
+			start = start - (start % step)
+
+			changed = 0
+			tot_changed = 0
+			# for idx in range(start, stop, step):
+			for idx in tqdm.tqdm(range(start, stop, step), desc="Resetting raw URLs"):
+				try:
+					# SQL String munging! I'm a bad person!
+					# Only done because I can't easily find how to make sqlalchemy
+					# bind parameters ignore the postgres specific cast
+					# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
+					have = sess.execute("""UPDATE
+												raw_web_pages
+											SET
+												state = 'skipped'
+											WHERE
+												(state = 'fetching' OR state = 'processing' OR state = 'new')
+											AND
+												id > {}
+											AND
+												id <= {};""".format(idx, idx+step))
+					# print()
+
+					# processed  = idx - start
+					# total_todo = stop - start
+					# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
+					changed += have.rowcount
+					tot_changed += have.rowcount
+					if changed > commit_interval:
+						print("Committing (%s changed rows)...." % changed, end=' ')
+						sess.commit()
+						print("done")
+						changed = 0
+						last_commit     = time.time()
+
+					if time.time() > last_commit + commit_every:
+						last_commit     = time.time()
+						print("Committing (%s changed rows, timed out)...." % changed, end=' ')
+						sess.commit()
+						print("done")
+						changed = 0
+
+
+
+				except sqlalchemy.exc.OperationalError:
+					sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					sess.rollback()
+
+
+			sess.commit()
+
+		finally:
+			pass
+			# sess.execute('''SET enable_bitmapscan TO on;''')
+
+
+
+def reset_root_skipped_to_new():
+	print("Initializing all start URLs in the database")
+	with common.database.session_context() as sess:
+		for module in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+			for starturl in module.get_start_urls():
+				have = sess.query(common.database.RawWebPages) \
+					.filter(common.database.RawWebPages.url == starturl)   \
+					.count()
+				if have:
+					if have.state == 'skipped':
+						have.state = 'new'
+				else:
+					netloc = urlFuncs.getNetLoc(starturl)
+					new = common.database.RawWebPages(
+							url               = starturl,
+							starturl          = starturl,
+							netloc            = netloc,
+							priority          = common.database.DB_IDLE_PRIORITY,
+							distance          = common.database.DB_DEFAULT_DIST,
+						)
+					print("Missing start-url for address: '{}'".format(starturl))
+					sess.add(new)
+				try:
+					sess.commit()
+				except Exception:
+					print("Failure inserting start url for address: '{}'".format(starturl))
+
+					sess.rollback()
+
+
+
+
+def exposed_reset_raw_incremental_fetch():
+	'''
+	Reset the raw fetch incremental fetch.
+	'''
+	set_new_to_skipped()
+	reset_root_skipped_to_new()
+
 
 
 def exposed_reset_raw_missing():

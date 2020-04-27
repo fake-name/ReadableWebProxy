@@ -505,6 +505,7 @@ baseUrl: [
 	'https://perpetuallyperennial.car.blog',
 	'https://nyanovels.com',
 	'https://33fdtlx44.wordpress.com',
+	'https://fatchicusualykool.wordpress.com',
 	]
 
 
@@ -610,6 +611,14 @@ decompose: [
 	{'class'                         : 'sidebar-primary'},
 	{'class'                         : 'shins-before-content'},
 	{'class'                         : 'osny-nightmode'},
+	
+	#Novelonomicon
+	{'class'                         : 'g1-quick-nav'},
+	{'class'                         : 'g1-drop'},
+	{'class'                         : 'g1-dropable'},
+	{'class'                         : 'g1-hb-row'},
+	{'class'                         : 'g1-featured'},
+	{'class'                         : 'g1-featured-row'},
 
 
 
