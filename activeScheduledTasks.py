@@ -37,12 +37,6 @@ target_jobs = {
 		"interval"         : minutes(45),
 		# "minute"           : '*/42',
 	},
-	'scheduled_jobs.python_job.RollingRewalkTriggersBaseJob' : {
-		"name"             : 'AUTO: Rolling Rewalk Trigger job',
-		"interval"         : hours(4),
-		# "minute"           : '15',
-		# "hour"             : '*/4',
-	},
 	'scheduled_jobs.python_job.HourlyPageTriggerJob' : {
 		"name"             : 'AUTO: Hourly Page Trigger job',
 		"interval"         : minutes(60),
@@ -85,12 +79,6 @@ target_jobs = {
 		"interval"         : minutes(20),
 		# "minute"           : '*/25',
 	},
-	'scheduled_jobs.python_job.RollingRawRewalkTriggerJob' : {
-		"name"             : 'AUTO: Rolling Raw Rewalk Trigger job',
-		"interval"         : hours(12),
-		# "minute"           : '10',
-		# "hour"             : '*/12',
-	},
 
 	'scheduled_jobs.python_job.NuHeaderJob' : {
 		"name"             : 'AUTO: NuHeader job',
@@ -120,6 +108,19 @@ target_jobs = {
 		"interval"         : hours(8),
 		# "minute"           : '*/40',
 	},
+
+	# 'scheduled_jobs.python_job.RollingRewalkTriggersBaseJob' : {
+	# 	"name"             : 'AUTO: Rolling Rewalk Trigger job',
+	# 	"interval"         : hours(4),
+	# 	# "minute"           : '15',
+	# 	# "hour"             : '*/4',
+	# },
+	# 'scheduled_jobs.python_job.RollingRawRewalkTriggerJob' : {
+	# 	"name"             : 'AUTO: Rolling Raw Rewalk Trigger job',
+	# 	"interval"         : hours(12),
+	# 	# "minute"           : '10',
+	# 	# "hour"             : '*/12',
+	# },
 
 	# 'scheduled_jobs.python_job.RssHistoryPurger' : {
 	# 	"name"             : 'AUTO: Purge RSS Entries from history table',

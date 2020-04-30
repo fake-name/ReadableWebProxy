@@ -48,6 +48,8 @@ badwords: [
 			'stardancer.org/art',
 			'www.addergoole.com/forum/',
 			'www.addergoole.com/wiki/',
+
+			'scribblehub.com/login/?',
 			]
 
 

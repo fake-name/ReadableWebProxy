@@ -163,7 +163,7 @@ def set_new_to_skipped():
 	commit_every    =  30
 	last_commit     = time.time()
 
-	with db.session_context(override_timeout_ms=60 * 1000 * 15) as sess:
+	with db.session_context(override_timeout_ms=60 * 1000 * 45) as sess:
 		try:
 			# sess.execute('''SET enable_bitmapscan TO off;''')
 			print("Getting minimum row in need or update..")
@@ -246,7 +246,7 @@ def reset_root_skipped_to_new():
 			for starturl in module.get_start_urls():
 				have = sess.query(common.database.RawWebPages) \
 					.filter(common.database.RawWebPages.url == starturl)   \
-					.count()
+					.scalar()
 				if have:
 					if have.state == 'skipped':
 						have.state = 'new'

@@ -198,7 +198,7 @@ badwords: [
 			'/~BE_Games/',
 
 			'tag[]=',
-
+			'chyoa.com/search?',
 
 			# Multi-megabyte favorites pages:
 			"https://www.literotica.com/stories/memberpage.php?uid=1392828&page=favorites",
