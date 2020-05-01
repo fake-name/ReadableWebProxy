@@ -409,7 +409,7 @@ def check_init_func():
 							state           = EXCLUDED.state,
 							starturl        = EXCLUDED.starturl,
 							netloc          = EXCLUDED.netloc,
-							epoch           = EXCLUDED.epoch,
+							epoch           = LEAST(EXCLUDED.epoch, raw_web_pages.epoch),
 							-- Largest distance is 100, but it's not checked
 							distance        = LEAST(EXCLUDED.distance, raw_web_pages.distance),
 							-- The lowest priority is 10.
