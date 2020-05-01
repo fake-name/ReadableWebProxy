@@ -115,12 +115,12 @@ target_jobs = {
 	# 	# "minute"           : '15',
 	# 	# "hour"             : '*/4',
 	# },
-	# 'scheduled_jobs.python_job.RollingRawRewalkTriggerJob' : {
-	# 	"name"             : 'AUTO: Rolling Raw Rewalk Trigger job',
-	# 	"interval"         : hours(12),
-	# 	# "minute"           : '10',
-	# 	# "hour"             : '*/12',
-	# },
+	'scheduled_jobs.python_job.RollingRawUrlTriggerJob' : {
+		"name"             : 'AUTO: Rolling Raw URL Trigger job',
+		"interval"         : hours(4),
+		# "minute"           : '10',
+		# "hour"             : '*/12',
+	},
 
 	# 'scheduled_jobs.python_job.RssHistoryPurger' : {
 	# 	"name"             : 'AUTO: Purge RSS Entries from history table',

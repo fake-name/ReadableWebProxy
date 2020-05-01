@@ -46,7 +46,10 @@ def get_interval_for_url(url):
 
 	return 0
 
-def get_epoch_for_url(url, netloc):
+def get_epoch_for_url(url, netloc=None):
+	if not netloc:
+		netloc = urllib.parse.urlsplit(url).netloc
+
 	interval = get_interval_for_url(url)
 	assert netloc
 

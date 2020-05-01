@@ -259,6 +259,22 @@ def cleanUrl(urlin):
 	if parsed.netloc.endswith('wp.me'):
 		resolve_redirects = True
 
+	# Move to a canonical path for RoyalRoadL items
+	if (parsed.netloc == "royalroad.com"
+		or parsed.netloc == "www.royalroadl.com"
+		or parsed.netloc == "royalroadl.com"):
+
+		urlin = urllib.parse.urlunparse((
+			'https',
+			'www.royalroad.com',
+			parsed.path,
+			parsed.params,
+			parsed.query,
+			parsed.fragment,
+			))
+		parsed = urllib.parse.urlparse(urlin)
+
+
 	if 'feedproxy.google.com' in parsed.netloc:
 		resolve_redirects = True
 
@@ -268,11 +284,13 @@ def cleanUrl(urlin):
 			qs = urllib.parse.parse_qs(parsed.query)
 			if 'redirect' in qs:
 				urlin = qs['redirect'][0]
+
 	if urlin.startswith("http://www.livejournal.com/login.bml?"):
 		if parsed.query:
 			qs = urllib.parse.parse_qs(parsed.query)
 			if 'returnto' in qs:
 				urlin = qs['returnto'][0]
+
 	if urlin.startswith("https://t.umblr.com/redirect?"):
 		if parsed.query:
 			qs = urllib.parse.parse_qs(parsed.query)
@@ -280,7 +298,13 @@ def cleanUrl(urlin):
 				urlin = qs['z'][0]
 
 
-	return unwrap_redirect(urlin, resolve_redirects)
+	ret = unwrap_redirect(urlin, resolve_redirects)
+
+	# I hate feedburner
+	if '?utm_source=' in ret:
+		ret = ret.split("?utm_source=")[0]
+
+	return ret
 
 
 ##############################################################################################################

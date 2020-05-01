@@ -119,6 +119,9 @@ class TransactionTruncatorJob(PythonJob, job.JobBase):
 class RollingRawRewalkTriggerJob(PythonJob, job.JobBase):
 	invokable = RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRawRewalkTrigger
 
+class RollingRawUrlTriggerJob(PythonJob, job.JobBase):
+	invokable = RawArchiver.TimedTriggers.RawUrlStartTrigger.RollingRawUrlStartTrigger
+
 class NuHeaderJob(PythonJob, job.JobBase):
 	invokable = Misc.NuForwarder.NuHeader.NuHeader
 

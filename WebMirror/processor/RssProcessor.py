@@ -197,7 +197,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 				item['linkUrl']  = urlFuncs.cleanUrl(entry['link'])
 				item['authors']  = entry['authors']
 
-				item['feedUrl']  = feedUrl
+				item['feedUrl']  = urlFuncs.cleanUrl(feedUrl)
 
 
 

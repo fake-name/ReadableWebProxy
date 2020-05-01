@@ -313,7 +313,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				tmp = self.local.rpc_interface.get_job()
 
 				with self.count_lock:
-					print("Handling response!")
+					# print("Handling response!")
 					self.active_jobs -= 1
 					self.jobs_in += 1
 					if self.active_jobs < 0:
@@ -454,7 +454,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		msg_loop = 0
 		while self.run_flag.value == 1:
-			print("Drainer looping@")
+			# print("Drainer looping@")
 			self.process_responses()
 
 			msg_loop += 1
@@ -512,11 +512,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					                    raw_web_pages
 					                WHERE
 					                    state = 'new'::dlstate_enum
-					                AND
-					                    raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 					            ) + 1
-					        AND
-					            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 					        LIMIT {in_flight}
 					    )
 					AND
@@ -541,8 +537,6 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					            raw_web_pages.state = 'new'
 					        AND
 					            raw_web_pages.fspath IS NULL
-					        AND
-					            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 					        LIMIT {in_flight}
 					    )
 					AND
@@ -565,8 +559,6 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					            raw_web_pages
 					        WHERE
 					            raw_web_pages.state = 'new'
-					        AND
-					            raw_web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 					        LIMIT {in_flight}
 					    )
 					AND
