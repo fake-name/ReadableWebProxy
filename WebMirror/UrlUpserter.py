@@ -67,6 +67,7 @@ def initializeStartUrls(rules):
 							priority          = db.DB_IDLE_PRIORITY,
 							distance          = db.DB_DEFAULT_DIST,
 							normal_fetch_mode = ruleset['normal_fetch_mode'],
+							epoch             = 0,
 						)
 					print("Missing start-url for address: '{}'".format(starturl))
 					sess.add(new)
@@ -216,9 +217,8 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 			'type',
 			'addtime',
 			'state',
-			'ignoreuntiltime',
+			'epoch',
 			'maximum_priority',  # Optional
-			'ignore_ignore_time',      # Optional
 		])
 
 
@@ -233,18 +233,15 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 			assert 'type'             in item
 			assert 'addtime'          in item
 			assert 'state'            in item
-			assert 'ignoreuntiltime'  in item
+			assert 'epoch'            in item
 
 			if not 'maximum_priority' in item:
 				item['maximum_priority'] = item['priority']
-			if not 'ignore_ignore_time' in item:
-				item['ignore_ignore_time'] = False
 
 			if item['distance'] < item['maximum_priority']:
 				item['distance'] = item['maximum_priority']
 
 			assert 'maximum_priority' in item
-			assert 'ignore_ignore_time' in item
 
 			# psycopg2cffi._impl.exceptions.OperationalError: index row size 3192 exceeds maximum 2712 for index "ix_web_pages_url"
 			assert len(item['url']) < 2712, "URL Too long for postgres. Length %s for url '%s'" % (
@@ -301,9 +298,8 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 			%(type)s,
 			%(addtime)s,
 			%(state)s,
-			%(ignoreuntiltime)s,
 			%(maximum_priority)s,
-			%(ignore_ignore_time)s
+			%(epoch)s
 			);
 			""".replace("	", " ")
 
@@ -456,17 +452,16 @@ class UpdateAggregator(object):
 					type_v               itemtype_enum,
 					addtime_v            timestamp without time zone,
 					state_v              dlstate_enum,
-					ignoreuntiltime_v    timestamp without time zone,
 					max_priority_v       integer,
-					ignore_ignore_time_v boolean
+					upsert_epoch_v       integer
 					)
 				RETURNS VOID AS $$
 
 				INSERT INTO
 					web_pages
-					 (url, starturl, netloc, distance, is_text, priority, type, addtime, state)
+					 (url, starturl, netloc, distance, is_text, priority, type, addtime, state, epoch)
 				VALUES
-					(url_v, starturl_v, netloc_v, distance_v, is_text_v, priority_v, type_v, addtime_v, state_v)
+					(url_v, starturl_v, netloc_v, distance_v, is_text_v, priority_v, type_v, addtime_v, state_v, upsert_epoch_v)
 				ON CONFLICT (url) DO
 					UPDATE
 						SET
@@ -494,23 +489,14 @@ class UpdateAggregator(object):
 														)
 												),
 							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
-
-							ignoreuntiltime = (
-								CASE ignore_ignore_time_v
-									WHEN true THEN 'epoch'::timestamp
-									WHEN false THEN web_pages.ignoreuntiltime
-								END
-							)
+							epoch           = LEAST(EXCLUDED.epoch, web_pages.epoch)
 						WHERE
 						(
-								(web_pages.ignoreuntiltime < ignoreuntiltime_v OR ignore_ignore_time_v)
+								(web_pages.epoch IS NULL or web_pages.epoch < upsert_epoch_v)
 							AND
 								web_pages.url = EXCLUDED.url
 							AND
-								-- We need to allow updating the priority on new items if we're intentially ignoring the ignore-time
-								-- I can't think of a reason allowing this to update 'new' items in all cases isn't desired, but
-								-- it's been this whay for a while, so.... ¯\_(ツ)_/¯
-								(web_pages.state = 'complete' OR web_pages.state = 'error' OR (web_pages.state = 'new' AND ignore_ignore_time_v))
+								(web_pages.state = 'complete' OR web_pages.state = 'error' OR web_pages.state = 'skipped')
 						)
 					;
 
@@ -567,7 +553,7 @@ class UpdateAggregator(object):
 		assert 'type'             in linkdict
 		assert 'state'            in linkdict
 		assert 'addtime'          in linkdict
-		assert 'ignoreuntiltime'  in linkdict
+		assert 'epoch'            in linkdict
 		assert 'maximum_priority' in linkdict
 
 		url = linkdict['url']
@@ -596,7 +582,7 @@ class UpdateAggregator(object):
 		assert 'type'             in linkdict
 		assert 'state'            in linkdict
 		assert 'addtime'          in linkdict
-		assert 'ignoreuntiltime'  in linkdict
+		assert 'epoch'            in linkdict
 		assert 'maximum_priority' in linkdict
 
 		url = linkdict['url']

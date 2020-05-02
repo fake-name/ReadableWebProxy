@@ -11,6 +11,7 @@ import time
 import common.database as db
 import WebMirror.UrlUpserter
 from WebMirror.processor.ProcessorBase import PageProcessor
+import WebMirror.misc
 
 class FilterBase(PageProcessor):
 
@@ -66,7 +67,7 @@ class FilterBase(PageProcessor):
 				'type'              : self.kwargs['job'].type,
 				'state'             : "new",
 				'addtime'           : datetime.datetime.now(),
-				'ignoreuntiltime'   : datetime.datetime.now(),
+				'epoch'             : WebMirror.misc.get_epoch_for_url(link),
 				}
 			links_out.append(new)
 
@@ -148,14 +149,14 @@ class FilterBase(PageProcessor):
 						have.state in ['new', 'fetching', 'processing', 'removed']
 						and have.priority <= trigger_priority
 						and have.distance > 1
-						and have.ignoreuntiltime < datetime.datetime.now() - datetime.timedelta(hours=1)
+						and have.epoch <= WebMirror.misc.get_epoch_for_url(release_url)
 					):
 					self.log.info("Skipping: '%s' (%s, %s)", release_url, have.state, have.priority)
 					break
 
 				self.log.info("Retriggering page '%s' (%s, %s)", release_url, have.state, have.priority)
 				have.state           = 'new'
-				have.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
+				have.epoch           = WebMirror.misc.get_epoch_for_url(release_url) - 1
 				have.distance        = 1
 				have.priority        = trigger_priority
 				self.db_sess.commit()

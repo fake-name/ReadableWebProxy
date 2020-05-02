@@ -502,12 +502,6 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		self.log.info("Saved file to path: %s", saved_to)
 
-		interval = RawArchiver.misc.getModuleForUrl(joburl).rewalk_interval
-
-		assert interval > 7
-		# ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
-
-
 		with self.job_context(jobid) as (sess, job):
 
 			starturl = job.starturl
@@ -535,7 +529,6 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				try:
 					job.state           = 'complete'
 					job.fetchtime       = datetime.datetime.now()
-					# job.ignoreuntiltime = ignoreuntiltime
 					job.fspath          = saved_to
 					job.mimetype        = mimetype
 					job.epoch           = raw_misc.get_epoch_for_url(job.url)
@@ -569,7 +562,6 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		else:
 			with self.job_context(jobid) as (_, job):
-				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
 				job.epoch           = raw_misc.get_epoch_for_url(job.url) + 1
 				job.state = 'error'
 				job.errno = -4
@@ -584,25 +576,20 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					log_func = self.log.error
 
 					if '<FetchFailureError 410 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
 						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 10
 						log_func = self.log.warning
 						job.errno = 410
 					elif '<FetchFailureError 404 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
 						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 10
 						log_func = self.log.warning
 						job.errno = 404
 					elif '<FetchFailureError 403 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
 						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 2
 						job.errno = 403
 					elif '<FetchFailureError 500 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
 						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 2
 						job.errno = 500
 					else:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
 						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 2
 						job.errno = -1
 

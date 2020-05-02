@@ -80,30 +80,6 @@ class RollingRawUrlStartTrigger(RawArchiver.TimedTriggers.TriggerBase.TriggerBas
 		self.retrigger_urls(starturls)
 
 
-		# for interval, nl in starturls:
-		# 	if "wattpad.com" in nl:
-		# 		continue
-		# 	if "booksie.com" in nl:
-		# 		continue
-
-		# 	# "+2" is to (hopefully) allow the normal rewalk system to catch the site.
-		# 	ago = datetime.datetime.now() - datetime.timedelta(days=(interval + 2))
-		# 	self.retrigger_netloc(nl, ago)
-
-		# 	# def conditional_check(row):
-		# 	# 	if day == today or row.fetchtime < (datetime.datetime.now() - datetime.timedelta(days=settings.REWALK_INTERVAL_DAYS)):
-		# 	# 		print("Retriggering: ", row, row.fetchtime, row.url)
-		# 	# 		row.state    = "new"
-		# 	# 		row.distance = 0
-		# 	# 		row.priority = dbm.DB_IDLE_PRIORITY
-		# 	# 		row.ignoreuntiltime = datetime.datetime.now() - datetime.timedelta(days=1)
-
-		# 	# self.retriggerUrl(url, conditional=conditional_check)
-
-		# self.log.info("Now retriggering all old items.")
-		# self.retrigger_other()
-		# self.log.info("Old files retrigger complete.")
-
 
 if __name__ == "__main__":
 	import logSetup

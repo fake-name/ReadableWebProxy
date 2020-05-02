@@ -315,7 +315,6 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 								'outbound_wrapper' : linkfq,
 								'release_date'     : reldate,
 								'first_seen'       : datetime.datetime.now(),
-								'ignoreuntiltime'  : datetime.datetime.now(),
 							})
 						self.log.info("Upserting outbound wrapper url %s, changed %s rows.", linkfq, changed)
 

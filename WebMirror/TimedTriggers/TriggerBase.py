@@ -17,6 +17,7 @@ import common.database as db
 import common.LogBase
 
 import WebMirror.UrlUpserter
+import WebMirror.misc
 
 class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
@@ -52,19 +53,18 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		# Forward-data the next walk, time, rather then using now-value for the thresh.
 		data = {
-			'url'             : url,
-			'starturl'        : url,
-			'netloc'          : url_netloc,
-			'distance'        : 0,
-			'is_text'         : True,
-			'priority'        : db.DB_HIGH_PRIORITY if ignoreignore else db.DB_LOW_PRIORITY,
-			'type'            : "unknown",
-			'state'           : "new",
-			'addtime'         : datetime.datetime.now(),
+				'url'             : url,
+				'starturl'        : url,
+				'netloc'          : url_netloc,
+				'distance'        : 0,
+				'is_text'         : True,
+				'priority'        : db.DB_HIGH_PRIORITY if ignoreignore else db.DB_LOW_PRIORITY,
+				'type'            : "unknown",
+				'state'           : "new",
+				'addtime'         : datetime.datetime.now(),
 
-			# Don't retrigger unless the ignore time has elaped or we're in force mode.
-			'ignoreuntiltime'    : datetime.datetime.min if ignoreignore else datetime.datetime.now(),
-			'ignore_ignore_time' : ignoreignore,
+				# Don't retrigger unless the ignore time has elaped or we're in force mode.
+				'epoch'              : 0 if ignoreignore else WebMirror.misc.get_epoch_for_url(url),
 			}
 		return data
 

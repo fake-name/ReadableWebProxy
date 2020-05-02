@@ -276,7 +276,7 @@ def reset_homepages():
 
 		if have:
 			have.state = 'new'
-			have.ignoreuntiltime = datetime.datetime.min
+			have.epoch = 0
 			sess.commit()
 
 

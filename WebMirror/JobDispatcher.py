@@ -739,7 +739,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 							normal_fetch_mode = true
 						AND
 							web_pages.priority < (
-							   SELECT
+								SELECT
 									min(priority) + 1
 								FROM
 									web_pages
@@ -747,13 +747,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 									state = 'new'::dlstate_enum
 								AND
 									normal_fetch_mode = true
-								AND
-									web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 							)
 						AND
 							web_pages.distance < 1000000
-						AND
-							web_pages.ignoreuntiltime < now() + '5 minutes'::interval
 						LIMIT {in_flight}
 					)
 				AND

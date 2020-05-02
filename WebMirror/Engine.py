@@ -47,6 +47,7 @@ import common.database as db
 import common.global_constants
 import common.StatsdMixin as StatsdMixin
 import WebMirror.UrlUpserter
+import WebMirror.misc
 from config import C_RESOURCE_DIR
 
 
@@ -310,14 +311,8 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 	# Update the row with the item contents
 	def upsertReponseContent(self, job, response):
-
 		start = urllib.parse.urlsplit(job.starturl).netloc
-		interval = settings.REWALK_INTERVAL_DAYS
-		if start in self.netloc_rewalk_times and self.netloc_rewalk_times[start]:
-			interval = self.netloc_rewalk_times[start]
-
-		assert interval > 7
-		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
+		job_epoch = WebMirror.misc.get_epoch_for_url(job.url)
 
 		while True:
 			have_history = self.checkHaveHistory(job.url)
@@ -344,8 +339,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				job.title           = response['title']
 				job.content         = response['contents']
 				job.mimetype        = response['mimeType']
-				job.ignoreuntiltime = ignoreuntiltime
-
+				job.epoch           = job_epoch
 
 				if "text" in job.mimetype:
 					job.is_text  = True
@@ -471,13 +465,6 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 	def upsertRssItems(self, job, entrylist, feedurl):
 
-		start = urllib.parse.urlsplit(job.starturl).netloc
-		interval = settings.REWALK_INTERVAL_DAYS
-		if start in self.netloc_rewalk_times:
-			interval = self.netloc_rewalk_times[start]
-		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
-		print("[upsertRssItems] Ignore until: ", ignoreuntiltime)
-
 		while 1:
 			try:
 				self.db_sess.flush()
@@ -485,7 +472,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					self.log.critical("Someone else modified row first? State: %s, url: %s", job.state, job.url)
 				job.state           = 'complete'
 				job.fetchtime       = datetime.datetime.now()
-				job.ignoreuntiltime = ignoreuntiltime
+				job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 1
 
 				self.db_sess.commit()
 				self.log.info("Marked RSS job with id %s, url %s as complete (%s)!", job.id, job.url, job.state)
@@ -748,7 +735,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				'addtime'         : datetime.datetime.now(),
 
 				# Don't retrigger unless the ignore time has elaped.
-				'ignoreuntiltime' : datetime.datetime.now(),
+				'epoch' : WebMirror.misc.get_epoch_for_url(link_url),
 			}
 			for
 				link_url, is_text
@@ -804,16 +791,6 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			response['content'] = response['content'].encode("utf-8")
 		fHash = getHash(response['content'])
 
-
-		start = urllib.parse.urlsplit(job.starturl).netloc
-		interval = settings.REWALK_INTERVAL_DAYS
-		if start in self.netloc_rewalk_times:
-			interval = self.netloc_rewalk_times[start]
-
-		assert interval > 7
-		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
-		print("[upsertFileResponse] Ignore until: ", ignoreuntiltime)
-
 		tries = 0
 
 		while 1:
@@ -857,7 +834,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				job.state           = 'complete'
 				job.is_text         = False
 				job.fetchtime       = datetime.datetime.now()
-				job.ignoreuntiltime = ignoreuntiltime
+				job.epoch           = WebMirror.misc.get_epoch_for_url(job.url)
 
 				self.log.info("Marked file job with id %s, url %s as complete!", job.id, job.url)
 
@@ -1006,7 +983,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				preretrieved = rpcresp['ret']
 				self.dispatchRequest(job, preretrieved)
 			else:
-				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
+				job.epoch           = WebMirror.misc.get_epoch_for_url(job.url)
 				job.state = 'error'
 				job.errno = -4
 
@@ -1020,21 +997,21 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					log_func = self.log.error
 
 					if '<FetchFailureError 410 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
-						log_func = self.log.warning
-						job.errno = 410
+						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 10
+						log_func            = self.log.warning
+						job.errno           = 410
 					elif '<FetchFailureError 404 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
-						log_func = self.log.warning
-						job.errno = 404
+						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 10
+						log_func            = self.log.warning
+						job.errno           = 404
 					elif '<FetchFailureError 403 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
-						job.errno = 403
+						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 2
+						job.errno           = 403
 					elif '<FetchFailureError 500 -> ' in content:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
-						job.errno = 500
+						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 2
+						job.errno           = 500
 					else:
-						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
+						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 1
 
 					max_len_trunc = 450
 
