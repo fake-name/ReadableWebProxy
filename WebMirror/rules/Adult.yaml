@@ -199,6 +199,7 @@ badwords: [
 
 			'tag[]=',
 			'chyoa.com/search?',
+			'chyoa.com/index.php/search?',
 
 			# Multi-megabyte favorites pages:
 			"https://www.literotica.com/stories/memberpage.php?uid=1392828&page=favorites",

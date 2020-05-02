@@ -517,6 +517,8 @@ baseUrl: [
 	'https://dummynovels.com',
 	'https://vrumja.com',
 	'http://wondabunny.com',
+	'https://insomanianovels.wordpress.com',
+	'https://letsyuri.wordpress.com',
 
 	]
 
@@ -551,6 +553,8 @@ badwords: [
 		'f-w-o.com/login/?redirect_to=',
 		'www.oyensblog.com/search/',
 		'www.oyensblog.com/search?',
+
+		'?share=',
 	]
 
 compound_badwords: [

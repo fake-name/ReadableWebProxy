@@ -1818,6 +1818,7 @@ badwords: [
 		'/wp-content/cache/',
 
 		'https://www.deadlynovels.com/community/',
+		'translatinotaku.net/forum/',
 	]
 
 compound_badwords: [
