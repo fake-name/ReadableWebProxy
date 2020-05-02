@@ -23,6 +23,7 @@ import common.management.RawMirrorManage
 
 import Misc.NuForwarder.NuHeader
 # import RawArchiver.TimedTriggers.RawRollingRewalkTrigger
+import RawArchiver.TimedTriggers.RawUrlStartTrigger
 
 class PythonJob():
 	invokable = "None"
@@ -119,8 +120,8 @@ class TransactionTruncatorJob(PythonJob, job.JobBase):
 # class RollingRawRewalkTriggerJob(PythonJob, job.JobBase):
 # 	invokable = RawArchiver.TimedTriggers.RawRollingRewalkTrigger.RollingRawRewalkTrigger
 
-# class RollingRawUrlTriggerJob(PythonJob, job.JobBase):
-# 	invokable = RawArchiver.TimedTriggers.RawUrlStartTrigger.RollingRawUrlStartTrigger
+class RollingRawUrlTriggerJob(PythonJob, job.JobBase):
+	invokable = RawArchiver.TimedTriggers.RawUrlStartTrigger.RollingRawUrlStartTrigger
 
 class NuHeaderJob(PythonJob, job.JobBase):
 	invokable = Misc.NuForwarder.NuHeader.NuHeader

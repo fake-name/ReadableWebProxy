@@ -506,6 +506,18 @@ baseUrl: [
 	'https://nyanovels.com',
 	'https://33fdtlx44.wordpress.com',
 	'https://fatchicusualykool.wordpress.com',
+	'https://atravelingpeach.wordpress.com',
+	'https://bibliophilesociety888305596.wordpress.com',
+	'https://mashintrans.wordpress.com',
+	'https://pinnochies.wordpress.com',
+	'https://seethroughtranslation.wordpress.com',
+	'https://smollstarkstranslations.wordpress.com',
+	'https://stealthfiretranslations.wordpress.com',
+	'https://yalesreadingcorner.wordpress.com',
+	'https://dummynovels.com',
+	'https://vrumja.com',
+	'http://wondabunny.com',
+
 	]
 
 
@@ -611,7 +623,7 @@ decompose: [
 	{'class'                         : 'sidebar-primary'},
 	{'class'                         : 'shins-before-content'},
 	{'class'                         : 'osny-nightmode'},
-	
+
 	#Novelonomicon
 	{'class'                         : 'g1-quick-nav'},
 	{'class'                         : 'g1-drop'},

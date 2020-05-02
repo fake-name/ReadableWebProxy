@@ -32,6 +32,7 @@ import common.StatsdMixin as StatsdMixin
 import runStatus
 import settings
 from config import C_RAW_RESOURCE_DIR
+import RawArchiver.misc as raw_misc
 
 if '__pypy__' in sys.builtin_module_names:
 	import psycopg2cffi as psycopg2
@@ -504,7 +505,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		interval = RawArchiver.misc.getModuleForUrl(joburl).rewalk_interval
 
 		assert interval > 7
-		ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
+		# ignoreuntiltime = (datetime.datetime.now() + datetime.timedelta(days=interval))
 
 
 		with self.job_context(jobid) as (sess, job):
@@ -534,9 +535,10 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				try:
 					job.state           = 'complete'
 					job.fetchtime       = datetime.datetime.now()
-					job.ignoreuntiltime = ignoreuntiltime
+					# job.ignoreuntiltime = ignoreuntiltime
 					job.fspath          = saved_to
 					job.mimetype        = mimetype
+					job.epoch           = raw_misc.get_epoch_for_url(job.url)
 
 					sess.commit()
 					self.log.info("Marked plain job with id %s, url %s as complete!", job.id, job.url)
@@ -568,6 +570,7 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		else:
 			with self.job_context(jobid) as (_, job):
 				job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=7)
+				job.epoch           = raw_misc.get_epoch_for_url(job.url) + 1
 				job.state = 'error'
 				job.errno = -4
 
@@ -582,20 +585,25 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 					if '<FetchFailureError 410 -> ' in content:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 10
 						log_func = self.log.warning
 						job.errno = 410
 					elif '<FetchFailureError 404 -> ' in content:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=365)
+						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 10
 						log_func = self.log.warning
 						job.errno = 404
 					elif '<FetchFailureError 403 -> ' in content:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
+						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 2
 						job.errno = 403
 					elif '<FetchFailureError 500 -> ' in content:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=60)
+						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 2
 						job.errno = 500
 					else:
 						job.ignoreuntiltime = datetime.datetime.now() + datetime.timedelta(days=30)
+						job.epoch           = raw_misc.get_epoch_for_url(job.url) + 2
 						job.errno = -1
 
 					max_len_trunc = 450
