@@ -711,7 +711,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		new_starturl = job.starturl
 
 		new_distance = job.distance+1
-		new_priority = job.priority
+		new_priority = job.priority+1
 		new_type     = job.type
 
 

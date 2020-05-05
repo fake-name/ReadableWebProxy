@@ -71,6 +71,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 									OR raw_web_pages.state = 'new'
 									OR raw_web_pages.state = 'fetching'
 									OR raw_web_pages.state = 'error'
+									OR raw_web_pages.state = 'skipped'
 								)
 							AND
 								raw_web_pages.url = %(url)s

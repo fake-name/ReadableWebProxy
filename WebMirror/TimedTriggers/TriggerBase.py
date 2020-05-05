@@ -68,16 +68,85 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			}
 		return data
 
+
+	def __retrigger_with_cursor(self, url, cursor, ignoreignore):
+
+		# self.log.info("Retriggering fetch for URL: %s", url)
+
+		#  Fucking huzzah for ON CONFLICT!
+		cmd = """
+				INSERT INTO
+					web_pages
+					(url, starturl, netloc, distance, is_text, priority, addtime, state, epoch)
+				VALUES
+					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(addtime)s, %(state)s, %(epoch)s)
+				ON CONFLICT (url) DO
+					UPDATE
+						SET
+							state           = %(state)s,
+							distance        = LEAST(EXCLUDED.distance, web_pages.distance),
+							-- The lowest priority is 10.
+							priority        = LEAST(EXCLUDED.priority, web_pages.priority, 10),
+							addtime         = LEAST(EXCLUDED.addtime, web_pages.addtime),
+							epoch           = LEAST(EXCLUDED.epoch, web_pages.epoch)
+						WHERE
+						(
+								(
+									   web_pages.state = 'complete'
+									OR web_pages.state = 'new'
+									OR web_pages.state = 'fetching'
+									OR web_pages.state = 'error'
+									OR web_pages.state = 'skipped'
+								)
+							AND
+								web_pages.url = %(url)s
+						)
+					;
+
+			""".replace("	", " ")
+
+		url_netloc = urllib.parse.urlsplit(url).netloc
+
+		assert url.startswith("http")
+		assert url_netloc
+
+		data = self.__url_to_dict(url, ignoreignore)
+		cursor.execute(cmd, data)
+		rowcnt = cursor.rowcount
+		return rowcnt
+
 	def retriggerUrlList(self, urlList, ignoreignore=False):
 
-		if ignoreignore:
-			self.log.warning("Doing high-priority URL upsert!")
+		self.log.info("Triggering %s URLs from list", len(urlList))
 
-		with self.db.session_context() as sess:
-			priority = db.DB_HIGH_PRIORITY if ignoreignore else db.DB_IDLE_PRIORITY
-			dictlinks = [self.__url_to_dict(url, ignoreignore) for url in urlList]
-			show_progress = len(dictlinks) > 500
-			WebMirror.UrlUpserter.do_link_batch_update_sess(self.log, sess, dictlinks, priority, show_progress=show_progress)
+		with common.database.session_context() as sess:
+
+			raw_cur = sess.connection().connection.cursor()
+			commit_each = False
+			changed = 0
+			while 1:
+				loopcnt = 0
+				changed = 0
+				try:
+					for url in urlList:
+						loopcnt += 1
+						changed += self.__retrigger_with_cursor(url, raw_cur, ignoreignore)
+						if commit_each or (loopcnt % 250) == 0:
+							raw_cur.execute("COMMIT;")
+					raw_cur.execute("COMMIT;")
+					break
+
+				except psycopg2.Error:
+					if commit_each is False:
+						self.log.warning("psycopg2.Error - Retrying with commit each.")
+					else:
+						self.log.warning("psycopg2.Error - Retrying.")
+						traceback.print_exc()
+
+					raw_cur.execute("ROLLBACK;")
+					commit_each = True
+
+		self.log.info("Retrigger changed %s rows", changed)
 
 
 	def retriggerUrl(self, url, conditional=None, ignoreignore=False):
