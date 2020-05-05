@@ -12,6 +12,8 @@ def extractIdleturtleTranslationsCom(item):
 		('Bad',        'Back to the Age of Dinosaurs',                      'translated'),
 		('rse',        '[Rebirth] Sword Edge',                      'translated'),
 		('rtf',        '[Rebirth] Sword Edge',                      'translated'),
+		('bun',        'Break Up, Next',                      'translated'),
+		('teld',       'Two or Three Events in the Last Days ',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

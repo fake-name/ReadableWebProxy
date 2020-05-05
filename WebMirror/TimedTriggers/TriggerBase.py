@@ -64,7 +64,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				'addtime'         : datetime.datetime.now(),
 
 				# Don't retrigger unless the ignore time has elaped or we're in force mode.
-				'epoch'              : 0 if ignoreignore else WebMirror.misc.get_epoch_for_url(url),
+				'epoch'           : 0 if ignoreignore else WebMirror.misc.get_epoch_for_url(url),
 			}
 		return data
 

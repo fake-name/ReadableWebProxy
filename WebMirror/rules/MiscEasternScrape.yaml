@@ -59,7 +59,7 @@ baseUrl: [
 		'https://idola.dreamwidth.org',
 		'https://chiisai-hime.dreamwidth.org',
 		'https://theysayivemetaghost.dreamwidth.org',
-
+		'https://simplypink.dreamwidth.org',
 
 		'http://lilith-art.de.tl',
 
@@ -103,6 +103,10 @@ baseUrl: [
 		'https://bluedreamsblog.jimdofree.com',
 		'https://babelnovel.com',
 		'https://www.pemudatunawisata.my.id',
+		'https://isotls.com',
+		'https://ritsu.dev',
+		'http://www.asianovel.net',
+		'https://www.novellike.com',
 
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'https://www.novelmultiverse.com',
@@ -133,6 +137,7 @@ feeds: [
 	'http://weletranslation.com/atom.xml',
 	'http://novel-id.blognive.com/rss.xml',
 	'https://www.pemudatunawisata.my.id/feeds/posts/default',
+	'https://isotls.com/rss/',
 ]
 
 extraStartUrls: [

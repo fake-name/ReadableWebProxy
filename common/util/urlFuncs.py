@@ -218,6 +218,23 @@ gilegati_squatter_re    = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9_]+\.(html
 silversrise_squatter_re = re.compile(r'www\.silversrise\.com/[a-zA-Z0-9]+/([a-zA-Z0-9]+/|[a-z0-9]+\.html)')
 unknown_squatter_1_re   = re.compile(r'\?fp=[a-zA-Z0-9\+\/]{30,}')
 
+
+
+is_rrl_slug_chap_re = re.compile(r'^https?://(?:www\.)?royalroadl?\.com/fiction/\d+/[a-z0-9\-]+/chapter/(\d+)/[a-z0-9\-]+$', flags=re.IGNORECASE)
+is_rrl_base_chap_re = re.compile(r'^https?://(?:www\.)?royalroadl?\.com/fiction/chapter/(\d+)/?$', flags=re.IGNORECASE)
+
+def check_fix_rrl(url):
+
+	is_chp = is_rrl_slug_chap_re.search(url)
+	if is_chp:
+		url = "https://www.royalroad.com/fiction/chapter/{}".format(is_chp.group(1))
+
+	is_chp = is_rrl_base_chap_re.search(url)
+	if is_chp:
+		url = "https://www.royalroad.com/fiction/chapter/{}".format(is_chp.group(1))
+
+	return url
+
 def cleanUrl(urlin):
 	# Fucking tumblr redirects.
 	if urlin.startswith("https://www.tumblr.com/login"):
@@ -272,6 +289,9 @@ def cleanUrl(urlin):
 			parsed.query,
 			parsed.fragment,
 			))
+
+		urlin = check_fix_rrl(urlin)
+
 		parsed = urllib.parse.urlparse(urlin)
 
 

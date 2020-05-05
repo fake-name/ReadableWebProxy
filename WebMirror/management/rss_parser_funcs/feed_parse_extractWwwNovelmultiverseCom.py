@@ -7,6 +7,22 @@ def extractWwwNovelmultiverseCom(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
+
+	if item['tags'] == []:
+		titlemap = [
+			('Heaven Awakening Path',                             'Heaven Awakening Path',                                 'translated'),
+			('Master of Science and Technology',                  'Master of Science and Technology',                      'translated'),
+			('Reincarnated Young Lady Aims to Be an Adventurer',  'Reincarnated Young Lady Aims to Be an Adventurer',      'translated'),
+			('Don’t Turn from Summer',                            'Don’t Turn from Summer',                                'translated'),
+			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+		]
+
+		for titlecomponent, name, tl_type in titlemap:
+			if titlecomponent.lower() in item['title'].lower():
+				return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+
 	tagmap = [
 		('elememtaryharem',                                         'After returning to elementary school with my memory the result was to create a harem',   'translated'),
 		('elementaryharem',                                         'After returning to elementary school with my memory the result was to create a harem',   'translated'),

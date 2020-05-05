@@ -1,6 +1,7 @@
-def extractChiisaiHimeDreamwidthOrg(item):
+
+def extractTyralionsBlogspotCom(item):
 	'''
-	Parser for 'chiisai-hime.dreamwidth.org'
+	Parser for 'tyralions.blogspot.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +9,6 @@ def extractChiisaiHimeDreamwidthOrg(item):
 		return None
 
 	tagmap = [
-		('the villains all fell in love with me',       'the villains all fell in love with me',                      'translated'),
-		('phantom skeleton painting',                   'Phantom Skeleton Painting',                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -20,3 +19,4 @@ def extractChiisaiHimeDreamwidthOrg(item):
 
 
 	return False
+	

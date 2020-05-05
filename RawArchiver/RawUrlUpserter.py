@@ -232,7 +232,7 @@ def do_link_batch_update_sess(logger, interface, link_batch):
 			assert 'priority'         in item
 			assert 'state'            in item
 			assert 'addtime'          in item
-			assert 'epoch'  in item
+			assert 'epoch'            in item
 
 		except AssertionError:
 			logger.error("Missing key from raw entry: ")
@@ -413,7 +413,7 @@ def check_init_func():
 							-- Largest distance is 100, but it's not checked
 							distance        = LEAST(EXCLUDED.distance, raw_web_pages.distance),
 							-- The lowest priority is 10.
-							priority        = LEAST(GREATEST(EXCLUDED.priority, raw_web_pages.priority), 10),
+							priority        = LEAST(EXCLUDED.priority, raw_web_pages.priority, 10),
 							addtime         = LEAST(EXCLUDED.addtime, raw_web_pages.addtime)
 						WHERE
 						(

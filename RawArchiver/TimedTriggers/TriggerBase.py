@@ -50,21 +50,20 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		#  Fucking huzzah for ON CONFLICT!
 		cmd = """
-
 				INSERT INTO
 					raw_web_pages
-					(url, starturl, netloc, distance, is_text, priority, addtime, state)
+					(url, starturl, netloc, distance, is_text, priority, addtime, state, epoch)
 				VALUES
-					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(addtime)s, %(state)s)
+					(%(url)s, %(starturl)s, %(netloc)s, %(distance)s, %(is_text)s, %(priority)s, %(addtime)s, %(state)s, %(epoch)s)
 				ON CONFLICT (url) DO
 					UPDATE
 						SET
 							state           = %(state)s,
 							distance        = LEAST(EXCLUDED.distance, raw_web_pages.distance),
 							-- The lowest priority is 10.
-							priority        = LEAST(GREATEST(EXCLUDED.priority, raw_web_pages.priority), 10),
+							priority        = LEAST(EXCLUDED.priority, raw_web_pages.priority, 10),
 							addtime         = LEAST(EXCLUDED.addtime, raw_web_pages.addtime),
-							ignoreuntiltime = LEAST(EXCLUDED.addtime, raw_web_pages.addtime, %(ignoreuntiltime)s)
+							epoch           = LEAST(EXCLUDED.epoch, raw_web_pages.epoch),
 						WHERE
 						(
 								(
@@ -98,7 +97,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 			'addtime'         : datetime.datetime.now(),
 
 			# Don't retrigger unless the ignore time has elaped.
-			'ignoreuntiltime' : datetime.datetime.now(),
+			'epoch'           : 0,
+			# 'ignoreuntiltime' : datetime.datetime.now(),
 			}
 
 		cursor.execute(cmd, data)
