@@ -1,4 +1,3 @@
-
 def extractBlissfulfairytaleCom(item):
 	'''
 	Parser for 'blissfulfairytale.com'
@@ -9,6 +8,9 @@ def extractBlissfulfairytaleCom(item):
 		return None
 
 	tagmap = [
+		('reborn as the villain president\'s lover',       'reborn as the villain president\'s lover',                      'translated'),
+		('i raised a sick and weak prince',                'i raised a sick and weak prince',                               'translated'),
+		('pretty her [qt]',                                'Pretty Her [QT]',                                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractBlissfulfairytaleCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractPinnochiesWordpressCom(item):
 	'''
 	Parser for 'pinnochies.wordpress.com'
@@ -9,6 +8,7 @@ def extractPinnochiesWordpressCom(item):
 		return None
 
 	tagmap = [
+		('reslw',       'Rebirth to Eighties : Shrewd Little Wife',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractPinnochiesWordpressCom(item):
 
 
 	return False
-	

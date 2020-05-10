@@ -1,4 +1,3 @@
-
 def extractSmollstarkstranslationsWordpressCom(item):
 	'''
 	Parser for 'smollstarkstranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractSmollstarkstranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('how to survive as a villain',       'how to survive as a villain',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSmollstarkstranslationsWordpressCom(item):
 
 
 	return False
-	

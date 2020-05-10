@@ -1,4 +1,3 @@
-
 def extractLeirionverseCom(item):
 	'''
 	Parser for 'leirionverse.com'
@@ -9,6 +8,7 @@ def extractLeirionverseCom(item):
 		return None
 
 	tagmap = [
+		('the witch nichang',       'the witch nichang',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLeirionverseCom(item):
 
 
 	return False
-	

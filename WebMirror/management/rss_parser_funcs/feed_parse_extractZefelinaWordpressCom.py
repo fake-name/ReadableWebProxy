@@ -1,4 +1,3 @@
-
 def extractZefelinaWordpressCom(item):
 	'''
 	Parser for 'zefelina.wordpress.com'
@@ -9,6 +8,7 @@ def extractZefelinaWordpressCom(item):
 		return None
 
 	tagmap = [
+		('his canary',       'his canary',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractZefelinaWordpressCom(item):
 
 
 	return False
-	

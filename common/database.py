@@ -11,15 +11,15 @@ def cares_about_change(op, row):
 	if table_name == "web_pages":
 		# Ignore insert and deletes
 		if op == 'insert':
-			print("Ignoring insert", row.url)
+			print("[continuum] Ignoring insert", row.url)
 			return False
 		if op == 'delete':
-			print("Ignoring delete", row.url)
+			print("[continuum] Ignoring delete", row.url)
 			return False
 
 		# Also ignore history where things aren't complete.
 		if row.state != 'complete':
-			# print("Ignoring row update to not-complete")
+			# print("[continuum] Ignoring row update to not-complete")
 			return False
 
 		rss_mimetypes = [
@@ -31,17 +31,17 @@ def cares_about_change(op, row):
 						]
 		# Also ignore history where things aren't complete.
 		if row.mimetype in rss_mimetypes:
-			print("Ignoring rss row update")
+			print("[continuum] Ignoring rss row update")
 			return False
 
-		print("Pushing row into history: %s" % (row.url, ))
+		print("[continuum] Pushing row into history: %s" % (row.url, ))
 		return True
 
 	elif table_name == "raw_web_pages":
 		return True
 
 	else:
-		print("Unknown table: ", table_name)
+		print("[continuum] Unknown table: ", table_name)
 		return True
 
 if DO_VERSIONING:

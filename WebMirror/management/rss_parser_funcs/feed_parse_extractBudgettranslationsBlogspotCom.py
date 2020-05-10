@@ -1,4 +1,3 @@
-
 def extractBudgettranslationsBlogspotCom(item):
 	'''
 	Parser for 'budgettranslations.blogspot.com'
@@ -9,6 +8,8 @@ def extractBudgettranslationsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('ekigp',       'Everyone Knows I\'m a Good Person',                      'translated'),
+		('pisdd',       'Peerless Immortal Surrounded by Demonic Disciples',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractBudgettranslationsBlogspotCom(item):
 
 
 	return False
-	

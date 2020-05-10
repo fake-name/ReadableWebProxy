@@ -1,4 +1,3 @@
-
 def extractMarsgardengroupWordpressCom(item):
 	'''
 	Parser for 'marsgardengroup.wordpress.com'
@@ -9,6 +8,8 @@ def extractMarsgardengroupWordpressCom(item):
 		return None
 
 	tagmap = [
+		('holygrailoferis',          'holy grail of eris',                      'translated'),
+		('holy grail of eris',       'holy grail of eris',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractMarsgardengroupWordpressCom(item):
 
 
 	return False
-	

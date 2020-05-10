@@ -1,4 +1,3 @@
-
 def extractRainingtlOrg(item):
 	'''
 	Parser for 'rainingtl.org'
@@ -9,6 +8,7 @@ def extractRainingtlOrg(item):
 		return None
 
 	tagmap = [
+		('gpah',      'Genius of a Performing Arts High',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractRainingtlOrg(item):
 
 
 	return False
-	

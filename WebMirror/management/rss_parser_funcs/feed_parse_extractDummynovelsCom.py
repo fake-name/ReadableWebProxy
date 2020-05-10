@@ -1,4 +1,3 @@
-
 def extractDummynovelsCom(item):
 	'''
 	Parser for 'dummynovels.com'
@@ -9,6 +8,13 @@ def extractDummynovelsCom(item):
 		return None
 
 	tagmap = [
+		('my nemesis has finally gone bankrupt',                       'my nemesis has finally gone bankrupt',                                      'translated'),
+		('The General\'s cat always wants to climb into my bed',       'The General\'s cat always wants to climb into my bed',                      'translated'),
+		('the people who\'re supposed to kill me fell for me instead', 'the people who\'re supposed to kill me fell for me instead',                'translated'),
+		('i have a sickness',                                          'i have a sickness',                                                         'translated'),
+		('The target always thinks that I like him',                   'The target always thinks that I like him',                                  'translated'),
+		('could you not tease me',                                     'could you not tease me',                                                    'translated'),
+		('fake demon lord',                                            'fake demon lord',                                                           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +25,3 @@ def extractDummynovelsCom(item):
 
 
 	return False
-	

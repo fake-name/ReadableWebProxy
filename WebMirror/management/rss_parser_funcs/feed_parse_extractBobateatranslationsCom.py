@@ -1,6 +1,6 @@
-def extractLowqualitytranslationsWordpressCom(item):
+def extractBobateatranslationsCom(item):
 	'''
-	Parser for 'lowqualitytranslations.wordpress.com'
+	Parser for 'bobateatranslations.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +8,7 @@ def extractLowqualitytranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('wedding pet',       'wedding pet',                      'translated'),
+		('wfiltu',       'Why fall in love if you can attend Tsinghua University',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

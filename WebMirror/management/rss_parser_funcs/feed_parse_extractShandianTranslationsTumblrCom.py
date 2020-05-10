@@ -1,4 +1,3 @@
-
 def extractShandianTranslationsTumblrCom(item):
 	'''
 	Parser for 'shandian-translations.tumblr.com'
@@ -9,6 +8,7 @@ def extractShandianTranslationsTumblrCom(item):
 		return None
 
 	tagmap = [
+		('exhusbands call',       'Ex-Husbands Call',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractShandianTranslationsTumblrCom(item):
 
 
 	return False
-	

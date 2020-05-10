@@ -1,4 +1,3 @@
-
 def extractLingekidWordpressCom(item):
 	'''
 	Parser for 'lingekid.wordpress.com'
@@ -9,6 +8,8 @@ def extractLingekidWordpressCom(item):
 		return None
 
 	tagmap = [
+		('awtiagc',                                          'another world transfer in a game character',                      'translated'),
+		('another world transfer in a game character',       'another world transfer in a game character',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractLingekidWordpressCom(item):
 
 
 	return False
-	

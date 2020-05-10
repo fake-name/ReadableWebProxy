@@ -1,4 +1,3 @@
-
 def extractTheraggeddollWordpressCom(item):
 	'''
 	Parser for 'theraggeddoll.wordpress.com'
@@ -9,6 +8,7 @@ def extractTheraggeddollWordpressCom(item):
 		return None
 
 	tagmap = [
+		('after the cannon fodder\'s rebirth',       'after the cannon fodder\'s rebirth',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTheraggeddollWordpressCom(item):
 
 
 	return False
-	

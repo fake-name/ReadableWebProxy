@@ -1,4 +1,3 @@
-
 def extractIcedlattenoiceWordpressCom(item):
 	'''
 	Parser for 'icedlattenoice.wordpress.com'
@@ -9,6 +8,7 @@ def extractIcedlattenoiceWordpressCom(item):
 		return None
 
 	tagmap = [
+		('pancake cart',       'pancake cart',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractIcedlattenoiceWordpressCom(item):
 
 
 	return False
-	

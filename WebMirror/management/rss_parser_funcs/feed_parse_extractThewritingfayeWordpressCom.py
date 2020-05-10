@@ -1,4 +1,3 @@
-
 def extractThewritingfayeWordpressCom(item):
 	'''
 	Parser for 'thewritingfaye.wordpress.com'
@@ -10,6 +9,7 @@ def extractThewritingfayeWordpressCom(item):
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
+		('the chronicles of the bibliophile demoness', 'the chronicles of the bibliophile demoness',                'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 
@@ -19,4 +19,3 @@ def extractThewritingfayeWordpressCom(item):
 
 
 	return False
-	

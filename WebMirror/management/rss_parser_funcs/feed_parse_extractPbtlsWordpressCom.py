@@ -10,6 +10,7 @@ def extractPbtlsWordpressCom(item):
 	tagmap = [
 		('ore wo suki',            'Ore wo Suki Nano wa Omae Dake ka yo',                      'translated'),
 		('ore wo suki nano',       'Ore wo Suki Nano wa Omae Dake ka yo',                      'translated'),
+		('bocchi no kanojo',       'Bocchi no Kanojo',                                         'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

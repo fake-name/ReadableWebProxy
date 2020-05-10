@@ -1,4 +1,3 @@
-
 def extractSumistartranslationWordpressCom(item):
 	'''
 	Parser for 'sumistartranslation.wordpress.com'
@@ -9,6 +8,7 @@ def extractSumistartranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the strongest god',       'the strongest god',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSumistartranslationWordpressCom(item):
 
 
 	return False
-	

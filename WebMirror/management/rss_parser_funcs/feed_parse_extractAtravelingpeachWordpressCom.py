@@ -1,4 +1,3 @@
-
 def extractAtravelingpeachWordpressCom(item):
 	'''
 	Parser for 'atravelingpeach.wordpress.com'
@@ -7,6 +6,11 @@ def extractAtravelingpeachWordpressCom(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
+
+
+	if item['title'].startswith("Chapter ") and item['tags'] == ['Uncategorized']:
+			return buildReleaseMessageWithType(item, 'After the Cannon Fodder’s Rebirth', vol, chp, frag=frag, postfix=postfix, tl_type='translated')
+		
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
@@ -19,4 +23,3 @@ def extractAtravelingpeachWordpressCom(item):
 
 
 	return False
-	

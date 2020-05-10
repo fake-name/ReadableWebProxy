@@ -1,4 +1,3 @@
-
 def extractIzzyleblancWordpressCom(item):
 	'''
 	Parser for 'izzyleblanc.wordpress.com'
@@ -9,6 +8,7 @@ def extractIzzyleblancWordpressCom(item):
 		return None
 
 	tagmap = [
+		('batsugame',       'Inkya no Boku ni Batsu Game ni Kokuhaku shitekita hazu no Gyaru ga, doumitemo Boku ni Betahore desu',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractIzzyleblancWordpressCom(item):
 
 
 	return False
-	

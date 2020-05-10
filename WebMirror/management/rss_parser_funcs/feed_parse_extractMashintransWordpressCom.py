@@ -1,4 +1,3 @@
-
 def extractMashintransWordpressCom(item):
 	'''
 	Parser for 'mashintrans.wordpress.com'
@@ -9,6 +8,7 @@ def extractMashintransWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Shinka no Mi',       'Shinka no Mi',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMashintransWordpressCom(item):
 
 
 	return False
-	

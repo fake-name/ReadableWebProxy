@@ -1,4 +1,3 @@
-
 def extractMidnightmoontranslationWordpressCom(item):
 	'''
 	Parser for 'midnightmoontranslation.wordpress.com'
@@ -9,6 +8,7 @@ def extractMidnightmoontranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the silly wizard\'s courtship method',       'the silly wizard\'s courtship method',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMidnightmoontranslationWordpressCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractOtherworldsinwordWordpressCom(item):
 	'''
 	Parser for 'otherworldsinword.wordpress.com'
@@ -9,6 +8,7 @@ def extractOtherworldsinwordWordpressCom(item):
 		return None
 
 	tagmap = [
+		('riad',       'The Roommates Were Ecstatic to See Their Roommate in a Dress',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractOtherworldsinwordWordpressCom(item):
 
 
 	return False
-	

@@ -1,6 +1,7 @@
-
 def extractCheeseburgerbrownCom(item):
 	'''
+	DISABLED
+	
 	Parser for 'cheeseburgerbrown.com'
 	'''
 
@@ -19,4 +20,3 @@ def extractCheeseburgerbrownCom(item):
 
 
 	return False
-	

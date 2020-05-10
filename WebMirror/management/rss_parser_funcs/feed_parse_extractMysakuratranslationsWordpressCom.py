@@ -1,4 +1,3 @@
-
 def extractMysakuratranslationsWordpressCom(item):
 	'''
 	Parser for 'mysakuratranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractMysakuratranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('this evil one is from the immortal realm',       'this evil one is from the immortal realm',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMysakuratranslationsWordpressCom(item):
 
 
 	return False
-	

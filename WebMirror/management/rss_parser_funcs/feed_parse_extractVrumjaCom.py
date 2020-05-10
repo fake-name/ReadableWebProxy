@@ -1,6 +1,6 @@
-def extractLowqualitytranslationsWordpressCom(item):
+def extractVrumjaCom(item):
 	'''
-	Parser for 'lowqualitytranslations.wordpress.com'
+	Parser for 'vrumja.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +8,7 @@ def extractLowqualitytranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('wedding pet',       'wedding pet',                      'translated'),
+		('supreme lord',       'supreme lord',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -10,6 +10,8 @@ def extractAerialrainWordpressCom(item):
 	tagmap = [
 		('mwfv',                               'my whole family are villains',                      'translated'),
 		('my whole family are villains',       'my whole family are villains',                      'translated'),
+		('thdp',                               'the healer demands payment',                        'translated'),
+		('the healer demands payment',         'the healer demands payment',                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

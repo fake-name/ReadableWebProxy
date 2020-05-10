@@ -1,4 +1,3 @@
-
 def extractKasamatsWordpressCom(item):
 	'''
 	Parser for 'kasamats.wordpress.com'
@@ -9,6 +8,7 @@ def extractKasamatsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('rebirth in hengdian',       'rebirth in hengdian',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractKasamatsWordpressCom(item):
 
 
 	return False
-	

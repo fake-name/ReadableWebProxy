@@ -1,4 +1,3 @@
-
 def extractStrictlybromanceCom(item):
 	'''
 	Parser for 'strictlybromance.com'
@@ -9,6 +8,8 @@ def extractStrictlybromanceCom(item):
 		return None
 
 	tagmap = [
+		('grave robbers\' chronicles',       'grave robbers\' chronicles',                      'translated'),
+		('haunted houses\' chronicles',       'haunted houses\' chronicles',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractStrictlybromanceCom(item):
 
 
 	return False
-	

@@ -145,6 +145,7 @@ def extractWwwAsianhobbyistCom(item):
 		('Magi’s Grandson',                                                                 'Magi’s Grandson',                                                                             'translated'),
 		('the man standing on top of the food chain',                                       'the man standing on top of the food chain',                                                   'translated'),
 		('Shinka no Mi',                                                                    'Shinka no Mi',                                                                                'translated'),
+		('let’s be an adventurer! ~defeating dungeons with a skill board',                  'let’s be an adventurer! ~defeating dungeons with a skill board',                              'translated'),
 		('Green Skin',                                                                      'Green Skin',                                                                                  'translated'),
 		('Chu Wang Fei',                                                                    'Chu Wang Fei',                                                                                'translated'),
 		('my castle my castellan',                                                          'my castle my castellan',                                                                      'translated'),

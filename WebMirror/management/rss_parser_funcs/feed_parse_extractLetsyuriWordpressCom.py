@@ -1,4 +1,3 @@
-
 def extractLetsyuriWordpressCom(item):
 	'''
 	Parser for 'letsyuri.wordpress.com'
@@ -9,6 +8,13 @@ def extractLetsyuriWordpressCom(item):
 		return None
 
 	tagmap = [
+		('icgsf',             'I, Cute Grass, am Super Fierce!',                 'translated'),
+		('ftbtceo',           'Forced to Become The CEO',                        'translated'),
+		('summon survival',   'Summon Survival',                                   'translated'),
+		('gtvf',              'Green Tea Villainess Fails',                        'translated'),
+		('ecfshm',            'Former Cannon Fodder’s Self-Help Manual',           'translated'),
+		('sodi',              'Stranded on a Deserted Island, What to Do?',        'translated'),
+		('vwccs',             'Villainess With Cat Changing System',               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -17,6 +23,22 @@ def extractLetsyuriWordpressCom(item):
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
+	titlemap = [
+		('Summon Survival',                               'Summon Survival',                                   'translated'),
+		('Green Tea Villainess Fails',                    'Green Tea Villainess Fails',                        'translated'),
+		('Former Cannon Fodder’s Self-Help Manual',       'Former Cannon Fodder’s Self-Help Manual',           'translated'),
+		('Stranded on a Deserted Island, What to Do?',    'Stranded on a Deserted Island, What to Do?',        'translated'),
+		('I, Cute Grass, am Super Fierce! Chapter ',      'I, Cute Grass, am Super Fierce!',                   'translated'),
+		('Forced to Become The CEO Chapter ',             'Forced to Become The CEO',                          'translated'),
+		('Villainess With Cat Changing System Chapter ',  'Villainess With Cat Changing System',               'translated'),
+		('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+		('Master of Dungeon',           'Master of Dungeon',               'oel'),
+	]
+
+	for titlecomponent, name, tl_type in titlemap:
+		if titlecomponent.lower() in item['title'].lower():
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+
 
 	return False
-	

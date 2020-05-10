@@ -20,7 +20,9 @@ def extractInoveltranslationsWordpressCom(item):
 
 
 	tagmap = [
-		('dual life',       'dual life',                      'translated'),
+		('dual life',                                                                    'dual life',                                                                                   'translated'),
+		('the adventure of a boy with the mind of a middle-aged man',                    'the adventure of a boy with the mind of a middle-aged man',                                   'translated'),
+		('i became peerless after i threw my whole paycheck at a real-life gacha',       'i became peerless after i threw my whole paycheck at a real-life gacha',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

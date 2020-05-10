@@ -1,4 +1,3 @@
-
 def extractNyanovelsCom(item):
 	'''
 	Parser for 'nyanovels.com'
@@ -9,6 +8,8 @@ def extractNyanovelsCom(item):
 		return None
 
 	tagmap = [
+		('Held in the Lonely Castle',                                       'Held in the Lonely Castle',                                                      'translated'),
+		('why harem intrigue when you can just raise a dog instead?',       'why harem intrigue when you can just raise a dog instead?',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractNyanovelsCom(item):
 
 
 	return False
-	

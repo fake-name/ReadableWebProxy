@@ -1,6 +1,6 @@
-def extractLowqualitytranslationsWordpressCom(item):
+def extractSimplypinkDreamwidthOrg(item):
 	'''
-	Parser for 'lowqualitytranslations.wordpress.com'
+	Parser for 'simplypink.dreamwidth.org'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +8,7 @@ def extractLowqualitytranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('wedding pet',       'wedding pet',                      'translated'),
+		('how to divorce the male lead',       'how to divorce the male lead',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

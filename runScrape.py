@@ -92,7 +92,8 @@ def run_in_subprocess():
 	proc = multiprocessing.Process(target=go, args=(sys.argv, ))
 	proc.start()
 	while proc.is_alive():
-		time.sleep(1)
+		time.sleep(10)
+		print("Base Subprocessor Runner")
 
 	# If the subprocess has gone away, die hard.
 	import ctypes;ctypes.string_at(1)

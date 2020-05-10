@@ -1,6 +1,7 @@
-
 def extractEinherjarprojectNet(item):
 	'''
+	DISABLED
+	
 	Parser for 'einherjarproject.net'
 	'''
 
@@ -19,4 +20,3 @@ def extractEinherjarprojectNet(item):
 
 
 	return False
-	
