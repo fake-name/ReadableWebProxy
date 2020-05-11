@@ -13,6 +13,7 @@ def extractDefiring(item):
 		('Almadinos Eiyuuden',                        'Almadinos Eiyuuden',                       'translated'),
 		('Tsuyokute New Saga',                        'Tsuyokute New Saga (LN)',                  'translated'),
 		('population control',                        'population control',                       'translated'),
+		('the demon lord is suing the hero',          'Maou Dakedo Yuushano Koto Kokuso Suru Kotoni Shitakara',                            'translated'),
 		('World teacher',                             'World teacher',                            'translated'),
 		('My Death Flags Show No Sign of Ending',     'My Death Flags Show No Sign of Ending',    'translated'),
 	]

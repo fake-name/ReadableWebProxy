@@ -8,8 +8,9 @@ def extractDaydropNowakiNet(item):
 		return None
 
 	tagmap = [
-		('Yes, No, or Maybe Half?',       'Yes, No, or Maybe Half?',                      'translated'),
-		('bloodlines ablaze',             'bloodlines ablaze',                            'translated'),
+		('Yes, No, or Maybe Half?',       'Yes, No, or Maybe Half?',                                                   'translated'),
+		('bloodlines ablaze',             'bloodlines ablaze',                                                         'translated'),
+		('side profiles and irises',      'Side Profiles and Irises ~Yes, No, or Maybe Half? Spinoff~',                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

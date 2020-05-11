@@ -9,6 +9,7 @@ def extractHaikushilanWordpressCom(item):
 
 	tagmap = [
 		('saye',       'SAYE 「Run Freely」',                      'translated'),
+		('idiot',      'Idiot',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

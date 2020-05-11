@@ -29,7 +29,9 @@ def extractCyborgTlCom(item):
 		return None
 
 	tagmap = [
-		('duke\'s daughter (ln)',       'duke\'s daughter (ln)',                      'translated'),
+		('duke\'s daughter (ln)',                   'duke\'s daughter (ln)',                                  'translated'),
+		('irregular rebellion',                     'irregular rebellion',                                    'translated'),
+		('ore wa mada, honki o dashite inai',       'ore wa mada, honki o dashite inai',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

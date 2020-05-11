@@ -15,6 +15,7 @@ def extractLetsyuriWordpressCom(item):
 		('ecfshm',            'Former Cannon Fodder’s Self-Help Manual',           'translated'),
 		('sodi',              'Stranded on a Deserted Island, What to Do?',        'translated'),
 		('vwccs',             'Villainess With Cat Changing System',               'translated'),
+		('Asura',       'Transmigrated Into a Smashing Asura Girl',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -15,6 +15,7 @@ def extractWatashiWaSugoiDesu(item):
 		('Cute Friend',                                     'The Hero’s Cute Childhood Friend, Doesn’t Know of His Pitch-Black Nature',                                      'translated'),
 		('TS Girl',                                         'My Best Friend Became A Transsexual Girl, And Says He Wants to Marry Me, But I’ll Flat Out Refuse.',            'translated'),
 		('SFY',                                             'Searching For You',                                                                                             'translated'),
+		('smgo',                                            'The Show Must Go On',                                                                                           'translated'),
 		('KtBC',                                            'Kiss the Black Cat',                                                                                            'translated'),
 		('Ossan Idol',                                      'Ossan (36) Ga Idol Ni Naru Hanashi',                                                                            'translated'),
 		('Strongest Wiseman',                               'Child Rearing Journal of the Strongest Wiseman～About My Daughter Being the Cutest in the World～',             'translated'),

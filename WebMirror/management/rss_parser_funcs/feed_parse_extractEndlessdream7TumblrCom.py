@@ -3,6 +3,16 @@ def extractEndlessdream7TumblrCom(item):
 	Parser for 'endlessdream7.tumblr.com'
 	'''
 
+
+	badwords = [
+			'book reviews',
+			'badword',
+		]
+	if any([bad in item['tags'] for bad in badwords]):
+		return None
+
+
+
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None

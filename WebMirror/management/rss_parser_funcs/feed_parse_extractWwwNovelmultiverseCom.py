@@ -14,6 +14,7 @@ def extractWwwNovelmultiverseCom(item):
 			('Master of Science and Technology',                  'Master of Science and Technology',                      'translated'),
 			('Reincarnated Young Lady Aims to Be an Adventurer',  'Reincarnated Young Lady Aims to Be an Adventurer',      'translated'),
 			('Don’t Turn from Summer',                            'Don’t Turn from Summer',                                'translated'),
+			('The Girl Who Spits Up Jewels - Volume ',  'The Girl Who Spits Up Jewels',      'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

@@ -1,6 +1,6 @@
-def extractVerylazymtlBlogspotCom(item):
+def extractChrysanthemumburstWordpressCom(item):
 	'''
-	Parser for 'verylazymtl.blogspot.com'
+	Parser for 'chrysanthemumburst.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +8,8 @@ def extractVerylazymtlBlogspotCom(item):
 		return None
 
 	tagmap = [
-		('overgod',       'Overgod Ascension',                      'translated'),
+		('ASV',                            'a smile from the villain',                      'translated'),
+		('a smile from the villain',       'a smile from the villain',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

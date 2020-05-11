@@ -18,6 +18,7 @@ def extractAllaboutmynothingsBlogspotCom(item):
 		('The Love Potion',                             'The Love Potion',                                                           'translated'), 
 		('Bunny Husband',                               'Bunny Husband',                                                             'translated'), 
 		('namjang secretary',                           'namjang secretary',                                                         'translated'), 
+		('shameful lessons',                            'The S Manager\'s Shameful Lessons',                                         'translated'), 
 		('Dark Empress',                                'Dark Empress',                                                              'translated'), 
 		('mo yan transmigrates',                        'Mo Yan\'s Transmigration Inside The Book',                                  'translated'), 
 	]

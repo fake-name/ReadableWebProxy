@@ -10,6 +10,7 @@ def extractWwwThenovelstCom(item):
 	tagmap = [
 		('Reincarnation – Lord is Extremely Hardcore',       'Reincarnation – Lord is Extremely Hardcore',                      'translated'),
 		('If You Are a Dodder Flower',                       'If You Are a Dodder Flower',                                      'translated'),
+		('Legend of Hua Buqi',                               'Legend of Hua Buqi',                                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

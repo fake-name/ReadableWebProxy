@@ -9,7 +9,8 @@ def extractAstereadsWordpressCom(item):
 
 	tagmap = [
 		('Thanks to a Different World Reincarnation',       'Thanks to a Different World Reincarnation',                      'translated'),
-		('s-rank appraiser',       'The Kicked Out S-rank Appraiser',                      'translated'),
+		('s-rank appraiser',                                'The Kicked Out S-rank Appraiser',                                'translated'),
+		('isekai cat',                                      'I Become a Cat in Another World',                                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -15,16 +15,12 @@ baseUrl: [
 		'https://kudalakorn.club',
 		'https://www.mintwood.top',
 
-		# Disabled until I can work around their garbage "protection"
-		# 'https://www.foxteller.com',
-
 		'https://work.nwong.net',
 		'http://www.gundamwingtales.com',
 		'http://www.tigresstranslations.com',
 		'http://novel-id.blognive.com',
 		'https://laescans.myportfolio.com',
-
-		# Dickish blocking garbage shit.
+		'http://novelsetromans.eklablog.com',
 
 		'http://www.okanegahoshii.club',
 
@@ -108,6 +104,8 @@ baseUrl: [
 		'http://www.asianovel.net',
 		'https://www.novellike.com',
 
+		'https://sleepy.witchcraft.academy',
+
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'https://www.novelmultiverse.com',
 		'https://www.novelsluttyverse.com',
@@ -138,6 +136,7 @@ feeds: [
 	'http://novel-id.blognive.com/rss.xml',
 	'https://www.pemudatunawisata.my.id/feeds/posts/default',
 	'https://isotls.com/rss/',
+	'https://sleepy.witchcraft.academy/rss/',
 ]
 
 extraStartUrls: [

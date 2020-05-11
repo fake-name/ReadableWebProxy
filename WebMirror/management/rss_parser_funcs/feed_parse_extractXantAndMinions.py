@@ -15,6 +15,7 @@ def extractXantAndMinions(item):
 		('Garudena',                     'Garudina Oukoku Koukoku Ki',                           'translated'),
 		('Xingfeng',                     'Legend of Xingfeng',                                   'translated'),
 		('Bear',                         'Kuma Kuma Kuma Bear',                                  'translated'),
+		('Surgeon',                      'Isekai Surgeon',                                  'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

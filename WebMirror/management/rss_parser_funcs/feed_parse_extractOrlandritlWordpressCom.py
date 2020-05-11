@@ -11,6 +11,7 @@ def extractOrlandritlWordpressCom(item):
 		('sukamoka',               'Sukamoka',                      'translated'),
 		('sukasuka',               'Sukasuka',                      'translated'),
 		('Sukasuka Vol. EX',       'Sukasuka',                      'translated'),
+		('sukasuka leila',         'Sukasuka Side Story: Leila Asprey',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

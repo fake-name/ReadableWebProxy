@@ -4,6 +4,8 @@ def extractAswTenanBlogspotCom(item):
 	'''
 	if 'English' not in item['tags']:
 		return None
+	if 'Bahasa Indonesia' in item['tags']:
+		return None
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
@@ -11,6 +13,7 @@ def extractAswTenanBlogspotCom(item):
 
 	tagmap = [
 		('mushoku no eiyuu',       'Mushoku no Eiyuu ~Betsu ni Skill Nanka Iranakattan daga~',                      'translated'),
+		('s-rank girls',           'S Rank Boukensha de aru Ore no Musume-tachi wa Juudo no Father Con deshita',    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

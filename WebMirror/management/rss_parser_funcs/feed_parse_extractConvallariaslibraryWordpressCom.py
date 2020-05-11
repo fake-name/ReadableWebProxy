@@ -23,5 +23,8 @@ def extractConvallariaslibraryWordpressCom(item):
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
+	if 'the small sage will try her best in the different world from lv.1!' in item['tags'] and chp != 1:
+		return buildReleaseMessageWithType(item, "the small sage will try her best in the different world from lv.1!", vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
 
 	return False

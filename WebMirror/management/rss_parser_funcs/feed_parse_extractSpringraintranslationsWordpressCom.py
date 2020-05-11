@@ -10,6 +10,7 @@ def extractSpringraintranslationsWordpressCom(item):
 	tagmap = [
 		('mary sue does not stick to the plot',             'mary sue does not stick to the plot',          'translated'),
 		('scheming villainess\'s counterattack',            'scheming villainess\'s counterattack',         'translated'),
+		('Princess and the General',                        'Princess and the General',                     'translated'),
 		('Shen Yi Di Nu',                                   'Shen Yi Di Nu',                                'translated'),
 		('Epoch of the Dragon',                             'X – Epoch of the Dragon',                      'translated'),
 	]

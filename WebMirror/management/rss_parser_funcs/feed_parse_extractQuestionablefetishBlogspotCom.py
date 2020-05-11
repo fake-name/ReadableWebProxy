@@ -1,6 +1,7 @@
-def extractVerylazymtlBlogspotCom(item):
+
+def extractQuestionablefetishBlogspotCom(item):
 	'''
-	Parser for 'verylazymtl.blogspot.com'
+	Parser for 'questionablefetish.blogspot.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +9,6 @@ def extractVerylazymtlBlogspotCom(item):
 		return None
 
 	tagmap = [
-		('overgod',       'Overgod Ascension',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,3 +19,4 @@ def extractVerylazymtlBlogspotCom(item):
 
 
 	return False
+	

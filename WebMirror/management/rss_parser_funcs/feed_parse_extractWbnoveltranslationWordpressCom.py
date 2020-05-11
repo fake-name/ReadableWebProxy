@@ -1,4 +1,3 @@
-
 def extractWbnoveltranslationWordpressCom(item):
 	'''
 	Parser for 'wbnoveltranslation.wordpress.com'
@@ -9,6 +8,7 @@ def extractWbnoveltranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Spirit\'s Paradise',       'Spirit’s Paradise And The Idle Another World Life',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractWbnoveltranslationWordpressCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractWwwPemudatunawisataMyId(item):
 	'''
 	Parser for 'www.pemudatunawisata.my.id'
@@ -9,6 +8,8 @@ def extractWwwPemudatunawisataMyId(item):
 		return None
 
 	tagmap = [
+		('fd',       'My Lover Was Stolen, And I Was Kicked Out Of The Hero\'s Party, But I Awakened To The EX Skill "Fixed Damage" And Became Invincible. Now, Let\'s Begin Some Revenge',                      'translated'),
+		('tearmoon',       'Tearmoon Teikoku Monogatari',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractWwwPemudatunawisataMyId(item):
 
 
 	return False
-	

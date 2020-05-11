@@ -10,6 +10,8 @@ def extractNeoTranslations(item):
 		return buildReleaseMessageWithType(item, 'The Man Picked up by the Gods', vol, chp, frag=frag, postfix=postfix)
 	if 'I came back but the world is still a fantasy' in item['tags']:
 		return buildReleaseMessageWithType(item, 'Kaettekite mo Fantasy!?', vol, chp, frag=frag, postfix=postfix)
+	if 'I came back but the world is still a fantasy' in item['title']:
+		return buildReleaseMessageWithType(item, 'Kaettekite mo Fantasy!?', vol, chp, frag=frag, postfix=postfix)
 	if 'Ashes and Kingdoms' in item['tags']:
 		return buildReleaseMessageWithType(item, 'Ashes and Kingdoms', vol, chp, frag=frag, postfix=postfix)
 	if 'Goblin Kingdom' in item['tags']:

@@ -49,6 +49,8 @@ def extractBlackboxTlCom(item):
 		('how to survive as a villain',                   'how to survive as a villain',                                  'translated'),
 		('chasing tides',                                 'chasing tides',                                                'translated'),
 		('the elegant dancing years',                     'the elegant dancing years',                                    'translated'),
+		('GDT',                                           'green dragon totem',                                           'translated'),
+		('green dragon totem',                            'green dragon totem',                                           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

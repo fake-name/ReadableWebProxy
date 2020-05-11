@@ -32,6 +32,7 @@ def extractLightNovelsTranslations(item):
 		('Fairy Tale Chronicles',                                                      'Fairy Tale Chronicles',                                                                    'translated'),
 		('space mercenary',                                                            'I Woke Up Piloting the Strongest Starship, so I Became a Space Mercenary',                 'translated'),
 		('goodbye dragon life, hello human life',                                      'goodbye dragon life, hello human life',                                                    'translated'),
+		('ultimate tank',                                                              'The Labyrinth Raids of the Ultimate Tank',                                                 'translated'),
 		('Heavenly Castle',                                                            'Heavenly Castle',                                                                          'translated'),
 		('Shiinamachi-senpai\'s Safe Day',                                             'Shiinamachi-senpai\'s Safe Day',                                                           'translated'),
 		('Nidome no Yuusha',                                                           'Nidome no Yuusha',                                                                         'translated'),

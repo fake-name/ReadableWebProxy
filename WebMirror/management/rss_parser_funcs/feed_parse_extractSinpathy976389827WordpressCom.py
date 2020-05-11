@@ -1,8 +1,11 @@
-
 def extractSinpathy976389827WordpressCom(item):
 	'''
 	Parser for 'sinpathy976389827.wordpress.com'
 	'''
+
+	if item['title'].startswith("Protected"):
+		return None
+		
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
@@ -19,4 +22,3 @@ def extractSinpathy976389827WordpressCom(item):
 
 
 	return False
-	

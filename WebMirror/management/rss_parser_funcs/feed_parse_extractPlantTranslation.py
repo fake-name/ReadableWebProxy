@@ -8,6 +8,7 @@ def extractPlantTranslation(item):
 		
 	tagmap = [
 		('cultutral inavsion in different world',          'cultutral inavsion in different world',    'translated'),
+		('cultural invasion in different world',           'cultural invasion in different world',     'translated'),
 		('Heavenly Farmer',                                'Heavenly Farmer',                          'translated'),
 		('The Strongest Gene',                             'The Strongest Gene',                       'translated'),
 	]

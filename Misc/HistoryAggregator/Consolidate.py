@@ -383,12 +383,12 @@ class DbFlattener(object):
 
 
 
-		self.log.info("Counting rows for url '%s'.", url)
+		# self.log.info("Counting rows for url '%s'.", url)
 		orig_cnt = sess.query(ctbl)           \
 			.filter(ctbl.c.url == url)     \
 			.count()
 
-		self.log.info("Found %s results for url '%s'. Fetching rows", orig_cnt, url)
+		# self.log.info("Found %s results for url '%s'. Fetching rows", orig_cnt, url)
 
 		deleted_1 = 0
 		deleted_2 = 0
@@ -398,11 +398,10 @@ class DbFlattener(object):
 
 		deletes = []
 
-		for item in tqdm.tqdm(
-			sess.query(ctbl)                               \
+		for item in (sess.query(ctbl)                               \
 			.filter(ctbl.c.url == url)                     \
 			.order_by(ctbl.c.id, ctbl.c.transaction_id)    \
-			.yield_per(2), total=orig_cnt):
+			.yield_per(2)):
 
 			if item.state != "complete" and item.state != 'error':
 				deleted_1 += 1
@@ -435,14 +434,14 @@ class DbFlattener(object):
 			else:
 				print("Wat?")
 
-
-		self.log.info("Found %s items missing both file reference and content", deleted_1)
+		if deleted_1:
+			self.log.info("Found %s items missing both file reference and content", deleted_1)
 		keys = list(attachments.keys())
 		keys.sort()
 
 		out = []
 
-		for key in tqdm.tqdm(keys):
+		for key in keys:
 			superset = attachments[key]
 			if len(superset) > 1:
 				# print("lolercoaster")
@@ -462,7 +461,7 @@ class DbFlattener(object):
 		if deletes:
 			self.log.info("Deleting %s entries from history table!", len(deletes))
 			chunks = list(batch(deletes, 15))
-			for chunk in tqdm.tqdm(chunks):
+			for chunk in tqdm.tqdm(chunks, position=1):
 				sess.execute(ctbl.delete().where(or_(*chunk)))
 
 		deleted = deleted_1 + deleted_2
@@ -477,7 +476,8 @@ class DbFlattener(object):
 
 		db.set_in_version_check_table(sess, url, datetime.datetime.now())
 
-		self.log.info("Deleted: %s items when simplifying history, %s incomplete items, Total deleted: %s, remaining: %s", deleted_2, deleted_1, deleted, orig_cnt-deleted)
+		if deleted_2:
+			self.log.info("Deleted: %s items when simplifying history, %s incomplete items, Total deleted: %s, remaining: %s", deleted_2, deleted_1, deleted, orig_cnt-deleted)
 		return deleted
 
 	def truncate_url_range(self, sess, range_start, range_end):
@@ -537,7 +537,7 @@ class DbFlattener(object):
 
 		step = 50000
 		start = start - (start % step)
-		pbar = tqdm.tqdm(range(start, end, step))
+		pbar = tqdm.tqdm(range(start, end, step), position=1)
 
 		# m_tracker = tracker.SummaryTracker()
 
@@ -545,7 +545,8 @@ class DbFlattener(object):
 
 		deleted = 0
 		for x in pbar:
-			with db.session_context(override_timeout_ms=1000*60*30) as sess:
+			# with db.session_context(override_timeout_ms=1000*60*30) as sess:
+			with db.session_context() as sess:
 				pbar.set_description("Deleted %s. Processed %s urls" % (deleted, len(self.url_hit_list)))
 				try:
 					changed  = self.truncate_url_range(sess, x, x+step)
@@ -732,7 +733,7 @@ class DbFlattener(object):
 
 
 	def _go(self):
-		self.consolidate_history()
+		self.consolidate_history_new()
 		self.fix_missing_history()
 
 def incremental_history_consolidate(batched):
@@ -741,7 +742,7 @@ def incremental_history_consolidate(batched):
 
 def consolidate_history():
 	proc = DbFlattener()
-	proc.consolidate_history()
+	proc.consolidate_history_new()
 
 
 def fix_missing_history():

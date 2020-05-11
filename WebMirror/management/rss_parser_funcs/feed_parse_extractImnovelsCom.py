@@ -1,6 +1,6 @@
-def extractVerylazymtlBlogspotCom(item):
+def extractImnovelsCom(item):
 	'''
-	Parser for 'verylazymtl.blogspot.com'
+	Parser for 'imnovels.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +8,10 @@ def extractVerylazymtlBlogspotCom(item):
 		return None
 
 	tagmap = [
-		('overgod',       'Overgod Ascension',                      'translated'),
+		('idtml',        'I Dumped the Male Lead Before an Apocalypse',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
+		('iterum incipi', 'Iterum Incipi',                'oel'),
+		('tbab',          'To Be a Beauty',                'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

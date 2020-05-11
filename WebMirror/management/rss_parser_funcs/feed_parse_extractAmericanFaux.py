@@ -25,6 +25,9 @@ def extractAmericanFaux(item):
 		('the returnee noble lady attacks his majesty the dragon emperor',                                         'the returnee noble lady attacks his majesty the dragon emperor',                                                          'translated'),
 		('i don\'t want to break off my engagement...',                                                            'i don\'t want to break off my engagement...',                                                                             'translated'),
 		('the kingdom of everlasting night and the last ball',                                                     'the kingdom of everlasting night and the last ball',                                                                      'translated'),
+		('your highness, the voice of your heart is leaking!',                                                     'your highness, the voice of your heart is leaking!',                                                                      'translated'),
+		('i am a duchess who has rewound nine times, but my tenth life seems to be a reward mode',                 'i am a duchess who has rewound nine times, but my tenth life seems to be a reward mode',                                  'translated'),
+		('formerly a fallen duke\'s daughter',                                                                     'formerly a fallen duke\'s daughter',                                                                                      'translated'),
 		('.hack//C.S.',                                                                                            '.hack//C.S.',                                                                                                             'translated'),
 		('The Wandering World',                                                'The Wandering World',                                                                 'oel'),
 	]

@@ -7,20 +7,24 @@ def extractStarveCleric(item):
 		return None
 	if 'protected' in item['title'].lower():
 		return None
-	if "Library of Heaven's Path" in item['tags']:
-		return buildReleaseMessageWithType(item, "Library of Heaven's Path", vol, chp, frag=frag, postfix=postfix)
-	if 'The Experimental Diaries of A Crazy Lich' in item['tags']:
-		return buildReleaseMessageWithType(item, 'The Experimental Diaries of A Crazy Lich', vol, chp, frag=frag, postfix=postfix)
-	if 'Tian Ying' in item['tags']:
-		return buildReleaseMessageWithType(item, 'Tian Ying', vol, chp, frag=frag, postfix=postfix)
-	if 'The Adonis Next Door' in item['tags']:
-		return buildReleaseMessageWithType(item, 'The Adonis Next Door', vol, chp, frag=frag, postfix=postfix)
-	if 'The Diary of the Truant Death God' in item['tags']:
-		return buildReleaseMessageWithType(item, 'The Diary of the Truant Death God', vol, chp, frag=frag, postfix=postfix)
-	if 'Dao Tian Xian Tu' in item['tags']:
-		return buildReleaseMessageWithType(item, 'Dao Tian Xian Tu', vol, chp, frag=frag, postfix=postfix)
-	if 'Rebirth - First Class Magician' in item['tags']:
-		return buildReleaseMessageWithType(item, 'Rebirth - First Class Magician', vol, chp, frag=frag, postfix=postfix)
-	if 'The Records of the Human Emperor' in item['tags']:
-		return buildReleaseMessageWithType(item, 'The Records of the Human Emperor', vol, chp, frag=frag, postfix=postfix)
+		
+	tagmap = [
+
+		("Library of Heaven's Path",                 "Library of Heaven's Path",                 'translated'),
+		('The Experimental Diaries of A Crazy Lich', 'The Experimental Diaries of A Crazy Lich', 'translated'),
+		('ninth special district',                   'ninth special district',                   'translated'),
+		('Tian Ying',                                'Tian Ying',                                'translated'),
+		('The Adonis Next Door',                     'The Adonis Next Door',                     'translated'),
+		('The Diary of the Truant Death God',        'The Diary of the Truant Death God',        'translated'),
+		('Dao Tian Xian Tu',                         'Dao Tian Xian Tu',                         'translated'),
+		('Rebirth - First Class Magician',           'Rebirth - First Class Magician',           'translated'),
+		('The Records of the Human Emperor',         'The Records of the Human Emperor',         'translated'),
+	]
+
+	for tagname, name, tl_type in tagmap:
+		if tagname in item['tags']:
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+		
+		
 	return False

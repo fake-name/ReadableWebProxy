@@ -36,6 +36,7 @@ def extractSkythewood(item):
 		('Gamers',                                 'Gamers',                                                                       'translated'),
 		('Manu',                                   'Manuscript Screening Boy and Manuscript Submitting Girl',                      'translated'),
 		('Isekai Mahou',                           'Isekai Mahou wa Okureteru!',                                                   'translated'),
+		('demon sword',                            'Demon Sword Master of the Holy Sword Academy',                                 'translated'),
 		('HWBT',                                   'Hero without Blood or Tear',                                                   'translated'),
 		('Death',                                  'The Girl Raised by the Death God Holds the Sword of Darkness in Her Arms',     'translated'),
 	]

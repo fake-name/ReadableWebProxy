@@ -23,6 +23,8 @@ def extractNastriumdenBlogspotCom(item):
 		('the sleuth of the ming dynasty',                            'the sleuth of the ming dynasty',                                           'translated'),
 		('The Paternity Guard',                                       'The Paternity Guard',                                                      'translated'),
 		('Love is More Than a Word',                                  'Love is More Than a Word',                                                 'translated'),
+		('the en of love',                                            'the en of love',                                                           'translated'),
+		('i’ll still love you even if you’re a man 2',                'i’ll still love you even if you’re a man 2',                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

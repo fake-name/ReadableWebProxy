@@ -17,7 +17,7 @@ def extractFoxaholicWordpressCom(item):
 	if not (chp or vol):
 		return None
 
-	if item['tags'] == ['Uncategorized']:
+	if item['tags'] == ['Uncategorized'] or item['tags'] == ['Novel'] or item['tags'] == ['darkness7913'] or item['tags'] == ['Uncategorized', 'darkness7913']:
 		titlemap = [
 			('Skill Taker’s World Domination ~ Building a Slave Harem from Scratch Chapter ',  'Skill Taker’s World Domination ~ Building a Slave Harem from Scratch',      'translated'),
 			('New Chapter: Legend of Great Tang’s Twin Dragons, ',                             'Legend of Great Tang’s Twin Dragons',                                       'translated'),
@@ -26,7 +26,15 @@ def extractFoxaholicWordpressCom(item):
 			('New Ch: How To Say I Love You – ',                                               'How To Say I Love You',                                                     'translated'),
 			('New Ch: Cannon Fodder Counter Attack System ',                                   'Cannon Fodder Counter Attack System',                                       'translated'),
 			('Quick Transmigration: The Villain is delicate and soft – ',                      'Quick Transmigration: The Villain is delicate and soft',                    'translated'),
+			('The Yandere came During the Night – Chapter ',                                   'The Yandere came During the Night',                                         'translated'),
 			('New Ch: Time – ',                                                                'Time ',                                                                     'translated'),
+			('How To Become A Great White Moonlight Chapter ',                                 'How To Become A Great White Moonlight',                                     'translated'),
+			('Transmigrating into a demon spirit',                                             'Transmigrating into a demon spirit to blow up the entire world',            'translated'),
+			('Transmigrating into the ML’s Villainess Older Sis',                              'Transmigrating into the ML’s Villainess Older Sister',                      'translated'),
+			('A crowd of evil spirit',                                                         'A crowd of evil spirit lines up to confess to me',                          'translated'),
+			('A crowd of evil spirit lines up to confess to me',                               'A crowd of evil spirit lines up to confess to me',                          'translated'),
+			('After Being Transported into a Book, I Adopted the Villain Chapter',             'After Being Transported into a Book, I Adopted the Villain',                'translated'),
+			('Demon King of Phantom Thief',                                                    'Demon King of Phantom Thief',                                               'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]
@@ -113,11 +121,18 @@ def extractFoxaholicWordpressCom(item):
 		('transmigrated female support: male god addicted to teasing',                              'transmigrated female support: male god, addicted to teasing',                                            'translated'),
 		('quick transmigration system: pounce on male gods which family’s stronger',                'quick transmigration system: pounce on male gods which family’s stronger',                               'translated'),
 		('quick transmigration: the villain\'s sweet wife',                                         'quick transmigration: the villain\'s sweet wife',                                                        'translated'),
+		('the villain is happy being a father [quick',                                              'the villain is happy being a father',                                                                    'translated'),
 		('Winter Begonia',                                                                          'Winter Begonia',                                                                                         'translated'),
 		('fairyland lovers',                                                                        'fairyland lovers',                                                                                       'translated'),
+		('leisurely beast world: plant some fields have some cubs',                                 'leisurely beast world: plant some fields, have some cubs',                                               'translated'),
+		('leisurely beast world: plant some fields, have some cubs',                                'leisurely beast world: plant some fields, have some cubs',                                               'translated'),
+		('vhbf',                                                                                    'the villain is happy being a father [quick transmigration]',                                             'translated'),
+		('want to ascend then fall in love',                                                        'want to ascend then fall in love',                                                                       'translated'),
+		('undying patient',                                                                         'undying patient',                                                                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
+
 
 
 

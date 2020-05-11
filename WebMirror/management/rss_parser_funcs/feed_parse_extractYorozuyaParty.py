@@ -1,14 +1,17 @@
-def extractVerylazymtlBlogspotCom(item):
+def extractYorozuyaParty(item):
 	'''
-	Parser for 'verylazymtl.blogspot.com'
+	Parser for 'yorozuya.party'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
+	#  and 
+
 	tagmap = [
-		('overgod',       'Overgod Ascension',                      'translated'),
+		('eijiw',       'Everywhere in Jianghu is Wonderful',                      'translated'),
+		('dwgl',        'Di Wang Gong Lue',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

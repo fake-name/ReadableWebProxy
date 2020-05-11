@@ -12,9 +12,13 @@ def extractRhinabolla(item):
 	if 'Hachi-nan Chapter' in item['title']:
 		return buildReleaseMessageWithType(item, 'Hachinan tte, Sore wa nai Deshou!', vol, chp, frag=frag, postfix=postfix)
 		
+	if item['title'].startswith("Cafe "):
+		return buildReleaseMessageWithType(item, 'salvation began from cafe', vol, chp, frag=frag, postfix=postfix)
+		
 	tagmap = [
 		('salvation began from cafe',       'salvation began from cafe',                      'translated'),
 		('Hachi-nan Chapter',               'Hachinan tte, Sore wa nai Deshou!',              'translated'),
+		('infinity moe',                    'infinity moe',                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

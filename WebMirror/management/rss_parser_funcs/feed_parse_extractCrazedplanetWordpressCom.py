@@ -10,6 +10,8 @@ def extractCrazedplanetWordpressCom(item):
 	tagmap = [
 		('life after marrying my love rival',         'life after marrying my love rival',                        'translated'),
 		('Who Dares Slander My Senior Brother',       'Who Dares Slander My Senior Brother',                      'translated'),
+		('Can You Connect to Your Wifi?',             'Can You Connect to Your Wifi?',                            'translated'),
+		('Taizi',                                     'Taizi',                                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

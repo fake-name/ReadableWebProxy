@@ -14,6 +14,7 @@ def extractBetwixtedtranslationsBlogspotCom(item):
 		('Death Progress Bar',                                            'Death Progress Bar',                                                           'translated'),
 		('King of Classical Music',                                       'King of Classical Music',                                                      'translated'),
 		('Everyday I Get up to See the Villain Stealing the Show',        'Everyday I Get up to See the Villain Stealing the Show',                       'translated'),
+		('where is our agreement to be each other\'s arch rivals?',       'where is our agreement to be each other\'s arch rivals?',                      'translated'),
 		('Gentle Beast',                                                  'Gentle Beast',                                                                 'translated'),
 		('Epiphanies of Rebirth',                                         'Epiphanies of Rebirth',                                                        'translated'),
 	]

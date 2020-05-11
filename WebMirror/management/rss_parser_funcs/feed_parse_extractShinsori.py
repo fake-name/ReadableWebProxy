@@ -68,6 +68,7 @@ def extractShinsori(item):
 		('demon lord wants to laze',                                    'Demon Lord Wants to Laze',                                                                 'translated'),
 		('Heroine of the Broken Engagement',                            'Heroine of the Broken Engagement',                                                         'translated'),
 		('Child Rearing Hero',                                          'Child Rearing Hero and Children of the Demon King',                                        'translated'),
+		('my husband, the commander of imperial guards, wants to divorce me, but i don’t want to part with my angelic stepchild.',        'my husband, the commander of imperial guards, wants to divorce me, but i don’t want to part with my angelic stepchild.',      'translated'),
 		('akuyaku reijou ni nanka narimasen. watashi wa『futsuu』no koushaku reijou desu!',            'akuyaku reijou ni nanka narimasen. watashi wa『futsuu』no koushaku reijou desu!',                       'translated'),
 		('she retaliated because her entire family was wrongfully executed. and thoroughly at that!',  'she retaliated because her entire family was wrongfully executed. and thoroughly at that!',             'translated'),
 	]
