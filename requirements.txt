@@ -79,7 +79,7 @@ redis==3.5.1
 vmprof==0.4.15
 
 parsedatetime==2.5
-psutil
+psutil==5.7.0
 
 ## alembic
 ## Babel
