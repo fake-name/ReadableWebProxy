@@ -278,6 +278,11 @@ def extractFantasyBooksLive(item):
 		('150977',                                                                   'The System Wants Me Dead',                                                                      'oel'),
 		('150047',                                                                   'Deployed to Destiny',                                                                      'oel'),
 		('151022',                                                                   'The Hunters: Gaea',                                                                      'oel'),
+		('157036',                                                                   'Arthur and the Mystery of Reincarnation',                                                                      'oel'),
+		('153973',                                                                   'Apocalypse: World Revolution',                                                                      'oel'),
+		('153222',                                                                   'The Hero’s Supplier',                                                                      'oel'),
+		('157302',                                                                   'My Career is Useless in this World!!',                                                                      'oel'),
+		('157348',                                                                   'Taking Over the Villainess’ Body: 365 Days to Live As I Like!',                                                                      'oel'),
 
 
 	]

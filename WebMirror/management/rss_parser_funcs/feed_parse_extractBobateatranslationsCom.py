@@ -9,6 +9,7 @@ def extractBobateatranslationsCom(item):
 
 	tagmap = [
 		('wfiltu',       'Why fall in love if you can attend Tsinghua University',                      'translated'),
+		('sooew',        'Show Off Once in Every World (SOOEW)',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

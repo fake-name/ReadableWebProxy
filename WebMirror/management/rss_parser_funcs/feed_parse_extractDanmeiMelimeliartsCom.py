@@ -132,10 +132,12 @@ def extractDanmeiMelimeliartsCom(item):
 		('2013 (doomsday)',                                                        '2013',                                                                                  'translated'),
 		('tianbao fuyao lu',                                                       'tianbao fuyao lu',                                                                      'translated'),
 		('after transmigrating into an omega, i was marked by the enemy',          'after transmigrating into an omega, i was marked by the enemy',                         'translated'),
+		('beastman forcefully raising a wife',                                     'beastman forcefully raising a wife',                                                    'translated'),
 		('Violant of the Silver',                                                  'Violant of the Silver',                                                                 'translated'),
 		('escape the infinite chambers',                                           'escape the infinite chambers',                                                          'translated'),
 		('after transmigrating into an omega, i was targeted by the enemy',        'after transmigrating into an omega, i was targeted by the enemy',                       'translated'),
 		('exclusive rights to an online voice actor',                              'exclusive rights to an online voice actor',                                             'translated'),
+		('everyone knows i\'m a good person',                                      'everyone knows i\'m a good person',                                                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

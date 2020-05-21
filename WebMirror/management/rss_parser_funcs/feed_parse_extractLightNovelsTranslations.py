@@ -26,6 +26,8 @@ def extractLightNovelsTranslations(item):
 		('I Got a Cheat, So I Want to Live as I Like',                                 'I Got a Cheat, So I Want to Live as I Like',                                               'translated'),
 		('The Summoner is Going',                                                      'The Summoner is Going',                                                                    'translated'),
 		('Dragon-san Wants a Friend',                                                  'Dragon-san Wants a Friend',                                                                'translated'),
+		('Cursed Sword Master',                                                        'Cursed Sword Master',                                                                      'translated'),
+		('the loner who conquers the other world',                                     'the loner who conquers the other world',                                                   'translated'),
 		('over the infinite',                                                          'over the infinite',                                                                        'translated'),
 		('Fiancée of the Wizard',                                                      'Fiancée of the Wizard',                                                                    'translated'),
 		('galactic navy officer',                                                      'Kochugunshikan Boukensha ni Naru',                                                         'translated'),

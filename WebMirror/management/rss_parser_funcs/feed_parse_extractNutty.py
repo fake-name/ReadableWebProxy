@@ -29,10 +29,14 @@ def extractNutty(item):
 		
 	if item['tags'] == ['A Mistaken Marriage Match']:
 		titlemap = [
-			('DMSJ: Ch ',                   'A mistaken marriage match: Destined Marriage Of Shang Jun',      'translated'),
-			('DMSJ: Chapter ',              'A mistaken marriage match: Destined Marriage Of Shang Jun',      'translated'),
-			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
-			('Master of Dungeon',           'Master of Dungeon',               'oel'),
+			('DMSJ Chapter ',                             'A mistaken marriage match: Destined Marriage Of Shang Jun',      'translated'),
+			('Destined Marriage Shang Jun: Chapter ',     'A mistaken marriage match: Destined Marriage Of Shang Jun',      'translated'),
+			('Destined Marriage Of Shang Jun: Chapter ',  'A mistaken marriage match: Destined Marriage Of Shang Jun',      'translated'),
+			('DMSJ: Ch ',                                 'A mistaken marriage match: Destined Marriage Of Shang Jun',      'translated'),
+			('DMSJ: Chapter ',                            'A mistaken marriage match: Destined Marriage Of Shang Jun',      'translated'),
+			('Destined Marriage With Fragrance ',         'A mistaken marriage match: Destined Marriage With Fragrance',    'translated'),
+			('Tensei Shoujo no Rirekisho',                'Tensei Shoujo no Rirekisho',      'translated'),
+			('Master of Dungeon',                         'Master of Dungeon',               'oel'),
 		]
 
 		for titlecomponent, name, tl_type in titlemap:

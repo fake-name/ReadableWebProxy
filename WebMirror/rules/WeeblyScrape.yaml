@@ -33,6 +33,10 @@ baseUrl:
      - "https://nasiulamkerabu.weebly.com"
      - "https://cicadacricket.weebly.com"
 
+     # Same site:
+     - "https://horanginim.weebly.com"
+     - "https://www.horanginim.com"
+
 badwords:
      - "pages/reportAbuse"
      - "fanfic.php"

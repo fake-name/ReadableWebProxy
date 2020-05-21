@@ -7,6 +7,9 @@ def extractThefinalcinderellaTumblrCom(item):
 	badwords = [
 			'tsurune dvd translations',
 			'a3! anime',
+			'twisted wonderland spoilers',
+			'pjo',
+			'ask',
 			'badword',
 		]
 	if any([bad in item['tags'] for bad in badwords]):

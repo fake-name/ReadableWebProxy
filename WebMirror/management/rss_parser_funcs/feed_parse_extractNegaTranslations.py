@@ -16,6 +16,7 @@ def extractNegaTranslations(item):
 		'Sono Mono, Nochi Ni'              : 'Sono Mono, Nochi Ni',
 		'29-sai dokushin wa isekai'        : '29-sai dokushin wa isekai',
 		'sono mono, nochi ni... 2'         : 'sono mono, nochi ni... Part 2',
+		'i was called incompetent'         : 'Munou To Yobareta Ore, Yottsu No Chikara Wo Eru',
 		'Arifureta'                        : 'Arifureta',
 		'One-eyed female General'          : 'One-eyed Female General and the Harem',
 	}

@@ -8,6 +8,7 @@ def extractNoodletownTranslated(item):
 		
 	tagmap = [
 		('ctw',       'Conquer the World',                      'translated'),
+		('lfs',       'Let’s Make a Pact, Lord Fox Spirit',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

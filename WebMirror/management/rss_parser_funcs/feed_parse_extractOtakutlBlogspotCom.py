@@ -8,6 +8,7 @@ def extractOtakutlBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('the record of barton\'s fantastical events',    'the record of barton\'s fantastical events',                   'translated'),
 		('TRO',                                           'The Rise of Otaku',                                            'translated'),
 		('the rise of otaku',                             'The Rise of Otaku',                                            'translated'),
 		('Dark Blood Age',                                'Dark Blood Age',                                               'translated'),

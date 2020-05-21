@@ -1,4 +1,3 @@
-
 def extractXueversityWordpressCom(item):
 	'''
 	Parser for 'xueversity.wordpress.com'
@@ -9,6 +8,7 @@ def extractXueversityWordpressCom(item):
 		return None
 
 	tagmap = [
+		('My Dream Guy Became A Dog [MOD/HE]',       'My Dream Guy Became A Dog',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractXueversityWordpressCom(item):
 
 
 	return False
-	

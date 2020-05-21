@@ -1,4 +1,3 @@
-
 def extractKeisotsunatranslationWordpressCom(item):
 	'''
 	Parser for 'keisotsunatranslation.wordpress.com'
@@ -9,6 +8,7 @@ def extractKeisotsunatranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('my old gong has amnesia',       'my old gong has amnesia',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractKeisotsunatranslationWordpressCom(item):
 
 
 	return False
-	

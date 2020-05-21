@@ -19,11 +19,12 @@ def extractDjurasicoHomeBlog(item):
 		return None
 
 	tagmap = [
-		('the duchess of the attic',       'The Duchess of the attic',                      'translated'),
-		('Garudeina Oukoku Koukoku Ki',       'Garudeina Oukoku Koukoku Ki',                      'translated'),
-		('The Noble Girl Living in Debt',       'The Noble Girl Living in Debt',                      'translated'),
+		('the duchess of the attic',                         'The Duchess of the attic',                                        'translated'),
+		('Garudeina Oukoku Koukoku Ki',                      'Garudeina Oukoku Koukoku Ki',                                     'translated'),
+		('The Noble Girl Living in Debt',                    'The Noble Girl Living in Debt',                                   'translated'),
 		('the duchess of rosia -a contract marriage?',       'the duchess of rosia -a contract marriage?',                      'translated'),
-		('loved by her sister’s former fiancée',       'loved by her sister’s former fiancée',                      'translated'),
+		('loved by her sister’s former fiancée',             'loved by her sister’s former fiancée',                            'translated'),
+		('31st consort candidate',                           '31st consort candidate',                                          'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

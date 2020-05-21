@@ -590,6 +590,7 @@ baseUrl: [
 	'https://www.exenovels.com',
 	'https://www.fuyukai.club',
 	'https://www.hontra.com',
+	'http://hontra.com',
 	'https://www.laundrybasket.xyz',
 	'https://www.novelsground.wordpress.com',
 	'https://www.noveltranslatedcollection.com',
@@ -601,6 +602,8 @@ baseUrl: [
 	'https://yuukou.us',
 	'https://zelskytranslations.com',
 	'https://www.dolionisapathy.xyz',
+
+	'http://pgttranslations.com',
 
 	# Now kissmanga?
 	'https://novelhub.co',

@@ -9,7 +9,8 @@ def extractJunktranslatesWordpressCom(item):
 
 	tagmap = [
 		('intl',       'It’s Not Too Late to Meet Again After Rebirth',                      'translated'),
-		('smwom',       'Second Marriage of a Wealthy Old Man',                      'translated'),
+		('smwom',      'Second Marriage of a Wealthy Old Man',                      'translated'),
+		('rolm',       'Reborn Out of Love and Murder',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -120,10 +120,7 @@ feeds: [
 	'http://girlyboysalliance.mozello.com/blog/rss/',
 	'http://novel.oddsquad.org/feeds/posts/default',
 	'http://www.everythingsweet.me/feeds/posts/default',
-# 	'http://www.heavenlyenchantress.com/feeds/posts/default',
-# 	'http://www.karasunovels.com/feeds/posts/default',
 	'http://www.lionmask.pro/feeds/posts/default',
-# 	'http://www.novellatranslation.com/feed',
 	'http://www.ultimaguil.org/base/news_rss.xml',
 	'http://www.ultimaguil.org/base/novelupdates_rss.xml',
 	'https://lightnovelbastion.com/rss.php',
@@ -143,6 +140,8 @@ extraStartUrls: [
 	]
 
 badwords: [
+			'Wu-White.svg',
+
 			"/about/",
 			"/join-us/",
 			"/chat/",

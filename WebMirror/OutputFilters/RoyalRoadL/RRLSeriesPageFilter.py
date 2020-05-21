@@ -220,7 +220,9 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval] + [meta_pkt]
 
-		self.log.info("Found %s chapter releases on series page!", len(retval))
+
+
+		self.log.info("Found %s chapter releases on series page for %s (with rating %s)!", len(retval), msgpackers.fix_string(title), rating)
 		return retval
 
 

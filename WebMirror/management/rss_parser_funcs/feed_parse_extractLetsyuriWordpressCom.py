@@ -15,7 +15,8 @@ def extractLetsyuriWordpressCom(item):
 		('ecfshm',            'Former Cannon Fodder’s Self-Help Manual',           'translated'),
 		('sodi',              'Stranded on a Deserted Island, What to Do?',        'translated'),
 		('vwccs',             'Villainess With Cat Changing System',               'translated'),
-		('Asura',       'Transmigrated Into a Smashing Asura Girl',                      'translated'),
+		('Asura',             'Transmigrated Into a Smashing Asura Girl',                      'translated'),
+		('movie queen',       'Being Raised as a Baby by the Movie Queen',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -25,6 +26,8 @@ def extractLetsyuriWordpressCom(item):
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 	titlemap = [
+		('BRMQ ',                                        'Being Raised as a Baby by the Movie Queen',          'translated'),
+		('TISAG ',                                        'Transmigrated Into a Smashing Asura Girl',          'translated'),
 		('Summon Survival',                               'Summon Survival',                                   'translated'),
 		('Green Tea Villainess Fails',                    'Green Tea Villainess Fails',                        'translated'),
 		('Former Cannon Fodder’s Self-Help Manual',       'Former Cannon Fodder’s Self-Help Manual',           'translated'),

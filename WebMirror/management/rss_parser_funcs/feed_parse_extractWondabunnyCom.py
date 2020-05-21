@@ -1,4 +1,3 @@
-
 def extractWondabunnyCom(item):
 	'''
 	Parser for 'wondabunny.com'
@@ -9,6 +8,8 @@ def extractWondabunnyCom(item):
 		return None
 
 	tagmap = [
+		('hi, my sweet little wife',       'Hi, my sweet little wife',                      'translated'),
+		('the idol\'s spoiled wife',       'The Idol’s spoiled Wife',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractWondabunnyCom(item):
 
 
 	return False
-	

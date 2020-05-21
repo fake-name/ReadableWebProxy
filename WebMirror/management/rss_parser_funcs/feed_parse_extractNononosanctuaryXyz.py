@@ -20,6 +20,7 @@ def extractNononosanctuaryXyz(item):
 		('salty yet sweet sato-san',                                                           'Aren\'t you too sweet Salt-God Sato-san?',                                                          'translated'),
 		('okaeri saotome-san',                                                                 'I\'m being paid ¥ 300,000 a month to say \'okaeri, kyo mo ganbatta ne\' to a hardworking neighbor oneesan who earns ¥500,000 a month but doesn\'t have a use for the money, which is really fun',                      'translated'),
 		('sekigae bishoujo ni horerareta',                                                     'My Seatmate Tries to Make Me Fall in Love with Her by Teasing Me Repeatedly, but Somehow She Was the One Who Fell',                      'translated'),
+		('kanzen muteki',                                                                      'It Seems Like My Body Is Completely Invincible',                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

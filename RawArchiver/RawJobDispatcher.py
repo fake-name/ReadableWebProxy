@@ -683,6 +683,17 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		return "Worker is none! Error!"
 
+
+	def is_running(self):
+		if any([tmp.is_alive() for tmp in self.fetch_procs.values()]):
+
+			with self.count_lock:
+				return all([tmp.is_alive() for tmp in self.fetch_procs.values()])
+
+		return False
+
+
+
 def test2():
 	import logSetup
 	import pprint

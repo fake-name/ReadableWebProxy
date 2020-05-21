@@ -13,6 +13,9 @@ def extractCarnationscansWeeblyCom(item):
 		('The Villainess Wants to Marry a Commoner',                                                                                'The Villainess Wants to Marry a Commoner',                                                       'translated'),
 		('The Result of Being Reincarnated is Having a Master-Servant Relationship with the Yandere Love Interest Web Novel',       'The Result of Being Reincarnated is Having a Master-Servant Relationship with the Yandere Love Interest Web Novel',                      'translated'),
 		('The Eternal World ~ For Whose Sake is this Story For ~',                                                                  'The Eternal World ~ For Whose Sake is this Story For ~',                      'translated'),
+		('the more of a villainess i become the more the prince will dote on me',                                                   'I’ll Become a Villainess That Will Go Down in History',                      'translated'),
+		('the more the prince will dote on me',                                                                                     'I’ll Become a Villainess That Will Go Down in History',                      'translated'),
+		('Having a Yandere Servant',                                                                                                'The Consequences of Having a Master-Servant Relationship with a Yandere after Reincarnation',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

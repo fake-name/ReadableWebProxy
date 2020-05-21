@@ -24,6 +24,7 @@ def extractSnowycodexCom(item):
 		('My Husband Is An Undead',                                                        'My Husband Is An Undead',                                                                   'translated'),
 		('Happy Little Mayor',                                                             'Happy Little Mayor',                                                                        'translated'),
 		('Heroic Death System',                                                            'Heroic Death System',                                                                       'translated'),
+		('Thousand Autumns',                                                               'Thousand Autumns',                                                                          'translated'),
 		('Death Notice',                                                                   'Death Notice',                                                                              'translated'),
 		('Intense Radical Behavior',                                                       'Intense Radical Behaviors',                                                                 'translated'),
 		('The Ultimate Past',                                                              'The Ultimate Past',                                                                         'translated'),

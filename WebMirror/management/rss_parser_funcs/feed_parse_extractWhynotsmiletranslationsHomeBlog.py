@@ -1,4 +1,3 @@
-
 def extractWhynotsmiletranslationsHomeBlog(item):
 	'''
 	Parser for 'whynotsmiletranslations.home.blog'
@@ -9,6 +8,7 @@ def extractWhynotsmiletranslationsHomeBlog(item):
 		return None
 
 	tagmap = [
+		('i am that kind of woman',       'i am that kind of woman',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractWhynotsmiletranslationsHomeBlog(item):
 
 
 	return False
-	

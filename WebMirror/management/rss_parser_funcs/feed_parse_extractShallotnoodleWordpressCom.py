@@ -10,6 +10,8 @@ def extractShallotnoodleWordpressCom(item):
 	tagmap = [
 		('surrounded mob wants to quietly withdraw',                    'surrounded mob wants to quietly withdraw',                                   'translated'),
 		('live broadcasting raising dragons in the interstellar',       'live broadcasting raising dragons in the interstellar',                      'translated'),
+		('straight playboy sub',                                        'straight playboy sub',                                                       'translated'),
+		('one and only',                                                'One and Only',                                                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

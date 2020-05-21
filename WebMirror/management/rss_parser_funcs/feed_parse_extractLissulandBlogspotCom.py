@@ -17,5 +17,16 @@ def extractLissulandBlogspotCom(item):
 		if tagname in item['tags']:
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
+	titlemap = [
+		('] Reborn, I Became a Male God',  'Reborn, I Became a Male God',      'translated'),
+		('] The Special Agent Princess',  'The Special Agent Princess',      'translated'),
+		('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
+		('Master of Dungeon',           'Master of Dungeon',               'oel'),
+	]
+
+	for titlecomponent, name, tl_type in titlemap:
+		if titlecomponent.lower() in item['title'].lower():
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
 
 	return False

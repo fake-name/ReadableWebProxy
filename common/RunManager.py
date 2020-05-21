@@ -211,8 +211,12 @@ class Crawler(object):
 		drain_queues = [raw_new_job_queue]
 		flush_queues = [new_url_aggreator_queue, raw_new_job_queue]
 
+		self.status_call = self.raw_job_fetcher.get_status
+		self.running_call = self.raw_job_fetcher.is_running
+
 		self._runloop(managers, drain_queues)
 		self._teardown(managers, drain_queues, flush_queues)
+
 
 	def run(self):
 
@@ -235,6 +239,9 @@ class Crawler(object):
 		managers     = [mainManager]
 		drain_queues = [main_new_job_queue]
 		flush_queues = [new_url_aggreator_queue, main_new_job_queue]
+
+		self.status_call = self.main_job_fetcher.get_status
+		self.running_call = self.main_job_fetcher.is_running
 
 		self._runloop(managers, drain_queues)
 		self._teardown(managers, drain_queues, flush_queues)
@@ -259,14 +266,11 @@ class Crawler(object):
 
 					self.log.info("Living processes: %s (Cookie lock acquired: %s, queue sizes: %s, exiting: %s)",
 						living, not clok_locked, [q.qsize() for q in drain_queues], runStatus.run_state.value == 0)
-					try:
-						self.log.info("Job Queue Fillers: %s ", self.main_job_fetcher.get_status())
-					except Exception:
-						pass
-					try:
-						self.log.info("Raw job Queue Fillers: %s ", self.raw_job_fetcher.get_status())
-					except Exception:
-						pass
+
+					self.log.info("Job Queue Fillers: %s ", self.status_call())
+					if not self.running_call():
+						self.log.error("Job fetcher is dead. Aborting!")
+						runStatus.run_state.value = 0
 
 					if is_pypy:
 						collected = gc.collect()

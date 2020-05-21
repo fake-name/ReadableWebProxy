@@ -6,6 +6,7 @@ def extractSkeletonqueen06WordpressCom(item):
 
 	badwords = [
 			'Anime Ending Song',
+			'Manhua',
 			'Manga',
 			'Doujinshi',
 		]
@@ -20,6 +21,7 @@ def extractSkeletonqueen06WordpressCom(item):
 
 	tagmap = [
 		('akuyaku reijo',       'Akuyaku Reijo Nanode Rasubosu o Katte Mimashita',                      'translated'),
+		('isekai torippu',      'Isekai Torippu Shita sono Baa De Taberarechaimashita',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -8,11 +8,12 @@ def extractImnovelsCom(item):
 		return None
 
 	tagmap = [
-		('idtml',        'I Dumped the Male Lead Before an Apocalypse',                      'translated'),
-		('PRC',       'PRC',                      'translated'),
-		('iterum incipi', 'Iterum Incipi',                'oel'),
-		('tbab',          'To Be a Beauty',                'oel'),
-		('Loiterous', 'Loiterous',                'oel'),
+		('idtml',                    'I Dumped the Male Lead Before an Apocalypse',       'translated'),
+		('PRC',                      'PRC',                                               'translated'),
+		('iterum incipi',            'Iterum Incipi',                                     'oel'),
+		('tbab',                     'To Be a Beauty',                                    'oel'),
+		('song of silent promise',   'Song of the Silent Promise',                        'oel'),
+		('Loiterous',                'Loiterous',                                         'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:

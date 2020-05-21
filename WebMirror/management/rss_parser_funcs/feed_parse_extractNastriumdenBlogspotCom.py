@@ -25,6 +25,9 @@ def extractNastriumdenBlogspotCom(item):
 		('Love is More Than a Word',                                  'Love is More Than a Word',                                                 'translated'),
 		('the en of love',                                            'the en of love',                                                           'translated'),
 		('i’ll still love you even if you’re a man 2',                'i’ll still love you even if you’re a man 2',                               'translated'),
+		('how to change: the love tactics of an innocence senior',    'how to change: the love tactics of an innocence senior',                   'translated'),
+		('Winter Begonia',                                            'Winter Begonia',                                                           'translated'),
+		('my accidental love is you',                                 'my accidental love is you',                                                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

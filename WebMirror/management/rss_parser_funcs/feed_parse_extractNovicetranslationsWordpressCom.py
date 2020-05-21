@@ -34,6 +34,8 @@ def extractNovicetranslationsWordpressCom(item):
 		('my husband with scholar syndrome',                           'my husband with scholar syndrome',                                  'translated'),
 		('chasing a flower blossom',                                   'chasing a flower blossom',                                          'translated'),
 		('ah, senior brother is actually a sister!',                   'ah, senior brother is actually a sister!',                                  'translated'),
+		('believe it or not, i already caught you',                    'believe it or not, i already caught you',                                   'translated'),
+		('female lead, please let go of the white moonlight',          'female lead, please let go of the white moonlight',                         'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

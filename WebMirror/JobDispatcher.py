@@ -1104,6 +1104,12 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 		return "Worker is none! Error!"
 
 
+	def is_running(self):
+		if self.main_job_agg:
+			return self.main_job_agg.is_alive()
+
+		return False
+
 def test():
 	print("Wat?")
 

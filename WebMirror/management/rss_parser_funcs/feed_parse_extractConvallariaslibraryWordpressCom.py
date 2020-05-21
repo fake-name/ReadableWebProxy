@@ -17,6 +17,7 @@ def extractConvallariaslibraryWordpressCom(item):
 		('Watashi wa Teki ni Narimasen!',                                       'Watashi wa Teki ni Narimasen!',                                         'translated'),
 		('But God Forced Me to Reincarnate',                                    'But God Forced Me to Reincarnate',                                      'oel'),
 		('Returning to the Other World with My Children',                       'Returning to the Other World with My Children',                         'oel'),
+		('taking over villainess body',                                         'Taking Over the Villainess\' Body: 365 Days to Live As I Like!',        'oel'),
 	]
 
 	for tagname, name, tl_type in tagmap:
