@@ -27,6 +27,7 @@ import RawArchiver.RawRunner
 import RawArchiver.RawUrlUpserter
 import common.stuck
 import common.process
+import psutil
 import Misc.ls_open_file_handles
 
 import common.redis
@@ -35,6 +36,48 @@ import common.management.WebMirrorManage
 from settings import NO_PROCESSES
 from settings import RAW_NO_PROCESSES
 from settings import MAX_DB_SESSIONS
+
+import common.LogBase as LogBase
+import common.StatsdMixin as StatsdMixin
+
+class MemoryTracker(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin):
+
+	loggerPath                = "Main.MemStats"
+	influxdb_type             = "memory_stats"
+	influxdb_measurement_name = "server_ram_free"
+
+	def save_mem_stats(self):
+		v = psutil.virtual_memory()
+
+		params = {
+			'mem_total'     : v.total,
+			'mem_available' : v.available,
+			'mem_percent'   : v.percent,
+			'mem_used'      : v.used,
+			'mem_free'      : v.free,
+			'mem_active'    : v.active,
+			'mem_inactive'  : v.inactive,
+			'mem_buffers'   : v.buffers,
+			'mem_cached'    : v.cached,
+			'mem_shared'    : v.shared,
+			'mem_slab'      : v.slab,
+		}
+
+		self.log.info("Memory stats: %s", params)
+
+		points = [
+			{
+					'measurement' : self.influxdb_measurement_name,
+					"tags": {
+							'type' : self.influxdb_type,
+						},
+					'time' : int(time.time() * 1e9),
+					'fields' : params
+				}
+			]
+
+		self.influx_client.write_points(points)
+
 
 
 def go(args):
@@ -88,12 +131,13 @@ def go(args):
 
 def run_in_subprocess():
 	pass
-
+	mon = MemoryTracker()
 	proc = multiprocessing.Process(target=go, args=(sys.argv, ))
 	proc.start()
 	while proc.is_alive():
-		time.sleep(10)
-		print("Base Subprocessor Runner")
+		time.sleep(4)
+		mon.save_mem_stats()
+		# print("Base Subprocessor Runner: %s, %s" % (proc.is_alive(), proc.pid))
 
 	print("Main runner has gone away. Committing Suicide")
 
