@@ -546,7 +546,7 @@ class DbFlattener(object):
 		deleted = 0
 		for x in pbar:
 			# with db.session_context(override_timeout_ms=1000*60*30) as sess:
-			with db.session_context() as sess:
+			with db.session_context(override_timeout_ms=1000*60*60, quiet_override=True) as sess:
 				pbar.set_description("Deleted %s. Processed %s urls" % (deleted, len(self.url_hit_list)))
 				try:
 					changed  = self.truncate_url_range(sess, x, x+step)

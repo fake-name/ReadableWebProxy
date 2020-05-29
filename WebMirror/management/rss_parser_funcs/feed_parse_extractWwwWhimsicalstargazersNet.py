@@ -20,6 +20,7 @@ def extractWwwWhimsicalstargazersNet(item):
 		('Eliza',                                              'I Reincarnated as a Noble Villainess But Why Did It Turn Out Like This?',   'translated'),
 		('Just the Two of Us in this Vast World',              'Just the Two of Us in this Vast World',                                     'translated'),
 		('Kill The Dragon',                                    'Kill The Dragon',                                                           'translated'),
+		('east road quest',                                    'east road quest',                                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

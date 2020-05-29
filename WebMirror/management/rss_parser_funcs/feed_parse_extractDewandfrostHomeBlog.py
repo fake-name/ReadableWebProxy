@@ -10,6 +10,8 @@ def extractDewandfrostHomeBlog(item):
 	tagmap = [
 		('I Have Amnesia, Don\'t Be Noisy!',       'I Have Amnesia, Don\'t Be Noisy!',                      'translated'),
 		('holy institution',                       'holy institution',                                      'translated'),
+		('don\'t discriminate against species',    'Don’t Discriminate Against Species',                      'translated'),
+		('speciesism is not allowed',              'Don\'t Discriminate Against Species',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

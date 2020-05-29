@@ -14,8 +14,10 @@ def extractRufftranslationsWordpressCom(item):
 
 	tagmap = [
 		('the communication hero with the cool heroine',       'As the Communication Hero, I Formed the World\'s Strongest Party with a Cool Big Sister',                      'translated'),
+		('the pseudo-ninja from another world',                'the pseudo-kunoichi from another world',                            'translated'),
 		('the pseudo-kunoichi from another world',             'the pseudo-kunoichi from another world',                            'translated'),
-		('yuri flags with the heroine',                        'yuri flags with the heroine',                                       'translated'),
+		('yuri flags with the heroine',                        'When I Reincarnated as the Villainess, I Raised Yuri Flags with the Heroine!?',                                       'translated'),
+		('the death flag-breaking villainess',                 'I Was Reincarnated As The Villainess Of An Otome Game, But As I Broke The Death Flags With All My Might, The Heroine Opened My Route',                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

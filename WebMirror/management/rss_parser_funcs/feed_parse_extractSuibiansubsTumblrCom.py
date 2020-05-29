@@ -6,6 +6,7 @@ def extractSuibiansubsTumblrCom(item):
 
 	badwords = [
 			'audio drama',
+			'Manhua',
 			'MKV',
 			'badword',
 		]
@@ -20,6 +21,7 @@ def extractSuibiansubsTumblrCom(item):
 
 	tagmap = [
 		('copper coins',       'copper coins',                      'translated'),
+		('Han Shan\'s Sword Unsheathed',       'Han Shan\'s Sword Unsheathed',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

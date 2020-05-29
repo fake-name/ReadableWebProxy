@@ -1,4 +1,3 @@
-
 def extractCwastranslationsWordpressCom(item):
 	'''
 	Parser for 'cwastranslations.wordpress.com'
@@ -9,6 +8,8 @@ def extractCwastranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('tsifb',                                                            'Transmigrated into a School Idol and Forced to Do Business',                      'translated'),
+		('transmigrated into a school idol and forced to do business',       'Transmigrated into a School Idol and Forced to Do Business',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractCwastranslationsWordpressCom(item):
 
 
 	return False
-	

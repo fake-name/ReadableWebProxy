@@ -342,6 +342,8 @@ baseUrl: [
 	'https://liplily.blogspot.com',
 	'https://maneatingreincarnation.blogspot.com',
 	'https://kristineliterature.blogspot.com',
+	'https://flameucreations.blogspot.com',
+	'https://amrstuff.blogspot.com',
 ]
 
 feedPostfix: "/feeds/posts/default"

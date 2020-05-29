@@ -19,6 +19,7 @@ if __name__ == "__main__":
 
 import multiprocessing
 import time
+import json
 import common.RunManager
 import WebMirror.rules
 import WebMirror.Runner
@@ -129,8 +130,23 @@ def go(args):
 
 	# print("Thread halted. App exiting.")
 
+def dump_active_items():
+
+	print("Dumping active URLs")
+	active = {
+		'fetching'   : [tmp.decode("utf-8") for tmp in common.redis.get_fetching_urls()],
+		'processing' : [tmp.decode("utf-8") for tmp in common.redis.get_processing_urls()],
+	}
+
+	with open("active_jobs_at_start_%s.json" % time.time(), "w") as fp:
+		json.dump(active, fp, sort_keys=True, indent=4)
+
+	common.redis.clear_fetching_urls()
+	common.redis.clear_processing_urls()
+
 def run_in_subprocess():
-	pass
+	dump_active_items()
+
 	mon = MemoryTracker()
 	proc = multiprocessing.Process(target=go, args=(sys.argv, ))
 	proc.start()

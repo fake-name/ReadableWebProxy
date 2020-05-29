@@ -15,6 +15,7 @@ def extractBarnnnBlogspotCom(item):
 		vol = 1
 
 	tagmap = [
+		('yuri in which the world will end in ten days',       'yuri in which the world will end in ten days',                      'translated'),
 		('Monster Hunter: Cross Soul',       'Monster Hunter: Cross Soul',                      'translated'),
 		('The Girl Who Ate The Death God',   'The Girl Who Ate The Death God',                  'translated'),
 		('kino\'s journey',                  'Kino\'s Journey',                                 'translated'),

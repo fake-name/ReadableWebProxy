@@ -32,6 +32,7 @@ def extractExiledrebelsscanlationsCom(item):
 		('retirement life (ancient transmigration)',                    'Retirement Life (Ancient Transmigration)',                         'translated'),
 		('cps chapters',                                                'the cultivator\'s peerless sexcapades',                            'translated'),
 		('the cultivator\'s peerless sexcapades',                       'the cultivator\'s peerless sexcapades',                            'translated'),
+		('the first emperor said he likes me',                          'the first emperor said he likes me',                               'translated'),
 		('Mr. Fashionable',                                             'Mr. Fashionable',                                                  'translated'),
 		('Lessons on Raising a Partner',                                'Lessons on Raising a Partner',                                     'translated'),
 		('quick transmigration: lovers always on the counterattack',    'quick transmigration: lovers always on the counterattack',         'translated'),

@@ -9,6 +9,7 @@ def extractSunflowerpenguinWordpressCom(item):
 
 	tagmap = [
 		('heroine yuri flags',       'When I Reincarnated as the Villainess, I Raised Yuri Flags with the Heroine!?',                      'translated'),
+		('black lotus heroine',      'The Female Lead is a Black Lotus',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

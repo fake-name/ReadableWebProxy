@@ -1,21 +1,9 @@
-def extractCfensiWordpressCom(item):
+
+def extractWoopreadCom(item):
 	'''
-	Parser for 'cfensi.wordpress.com'
+	Parser for 'woopread.com'
 	'''
-	
-	
-	bad = [
-			'general news',
-			'Photoshoot',
-			'Music',
-			'Television',
-			'Drama',
-			'mainland china',
-		]
-		
-	if any([tmp in item['tags'] for tmp in bad]):
-		return None
-	
+
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
@@ -31,3 +19,4 @@ def extractCfensiWordpressCom(item):
 
 
 	return False
+	

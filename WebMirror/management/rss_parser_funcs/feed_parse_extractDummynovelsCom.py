@@ -15,6 +15,7 @@ def extractDummynovelsCom(item):
 		('The target always thinks that I like him',                   'The target always thinks that I like him',                                  'translated'),
 		('could you not tease me',                                     'could you not tease me',                                                    'translated'),
 		('fake demon lord',                                            'fake demon lord',                                                           'translated'),
+		('sea monster alliance',                                       'sea monster alliance',                                                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

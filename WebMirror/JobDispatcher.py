@@ -13,6 +13,7 @@ import socket
 
 
 import common.stuck
+import common.redis
 
 # import sqlalchemy.exc
 # from sqlalchemy.sql import text
@@ -27,6 +28,7 @@ else:
 
 import sys
 import os
+import psutil
 
 import settings
 import WebMirror.rules
@@ -39,6 +41,7 @@ import common.global_constants
 import common.util.urlFuncs
 
 import common.process
+import common.memory
 import common.LogBase as LogBase
 import common.StatsdMixin as StatsdMixin
 
@@ -165,6 +168,19 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin, Rpc
 	def process_responses(self):
 		while 1:
 
+			# Disable because it's not seeming to help.
+			should_check_mem = False
+			if should_check_mem:
+
+				# This is fairly expensive, I really don't like having it in the
+				# main feeder loop, but there doesn't seem to be a cheap way to get
+				# free memory on linux.
+				if common.memory.is_low_mem():
+					self.log.warning("Low memory. Not feeding job system.")
+					time.sleep(1)
+					return
+
+
 			# Something in the RPC stuff is resulting in a typeerror I don't quite
 			# understand the source of. anyways, if that happens, just reset the RPC interface.
 			try:
@@ -254,6 +270,12 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin, Rpc
 
 				with acquire_timeout(self.state_lock, 10) as acquired:
 					if acquired:
+						self.put_measurement(
+								measurement_name = 'leaked_jobs',
+								measurement      = self.system_state['active_jobs'],
+								fields           = {},
+								extra_tags       = {},
+							)
 						self.system_state['active_jobs']     = 0
 					else:
 						self.log.error("Failure when resetting active jobs!")
@@ -457,6 +479,9 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 	def put_fetch_job(self, jobid, joburl, netloc=None):
 		# module='SmartWebRequest', call='getItem'
+
+		common.redis.put_fetching_url(joburl)
+
 		raw_job = WebMirror.JobUtils.buildjob(
 			module         = 'SmartWebRequest',
 			call           = 'smartGetItem',

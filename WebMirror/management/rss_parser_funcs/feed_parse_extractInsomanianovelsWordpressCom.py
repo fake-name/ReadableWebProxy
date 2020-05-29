@@ -8,6 +8,7 @@ def extractInsomanianovelsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('beautyandthebeasts',               'Beauty and the Beasts',           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

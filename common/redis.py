@@ -31,7 +31,7 @@ def redis_session_context():
 		pass
 		# put_redis_conn(conn)
 
-
+########################################################################################################################################
 
 q_pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=1)
 
@@ -54,7 +54,97 @@ def redis_queue_session_context():
 		pass
 		# put_redis_queue_conn(conn)
 
+
+
+########################################################################################################################################
+
+q_pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=2)
+
+def get_redis_active_conn():
+	return redis.StrictRedis(connection_pool=q_pool)
+
+def put_redis_active_conn(conn):
+	q_pool.release(conn)
+
+
+
+@contextlib.contextmanager
+def redis_active_session_context():
+
+	conn = get_redis_active_conn()
+	try:
+		yield conn
+
+	finally:
+		pass
+		# put_redis_queue_conn(conn)
+
+
+FETCHING_URL_SET_NAME = 'fetching-urls'
+
+def put_fetching_url(item):
+	with redis_active_session_context() as conn:
+		conn.sadd(FETCHING_URL_SET_NAME, item)
+
+def remove_fetching_url(item):
+	with redis_active_session_context() as conn:
+		conn.srem(FETCHING_URL_SET_NAME, item)
+
+def get_fetching_urls():
+	with redis_active_session_context() as conn:
+		ret = conn.smembers(FETCHING_URL_SET_NAME)
+		ret = list(ret)
+
+	return ret
+
+def clear_fetching_urls():
+	with redis_active_session_context() as conn:
+		conn.delete(FETCHING_URL_SET_NAME)
+
+PROCESSING_URL_SET_NAME = 'processing-urls'
+
+def put_processing_url(item):
+	with redis_active_session_context() as conn:
+		conn.sadd(PROCESSING_URL_SET_NAME, item)
+
+def remove_processing_url(item):
+	with redis_active_session_context() as conn:
+		conn.srem(PROCESSING_URL_SET_NAME, item)
+
+def get_processing_urls():
+	with redis_active_session_context() as conn:
+		ret = conn.smembers(PROCESSING_URL_SET_NAME)
+		ret = list(ret)
+
+	return ret
+
+def clear_processing_urls():
+	with redis_active_session_context() as conn:
+		conn.delete(PROCESSING_URL_SET_NAME)
+
+########################################################################################################################################
+
 def test():
+	put_active_url("test-1")
+	put_active_url("test-2")
+	put_active_url("test-3")
+	put_active_url("test-4")
+	put_active_url("test-1")
+	remove_active_url("test-3")
+
+	urls = get_active_urls()
+	print("Urls:", urls)
+
+	remove_active_url("test-1")
+	remove_active_url("test-2")
+	remove_active_url("test-3")
+	remove_active_url("test-4")
+	remove_active_url("test-1")
+
+
+	urls = get_active_urls()
+	print("Urls:", urls)
+
 	# with redis_session_context() as rd:
 	# 	print(rd)
 	# 	havel = rd.mget(['1', '2', '3'])

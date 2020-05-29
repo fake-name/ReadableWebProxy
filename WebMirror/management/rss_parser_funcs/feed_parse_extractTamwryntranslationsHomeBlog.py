@@ -11,6 +11,7 @@ def extractTamwryntranslationsHomeBlog(item):
 		('Boss\'s Death Guide',              'Boss\'s Death Guide',                             'translated'),
 		('Always with the Old Attack',       'Always with the Old Attack',                      'translated'),
 		('Unlimited Cycles of Death',        'Unlimited Cycles of Death',                       'translated'),
+		('striving for science',       'striving for science',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

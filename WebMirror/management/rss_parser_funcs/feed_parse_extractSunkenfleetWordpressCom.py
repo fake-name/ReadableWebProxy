@@ -9,6 +9,7 @@ def extractSunkenfleetWordpressCom(item):
 
 	tagmap = [
 		('noble wife',       'Noble Wife Wants No Love',                      'translated'),
+		('dflb',             'Don\'t Fall In Love With The Boss',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

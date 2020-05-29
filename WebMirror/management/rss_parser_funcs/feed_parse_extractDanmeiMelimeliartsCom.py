@@ -138,6 +138,9 @@ def extractDanmeiMelimeliartsCom(item):
 		('after transmigrating into an omega, i was targeted by the enemy',        'after transmigrating into an omega, i was targeted by the enemy',                       'translated'),
 		('exclusive rights to an online voice actor',                              'exclusive rights to an online voice actor',                                             'translated'),
 		('everyone knows i\'m a good person',                                      'everyone knows i\'m a good person',                                                     'translated'),
+		('you use a gun, i use a bow',                                             'you use a gun, i use a bow',                                                            'translated'),
+		('the silly wizard\'s courtship method',                                   'the silly wizard\'s courtship method',                                                  'translated'),
+		('psychic',                                                                'Psychic',                                                                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

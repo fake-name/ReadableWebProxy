@@ -11,6 +11,7 @@ def extractYumeineijiworksWordpressCom(item):
 		('hagure seirei ino shinsatsu kiroku',                                    'hagure seirei ino shinsatsu kiroku',                                                   'translated'),
 		('homeless tensei: isekai de jiyuu sugiru majutsu jisoku seikatsu',       'homeless tensei: isekai de jiyuu sugiru majutsu jisoku seikatsu',                      'translated'),
 		('chocolate bliss',                                                       'chocolate bliss',                                                                      'translated'),
+		('kajiya de hajimeru isekai slow life',                                   'kajiya de hajimeru isekai slow life',                                                  'translated'),
 		('glitzheria',                                                            'glitzheria',                                                                           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),

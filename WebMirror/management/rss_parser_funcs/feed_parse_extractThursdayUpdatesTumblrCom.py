@@ -1,4 +1,3 @@
-
 def extractThursdayUpdatesTumblrCom(item):
 	'''
 	Parser for 'thursday-updates.tumblr.com'
@@ -9,6 +8,8 @@ def extractThursdayUpdatesTumblrCom(item):
 		return None
 
 	tagmap = [
+		('tkhc',                        'the kids have changed',                      'translated'),
+		('the kids have changed',       'the kids have changed',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractThursdayUpdatesTumblrCom(item):
 
 
 	return False
-	

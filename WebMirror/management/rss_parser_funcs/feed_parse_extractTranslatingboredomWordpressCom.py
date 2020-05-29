@@ -1,26 +1,15 @@
-def extractCfensiWordpressCom(item):
+def extractTranslatingboredomWordpressCom(item):
 	'''
-	Parser for 'cfensi.wordpress.com'
+	Parser for 'translatingboredom.wordpress.com'
 	'''
-	
-	
-	bad = [
-			'general news',
-			'Photoshoot',
-			'Music',
-			'Television',
-			'Drama',
-			'mainland china',
-		]
-		
-	if any([tmp in item['tags'] for tmp in bad]):
-		return None
-	
+
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
+		('rcfn chapters',       'Rebirth of a Cannon Fodder in a Novel',                      'translated'),
+		('rcfn',                'Rebirth of a Cannon Fodder in a Novel',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

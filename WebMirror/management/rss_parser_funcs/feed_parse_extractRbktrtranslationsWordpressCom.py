@@ -11,6 +11,7 @@ def extractRbktrtranslationsWordpressCom(item):
 		('Residence of Monsters',              'Residence of Monsters',                             'translated'),
 		('Jin Xiao Yi Tan',                    'Jin Xiao Yi Tan',                                   'translated'),
 		('I Think My Boyfriend Is Sick',       'I Think My Boyfriend Is Sick',                      'translated'),
+		('the protagonist makes you retreat about thirty miles',       'the protagonist makes you retreat about thirty miles',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -157,12 +157,12 @@ def delete_db_session(postfix="", flask_sess_if_possible=True):
 			# print("Deleted session for id: ", csid)
 
 @contextlib.contextmanager
-def session_context(name="", override_timeout_ms=False):
+def session_context(name="", override_timeout_ms=False, quiet_override=False):
 	postfix_name = name + 'context-sess'
 	sess = get_db_session(postfix=postfix_name)
 
 	try:
-		if override_timeout_ms:
+		if override_timeout_ms and not quiet_override:
 			log.warning("Query timeout overridden to be %0.2f seconds!", override_timeout_ms / 1000.0, )
 			sess.execute("""SET statement_timeout TO :new_timeout;""", { 'new_timeout' : override_timeout_ms, })
 		yield sess

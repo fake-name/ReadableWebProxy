@@ -17,6 +17,9 @@ def extractLetsyuriWordpressCom(item):
 		('vwccs',             'Villainess With Cat Changing System',               'translated'),
 		('Asura',             'Transmigrated Into a Smashing Asura Girl',                      'translated'),
 		('movie queen',       'Being Raised as a Baby by the Movie Queen',                      'translated'),
+		('vipu',              'Villainess, I’ll Pamper You',                      'translated'),
+		('vipy',              'Villainess, I’ll Pamper You',                      'translated'),
+		('abmb',              'After Being Marked, I Have a Baby',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

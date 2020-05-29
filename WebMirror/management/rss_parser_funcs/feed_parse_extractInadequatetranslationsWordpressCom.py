@@ -9,6 +9,7 @@ def extractInadequatetranslationsWordpressCom(item):
 
 	tagmap = [
 		('Quick Transmigration Second Female Lead’s Counter Attack',       'Quick Transmigration Second Female Lead’s Counter Attack',                      'translated'),
+		('sweet nothings',                                                 'sweet nothings',                                                                'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

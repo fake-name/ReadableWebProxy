@@ -44,6 +44,7 @@ from common.Exceptions import DownloadException
 from common.Exceptions import RetryProcessingException
 import WebMirror.Fetch
 import common.database as db
+import common.redis
 import common.global_constants
 import common.StatsdMixin as StatsdMixin
 import WebMirror.UrlUpserter
@@ -977,11 +978,16 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				self.log.error("Received job that doesn't exist in the database? Wut? (Id: %s -> %s)", rpcresp['jobid'], job)
 				return
 
+			common.redis.put_processing_url(job.url)
+			common.redis.remove_fetching_url(job.url)
+
+
 			if 'ret' in rpcresp:
 				# Clear the error number (if present)
 				job.errno = None
 				preretrieved = rpcresp['ret']
 				self.dispatchRequest(job, preretrieved)
+				common.redis.remove_processing_url(job.url)
 			else:
 				job.epoch           = WebMirror.misc.get_epoch_for_url(job.url)
 				job.state = 'error'
@@ -1024,6 +1030,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				job.content = content
 				self.db_sess.commit()
 				self.log.error("Error in remote fetch.")
+				common.redis.remove_processing_url(job.url)
 		except psycopg2.InternalError:
 			self.log.error("Failure processing job!")
 			for line in traceback.format_exc().split("\n"):
@@ -1034,6 +1041,7 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			runStatus.run = False
 			runStatus.run_state.value = 0
 			print("Keyboard Interrupt!")
+			common.redis.remove_processing_url(job.url)
 
 	def rpc_resp_retrier(self, job_item):
 		for try_attempt in range(4):

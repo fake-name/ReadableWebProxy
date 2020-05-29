@@ -1,4 +1,3 @@
-
 def extractTofuozzWordpressCom(item):
 	'''
 	Parser for 'tofuozz.wordpress.com'
@@ -9,6 +8,7 @@ def extractTofuozzWordpressCom(item):
 		return None
 
 	tagmap = [
+		('stolen love',       'stolen love',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTofuozzWordpressCom(item):
 
 
 	return False
-	

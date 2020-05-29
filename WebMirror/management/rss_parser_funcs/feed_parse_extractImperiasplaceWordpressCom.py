@@ -1,4 +1,3 @@
-
 def extractImperiasplaceWordpressCom(item):
 	'''
 	Parser for 'imperiasplace.wordpress.com'
@@ -9,6 +8,7 @@ def extractImperiasplaceWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the end of an unrequired love',       'the end of an unrequired love',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractImperiasplaceWordpressCom(item):
 
 
 	return False
-	

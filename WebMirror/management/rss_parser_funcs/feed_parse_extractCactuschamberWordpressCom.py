@@ -1,4 +1,3 @@
-
 def extractCactuschamberWordpressCom(item):
 	'''
 	Parser for 'cactuschamber.wordpress.com'
@@ -9,6 +8,7 @@ def extractCactuschamberWordpressCom(item):
 		return None
 
 	tagmap = [
+		('i rely on selling meng to upgrade',       'I Rely On Selling Meng To Upgrade',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractCactuschamberWordpressCom(item):
 
 
 	return False
-	

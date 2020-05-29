@@ -1,4 +1,3 @@
-
 def extractInsidethemirrorTumblrCom(item):
 	'''
 	Parser for 'insidethemirror.tumblr.com'
@@ -9,6 +8,9 @@ def extractInsidethemirrorTumblrCom(item):
 		return None
 
 	tagmap = [
+		('sheisthprotagonist',               'She is the Protagonist',                      'translated'),
+		('sheistheprotagonist',              'She is the Protagonist',                      'translated'),
+		('rebirthofthegoldenmarriage',       'Rebirth of The Golden Marriage',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractInsidethemirrorTumblrCom(item):
 
 
 	return False
-	

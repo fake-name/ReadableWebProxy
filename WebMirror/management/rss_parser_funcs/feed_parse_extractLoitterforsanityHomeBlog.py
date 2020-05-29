@@ -5,8 +5,10 @@ def extractLoitterforsanityHomeBlog(item):
 
 
 	badwords = [
+			'news',
 			'review',
 			'Manga',
+			'Anime',
 		]
 	if any([bad in item['tags'] for bad in badwords]):
 		return None
@@ -18,6 +20,7 @@ def extractLoitterforsanityHomeBlog(item):
 		return None
 
 	tagmap = [
+		('blci',       'Buy the Land And Cultivate in Different World',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

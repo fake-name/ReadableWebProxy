@@ -23,6 +23,7 @@ def extractIsotlsCom(item):
 			('Believe It Or Not, I Already Caught You Chapter ',                         'Believe It Or Not, I Already Caught You',                                        'translated'),
 			('Need to Propose to Seven Men What to Do Chapter ',                         'need to propose to seven men, what to do!',                                                 'translated'),
 			('Daily Life of a Wealthy Woof chapter ',                                    'Daily Life of a Wealthy Woof',                                                              'translated'),
+			('There\'s A Beauty Chapter ',                                               'There\'s A Beauty',               'translated'),
 			('Tensei Shoujo no Rirekisho',                                               'Tensei Shoujo no Rirekisho',               'translated'),
 			('Master of Dungeon',                                                        'Master of Dungeon',                        'oel'),
 			
@@ -53,6 +54,10 @@ def extractIsotlsCom(item):
 		('end of world\'s businessman',                                                'end of world\'s businessman',                                                               'translated'),
 		('the villain has blackened again',                                            'the villain has blackened again',                                                           'translated'),
 		('believe it or not',                                                          'Believe It Or Not, I Already Caught You',                                                   'translated'),
+		('There\'s A Beauty',                                                          'There\'s A Beauty',                                                                         'translated'),
+		('rebirth to become the president’s omega wife',                               'rebirth to become the president’s omega wife',                                              'translated'),
+		('pampered fei: brimming with cuteness',                                       'pampered fei: brimming with cuteness',                                                      'translated'),
+		('Sinister Ex-Girlfriend',                                                     'Sinister Ex-Girlfriend',                                                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

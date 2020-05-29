@@ -20,6 +20,7 @@ def extractMachineSlicedBread(item):
 		return None
 		
 	tagmap = [
+		('isekai survival',                             'Easy Survival Life in the other world ~ Everyone in school transferred to an uninhabited island in the other world but it’s an easy victory for me~ ',          'translated'),
 		('Inma no Hado TL',                             'Inma no Hado',                                                                                                                  'translated'),
 		('Charm TL',                                    'I made a slave harem using a charm cheat in a different world.',                                                                'translated'),
 		('Loli Manko TL',                               'Kyonkon na Ore ga Rori ma●ko Bishoujo wo Okashite Kopitte, Ohime-sama wo Torimodosu Isekai Tan',                                'translated'),

@@ -25,6 +25,7 @@ def extractTigertranslationsOrg(item):
 		('Only with Your Heart',                                                                          'Only with Your Heart',                                                                                         'translated'),
 		('ryusousha ha shizukani kurashitai',                                                             'ryusousha ha shizukani kurashitai',                                                                            'translated'),
 		('makai hongi',                                                                                   'makai hongi',                                                                                                  'translated'),
+		('the cave king will live a paradise life -becoming the strongest with the mining skill?-',       'the cave king will live a paradise life -becoming the strongest with the mining skill?-',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
