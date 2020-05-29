@@ -8,12 +8,12 @@ send_raw_feed: True
 baseUrl: [
 
 
-		'https://read18.com',
+# 		'https://read18.com',
 
 	]
 
 feeds: [
-	'https://read18.com/read/rss/',
+# 	'https://read18.com/read/rss/',
 ]
 
 extraStartUrls: [
@@ -50,6 +50,5 @@ decompose: [
 
 stripTitle: [
 ]
-
 
 

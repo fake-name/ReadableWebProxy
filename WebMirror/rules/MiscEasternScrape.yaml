@@ -11,7 +11,7 @@ baseUrl: [
 		'http://www.ultimaguil.org',
 		'http://ultimaguil.org',
 
-		'https://vivennovels.com',
+# 		'https://vivennovels.com',
 		'https://kudalakorn.club',
 		'https://www.mintwood.top',
 
@@ -56,7 +56,7 @@ baseUrl: [
 		'https://chiisai-hime.dreamwidth.org',
 		'https://theysayivemetaghost.dreamwidth.org',
 		'https://simplypink.dreamwidth.org',
-		'https://meigui-hua.dreamwidth.org',
+# 		'https://meigui-hua.dreamwidth.org',
 
 		'http://lilith-art.de.tl',
 
@@ -231,7 +231,5 @@ special_case_filters : {
 	'http://wuxiaworld.com'     : ["local_fetch", ],
 	'http://www.wuxiaworld.com' : ["local_fetch", ],
 }
-
-
 
 

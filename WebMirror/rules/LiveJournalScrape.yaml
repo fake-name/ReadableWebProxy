@@ -20,7 +20,7 @@ baseUrl: [
 	'http://tsukilining.livejournal.com',
 	'http://sinmay.livejournal.com',
 	'http://yuujinchou.livejournal.com',
-	'http://mittens-220.livejournal.com',
+# 	'http://mittens-220.livejournal.com',
 	'http://sookybabi.livejournal.com',
 	'http://adarshan-novels.livejournal.com',
 	'http://sparkskey.livejournal.com',
@@ -337,7 +337,6 @@ titleTweakLut:  [
 #       for mid_span in soup.find_all("span", _class="c3"):
 #           mid_span.unwrap()
 #       return soup
-
 
 
 
