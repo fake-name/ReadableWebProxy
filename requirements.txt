@@ -9,7 +9,7 @@ setproctitle==1.1.10
 paka.cmark==2.2.0
 json2html==1.3.0
 mprpc==0.1.17
-tqdm==4.43.0
+tqdm==4.46.1
 chardet==3.0.4
 pymysql==0.9.3
 statsd==3.3.0
