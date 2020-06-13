@@ -13,6 +13,8 @@ def extract88TangeatdrinkreadWordpressCom(item):
 		('Remarrynoway',                                                          'Remarry, No Way!',                                                                     'translated'),
 		('I used to be alone until I meet you',                                   'I Used To Be Alone Until I Meet You',                                                  'translated'),
 		('secretly secretly; but unable to hide it',                              'secretly secretly; but unable to hide it',                                             'translated'),
+		('strawberry kiss mark',                                                  'strawberry kiss mark',                                                                 'translated'),
+		('waiting for you in the city',                                           'waiting for you in the city',                                                          'translated'),
 		('Memoirs of Love',                                                       'Memoirs of Love',                                                                      'translated'),
 		('Marry! My Black Horse',                                                 'Marry! My Black Horse',                                                                'translated'),
 		('The most pleasant thing to hear',                                       'The Most Pleasant Thing to Hear',                                                      'translated'),

@@ -130,6 +130,7 @@ def extractFoxaholicWordpressCom(item):
 		('want to ascend then fall in love',                                                        'want to ascend then fall in love',                                                                       'translated'),
 		('undying patient',                                                                         'undying patient',                                                                                        'translated'),
 		('the villains i raised all died',                                                          'the villains i raised all died',                                                                         'translated'),
+		('black iron magician',                                                                     'black iron magician',                                                                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -1,6 +1,7 @@
-def extractDreamstlTumblrCom(item):
+
+def extractDuckytlWordpressCom(item):
 	'''
-	Parser for 'dreamstl.tumblr.com'
+	Parser for 'duckytl.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +9,6 @@ def extractDreamstlTumblrCom(item):
 		return None
 
 	tagmap = [
-		('the s ranks that i raised',           'The S-Ranks that I Raised',                      'translated'),
-		('the s ranks that i\'ve raised',       'The S-Ranks that I Raised',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -20,3 +19,4 @@ def extractDreamstlTumblrCom(item):
 
 
 	return False
+	

@@ -58,6 +58,7 @@ def extractIsotlsCom(item):
 		('rebirth to become the president’s omega wife',                               'rebirth to become the president’s omega wife',                                              'translated'),
 		('pampered fei: brimming with cuteness',                                       'pampered fei: brimming with cuteness',                                                      'translated'),
 		('Sinister Ex-Girlfriend',                                                     'Sinister Ex-Girlfriend',                                                                    'translated'),
+		('the traveling hero won’t let the innkeeper’s son escape',                    'the traveling hero won’t let the innkeeper’s son escape',                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

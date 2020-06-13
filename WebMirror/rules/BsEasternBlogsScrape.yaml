@@ -344,6 +344,21 @@ baseUrl: [
 # 	'https://kristineliterature.blogspot.com',
 	'https://flameucreations.blogspot.com',
 	'https://amrstuff.blogspot.com',
+
+	'https://belvestamtl.blogspot.com',
+	'https://hanamooitranslation.blogspot.com',
+	'https://illanovels.blogspot.com',
+	'https://jeytranslations.blogspot.com',
+	'https://lefttenpercent.blogspot.com',
+	'https://lilacpoo.blogspot.com',
+	'https://novellibrarium.blogspot.com',
+	'https://rockwalldoesathing.blogspot.com',
+	'https://zimmings.blogspot.com',
+	'https://daoofnovel.blogspot.com',
+	'https://daichinoveltranslate.blogspot.com',
+	'https://gsekkatranslation.blogspot.com',
+	'https://yasuitl.blogspot.com',
+
 ]
 
 feedPostfix: "/feeds/posts/default"

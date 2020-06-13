@@ -1,6 +1,6 @@
-def extractDreamstlTumblrCom(item):
+def extractWwwWebnoveltranslationCom(item):
 	'''
-	Parser for 'dreamstl.tumblr.com'
+	Parser for 'www.webnoveltranslation.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,8 +8,9 @@ def extractDreamstlTumblrCom(item):
 		return None
 
 	tagmap = [
-		('the s ranks that i raised',           'The S-Ranks that I Raised',                      'translated'),
-		('the s ranks that i\'ve raised',       'The S-Ranks that I Raised',                      'translated'),
+		('the universal plugins for online games',       'the universal plugins for online games',                      'translated'),
+		('the city\'s strongest immortal emperor',       'the city\'s strongest immortal emperor',                      'translated'),
+		('desperate mobile game',                        'desperate mobile game',                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
