@@ -10,7 +10,8 @@ def extractGakuseitranslationsWordpressCom(item):
 	tagmap = [
 		('PGT',       'Every Morning the Most Popular Girl at School Sits Next to Me on the Train',    'translated'),
 		('Monrabu',   'Monku no Tsukeyou ga Nai Rabukome',                                             'translated'),
-		('Kou2TL',   'The Results From When I Time Leaped to My Second Year of High School and Confessed to the Teacher I Liked at the Time',                                             'translated'),
+		('Kou2TL',    'The Results From When I Time Leaped to My Second Year of High School and Confessed to the Teacher I Liked at the Time',                                             'translated'),
+		('wggc',      'After Coincidentally Saving the New Transfer Student’s Little Sister, We Gradually Grew Closer',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

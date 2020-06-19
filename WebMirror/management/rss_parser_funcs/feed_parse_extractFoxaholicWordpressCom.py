@@ -18,6 +18,11 @@ def extractFoxaholicWordpressCom(item):
 		return None
 
 	if item['tags'] == ['Uncategorized'] or item['tags'] == ['Novel'] or item['tags'] == ['darkness7913'] or item['tags'] == ['Uncategorized', 'darkness7913']:
+		
+		if '100 Ways to Get the Male God Chapter ' in item['title'] and chp != 100:
+			return buildReleaseMessageWithType(item, '100 Ways to Get the Male God', vol, chp, frag=frag, postfix=postfix, tl_type='translated')
+			
+			
 		titlemap = [
 			('Skill Taker’s World Domination ~ Building a Slave Harem from Scratch Chapter ',  'Skill Taker’s World Domination ~ Building a Slave Harem from Scratch',      'translated'),
 			('New Chapter: Legend of Great Tang’s Twin Dragons, ',                             'Legend of Great Tang’s Twin Dragons',                                       'translated'),
@@ -35,6 +40,11 @@ def extractFoxaholicWordpressCom(item):
 			('A crowd of evil spirit lines up to confess to me',                               'A crowd of evil spirit lines up to confess to me',                          'translated'),
 			('After Being Transported into a Book, I Adopted the Villain Chapter',             'After Being Transported into a Book, I Adopted the Villain',                'translated'),
 			('Demon King of Phantom Thief',                                                    'Demon King of Phantom Thief',                                               'translated'),
+			('Quick Wear: Male God, Shine Bright! Chapter ',                                   'Quick Wear: Male God, Shine Bright!',                                       'translated'),
+			('Granting You a Dreamlike Life Chapter ',                                         'Granting You a Dreamlike Life',                                             'translated'),
+			('Undying Patient ',                                                               'Undying Patient',                                                           'translated'),
+			('The Noble Woman’s Guide On How to Tease One’s Husband – Chapter ',               'The Noble Woman’s Guide On How to Tease One’s Husband',                     'translated'),
+			('Love Experiment Chapter ',                                                       'Love Experiment',                                                           'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

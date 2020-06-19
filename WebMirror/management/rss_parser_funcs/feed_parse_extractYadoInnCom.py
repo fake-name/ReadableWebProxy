@@ -17,6 +17,7 @@ def extractYadoInnCom(item):
 		('aristocrat assassin',               'aristocrat assassin',                                                                         'translated'),
 		('reincarnated maid',                 'Reincarnated Maid is About To Be Captured by All Players',                                    'translated'),
 		('gorgeous beauty',                   'Transformed into a Gorgeous Beauty',                                                          'translated'),
+		('mercenary cook',                    'mercenary cook',                                                                              'translated'),
 		('JUSCO',                             'JUSCO',                                                                                       'translated'),
 		('TGWSPUJ',                           'The Girl Who Spits Up Jewels',                                                                'translated'),
 		('ABM',                               'Akugyaku no Black Maria',                                                                     'translated'),

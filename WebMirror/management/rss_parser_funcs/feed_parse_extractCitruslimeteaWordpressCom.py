@@ -1,4 +1,3 @@
-
 def extractCitruslimeteaWordpressCom(item):
 	'''
 	Parser for 'citruslimetea.wordpress.com'
@@ -9,6 +8,7 @@ def extractCitruslimeteaWordpressCom(item):
 		return None
 
 	tagmap = [
+		('i can talk to cats',       'I Can Talk to Cats',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractCitruslimeteaWordpressCom(item):
 
 
 	return False
-	

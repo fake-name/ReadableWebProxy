@@ -47,6 +47,7 @@ def extractWhatsawhizzerwebnovelsCom(item):
 		('enslaved',                        'Enslaved Sister Harem',                                                    'oel'),
 		('the last dread pirate',           'The Last Dread Pirate',                                                    'oel'),
 		('zoo',                             'The Zoo',                                                                  'oel'),
+		('apocalypse',                      'It’s Not Easy Making Money In the Apocalypse',                             'oel'),
 		('Loiterous',                       'Loiterous',                                                                'oel'),
 	]
 
@@ -55,8 +56,9 @@ def extractWhatsawhizzerwebnovelsCom(item):
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 	chp_prefixes = [
-			('My Dungeon Life – Chapter ',  'My Dungeon Life',               'oel'),
-			('Sex Trafficking for Dummies',                             'Sex Trafficking for Dummies',                                              'oel'),
+			('My Dungeon Life – Chapter ',                                                   'My Dungeon Life',                                                          'oel'),
+			('It’s Not Easy Making Money In the Apocalypse – Chapter ',                      'It’s Not Easy Making Money In the Apocalypse',                             'oel'),
+			('Sex Trafficking for Dummies',                                                  'Sex Trafficking for Dummies',                                              'oel'),
 		]
 
 	for prefix, series, tl_type in chp_prefixes:

@@ -14,6 +14,8 @@ def extractSteambunlightnovelCom(item):
 		('Martial God Space',                            'Martial God Space',                                           'translated'),
 		('Demon\'s Diary',                               'Demon\'s Diary',                                              'translated'),
 		('the king of hell\'s genius pampered wife',     'the king of hell\'s genius pampered wife',                    'translated'),
+		('History’s Strongest Senior Brother',           'History’s Strongest Senior Brother',                          'translated'),
+		('traveler',                                     'traveler',                                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

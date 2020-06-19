@@ -1,6 +1,7 @@
-def extractTranslationsdrtWordpressCom(item):
+
+def extractJuboReadOnlineBlogspotCom(item):
 	'''
-	Parser for 'translationsdrt.wordpress.com'
+	Parser for 'jubo-read-online.blogspot.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,9 +9,6 @@ def extractTranslationsdrtWordpressCom(item):
 		return None
 
 	tagmap = [
-		('iceblade magician',       'The Iceblade Magician Rules over the World',                      'translated'),
-		('wortenia',                'Wortenia Senki',                                                  'translated'),
-		('Wortenia Senki',          'Wortenia Senki',                                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -21,3 +19,4 @@ def extractTranslationsdrtWordpressCom(item):
 
 
 	return False
+	

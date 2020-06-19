@@ -11,6 +11,8 @@ def extractDmtranslationscnWordpressCom(item):
 		('OPTS',        'One Piece Talent System',                                  'translated'), 
 		('GGS',         'Galactic Garbage Station',                                 'translated'), 
 		('HOM',         'Heroes of Marvel',                                         'translated'), 
+		('ephs',        'Endless Plunder In High School DxD',                       'translated'), 
+		('optm',        'One Piece – Thundergod Marine',                            'translated'), 
 	]
 
 	for tagname, name, tl_type in tagmap:

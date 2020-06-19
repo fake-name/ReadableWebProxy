@@ -1,4 +1,3 @@
-
 def extractJapmtlWordpressCom(item):
 	'''
 	Parser for 'japmtl.wordpress.com'
@@ -9,6 +8,9 @@ def extractJapmtlWordpressCom(item):
 		return None
 
 	tagmap = [
+		('one day, the engagement was suddenly cancelled. ......my little sister\'s.',       'one day, the engagement was suddenly cancelled. ......my little sister\'s.',                      'translated'),
+		('villainess (?) and my engagement cancellation',                                    'villainess (?) and my engagement cancellation',                                                   'translated'),
+		('beloved villain flips the skies',                                                  'beloved villain flips the skies',                                                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractJapmtlWordpressCom(item):
 
 
 	return False
-	

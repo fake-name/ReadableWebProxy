@@ -10,6 +10,8 @@ def extractJustatranslatortranslationsCom(item):
 	tagmap = [
 		('legend of the great sage',       'legend of the great sage',                      'translated'),
 		('lgs',                            'legend of the great sage',                      'translated'),
+		('CSG',                            'Chaotic Sword God',                             'translated'),
+		('Chaotic Sword God',              'Chaotic Sword God',                             'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

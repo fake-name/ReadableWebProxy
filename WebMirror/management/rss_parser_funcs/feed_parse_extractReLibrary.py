@@ -44,6 +44,7 @@ def extractReLibrary(item):
 		('hero\'s daughter',                       'Reborn as the Hero\'s Daughter! Time to Become the Hero Once More!',     'translated'),
 		('reborn as a transcendence',              'reborn as a transcendent',                                               'translated'),
 		('reborn as a transcendent',               'reborn as a transcendent',                                               'translated'),
+		('wild last boss',                         'wild last boss',                                                         'translated'),
 		('life with a tail',                       'life with a tail',                                                       'translated'),
 		('pupil of the wiseman',                   'She Professed Herself The Pupil Of The Wiseman',                         'translated'),
 		('hero\'s redo',                           'Hero’s Redo ~ A Hero That Once Saved the World Reborn as a Girl ~ ',     'translated'),

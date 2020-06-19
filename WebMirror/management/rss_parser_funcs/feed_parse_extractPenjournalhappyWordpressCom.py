@@ -12,6 +12,7 @@ def extractPenjournalhappyWordpressCom(item):
 		('Villain Reformation Strategy',            'Pulling Together a Villain Reformation Strategy',                      'translated'),
 		('Want to Ascend? Then Fall in Love',       'Want to Ascend? Then Fall in Love',                      'translated'),
 		('Golden Stage',                            'Golden Stage',                                           'translated'),
+		('a tale of strategies for the throne',     'a tale of strategies for the throne',                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

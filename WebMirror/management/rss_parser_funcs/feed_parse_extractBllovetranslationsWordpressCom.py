@@ -8,7 +8,10 @@ def extractBllovetranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('CDAW',       'Continuation of the Dream in Another World',                      'translated'),
+		('CDAW',                            'Continuation of the Dream in Another World',                      'translated'),
+		('aak',                             'ai wo ataeru kemono-tachi',                      'translated'),
+		('ai wo ataeru kemono-tachi',       'ai wo ataeru kemono-tachi',                      'translated'),
+		('Sweet Daydream',                  'Sweet Daydream',                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

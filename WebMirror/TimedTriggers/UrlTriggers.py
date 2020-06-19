@@ -148,10 +148,10 @@ class EveryOtherDayPageTrigger(PageTriggerBase):
 
 	def get_pages(self):
 		wg = WebRequest.WebGetRobust()
-		soup = wg.getSoup('https://www.royalroadl.com/fictions/new-releases')
+		soup = wg.getSoup('https://www.royalroad.com/fictions/new-releases')
 		rrl_max = self._rrlExtractSeriesReleases(soup)
 
-		rrl_pages    = ['http://www.royalroadl.com/fiction/%s' % x for x in range(max(rrl_max))]
+		rrl_pages    = ['https://www.royalroad.com/fiction/%s' % x for x in range(max(rrl_max))]
 		japtem_pages = ['http://japtem.com/fanfic.php?novel=%s' % x for x in range(800)]
 		return rrl_pages + japtem_pages
 

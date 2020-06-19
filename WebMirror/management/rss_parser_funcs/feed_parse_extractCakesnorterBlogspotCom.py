@@ -10,6 +10,7 @@ def extractCakesnorterBlogspotCom(item):
 	tagmap = [
 		('back to before i married the tyrant',       'Back to Before I Married the Tyrant [Rebirth]',                      'translated'),
 		('bbmt',                                      'Back to Before I Married the Tyrant [Rebirth]',                      'translated'),
+		('rcbw',                                      'Rebirth of the Campus Bussiness Woman',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

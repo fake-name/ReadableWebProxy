@@ -1,4 +1,3 @@
-
 def extractHanamooitranslationBlogspotCom(item):
 	'''
 	Parser for 'hanamooitranslation.blogspot.com'
@@ -9,6 +8,7 @@ def extractHanamooitranslationBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('Pampered Poisonous Royal Wife',       'Pampered Poisonous Royal Wife',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractHanamooitranslationBlogspotCom(item):
 
 
 	return False
-	

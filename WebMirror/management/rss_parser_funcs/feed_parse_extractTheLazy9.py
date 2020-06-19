@@ -28,6 +28,8 @@ def extractTheLazy9(item):
 		('Kansutoppu!',                                'Kansutoppu!',                                                                                      'translated'),
 		('The Lonely Monster and The Blind Girl ',     'The Lonely Monster and The Blind Girl',                                                            'translated'),
 		('Job Change',                                 'Being Recognized as an Evil God, I Changed My Job to Guardian Deity of the Beastmen Country',      'translated'),
+		('Orgegirl ch',                                'Blunt Type Ogre Girl’s Way to Live Streaming',                                                     'translated'),
+		('Ogregirl ch',                                'Blunt Type Ogre Girl’s Way to Live Streaming',                                                     'translated'),
 	]
 
 	for titlecomponent, name, tl_type in titlemap:

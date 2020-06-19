@@ -38,6 +38,7 @@ def extractLetsyuriWordpressCom(item):
 		('I, Cute Grass, am Super Fierce! Chapter ',      'I, Cute Grass, am Super Fierce!',                   'translated'),
 		('Forced to Become The CEO Chapter ',             'Forced to Become The CEO',                          'translated'),
 		('Villainess With Cat Changing System Chapter ',  'Villainess With Cat Changing System',               'translated'),
+		('XCF ',                                          'Former Cannon Fodder’s Self-Help Manual',           'translated'),
 		('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 		('Master of Dungeon',           'Master of Dungeon',               'oel'),
 	]

@@ -151,6 +151,7 @@ def extractWuxiaworld(item):
 		('vrmmo: the unrivaled',                            'vrmmo: the unrivaled',                              'translated'),
 		('life, once again!',                               'life, once again!',                                 'translated'),
 		('necropolis immortal',                             'necropolis immortal',                               'translated'),
+		('vrmmo: passing of the sword',                     'vrmmo: passing of the sword',                       'translated'),
 		('i am overlord',                                   'i am overlord',                                     'translated'),
 		('tomb raider king',                                'tomb raider king',                                  'translated'),
 		('The Unrivaled Tang Sect',                         'The Unrivaled Tang Sect',                           'translated'),

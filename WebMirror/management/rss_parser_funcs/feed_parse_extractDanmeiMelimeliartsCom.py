@@ -6,6 +6,7 @@ def extractDanmeiMelimeliartsCom(item):
 	
 	badwords = [
 			'tianbao fuyao lu [manhua]',
+			'[audio drama]',
 			'[Audio Drama]',
 		]
 	tstr = str(item['tags'])
@@ -141,6 +142,8 @@ def extractDanmeiMelimeliartsCom(item):
 		('you use a gun, i use a bow',                                             'you use a gun, i use a bow',                                                            'translated'),
 		('the silly wizard\'s courtship method',                                   'the silly wizard\'s courtship method',                                                  'translated'),
 		('psychic',                                                                'Psychic',                                                                               'translated'),
+		('peerless immortal surrounded by demonic disciples',                      'peerless immortal surrounded by demonic disciples',                                     'translated'),
+		('a beta has dreams too',                                                  'a beta has dreams too',                                                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

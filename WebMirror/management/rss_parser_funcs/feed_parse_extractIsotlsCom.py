@@ -24,6 +24,9 @@ def extractIsotlsCom(item):
 			('Need to Propose to Seven Men What to Do Chapter ',                         'need to propose to seven men, what to do!',                                                 'translated'),
 			('Daily Life of a Wealthy Woof chapter ',                                    'Daily Life of a Wealthy Woof',                                                              'translated'),
 			('There\'s A Beauty Chapter ',                                               'There\'s A Beauty',               'translated'),
+			('How Much for a Pound of Cuteness Chapter ',                                'How Much for a Pound of Cuteness',               'translated'),
+			('Return of the Goddess Chapter ',                                           'Return of the Goddess',           'translated'),
+			('Rebirth To Become The President’s Omega Wife Chapter ',                    'Rebirth To Become The President’s Omega Wife',               'translated'),
 			('Tensei Shoujo no Rirekisho',                                               'Tensei Shoujo no Rirekisho',               'translated'),
 			('Master of Dungeon',                                                        'Master of Dungeon',                        'oel'),
 			
@@ -59,6 +62,12 @@ def extractIsotlsCom(item):
 		('pampered fei: brimming with cuteness',                                       'pampered fei: brimming with cuteness',                                                      'translated'),
 		('Sinister Ex-Girlfriend',                                                     'Sinister Ex-Girlfriend',                                                                    'translated'),
 		('the traveling hero won’t let the innkeeper’s son escape',                    'the traveling hero won’t let the innkeeper’s son escape',                                   'translated'),
+		('how to die as heavy as mt tai',                                              'how to die as heavy as mt tai',                                                             'translated'),
+		('the villainess, cecilia silvy doesn\'t want to die so she decided to crossdress',       'the villainess, cecilia silvy doesn\'t want to die so she decided to crossdress',                      'translated'),
+		('Return of the Goddess',                                                                 'Return of the Goddess',                                                                                'translated'),
+		('the cannon fodder won\'t meddle',                                                       'the cannon fodder won\'t meddle',                                                                      'translated'),
+		('novel wars',                                                                            'novel wars',                                                                                           'translated'),
+		('how much for a pound of cuteness',                                                      'how much for a pound of cuteness',                                                                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

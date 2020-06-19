@@ -18,6 +18,7 @@ def extractRufftranslationsWordpressCom(item):
 		('the pseudo-kunoichi from another world',             'the pseudo-kunoichi from another world',                            'translated'),
 		('yuri flags with the heroine',                        'When I Reincarnated as the Villainess, I Raised Yuri Flags with the Heroine!?',                                       'translated'),
 		('the death flag-breaking villainess',                 'I Was Reincarnated As The Villainess Of An Otome Game, But As I Broke The Death Flags With All My Might, The Heroine Opened My Route',                                       'translated'),
+		('the small-town girl becomes the demon king',         'An Unemployed Small-Town Girl Pulled Out The Enchanted Sword: She Can\'t Become The Hero, So She\'ll Become the Demon King Instead',                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

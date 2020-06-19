@@ -1,4 +1,3 @@
-
 def extractHellobiewtranslationWordpressCom(item):
 	'''
 	Parser for 'hellobiewtranslation.wordpress.com'
@@ -9,6 +8,8 @@ def extractHellobiewtranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('offered into marriage',       'offered into marriage',                      'translated'),
+		('the bell and the drum',       'the bell and the drum',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractHellobiewtranslationWordpressCom(item):
 
 
 	return False
-	

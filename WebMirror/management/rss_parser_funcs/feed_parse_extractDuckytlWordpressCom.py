@@ -1,4 +1,3 @@
-
 def extractDuckytlWordpressCom(item):
 	'''
 	Parser for 'duckytl.wordpress.com'
@@ -9,6 +8,7 @@ def extractDuckytlWordpressCom(item):
 		return None
 
 	tagmap = [
+		('osnw',       'Opening a Shop in the Nightmare World',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractDuckytlWordpressCom(item):
 
 
 	return False
-	

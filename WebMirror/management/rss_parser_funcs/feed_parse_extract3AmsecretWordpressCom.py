@@ -1,4 +1,3 @@
-
 def extract3AmsecretWordpressCom(item):
 	'''
 	Parser for '3amsecret.wordpress.com'
@@ -9,6 +8,8 @@ def extract3AmsecretWordpressCom(item):
 		return None
 
 	tagmap = [
+		('thwipb',                                 'the husband who is played broken',                      'translated'),
+		('the husband who is played broken',       'the husband who is played broken',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extract3AmsecretWordpressCom(item):
 
 
 	return False
-	

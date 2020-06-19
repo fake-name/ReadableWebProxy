@@ -19,6 +19,7 @@ def extractPigcowTranslationsCom(item):
 	tagmap = [
 		('Seven Wonders Overtime',       'Seven Wonders Overtime',               'translated'),
 		('holmes of kyoto',              'Holmes of Kyoto',                      'translated'),
+		('Hyouka',                       'Hyouka',                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

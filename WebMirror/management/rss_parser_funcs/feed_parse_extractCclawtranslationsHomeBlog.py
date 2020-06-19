@@ -33,6 +33,7 @@ def extractCclawtranslationsHomeBlog(item):
 			('Bokutachi wa Benkyou ga Dekinai – Examples of the Extraordinary Chapter ',  'Bokutachi wa Benkyou ga Dekinai',                                                                       'translated'),
 			('Lonely Loser (LN) Volume ',                                                 'Lonely Loser',                                                                                          'translated'),
 			('Spy Room Volume ',                                                          'Spy Room',                                                                                              'translated'),
+			('Hentai Ouji to Warawanai Neko',                                             'Hentai Ouji to Warawanai Neko',                                                 'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

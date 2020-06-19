@@ -27,6 +27,8 @@ def extractJstranslations1WordpressCom(item):
 		('cold palace’s abandoned consort',                               'cold palace’s abandoned consort',                                             'translated'),
 		('the demon king addicted to robbing the bride',                  'the demon king addicted to robbing the bride',                                'translated'),
 		('Empress Running Away with the Ball!',                           'Empress Running Away with the Ball!',                                         'translated'),
+		('the emperor is always unhappy',                                 'the emperor is always unhappy',                                               'translated'),
+		('acting turns into reality: love was always here',               'acting turns into reality: love was always here',                             'translated'),
 		('PRC',        'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

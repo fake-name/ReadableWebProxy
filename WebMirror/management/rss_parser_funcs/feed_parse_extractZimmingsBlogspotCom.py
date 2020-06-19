@@ -1,4 +1,3 @@
-
 def extractZimmingsBlogspotCom(item):
 	'''
 	Parser for 'zimmings.blogspot.com'
@@ -9,6 +8,7 @@ def extractZimmingsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('baby raising devil',       'The Baby Raising a Devil',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractZimmingsBlogspotCom(item):
 
 
 	return False
-	

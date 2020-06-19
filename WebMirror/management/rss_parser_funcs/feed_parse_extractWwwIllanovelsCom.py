@@ -1,4 +1,3 @@
-
 def extractWwwIllanovelsCom(item):
 	'''
 	Parser for 'www.illanovels.com'
@@ -9,6 +8,12 @@ def extractWwwIllanovelsCom(item):
 		return None
 
 	tagmap = [
+		('my little happiness',       'my little happiness',                      'translated'),
+		('intense love',              'intense love',                             'translated'),
+		('Under the Power',           'Under the Power',                          'translated'),
+		('Unrequited Love',           'Unrequited Love',                          'translated'),
+		('Autumn\'s Concerto',        'Autumn\'s Concerto',                       'translated'),
+		('the love equations',        'the love equations',                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +24,3 @@ def extractWwwIllanovelsCom(item):
 
 
 	return False
-	

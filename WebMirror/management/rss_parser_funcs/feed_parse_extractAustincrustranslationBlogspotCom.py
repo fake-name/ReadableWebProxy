@@ -12,6 +12,9 @@ def extractAustincrustranslationBlogspotCom(item):
 			('Isekai de Slow Life wo (Ganbou) Chapter ',  'Isekai de Slow Life wo (Ganbou)',      'translated'),
 			('Isekai De Slow Live wo (Ganbou) Chapter ',  'Isekai de Slow Life wo (Ganbou)',      'translated'),
 			('Isekai de Slow Life wo (Ganbou} Chapter ',  'Isekai de Slow Life wo (Ganbou)',      'translated'),
+			('I will Leisure become healer in another world Chapter ',  'I will Leisurely Become Healer in Another World',      'translated'),
+			('I will Leisurely Become Healer in Another World Chapter ',  'I will Leisurely Become Healer in Another World',      'translated'),
+			('The Best Assassin, Incarnated into a Different World’s Aristocrat Chapter ',  'The Best Assassin, Incarnated into a Different World’s Aristocrat',      'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]

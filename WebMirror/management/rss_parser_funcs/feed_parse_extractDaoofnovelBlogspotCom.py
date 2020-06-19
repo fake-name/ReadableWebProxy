@@ -1,4 +1,3 @@
-
 def extractDaoofnovelBlogspotCom(item):
 	'''
 	Parser for 'daoofnovel.blogspot.com'
@@ -9,6 +8,8 @@ def extractDaoofnovelBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('LOTCG',                               'Legend of the Cultivation God',                      'translated'),
+		('Legend of the Cultivation God',       'Legend of the Cultivation God',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractDaoofnovelBlogspotCom(item):
 
 
 	return False
-	

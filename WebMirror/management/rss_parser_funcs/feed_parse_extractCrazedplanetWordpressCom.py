@@ -12,6 +12,7 @@ def extractCrazedplanetWordpressCom(item):
 		('Who Dares Slander My Senior Brother',       'Who Dares Slander My Senior Brother',                      'translated'),
 		('Can You Connect to Your Wifi?',             'Can You Connect to Your Wifi?',                            'translated'),
 		('Taizi',                                     'Taizi',                                                    'translated'),
+		('can i connect to your wifi?',               'can i connect to your wifi?',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

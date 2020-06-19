@@ -286,7 +286,7 @@ def extractFantasyBooksLive(item):
 		('157659',                                                                   'Ellori, the Ero Witch of Parthun',                                                                      'oel'),
 		('157655',                                                                   'I am Succubus!',                                                                      'oel'),
 		('157411',                                                                   'Detective Karma – The Corruption Within',                                                                      'oel'),
-
+		('160421',                                                                   'Rising from the Depths',                                                                      'oel'),
 
 	]
 

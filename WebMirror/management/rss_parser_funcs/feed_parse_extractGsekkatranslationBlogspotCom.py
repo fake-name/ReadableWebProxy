@@ -1,4 +1,3 @@
-
 def extractGsekkatranslationBlogspotCom(item):
 	'''
 	Parser for 'gsekkatranslation.blogspot.com'
@@ -9,6 +8,8 @@ def extractGsekkatranslationBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('skkn',                                  'Saikyou Kenja no Kosodate Nikki ～Uchi no Musume ga Sekaiichi Kawaii Ken ni Tsuite～',                      'translated'),
+		('saikyou kenja no kosodate nikki',       'Saikyou Kenja no Kosodate Nikki ～Uchi no Musume ga Sekaiichi Kawaii Ken ni Tsuite～',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractGsekkatranslationBlogspotCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractKagerouscansWordpressCom(item):
 	'''
 	Parser for 'kagerouscans.wordpress.com'
@@ -9,6 +8,7 @@ def extractKagerouscansWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the film emperor asks for divorce every day',       'the film emperor asks for divorce every day',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractKagerouscansWordpressCom(item):
 
 
 	return False
-	

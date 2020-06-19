@@ -1,4 +1,3 @@
-
 def extractSnowpearltranslationsWordpressCom(item):
 	'''
 	Parser for 'snowpearltranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractSnowpearltranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('bewitching prince spoils his wife : genius doctor unscrupulous consort',       'bewitching prince spoils his wife : genius doctor unscrupulous consort',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSnowpearltranslationsWordpressCom(item):
 
 
 	return False
-	

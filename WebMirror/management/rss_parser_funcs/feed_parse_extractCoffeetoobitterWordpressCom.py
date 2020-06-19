@@ -5,6 +5,7 @@ def extractCoffeetoobitterWordpressCom(item):
 	
 	badwords = [
 			'fair wind scroll',   # Manhua
+			'comic',
 			'badword',
 		]
 	if any([bad in item['tags'] for bad in badwords]):

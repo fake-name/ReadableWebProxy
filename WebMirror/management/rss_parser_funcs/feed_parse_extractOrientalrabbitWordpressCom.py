@@ -10,6 +10,7 @@ def extractOrientalrabbitWordpressCom(item):
 	tagmap = [
 		('tmrw',       'How Many Tomorrows There Are',                      'translated'),
 		('scgl',       'Side Character Survival Guidelines',                'translated'),
+		('wlwm',       'A White Lotus Host Who Does Not Want To Be a White Moonlight Is Not a Good Host',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

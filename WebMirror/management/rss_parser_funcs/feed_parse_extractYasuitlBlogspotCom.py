@@ -1,4 +1,3 @@
-
 def extractYasuitlBlogspotCom(item):
 	'''
 	Parser for 'yasuitl.blogspot.com'
@@ -9,6 +8,7 @@ def extractYasuitlBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('Dream Life',       'Dream Life -Dreams in a Different World-',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractYasuitlBlogspotCom(item):
 
 
 	return False
-	

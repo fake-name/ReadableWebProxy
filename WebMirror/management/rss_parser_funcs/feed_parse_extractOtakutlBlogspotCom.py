@@ -14,7 +14,9 @@ def extractOtakutlBlogspotCom(item):
 		('Dark Blood Age',                                'Dark Blood Age',                                               'translated'),
 		('psfilwm',                                       'Problematic Sister Fell In Love With Me',                      'translated'),
 		('porblematic sister fell in love with me',       'Problematic Sister Fell In Love With Me',                      'translated'),
-		('world apocalypse online',       'world apocalypse online',                      'translated'),
+		('world apocalypse online',                       'world apocalypse online',                                      'translated'),
+		('STH',                                           'Shrouding the Heavens',                                        'translated'),
+		('Shrouding the Heavens',                         'Shrouding the Heavens',                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

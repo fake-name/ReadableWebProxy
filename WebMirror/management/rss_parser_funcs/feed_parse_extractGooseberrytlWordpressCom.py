@@ -1,4 +1,3 @@
-
 def extractGooseberrytlWordpressCom(item):
 	'''
 	Parser for 'gooseberrytl.wordpress.com'
@@ -9,6 +8,7 @@ def extractGooseberrytlWordpressCom(item):
 		return None
 
 	tagmap = [
+		('tsats',       'The Star Around The Sun',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractGooseberrytlWordpressCom(item):
 
 
 	return False
-	

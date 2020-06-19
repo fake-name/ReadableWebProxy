@@ -1,4 +1,3 @@
-
 def extractFluffycloudtranslationsWordpressCom(item):
 	'''
 	Parser for 'fluffycloudtranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractFluffycloudtranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('melody drifting in the rain',       'melody drifting in the rain',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFluffycloudtranslationsWordpressCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractJeytranslationsBlogspotCom(item):
 	'''
 	Parser for 'jeytranslations.blogspot.com'
@@ -9,6 +8,7 @@ def extractJeytranslationsBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('See You Again',       'See You Again',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractJeytranslationsBlogspotCom(item):
 
 
 	return False
-	

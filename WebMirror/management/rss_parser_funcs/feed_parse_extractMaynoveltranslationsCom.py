@@ -1,4 +1,3 @@
-
 def extractMaynoveltranslationsCom(item):
 	'''
 	Parser for 'maynoveltranslations.com'
@@ -9,6 +8,9 @@ def extractMaynoveltranslationsCom(item):
 		return None
 
 	tagmap = [
+		('president shen always top up money',       'president shen always top up money',                      'translated'),
+		('Rebirth of Brotherly Love',                'Rebirth of Brotherly Love',                               'translated'),
+		('Rebirth of Chen An',                       'Rebirth of Chen An',                                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractMaynoveltranslationsCom(item):
 
 
 	return False
-	
