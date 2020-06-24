@@ -17,12 +17,13 @@
 					<tr>
 						<th>Name</th>
 						<th>Type</th>
+						<th>DL</th>
 					</tr>
 					{%- for item in items -%}
 						<tr>
 							<td><a href="{{item['relp']}}">{{item['name']}}</a></td>
-
 							<td>{{'📁' if item['is_dir'] else '📄'}}</td>
+							<td><a href="{{item['felp']}}">DL</a></td>
 						</tr>
 					{%- endfor -%}
 				</table>

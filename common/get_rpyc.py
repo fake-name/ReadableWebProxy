@@ -153,3 +153,21 @@ class RemoteFetchInterface(LogBase.LoggerMixin):
 		del self.rpc_client
 
 
+
+def test():
+
+	i1 = RemoteJobInterface('test')
+	i2 = RemoteFetchInterface()
+
+	print(i1.check_ok())
+	print(i2.check_ok())
+
+	print(i1)
+	print(i2)
+
+	pass
+
+if __name__ == "__main__":
+	import logging
+	logging.basicConfig(level=logging.DEBUG)
+	test()

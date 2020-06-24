@@ -29,3 +29,4 @@ ghostdriver.log
 /chunks
 /settings_sched.py
 /bad
+/active_jobs_at_start_*.json

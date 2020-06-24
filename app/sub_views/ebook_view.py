@@ -28,7 +28,8 @@ def render_ebook_directory(fpath):
 			'directory' : fpath,
 			'is_dir'    : item.is_dir(),
 			'is_file'   : item.is_file(),
-			'relp'      : urllib.parse.urljoin("/epub-reader/", urllib.parse.quote(os.path.relpath(os.path.join(fpath, item.name), settings.EBOOK_STORAGE_DIR)))
+			'relp'      : urllib.parse.urljoin("/epub-reader/",  urllib.parse.quote(os.path.relpath(os.path.join(fpath, item.name), settings.EBOOK_STORAGE_DIR))),
+			'felp'      : urllib.parse.urljoin("/epub-content/", urllib.parse.quote(os.path.relpath(os.path.join(fpath, item.name), settings.EBOOK_STORAGE_DIR))),
 		}
 		for item in items
 	]

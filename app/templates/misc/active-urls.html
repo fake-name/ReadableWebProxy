@@ -1,0 +1,48 @@
+<!-- extend base layout -->
+{% set title = "Loading" %}
+{% extends "__base.html" %}
+
+{% block header %}
+
+	<style>
+		#segment_container
+		{
+			max-width: none !important;
+		}
+		body
+		{
+			max-width: none !important;
+		}
+		table, th, td {
+		    border: 1px solid black !important;
+		}
+		th, td
+		{
+			padding : 2px !important;
+		}
+	</style>
+
+{% endblock %}
+{% block content %}
+	{% include '_block_flash.html' %}
+	<div class="well well-large breakword" style="min-height: 140px; width: 100%;">
+		<h4>Live URL jobs</h4>
+		<div>
+			<h5>Fetching ({{fetching | length}}):</h5>
+			<ul>
+				{% for url in fetching %}
+				<li><code>{{url}}</code></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div>
+			<h5>Processing ({{processing | length}}):</h5>
+			<ul>
+				{% for url in processing %}
+				<li><code>{{url}}</code></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+{% endblock %}
