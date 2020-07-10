@@ -1,4 +1,3 @@
-
 def extractSpiritsofedenCom(item):
 	'''
 	Parser for 'spiritsofeden.com'
@@ -10,6 +9,7 @@ def extractSpiritsofedenCom(item):
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
+		('unjust depths',      'unjust depths',                     'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 
@@ -19,4 +19,3 @@ def extractSpiritsofedenCom(item):
 
 
 	return False
-	

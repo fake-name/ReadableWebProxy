@@ -8,7 +8,9 @@ def extractOtherworldsinwordWordpressCom(item):
 		return None
 
 	tagmap = [
-		('riad',       'The Roommates Were Ecstatic to See Their Roommate in a Dress',                      'translated'),
+		('riad',                              'The Roommates Were Ecstatic to See Their Roommate in a Dress',                      'translated'),
+		('bwc',                               'the boss wants to be coaxed',                      'translated'),
+		('the boss wants to be coaxed',       'the boss wants to be coaxed',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

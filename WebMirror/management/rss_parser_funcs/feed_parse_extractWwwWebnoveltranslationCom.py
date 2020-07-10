@@ -11,6 +11,9 @@ def extractWwwWebnoveltranslationCom(item):
 		('the universal plugins for online games',       'the universal plugins for online games',                      'translated'),
 		('the city\'s strongest immortal emperor',       'the city\'s strongest immortal emperor',                      'translated'),
 		('desperate mobile game',                        'desperate mobile game',                                       'translated'),
+		('the ceo wants to marry me',                    'the ceo wants to marry me',                                   'translated'),
+		('my disciples are all villains',                'my disciples are all villains',                               'translated'),
+		('i do not want to inherit the family fortune',  'i do not want to inherit the family fortune',                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

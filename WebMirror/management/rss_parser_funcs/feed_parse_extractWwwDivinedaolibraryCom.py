@@ -18,6 +18,7 @@ def extractWwwDivinedaolibraryCom(item):
 		('the steward demonic emperor',                                           'the steward demonic emperor',                                       'translated'), 
 		('the strongest cultivation system',                                      'the strongest cultivation system',                                  'translated'), 
 		('dragon hermit',                                                         'dragon hermit',                                                     'translated'), 
+		('adventurers who don’t believe in humanity will save the world',         'adventurers who don’t believe in humanity will save the world',     'translated'), 
 		('live dungeon!',                                                         'live dungeon!',                                                     'translated'), 
 		('rebuild world',                                                         'rebuild world',                                                     'translated'), 
 		('Omni-Magician',                                                         'Omni-Magician',                                                     'translated'), 

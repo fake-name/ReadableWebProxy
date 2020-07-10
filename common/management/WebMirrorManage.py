@@ -1041,7 +1041,16 @@ def exposed_find_dead_netlocs():
 	urls = [item['starturls'] if item['starturls'] else [] + item['feedurls'] if item['feedurls'] else [] for item in rules if not item['rewalk_disabled']]
 	urls = [item for sublist in urls for item in sublist]
 
-	urls = list(set([urllib.parse.urlunsplit(urllib.parse.urlsplit(url)[:2] + ("", "", "")) for url in urls]))
+	def truncate_url(url):
+		# Wixsite is broken and requires a path. The root 404s.
+		if '.wixsite.com/' in url:
+			return url
+
+		split = urllib.parse.urlsplit(url)[:2] + ("", "", "")
+		ret = urllib.parse.urlunsplit(split)
+		return ret
+
+	urls = list(set([truncate_url(url) for url in urls]))
 
 
 	res = {}

@@ -29,6 +29,8 @@ def extractWhatsawhizzerwebnovelsCom(item):
 	tagmap = [
 		('Rise of the Midnight King',       'Rise of the Midnight King',                                                'oel'),
 		('NTR Crush',                       'NTR Crush : I Will Steal Every Girl',                                      'oel'),
+		('tales of a seductress',           'tales of a seductress',                                                    'oel'),
+		('screwed by my boss',              'screwed by my boss',                                                       'oel'),
 		('Hawtness',                        'Hawtness',                                                                 'oel'),
 		('Time and Place',                  'The Timefall Saga - Time and Place',                                       'oel'),
 		('EPASH',                           'Enslaved Pregnant Animalgirl Sister Harem With No NTR',                    'oel'),

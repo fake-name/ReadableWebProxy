@@ -20,6 +20,7 @@ def extractRrrrhexiatranslationHomeBlog(item):
 		('brushing boss for 363 days',           'After Brushing the Apocalypse\'s Boss for 363 Days',                      'translated'), 
 		('i don\'t want you to be responsible',  'I Don\'t Want You To Be Responsible!',                                    'translated'), 
 		('become a koi and fall into male god\'s bathtub',       'become a koi and fall into male god\'s bathtub',                      'translated'), 
+		('encountering a snake',                                 'encountering a snake',                                                'translated'), 
 		('PRC',       'PRC',                      'translated'), 
 		('Loiterous', 'Loiterous',                'oel'),
 	]

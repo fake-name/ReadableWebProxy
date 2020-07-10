@@ -319,7 +319,9 @@ def cleanUrl(urlin):
 
 	# RSS garbage
 	if '#utm_source=' in urlin:
-		urlin = urlin.split("#")[0]
+		urlin = urlin.split("#utm_source=")[0]
+	if '?preview_id=' in urlin:
+		urlin = urlin.split("?preview_id=")[0]
 
 
 	ret = unwrap_redirect(urlin, resolve_redirects)

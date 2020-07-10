@@ -1,4 +1,3 @@
-
 def extractSymphonyalphaWordpressCom(item):
 	'''
 	Parser for 'symphonyalpha.wordpress.com'
@@ -9,6 +8,7 @@ def extractSymphonyalphaWordpressCom(item):
 		return None
 
 	tagmap = [
+		('tag-team',       'tag-team',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSymphonyalphaWordpressCom(item):
 
 
 	return False
-	

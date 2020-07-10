@@ -14,6 +14,7 @@ def extractWwwIllanovelsCom(item):
 		('Unrequited Love',           'Unrequited Love',                          'translated'),
 		('Autumn\'s Concerto',        'Autumn\'s Concerto',                       'translated'),
 		('the love equations',        'the love equations',                       'translated'),
+		('love is sweet',             'love is sweet',                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -10,6 +10,8 @@ def extractTranslatingboredomWordpressCom(item):
 	tagmap = [
 		('rcfn chapters',       'Rebirth of a Cannon Fodder in a Novel',                      'translated'),
 		('rcfn',                'Rebirth of a Cannon Fodder in a Novel',                      'translated'),
+		('mhsc chapters',       'Me and my Husband Sleep in a Coffin',                      'translated'),
+		('mhsc',                'Me and my Husband Sleep in a Coffin',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

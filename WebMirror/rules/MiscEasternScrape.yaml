@@ -109,6 +109,16 @@ baseUrl: [
 		'https://www.kumomori.com',
 		'http://pbsnovel.rocks',
 		'https://hostednovel.com',
+		'https://www.fringecapybara.com',
+		'https://konila.com',
+		'http://tran-slations.com',
+		'http://www.thisdaydreamertranslates.net',
+		'http://www.hellomiss285.com',
+		'https://www.yagaminovel.net',
+
+		# Broken cert.
+		'https://www.ibig5.net',
+		'http://ibig5.net',   # redirects to https www
 
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'https://www.novelmultiverse.com',
@@ -138,6 +148,9 @@ feeds: [
 	'https://www.pemudatunawisata.my.id/feeds/posts/default',
 	'https://isotls.com/rss/',
 	'https://sleepy.witchcraft.academy/rss/',
+	'https://tran-slations.com/rss.xml',
+	'https://www.hellomiss285.com/feeds/posts/default',
+	'https://www.yagaminovel.net/feeds/posts/default',
 ]
 
 extraStartUrls: [

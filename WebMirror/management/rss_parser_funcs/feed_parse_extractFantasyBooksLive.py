@@ -287,6 +287,10 @@ def extractFantasyBooksLive(item):
 		('157655',                                                                   'I am Succubus!',                                                                      'oel'),
 		('157411',                                                                   'Detective Karma – The Corruption Within',                                                                      'oel'),
 		('160421',                                                                   'Rising from the Depths',                                                                      'oel'),
+		('163166',                                                                   'Rioneed: The Rise Of a Necromancer',                                                                      'oel'),
+		('161807',                                                                   'Reincarnated As A Potato. Yes, This Is Not A Joke',                                                                      'oel'),
+		('160849',                                                                   'THE LOVE ECLIPSE',                                                                      'oel'),
+		('157217',                                                                   'Unfathomable Senior',                                                                      'oel'),
 
 	]
 

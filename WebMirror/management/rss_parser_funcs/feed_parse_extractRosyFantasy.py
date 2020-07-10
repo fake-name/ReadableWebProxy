@@ -25,6 +25,7 @@ def extractRosyFantasy(item):
 		("demon's wang golden favorite fei",                      "Demon Wang's Golden Favorite Fei",                'translated'),
 		("emperor is in trouble again",                           "emperor is in trouble again",                     'translated'),
 		("seeking happiness",                                     "Seeking Happiness",                               'translated'),
+		("i married an exasperating eunuch",                      "i married an exasperating eunuch",                'translated'),
 		("living up to you",                                      "living up to you",                                'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

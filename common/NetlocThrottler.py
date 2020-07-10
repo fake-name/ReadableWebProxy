@@ -20,7 +20,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 
 		self.fifo_limit      = fifo_limit
 		self.accumulator_min = 10
-		self.accumulator_max = 500
+		self.accumulator_max = 100
 		self.url_throttler   = {}
 
 		self.total_queued    = 0

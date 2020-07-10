@@ -141,6 +141,11 @@ def extractFoxaholicWordpressCom(item):
 		('undying patient',                                                                         'undying patient',                                                                                        'translated'),
 		('the villains i raised all died',                                                          'the villains i raised all died',                                                                         'translated'),
 		('black iron magician',                                                                     'black iron magician',                                                                                    'translated'),
+		('i am a gao fushuai villain',                                                              'i am a gao fushuai villain',                                                                             'translated'),
+		('tbddm',                                                                                   'The Basketball Captain is Determined to Date Me',                                                        'translated'),
+		('tbcddm',                                                                                  'The Basketball Captain is Determined to Date Me',                                                        'translated'),
+		('supernatural rebirth genius girl diviner',                                                'supernatural rebirth genius girl diviner',                                                               'translated'),
+		('apocalypse rebirth: chief, don’t move!',                                                  'apocalypse rebirth: chief, don’t move!',                                                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

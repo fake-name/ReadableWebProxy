@@ -10,6 +10,7 @@ def extractDustbunnytranslationsWordpressCom(item):
 	tagmap = [
 		('wushuang',       'Wushuang',                      'translated'),
 		('huo luan jiang hu',       'huo luan jiang hu',                      'translated'),
+		('jun you ji fou',       'How is the Gentleman Feeling?',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

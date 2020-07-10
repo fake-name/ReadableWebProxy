@@ -29,6 +29,8 @@ def extractJstranslations1WordpressCom(item):
 		('Empress Running Away with the Ball!',                           'Empress Running Away with the Ball!',                                         'translated'),
 		('the emperor is always unhappy',                                 'the emperor is always unhappy',                                               'translated'),
 		('acting turns into reality: love was always here',               'acting turns into reality: love was always here',                             'translated'),
+		('reborn top student and sweet little wife',                      'reborn top student and sweet little wife',                                    'translated'),
+		('genius maiden transmigrates: the empress of weapons',           'genius maiden transmigrates: the empress of weapons',                         'translated'),
 		('PRC',        'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

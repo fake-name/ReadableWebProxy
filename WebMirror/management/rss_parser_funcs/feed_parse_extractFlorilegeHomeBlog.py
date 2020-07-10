@@ -1,4 +1,3 @@
-
 def extractFlorilegeHomeBlog(item):
 	'''
 	Parser for 'florilege.home.blog'
@@ -9,6 +8,7 @@ def extractFlorilegeHomeBlog(item):
 		return None
 
 	tagmap = [
+		('i\'ll be the warrior\'s mother',       'i\'ll be the warrior\'s mother',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFlorilegeHomeBlog(item):
 
 
 	return False
-	

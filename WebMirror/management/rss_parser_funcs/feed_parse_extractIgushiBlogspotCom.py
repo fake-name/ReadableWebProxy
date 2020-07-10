@@ -1,4 +1,3 @@
-
 def extractIgushiBlogspotCom(item):
 	'''
 	Parser for 'igushi.blogspot.com'
@@ -9,6 +8,7 @@ def extractIgushiBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('Under the Power',       'Under the Power',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractIgushiBlogspotCom(item):
 
 
 	return False
-	

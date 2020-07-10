@@ -1,4 +1,3 @@
-
 def extractPerpetuallyperennialCarBlog(item):
 	'''
 	Parser for 'perpetuallyperennial.car.blog'
@@ -9,6 +8,9 @@ def extractPerpetuallyperennialCarBlog(item):
 		return None
 
 	tagmap = [
+		('please don&#039;t eat me',                     'Please Don’t Eat Me',                      'translated'),
+		('the villainess needs a tyrant',                'The Villainess Need A Tyrant',                      'translated'),
+		('a villain is a good match for a tyrant',       'A Villain Is A Good Match For A Tyrant',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractPerpetuallyperennialCarBlog(item):
 
 
 	return False
-	

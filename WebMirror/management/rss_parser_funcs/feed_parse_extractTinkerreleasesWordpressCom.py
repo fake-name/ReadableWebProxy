@@ -9,6 +9,7 @@ def extractTinkerreleasesWordpressCom(item):
 
 	tagmap = [
 		('wce',       'Wife Can’t Escape',                      'translated'),
+		('DEM',       'The Downfall of the Eldest Miss',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

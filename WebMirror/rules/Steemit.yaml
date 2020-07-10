@@ -1,9 +1,16 @@
-type: eastern
+# type: eastern
 
-send_raw_feed: True
+# send_raw_feed: False
 
-rewalk_interval_days: 90
-max_active_jobs:      10
+# rewalk_interval_days: 90
+# max_active_jobs:      10
+
+
+type: unknown
+send_raw_feed: False
+rewalk_disabled: True
+rewalk_interval_days: 50000
+
 
 baseUrl: [
 

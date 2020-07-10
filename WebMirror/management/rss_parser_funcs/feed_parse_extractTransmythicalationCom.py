@@ -19,6 +19,7 @@ def extractTransmythicalationCom(item):
 	if item['tags'] == ['translation']:
 		titlemap = [
 			('Roku de Nashi Vol ',          'Roku de Nashi Majutsu Koushi to Akashic Records',      'translated'),
+			('Roku de Nashi Volume ',       'Roku de Nashi Majutsu Koushi to Akashic Records',      'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',                           'translated'),
 			('Master of Dungeon',           'Master of Dungeon',                                    'oel'),
 		]

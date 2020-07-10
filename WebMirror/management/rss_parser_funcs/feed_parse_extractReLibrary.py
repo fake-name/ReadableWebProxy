@@ -52,6 +52,7 @@ def extractReLibrary(item):
 		('loli elf',                               'Loli Elf & Her Happy Life',                                              'translated'),
 		('my loli brother',                        'my loli brother',                                                        'translated'),
 		('blue sky',                               'blue sky',                                                               'translated'),
+		('lazy overlord',                          'lazy overlord',                                                          'translated'),
 		('Levelmaker',                             'Levelmaker',                                                             'translated'),
 		('Demon Sword Maiden',                     'Demon Sword Maiden',                                                     'translated'),
 		('the saintess',                           'How can the Saintess be a Boy!?',                                                                                                 'translated'),

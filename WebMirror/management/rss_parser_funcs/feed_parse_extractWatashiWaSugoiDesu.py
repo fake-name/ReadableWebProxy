@@ -17,6 +17,7 @@ def extractWatashiWaSugoiDesu(item):
 		('SFY',                                             'Searching For You',                                                                                             'translated'),
 		('smgo',                                            'The Show Must Go On',                                                                                           'translated'),
 		('wsbw',                                            'When She Becomes a Witch',                                                                                      'translated'),
+		('gdg',                                             'The Gentle Death God Laughs Above the Cherry-Blossom Sky',                                                      'translated'),
 		('KtBC',                                            'Kiss the Black Cat',                                                                                            'translated'),
 		('Ossan Idol',                                      'Ossan (36) Ga Idol Ni Naru Hanashi',                                                                            'translated'),
 		('Strongest Wiseman',                               'Child Rearing Journal of the Strongest Wiseman～About My Daughter Being the Cutest in the World～',             'translated'),

@@ -9,8 +9,8 @@ baseUrl: [
 	'https://faelicy.tumblr.com',
 	'https://kimamanitranslatesnovels.tumblr.com',
 
+	'https://fastidious-translations.tumblr.com',
 	'https://fleurdelystranslations.tumblr.com',
-# 	'http://2-bit-translations.tumblr.com',
 	'http://2minutesofyourtime.tumblr.com',
 	'http://agirlinjapan.tumblr.com',
 	'http://akihaharu.tumblr.com',
@@ -84,7 +84,6 @@ baseUrl: [
 	'https://orlandri-tl.tumblr.com',
 	'https://peppermintii.tumblr.com',
 	'https://pinkyoneesama.tumblr.com',
-# 	'https://rmtranslations.tumblr.com',
 	'https://dreamsinthesea.tumblr.com',
 	'https://dreamstl.tumblr.com',
 	'https://borahae7.tumblr.com',
@@ -118,6 +117,14 @@ baseUrl: [
 	'https://brokasteltranslations.tumblr.com',
 	'https://insidethemirror.tumblr.com',
 	'https://thursday-updates.tumblr.com',
+
+	'https://karoisart-translations.tumblr.com',
+	'https://fckyeahdaisukekambe.tumblr.com',
+	'https://guxianzhis.tumblr.com',
+	'https://nomekun.tumblr.com',
+
+
+
 
 	# Low quality
 	'http://owari-owari.tumblr.com',

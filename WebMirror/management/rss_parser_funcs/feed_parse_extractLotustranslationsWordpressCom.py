@@ -13,6 +13,7 @@ def extractLotustranslationsWordpressCom(item):
 		('Xianggong, Please Divorce Me!',               'Xianggong, Please Divorce Me!',                                'translated'),
 		('100% Sweet Love',                             '100% sweet love: The delinquent XXX wife is a bit sweet',      'translated'),
 		('Black Bellied President Dotes on Wife',       'Black Bellied President Dotes on Wife',                        'translated'),
+		('icsaytd',                                     'I Can Still Accompany You Till Dawn',                          'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

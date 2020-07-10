@@ -152,6 +152,7 @@ baseUrl: [
 	'http://darkroadtales.blogspot.com',
 	'http://building-castles.blogspot.com',
 	'http://13thechelon.blogspot.com',
+	'http://www.lightbringersandlamplighters.com',
 
 	'https://kumabearfailtranslations.blogspot.com',
 	'https://fishytranslations.blogspot.com',
@@ -652,7 +653,12 @@ baseUrl: [
 	'http://funwithstela.web.id',
 	'https://matchalations.wordpress.com',
 	'https://www.xiaxuenovels.xyz',
+	'https://suli-art.tumblr.com',
+	'https://shosetsunomori.com',
+	'https://pucari.cc',
 
+	# Moved to athenatls.com and content deleted
+	'http://athenatranslations.epizy.com',
 
 	# Now kissmanga?
 	'https://novelhub.co',
@@ -728,6 +734,16 @@ badwords: [
 		"http://novel.gilegati.com/zmhd",
 		"http://novel.gilegati.com/zwgk",
 
+
+		# Amazon garbage (one site redirected to amazon)
+		'&pd_rd_i=',
+		'&pd_rd_wg=',
+		'&pf_rd_r=',
+		'/reviews-render/',
+		'www.lightbringersandlamplighters.com/gp/redirect.html/',
+		'www.lightbringersandlamplighters.com/gp/bestsellers/',
+		'www.lightbringersandlamplighters.com/gp/prime/',
+		'www.lightbringersandlamplighters.com/Kindle-eBooks/',
 	]
 
 decompose: [

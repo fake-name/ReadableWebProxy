@@ -21,14 +21,20 @@ baseUrl: [
 		'https://arwaalaoui.wixsite.com/website/',
 		'https://flozen-tl.wixsite.com/flzen-tl/',
 		'https://jesssational.wixsite.com/noveltl/',
+		'https://indusmtl.wixsite.com/indusmtl/',
+		'https://108yunyun.wixsite.com/translations/',
 
-# 		'https://divinelink2.wixsite.com/dlscanlations',
+		'https://divinelink2.wixsite.com/dlscanlations',
+		'https://tachibanachinatsu.wixsite.com/tenshitranslations/',
+		'https://shamelessghostbear.wixsite.com/website/',
+		'https://silv3rfox4.wixsite.com/silverfox/',
+		'https://sueermes.wixsite.com/website/',
+
+
 # 		'http://meejeenovels.wixsite.com',
 # 		'https://flairv.wixsite.com',
 # 		'https://nimini067.wixsite.com',
-# 		'http://tachibanachinatsu.wix.com',
 # 		'https://planetchild.wixsite.com',
-# 		'https://tachibanachinatsu.wixsite.com/tenshitranslations/',
 # 		'https://dreamingsheep.wixsite.com',
 # 		'https://djurasico.wixsite.com',
 # 		'https://going5d.wixsite.com',
@@ -36,15 +42,12 @@ baseUrl: [
 # 		'https://celestialmaid.wixsite.com',
 # 		'https://ciphertranslation.wixsite.com',
 # 		'https://nanthawat8best.wixsite.com',
-# 		'https://shamelessghostbear.wixsite.com/website/',
-# 		'https://silv3rfox4.wixsite.com/silverfox/',
-# 		'https://sueermes.wixsite.com/website/',
 
 	]
 
 feeds: [
 		'https://www.catatopatch.com/feed.xml',
-# 		"https://tachibanachinatsu.wixsite.com/tenshitranslations/feed.xml"
+		"https://tachibanachinatsu.wixsite.com/tenshitranslations/feed.xml"
 	]
 
 extraStartUrls: []

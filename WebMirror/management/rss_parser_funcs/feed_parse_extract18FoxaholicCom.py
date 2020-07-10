@@ -16,8 +16,10 @@ def extract18FoxaholicCom(item):
 		return None
 
 	tagmap = [
-		('av filming guidebook',                    'av filming guidebook',                                   'translated'),
-		('not allowed to leak a single drop',       'not allowed to leak a single drop',                      'translated'),
+		('av filming guidebook',                                               'av filming guidebook',                                                              'translated'),
+		('not allowed to leak a single drop',                                  'not allowed to leak a single drop',                                                 'translated'),
+		('the transmigrated cannon fodder overthrows the male protagonist',    'the transmigrated cannon fodder overthrows the male protagonist',                   'translated'),
+		('after being extorted',                                               'after being extorted',                                                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

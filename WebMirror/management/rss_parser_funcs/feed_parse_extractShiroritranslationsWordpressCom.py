@@ -12,6 +12,7 @@ def extractShiroritranslationsWordpressCom(item):
 		('seijo ni narunode',       'Seijo ni Narunode Nidoume no Jinsei wa Katte ni Sasetemoraimasu ~Outaihi wa, Zensei de Watashi wo Futta Koibito Deshita~',                      'translated'),
 		('nazeboku',                'Naze Boku no Sekai wo Dare mo Oboeteinainoka?',                                                                                                 'translated'),
 		('mattari',                 'Reijou wa Mattari wo Goshomou',                                                                                                                 'translated'),
+		('seijuuban',               'Hikkikomori Reijou wa Hanashi no Wakaru Seijuuban',                                                                                                                 'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

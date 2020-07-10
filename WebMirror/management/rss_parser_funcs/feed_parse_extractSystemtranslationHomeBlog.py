@@ -12,6 +12,8 @@ def extractSystemtranslationHomeBlog(item):
 		('inadvertently invincible',            'inadvertently invincible',                           'translated'),
 		('stand user in marvel universe',       'stand user in marvel universe',                      'translated'),
 		('crazy leveling system',               'crazy leveling system',                              'translated'),
+		('hokage ryo\'s path',                  'hokage ryo\'s path',                                 'translated'),
+		('my doomsday territory',               'my doomsday territory',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

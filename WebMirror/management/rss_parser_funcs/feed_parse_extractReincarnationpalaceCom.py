@@ -1,4 +1,3 @@
-
 def extractReincarnationpalaceCom(item):
 	'''
 	Parser for 'reincarnationpalace.com'
@@ -9,6 +8,7 @@ def extractReincarnationpalaceCom(item):
 		return None
 
 	tagmap = [
+		('totwds',       'Tales of The World Devouring Serpent',                      'oel'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractReincarnationpalaceCom(item):
 
 
 	return False
-	

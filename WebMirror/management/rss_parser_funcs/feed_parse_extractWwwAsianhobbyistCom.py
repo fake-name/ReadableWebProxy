@@ -152,6 +152,7 @@ def extractWwwAsianhobbyistCom(item):
 		('Blade Online',                                                                    'Blade Online',                                                                                'translated'),
 		('Real Cheat Online',                                                               'Real Cheat Online',                                                                           'translated'),
 		('endo and kobayashi’s live commentary on the villainess',                          'endo and kobayashi’s live commentary on the villainess',                                      'translated'),
+		('the s-classes that i raised',                                                     'the s-classes that i raised',                                                                 'translated'),
 		('Green Skin',                                                                      'Green Skin',                                                                                  'translated'),
 		('Chu Wang Fei',                                                                    'Chu Wang Fei',                                                                                'translated'),
 		('my castle my castellan',                                                          'my castle my castellan',                                                                      'translated'),

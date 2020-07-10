@@ -11,6 +11,7 @@ def extractJapmtlWordpressCom(item):
 		('one day, the engagement was suddenly cancelled. ......my little sister\'s.',       'one day, the engagement was suddenly cancelled. ......my little sister\'s.',                      'translated'),
 		('villainess (?) and my engagement cancellation',                                    'villainess (?) and my engagement cancellation',                                                   'translated'),
 		('beloved villain flips the skies',                                                  'beloved villain flips the skies',                                                                 'translated'),
+		('slow life villainess doesn\'t notice the prince\'s fondness',                      'slow life villainess doesn\'t notice the prince\'s fondness',                                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -29,7 +29,7 @@ def extractLetsyuriWordpressCom(item):
 			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
 
 	titlemap = [
-		('BRMQ ',                                        'Being Raised as a Baby by the Movie Queen',          'translated'),
+		('BRMQ ',                                         'Being Raised as a Baby by the Movie Queen',         'translated'),
 		('TISAG ',                                        'Transmigrated Into a Smashing Asura Girl',          'translated'),
 		('Summon Survival',                               'Summon Survival',                                   'translated'),
 		('Green Tea Villainess Fails',                    'Green Tea Villainess Fails',                        'translated'),
@@ -39,6 +39,13 @@ def extractLetsyuriWordpressCom(item):
 		('Forced to Become The CEO Chapter ',             'Forced to Become The CEO',                          'translated'),
 		('Villainess With Cat Changing System Chapter ',  'Villainess With Cat Changing System',               'translated'),
 		('XCF ',                                          'Former Cannon Fodder’s Self-Help Manual',           'translated'),
+		('VIPU ',                                         'Villainess, I’ll Pamper You',                       'translated'),
+		('FCF ',                                          'Former Cannon Fodder’s Self-Help Manual',           'translated'),
+		('Yuege ',                                        'Transmigrated Into a Smashing Asura Girl',          'translated'),
+		('UHW ',                                          'Unlimited Hongyi Works',                            'translated'),
+		('HONGYI ',                                       'Unlimited Hongyi Works',                            'translated'),
+		('RAISEZK ',                                      'Raising The Zombie King',                           'translated'),
+		('RTZK ',                                         'Raising The Zombie King',                           'translated'),
 		('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 		('Master of Dungeon',           'Master of Dungeon',               'oel'),
 	]

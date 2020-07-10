@@ -1,4 +1,3 @@
-
 def extractMehtranslationsCom(item):
 	'''
 	Parser for 'mehtranslations.com'
@@ -9,6 +8,9 @@ def extractMehtranslationsCom(item):
 		return None
 
 	tagmap = [
+		('paw in paw',                                         'Paw in Paw, Let’s Satisfy Our Desire for Dogs',                                        'translated'),
+		('the favoured genius',                                'Space and Rebirth: The Favoured Genius Doctor and Businesswoman',                      'translated'),
+		('the favoured genius doctor and businesswoman',       'Space and Rebirth: The Favoured Genius Doctor and Businesswoman',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractMehtranslationsCom(item):
 
 
 	return False
-	

@@ -8,8 +8,10 @@ def extractChrysanthemumburstWordpressCom(item):
 		return None
 
 	tagmap = [
-		('ASV',                            'a smile from the villain',                      'translated'),
-		('a smile from the villain',       'a smile from the villain',                      'translated'),
+		('ASV',                                           'a smile from the villain',                                     'translated'),
+		('a smile from the villain',                      'a smile from the villain',                                     'translated'),
+		('r:dsat',                                        'rebirth: degenerate slave abuses tyrant',                      'translated'),
+		('rebirth: degenerate slave abuses tyrant',       'rebirth: degenerate slave abuses tyrant',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

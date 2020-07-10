@@ -8,8 +8,9 @@ def extractStrictlybromanceCom(item):
 		return None
 
 	tagmap = [
-		('grave robbers\' chronicles',       'grave robbers\' chronicles',                      'translated'),
+		('grave robbers\' chronicles',        'grave robbers\' chronicles',                       'translated'),
 		('haunted houses\' chronicles',       'haunted houses\' chronicles',                      'translated'),
+		('the trial game of life',            'the trial game of life',                           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

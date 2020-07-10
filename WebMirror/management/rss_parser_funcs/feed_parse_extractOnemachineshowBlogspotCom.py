@@ -9,7 +9,8 @@ def extractOnemachineshowBlogspotCom(item):
 
 	tagmap = [
 		('amdtvba',       'After My Death, The Villain Blackened Again',                      'translated'),
-		('PRC',       'PRC',                      'translated'),
+		('ebed',          'Quick Transmigration: Ex-Girlfriend Blackens Every Day',                      'translated'),
+		('Loiterous', 'Loiterous',                'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

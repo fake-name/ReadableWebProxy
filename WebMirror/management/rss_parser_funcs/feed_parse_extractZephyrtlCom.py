@@ -1,4 +1,3 @@
-
 def extractZephyrtlCom(item):
 	'''
 	Parser for 'zephyrtl.com'
@@ -9,6 +8,9 @@ def extractZephyrtlCom(item):
 		return None
 
 	tagmap = [
+		('revenge death game',       'revenge death game',                      'translated'),
+		('god eyes appraiser',       'god eyes appraiser',                      'translated'),
+		('god eye appraiser',        'god eyes appraiser',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractZephyrtlCom(item):
 
 
 	return False
-	

@@ -80,3 +80,14 @@ class RawScraperModuleBase(metaclass=abc.ABCMeta):
 	@classmethod
 	def check_postfetch(cls, url, wg_proxy, fname, fcontent, fmimetype):
 		return fname, fcontent, fmimetype
+
+
+	@classmethod
+	def get_netlocs(cls):
+		urls = cls.get_start_urls()
+		netlocs = [urllib.parse.urlparse(tmp).netloc for tmp in urls]
+		return list(set(netlocs))
+
+	@staticmethod
+	def get_max_active_jobs():
+		return 100

@@ -19,6 +19,7 @@ import common.util.urlFuncs
 import common.process
 import common.LogBase as LogBase
 import common.StatsdMixin as StatsdMixin
+import RawArchiver.RawActiveModules
 
 
 # import sqlalchemy.exc
@@ -53,7 +54,7 @@ else:
 	# MAX_IN_FLIGHT_JOBS = 5
 	# MAX_IN_FLIGHT_JOBS = 15
 	# MAX_IN_FLIGHT_JOBS = 40
-	MAX_IN_FLIGHT_JOBS = 75
+	MAX_IN_FLIGHT_JOBS = 5
 	# MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 500
 	# MAX_IN_FLIGHT_JOBS = 1000
@@ -78,7 +79,21 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 		self.run_flag = multiprocessing.Value("b", 1, lock=False)
 
-		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(key_prefix='raw', fifo_limit = 100 * 1000)
+
+		netloc_max = {}
+
+		for raw_mod in RawArchiver.RawActiveModules.ACTIVE_MODULES:
+			for netloc in raw_mod.get_netlocs():
+				max_jobs = raw_mod.get_max_active_jobs()
+				self.log.info("Maximum active jobs for netloc %s: %s", netloc, max_jobs)
+				netloc_max[netloc] = max_jobs
+
+
+		self.ratelimiter = common.NetlocThrottler.NetlockThrottler(
+			key_prefix = 'raw',
+			fifo_limit = 100 * 1000,
+			netloc_max = netloc_max,
+			)
 
 		self.count_lock = threading.Lock()
 		self.limiter_lock = threading.Lock()
@@ -268,7 +283,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			num_new = self._get_task_internal(mode)
 			with self.count_lock:
 				current_active = self.active_jobs
-				self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, self.active_jobs-old)
+				self.log.info("Need to add jobs to the job queue (%s active, %s added)!", self.active_jobs, max(self.active_jobs-old, 0))
 
 			if self.run_flag.value != 1:
 				return

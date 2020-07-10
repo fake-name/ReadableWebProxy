@@ -68,6 +68,7 @@ def extractIsotlsCom(item):
 		('the cannon fodder won\'t meddle',                                                       'the cannon fodder won\'t meddle',                                                                      'translated'),
 		('novel wars',                                                                            'novel wars',                                                                                           'translated'),
 		('how much for a pound of cuteness',                                                      'how much for a pound of cuteness',                                                                     'translated'),
+		('high energy qr code',                                                                   'high energy qr code',                                                                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

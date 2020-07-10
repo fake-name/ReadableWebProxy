@@ -13,6 +13,7 @@ def extractAiHristDreamTranslations(item):
 		('Princess Medical Doctor',                                               'Princess Medical Doctor',                                                              'translated'),
 		('Into the World of Medicine',                                            'Into the World of Medicine',                                                           'translated'),
 		('Ghost Marriage, the abandoned wife has three treasures',                'Ghost Marriage, the abandoned wife has three treasures',                               'translated'),
+		('fortune teller master',                                                 'fortune teller master',                                                                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

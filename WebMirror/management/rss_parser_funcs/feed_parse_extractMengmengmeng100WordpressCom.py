@@ -1,4 +1,3 @@
-
 def extractMengmengmeng100WordpressCom(item):
 	'''
 	Parser for 'mengmengmeng100.wordpress.com'
@@ -9,6 +8,7 @@ def extractMengmengmeng100WordpressCom(item):
 		return None
 
 	tagmap = [
+		('mphcd',       'Meng Po’s Husband Chasing Diary',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractMengmengmeng100WordpressCom(item):
 
 
 	return False
-	

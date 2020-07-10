@@ -1,4 +1,3 @@
-
 def extractZeinpetengBlogspotCom(item):
 	'''
 	Parser for 'zeinpeteng.blogspot.com'
@@ -9,6 +8,9 @@ def extractZeinpetengBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('the escape of layla',       'the escape of layla',                      'translated'),
+		('jimi de medatanai watashi wa kyou de owari ni shimasu',       'jimi de medatanai watashi wa kyou de owari ni shimasu',                      'translated'),
+		('hariko no otome',       'hariko no otome',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractZeinpetengBlogspotCom(item):
 
 
 	return False
-	

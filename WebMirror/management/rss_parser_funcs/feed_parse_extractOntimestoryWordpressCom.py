@@ -41,10 +41,11 @@ def extractOntimestoryWordpressCom(item):
 				
 
 	tagmap = [
-		('spare tire is gone',                       'spare tire is gone',                      'translated'),
-		('devil venerable also wants to know',       'devil venerable also wants to know',                      'translated'),
+		('spare tire is gone',                       'spare tire is gone',                                   'translated'),
+		('devil venerable also wants to know',       'devil venerable also wants to know',                   'translated'),
 		('tofuh',                                    'The Only Favourite Ugly Husband',                      'translated'),
-		('turn on the love system',                  'turn on the love system',                      'translated'),
+		('turn on the love system',                  'turn on the love system',                              'translated'),
+		('mair',                                     'My Artist is Reborn',                                  'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

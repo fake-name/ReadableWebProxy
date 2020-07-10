@@ -8,6 +8,7 @@ def extractWwwYamitlCom(item):
 		return None
 
 	tagmap = [
+		('mistress i was wrong',          'mistress i was wrong',                         'translated'),
 		('Illimitable Until Death',       'Illimitable Until Death',                      'translated'),
 		('Summoner of Miracles',          'Summoner of Miracles',                         'translated'),
 		('Loiterous', 'Loiterous',                'oel'),

@@ -9,7 +9,7 @@ baseUrl: [
 		'http://www.spcnet.tv/forums',
 		'http://forum.wuxiaworld.com',
 		'http://wuxiasociety.freeforums.net',
-# 		'http://www.jcafe24.net',
+		# 'http://www.jcafe24.net',
 		'https://elwiki.net',
 ]
 
@@ -225,8 +225,10 @@ badwords: [
 			'Special:ShortPages',
 			'Special:LongPages',
 			'Special:ListFiles',
+			'Special:MobileDiff',
 			'&direction=prev&',
 			'&direction=next&',
+			'index.php?diff=',
 
 
 			'&action=history',
@@ -236,6 +238,7 @@ badwords: [
 			'&printable=yes',
 			'&oldid=',
 
+			'elwiki.net/w/Special:',
 
 			# JCafe crap
 			';prev_next=',

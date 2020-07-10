@@ -144,6 +144,9 @@ def extractDanmeiMelimeliartsCom(item):
 		('psychic',                                                                'Psychic',                                                                               'translated'),
 		('peerless immortal surrounded by demonic disciples',                      'peerless immortal surrounded by demonic disciples',                                     'translated'),
 		('a beta has dreams too',                                                  'a beta has dreams too',                                                                 'translated'),
+		('this omega is immune to all abilities',                                  'this omega is immune to all abilities',                                                 'translated'),
+		('100 ways to heal a psychopath',                                          '100 ways to heal a psychopath',                                                         'translated'),
+		('forced to marry the enemy prince',                                       'forced to marry the enemy prince',                                                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

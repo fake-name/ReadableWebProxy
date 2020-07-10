@@ -142,3 +142,7 @@ class ArchiveOfOurOwnRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 	@classmethod
 	def get_start_urls(cls):
 		return [tmp for tmp in cls.target_urls]
+
+	@staticmethod
+	def get_max_active_jobs():
+		return 20

@@ -11,6 +11,7 @@ def extractStabbingwithasyringeHomeBlog(item):
 		('Reincarnated Elf Prince',                      'Harem Tales of reincarnated Elf Prince',                      'translated'),
 		('Harem Tales of reincarnated Elf Prince',       'Harem Tales of reincarnated Elf Prince',                      'translated'),
 		('reincarnated tower magician',                  'A Reincarnated Mage\'s Tower Dungeon Management',             'translated'),
+		('reversed world\'s messiah',                    'reversed world\'s messiah',                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

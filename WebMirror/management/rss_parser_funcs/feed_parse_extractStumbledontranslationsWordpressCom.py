@@ -8,7 +8,8 @@ def extractStumbledontranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
-		('tfglcs',       'The Female General’s Little Childhood Sweetheart',                      'translated'),
+		('tfglcs',               'The Female General’s Little Childhood Sweetheart',                      'translated'),
+		('surrender (bl)',       'Surrender',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

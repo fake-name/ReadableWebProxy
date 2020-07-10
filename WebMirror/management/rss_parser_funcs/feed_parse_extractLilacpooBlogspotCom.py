@@ -1,4 +1,3 @@
-
 def extractLilacpooBlogspotCom(item):
 	'''
 	Parser for 'lilacpoo.blogspot.com'
@@ -9,6 +8,8 @@ def extractLilacpooBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('swsbg',                     'she was sent by god',                      'translated'),
+		('she was sent by god',       'she was sent by god',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractLilacpooBlogspotCom(item):
 
 
 	return False
-	

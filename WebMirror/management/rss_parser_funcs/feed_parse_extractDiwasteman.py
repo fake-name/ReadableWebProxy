@@ -7,11 +7,12 @@ def extractDiwasteman(item):
 		return False
 		
 	tagmap = [
-		('Parameter remote controller',      'Parameter remote controller',                  'translated'),
-		('maou no hajimekata',               'Maou no Hajimekata',                           'translated'),
-		('Is my reality a love game??',      'Is my reality a love game??',                  'translated'),
-		('Ero Gacha',                        'Ero Gacha',                                    'translated'),
-		('Women gather in a cheap house',    'The Gathering of Women in a Cheap House',      'translated'),
+		('Parameter remote controller',             'Parameter remote controller',                  'translated'),
+		('maou no hajimekata',                      'Maou no Hajimekata',                           'translated'),
+		('Is my reality a love game??',             'Is my reality a love game??',                  'translated'),
+		('Ero Gacha',                               'Ero Gacha',                                    'translated'),
+		('Women gather in a cheap house',           'The Gathering of Women in a Cheap House',      'translated'),
+		('i was a soldier when i reincarnated!',    'I was a soldier when I reincarnated! Later earning the nickname Red Devil~ &#8211; Diwasteman',      'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:
