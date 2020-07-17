@@ -21,24 +21,32 @@ Additionally, multiple versions of each page are kept, with a overall rolling
 refresh of the entire database at configurable intervals (configurable on a
 per-domain, or global basis).
 
+There are also a lot of facilities responsible for feeding the releases/RSS views
+as part of wlnupdates.com.
+
 ---
 
 Quick installation overview:
 
- - Install Postgresql **>= 9.5.** 
+ - Install Redis 
+ - (optional) install InfluxDB
+ - (optional) install Graphite
+ - Install Postgresql **>= 10.** 
  - Build the community extensions for Postgresql.
  - Create a database for the project.
  - In the project database, install the `pg_trgm` and `citext` extensions from the 
     community extensions modules.
  - Copy `settings.example.py` to `settings.py`.
+ - Fill in all settings in settings.py
  - Setup virtualhost by running `build-venv.sh`
  - Activate vhost: `source flask/bin/activate`
- - Bootstrap DB: `create_db.sh`
- - Run local fetch RPC server `run_local.sh` from 
+ - Bootstrap DB: `alembic uprade head`
+ - (on another machine/session) Run local fetch RPC server `run_local.sh` from 
  	https://github.com/fake-name/AutoTriever
  - Run server: `python3 run.py`
  - If you want to run the spider, it has a LOT more complicated components:
 	 - Main scraper is started by `python runScrape.py`
+	 - Raw scraper is started by `python runScrape.py raw`
 	 - Scraper periodic scheduler is started by `python runScrape.py scheduler`
 	 - The scraper requires substantial RPC infrastructure. You will need:
 	 	+ A RabbitMQ instance with a public DNS address
@@ -47,7 +55,7 @@ Quick installation overview:
 	 		https://github.com/fake-name/AutoTriever/tree/master/marshaller/salt_scheduler.py
 	 	+ A variable number of RPC workers to execute fetch tasks. The 
 	 		AutoTriever project can be used to manage these.
-	 	+ A machine to run the RPC local agent (`run_agent.sh`)
+	 	+ A machine to run the RPC local demultiplexing agent (`run_agent.sh`)
 	    The RPC agent allows multiple projects to use the RPC system 
 	    simultaneously. Since the RPC system basically allows executing 
 	    either predefined jobs, or arbitrary code on the worker swarm. This 
@@ -55,5 +63,6 @@ Quick installation overview:
 	    that multiple of my projects then use.
 
 Ubuntu dependencies
- - postgresql-common libpq-dev libenchant-dev
+ - postgresql-common libpq-dev libenchant-dev 
+ - probably more I've forgotten
 

@@ -147,12 +147,12 @@ def dump_active_items():
 def run_in_subprocess():
 	dump_active_items()
 
-	mon = MemoryTracker()
+	# mon = MemoryTracker()
 	proc = multiprocessing.Process(target=go, args=(sys.argv, ))
 	proc.start()
 	while proc.is_alive():
 		time.sleep(4)
-		mon.save_mem_stats()
+		# mon.save_mem_stats()
 		# print("Base Subprocessor Runner: %s, %s" % (proc.is_alive(), proc.pid))
 
 	print("Main runner has gone away. Committing Suicide")

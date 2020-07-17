@@ -10,19 +10,58 @@ RAW_RESOURCE_DIR = "/a/path"
 RELINK_SECRET = "random string for relinking. Put >10 characters of randomness here"
 RESOURCE_DIR  = "Absolute filesystem path where resources will be stored."
 
-# RabbitMQ bits and bobs.
-RABBIT_ENABLED      = True  # Set this false to disable rabbitmq interface
-RABBIT_LOGIN        = "client_1"
-RABBIT_PASWD        = "pass"
-RABBIT_SRVER        = "url"
-RABBIT_VHOST        = "vhost"
+
+GRAPHITE_DB_IP   = '<ip-addr-goes-here>'
+RPC_AGENT_HOST   = '<ip-addr-goes-here>'
+REDIS_SERVER_IP  = '<ip-addr-goes-here>'
+SYNC_RPC_SERVER  = '<ip-addr-goes-here>'
 
 
 WATTPAD_AUTH_CREDS = {
 	"username" : '<username>',
 	"password" : '<pwd>'
-
 }
+
+
+
+# RabbitMQ bits and bobs.
+RABBIT_ENABLED      = True # Set this false to disable rabbitmq interface
+RABBIT_LOGIN        = "<username-goes-here>"
+RABBIT_PASWD        = "<password-goes-here>"
+RABBIT_SRVER        = "<your-domain>:5671"
+RABBIT_VHOST        = "/<your-vhost-for-wlnupdates>"
+
+# RabbitMQ bits and bobs.
+RPC_RABBIT_LOGIN        = "<username-goes-here>"
+RPC_RABBIT_PASWD        = "<password-goes-here>"
+RPC_RABBIT_SRVER        = "<your-domain>:5671"
+RPC_RABBIT_VHOST        = "/<your-vhost-for-rpc-agents>"
+
+SPHINX_AVAILABLE      = True
+SPHINX_SERVER_IP      = '<ip-goes-here>'
+SPHINX_SERVER_PORT    = 9306
+SPHINX_SERVER_USER    = ""
+SPHINX_SERVER_PASS    = ""
+SPHINX_SERVER_TABLE   = "webarchive"
+
+CHUNK_CACHE_DIR = "/a/path"
+
+SECRET_KEY             = b'some random string'
+WTF_CSRF_SECRET_KEY    = b'another random string'
+SECURITY_PASSWORD_SALT = b'more random strings'
+
+WATTPAD_AUTH_CREDS = {
+}
+
+INFLUX_DB_URL              = "<addres-goes-here>"
+INFLUX_DB_PORT             = 8086
+INFLUX_DB_DBNAME           = "readable_web_proxy"
+
+RRL_API_KEY = '<I have no idea how you can get one of these without talking to the RRL admins>'
+
+RAW_REWALK_INTERVAL_DAYS = 90
+REWALK_INTERVAL_DAYS     = 60
+
 
 # Items will not be processed unless they include at least
 # one of the following tags.
