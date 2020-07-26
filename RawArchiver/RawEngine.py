@@ -179,7 +179,7 @@ def saveFile(filecont, url, filename):
 			root, ext = os.path.splitext(fqpath)
 			fqpath = root[:-1]+ext
 
-			if saves > 250:
+			if saves > 1000:
 
 				with open("error %s - %s.txt" % ('raw_file_saver', time.time()), "w") as fp:
 					fp.write("File saver hit exception!\n")

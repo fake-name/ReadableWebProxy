@@ -1,4 +1,3 @@
-
 def extractDebaucheryteaparty169917926WordpressCom(item):
 	'''
 	Parser for 'debaucheryteaparty169917926.wordpress.com'
@@ -9,6 +8,7 @@ def extractDebaucheryteaparty169917926WordpressCom(item):
 		return None
 
 	tagmap = [
+		('lust guidance city',       'lust guidance city',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractDebaucheryteaparty169917926WordpressCom(item):
 
 
 	return False
-	

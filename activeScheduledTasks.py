@@ -109,6 +109,12 @@ target_jobs = {
 		# "minute"           : '*/40',
 	},
 
+	'scheduled_jobs.python_job.NewUrlTitleLoader' : {
+		"name"             : 'AUTO: New URL Title Loader',
+		"interval"         : hours(1),
+		# "minute"           : '*/40',
+	},
+
 	# 'scheduled_jobs.python_job.RollingRewalkTriggersBaseJob' : {
 	# 	"name"             : 'AUTO: Rolling Rewalk Trigger job',
 	# 	"interval"         : hours(4),

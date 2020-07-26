@@ -84,6 +84,9 @@ class NewUrlExtractorRunner():
 
 		nnt.filter_get_have_urls()
 
+class NewUrlTitleLoader():
+	def go(self):
+		mapdict = nnt.get_nu_head_urls()
 		nnt.update_missing_new_with_title()
 
 
@@ -137,4 +140,7 @@ class RssHistoryPurger(PythonJob, job.JobBase):
 
 class NewUrlExtractor(PythonJob, job.JobBase):
 	invokable = NewUrlExtractorRunner
+
+class NewUrlTitleLoader(PythonJob, job.JobBase):
+	invokable = NewUrlTitleLoader
 

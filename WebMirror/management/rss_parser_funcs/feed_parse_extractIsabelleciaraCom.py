@@ -1,6 +1,7 @@
-def extractThelazytranslationWordpressCom(item):
+
+def extractIsabelleciaraCom(item):
 	'''
-	Parser for 'thelazytranslation.wordpress.com'
+	Parser for 'isabelleciara.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
@@ -8,7 +9,6 @@ def extractThelazytranslationWordpressCom(item):
 		return None
 
 	tagmap = [
-		('the strongest brave who craves for revenge',       'the strongest brave who craves for revenge',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,3 +19,4 @@ def extractThelazytranslationWordpressCom(item):
 
 
 	return False
+	
