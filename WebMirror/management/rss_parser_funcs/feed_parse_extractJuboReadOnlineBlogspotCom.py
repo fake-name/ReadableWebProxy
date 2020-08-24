@@ -1,4 +1,3 @@
-
 def extractJuboReadOnlineBlogspotCom(item):
 	'''
 	Parser for 'jubo-read-online.blogspot.com'
@@ -7,6 +6,11 @@ def extractJuboReadOnlineBlogspotCom(item):
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
+		
+		
+	if item['tags'] == []:
+			return buildReleaseMessageWithType(item, "Jubo", vol, chp, frag=frag, postfix=postfix)
+		
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
@@ -19,4 +23,3 @@ def extractJuboReadOnlineBlogspotCom(item):
 
 
 	return False
-	

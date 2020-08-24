@@ -42,7 +42,7 @@ def exposed_crn_series_type_from_chapter_url(url):
 	spage = wg.getSoup(surl)
 
 
-	author_div = spage.find("div", class_='e45344-14')
+	author_div = spage.find("div", class_='e45344-16')
 	assert author_div
 
 	auth_href = author_div.a

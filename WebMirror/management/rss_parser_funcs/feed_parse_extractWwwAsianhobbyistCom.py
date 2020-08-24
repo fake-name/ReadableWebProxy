@@ -153,6 +153,10 @@ def extractWwwAsianhobbyistCom(item):
 		('Real Cheat Online',                                                               'Real Cheat Online',                                                                           'translated'),
 		('endo and kobayashi’s live commentary on the villainess',                          'endo and kobayashi’s live commentary on the villainess',                                      'translated'),
 		('the s-classes that i raised',                                                     'the s-classes that i raised',                                                                 'translated'),
+		('Thanks to a Different World Reincarnation',                                       'Thanks to a Different World Reincarnation',                                                   'translated'),
+		('Reincarnation into the Barrier Master',                                           'Reincarnation into the Barrier Master',                                                       'translated'),
+		('of course, i’ll claim palimony!',                                                 'of course, i’ll claim palimony!',                                                             'translated'),
+		('past life returner',                                                              'past life returner',                                                                          'translated'),
 		('Green Skin',                                                                      'Green Skin',                                                                                  'translated'),
 		('Chu Wang Fei',                                                                    'Chu Wang Fei',                                                                                'translated'),
 		('my castle my castellan',                                                          'my castle my castellan',                                                                      'translated'),
@@ -160,6 +164,7 @@ def extractWwwAsianhobbyistCom(item):
 		('Liu Yao: The Revitalization of Fuyao Sect',                                       'Liu Yao: The Revitalization of Fuyao Sect',                                                   'translated'),
 		('The Simple Life of Killing Demons',                                               'The Simple Life of Killing Demons',                                                           'translated'),
 		('frontiers ~chronicles of bucket-san’s detailed pioneering~',                      'frontiers ~chronicles of bucket-san’s detailed pioneering~',                                  'translated'),
+		('my 【repair】skill became an almighty cheat skill, so i thought i’d open up a weapon shop',                       'my 【repair】skill became an almighty cheat skill, so i thought i’d open up a weapon shop',                                   'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

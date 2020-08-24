@@ -20,6 +20,7 @@ def extractArunamettaAsia(item):
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
 		('Eiwa - The Knight of Magical Laws', 'Eiwa - The Knight of Magical Laws',                'oel'),
+		('dystopian sunset',                  'Dystopian Sunset',                                 'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

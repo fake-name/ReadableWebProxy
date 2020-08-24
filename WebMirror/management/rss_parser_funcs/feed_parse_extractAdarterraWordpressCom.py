@@ -1,4 +1,3 @@
-
 def extractAdarterraWordpressCom(item):
 	'''
 	Parser for 'adarterra.wordpress.com'
@@ -9,6 +8,7 @@ def extractAdarterraWordpressCom(item):
 		return None
 
 	tagmap = [
+		('ending maker',       'ending maker',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractAdarterraWordpressCom(item):
 
 
 	return False
-	

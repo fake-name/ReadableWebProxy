@@ -10,6 +10,8 @@ def extractHimikochouWordpressCom(item):
 		('Affection: Call of the King',       'Affection: Call of the King',                      'translated'),
 		('DLLB',                              'Demon-Lord’s Little Bride',                        'translated'),
 		('AFP',                               'Affection: Fate of The Pair',                      'translated'),
+		('TATEV',                             'Tengu-sama And The Eternal Vow',                   'translated'),
+		('MD',                                'Mating Desire',                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

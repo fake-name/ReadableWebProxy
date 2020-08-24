@@ -12,6 +12,7 @@ def extractChrysanthemumburstWordpressCom(item):
 		('a smile from the villain',                      'a smile from the villain',                                     'translated'),
 		('r:dsat',                                        'rebirth: degenerate slave abuses tyrant',                      'translated'),
 		('rebirth: degenerate slave abuses tyrant',       'rebirth: degenerate slave abuses tyrant',                      'translated'),
+		('turns out i am crazy',       'turns out i am crazy',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

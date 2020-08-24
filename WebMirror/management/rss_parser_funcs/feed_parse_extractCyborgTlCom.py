@@ -4,6 +4,8 @@ def extractCyborgTlCom(item):
 	'''
 	
 	
+	
+	
 	badwords = [
 			'Penjelajahan',
 		]
@@ -22,8 +24,6 @@ def extractCyborgTlCom(item):
 		return None
 
 
-
-
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
@@ -32,6 +32,8 @@ def extractCyborgTlCom(item):
 		('duke\'s daughter (ln)',                   'duke\'s daughter (ln)',                                  'translated'),
 		('irregular rebellion',                     'irregular rebellion',                                    'translated'),
 		('ore wa mada, honki o dashite inai',       'ore wa mada, honki o dashite inai',                      'translated'),
+		('creating a different world',              'Creating a Different World',                             'translated'),
+		('burakku na kishidan no dorei ga howaitona boukensha girudo ni hikinukarete s ranku ni narimashita',       'burakku na kishidan no dorei ga howaitona boukensha girudo ni hikinukarete s ranku ni narimashita',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

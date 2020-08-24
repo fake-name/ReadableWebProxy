@@ -12,10 +12,20 @@ def extractPuttty(item):
 		return buildReleaseMessageWithType(item, 'God of Thunder', vol, chp, frag=frag, postfix=postfix)
 	if 'Beseech the devil'.lower() in item['title'].lower():
 		return buildReleaseMessageWithType(item, 'Beseech the Devil', vol, chp, frag=frag, postfix=postfix)
-	if 'Goblin' in item['tags']:
-		return buildReleaseMessageWithType(item, 'Goblin', vol, chp, frag=frag, postfix=postfix)
-	if 'King of the Eternal Night' in item['tags']:
-		return buildReleaseMessageWithType(item, 'King of the Eternal Night', vol, chp, frag=frag, postfix=postfix)
-	if 'Martial World' in item['tags']:
-		return buildReleaseMessageWithType(item, 'Martial World', vol, chp, frag=frag, postfix=postfix)
+		
+	tagmap = [
+		('edge of the apocalypse',       'edge of the apocalypse',                      'translated'),
+		('Goblin',                       'Goblin',                                      'translated'),
+		('King of the Eternal Night',    'King of the Eternal Night',                   'translated'),
+		('Martial World',                'Martial World',                               'translated'),
+		('PRC',       'PRC',                      'translated'),
+		('Loiterous', 'Loiterous',                'oel'),
+	]
+
+	for tagname, name, tl_type in tagmap:
+		if tagname in item['tags']:
+			return buildReleaseMessageWithType(item, name, vol, chp, frag=frag, postfix=postfix, tl_type=tl_type)
+
+		
+		
 	return False

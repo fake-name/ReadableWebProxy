@@ -291,6 +291,20 @@ def extractFantasyBooksLive(item):
 		('161807',                                                                   'Reincarnated As A Potato. Yes, This Is Not A Joke',                                                                      'oel'),
 		('160849',                                                                   'THE LOVE ECLIPSE',                                                                      'oel'),
 		('157217',                                                                   'Unfathomable Senior',                                                                      'oel'),
+		('164815',                                                                   'Gateway to Happiness',                                                                      'translated'),
+		('166372',                                                                   'Hollow Core',                                                                      'oel'),
+		('168785',                                                                   'Shinji Servitude',                                                                      'oel'),
+		('167955',                                                                   'Reincarnation of A Worthless Man',                                                                      'oel'),
+		('163911',                                                                   'Dead Under',                                                                      'oel'),
+		('168815',                                                                   'Vyndra Stories',                                                                      'oel'),
+		('164594',                                                                   'Chang’an’s First Beauty',                                                                      'translated'),
+		('165609',                                                                   'Destruction Angel Summoned From Being Dead For 500 Years Finds Love',                                                                      'oel'),
+		('165578',                                                                   'Man Man Qing Luo',                                                                      'translated'),
+		('164100',                                                                   'Heavenly Tyrant Martial Soul',                                                                      'translated'),
+		('168004',                                                                   'Atlas Nightshade',                                                                      'oel'),
+		('164890',                                                                   'Omnipotent Overlord',                                                                      'translated'),
+		('167079',                                                                   'HOST ME!',                                                                      'oel'),
+		('164259',                                                                   'Reincarnated As An OP Dungeon: Prequel',                                                                      'oel'),
 
 	]
 

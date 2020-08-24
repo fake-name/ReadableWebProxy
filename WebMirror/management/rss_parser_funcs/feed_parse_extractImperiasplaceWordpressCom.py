@@ -8,8 +8,11 @@ def extractImperiasplaceWordpressCom(item):
 		return None
 
 	tagmap = [
-		('the end of an unrequired love',       'the end of an unrequired love',                      'translated'),
-		('cinderella wasn\'t me',               'cinderella wasn\'t me',                              'translated'),
+		('the end of an unrequired love',                      'the end of an unrequired love',                                     'translated'),
+		('cinderella wasn\'t me',                              'cinderella wasn\'t me',                                             'translated'),
+		('the lady i served became the master',                'the lady i served became the master',                               'translated'),
+		('the obsessive second male lead has gone wild',       'the obsessive second male lead has gone wild',                      'translated'),
+		('the bitch needs a tyrant',                           'the bitch needs a tyrant',                                          'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

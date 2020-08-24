@@ -12,6 +12,11 @@ def extractDeeyosarecommendationWordpressCom(item):
 		('demon\'s sweetheart',       'demon\'s sweetheart',                      'translated'),
 		('fylmt',                              'fortunately, you like me too',                      'translated'),
 		('fortunately, you like me too',       'fortunately, you like me too',                      'translated'),
+		('bnddsb',       'brother next door, don\'t sleep on my bed',                      'translated'),
+		('brother next door, don\'t sleep on my bed',       'brother next door, don\'t sleep on my bed',                      'translated'),
+		('sdwz',       'splendid dream of wanzhou',                      'translated'),
+		('splendid dream of wanzhou',       'splendid dream of wanzhou',                      'translated'),
+		('wife became a minor before divorce',       'wife became a minor before divorce',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

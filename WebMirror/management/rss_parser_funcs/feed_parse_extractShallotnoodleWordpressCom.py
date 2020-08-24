@@ -12,6 +12,10 @@ def extractShallotnoodleWordpressCom(item):
 		('live broadcasting raising dragons in the interstellar',       'live broadcasting raising dragons in the interstellar',                      'translated'),
 		('straight playboy sub',                                        'straight playboy sub',                                                       'translated'),
 		('one and only',                                                'One and Only',                                                               'translated'),
+		('blue black',                                                  'Blue-Black',                                                                 'translated'),
+		('after being picked up by the top alpha',                      'after being picked up by the top alpha',                                     'translated'),
+		('Starry Night',                                                'Starry Night',                                                               'translated'),
+		('i use my straight friend as a sex toy',       'i use my straight friend as a sex toy',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

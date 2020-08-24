@@ -1,4 +1,3 @@
-
 def extractPeachpittingCom(item):
 	'''
 	Parser for 'peachpitting.com'
@@ -9,6 +8,9 @@ def extractPeachpittingCom(item):
 		return None
 
 	tagmap = [
+		('There Will Always Be Protagonists With Delusions of Starting a Harem',       'There Will Always Be Protagonists With Delusions of Starting a Harem',                      'translated'),
+		('i have a pair of yin-yuan eyes',       'i have a pair of yin-yuan eyes',                      'translated'),
+		('My Cherry Will Explode in the Apocalypse',       'My Cherry Will Explode in the Apocalypse',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractPeachpittingCom(item):
 
 
 	return False
-	

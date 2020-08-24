@@ -31,6 +31,9 @@ def extractJstranslations1WordpressCom(item):
 		('acting turns into reality: love was always here',               'acting turns into reality: love was always here',                             'translated'),
 		('reborn top student and sweet little wife',                      'reborn top student and sweet little wife',                                    'translated'),
 		('genius maiden transmigrates: the empress of weapons',           'genius maiden transmigrates: the empress of weapons',                         'translated'),
+		('abandoned peasant woman: farming with a cute baby',             'abandoned peasant woman: farming with a cute baby',                           'translated'),
+		('fortunate pregnancy, forced marriage: boss is addicted to pampering his wife',        'Fortunate Pregnancy, Forced Marriage: Boss is Addicted to Pampering His Wife',                      'translated'),
+		('fortunate pregnancy forced marriage: boss is addicted to pampering his wife',        'Fortunate Pregnancy, Forced Marriage: Boss is Addicted to Pampering His Wife',                      'translated'),
 		('PRC',        'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

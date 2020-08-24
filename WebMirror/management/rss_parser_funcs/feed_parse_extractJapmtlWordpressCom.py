@@ -12,6 +12,7 @@ def extractJapmtlWordpressCom(item):
 		('villainess (?) and my engagement cancellation',                                    'villainess (?) and my engagement cancellation',                                                   'translated'),
 		('beloved villain flips the skies',                                                  'beloved villain flips the skies',                                                                 'translated'),
 		('slow life villainess doesn\'t notice the prince\'s fondness',                      'slow life villainess doesn\'t notice the prince\'s fondness',                                     'translated'),
+		('is the villain not allowed to fall in love?',                                      'is the villain not allowed to fall in love?',                                                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

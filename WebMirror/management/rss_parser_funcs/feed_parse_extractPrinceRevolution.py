@@ -8,14 +8,15 @@ def extractPrinceRevolution(item):
 		
 
 	tagmap = [
-		('Romance RPG',                  'Romance RPG',                  'translated'),
-		('The Legend of Sun Knight',     'The Legend of Sun Knight',     'translated'),
-		('Dominions End',                'Dominions End',                'translated'),
-		('½ Prince',                     '½ Prince',                     'translated'),
-		('killvsprince',                 'Kill No More VS 1/2 Prince',   'translated'),
-		('Illusions-Lies-Truth',         'Illusions, Lies, Truth',       'translated'),
-		('No Hero',                      'No Hero',                      'translated'),
-		('God',                          'GOD',                          'translated'),
+		('Romance RPG',                     'Romance RPG',                  'translated'),
+		('The Legend of Sun Knight',        'The Legend of Sun Knight',     'translated'),
+		('Dominions End',                   'Dominions End',                'translated'),
+		('½ Prince',                        '½ Prince',                     'translated'),
+		('killvsprince',                    'Kill No More VS 1/2 Prince',   'translated'),
+		('Illusions-Lies-Truth',            'Illusions, Lies, Truth',       'translated'),
+		('No Hero',                         'No Hero',                      'translated'),
+		('God',                             'GOD',                          'translated'),
+		('lsk - big and little sun go go',       'big and little sun go go',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

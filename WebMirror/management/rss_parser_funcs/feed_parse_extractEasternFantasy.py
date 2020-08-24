@@ -12,6 +12,7 @@ def extractEasternFantasy(item):
 		('A Martial Odyssey 2',                     'A Martial Odyssey 2',                                    'translated'),
 		('A Martial Odyssey',                       'A Martial Odyssey',                                      'translated'),
 		('the good-for-nothing cultivator',         'the good-for-nothing cultivator',                        'translated'),
+		('the romantic cultivator',                 'the romantic cultivator',                                'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

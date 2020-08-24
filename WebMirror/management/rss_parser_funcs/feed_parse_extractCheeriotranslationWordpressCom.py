@@ -1,4 +1,3 @@
-
 def extractCheeriotranslationWordpressCom(item):
 	'''
 	Parser for 'cheeriotranslation.wordpress.com'
@@ -9,6 +8,7 @@ def extractCheeriotranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('ptavrs',       'Pulling Together a Villain Reformation System',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractCheeriotranslationWordpressCom(item):
 
 
 	return False
-	

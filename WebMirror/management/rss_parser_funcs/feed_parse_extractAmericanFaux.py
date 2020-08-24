@@ -29,6 +29,10 @@ def extractAmericanFaux(item):
 		('i am a duchess who has rewound nine times, but my tenth life seems to be a reward mode',                 'i am a duchess who has rewound nine times, but my tenth life seems to be a reward mode',                                  'translated'),
 		('formerly a fallen duke\'s daughter',                                                                     'formerly a fallen duke\'s daughter',                                                                                      'translated'),
 		('.hack//C.S.',                                                                                            '.hack//C.S.',                                                                                                             'translated'),
+		('even though i was the real saint, i was exiled—which means my country is over',                          'even though i was the real saint, i was exiled—which means my country is over',                                           'translated'),
+		('your majesty, the voice of your heart is leaking!',                                                      'your majesty, the voice of your heart is leaking!',                                                                       'translated'),
+		('PRC',       'PRC',                        'translated'),
+		
 		('The Wandering World',                                                'The Wandering World',                                                                 'oel'),
 	]
 

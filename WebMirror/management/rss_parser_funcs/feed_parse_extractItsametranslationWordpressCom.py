@@ -1,4 +1,3 @@
-
 def extractItsametranslationWordpressCom(item):
 	'''
 	Parser for 'itsametranslation.wordpress.com'
@@ -9,6 +8,10 @@ def extractItsametranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('person with an inferior ability',       'person with inferior ability returns from demon world',                      'translated'),
+		('person with inferior ability returns from demon world',       'person with inferior ability returns from demon world',                      'translated'),
+		('another world is full of happiness',       'another world is full of happiness',                      'translated'),
+		('the iceblade magician rules over the world',       'the iceblade magician rules over the world',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractItsametranslationWordpressCom(item):
 
 
 	return False
-	

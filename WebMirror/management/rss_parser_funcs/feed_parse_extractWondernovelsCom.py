@@ -1,4 +1,3 @@
-
 def extractWondernovelsCom(item):
 	'''
 	Parser for 'wondernovels.com'
@@ -9,6 +8,9 @@ def extractWondernovelsCom(item):
 		return None
 
 	tagmap = [
+		('the golden age',       'the golden age',                      'translated'),
+		('invincible powers',       'invincible powers',                      'translated'),
+		('a joyful life',       'a joyful life',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractWondernovelsCom(item):
 
 
 	return False
-	

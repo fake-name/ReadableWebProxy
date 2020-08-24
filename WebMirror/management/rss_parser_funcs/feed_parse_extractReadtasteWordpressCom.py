@@ -1,4 +1,3 @@
-
 def extractReadtasteWordpressCom(item):
 	'''
 	Parser for 'readtaste.wordpress.com'
@@ -9,6 +8,8 @@ def extractReadtasteWordpressCom(item):
 		return None
 
 	tagmap = [
+		('igatrm',       'Quick Transmigration: All the Supporting Male Leads Are Mine',                      'translated'),
+		('qtatsmlam',       'Quick Transmigration: All the Supporting Male Leads Are Mine',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractReadtasteWordpressCom(item):
 
 
 	return False
-	

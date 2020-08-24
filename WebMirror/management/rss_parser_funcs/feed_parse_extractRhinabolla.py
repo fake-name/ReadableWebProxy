@@ -20,6 +20,7 @@ def extractRhinabolla(item):
 		('Hachi-nan Chapter',               'Hachinan tte, Sore wa nai Deshou!',              'translated'),
 		('infinity moe',                    'infinity moe',                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
+		('strongest hokage kakashi', 'strongest hokage kakashi',                'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

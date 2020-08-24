@@ -14,6 +14,7 @@ def extractSystemtranslationHomeBlog(item):
 		('crazy leveling system',               'crazy leveling system',                              'translated'),
 		('hokage ryo\'s path',                  'hokage ryo\'s path',                                 'translated'),
 		('my doomsday territory',               'my doomsday territory',                              'translated'),
+		('Unfathomable Doomsday',               'Unfathomable Doomsday',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

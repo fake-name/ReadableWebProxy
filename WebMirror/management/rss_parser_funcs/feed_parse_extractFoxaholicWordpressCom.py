@@ -146,6 +146,12 @@ def extractFoxaholicWordpressCom(item):
 		('tbcddm',                                                                                  'The Basketball Captain is Determined to Date Me',                                                        'translated'),
 		('supernatural rebirth genius girl diviner',                                                'supernatural rebirth genius girl diviner',                                                               'translated'),
 		('apocalypse rebirth: chief, don’t move!',                                                  'apocalypse rebirth: chief, don’t move!',                                                                 'translated'),
+
+		('av filming guidebook',                                               'av filming guidebook',                                                              'translated'),
+		('not allowed to leak a single drop',                                  'not allowed to leak a single drop',                                                 'translated'),
+		('the transmigrated cannon fodder overthrows the male protagonist',    'the transmigrated cannon fodder overthrows the male protagonist',                   'translated'),
+		('after being extorted',                                               'after being extorted',                                                              'translated'),
+	
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -1,4 +1,3 @@
-
 def extractAfterhourssolaceCom(item):
 	'''
 	Parser for 'afterhourssolace.com'
@@ -9,6 +8,8 @@ def extractAfterhourssolaceCom(item):
 		return None
 
 	tagmap = [
+		('today\'s dinner is the hero',       'Today’s Dinner is the Hero.',                      'translated'),
+		('today\'s dinner is the hero.',       'Today’s Dinner is the Hero.',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractAfterhourssolaceCom(item):
 
 
 	return False
-	

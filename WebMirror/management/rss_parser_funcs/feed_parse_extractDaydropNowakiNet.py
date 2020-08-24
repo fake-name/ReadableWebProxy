@@ -11,6 +11,8 @@ def extractDaydropNowakiNet(item):
 		('Yes, No, or Maybe Half?',       'Yes, No, or Maybe Half?',                                                   'translated'),
 		('bloodlines ablaze',             'bloodlines ablaze',                                                         'translated'),
 		('side profiles and irises',      'Side Profiles and Irises ~Yes, No, or Maybe Half? Spinoff~',                'translated'),
+		('house of sweets',       'House of Sweets ~un petit nid~',                      'translated'),
+		('Off Air',       'Off Air',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

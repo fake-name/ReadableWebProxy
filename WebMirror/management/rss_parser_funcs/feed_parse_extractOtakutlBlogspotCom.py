@@ -17,6 +17,12 @@ def extractOtakutlBlogspotCom(item):
 		('world apocalypse online',                       'world apocalypse online',                                      'translated'),
 		('STH',                                           'Shrouding the Heavens',                                        'translated'),
 		('Shrouding the Heavens',                         'Shrouding the Heavens',                                        'translated'),
+		('history\'s top sect leader',                    'history’s top sect leader',                                    'translated'),
+		('history’s top sect leader',                     'history’s top sect leader',                                    'translated'),
+		('son',                                           'soul of negary',                      'translated'),
+		('soul of negary',                                'soul of negary',                      'translated'),
+		('ecltd',                                         'every confession leads to death',                      'translated'),
+		('every confession leads to death',               'every confession leads to death',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

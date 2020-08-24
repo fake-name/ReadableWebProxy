@@ -50,6 +50,7 @@ class WebComicsRawModule(RawArchiver.ModuleBase.RawScraperModuleBase):
 		'http://xkcd.com',
 		'http://www.wastedtalent.ca',
 		'http://www.vgcats.com',
+		'http://www.casualvillain.com',
 
 		# Fukkit, lets just archive the all of keenspot
 		'http://twenty-seven.keenspot.com',

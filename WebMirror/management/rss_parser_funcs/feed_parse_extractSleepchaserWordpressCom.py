@@ -14,6 +14,7 @@ def extractSleepchaserWordpressCom(item):
 		('The Job of an Imperial Concubine',        'The Job of an Imperial Concubine',                       'translated'),
 		('Villain Days',                            'Villain Days',                                           'translated'),
 		('Story of Yanxi Palace',                   'Story of Yanxi Palace',                                  'translated'),
+		('the times spent in pretense',             'the times spent in pretense',                            'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

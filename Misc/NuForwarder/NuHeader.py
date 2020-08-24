@@ -1116,7 +1116,8 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		self.log.info("Found %s URLs", len(release_urls))
 
-		self.retriggerUrlList(release_urls)
+		# Do not retrigger URLs that we've already seen.
+		self.retriggerUrlList(release_urls, retrigger_complete=False)
 
 
 	def process_rpc_responses(self, jobids=None, timeout=None):

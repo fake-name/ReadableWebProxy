@@ -21,6 +21,7 @@ def extractFlameucreationsBlogspotCom(item):
 
 	tagmap = [
 		('marilyn likes lariensa too much!',       'marilyn likes lariensa too much!',                      'translated'),
+		('my dad is too strong',       'my dad is too strong',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

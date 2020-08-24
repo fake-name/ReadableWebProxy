@@ -1,0 +1,58 @@
+type: eastern
+
+
+rewalk_interval_days: 30
+
+send_raw_feed: True
+
+baseUrl: [
+
+
+		'http://www.asianovel.net',
+		'http://www.asianovel.com',
+		'https://mtl.asianovel.com',
+
+	]
+
+feeds: [
+	'https://anlate.com/site/rss',
+]
+
+extraStartUrls: [
+	]
+
+badwords: [
+			"?",
+			"&",
+			"/feed/",
+			"/login/",
+			"/contact-us",
+
+
+		]
+
+
+
+decomposeBefore: [
+	{'class'      :'comments-area'},
+	{'class' : "adsbygoogle"},
+]
+
+decompose: [
+
+	{'class'  : 'main-nav'},
+	{'class'  : 'inside-right-sidebar'},
+	{'class'  : 'screen-reader-text'},
+	{'class'  : 'site-footer'},
+	{'class'  : 'menu-toggle'},
+	{'class'  : 'site-header'},
+	{'class'  : 'blog-sidebar'},
+	{'class'  : 'paging-navigation'},
+	{'class'  : 'comments-area'},
+]
+
+stripTitle: [
+]
+
+
+

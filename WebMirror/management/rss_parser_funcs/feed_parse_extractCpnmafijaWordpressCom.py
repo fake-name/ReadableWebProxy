@@ -1,4 +1,3 @@
-
 def extractCpnmafijaWordpressCom(item):
 	'''
 	Parser for 'cpnmafija.wordpress.com'
@@ -9,6 +8,7 @@ def extractCpnmafijaWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Yuusha',       'Yuusha, Aruiwa Bakemono to Yobareta Shoujo',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractCpnmafijaWordpressCom(item):
 
 
 	return False
-	

@@ -7,9 +7,12 @@ def extractEmmsunofficialtranslationsWordpressCom(item):
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
-	if item['tags'] == ['Uncategorized']:
+	if item['tags'] == ['Uncategorized'] or item['tags'] == ['Novel'] or item['tags'] == ['Chinese Novel']:
 		titlemap = [
+			('Rebirth of a Star General: Chapter ',  'Rebirth of a Star General',      'translated'),
 			('Rebirth of a Star General (Chapter ',  'Rebirth of a Star General',      'translated'),
+			('Crimson Karma: Chapter ',  'Crimson Karma ',      'translated'),
+			('My Lady, Please Become My Heroine!: Chapter ',  'My Lady, Please Become My Heroine!',      'translated'),
 			('Tensei Shoujo no Rirekisho',  'Tensei Shoujo no Rirekisho',      'translated'),
 			('Master of Dungeon',           'Master of Dungeon',               'oel'),
 		]
@@ -20,6 +23,8 @@ def extractEmmsunofficialtranslationsWordpressCom(item):
 
 
 	tagmap = [
+		('feng xing',       'feng xing',                      'translated'),
+		('rebirth of a star general',  'Rebirth of a Star General',      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

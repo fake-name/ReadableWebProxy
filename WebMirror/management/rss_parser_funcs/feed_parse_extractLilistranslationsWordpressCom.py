@@ -1,4 +1,3 @@
-
 def extractLilistranslationsWordpressCom(item):
 	'''
 	Parser for 'lilistranslations.wordpress.com'
@@ -9,6 +8,9 @@ def extractLilistranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('little expert bending plot lines back',       'Little Expert Bending Plot Lines Back (Quick Transmigration)',                      'translated'),
+		('i\'m afraid i\'m now a salted fish',          'I’m Afraid I’m Now a Salted Fish (Entertainment Circle)',                      'translated'),
+		('i\'m afraid it\'s a salted fish',          'I’m Afraid I’m Now a Salted Fish (Entertainment Circle)',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractLilistranslationsWordpressCom(item):
 
 
 	return False
-	

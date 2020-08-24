@@ -69,9 +69,11 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		return data
 
 
-	def __retrigger_with_cursor(self, url, cursor, ignoreignore):
+	def __retrigger_with_cursor(self, url, cursor, ignoreignore, retrigger_complete=False):
 
 		# self.log.info("Retriggering fetch for URL: %s", url)
+
+		retrigger_conditional = '''web_pages.state = 'complete' OR ''' if retrigger_complete else ""
 
 		#  Fucking huzzah for ON CONFLICT!
 		cmd = """
@@ -92,8 +94,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 						WHERE
 						(
 								(
-									   web_pages.state = 'complete'
-									OR web_pages.state = 'new'
+									{retrigger}
+									   web_pages.state = 'new'
 									OR web_pages.state = 'fetching'
 									OR web_pages.state = 'error'
 									OR web_pages.state = 'skipped'
@@ -103,7 +105,8 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 						)
 					;
 
-			""".replace("	", " ")
+			""".replace("	", " ").format(retrigger = retrigger_conditional)
+
 
 		url_netloc = urllib.parse.urlsplit(url).netloc
 
@@ -115,7 +118,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		rowcnt = cursor.rowcount
 		return rowcnt
 
-	def retriggerUrlList(self, urlList, ignoreignore=False):
+	def retriggerUrlList(self, urlList, ignoreignore=False, retrigger_complete=False):
 
 		self.log.info("Triggering %s URLs from list", len(urlList))
 
@@ -130,7 +133,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 				try:
 					for url in urlList:
 						loopcnt += 1
-						changed += self.__retrigger_with_cursor(url, raw_cur, ignoreignore)
+						changed += self.__retrigger_with_cursor(url, raw_cur, ignoreignore=ignoreignore, retrigger_complete=retrigger_complete)
 						if commit_each or (loopcnt % 250) == 0:
 							raw_cur.execute("COMMIT;")
 					raw_cur.execute("COMMIT;")

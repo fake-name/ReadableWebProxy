@@ -17,6 +17,11 @@ def extractDummynovelsCom(item):
 		('fake demon lord',                                            'fake demon lord',                                                           'translated'),
 		('sea monster alliance',                                       'sea monster alliance',                                                      'translated'),
 		('Lovable Package',                                            'Lovable Package',                                                           'translated'),
+		('good god stop',                                              'good god stop',                                                             'translated'),
+		('why do i wake up as a cheater every time',                   'why do i wake up as a cheater every time',                                  'translated'),
+		('pastel colours',                                             'pastel colours',                                                            'translated'),
+		('Sect Master and Psycho',                                     'Sect Master and Psycho',                                                    'translated'),
+		('asylum live broadcast room',                                 'asylum live broadcast room',                                                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

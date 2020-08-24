@@ -8,7 +8,9 @@ def extractIcedlattenoiceWordpressCom(item):
 		return None
 
 	tagmap = [
-		('pancake cart',       'pancake cart',                      'translated'),
+		('pancake cart',           'pancake cart',                          'translated'),
+		('find my bearings',       'find my bearings',                      'translated'),
+		('jiang jiu',              'jiang jiu',                             'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

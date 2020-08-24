@@ -1,4 +1,3 @@
-
 def extractLovemetilicecreamWordpressCom(item):
 	'''
 	Parser for 'lovemetilicecream.wordpress.com'
@@ -9,6 +8,7 @@ def extractLovemetilicecreamWordpressCom(item):
 		return None
 
 	tagmap = [
+		('wolves\' den',       'wolves\' den',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLovemetilicecreamWordpressCom(item):
 
 
 	return False
-	

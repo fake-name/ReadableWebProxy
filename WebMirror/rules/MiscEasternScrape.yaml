@@ -39,6 +39,7 @@ baseUrl: [
 		'https://www.zerothnovels.com',
 		'https://www.huntresstranslations.xyz',
 		'https://www.yhittranslations.xyz',
+		'https://www.lipstickwritings.xyz',
 
 		# Dreamwidth seems OK with the default rules
 		"https://duelnoir.dreamwidth.org",
@@ -102,7 +103,6 @@ baseUrl: [
 		'https://www.pemudatunawisata.my.id',
 		'https://isotls.com',
 		'https://ritsu.dev',
-		'http://www.asianovel.net',
 		'https://www.novellike.com',
 
 		'https://sleepy.witchcraft.academy',
@@ -116,6 +116,10 @@ baseUrl: [
 		'http://www.hellomiss285.com',
 		'https://www.yagaminovel.net',
 		'https://sneikkimies.github.io',
+		'https://www.pidifi.com',
+		'https://potla1995.github.io',
+
+		'https://bloodcoretl.com',
 
 		# Broken cert.
 		'https://www.ibig5.net',
@@ -126,6 +130,7 @@ baseUrl: [
 		'https://www.novelsluttyverse.com',
 		'http://www.spaceofgod.com',
 		'http://novelfull.com',
+		'https://www.mysticalmerries.com',
 
 
 	]

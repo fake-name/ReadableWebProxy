@@ -14,6 +14,9 @@ def extractWwwVerdantloreCom(item):
 		('My Wife is the Martial Alliance Leader',       'My Wife is the Martial Alliance Leader',                      'translated'),
 		('tvhss',                                        'The Villain Has Something to Say',                            'translated'),
 		('the final theocracy',                          'The Final Theocracy',                                         'translated'),
+		('the god slaying sword brynhildr',              'the god slaying sword brynhildr',                             'translated'),
+		('tales of distractions',                         'Tales of Distraction',                                        'translated'),
+		('Tales of Distraction',                         'Tales of Distraction',                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

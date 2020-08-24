@@ -8,7 +8,10 @@ def extractOniichancornerWordpressCom(item):
 		return None
 
 	tagmap = [
-		('Isekai Tensei Shodouki',       'Isekai Tensei Shodouki',                      'translated'),
+		('Isekai Tensei Shodouki',                                     'Isekai Tensei Shodouki',                                                    'translated'),
+		('Supreme God',                                                'Supreme God',                                                               'translated'),
+		('when i woke up i became a silver haired loli vampire',       'when i woke up i became a silver haired loli vampire',                      'translated'),
+		('takarakuji',                                                 'Takarakuji de 40-oku Atattandakedo',                                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

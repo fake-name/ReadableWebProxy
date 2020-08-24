@@ -1,9 +1,12 @@
-
 def extractWwwAsianovelCom(item):
 	'''
 	Parser for 'www.asianovel.com'
 	'''
-
+	
+	if "Source:" in item['title']:
+		return None
+		
+		
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
@@ -19,4 +22,3 @@ def extractWwwAsianovelCom(item):
 
 
 	return False
-	

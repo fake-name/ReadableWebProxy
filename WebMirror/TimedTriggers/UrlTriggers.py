@@ -34,7 +34,7 @@ class RssTriggerBase(UrlTrigger):
 	def retriggerRssFeeds(self, feedurls):
 		self.log.info("Retriggering RSS feed URLs")
 
-		self.retriggerUrlList(feedurls, ignoreignore=True)
+		self.retriggerUrlList(feedurls, ignoreignore=True, retrigger_complete=True)
 
 
 	def go(self):
@@ -62,7 +62,7 @@ class PageTriggerBase(UrlTrigger):
 
 	def retriggerPages(self):
 
-		self.retriggerUrlList(self.pages, ignoreignore=True)
+		self.retriggerUrlList(self.pages, ignoreignore=True, retrigger_complete=True)
 
 		# for x in range(len(self.pages)):
 		# 	url = self.pages[x]

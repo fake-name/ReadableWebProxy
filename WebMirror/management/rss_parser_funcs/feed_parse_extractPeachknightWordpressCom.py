@@ -1,4 +1,3 @@
-
 def extractPeachknightWordpressCom(item):
 	'''
 	Parser for 'peachknight.wordpress.com'
@@ -9,6 +8,8 @@ def extractPeachknightWordpressCom(item):
 		return None
 
 	tagmap = [
+		('sozai saishu',       'Isekai Nonbiri Sozai Saishu Seikatsu',                      'translated'),
+		('sozaisaishu',       'Isekai Nonbiri Sozai Saishu Seikatsu',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractPeachknightWordpressCom(item):
 
 
 	return False
-	

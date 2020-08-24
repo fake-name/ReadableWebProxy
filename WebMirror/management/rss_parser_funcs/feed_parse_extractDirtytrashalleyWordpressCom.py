@@ -1,4 +1,3 @@
-
 def extractDirtytrashalleyWordpressCom(item):
 	'''
 	Parser for 'dirtytrashalley.wordpress.com'
@@ -9,6 +8,8 @@ def extractDirtytrashalleyWordpressCom(item):
 		return None
 
 	tagmap = [
+		('regressor instruction manual',       'Regressor Instruction Manual',                      'translated'),
+		('rim',       'Regressor Instruction Manual',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractDirtytrashalleyWordpressCom(item):
 
 
 	return False
-	
