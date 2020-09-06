@@ -101,7 +101,7 @@
 												<th>Target URL</th>
 
 											</tr>
-											{%- for markedup_titles, markedup_name, row_item in new -%}
+											{%- for markedup_titles, markedup_name, raw_urls, row_item in new -%}
 												<tr class='release-row release-row-normal'>
 													<td>
 														<form class='row-state'
@@ -120,7 +120,11 @@
 													<td>{{row_item.releaseinfo}}</td>
 													<td class='title-td'>
 														<a href='{{row_item.actual_target}}'>{{markedup_name | safe}}</a>
+														{% if raw_urls %}
+															<br>
+															{% for raw_url in raw_urls %}URL: {{raw_url | safe}}{% if not loop.last %}<br>{% endif %}{% endfor %}
 														{% if markedup_titles %}
+														{%- endif -%}
 															<br>
 															{% for markedup_title in markedup_titles %}Title: {{markedup_title | safe}}{% if not loop.last %}<br>{% endif %}{% endfor %}
 														{%- endif -%}

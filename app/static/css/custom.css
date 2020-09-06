@@ -146,6 +146,15 @@ div.easyreading
 }
 
 
+div.easyreading select
+{
+	max-width: 90% !important;
+}
+div.easyreading option
+{
+	max-width: 90% !important;
+}
+
 div.easyreading img {
    max-width: 100% !important;
 }

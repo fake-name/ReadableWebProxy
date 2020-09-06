@@ -73,6 +73,8 @@ def exposed_update_nu_responses():
 	'''
 
 	hd = Misc.NuForwarder.NuHeader.NuHeader()
+
+	hd.review_probable_validated()
 	hd.validate_from_new()
 	hd.timestamp_validated()
 
@@ -94,23 +96,8 @@ def exposed_do_nu_head():
 
 	'''
 
-	while 1:
-		hd = Misc.NuForwarder.NuHeader.NuHeader()
-
-		jobcnt = 50
-		print("Putting %s jobs!" % jobcnt)
-		hd.put_job(put=jobcnt)
-
-		sleep_for = 120
-		try:
-			for x in range(sleep_for):
-				hd.process_avail()
-				time.sleep(1)
-				print("Sleeping %s of %s" % (x, sleep_for))
-		except KeyboardInterrupt:
-			print("Interrupted!")
-			return
-		exposed_update_nu_responses()
+	hd = Misc.NuForwarder.NuHeader.NuHeader()
+	hd.go()
 
 
 

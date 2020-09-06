@@ -51,7 +51,7 @@ GONE_RESOLVES = [
 	'faktranslations.com',
 ]
 
-MAX_TOTAL_FETCH_ATTEMPTS = 7
+MAX_TOTAL_FETCH_ATTEMPTS = 8
 
 
 URL_TITLE_CACHE = cachetools.LRUCache(maxsize=5000)
@@ -234,127 +234,6 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 
 
-	def put_head_jobs(self, put=3):
-		with db.session_context() as db_sess:
-			self.log.info("Loading rows to fetch..")
-			recent_d_1 = datetime.datetime.now() - datetime.timedelta(hours=72)
-			recentq = db_sess.query(db.NuReleaseItem)                     \
-				.outerjoin(db.NuResolvedOutbound)                         \
-				.filter(db.NuReleaseItem.validated == False)              \
-				.filter(db.NuReleaseItem.release_date >= recent_d_1)        \
-				.options(joinedload('resolved'))                          \
-				.order_by(desc(db.NuReleaseItem.first_seen))              \
-				.group_by(db.NuReleaseItem.id)                            \
-				.limit(max(100, put*10))
-
-
-			recent_d_2 = datetime.datetime.now() - datetime.timedelta(hours=24*14)
-			bulkq = db_sess.query(db.NuReleaseItem)                       \
-				.outerjoin(db.NuResolvedOutbound)                         \
-				.filter(db.NuReleaseItem.validated == False)              \
-				.filter(db.NuReleaseItem.release_date >= recent_d_2)        \
-				.options(joinedload('resolved'))                          \
-				.order_by(desc(db.NuReleaseItem.first_seen))              \
-				.group_by(db.NuReleaseItem.id)                            \
-				.limit(max(100, put*6))
-
-			bulkset   = bulkq.all()
-			recentset = recentq.all()
-
-			self.log.info("Have %s recent items, %s long-term items to fetch", len(recentset), len(bulkset))
-			haveset   = bulkset + recentset
-			filtered = {tmp.id : tmp for tmp in haveset}
-			haveset = list(filtered.values())
-			self.log.info("Total items after filtering for uniqueness %s", len(haveset))
-
-			if not haveset:
-				self.log.info("No jobs to remote HEAD.")
-				return
-
-			# We pick a large number of items, and randomly choose one of them.
-			# This lets us weight the fetch preferentially to the recent items, but still
-			# have some variability.
-			# We prefer to fetch items that'll resolve as fast as possible.
-			preferred_2 = [tmp for tmp in haveset if len(tmp.resolved) == 2]
-			preferred_1 = [tmp for tmp in haveset if len(tmp.resolved) == 1]
-			fallback    = [tmp for tmp in haveset if len(tmp.resolved) == 0]
-
-
-			haveset = random.sample(preferred_2, min(put, len(preferred_2)))
-			if len(haveset) < put:
-				haveset.extend(random.sample(preferred_1, min(put-len(haveset), len(preferred_1))))
-			if len(haveset) < put:
-				haveset.extend(random.sample(fallback, min(put-len(haveset), len(fallback))))
-
-			put = 0
-			active = set()
-
-			for have in haveset:
-				if len(list(have.resolved)) >= 3:
-					raise RuntimeError("Overresolved item that's not valid.")
-
-				if (have.referrer == "https://www.novelupdates.com" or
-					have.referrer == "https://www.novelupdates.com" or
-					have.referrer == "https://www.novelupdates.com/" or
-					have.referrer == "https://www.novelupdates.com/"):
-					self.log.error("Wat?")
-					self.log.error("Bad Referrer URL got into the input queue!")
-					self.log.error("Id: %s, ref: %s", have.id, have.referrer)
-					for bad_resolve in have.resolved:
-						db_sess.delete(bad_resolve)
-					db_sess.delete(have)
-					db_sess.commit()
-					continue
-
-				if have.fetch_attempts > MAX_TOTAL_FETCH_ATTEMPTS:
-					self.log.error("Wat?")
-					self.log.error("Item fetched too many times!")
-					self.log.error("Id: %s", have.id)
-					self.log.error("Attempted more then %s resolves. Disabling.", MAX_TOTAL_FETCH_ATTEMPTS)
-					have.reviewed = 'rejected'
-					have.validated = True
-					db_sess.commit()
-					continue
-
-				if have.outbound_wrapper in active:
-					continue
-				active.add(have.outbound_wrapper)
-
-				have.fetch_attempts += 1
-				db_sess.commit()
-
-				self.log.info("Putting job for url '%s', with %s resolves so far", have.outbound_wrapper, len(have.resolved))
-				self.log.info("Referring page '%s'", have.referrer)
-
-
-				raw_job = buildjob(
-					module         = 'PersistentSmartWebRequest',
-					call           = 'getHeadTitleChromium',
-					dispatchKey    = "fetcher",
-					jobid          = -1,
-					args           = [],
-					kwargs         = {
-						"url"           : have.outbound_wrapper,
-						"referrer"      : have.referrer,
-						"title_timeout" : 30,
-					},
-					additionalData = {
-						'mode'        : 'fetch',
-						'wrapper_url' : have.outbound_wrapper,
-						'referrer'    : have.referrer
-						},
-					postDelay      = 0,
-					unique_id      = have.outbound_wrapper,
-					serialize      = 'Nu-Header',
-				)
-
-				self.rpc.put_job(raw_job)
-				put += 1
-
-		return put
-
-
-
 	def get_rpc_head_lists(self, chunks=12, chunklength=20, chunkdupes=3):
 		put = chunks * chunklength
 
@@ -401,6 +280,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			preferred_2 = [tmp for tmp in haveset if len(tmp.resolved) == 2]
 			preferred_1 = [tmp for tmp in haveset if len(tmp.resolved) == 1]
 			fallback    = [tmp for tmp in haveset if len(tmp.resolved) == 0]
+			rest        = [tmp for tmp in haveset if len(tmp.resolved) > 2 and len(tmp.resolved) < MAX_TOTAL_FETCH_ATTEMPTS]
 
 
 			haveset = random.sample(preferred_2, min(put, len(preferred_2)))
@@ -408,15 +288,22 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 				haveset.extend(random.sample(preferred_1, min(put-len(haveset), len(preferred_1))))
 			if len(haveset) < put:
 				haveset.extend(random.sample(fallback, min(put-len(haveset), len(fallback))))
+			if len(haveset) < put:
+				haveset.extend(random.sample(rest, min(put-len(haveset), len(rest))))
+
+			self.log.info("Items to fetch after sampling %s", len(haveset))
+			# import pdb
+			# pdb.set_trace()
 
 			put = 0
 			active = set()
 			chunks = []
 
 			chunk = ()
+
 			for have in haveset:
 
-				if len(list(have.resolved)) >= 3:
+				if len(list(have.resolved)) >= MAX_TOTAL_FETCH_ATTEMPTS:
 					raise RuntimeError("Overresolved item that's not valid.")
 
 				if (have.referrer == "https://www.novelupdates.com" or
@@ -753,12 +640,14 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 					assert len(list(valid.resolved)) >= 3
 					not_disabled = [tmp for tmp in valid.resolved if not tmp.disabled]
 					matches = urls_the_same([tmp.actual_target for tmp in not_disabled])
-					if matches:
+					if len(not_disabled) >= 3 and matches:
 						# Since all the URLs match, just use one of them.
 						valid.actual_target = valid.resolved[0].actual_target
 						new_items.append((valid.seriesname, valid.actual_target))
 						valid.validated = True
 						self.mon_con.incr('validated', 1)
+
+							# do nothing until we have more resolves.
 
 					else:
 						bad = []
@@ -767,6 +656,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 						# drop it immediately
 						for resolve in valid.resolved:
 							bad.append(any([tmp in resolve.actual_target for tmp in GONE_RESOLVES]))
+
 						if any(bad):
 							self.log.warning("Domain appears to now be gone. Disabling.")
 							valid.reviewed = 'rejected'
@@ -775,34 +665,35 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 							return
 
 						if len(valid.resolved) >= MAX_TOTAL_FETCH_ATTEMPTS:
-							self.log.warning("Attempted more then 10 resolves. Disabling.")
+							self.log.warning("Attempted more then %s resolves. Disabling.", MAX_TOTAL_FETCH_ATTEMPTS)
 							valid.reviewed = 'rejected'
 							valid.validated = True
 							db_sess.commit()
 							return
 
+						valid.validated = False
 
-						self.log.error("Invalid or not-matching URL set for wrapper %s!", valid.id)
+						if len(not_disabled):
+							self.log.error("Invalid or not-matching URL set for wrapper %s!", valid.id)
+							for lookup in not_disabled:
+								self.log.error("	Resolved URL: %s->%s (%s)", lookup.id, lookup.actual_target, lookup.disabled)
 
-						for lookup in not_disabled:
-							self.log.error("	Resolved URL: %s->%s (%s)", lookup.id, lookup.actual_target, lookup.disabled)
 
+							self.log.info("Masking oldest value.")
+							oldest_time = datetime.datetime.max
+							oldest_row  = None
 
+							for lookup in not_disabled:
+								if lookup.fetched_on < oldest_time:
+									oldest_row = lookup
+									oldest_time = lookup.fetched_on
 
-						self.log.info("Masking oldest value.")
-						oldest_time = datetime.datetime.max
-						oldest_row  = None
+							if oldest_row:
+								self.log.info("Disabling row with ID: %s (%s) Total resolves = %s", oldest_row.id, oldest_row.actual_target, len(valid.resolved))
+								oldest_row.disabled = True
+								db_sess.commit()
 
-						for lookup in not_disabled:
-							if lookup.fetched_on < oldest_time:
-								oldest_row = lookup
-								oldest_time = lookup.fetched_on
-						if oldest_row:
-							self.log.info("Disabling row with ID: %s (%s) Total resolves = %s", oldest_row.id, oldest_row.actual_target, len(valid.resolved))
-							oldest_row.disabled = True
-							db_sess.commit()
-
-						self.mon_con.incr('invalidated', 1)
+							self.mon_con.incr('invalidated', 1)
 
 			db_sess.commit()
 			self.log.info("Added validated series: %s", len(new_items))
@@ -964,7 +855,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		titles = [tmp.resolved_title for tmp in row.resolved]
 		tgts   = [tmp.actual_target for tmp in row.resolved]
 		if not all(titles):
-			return
+			return False
 
 		badwords = [
 			'523',
@@ -983,15 +874,19 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			if any([badword in title.lower() for badword in badwords]):
 				self.log.info("Badword in title: %s (%s)", titles, [badword for badword in badwords if badword in title.lower()])
 
-				return
+				return False
 
 		if not all([tgts[0] == tgt for tgt in tgts]):
-			self.log.info("URL Mismatch!")
-			return
+			self.log.info("URL Mismatch! Removing validation: %s", tgts)
+			row.validated = False
+			row.validated_on = None
+			return False
 
 		row.reviewed = 'valid'
 
 		self.mon_con.incr('reviewed', 1)
+
+		return True
 
 	def review_probable_validated(self):
 		self.log.info("Doing optional validation")
@@ -1012,8 +907,16 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			self.log.info("Have %s items to do validity checks on", len(new_items))
 			self.log.info("%s items needing checking", unverified)
 
+			ok = 0
+			failed = 0
 			for row in new_items:
-				self.review_probable_validated_row(row)
+				did_validate = self.review_probable_validated_row(row)
+				if did_validate:
+					ok += 1
+				else:
+					failed += 1
+
+			self.log.info("Row checker reviewd %s successfully, failed %s items", ok, failed)
 
 			db_sess.commit()
 
@@ -1206,14 +1109,10 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.validate_from_new()
 		self.timestamp_validated()
 		self.fix_names()
-
 		self.review_probable_validated()
 
 		ago = datetime.datetime.now() - datetime.timedelta(days=3)
 		self.transmit_since(ago)
-
-		self.validate_from_new()
-		self.timestamp_validated()
 
 
 		try:
@@ -1470,6 +1369,11 @@ def test():
 	pass
 
 	hdl = NuHeader()
+
+	hdl.review_probable_validated()
+	return
+
+
 
 	hdl.process_avail()
 

@@ -207,15 +207,17 @@ def nu_view():
 	new_with_markup = []
 	for row in new:
 		raw_titles = [tmp.resolved_title for tmp in row.resolved if tmp.resolved_title]
+		raw_urls   = [tmp.actual_target  for tmp in row.resolved if tmp.actual_target ]
 		raw_titles = set(raw_titles)
+		raw_urls = set(raw_urls)
 
 		hl_titles = [add_highlight(row.seriesname, row.releaseinfo, row.groupinfo, title) for title in raw_titles]
 
 		if row.actual_target:
 			highlight = add_highlight(row.seriesname, row.releaseinfo, row.groupinfo, row.actual_target)
-			new_with_markup.append((hl_titles, highlight, row))
+			new_with_markup.append((hl_titles, highlight, raw_urls, row))
 		else:
-			new_with_markup.append((hl_titles, 'No Url', row))
+			new_with_markup.append((hl_titles, 'No Url', raw_urls, row))
 
 	response = make_response(render_template('nu_releases.html',
 						   new              = new_with_markup,
