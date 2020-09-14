@@ -51,7 +51,7 @@ Flask-Babel==2.0.0
 selenium==3.141.0
 webcolors==1.11.1
 pyparsing==2.4.7
-feedparser==5.2.1
+feedparser==6.0.0
 
 Flask-SQLAlchemy==2.4.3
 flask-paginate==0.7.0
