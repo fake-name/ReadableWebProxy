@@ -157,6 +157,11 @@ def extractDanmeiMelimeliartsCom(item):
 		('paintings of terror',       'paintings of terror',                      'translated'),
 		('i rely on poverty to sweep through survival games',       'i rely on poverty to sweep through survival games',                      'translated'),
 		('national competition - druid 1',       'national competition - druid 1',                      'translated'),
+		('don\'t discriminate against species',       'don\'t discriminate against species',                      'translated'),
+		('i\'ve got this cannon fodder\'s back',       'i\'ve got this cannon fodder\'s back',                      'translated'),
+		('the e-sports circle\'s toxic assembly camp',       'the e-sports circle\'s toxic assembly camp',                      'translated'),
+		('falling into the abyss',       'falling into the abyss',                      'translated'),
+		('mr. melancholy wants to live a peaceful life',       'mr. melancholy wants to live a peaceful life',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

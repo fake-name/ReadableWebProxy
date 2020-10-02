@@ -15,6 +15,7 @@ def extractSystemtranslationHomeBlog(item):
 		('hokage ryo\'s path',                  'hokage ryo\'s path',                                 'translated'),
 		('my doomsday territory',               'my doomsday territory',                              'translated'),
 		('Unfathomable Doomsday',               'Unfathomable Doomsday',                              'translated'),
+		('dragon ball god mu',                  'dragon ball god mu',                                 'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

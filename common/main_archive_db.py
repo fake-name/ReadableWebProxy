@@ -114,7 +114,8 @@ class NuReleaseItem(common.db_base.Base):
 	first_seen       = Column(DateTime, nullable=False, default=datetime.datetime.min)
 	validated_on     = Column(DateTime, index=True)
 
-	fetch_attempts   = Column(Integer,  index=True, default=0, nullable=False)
+	fetch_attempts       = Column(Integer, index=True, default=0, nullable=False)
+	local_fetch_attempts = Column(Integer,             default=0, nullable=False)
 
 	resolved         = relationship("NuResolvedOutbound", backref='release')
 

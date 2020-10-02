@@ -8,7 +8,10 @@ def extractTranslationsCraneanimeCom(item):
 		return None
 
 	tagmap = [
+		('my class is a lumberjack',        'Yes, My Class is “Lumberjack”, so what? ~The Giant Tree I Cut was a Mass of Exp~',                      'translated'),
 		('how i become a lumberjack',       'Yes, My Class is “Lumberjack”, so what? ~The Giant Tree I Cut was a Mass of Exp~',                      'translated'),
+		('young god divine armament',       'young god divine armaments',                      'translated'),
+		('communicationaly challenged',      'communicationaly challenged',                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

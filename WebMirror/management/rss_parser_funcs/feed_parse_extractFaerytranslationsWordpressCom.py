@@ -1,4 +1,3 @@
-
 def extractFaerytranslationsWordpressCom(item):
 	'''
 	Parser for 'faerytranslations.wordpress.com'
@@ -9,6 +8,16 @@ def extractFaerytranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('bnddsb',                                          'brother next door, don\'t sleep on my bed',                      'translated'),
+		('brother next door, don\'t sleep on my bed',       'brother next door, don\'t sleep on my bed',                      'translated'),
+		('DS',                                              'demon\'s sweetheart',                      'translated'),
+		('demon\'s sweetheart',                             'demon\'s sweetheart',                      'translated'),
+		('trwnla',                                          'the rich woman is no longer acting',                      'translated'),
+		('the rich woman is no longer acting',              'the rich woman is no longer acting',                      'translated'),
+		('tvreg',                                           'the villain\'s reborn ex-girlfriend',                      'translated'),
+		('the villain\'s reborn ex-girlfriend',             'the villain\'s reborn ex-girlfriend',                      'translated'),
+		('sdwz',                                            'splendid dream of wanzhou',                      'translated'),
+		('splendid dream of wanzhou',                       'splendid dream of wanzhou',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +28,3 @@ def extractFaerytranslationsWordpressCom(item):
 
 
 	return False
-	

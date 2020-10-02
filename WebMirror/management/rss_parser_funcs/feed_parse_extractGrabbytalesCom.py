@@ -1,4 +1,3 @@
-
 def extractGrabbytalesCom(item):
 	'''
 	Parser for 'grabbytales.com'
@@ -9,6 +8,7 @@ def extractGrabbytalesCom(item):
 		return None
 
 	tagmap = [
+		('The Rise of Phoenixes',       'The Rise of Phoenixes',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractGrabbytalesCom(item):
 
 
 	return False
-	

@@ -13,6 +13,7 @@ def extractMobofdeerWordpressCom(item):
 	tagmap = [
 		('Summoning Japan',       'Summoning Japan',                                        'translated'),
 		('MaouSaikon',            'The Demon Lord\'s Second Marriage',                      'translated'),
+		('golden experience',     'golden experience',                                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

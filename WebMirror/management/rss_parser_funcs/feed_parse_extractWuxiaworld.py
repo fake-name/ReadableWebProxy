@@ -155,6 +155,8 @@ def extractWuxiaworld(item):
 		('beastmaster of the ages',                         'beastmaster of the ages',                           'translated'),
 		('Fields of Gold',                                  'Fields of Gold',                                    'translated'),
 		('star odyssey',                                    'Star Odyssey',                                      'translated'),
+		('yama rising',                                     'yama rising',                                       'translated'),
+		('Rise',                                            'Rise',                                              'translated'),
 		('i am overlord',                                   'i am overlord',                                     'translated'),
 		('tomb raider king',                                'tomb raider king',                                  'translated'),
 		('The Unrivaled Tang Sect',                         'The Unrivaled Tang Sect',                           'translated'),

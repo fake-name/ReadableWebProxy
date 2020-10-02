@@ -80,12 +80,13 @@ target_jobs = {
 		# "minute"           : '*/25',
 	},
 
-	'scheduled_jobs.python_job.NuHeaderJob' : {
-		"name"             : 'AUTO: NuHeader job',
-		"interval"         : minutes(50),
-		# "minute"           : '*/22',
-		# "hour"             : '*',
-	},
+	## Disabled because ugh cloudflare
+	# 'scheduled_jobs.python_job.NuHeaderJob' : {
+	# 	"name"             : 'AUTO: NuHeader job',
+	# 	"interval"         : minutes(50),
+	# 	# "minute"           : '*/22',
+	# 	# "hour"             : '*',
+	# },
 
 	'scheduled_jobs.python_job.NuQueueTriggerJob' : {
 		"name"             : 'AUTO: NU Homepage Fetch',

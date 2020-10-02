@@ -1,4 +1,3 @@
-
 def extractWwwWynneFleurCom(item):
 	'''
 	Parser for 'www.wynne-fleur.com'
@@ -9,6 +8,7 @@ def extractWwwWynneFleurCom(item):
 		return None
 
 	tagmap = [
+		('etl',       'Emilone\'s Temptation Labyrinth',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractWwwWynneFleurCom(item):
 
 
 	return False
-	

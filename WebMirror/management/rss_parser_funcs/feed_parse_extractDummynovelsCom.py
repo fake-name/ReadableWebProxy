@@ -22,6 +22,7 @@ def extractDummynovelsCom(item):
 		('pastel colours',                                             'pastel colours',                                                            'translated'),
 		('Sect Master and Psycho',                                     'Sect Master and Psycho',                                                    'translated'),
 		('asylum live broadcast room',                                 'asylum live broadcast room',                                                'translated'),
+		('a filthy rich hamster in the apocalypse',       'a filthy rich hamster in the apocalypse',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

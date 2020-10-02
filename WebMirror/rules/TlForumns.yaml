@@ -285,3 +285,7 @@ decompose: [
 stripTitle: [
 ]
 
+
+special_case_filters : {
+	'forum.wuxiaworld.com' : ["local_fetch", ],
+}

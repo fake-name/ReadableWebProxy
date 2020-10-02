@@ -63,7 +63,6 @@ class NuProcessor(HtmlProcessor.HtmlPageProcessor):
 	# stuff.
 
 	def destyleItems(self, soup):
-
 		return soup
 
 	def decomposeItems(self, soup, toDecompose):
@@ -81,6 +80,7 @@ class NuProcessor(HtmlProcessor.HtmlPageProcessor):
 		# soup = self.relink(soup)
 		title = self.extractTitle(soup, url)
 		contents = soup.prettify()
+
 		return title, contents
 
 

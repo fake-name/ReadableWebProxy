@@ -8,6 +8,7 @@ def extractChaspoilerishtranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the king of despair and divine beast',  'the king of despair and divine beast',                 'translated'),
 		('I heard you are an alien',              'I heard you are an alien',                             'translated'),
 		('Different World Business Symbol',       'Different World Business Symbol',                      'translated'),
 		('I\'m Not Shouldering This Blame',       'I\'m Not Shouldering This Blame',                      'translated'),

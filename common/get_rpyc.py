@@ -25,6 +25,10 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		for x in range(99999):
 			try:
 				self.log.info("Creating rpc_client")
+				# self.log.info("Current stack:")
+				# for line in "\n".join(traceback.format_stack()).strip().split("\n"):
+				# 	self.log.info("%s", line.rstrip())
+				# self.log.info("------------")
 
 				self.rpc_client = mprpc.RPCClient(
 					host         = settings.RPC_AGENT_HOST,
@@ -111,6 +115,11 @@ class RemoteFetchInterface(LogBase.LoggerMixin):
 		for x in range(99999):
 			try:
 				self.log.info("Creating rpc_client")
+				# self.log.info("Current stack:")
+				# for line in "\n".join(traceback.format_stack()).strip().split("\n"):
+				# 	self.log.info("%s", line.rstrip())
+				# self.log.info("------------")
+
 				mp_conf = {"use_bin_type" : True}
 				self.rpc_client = mprpc.RPCClient(settings.SYNC_RPC_SERVER, 4315, pack_params=mp_conf, timeout=90)
 				self.log.info("Validating RPC connection")

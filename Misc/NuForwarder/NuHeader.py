@@ -242,8 +242,9 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			recent_d_1 = datetime.datetime.now() - datetime.timedelta(hours=72)
 			recentq = db_sess.query(db.NuReleaseItem)                     \
 				.outerjoin(db.NuResolvedOutbound)                         \
+				.filter(db.NuReleaseItem.reviewed == 'unverified')        \
 				.filter(db.NuReleaseItem.validated == False)              \
-				.filter(db.NuReleaseItem.release_date >= recent_d_1)        \
+				.filter(db.NuReleaseItem.release_date >= recent_d_1)      \
 				.options(joinedload('resolved'))                          \
 				.order_by(desc(db.NuReleaseItem.first_seen))              \
 				.group_by(db.NuReleaseItem.id)                            \
@@ -254,7 +255,8 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			bulkq = db_sess.query(db.NuReleaseItem)                       \
 				.outerjoin(db.NuResolvedOutbound)                         \
 				.filter(db.NuReleaseItem.validated == False)              \
-				.filter(db.NuReleaseItem.release_date >= recent_d_2)        \
+				.filter(db.NuReleaseItem.reviewed == 'unverified')        \
+				.filter(db.NuReleaseItem.release_date >= recent_d_2)      \
 				.options(joinedload('resolved'))                          \
 				.order_by(desc(db.NuReleaseItem.first_seen))              \
 				.group_by(db.NuReleaseItem.id)                            \
@@ -491,6 +493,11 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 						self.mon_con.incr('head-failed', 1)
 						return
 
+					if to_url_title is None:
+						self.log.warning("Item didn't resolve to a name properly!")
+						self.mon_con.incr('head-failed', 1)
+						return
+
 					if to_url_title.strip().lower() == to_url.strip().lower():
 						self.log.warning("Item didn't resolve to a name properly!")
 						self.mon_con.incr('head-failed', 1)
@@ -644,8 +651,9 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 						# Since all the URLs match, just use one of them.
 						valid.actual_target = valid.resolved[0].actual_target
 						new_items.append((valid.seriesname, valid.actual_target))
-						valid.validated = True
-						self.mon_con.incr('validated', 1)
+						if not valid.validated:
+							valid.validated = True
+							self.mon_con.incr('validated', 1)
 
 							# do nothing until we have more resolves.
 
@@ -662,6 +670,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 							valid.reviewed = 'rejected'
 							valid.validated = True
 							db_sess.commit()
+							self.mon_con.incr('site-gone', 1)
 							return
 
 						if len(valid.resolved) >= MAX_TOTAL_FETCH_ATTEMPTS:
@@ -669,6 +678,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 							valid.reviewed = 'rejected'
 							valid.validated = True
 							db_sess.commit()
+							self.mon_con.incr('rejected', 1)
 							return
 
 						valid.validated = False
@@ -927,7 +937,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 
 		received = 0
 		loops = 0
-		max_loop_time = 60 * 30
+		max_loop_time = 60 * 60
 		while 1:
 			received += self.process_avail()
 			print("\r`fetch_and_flush` sleeping for {} more responses ({} of {}, loop {} of {})\r".format(resp_cnt - received, received, resp_cnt, loops, max_loop_time), end='', flush=True)
@@ -1189,7 +1199,8 @@ class RemoteHeaderClass(RpcBaseClass):
 
 	def poke_chrome(self, ref):
 		self.log.info("Probing chromium")
-		goog = "https://www.novelupdates.com"
+		goog = "https://www.google.com"
+		nu   = "https://www.novelupdates.com"
 		try:
 			with self.cwg.chromiumContext(ref) as cr:
 				cr.navigate_to(goog)
@@ -1200,12 +1211,21 @@ class RemoteHeaderClass(RpcBaseClass):
 			self.log.info("Attempting to access google")
 			self.cwg.getHeadTitleChromium(url=goog)
 			self.log.info("On google.com homepage")
-
 			self.log.info("Chrome appears to be responsive!")
+			with self.cwg.chromiumContext(ref) as cr:
+				title, url = cr.get_page_url_title()
+				self.log.info("Current URL: %s, Title: %s", url, title)
+			self.log.info("Navigating to NU homepage")
+			bad = 'Just a moment...'
+			self.cwg.stepThroughJsWaf(nu, titleNotContains=bad)
+			with self.cwg.chromiumContext(ref) as cr:
+				title, url = cr.get_page_url_title()
+				self.log.info("Current URL: %s, Title: %s", url, title)
+			assert not bad in title, "Failed to get through CF"
 			return
 
 		except Exception as e:
-			self.log.error("Chrome not responding. Restarting")
+			self.log.error("(RemoteHeaderClass) Chrome not responding. Restarting")
 
 		self.cwg.chrome_pool.close()
 		import os
@@ -1371,7 +1391,6 @@ def test():
 	hdl = NuHeader()
 
 	hdl.review_probable_validated()
-	return
 
 
 
@@ -1399,9 +1418,9 @@ def test():
 	# hdl.run()
 
 	items = hdl.get_rpc_head_lists(
-			# chunks      = 1,
-			# chunkdupes  = 1,
-			# chunklength = 15
+			chunks      = 1,
+			chunkdupes  = 1,
+			chunklength = 15
 		)
 
 	if not items:

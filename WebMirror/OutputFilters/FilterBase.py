@@ -37,11 +37,11 @@ class FilterBase(PageProcessor):
 			return self.rpc_interface
 
 		else:
-			raise AttributeError
+			raise AttributeError("No attribute named '%s'" % name)
 
-	def __del__(self):
-		if hasattr(self, "rpc_interface"):
-			self.rpc_interface.close()
+	# def __del__(self):
+	# 	if "rpc_interface" in self.__dict__:
+	# 		self.rpc_interface.close()
 
 
 	def _put_page_links(self, links, priority):

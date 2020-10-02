@@ -1,4 +1,7 @@
 
+import time
+import random
+
 
 import WebMirror.OutputFilters.FilterBase
 
@@ -83,8 +86,29 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 
 
 
+	def __load_referrer(self, base_url, item):
 
-	def __addNewLinks(self, link_items):
+		# Don't dewaf
+		old_autowaf = self.kwargs['wg_proxy']().rules['auto_waf']
+		self.kwargs['wg_proxy']().rules['auto_waf'] = False
+		content, name, mime, url = self.kwargs['wg_proxy']().getFileNameMimeUrl(item.outbound_wrapper, addlHeaders={'Referer': base_url})
+		self.kwargs['wg_proxy']().rules['auto_waf'] = old_autowaf
+
+		if url.startswith("https://www.novelupdates.com/extnu/"):
+			raise RuntimeError("Failure when extracting NU referrer!")
+
+		item.actual_target = url
+		item.reviewed      = "manual_validate"
+		self.db_sess.commit()
+
+
+		self.log.info("TL Group: %s. Series %s, chap: %s", item.groupinfo, item.seriesname, item.releaseinfo)
+		self.log.info("URL '%s' resolved to '%s'", item.outbound_wrapper, item.actual_target)
+		sleep = random.triangular(3,10,30)
+		self.log.info("Sleeping %s", sleep)
+		time.sleep(sleep)
+
+	def __addNewLinks(self, base_url, link_items):
 
 		'''
 		Example release sections:
@@ -110,7 +134,6 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 		    'outbound_wrapper': 'https://www.novelupdates.com/extnu/327674/',
 		    'actual_target': None
 		}
-
 		'''
 
 		commit_each = False
@@ -125,16 +148,17 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 					if not have:
 						self.log.info("New: '%s' -> '%s' : '%s'", item['seriesname'], item['releaseinfo'], item['groupinfo'])
 						have = db.NuReleaseItem(
-								validated        = False,
-								reviewed         = 'unverified',
-								seriesname       = item['seriesname'].strip(),
-								releaseinfo      = item['releaseinfo'].strip(),
-								groupinfo        = item['groupinfo'].strip(),
-								referrer         = item['referrer'],
-								outbound_wrapper = item['outbound_wrapper'],
-								first_seen       = datetime.datetime.now(),
-								release_date     = item['release_date'],
-								fetch_attempts   = 0,
+								validated            = False,
+								reviewed             = 'unverified',
+								seriesname           = item['seriesname'].strip(),
+								releaseinfo          = item['releaseinfo'].strip(),
+								groupinfo            = item['groupinfo'].strip(),
+								referrer             = item['referrer'],
+								outbound_wrapper     = item['outbound_wrapper'],
+								first_seen           = datetime.datetime.now(),
+								release_date         = item['release_date'],
+								fetch_attempts       = 0,
+								local_fetch_attempts = 0,
 							)
 						self.db_sess.add(have)
 						new_count += 1
@@ -149,6 +173,24 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 							have.release_date = item['release_date']
 							if commit_each:
 								self.db_sess.commit()
+
+
+					# This shouldn't happen given the default value, but it is. Not sure how.
+					try:
+						int(have.local_fetch_attempts)
+					except:
+						have.local_fetch_attempts = 0
+
+					if have.reviewed == 'unverified' and have.fetch_attempts == 0 and have.local_fetch_attempts <= 2:
+						try:
+							self.__load_referrer(base_url, have)
+						except Exception as e:
+							self.log.info("Failure resolving item for '%s'", have.outbound_wrapper)
+							self.log.info("TL Group: %s. Series %s, chap: %s", have.groupinfo, have.seriesname, have.releaseinfo)
+							for line in traceback.format_exc().strip().split("\n"):
+								self.log.error("%s", line.rstrip())
+
+							have.local_fetch_attempts += 1
 
 				self.db_sess.commit()
 				break
@@ -251,7 +293,7 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 		soup = WebRequest.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
-			self.__addNewLinks(releases)
+			self.__addNewLinks(url, releases)
 			# self.retrigger_pages(releases)
 
 

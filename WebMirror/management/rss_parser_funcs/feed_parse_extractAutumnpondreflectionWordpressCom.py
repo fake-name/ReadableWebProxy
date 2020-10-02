@@ -1,4 +1,3 @@
-
 def extractAutumnpondreflectionWordpressCom(item):
 	'''
 	Parser for 'autumnpondreflection.wordpress.com'
@@ -9,6 +8,7 @@ def extractAutumnpondreflectionWordpressCom(item):
 		return None
 
 	tagmap = [
+		('tgp',       'The Grand Princess',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractAutumnpondreflectionWordpressCom(item):
 
 
 	return False
-	

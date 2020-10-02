@@ -10,6 +10,7 @@ def extractAirustlWordpressCom(item):
 	tagmap = [
 		('my seatmate tries to make me fall in love with her by teasing me repeatedly, but somehow she was the one who fell',       'my seatmate tries to make me fall in love with her by teasing me repeatedly, but somehow she was the one who fell',                      'translated'),
 		('i want to confess to my childhood friend',                                                                                'i want to confess to my childhood friend',                                                                                               'translated'),
+		('venomous tongue',                                                                                                         'I Quit the Going-Home Club for a Girl with a Venomous Tongue',                                                                           'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

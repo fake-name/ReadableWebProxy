@@ -246,12 +246,12 @@ stripTitle: [
 
 
 special_case_filters : {
-	"https://babelnovel.com"     : ["local_fetch", ],
-	'https://wuxiaworld.com'     : ["local_fetch", ],
-	'https://www.wuxiaworld.com' : ["local_fetch", ],
-	"http://babelnovel.com"     : ["local_fetch", ],
-	'http://wuxiaworld.com'     : ["local_fetch", ],
-	'http://www.wuxiaworld.com' : ["local_fetch", ],
+	"babelnovel.com"     : ["local_fetch", ],
+	'wuxiaworld.com'     : ["local_fetch", ],
+	'www.wuxiaworld.com' : ["local_fetch", ],
+	"babelnovel.com"     : ["local_fetch", ],
+	'wuxiaworld.com'     : ["local_fetch", ],
+	'www.wuxiaworld.com' : ["local_fetch", ],
 }
 
 

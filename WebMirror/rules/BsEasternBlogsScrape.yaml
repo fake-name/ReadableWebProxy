@@ -394,7 +394,12 @@ baseUrl: [
 	'https://silver-slime.blogspot.com',
 	'https://thisseatisbored.blogspot.com',
 	'https://vermilionbox.blogspot.com',
-
+	'https://mycotl.blogspot.com',
+	'https://sdslntranslations.blogspot.com',
+	'https://gracegracy118.blogspot.com',
+	'https://dreamsyoumakewhenyouareawake.blogspot.com',
+	'https://miraisaesang.blogspot.com',
+	'https://sdsyuritranslations.blogspot.com',
 ]
 
 feedPostfix: "/feeds/posts/default"

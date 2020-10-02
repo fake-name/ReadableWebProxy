@@ -305,6 +305,14 @@ def extractFantasyBooksLive(item):
 		('164890',                                                                   'Omnipotent Overlord',                                                                      'translated'),
 		('167079',                                                                   'HOST ME!',                                                                      'oel'),
 		('164259',                                                                   'Reincarnated As An OP Dungeon: Prequel',                                                                      'oel'),
+		('170292',                                                                   'To The World Dominated By Demons – The Deity Returns From Defeat',                                                                      'oel'),
+		('172987',                                                                   'Summoned by a Demon Lord',                                                                      'oel'),
+		('169729',                                                                   'Realms of Eas',                                                                      'oel'),
+		('172512',                                                                   'The Legend of the Tamer',                                                                      'oel'),
+		('172915',                                                                   'Map to Hope',                                                                      'oel'),
+		('164967',                                                                   'Agatha The Legendary Guild Master',                                                                      'oel'),
+		('168398',                                                                   'LUNA',                                                                      'oel'),
+		('168695',                                                                   'Sleeping Princess',                                                                      'oel'),
 
 	]
 
