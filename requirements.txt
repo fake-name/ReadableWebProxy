@@ -64,7 +64,7 @@ git+https://github.com/kvesteri/sqlalchemy-continuum.git
 
 # Probably requires
 # sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev
-pillow==7.1.2
+pillow==7.2.0
 
 # probably requires `sudo apt install libxml2-dev libxslt1-dev`
 BeautifulSoup4==4.9.1
