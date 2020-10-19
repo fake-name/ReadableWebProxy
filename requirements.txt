@@ -54,7 +54,7 @@ pyparsing==2.4.7
 feedparser==6.0.1
 
 Flask-SQLAlchemy==2.4.4
-flask-paginate==0.7.0
+flask-paginate==0.7.1
 Flask-WTF==0.14.3
 apscheduler==3.6.3
 sqlalchemy_searchable==1.1.0
