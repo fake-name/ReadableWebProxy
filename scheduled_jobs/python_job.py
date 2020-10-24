@@ -128,6 +128,8 @@ class RollingRawUrlTriggerJob(PythonJob, job.JobBase):
 
 class NuHeaderJob(PythonJob, job.JobBase):
 	invokable = Misc.NuForwarder.NuHeader.NuHeader
+class NuUpdateSenderJob(PythonJob, job.JobBase):
+	invokable = Misc.NuForwarder.NuHeader.NuUpdateSender
 
 class WebMirrorPriorityDropper(PythonJob, job.JobBase):
 	invokable = PriorityDropper

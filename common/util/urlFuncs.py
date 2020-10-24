@@ -213,6 +213,7 @@ def unwrap_redirect(urlin, resolve_redirects=True):
 		return None
 
 
+revfitz_garbage_re      = re.compile(r'revfitz\.com/\d+/[a-zA-Z\-_0-9&;]+/')
 fuyukai_squatter_re     = re.compile(r'www\.fuyukai\.club/[a-z]\d+[A-Z]/')
 gilegati_squatter_re    = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9_]+\.(html|php|xml)')
 silversrise_squatter_re = re.compile(r'www\.silversrise\.com/[a-zA-Z0-9]+/([a-zA-Z0-9]+/|[a-z0-9]+\.html)')
@@ -249,6 +250,10 @@ def cleanUrl(urlin):
 
 	if parsed.netloc.endswith('www.fuyukai.club'):
 		if fuyukai_squatter_re.search(urlin):
+			return None
+
+	if parsed.netloc.endswith('revfitz.com'):
+		if revfitz_garbage_re.search(urlin):
 			return None
 
 	if parsed.netloc.endswith('novel.gilegati.com'):

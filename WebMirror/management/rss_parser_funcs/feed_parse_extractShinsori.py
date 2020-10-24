@@ -55,6 +55,7 @@ def extractShinsori(item):
 		('Isekai Tensei Harem',                                         'Isekai Tensei Harem',                                                                      'translated'),
 		('The Great Nation Remodeling',                                 'Great Nation Remodeling of a Reincarnated Princess',                                       'translated'),
 		('Obaachan (28) is Free',                                       'Obaachan (28) is Free',                                                                    'translated'),
+		('the dismissed royal magician is returning home ~the country is a facing crisis, but i don’t care~',                                            'the dismissed royal magician is returning home ~the country is a facing crisis, but i don’t care~',                                                                         'translated'),
 		('Isekai Risshiden',                                            'Isekai Risshiden',                                                                         'translated'),
 		('Yuusha Ga Onna Da to Dame Desu Ka?',                          'Yuusha Ga Onna Da to Dame Desu Ka?',                                                       'translated'),
 		('Tensei Reijou wa Yancha Suru',                                'Tensei Reijou wa Yancha Suru',                                                             'translated'),
@@ -69,6 +70,7 @@ def extractShinsori(item):
 		('Heroine of the Broken Engagement',                            'Heroine of the Broken Engagement',                                                         'translated'),
 		('Child Rearing Hero',                                          'Child Rearing Hero and Children of the Demon King',                                        'translated'),
 		('my husband, the commander of imperial guards, wants to divorce me, but i don’t want to part with my angelic stepchild.',        'my husband, the commander of imperial guards, wants to divorce me, but i don’t want to part with my angelic stepchild.',      'translated'),
+		('Akuyaku Reijou ni Nanka Narimasen',                                                          'akuyaku reijou ni nanka narimasen. watashi wa『futsuu』no koushaku reijou desu!',                       'translated'),
 		('akuyaku reijou ni nanka narimasen. watashi wa『futsuu』no koushaku reijou desu!',            'akuyaku reijou ni nanka narimasen. watashi wa『futsuu』no koushaku reijou desu!',                       'translated'),
 		('she retaliated because her entire family was wrongfully executed. and thoroughly at that!',  'she retaliated because her entire family was wrongfully executed. and thoroughly at that!',             'translated'),
 	]

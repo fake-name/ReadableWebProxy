@@ -33,6 +33,8 @@ def extractReLibrary(item):
 		('God of Chaos',                           'God of Chaos',                                                           'oel'),
 		('Soft Spoken Brutality',                  'Soft Spoken Brutality',                                                  'oel'),
 		('Martial Void King',                      'Martial Void King',                                                      'oel'),
+		('the vampire’s templar',                  'The Vampire\'s Templar',                                                 'oel'),
+		('loli demon king',                        'iving as I Please, as a Loli Demon King',                                'oel'),
 		('Aurora God',                             'Aurora God',                                                             'oel'),
 		("Silva's Diary",                          "Silva's Diary",                                                          'oel'),
 		('Dragon Princess',                        'Even if I\'m Reborn as a Cute Dragon Girl, I will still make a Harem',   'translated'),

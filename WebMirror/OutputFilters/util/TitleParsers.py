@@ -6,11 +6,20 @@ import re
 import json
 import logging
 import settings
+import bs4
 from WebMirror.util.titleParseNew import TitleParser
 
 
 # pylint: disable=W0201
 
+
+def title_from_html(html):
+	soup = bs4.BeautifulSoup(html, features="lxml")
+	titletg = soup.title
+	if not titletg:
+		return None
+
+	return titletg.get_text(strip=True)
 
 skip_filter = [
 	"www.baka-tsuki.org",

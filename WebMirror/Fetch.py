@@ -161,6 +161,7 @@ class ItemFetcher(common.LogBase.LoggerMixin):
 		assert isinstance(content, (str, bytes)) , "Content must be a string/bytes. It's currently type: '%s'" % type(content)
 
 
+
 		params = {
 									'pageUrl'         : url,
 									'pgContent'       : content,
@@ -184,6 +185,8 @@ class ItemFetcher(common.LogBase.LoggerMixin):
 									'job'             : self.job,
 									'wg_proxy'        : self.wg_proxy,
 		}
+
+
 
 		ret = plugin.process(params)
 

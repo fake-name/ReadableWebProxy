@@ -55,12 +55,33 @@ badwords: [
 
 
 decomposeBefore: [
-	{'class'      :'comments-area'},
 ]
 
 decompose: [
+	{'id'  : 'my_popupdefault'},
+	{'id'  : 'mypostid_stats'},
+	{'id'  : 'report_id'},
+	{'id'  : 'islogin'},
+	{'id'  : 'mypostid'},
+	{'id'  : 'my_popupchapters'},
+	{'id'  : 'menu_username_right'},
+	{'id'  : 'my_popupreading'},
+	{'id'  : 'my_popuplogin_open'},
+	{'id'  : 'review_inside'},
+	{'id'  : 'my_popuplogin'},
 
-
+	{'class'  : 'ol_account_main'},
+	{'class'  : 'search_main_themain'},
+	{'class'  : 'search_main'},
+	{'class'  : 'popup-tag'},
+	{'class'  : 'admin_wi'},
+	{'class'  : 'menu_username_right'},
+	{'class'  : 'lo_box'},
+	{'class'  : 'lo_main'},
+	{'class'  : 'lo_main_themain'},
+	{'class'  : 'writeit-header'},
+	{'class'  : 'mobile_menu_items'},
+	{'class'  : 'ad_336'},
 	{'class'  : 'main-nav'},
 	{'class'  : 'inside-right-sidebar'},
 	{'class'  : 'screen-reader-text'},
@@ -68,7 +89,20 @@ decompose: [
 	{'class'  : 'menu-toggle'},
 	{'class'  : 'site-header'},
 	{'class'  : 'paging-navigation'},
-	{'class'  : 'comments-area'},
+	{'class'  : 'wi-fic_r-content'},
+	{'class'  : 'myp_report'},
+	{'class'  : 'wi_footer'},
+	{'class'  : 'social_footer_ico'},
+	{'class'  : 'popup_background'},
+	{'class'  : 'popup_wrapper'},
+	{'class'  : 'w-comments-form'},
+	{'class'  : 'rev_leave'},
+	{'class'  : 'login_img'},
+	{'class'  : 'filter_rate-ratings'},
+	{'class'  : 'review_noaccount'},
+	{'class'  : 'mypostid_stats'},
+	{'class'  : 'btnrev-group'},
+	{'class'  : 'sort-reviews'},
 ]
 
 stripTitle: [

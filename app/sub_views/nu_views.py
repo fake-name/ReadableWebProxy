@@ -31,6 +31,7 @@ from sqlalchemy.sql.expression import nullslast
 from sqlalchemy.orm import joinedload
 
 import common.util.urlFuncs as urlFuncs
+import Misc.NuForwarder.NuHeader
 
 def abbreviate(instr):
 	instr = "".join([char for char in instr if char in string.ascii_letters + " "])
@@ -85,6 +86,8 @@ def get_nu_items(sess, selector):
 		new_items = new_items.filter(db.NuReleaseItem.actual_target == None)
 	elif selector == "rejected":
 		new_items = new_items.filter(db.NuReleaseItem.reviewed == 'rejected')
+	elif selector == "manual_validate":
+		new_items = new_items.filter(db.NuReleaseItem.reviewed == 'manual_validate')
 	elif selector == "unverified" or selector == None:
 		new_items = new_items.filter(db.NuReleaseItem.validated == True)
 		new_items = new_items.filter(db.NuReleaseItem.reviewed == 'unverified')
@@ -127,7 +130,7 @@ def get_nu_items(sess, selector):
 
 def toggle_row(sess, rid, oldv, newv):
 
-	row = sess.query(db.NuReleaseItem)     \
+	row = sess.query(db.NuReleaseItem)      \
 		.filter(db.NuReleaseItem.id == rid) \
 		.scalar()
 
@@ -138,13 +141,23 @@ def toggle_row(sess, rid, oldv, newv):
 		assert(oldv != newv)
 		print("Row: ", rid, oldv, newv, row.seriesname, row.releaseinfo)
 		row.reviewed = newv
-
+		return row
 
 def release_validity_toggle(sess, data):
 	sess.expire_all()
+	rows = []
 	for change in data:
-		toggle_row(sess, change['id'], change['old'], change['new'])
+		row = toggle_row(sess, change['id'], change['old'], change['new'])
 		print("Change:", change)
+		if row:
+			rows.append(row)
+
+	if rows:
+		sender = Misc.NuForwarder.NuHeader.NuUpdateSender()
+		for row in rows:
+			if row.reviewed == 'valid':
+				sender.do_release(row)
+
 
 	sess.commit()
 	sess.expire_all()
@@ -186,6 +199,51 @@ ops = {
 	'nu release validity update' : release_validity_toggle,
 	'nu release delete' : release_delete,
 	}
+
+
+@app.route('/nu_manual_validate/', methods=['GET'])
+@auth.login_required
+def nu_manual_check():
+
+
+	session = g.session
+	session.expire_all()
+	session.commit()
+	session.expire_all()
+	new = get_nu_items(g.session, "manual_validate")
+	session.commit()
+	new.sort(key=lambda x: x.first_seen, reverse=True)
+	new.sort(key=lambda x: '...' in x.seriesname)
+	new.sort(key=lambda x: ('https://www.novelupdates.com' in x.actual_target if x.actual_target else False))
+
+	new_with_markup = []
+	for row in new:
+		raw_titles = [tmp.resolved_title for tmp in row.resolved if tmp.resolved_title]
+		raw_urls   = [tmp.actual_target  for tmp in row.resolved if tmp.actual_target ]
+		raw_titles = set(raw_titles)
+		raw_urls = set(raw_urls)
+
+		hl_titles = [add_highlight(row.seriesname, row.releaseinfo, row.groupinfo, title) for title in raw_titles]
+
+		if row.actual_target:
+			highlight = add_highlight(row.seriesname, row.releaseinfo, row.groupinfo, row.actual_target)
+			new_with_markup.append((hl_titles, highlight, raw_urls, row))
+		else:
+			new_with_markup.append((hl_titles, 'No Url', raw_urls, row))
+
+	response = make_response(render_template('nu_releases.html',
+						   new              = new_with_markup,
+						   ))
+	session.expire_all()
+
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+	response.headers["Pragma"] = "no-cache"
+	response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00"
+
+	session.commit()
+	session.expire_all()
+	return response
 
 
 @app.route('/nu_releases/', methods=['GET'])

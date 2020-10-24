@@ -400,6 +400,15 @@ baseUrl: [
 	'https://dreamsyoumakewhenyouareawake.blogspot.com',
 	'https://miraisaesang.blogspot.com',
 	'https://sdsyuritranslations.blogspot.com',
+	'https://azurism.blogspot.com',
+	'https://night-time-translations.blogspot.com',
+	'https://novellazu.blogspot.com',
+
+	'https://archersaitranslations.blogspot.com',
+	'https://dearsouthview.blogspot.com',
+	'https://grimmsstoryteller.blogspot.com',
+	'https://magnogarten.blogspot.com',
+
 ]
 
 feedPostfix: "/feeds/posts/default"

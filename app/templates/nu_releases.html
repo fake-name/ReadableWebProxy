@@ -79,6 +79,7 @@
 									<button onclick="apply_changes()">Apply changes</button>
 									<button onclick="check_rows(true)">Check rows</button>
 									<button onclick="check_rows(false)">Check ok rows</button>
+									<button onclick="check_all_rows()">Check all rows</button>
 									<div class="clearfix"></div>
 
 									<div>
@@ -311,6 +312,19 @@
 				{
 					itm.find("input[value=valid]").prop( "checked", true ).click();
 				}
+			});
+		}
+
+
+
+		function check_all_rows()
+		{
+			var rows = $(".release-row");
+			rows.each(function( index, value ) {
+				var row = $(this);
+				var itm = $(this).find(".row-state");
+
+				itm.find("input[value=valid]").prop( "checked", true ).click();
 			});
 		}
 

@@ -41,7 +41,7 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			print("SHSeriesPageFilter Wants url: '%s'" % url)
 			return True
 		# else:
-		# 	print("SHSeriesPageFilter doesn't want url: '%s'" % url)
+		# 	print("SHSeriesPageFilter doesn't want url: '%s'" % url)ty
 
 		return False
 
@@ -55,7 +55,7 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.content    = kwargs['pgContent']
 		self.type       = kwargs['type']
 
-		self.log.info("Processing ScribbleHub Item")
+		self.log.info("Processing ScribbleHub Series Page")
 		super().__init__(**kwargs)
 
 
@@ -66,6 +66,7 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	def extractSeriesReleases(self, seriesPageUrl, soup):
 
+
 		match = self.match_re.search(seriesPageUrl)
 		series_id = match.group(1)
 
@@ -75,24 +76,22 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if not titletg:
 			self.log.error("Could not find title tag!")
 			return []
+
 		if not authortg:
 			self.log.error("Could not find author tag!")
 			return []
 
+		metas = soup.find_all("script", type="application/ld+json")
+		agg_meta = {}
+		for meta in metas:
+			loaded = json.loads(meta.get_text())
+			for k, v in loaded.items():
+				agg_meta[k] = v
 
-		rating_val   = soup.find("meta", property='ratingValue')
-		rating_cnt = soup.find("meta", property='ratingCount')
+		rating     = float(agg_meta.get('ratingValue', "0"))
+		rating_cnt = float(agg_meta.get('ratingCount', "0"))
 
-		if not rating_val or not rating_cnt:
-			return []
-
-		rating     = float(rating_val.get('content', "0"))
-		rating_cnt = float(rating_cnt.get('content', "999999"))
-
-
-		print("Rating value:", rating)
-		print("Rating cnt:", rating_cnt)
-
+		self.log.info("Rating value: %s, Rating cnt: %s", rating, rating_cnt)
 
 		if rating < SeriesPageCommon.MIN_RATING_STARS:
 			self.log.error("Item rating below upload threshold: %s", rating)
@@ -138,7 +137,7 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		genres = []
 		genrediv = soup.find('span', class_='wi_fic_genre')
-		for genre in genrediv.find_all('a', class_='genre'):
+		for genre in genrediv.find_all('a', class_='fic_genre'):
 			genretxt = SeriesPageCommon.clean_tag(genre.get_text())
 			genretxt = SeriesPageCommon.fix_genre(genretxt)
 			genres.append(genretxt)
@@ -162,6 +161,8 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		extra['homepage']   = seriesPageUrl
 		extra['sourcesite'] = 'ScribbleHub'
 
+
+		self.log.info("Found %s tags, %s genres", len(tags), len(genres))
 
 		chapters = soup.find_all("li", class_='toc_w')
 
@@ -199,6 +200,9 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = float(reldate)
 			raw_item['linkUrl']   = relurl
 
+			import pdb
+			pdb.set_trace()
+
 			raw_msg = msgpackers._buildReleaseMessage(
 				raw_item,
 				title,
@@ -215,7 +219,7 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			# print("Chapter:", raw_item)
 			raw_retval.append(raw_msg)
 
-		raw_retval = SeriesPageCommon.check_fix_numbering(self.log, raw_retval, series_id, rrl=True)
+		raw_retval = SeriesPageCommon.check_fix_numbering(self.log, raw_retval, series_id, sh=True)
 
 		# Do not add series without 3 chapters.
 		if len(raw_retval) < 3:
@@ -242,12 +246,15 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def processPage(self, url, content):
 		# Ignore 404 chapters
 		if "<title> | Scribble Hub</title>" in content:
+			self.log.warning("No series?")
 			return
 
 		soup = WebRequest.as_soup(self.content)
 		releases = self.extractSeriesReleases(self.pageUrl, soup)
 		if releases:
 			self.sendReleases(releases)
+		else:
+			self.log.info("No releases found on page?")
 
 
 

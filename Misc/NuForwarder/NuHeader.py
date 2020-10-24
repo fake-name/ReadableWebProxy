@@ -90,7 +90,94 @@ def load_lut():
 	lut = json.loads(jctnt)
 	return lut
 
-class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin.StatsdMixin, rpc_base.RpcMixin):
+
+class NuSenderMixin(rpc_base.RpcMixin):
+
+
+	def do_release(self, row):
+
+		if row.seriesname.endswith("..."):
+			self.log.warning("Series name ends with dots. Skipping (%s -> %s -> %s)",
+				row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
+			return
+		if row.groupinfo.endswith("..."):
+			self.log.warning("Group name ends with dots. Skipping (%s -> %s -> %s -> %s)",
+				row.groupinfo, row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
+			return
+
+		if not row.releaseinfo:
+			self.log.error("NO releaseinfo (%s, %s)?", row, row.id)
+			return
+		if not row.actual_target:
+			self.log.error("NO actual_target (%s, %s)?", row, row.id)
+			return
+
+
+		# Had a typo in the name_fix_lut.json file. Fix that. Also, derp.
+		if row.groupinfo == 'Misty Cloud Translations' and '//2slow2latemtl.icu/' in row.actual_target:
+			row.groupinfo = "2Slow2Late MTL"
+
+
+		if "www.webnovel.com" in row.actual_target and "/rssbook/" in row.actual_target:
+			return
+
+		self.log.info("Release for series: %s -> %s -> %s", row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
+
+
+		vol, chap, frag, postfix = extractVolChapterFragmentPostfix(row.releaseinfo)
+
+
+		ret = {
+			'srcname'      : fix_string(row.groupinfo),
+			'series'       : fix_string(row.seriesname),
+			'vol'          : vol,
+			'chp'          : chap,
+			'frag'         : frag,
+			'published'    : calendar.timegm(row.first_seen.timetuple()),
+			'itemurl'      : row.actual_target,
+			'postfix'      : fix_string(postfix),
+			'author'       : None,
+			'tl_type'      : 'translated',
+			'match_author' : False,
+			'nu_release'   : True
+
+		}
+
+		release = createReleasePacket(ret, beta=False)
+		# print("Packed release:", release)
+		self.rpc.put_feed_job(release)
+
+		return row.actual_target
+
+
+	def transmit_since(self, earliest=None):
+		if not earliest:
+			earliest = datetime.datetime.min
+
+		release_urls = []
+		with db.session_context() as db_sess:
+			validated = db_sess.query(db.NuReleaseItem)      \
+				.filter(db.NuReleaseItem.reviewed == 'valid')        \
+				.filter(db.NuReleaseItem.validated_on > earliest) \
+				.all()
+
+				# .filter(db.NuReleaseItem.validated == True)       \
+
+			# print("validated:")
+			# print(len(list(validated)))
+
+			for row in validated:
+				relurl = self.do_release(row)
+				if relurl:
+					release_urls.append(relurl)
+
+			db_sess.commit()
+
+		return release_urls
+
+
+
+class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin.StatsdMixin, NuSenderMixin):
 	'''
 		NU Updates are batched and only forwarded to the output periodically,
 		to make timing attacks somewhat more difficult.
@@ -724,85 +811,7 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 			db_sess.commit()
 
 
-	def do_release(self, row):
 
-		if row.seriesname.endswith("..."):
-			self.log.warning("Series name ends with dots. Skipping (%s -> %s -> %s)",
-				row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
-			return
-		if row.groupinfo.endswith("..."):
-			self.log.warning("Group name ends with dots. Skipping (%s -> %s -> %s -> %s)",
-				row.groupinfo, row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
-			return
-
-		if not row.releaseinfo:
-			return
-		if not row.actual_target:
-			return
-
-
-		# Had a typo in the name_fix_lut.json file. Fix that. Also, derp.
-		if row.groupinfo == 'Misty Cloud Translations' and '//2slow2latemtl.icu/' in row.actual_target:
-			row.groupinfo = "2Slow2Late MTL"
-			self.log.error("What?")
-
-
-		if "www.webnovel.com" in row.actual_target and "/rssbook/" in row.actual_target:
-			return
-
-		self.log.info("Release for series: %s -> %s -> %s", row.seriesname.strip(), row.releaseinfo.strip(), row.actual_target.strip())
-
-
-		vol, chap, frag, postfix = extractVolChapterFragmentPostfix(row.releaseinfo)
-
-
-		ret = {
-			'srcname'      : fix_string(row.groupinfo),
-			'series'       : fix_string(row.seriesname),
-			'vol'          : vol,
-			'chp'          : chap,
-			'frag'         : frag,
-			'published'    : calendar.timegm(row.first_seen.timetuple()),
-			'itemurl'      : row.actual_target,
-			'postfix'      : fix_string(postfix),
-			'author'       : None,
-			'tl_type'      : 'translated',
-			'match_author' : False,
-
-			'nu_release'   : True
-
-		}
-
-		release = createReleasePacket(ret, beta=False)
-		# print("Packed release:", release)
-		self.rpc.put_feed_job(release)
-
-		return row.actual_target
-
-	def transmit_since(self, earliest=None):
-		if not earliest:
-			earliest = datetime.datetime.min
-
-		release_urls = []
-		with db.session_context() as db_sess:
-			validated = db_sess.query(db.NuReleaseItem)      \
-				.filter(db.NuReleaseItem.reviewed == 'valid')        \
-				.filter(db.NuReleaseItem.validated == True)       \
-				.filter(db.NuReleaseItem.validated_on > earliest) \
-				.all()
-
-			# print("validated:")
-			# print(len(list(validated)))
-
-
-			for row in validated:
-				relurl = self.do_release(row)
-				if relurl:
-					release_urls.append(relurl)
-
-			db_sess.commit()
-
-		self.retriggerUrlList(release_urls)
 
 	def fix_names(self):
 		with db.session_context() as db_sess:
@@ -1122,8 +1131,8 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.review_probable_validated()
 
 		ago = datetime.datetime.now() - datetime.timedelta(days=3)
-		self.transmit_since(ago)
-
+		release_urls = self.transmit_since(ago)
+		self.retriggerUrlList(release_urls)
 
 		try:
 			self.do_chunk_rpc_heads()
@@ -1142,13 +1151,29 @@ class NuHeader(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass, StatsdMixin
 		self.review_probable_validated()
 
 		ago = datetime.datetime.now() - datetime.timedelta(days=3)
-		self.transmit_since(ago)
+		release_urls = self.transmit_since(ago)
+		self.retriggerUrlList(release_urls)
 
 
 		# Update the netloc tracker
 		mapdict = nnt.get_nu_head_urls()
 		nnt.push_urls_into_table(mapdict)
 		nnt.filter_get_have_urls()
+
+
+class NuUpdateSender(NuHeader):
+	def run(self):
+
+		ago = datetime.datetime.now() - datetime.timedelta(days=3)
+		release_urls = self.transmit_since(ago)
+		self.retriggerUrlList(release_urls)
+
+
+		# Update the netloc tracker
+		mapdict = nnt.get_nu_head_urls()
+		nnt.push_urls_into_table(mapdict)
+		nnt.filter_get_have_urls()
+
 
 
 def fetch_and_flush():
@@ -1239,9 +1264,6 @@ class RemoteHeaderClass(RpcBaseClass):
 		self.cwg.chrome_pool.close()
 		pool = self.cwg.chrome_pool.get()
 		self.log.info("Restarted: %s", pool)
-
-
-
 
 
 	def do_head_sequence(self, lock_interface, urls_to_head):
@@ -1466,6 +1488,12 @@ def test():
 	# hdl.transmit_since(ago)
 	# hdl.get_dotted()
 
+def send_test():
+
+	snd = NuUpdateSender()
+	snd.go()
+
+
 
 if __name__ == '__main__':
 	import logSetup
@@ -1473,3 +1501,4 @@ if __name__ == '__main__':
 
 	# test_all_the_same()
 	test()
+	# send_test()

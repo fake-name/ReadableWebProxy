@@ -38,6 +38,7 @@ def get_sh_lut():
 
 	lut = _load_lut_internal()
 	lut = lut['scribblehub']
+	assert 'force_sequential_numbering' in lut
 
 	return lut
 
@@ -83,22 +84,32 @@ def check_fix_numbering(log, releases, series_id, rrl=False, sh=False):
 	must_renumber = series_id in conf['force_sequential_numbering']
 
 	missing_chap = 0
+	distinct = set()
 	for item in releases:
 		if not (item['vol'] or item['chp']):
 			missing_chap += 1
+		distinct.add((item['vol'], item['chp'], item['frag']))
 
-	if releases:
-		unnumbered = (missing_chap/len(releases)) * 100
-		if (len(releases) >= 5 and unnumbered > 80) or must_renumber:
-			if must_renumber:
-				log.warning("Item numbering force-overridden! Adding simple sequential chapter numbers.")
-			else:
-				log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
-			chap = 1
-			for item in releases:
-				item['vol'] = None
-				item['chp'] = chap
-				chap += 1
+	if not releases:
+		return []
+
+	# If less then half the release items have unique vol-chap-frag tuples,
+	# Apply a forced numbering scheme.
+	if len(distinct) < (len(releases) / 2.0):
+		must_renumber = True
+
+	unnumbered = (missing_chap/len(releases)) * 100
+
+	if (len(releases) >= 5 and unnumbered > 80) or must_renumber:
+		if must_renumber:
+			log.warning("Item numbering force-overridden! Adding simple sequential chapter numbers.")
+		else:
+			log.warning("Item seems to not have numbered chapters. Adding simple sequential chapter numbers.")
+		chap = 1
+		for item in releases:
+			item['vol'] = None
+			item['chp'] = chap
+			chap += 1
 
 	return releases
 

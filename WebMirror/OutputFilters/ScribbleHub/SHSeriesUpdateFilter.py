@@ -44,7 +44,7 @@ class SHSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.type       = kwargs['type']
 		self.db_sess    = kwargs['db_sess']
 
-		self.log.info("Processing ScribbleHub Item")
+		self.log.info("Processing ScribbleHub SeriesUpdate Item")
 		super().__init__(**kwargs)
 
 

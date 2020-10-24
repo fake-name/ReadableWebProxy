@@ -9,6 +9,7 @@ import common.database as db
 
 import WebMirror.OutputFilters.util.MessageConstructors  as msgpackers
 from WebMirror.OutputFilters.util.TitleParsers import extractTitle
+from WebMirror.OutputFilters.util.TitleParsers import title_from_html
 
 from . import NUBaseFilter
 
@@ -88,6 +89,10 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 
 	def __load_referrer(self, base_url, item):
 
+		if any([tmp.client_id == 'local' for tmp in item.resolved]):
+			return
+
+
 		# Don't dewaf
 		old_autowaf = self.kwargs['wg_proxy']().rules['auto_waf']
 		self.kwargs['wg_proxy']().rules['auto_waf'] = False
@@ -97,13 +102,28 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 		if url.startswith("https://www.novelupdates.com/extnu/"):
 			raise RuntimeError("Failure when extracting NU referrer!")
 
+		item.validated     = True
+		item.validated_on  = datetime.datetime.now()
 		item.actual_target = url
 		item.reviewed      = "manual_validate"
+
+		pg_title = title_from_html(content)
+
+		new = db.NuResolvedOutbound(
+				client_id      = "local",
+				client_key     = "local",
+				actual_target  = url,
+				resolved_title = pg_title,
+				fetched_on     = datetime.datetime.now(),
+			)
+
+		item.resolved.append(new)
 		self.db_sess.commit()
 
 
 		self.log.info("TL Group: %s. Series %s, chap: %s", item.groupinfo, item.seriesname, item.releaseinfo)
 		self.log.info("URL '%s' resolved to '%s'", item.outbound_wrapper, item.actual_target)
+		self.log.info("Page title: '%s'", pg_title)
 		sleep = random.triangular(3,10,30)
 		self.log.info("Sleeping %s", sleep)
 		time.sleep(sleep)
@@ -185,12 +205,23 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 						try:
 							self.__load_referrer(base_url, have)
 						except Exception as e:
+
 							self.log.info("Failure resolving item for '%s'", have.outbound_wrapper)
 							self.log.info("TL Group: %s. Series %s, chap: %s", have.groupinfo, have.seriesname, have.releaseinfo)
 							for line in traceback.format_exc().strip().split("\n"):
 								self.log.error("%s", line.rstrip())
 
 							have.local_fetch_attempts += 1
+
+							try:
+								self.log.warning("Rolling back")
+								self.db_sess.rollback()
+							except Exception as e:
+								self.log.critical("Failure in rollback for '%s'", have.outbound_wrapper)
+								for line in traceback.format_exc().strip().split("\n"):
+									self.log.error("%s", line.rstrip())
+								pass
+
 
 				self.db_sess.commit()
 				break

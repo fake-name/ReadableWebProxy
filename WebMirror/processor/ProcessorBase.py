@@ -415,8 +415,8 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		assert params['job'].priority
 
 		instance = cls(**params)
-		# print("Instantiated plugin: ", instance)
-		# print("Now calling: ", instance.extractContent)
+		print("Instantiated plugin: ", instance)
+		print("Now calling: ", instance.extractContent)
 		ret = instance.extractContent()
 		# print("Call returned data: ", bool(ret))
 

@@ -34,7 +34,7 @@ target_jobs = {
 
 	'scheduled_jobs.python_job.RssTriggerJob' : {
 		"name"             : 'AUTO: Rss Feeds Trigger job',
-		"interval"         : minutes(45),
+		"interval"         : minutes(60 + 20),
 		# "minute"           : '*/42',
 	},
 	'scheduled_jobs.python_job.HourlyPageTriggerJob' : {
@@ -87,6 +87,13 @@ target_jobs = {
 	# 	# "minute"           : '*/22',
 	# 	# "hour"             : '*',
 	# },
+
+	'scheduled_jobs.python_job.NuUpdateSenderJob' : {
+		"name"             : 'AUTO: NuUpdateSender job',
+		"interval"         : minutes(120),
+		# "minute"           : '*/22',
+		# "hour"             : '*',
+	},
 
 	'scheduled_jobs.python_job.NuQueueTriggerJob' : {
 		"name"             : 'AUTO: NU Homepage Fetch',
