@@ -1,12 +1,13 @@
 
 import traceback
 import os
+import os.path
 import sys
 import re
-import os.path
+import time
+import urllib.parse
 import yaml
 import flags
-import urllib.parse
 
 class ValidationError(Exception):
 	pass
@@ -471,12 +472,22 @@ def get_rules():
 	# 	print()
 	return ret, specials
 
+# Reload the rules every 8 hours
+reload_interval = 60 * 60 * 8
+
+last_rule_load = 0
+last_triggered_load = 0
+last_special_load = 0
+last_raw_load = 0
 
 
 def load_rules(override=False):
+	global last_rule_load
 
-	if flags.RULE_CACHE == None or "debug" in sys.argv or override:
-		print("Need to load rules (%s, %s)" % (flags.RULE_CACHE == None, "debug" in sys.argv))
+	now = time.time()
+	if flags.RULE_CACHE == None or "debug" in sys.argv or override or (last_rule_load + reload_interval) < now:
+		last_rule_load = now
+		print("Need to load rules (%s, %s, %s)" % (flags.RULE_CACHE == None, "debug" in sys.argv, (last_rule_load + reload_interval) < now))
 		rules, specials = get_rules()
 
 		# Might as well update both while we're here.
@@ -488,9 +499,12 @@ def load_rules(override=False):
 
 
 def load_special_case_sites(override=False):
+	global last_special_load
 
-	if flags.SPECIAL_CASE_CACHE == None or "debug" in sys.argv or override:
-		print("Need to load special-url handling ruleset (%s, %s)" % (flags.SPECIAL_CASE_CACHE == None, "debug" in sys.argv))
+	now = time.time()
+	if flags.SPECIAL_CASE_CACHE == None or "debug" in sys.argv or override or (last_special_load + reload_interval) < now:
+		last_special_load = now
+		print("Need to load special-url handling ruleset (%s, %s, %s)" % (flags.SPECIAL_CASE_CACHE == None, "debug" in sys.argv, (last_special_load + reload_interval) < now))
 		rules, specials = get_rules()
 
 		# Might as well update both while we're here.
@@ -518,9 +532,13 @@ def get_raw_mirror_confs():
 
 
 def load_raw_mirror_sites():
+	global last_raw_load
 
-	if flags.RAW_MIRROR_CACHE == None or "debug" in sys.argv:
-		print("Need to load special-url handling ruleset (%s, %s)" % (flags.RAW_MIRROR_CACHE == None, "debug" in sys.argv))
+
+	now = time.time()
+	if flags.RAW_MIRROR_CACHE == None or "debug" in sys.argv or (last_raw_load + reload_interval) < now:
+		last_raw_load = now
+		print("Need to load special-url handling ruleset (%s, %s, %s)" % (flags.RAW_MIRROR_CACHE == None, "debug" in sys.argv, (last_raw_load + reload_interval) < now))
 		flags.RAW_MIRROR_CACHE = get_raw_mirror_confs()
 
 
@@ -560,6 +578,13 @@ def import_from_path(path):
 
 
 def get_triggered_urls():
+	'''
+	Iterate over all the active jobs, and
+	extract the triggered URLs from those jobs to
+	pass on to the triggering system.
+
+
+	'''
 	import WebMirror.TimedTriggers.UrlTriggers
 	import activeScheduledTasks
 	ret = []
@@ -573,11 +598,16 @@ def get_triggered_urls():
 	return ret
 
 def load_triggered_url_list():
+	global last_triggered_load
+	now = time.time()
 
-	if flags.TRIGGERED_URLS_CACHE == None or "debug" in sys.argv:
-		print("Need to load special-url handling ruleset (%s, %s)" % (flags.TRIGGERED_URLS_CACHE == None, "debug" in sys.argv))
+
+	if flags.TRIGGERED_URLS_CACHE == None or "debug" in sys.argv or (last_triggered_load + reload_interval) < now:
+		print("Need to load special-url handling ruleset (%s, %s, %s)" % (flags.TRIGGERED_URLS_CACHE == None, "debug" in sys.argv, (last_triggered_load + reload_interval) < now))
 		flags.TRIGGERED_URLS_CACHE = get_triggered_urls()
 
+		print("Triggered URLs:")
+		print(flags.TRIGGERED_URLS_CACHE)
 
 	return flags.TRIGGERED_URLS_CACHE
 
@@ -593,6 +623,10 @@ def startup():
 	load_rules()
 	load_special_case_sites()
 	load_raw_mirror_sites()
+
+	# # Don't load the triggered URLs list, as it requires loading a bunch of database dependencies
+	# # that can break things due to fiddly import ordering issues.
+	# load_triggered_url_list()
 
 startup()
 
@@ -634,9 +668,23 @@ def test():
 	# import pdb
 	# pdb.set_trace()
 
+def test_multuple_load():
+	for x in range(100):
+		startup()
+		print("Loop ", x)
+
+
+def time_it():
+	import timeit
+	t = timeit.Timer("time.time()", setup="import time")
+	print("Repeating")
+	print(t.repeat())
+
 
 if __name__ == "__main__":
-	test()
+	test_multuple_load()
+	# time_it()
+	# test()
 	# for ruleset in load_rules():
 	# 	if ruleset['send_raw_feed'] == False:
 	# 		print(ruleset['netlocs'])

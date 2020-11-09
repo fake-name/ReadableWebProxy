@@ -11,6 +11,11 @@ send_raw_feed: True
 rewalk_interval_days: 30
 
 baseUrl: [
+
+	'https://esquiretranslation.blogspot.com',
+	'https://kotransalation.blogspot.com',
+	'https://watonbar.blogspot.com',
+
 	'https://dawninfinity.blogspot.com',
 	'https://dummytranslations.blogspot.com',
 	'https://echoesfromanotherlife.blogspot.com',
@@ -409,6 +414,18 @@ baseUrl: [
 	'https://grimmsstoryteller.blogspot.com',
 	'https://magnogarten.blogspot.com',
 
+	'https://2ntranslation.blogspot.com',
+	'https://it-came-from-the-labyrinth.blogspot.com',
+	'https://lazyladytranslations.blogspot.com',
+	'https://mochaccinoflavour.blogspot.com',
+	'https://noonascribble.blogspot.com',
+	'https://srtranslations.blogspot.com',
+	'https://woojm304.blogspot.com',
+	'https://theabyssdreams.blogspot.com',
+	'https://fantasykun.blogspot.com',
+	'https://lunaticll.blogspot.com',
+	'https://meidea-translation.blogspot.com',
+	'https://theabyssdreams-misc.blogspot.com',
 ]
 
 feedPostfix: "/feeds/posts/default"

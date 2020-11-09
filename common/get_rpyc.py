@@ -34,18 +34,19 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 					host         = settings.RPC_AGENT_HOST,
 					port         = 4315,
 					pack_params  = {
-							"use_bin_type":True
+							"use_bin_type":True,
 						},
 					unpack_params = {
 							'raw'             : True,
-							'max_buffer_size' : sys.maxsize,
-					# 		'max_str_len'     : sys.maxsize,
-					# 		'max_bin_len'     : sys.maxsize,
-					# 		'max_array_len'   : sys.maxsize,
-					# 		'max_map_len'     : sys.maxsize,
-					# 		'max_ext_len'     : sys.maxsize,
+							'max_buffer_size' : 2**31-1,
+							'max_str_len'     : 2**31-1,
+							'max_bin_len'     : 2**31-1,
+							'max_array_len'   : 2**31-1,
+							'max_map_len'     : 2**31-1,
+							'max_ext_len'     : 2**31-1,
 						},
 					)
+
 
 				self.log.info("Validating RPC connection")
 
@@ -95,6 +96,8 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 
 
 	def check_ok(self):
+
+
 		ret, bstr = self.rpc_client.call('checkOk')
 		assert ret is True
 		assert len(bstr) > 0

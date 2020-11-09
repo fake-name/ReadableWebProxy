@@ -528,7 +528,15 @@ def hasDuplicateSegments(url):
 
 		return False
 
+def stripUrlQuery(url):
+	'''
+	Trim any trailing query from a URL.
 
+	Will raise an exception on a non-valid URLs
+	'''
+	url_split = urllib.parse.urlsplit(url)
+	url_root = urllib.parse.urlunparse(url_split[:3] +("", "", ""))
+	return url_root
 
 def urlClean(url):
 	'''

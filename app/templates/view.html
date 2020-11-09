@@ -14,6 +14,7 @@
 				<a href="javascript:void(0)" id="refetch_link_1">Re-Fetch</a>
 				| Age: <span class='cachestate'>loading...</span>
 				| Filter: <span class='filterstate'>loading...</span>
+				| VP: <span class='viewport'>...</span>
 			</p>
 
 			<p>
@@ -123,10 +124,19 @@
 			})
 		}
 
-		load_cache();
+		$( document ).ready(function() {
+			var filtst  = $(".viewport");
+			var viewportWidth = $(window).width();
+			var viewportHeight = $(window).height();
+			filtst.text("W: " + String(viewportWidth) + " H: " + String(viewportHeight));
 
-		$('#refetch_link_1').click(load_nocache);
-		$('#refetch_link_2').click(load_nocache);
+			load_cache();
+
+			$('#refetch_link_1').click(load_nocache);
+			$('#refetch_link_2').click(load_nocache);
+		});
+
+
 
 
 	</script>

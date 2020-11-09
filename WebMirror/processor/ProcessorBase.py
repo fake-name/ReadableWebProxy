@@ -84,6 +84,12 @@ class PageProcessor(LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 		if inUrl.startswith("javascript:void(0);"):
 			return inUrl
 
+		# Don't generate reader links to my own content
+		if inUrl.startswith("https://www.wlnupdates.com"):
+			return inUrl
+		if inUrl.startswith("http://www.wlnupdates.com"):
+			return inUrl
+
 
 		# Fix protocol-relative URLs
 		if inUrl.startswith("//"):

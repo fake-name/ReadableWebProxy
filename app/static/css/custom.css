@@ -1,37 +1,35 @@
 div.scroll-panel-right-top {
-	position           : fixed;
-	overflow           : hidden;
-	z-index            : 2400;
-	right              : 10px;
+	position           : fixed !important;
+	z-index            : 2400 !important;
+	right              : 10px !important;
+	right              : 10px !important;
 	top                : 50px !important;
 }
 
 div.scroll-panel-left-top {
-	position           : fixed;
-	overflow           : hidden;
-	z-index            : 2400;
-	left               : 10px;
+	position           : fixed !important;
+	z-index            : 2400 !important;
+	left               : 10px !important;
 	top                : 50px !important;
 }
 div.scroll-panel-right-bottom {
-	position           : fixed;
-	overflow           : hidden;
-	z-index            : 2400;
-	right              : 10px;
+	position           : fixed !important;
+	z-index            : 2400 !important;
+	right              : 10px !important;
 	bottom             : 150px !important;
 }
 
 div.scroll-panel-left-bottom {
-	position           : fixed;
-	overflow           : hidden;
-	z-index            : 2400;
-	left               : 10px;
+	position           : fixed !important;
+	z-index            : 2400 !important;
+	left               : 10px !important;
 	bottom             : 150px !important;
 }
 
 
 div.scroll-button
 {
+	-webkit-backface-visibility: hidden;
 	font-size          : 40px;
 	opacity            : 0.70;
 	font-size          : 40px;
@@ -39,6 +37,10 @@ div.scroll-button
 	margin             : 5px;
 	border-radius      : 10px;
 	background-color   : rgba(255,255,255,0.5);
+}
+
+@viewport {
+    initial-scale: 1;
 }
 
 .fullwidth {
@@ -72,7 +74,7 @@ div.scroll-button
 
 	.scroll-panel-buttons
 	{
-		display: none;
+		/*display: none;*/
 	}
 }
 
@@ -100,7 +102,7 @@ div.scroll-button
 {
 	.scroll-panel-buttons
 	{
-		display: none;
+		/*display: none;*/
 	}
 }
 
@@ -110,11 +112,11 @@ div.scroll-button
 
 	div.scroll-panel-right
 	{
-		display : none;
+		/*display : none;*/
 	}
 	div.scroll-panel-left
 	{
-		display : none;
+		/*display : none;*/
 	}
 
 	div.easyreading
@@ -417,7 +419,7 @@ body {
 	height:100%;
 }
 #segment_container {
-	max-width: 1200px;
+	max-width: 100%;
 	min-height:100%;
 	position:relative;
 }

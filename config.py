@@ -1,5 +1,13 @@
 
 
+import os
+import sys
+import hashlib
+import datetime
+
+import string
+import random
+
 from settings import DATABASE_IP            as C_DATABASE_IP
 from settings import DATABASE_DB_NAME       as C_DATABASE_DB_NAME
 from settings import DATABASE_USER          as C_DATABASE_USER
@@ -18,13 +26,6 @@ from settings import RABBIT_VHOST           as C_RABBIT_VHOST
 
 from settings import RAW_RESOURCE_DIR       as C_RAW_RESOURCE_DIR
 
-import os
-import sys
-import hashlib
-import datetime
-
-import string
-import random
 random.seed()
 
 if len(sys.argv) > 1 and "debug" in sys.argv:
@@ -42,7 +43,7 @@ def get_random(chars):
 	return rand
 
 
-class BaseConfig(object):
+class BaseConfig():
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{passwd}@{host}:5432/{database}'.format(user=C_DATABASE_USER, passwd=C_DATABASE_PASS, host=C_DATABASE_IP, database=C_DATABASE_DB_NAME)
 	SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')

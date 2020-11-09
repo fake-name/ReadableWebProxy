@@ -2,7 +2,7 @@
 
 import abc
 
-import WebMirror.rules
+from WebMirror.rules import load_rules
 import WebMirror.TimedTriggers.TriggerBase
 import WebRequest
 import settings
@@ -24,7 +24,7 @@ class RssTriggerBase(UrlTrigger):
 
 
 	def get_urls(self):
-		self.rules =  WebMirror.rules.load_rules()
+		self.rules = load_rules()
 		feeds = []
 		for item in self.rules:
 			feeds += item['feedurls']

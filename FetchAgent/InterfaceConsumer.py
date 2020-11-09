@@ -219,7 +219,7 @@ class SingleAmqpConnection(object):
 		self.response_queue.put(message.body)
 		message.ack()
 
-		self.log.info("Message packet received! %s", len(message.body))
+		self.log.info("Message packet received! %s (%s items in queue)", len(message.body), self.response_queue.qsize())
 
 	def __do_tx(self):
 

@@ -155,6 +155,38 @@ def saveFile(filecont, url, filename):
 	assert dirPath.startswith(C_RAW_RESOURCE_DIR)
 
 
+
+		# while 1:
+		# 	try:
+
+
+		# 		hashfile.hash_bytes(file_contents)
+
+		# 		file_row, have_fqp = self.get_create_file_row(
+		# 				sess         = sess,
+		# 				row          = row,
+		# 				fqfilename   = fqfilename,
+		# 				file_content = file_contents,
+		# 			)
+		# 		row.fileid = file_row.id
+
+
+		# 		return have_fqp
+
+		# 	except (IOError, OSError):
+		# 		chop = chop - 1
+		# 		filepath, fileN = os.path.split(fqfilename)
+
+		# 		fileN = fileN[:chop]+fileN[-4:]
+		# 		self.log.warn("Truncating file length to %s characters and re-encoding.", chop)
+		# 		fileN = fileN.encode('utf-8','ignore').decode('utf-8')
+		# 		fileN = nt.makeFilenameSafe(fileN)
+		# 		fqfilename = os.path.join(filepath, fileN)
+		# 		fqfilename = insertCountIfFilenameExists(fqfilename)
+
+
+
+
 	saves = 0
 	while 1:
 		try:
@@ -170,20 +202,40 @@ def saveFile(filecont, url, filename):
 			with open(fqpath, "wb") as fp:
 				fp.write(filecont)
 				break
+
 		except OSError as e:
 			saves += 1
 
 			if e.args[0] != 36:  ## File name too long
-				raise
 
-			root, ext = os.path.splitext(fqpath)
-			fqpath = root[:-1]+ext
+				path, fname = os.path.split(fqpath)
+				root, ext = os.path.splitext(fname)
+				if len(root) < 4:
 
-			if saves > 1000:
+					with open("error %s - %s.txt" % ('raw_file_saver', time.time()), "w") as fp:
+						fp.write("File saver failed to generate sane filename:\n")
+						fp.write("\n")
+						fp.write("Full filename: %s\n" % (fqpath, ))
+						fp.write("Filename root: %s\n" % (root, ))
+						fp.write("Filename ext: %s\n" % (ext, ))
+						fp.write("\n")
+						fp.write("Exception args: %s\n" % (e.args, ))
+						fp.write("\n")
+						fp.write(traceback.format_exc())
+						fp.write("\n")
+
+					for line in traceback.format_exc().split("\n"):
+						print(line)
+
+					raise
+				fqpath = os.path.join(path, root[:-1]+ext)
+
+			if saves > 4096:
 
 				with open("error %s - %s.txt" % ('raw_file_saver', time.time()), "w") as fp:
 					fp.write("File saver hit exception!\n")
 					fp.write("\n")
+					fp.write("Full filename: %s\n" % (fqpath, ))
 					fp.write("Exception args: %s\n" % (e.args, ))
 					fp.write("\n")
 					fp.write(traceback.format_exc())
@@ -722,8 +774,6 @@ class RawSiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 
 def test():
-
-	import common.database
 
 	archiver = RawSiteArchiver(total_worker_count=1, worker_num=0, new_job_queue=None, cookie_lock=None, response_queue=None, db=common.database)
 

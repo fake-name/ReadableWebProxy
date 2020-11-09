@@ -2,7 +2,7 @@
 
 import xxhash
 import urllib.parse
-import WebMirror.rules
+from WebMirror.rules import load_rules
 import common.util.rewalk_epoch
 
 class UnwantedUrlError(RuntimeError):
@@ -10,7 +10,7 @@ class UnwantedUrlError(RuntimeError):
 
 
 def load_nl_refetch_interval_mapping():
-	rules = WebMirror.rules.load_rules()
+	rules = load_rules()
 
 
 	ret = {}

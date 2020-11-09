@@ -200,9 +200,6 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			raw_item['published'] = float(reldate)
 			raw_item['linkUrl']   = relurl
 
-			import pdb
-			pdb.set_trace()
-
 			raw_msg = msgpackers._buildReleaseMessage(
 				raw_item,
 				title,
