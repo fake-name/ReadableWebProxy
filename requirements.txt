@@ -20,7 +20,7 @@ cssutils==1.0.2
 tinycss2==1.1.0
 fontTools==4.17.0
 fdict==0.8.1
-cachetools==4.1.0
+cachetools==4.1.1
 bleach==3.1.5
 Jinja2==2.11.2
 xmljson==0.2.1 
