@@ -74,17 +74,64 @@ div.scroll-button
 
 	.scroll-panel-buttons
 	{
-		/*display: none;*/
+		display: none;
 	}
 }
 
 @media (min-width: 600px) and (max-width: 991px)
 {
 
+
+	* {
+	  color: #000000!important;
+	  font-weight:500 !important;
+	  border-color: #555555 !important;
+	  scrollbar-arrow-color: #CCCCCC !important;
+	  scrollbar-base-color: #2266AA !important;
+	  scrollbar-shadow-color: #2266AA !important;
+	  scrollbar-face-color: #333333 !important;
+	  scrollbar-highlight-color: #2266AA !important;
+	  scrollbar-dark-shadow-color: #2266AA !important;
+	  scrollbar-3d-light-color: #2266AA !important;
+	  scrollbar-track-color: #333333 !important;
+	}
+
+	a,a * {
+	  color: #000000 !important;
+	  font-weight:500 !important;
+	}
+
+	a: visited,a: visited *,a: active,a: active * {
+	  color: #000000 !important;
+	  font-weight:500 !important;
+	}
+
+	a: hover,a: hover * {
+	  color: #000000 !important;
+	  background: #666666 !important;
+	  font-weight:500 !important;
+	}
+
+	input,select,option,button,textarea {
+	  color: #000000 !important;
+	  font-weight:500 !important;
+	  background: #FFFFFF !important;
+	  border: #FFFFFF !important;
+	  border-color: #FFFFFF #FFFFFF #FFFFFF #FFFFFF !important;
+	}
+
+	input: focus,select: focus,option: focus,button: focus,textarea: focus,input: hover,select: hover,option: hover,button: hover,textarea: hover {
+	  color: #000000 !important;
+	  background: #FFFFFF !important;
+	  font-weight:500 !important;
+	  border-color: #FFFFFF #FFFFFF #FFFFFF #FFFFFF !important;
+	}
+
+
 	div.easyreading
 	{
 		font-size   : large !important;
-		max-width   : 600px !important;
+		max-width   : 500px !important;
 	}
 
 	.imgDiv {
@@ -102,7 +149,7 @@ div.scroll-button
 {
 	.scroll-panel-buttons
 	{
-		/*display: none;*/
+		display: none;
 	}
 }
 
@@ -112,11 +159,11 @@ div.scroll-button
 
 	div.scroll-panel-right
 	{
-		/*display : none;*/
+		display : none;
 	}
 	div.scroll-panel-left
 	{
-		/*display : none;*/
+		display : none;
 	}
 
 	div.easyreading
@@ -133,7 +180,7 @@ div.scroll-button
 	}
 	.info-item
 	{
-		/*overflow : hidden;*/
+		overflow : hidden;
 	}
 }
 
