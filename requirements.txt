@@ -117,7 +117,7 @@ tornado==6.1
 influxdb==5.3.1
 setproctitle==1.1.10
 flask_httpauth==4.2.0
-hiredis==1.0.1
+hiredis==1.1.0
 guess_language-spirit==0.5.3
 PyEnchant==3.1.1
 dill==0.3.1.1
