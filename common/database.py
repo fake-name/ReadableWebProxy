@@ -4,7 +4,7 @@ import sys
 
 from sqlalchemy_continuum_vendored import make_versioned
 
-from settings import DO_VERSIONING
+from config import C_DO_VERSIONING as DO_VERSIONING
 
 def cares_about_change(op, row):
 	table_name = row.__tablename__

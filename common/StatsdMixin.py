@@ -5,7 +5,7 @@ import abc
 import statsd
 from influxdb import InfluxDBClient
 
-import settings
+import config
 
 class StatsdMixin(metaclass=abc.ABCMeta):
 
@@ -18,7 +18,7 @@ class StatsdMixin(metaclass=abc.ABCMeta):
 
 
 		self.mon_con = statsd.StatsClient(
-				host = settings.GRAPHITE_DB_IP,
+				host = config.C_GRAPHITE_DB_IP,
 				port = 8125,
 				prefix = self.statsd_prefix,
 				)
@@ -39,9 +39,9 @@ class InfluxDBMixin(metaclass=abc.ABCMeta):
 		super().__init__(*args, **kwargs)
 
 		self.influx_client = InfluxDBClient(
-				host     = settings.INFLUX_DB_URL,
-				port     = settings.INFLUX_DB_PORT,
-				database = settings.INFLUX_DB_DBNAME
+				host     = config.C_INFLUX_DB_URL,
+				port     = config.C_INFLUX_DB_PORT,
+				database = config.C_INFLUX_DB_DBNAME
 			)
 
 	def put_measurement(self, measurement_name, measurement, fields, extra_tags=None):

@@ -622,7 +622,9 @@ def load_triggered_url_list():
 def startup():
 	load_rules()
 	load_special_case_sites()
-	load_raw_mirror_sites()
+
+	# # Not used yet
+	# load_raw_mirror_sites()
 
 	# # Don't load the triggered URLs list, as it requires loading a bunch of database dependencies
 	# # that can break things due to fiddly import ordering issues.

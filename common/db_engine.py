@@ -20,14 +20,14 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 
 
-from settings import DATABASE_IP            as C_DATABASE_IP
-from settings import DATABASE_DB_NAME       as C_DATABASE_DB_NAME
-from settings import DATABASE_USER          as C_DATABASE_USER
-from settings import DATABASE_PASS          as C_DATABASE_PASS
+from config import C_DATABASE_IP
+from config import C_DATABASE_DB_NAME
+from config import C_DATABASE_USER
+from config import C_DATABASE_PASS
+from config import C_MAX_DB_SESSIONS
 
 from flask import g
 
-from settings import MAX_DB_SESSIONS
 import flags
 
 if '__pypy__' in sys.builtin_module_names:

@@ -17,6 +17,7 @@ if __name__ == "__main__":
 # import WebMirror.runtime_engines
 
 
+import settings
 import multiprocessing
 import time
 import json
@@ -85,7 +86,7 @@ def go(args):
 
 	largv = [tmp.lower() for tmp in args]
 
-
+	common.redis.config_redis()
 	rules = WebMirror.rules.load_rules()
 
 	runner = common.RunManager.Crawler(main_thread_count=NO_PROCESSES, raw_thread_count=RAW_NO_PROCESSES)
