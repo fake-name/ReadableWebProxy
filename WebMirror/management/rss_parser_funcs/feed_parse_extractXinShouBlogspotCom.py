@@ -11,6 +11,7 @@ def extractXinShouBlogspotCom(item):
 		('A Match Made in Heaven',       'A Match Made in Heaven',                      'translated'),
 		('The Rebirth of Han Yuxi',      'The Rebirth of Han Yuxi',                     'translated'),
 		('Black Belly Wife',             'Black Belly Wife',                            'translated'),
+		('my housekeeper',               'my housekeeper',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

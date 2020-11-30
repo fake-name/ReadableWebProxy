@@ -11,6 +11,7 @@ def extractOrientalrabbitWordpressCom(item):
 		('tmrw',       'How Many Tomorrows There Are',                      'translated'),
 		('scgl',       'Side Character Survival Guidelines',                'translated'),
 		('wlwm',       'A White Lotus Host Who Does Not Want To Be a White Moonlight Is Not a Good Host',                      'translated'),
+		('ralp',       'I Ran Away after I was Forced into a Love Polygon',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

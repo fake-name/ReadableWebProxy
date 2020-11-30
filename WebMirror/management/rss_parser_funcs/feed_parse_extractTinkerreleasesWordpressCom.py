@@ -8,8 +8,11 @@ def extractTinkerreleasesWordpressCom(item):
 		return None
 
 	tagmap = [
-		('wce',       'Wife Can’t Escape',                      'translated'),
-		('DEM',       'The Downfall of the Eldest Miss',                      'translated'),
+		('wce',       'Wife Can’t Escape',                                                 'translated'),
+		('DEM',       'The Downfall of the Eldest Miss',                                   'translated'),
+		('pmcp',      'Pampering My Cute Pet',                                             'translated'),
+		('ismf',      'I am not fit to be the Stubborn Male Lead’s First Love',            'translated'),
+		('mdm',       'Married to a Disabled Man in the 70s',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

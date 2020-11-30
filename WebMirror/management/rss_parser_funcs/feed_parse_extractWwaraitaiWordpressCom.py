@@ -8,6 +8,9 @@ def extractWwaraitaiWordpressCom(item):
 		return None
 
 	tagmap = [
+		('i don\'t care',           'I Don’t Care, So Let Me Go Home!',                      'translated'),
+		('caretaker prince',        'I Was Reincarnated as a Villainess, but My Fiancé (Main Hero) is Taking Care of Me?!',                      'translated'),
+		('i\'m still stupid',       'I Reincarnated as a Villainess in an Otome Game, but I’m Still Stupid Inside',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

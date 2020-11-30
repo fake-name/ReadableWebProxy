@@ -1,4 +1,3 @@
-
 def extractSakkamadeWordpressCom(item):
 	'''
 	Parser for 'sakkamade.wordpress.com'
@@ -9,6 +8,7 @@ def extractSakkamadeWordpressCom(item):
 		return None
 
 	tagmap = [
+		('autodoll dreams in a decaying world',       'Autodoll Dreams in a Decaying World',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractSakkamadeWordpressCom(item):
 
 
 	return False
-	

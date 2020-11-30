@@ -1,4 +1,3 @@
-
 def extractWwwMystifiedtranslationCom(item):
 	'''
 	Parser for 'www.mystifiedtranslation.com'
@@ -9,6 +8,11 @@ def extractWwwMystifiedtranslationCom(item):
 		return None
 
 	tagmap = [
+		('vrmmo: create a bug every ten hours',               'vrmmo: create a bug every ten hours',                              'translated'),
+		('the ceo wants to marry me',                         'the ceo wants to marry me',                                        'translated'),
+		('i do not want to inherit the family fortune',       'i do not want to inherit the family fortune',                      'translated'),
+		('become a master from hokage',                       'become a master from hokage',                                      'translated'),
+		('i am a magic sword',                               'i am a magic sword',                                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +23,3 @@ def extractWwwMystifiedtranslationCom(item):
 
 
 	return False
-	

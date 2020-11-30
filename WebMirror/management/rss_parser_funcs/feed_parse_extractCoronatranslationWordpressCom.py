@@ -9,6 +9,7 @@ def extractCoronatranslationWordpressCom(item):
 
 	tagmap = [
 		('ldm',       'Lazy Dungeon Master',                      'translated'),
+		('pmz',       'I was reincarnated as a villainess, but since I have become the beautiful woman of my dreams, that\'s plus-minus zero.',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

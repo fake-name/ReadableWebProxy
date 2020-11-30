@@ -171,6 +171,9 @@ def initialize_manager(interface_dict):
 	interface_dict['feed_outq'] = {}
 	interface_dict['feed_inq'] = {}
 
+	interface_dict['independent_task'] = {}
+	interface_dict['independent_response'] = {}
+
 
 def run():
 

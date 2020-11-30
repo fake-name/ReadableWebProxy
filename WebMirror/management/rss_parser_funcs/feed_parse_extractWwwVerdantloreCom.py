@@ -15,8 +15,9 @@ def extractWwwVerdantloreCom(item):
 		('tvhss',                                        'The Villain Has Something to Say',                            'translated'),
 		('the final theocracy',                          'The Final Theocracy',                                         'translated'),
 		('the god slaying sword brynhildr',              'the god slaying sword brynhildr',                             'translated'),
-		('tales of distractions',                         'Tales of Distraction',                                        'translated'),
+		('tales of distractions',                        'Tales of Distraction',                                        'translated'),
 		('Tales of Distraction',                         'Tales of Distraction',                                        'translated'),
+		('game\'s dogma',                                'game\'s dogma',                                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

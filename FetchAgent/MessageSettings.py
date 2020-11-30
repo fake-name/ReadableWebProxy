@@ -28,7 +28,7 @@ def getSslOpts():
 
 
 RPC_AMQP_SETTINGS = {
-		'worker_threads'                         : 8,
+		'worker_threads'                         : 6,
 
 		'userid'                                 : settings_file.RPC_RABBIT_LOGIN,
 		'password'                               : settings_file.RPC_RABBIT_PASWD,
@@ -57,7 +57,7 @@ RPC_AMQP_SETTINGS = {
 	}
 
 LOWRATE_RPC_AMQP_SETTINGS = {
-		'worker_threads'                         : 8,
+		'worker_threads'                         : 2,
 
 		'userid'                                 : settings_file.RPC_RABBIT_LOGIN,
 		'password'                               : settings_file.RPC_RABBIT_PASWD,
@@ -83,6 +83,36 @@ LOWRATE_RPC_AMQP_SETTINGS = {
 		'response_exchange'                      : 'resps.e',
 
 		'response_exchange_routing'              : 'lowrate_resps',
+	}
+
+
+INDEPENDENT_RPC_AMQP_SETTINGS = {
+		'worker_threads'                         : 2,
+
+		'userid'                                 : settings_file.RPC_RABBIT_LOGIN,
+		'password'                               : settings_file.RPC_RABBIT_PASWD,
+		'host'                                   : settings_file.RPC_RABBIT_SRVER,
+		'virtual_host'                           : settings_file.RPC_RABBIT_VHOST,
+		'sslopts'                                : getSslOpts(),
+		'master'                                 : True,
+		'prefetch'                               : 25,
+		# 'prefetch'                             : 5,
+		'task_exchange_type'                     : 'direct',
+		'response_exchange_type'                 : 'direct',
+
+		'task_queue_name'                        : 'independent_task.q',
+		'response_queue_name'                    : 'independent_response.q',
+
+		'heartbeat'                              :  45,
+		'socket_timeout'                         :  90,
+
+		'taskq_name'                             : 'independent_task',
+		'respq_name'                             : 'independent_response',
+
+		'task_exchange'                          : 'independent_tasks.e',
+		'response_exchange'                      : 'independent_resps.e',
+
+		'response_exchange_routing'              : 'independent_resps',
 	}
 
 

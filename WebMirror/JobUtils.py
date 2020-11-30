@@ -2,17 +2,21 @@
 
 
 def buildjob(
-			module,
-			call,
-			dispatchKey,
-			jobid,
+			module,                          # Select remote function to be invoked.
+			call,                            # Select remote function to be invoked.
+			dispatchKey,                     # Dispatch key seems to just be roundtripped for the response
+			jobid,                           # Round-tripped to response data for job response correlation
 			args                 = [],
 			kwargs               = {},
-			additionalData       = None,
+			additionalData       = None,     # Round-tripped to response data for job response correlation
 			postDelay            = 0,
-			unique_id            = None,
-			early_ack            = False,
-			serialize            = False,
+			unique_id            = None,     # Unique id which can prevent the same host from re-processing a specific
+			                                 # job multiple times.
+			early_ack            = False,    # Ack job on receipt, rather then after completion. This can be needed for
+			                                 # long running jobs so they don't time out and get sent to another client.
+			                                 # On the other hand, it can lead to jobs being lost when the marshaller
+			                                 # destroys a VM while it's processing a task.
+			serialize            = False,    # Serialze jobs by this value
 			response_routing_key = False,
 		):
 

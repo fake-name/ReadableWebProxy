@@ -36,6 +36,7 @@ def extractNovicetranslationsWordpressCom(item):
 		('ah, senior brother is actually a sister!',                   'ah, senior brother is actually a sister!',                                  'translated'),
 		('believe it or not, i already caught you',                    'believe it or not, i already caught you',                                   'translated'),
 		('female lead, please let go of the white moonlight',          'female lead, please let go of the white moonlight',                         'translated'),
+		('targeted by a feline beastman in ancient times',             'targeted by a feline beastman in ancient times',                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

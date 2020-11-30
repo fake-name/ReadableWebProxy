@@ -1,4 +1,3 @@
-
 def extractEatapplepiesCom(item):
 	'''
 	Parser for 'eatapplepies.com'
@@ -9,6 +8,7 @@ def extractEatapplepiesCom(item):
 		return None
 
 	tagmap = [
+		('Trash of the Count\'s Family',       'Trash of the Count\'s Family',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractEatapplepiesCom(item):
 
 
 	return False
-	

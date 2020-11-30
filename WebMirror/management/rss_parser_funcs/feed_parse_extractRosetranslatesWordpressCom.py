@@ -1,4 +1,3 @@
-
 def extractRosetranslatesWordpressCom(item):
 	'''
 	Parser for 'rosetranslates.wordpress.com'
@@ -9,6 +8,7 @@ def extractRosetranslatesWordpressCom(item):
 		return None
 
 	tagmap = [
+		('my sweet physician wife who calls the shots',       'my sweet physician wife who calls the shots',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractRosetranslatesWordpressCom(item):
 
 
 	return False
-	

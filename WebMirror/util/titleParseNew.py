@@ -1319,7 +1319,8 @@ class TitleParser(object):
 		FreeTextGlobber,
 	]
 
-	def __init__(self, title):
+	def __init__(self, title, debug=False):
+		self.debug = debug
 		self.raw = title
 
 		while "  " in title:
@@ -1333,10 +1334,10 @@ class TitleParser(object):
 		# print("Parsing title: '%s'" % title)
 
 		for step in self.PROCESSING_STEPS:
-			if DEBUG:
+			if DEBUG or self.debug:
 				print("Splitter step before: ", str(step).ljust(80), title)
 			title = step().process(title)
-			if DEBUG:
+			if DEBUG or self.debug:
 				print("Splitter step after:  ", str(step).ljust(80), title)
 
 		# print(self)

@@ -1,4 +1,3 @@
-
 def extractRadlaneWebsite(item):
 	'''
 	Parser for 'radlane.website'
@@ -9,6 +8,8 @@ def extractRadlaneWebsite(item):
 		return None
 
 	tagmap = [
+		('Toaru Ossan no VRMMO katsudouki',              'Toaru Ossan no VRMMO katsudouki',                             'translated'),
+		('[novel]toaru ossan no vrmmo katsudouki',       '[novel]toaru ossan no vrmmo katsudouki',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractRadlaneWebsite(item):
 
 
 	return False
-	

@@ -314,6 +314,25 @@ def extractFantasyBooksLive(item):
 		('168398',                                                                   'LUNA',                                                                      'oel'),
 		('168695',                                                                   'Sleeping Princess',                                                                      'oel'),
 
+
+		('174828',                                                                   'Rise of the Dragonic God',                                                                      'oel'),
+		('181553',                                                                   'Unlimited Power – The Arcane Path',                                                                      'oel'),
+		('180201',                                                                   'I Watch As The Sun Goes Down',                                                                      'oel'),
+		('181666',                                                                   'World of Experts',                                                                      'translated'),
+		('177497',                                                                   'My Pick Up Artist System',                                                                      'oel'),
+		('176581',                                                                   'Half-Tried Deity',                                                                      'translated'),
+		('181644',                                                                   'Mahouka: Irregular Fate',                                                                      'oel'),
+		('181370',                                                                   'The World Towers',                                                                      'oel'),
+		('177147',                                                                   'In New Dimensions Everyday',                                                                      'oel'),
+		('181534',                                                                   'Ancient Times: Father of Three',                                                                      'oel'),
+		('181367',                                                                   'Our Dreams Follow',                                                                      'oel'),
+		('179244',                                                                   'Micchi Versus the New World',                                                                      'oel'),
+		('179127',                                                                   'The Three Rings',                                                                      'oel'),
+		('175299',                                                                   'Senses Reposed',                                                                      'oel'),
+		('175220',                                                                   'A World of Monsters',                                                                      'oel'),
+		('178360',                                                                   'Montgomery and Carano',                                                                      'oel'),
+		('177572',                                                                   'Restrained',                                                                      'oel'),
+
 	]
 
 	for tagname, name, tl_type in tagmap:

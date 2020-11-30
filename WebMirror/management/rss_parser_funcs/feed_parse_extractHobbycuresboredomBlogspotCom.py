@@ -9,6 +9,9 @@ def extractHobbycuresboredomBlogspotCom(item):
 
 	tagmap = [
 		('crc',       'Cultivator Returns to the City',                      'translated'),
+		('lawmm',      'Life in Another World as a Maid Mage',                      'translated'),
+		('eue',       'Era of Universal Evolution',                      'translated'),
+		('IHASH',      'I Have A \'System\' Halo',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

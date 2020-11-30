@@ -11,6 +11,8 @@ import common.get_rpyc
 import WebMirror.JobDispatcher
 from WebMirror.JobUtils import buildjob
 
+from WebMirror.util.titleParseNew import TitleParser as TPN
+
 def dump_response(resp):
 	pprint.pprint(resp)
 	if 'traceback' in resp:
@@ -170,3 +172,18 @@ def exposed_test_local_rpc_fetch():
 	pprint.pprint(ret4)
 
 	rpc_interface.close()
+
+
+
+def exposed_parse_title(title_str:str):
+	'''
+	Run the passed title through the title parsing system, and print the results
+	'''
+
+	print("Parsing title: ", title_str)
+
+
+	p = TPN(title_str, debug=True)
+	vol, chp, frag, post = p.getVolume(), p.getChapter(), p.getFragment(), p.getPostfix()
+	print("vol, chp, frag, post", (vol, chp, frag, post))
+	pass

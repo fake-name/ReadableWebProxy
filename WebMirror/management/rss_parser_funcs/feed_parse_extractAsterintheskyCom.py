@@ -1,4 +1,3 @@
-
 def extractAsterintheskyCom(item):
 	'''
 	Parser for 'asterinthesky.com'
@@ -9,6 +8,8 @@ def extractAsterintheskyCom(item):
 		return None
 
 	tagmap = [
+		('the boss is very busy 大佬在快穿很忙',       'the boss is very busy',                      'translated'),
+		('the boss is very busy',       'the boss is very busy',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractAsterintheskyCom(item):
 
 
 	return False
-	

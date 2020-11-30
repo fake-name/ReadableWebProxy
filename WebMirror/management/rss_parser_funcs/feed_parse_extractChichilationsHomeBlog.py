@@ -12,6 +12,9 @@ def extractChichilationsHomeBlog(item):
 		('dkgwf',                     'Didn\'t Know General Was Female',          'translated'),
 		('Golden Stage',              'Golden Stage',                             'translated'),
 		('eastward flow',             'Eastward Flow',                            'translated'),
+		('Lord Seventh',              'Lord Seventh',                             'translated'),
+		('dragon drowned',            'dragon drowned',                           'translated'),
+		('beauty and the blade',      'beauty and the blade',                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

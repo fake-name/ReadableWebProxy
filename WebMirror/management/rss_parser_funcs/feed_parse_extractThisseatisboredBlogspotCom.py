@@ -1,4 +1,3 @@
-
 def extractThisseatisboredBlogspotCom(item):
 	'''
 	Parser for 'thisseatisbored.blogspot.com'
@@ -9,6 +8,7 @@ def extractThisseatisboredBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('i became the stepmother of my ex-husband',       'i became the stepmother of my ex-husband',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractThisseatisboredBlogspotCom(item):
 
 
 	return False
-	

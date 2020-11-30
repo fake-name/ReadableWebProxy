@@ -1,4 +1,3 @@
-
 def extractFormermisswastetranslationsWordpressCom(item):
 	'''
 	Parser for 'formermisswastetranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractFormermisswastetranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('miss summoner of the eight elements',       'miss summoner of the eight elements',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFormermisswastetranslationsWordpressCom(item):
 
 
 	return False
-	

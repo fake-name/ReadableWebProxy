@@ -1,4 +1,3 @@
-
 def extractRimeitranslationsCom(item):
 	'''
 	Parser for 'rimeitranslations.com'
@@ -9,6 +8,11 @@ def extractRimeitranslationsCom(item):
 		return None
 
 	tagmap = [
+		('evil wang pampers his ghost doctor fei',       'evil wang pampers his ghost doctor fei',                      'translated'),
+		('general you have it',               'general you have it',                              'translated'),
+		('paper plane',                       'paper plane',                                      'translated'),
+		('rebirth plan to save leader',       'rebirth plan to save leader',                      'translated'),
+		('general, you have it',              'general, you have it',                             'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +23,3 @@ def extractRimeitranslationsCom(item):
 
 
 	return False
-	

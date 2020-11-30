@@ -1,14 +1,17 @@
-
 def extractFantasykunBlogspotCom(item):
 	'''
 	Parser for 'fantasykun.blogspot.com'
 	'''
+	
+	if "Bahasa Indonesia" in item['title']:
+		return None
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
 		return None
 
 	tagmap = [
+		('yuusha densetsu eng',       'Yuusha Densetsu no Uragawa de Ore wa Eiyuu',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractFantasykunBlogspotCom(item):
 
 
 	return False
-	

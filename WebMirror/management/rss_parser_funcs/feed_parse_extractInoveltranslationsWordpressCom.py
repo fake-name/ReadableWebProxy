@@ -23,6 +23,11 @@ def extractInoveltranslationsWordpressCom(item):
 		('dual life',                                                                    'dual life',                                                                                   'translated'),
 		('the adventure of a boy with the mind of a middle-aged man',                    'the adventure of a boy with the mind of a middle-aged man',                                   'translated'),
 		('i became peerless after i threw my whole paycheck at a real-life gacha',       'i became peerless after i threw my whole paycheck at a real-life gacha',                      'translated'),
+		('the falsely executed marquis\' daughter wants to live peacefully with fluffy god',       'the falsely executed marquis daughter wants to live peacefully with fluffy god',                      'translated'),
+		('the falsely executed marquis daughter wants to live peacefully with fluffy god',        'the falsely executed marquis daughter wants to live peacefully with fluffy god',                       'translated'),
+		('level 1 strongest sage',                                                                'level 1 strongest sage',                                                                               'translated'),
+		('when the golden finger lands in the hands of the villain',                              'when the golden finger lands in the hands of the villain',                                             'translated'),
+		('exiled magic swordsman',                                                                'The Exiled Jack-of-all-trades Magic Swordsman Becomes The Princess Instructor',                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -1,4 +1,3 @@
-
 def extractLazycatchroniclesWordpressCom(item):
 	'''
 	Parser for 'lazycatchronicles.wordpress.com'
@@ -9,6 +8,7 @@ def extractLazycatchroniclesWordpressCom(item):
 		return None
 
 	tagmap = [
+		('the glass maiden',       'the glass maiden',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLazycatchroniclesWordpressCom(item):
 
 
 	return False
-	

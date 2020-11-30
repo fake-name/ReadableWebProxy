@@ -1,4 +1,3 @@
-
 def extractAmnesiactlCom(item):
 	'''
 	Parser for 'amnesiactl.com'
@@ -9,6 +8,9 @@ def extractAmnesiactlCom(item):
 		return None
 
 	tagmap = [
+		('i\'ll never go back to bygone days!',       'I\'ll never go back to bygone days!',                      'translated'),
+		('banished failure',                          'banished failure',                                         'translated'),
+		('tokyo survive',                             'tokyo survive',                                            'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractAmnesiactlCom(item):
 
 
 	return False
-	

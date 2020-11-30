@@ -1,4 +1,3 @@
-
 def extractChichipephCom(item):
 	'''
 	Parser for 'chichipeph.com'
@@ -9,6 +8,10 @@ def extractChichipephCom(item):
 		return None
 
 	tagmap = [
+		('the former wife',       'The Former Wife of Invisible Wealthy Man',                      'translated'),
+		('villain father',       'Guide the Villain Father to Be Virtuous',                      'translated'),
+		('bhwatp',       'Become Husband and Wife According To Pleasure',                      'translated'),
+		('jiaochen',       'Jiaochen',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractChichipephCom(item):
 
 
 	return False
-	

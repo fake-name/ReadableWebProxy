@@ -14,6 +14,7 @@ def extractHasutsuki(item):
 		('Demon Army Staff Officer',        'Demon Army Staff Officer',                           'translated'),
 		('Wortenia Senki',                  'Wortenia Senki',                                     'translated'),
 		('Wortenia War',                    'Wortenia Senki',                                     'translated'),
+		('kuro no senki ln',                'Kuro no Senki LN',                                   'translated'),
 		('Reform',                          'Tsumi Kake Tensei Ryoushu no Kaikaku',               'translated'),
 	]
 

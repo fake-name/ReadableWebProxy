@@ -1,4 +1,3 @@
-
 def extractGaijinbitchTumblrCom(item):
 	'''
 	Parser for 'gaijinbitch.tumblr.com'
@@ -9,6 +8,9 @@ def extractGaijinbitchTumblrCom(item):
 		return None
 
 	tagmap = [
+		('prohibited isekai life',       'The Prohibited Isekai Life of a Certain Transmigrating Brother and Sister',                      'translated'),
+		('he\'s not a lizard but a dragon',       'He’s Not a Lizard, But a Dragon ',                      'translated'),
+		('story of gothic lady',       'The Story of Gothic Lady Who Met a Grave Keeper in Another World',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractGaijinbitchTumblrCom(item):
 
 
 	return False
-	

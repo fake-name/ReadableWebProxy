@@ -9,6 +9,7 @@ def extractPinnochiesWordpressCom(item):
 
 	tagmap = [
 		('reslw',       'Rebirth to Eighties : Shrewd Little Wife',                      'translated'),
+		('atswm',       'After Transmigrating into a Short-lived White Moonlight, had a HE with the Villain',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

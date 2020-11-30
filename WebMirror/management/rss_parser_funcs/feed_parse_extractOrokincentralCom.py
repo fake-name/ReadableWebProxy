@@ -1,4 +1,3 @@
-
 def extractOrokincentralCom(item):
 	'''
 	Parser for 'orokincentral.com'
@@ -9,6 +8,10 @@ def extractOrokincentralCom(item):
 		return None
 
 	tagmap = [
+		('demon king executive',       'As The Hero’s Mother, I Became An Executive Of The Demon King’s Army',                      'translated'),
+		('deported for innocent charges',       'Former Operations Chief Exiled For Innocent Charges Becomes The Strongest Adventurer',                      'translated'),
+		('northwest gas station',       'I Run A Gas Station In The Northwest',                      'translated'),
+		('after rebirth, he married his childhood sweetheart',       'after rebirth, he married his childhood sweetheart',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractOrokincentralCom(item):
 
 
 	return False
-	

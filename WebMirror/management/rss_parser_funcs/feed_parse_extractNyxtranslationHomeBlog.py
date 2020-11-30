@@ -13,6 +13,8 @@ def extractNyxtranslationHomeBlog(item):
 		('evasion healer novel english translation',       'Kanzen Kaihi Healer no Kiseki',                      'translated'),
 		('i got a cheat ability in a differen world',      'I Got A Cheat Ability In A Different World, And Become Extraordinary Even In The Real World',                      'translated'),
 		('and become extraordinary even in the real world','I Got A Cheat Ability In A Different World, And Become Extraordinary Even In The Real World',                      'translated'),
+		('Shinwa Densetsu no Eiyuu no Isekaitan',          'Shinwa Densetsu no Eiyuu no Isekaitan',                         'translated'),
+		('goshujinsama to yuku isekai survival',           'goshujinsama to yuku isekai survival',                          'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

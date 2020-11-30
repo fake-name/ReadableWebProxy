@@ -33,7 +33,12 @@ def extractJstranslations1WordpressCom(item):
 		('genius maiden transmigrates: the empress of weapons',           'genius maiden transmigrates: the empress of weapons',                         'translated'),
 		('abandoned peasant woman: farming with a cute baby',             'abandoned peasant woman: farming with a cute baby',                           'translated'),
 		('fortunate pregnancy, forced marriage: boss is addicted to pampering his wife',        'Fortunate Pregnancy, Forced Marriage: Boss is Addicted to Pampering His Wife',                      'translated'),
-		('fortunate pregnancy forced marriage: boss is addicted to pampering his wife',        'Fortunate Pregnancy, Forced Marriage: Boss is Addicted to Pampering His Wife',                      'translated'),
+		('fortunate pregnancy forced marriage: boss is addicted to pampering his wife',         'Fortunate Pregnancy, Forced Marriage: Boss is Addicted to Pampering His Wife',                      'translated'),
+		('plan to trap the golden thigh',                                                       'plan to trap the golden thigh',                                                                     'translated'),
+		('sweet and pampered military marriage: spare me commander!',                           'sweet and pampered military marriage: spare me commander!',                                         'translated'),
+		('Wife is Outrageous: His Evil Highness Comes Knocking',                                'Wife is Outrageous: His Evil Highness Comes Knocking',                                              'translated'),
+		('is president lu bankrupt today?',                                                     'is president lu bankrupt today?',                                                                   'translated'),
+		('poison doctor demon consort',                                                         'poison doctor demon consort',                                                                       'translated'),
 		('PRC',        'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

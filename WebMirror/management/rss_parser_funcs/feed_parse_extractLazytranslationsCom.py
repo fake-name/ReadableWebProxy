@@ -1,4 +1,3 @@
-
 def extractLazytranslationsCom(item):
 	'''
 	Parser for 'lazytranslations.com'
@@ -9,6 +8,9 @@ def extractLazytranslationsCom(item):
 		return None
 
 	tagmap = [
+		('magic swordsman',       'The Reincarnated Inferior Magic Swordsman',                      'translated'),
+		('Underground Doctor',       'Underground Doctor',                      'translated'),
+		('reincarnated aristocrat',       'Reincarnated As An Aristocrat With An Appraisal Skill',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractLazytranslationsCom(item):
 
 
 	return False
-	

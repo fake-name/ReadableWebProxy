@@ -17,6 +17,9 @@ def extractKktranslatesHomeBlog(item):
 		('to be a heartthrob in a horror movie',                'to be a heartthrob in a horror movie',                               'translated'),
 		('global university entrance examination',              'global university entrance examination',                             'translated'),
 		('Misplacement Game',                                   'Misplacement Game',                                                  'translated'),
+		('i really am a slag shou!',                            'i really am a slag shou!',                                           'translated'),
+		('mist',                                                'mist',                                                               'translated'),
+		('lovely allergen',                                     'lovely allergen',                                                    'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

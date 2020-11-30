@@ -1,4 +1,3 @@
-
 def extractMxyz616WpcomstagingCom(item):
 	'''
 	Parser for 'mxyz616.wpcomstaging.com'
@@ -9,6 +8,11 @@ def extractMxyz616WpcomstagingCom(item):
 		return None
 
 	tagmap = [
+		('let me go! i need to study!',        'let me go! i need to study!',                       'translated'),
+		('My Disciple Consumes Too Much',      'My Disciple Consumes Too Much',                     'translated'),
+		('mary sue meets cinderella',          'mary sue meets cinderella',                         'translated'),
+		('female lead is a black lotus',       'female lead is a black lotus',                      'translated'),
+		('for the rest of our life',           'for the rest of our life',                          'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +23,3 @@ def extractMxyz616WpcomstagingCom(item):
 
 
 	return False
-	

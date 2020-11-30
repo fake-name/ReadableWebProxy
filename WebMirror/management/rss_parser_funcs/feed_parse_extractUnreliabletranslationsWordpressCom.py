@@ -1,4 +1,3 @@
-
 def extractUnreliabletranslationsWordpressCom(item):
 	'''
 	Parser for 'unreliabletranslations.wordpress.com'
@@ -9,6 +8,8 @@ def extractUnreliabletranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('wlod',       'White Lotus Overturned Daily',                      'translated'),
+		('mchtm!',       'My Chief Husband, Too Mensao!',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractUnreliabletranslationsWordpressCom(item):
 
 
 	return False
-	

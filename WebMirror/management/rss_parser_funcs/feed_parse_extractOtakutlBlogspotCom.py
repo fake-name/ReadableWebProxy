@@ -23,6 +23,12 @@ def extractOtakutlBlogspotCom(item):
 		('soul of negary',                                'soul of negary',                      'translated'),
 		('ecltd',                                         'every confession leads to death',                      'translated'),
 		('every confession leads to death',               'every confession leads to death',                      'translated'),
+		('cultivate your sister',                         'cultivate your sister',                                        'translated'),
+		('sword immortal in another world',               'sword immortal in another world',                              'translated'),
+		('driver of the beautiful ceo',                   'driver of the beautiful ceo',                                  'translated'),
+		('i really didn\'t want to become a system',      'i really didn\'t want to become a system',                     'translated'),
+		('purvaviheda\'s tale of sealing demons',         'purvaviheda\'s tale of sealing demons',                        'translated'),
+		('wasteland employment guide',                    'wasteland employment guide',                                   'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

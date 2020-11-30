@@ -1,4 +1,3 @@
-
 def extractLadydiaryonstrikeWordpressCom(item):
 	'''
 	Parser for 'ladydiaryonstrike.wordpress.com'
@@ -9,6 +8,7 @@ def extractLadydiaryonstrikeWordpressCom(item):
 		return None
 
 	tagmap = [
+		('black butterfly',       'Black Butterfly, Where Does the Black Butterfly Go Drink Water',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractLadydiaryonstrikeWordpressCom(item):
 
 
 	return False
-	

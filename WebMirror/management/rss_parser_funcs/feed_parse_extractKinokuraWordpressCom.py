@@ -1,4 +1,3 @@
-
 def extractKinokuraWordpressCom(item):
 	'''
 	Parser for 'kinokura.wordpress.com'
@@ -9,6 +8,10 @@ def extractKinokuraWordpressCom(item):
 		return None
 
 	tagmap = [
+		('masho no otoko wo mezashimasu',                'masho no otoko wo mezashimasu',                               'translated'),
+		('yumemiru danshi wa genjitsushugisha',          'yumemiru danshi wa genjitsushugisha',                         'translated'),
+		('naguri tamer no isekai seikatsu',              'naguri tamer no isekai seikatsu',                             'translated'),
+		('isekai demo bunan ni ikitai shoukougun',       'isekai demo bunan ni ikitai shoukougun',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractKinokuraWordpressCom(item):
 
 
 	return False
-	

@@ -68,6 +68,7 @@ def extractVolareTranslations(item):
 		("The Sword and The Shadow",                                    "The Sword and The Shadow",                                                            'translated'),
 		("show me the money",                                           "Show Me the Money",                                                                   'translated'),
 		("love code at the end of the world",                           "love code at the end of the world",                                                   'translated'),
+		("their love stories",                                          "their love stories",                                                                  'translated'),
 		("Lost Treasure",                                               "Lost Treasure",                                                                       'translated'),
 		("Rebirth of a Star",                                           "Rebirth of a Star: Another Day, Another Drama",                                       'translated'),
 		("Defiant Martial God",                                         "Defiant Martial God",                                                                 'translated'),

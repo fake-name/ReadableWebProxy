@@ -1,4 +1,3 @@
-
 def extractArgentforestWordpressCom(item):
 	'''
 	Parser for 'argentforest.wordpress.com'
@@ -9,6 +8,7 @@ def extractArgentforestWordpressCom(item):
 		return None
 
 	tagmap = [
+		('batohmb',       'Boyfriends Always Turned out to Be a Horror Movie Boss',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractArgentforestWordpressCom(item):
 
 
 	return False
-	

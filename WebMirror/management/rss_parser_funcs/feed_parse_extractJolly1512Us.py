@@ -1,4 +1,3 @@
-
 def extractJolly1512Us(item):
 	'''
 	Parser for 'jolly1512.us'
@@ -6,6 +5,9 @@ def extractJolly1512Us(item):
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
 	if not (chp or vol) or "preview" in item['title'].lower():
+		return None
+		
+	if 'To view this content' in item['contents']:
 		return None
 
 	tagmap = [
@@ -19,4 +21,3 @@ def extractJolly1512Us(item):
 
 
 	return False
-	

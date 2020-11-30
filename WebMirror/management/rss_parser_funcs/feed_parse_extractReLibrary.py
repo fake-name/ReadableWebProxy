@@ -63,6 +63,8 @@ def extractReLibrary(item):
 		('disappointing princesses',               'Two as One Disappointing Princesses Want to Live Free ',                                                                          'translated'),
 		('Vampire Princess',                       'I Became a Vampire Princess after Reincarnation!? Building The Strongest Yuri Harem Using the Cheat Skill 【Demon Lord】!',       'translated'),
 		('hero king',                              'The Hero King, Reincarnate to Master the Art of War ~And Thus, I Became The Strongest Knight Disciple (♀) in The World~',         'translated'),
+		('sword saint fox girl',                   'The Sword Saint\'s Second Life As a Fox Girl',                                                                                    'oel'),
+		('wish of the cipher',                     'wish of the cipher',                                                                                                              'oel'),
 		('Stained Red',                            'Stained Red',                                                                                                                     'oel'),
 		('Truth & Myth - The Awakening',           'Truth & Myth - The Awakening',                                                                                                    'oel'),
 		

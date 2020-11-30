@@ -1,4 +1,3 @@
-
 def extractPerpetualdaydreamsCom(item):
 	'''
 	Parser for 'perpetualdaydreams.com'
@@ -9,6 +8,9 @@ def extractPerpetualdaydreamsCom(item):
 		return None
 
 	tagmap = [
+		('iwal',       'I Won a Lottery So I Moved to the Other World',                      'translated'),
+		('fpyq',       'Fei Pin Ying Qiang',                      'translated'),
+		('TYQHM',      'Those Years in Quest of Honor Mine',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractPerpetualdaydreamsCom(item):
 
 
 	return False
-	

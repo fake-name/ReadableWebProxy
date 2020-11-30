@@ -1,4 +1,3 @@
-
 def extractMoonlightrevolt896955869WordpressCom(item):
 	'''
 	Parser for 'moonlightrevolt896955869.wordpress.com'
@@ -10,6 +9,7 @@ def extractMoonlightrevolt896955869WordpressCom(item):
 
 	tagmap = [
 		('PRC',       'PRC',                      'translated'),
+		('under the moonlight', 'under the moonlight',                'oel'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 
@@ -19,4 +19,3 @@ def extractMoonlightrevolt896955869WordpressCom(item):
 
 
 	return False
-	

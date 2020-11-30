@@ -34,6 +34,12 @@ def extractCyborgTlCom(item):
 		('ore wa mada, honki o dashite inai',       'ore wa mada, honki o dashite inai',                      'translated'),
 		('creating a different world',              'Creating a Different World',                             'translated'),
 		('burakku na kishidan no dorei ga howaitona boukensha girudo ni hikinukarete s ranku ni narimashita',       'burakku na kishidan no dorei ga howaitona boukensha girudo ni hikinukarete s ranku ni narimashita',                      'translated'),
+		('ancient demon king',       'ancient demon king',                      'translated'),
+		('dark empire of orega in starcraft',       'dark empire of orega in starcraft',                      'translated'),
+		('sekai saikyou no maou desuga daremo toubatsushinikitekurenainode, yuusha ikusei kikan ni sennyuusuru koto ni shimashita',       'sekai saikyou no maou desuga daremo toubatsushinikitekurenainode, yuusha ikusei kikan ni sennyuusuru koto ni shimashita',                      'translated'),
+		('the reincarnation magician of the inferior eyes',       'the reincarnation magician of the inferior eyes',                      'translated'),
+		('king of the death in dark palace',       'king of the death in dark palace',                      'translated'),
+		('Mahouka Koukou no Rettousei',       'Mahouka Koukou no Rettousei',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

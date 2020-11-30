@@ -27,6 +27,7 @@ def extractRosyFantasy(item):
 		("seeking happiness",                                     "Seeking Happiness",                               'translated'),
 		("i married an exasperating eunuch",                      "i married an exasperating eunuch",                'translated'),
 		("living up to you",                                      "living up to you",                                'translated'),
+		("reborn to love lord qiansui",                           "reborn to love lord qiansui",                     'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
 

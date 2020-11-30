@@ -1,4 +1,3 @@
-
 def extractDorkzillatranslationsCom(item):
 	'''
 	Parser for 'dorkzillatranslations.com'
@@ -9,6 +8,8 @@ def extractDorkzillatranslationsCom(item):
 		return None
 
 	tagmap = [
+		('get to know about wife fan',       'Get to know about Wife Fan',                      'translated'),
+		('i have four dads after transmigrating in a novel',       'I have four dads after transmigrating in a novel',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractDorkzillatranslationsCom(item):
 
 
 	return False
-	

@@ -1,4 +1,3 @@
-
 def extractLovelikeathousandarrowsWordpressCom(item):
 	'''
 	Parser for 'lovelikeathousandarrows.wordpress.com'
@@ -9,6 +8,11 @@ def extractLovelikeathousandarrowsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('green plum fairy road',       'green plum fairy road',                      'translated'),
+		('the eternal heavenly dao system of ten thousand realms',       'the eternal heavenly dao system of ten thousand realms',                      'translated'),
+		('the super special forces king',       'the super special forces king',                      'translated'),
+		('urban strenghtening system',       'urban strenghtening system',                      'translated'),
+		('super special forces king',        'super special forces king',                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +23,3 @@ def extractLovelikeathousandarrowsWordpressCom(item):
 
 
 	return False
-	

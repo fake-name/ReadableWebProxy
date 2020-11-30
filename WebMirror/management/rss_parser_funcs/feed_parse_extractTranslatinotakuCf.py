@@ -20,6 +20,8 @@ def extractTranslatinotakuCf(item):
 		('Super Card System',                     'Super Card System',                        'translated'),
 		('long live the hokage',                  'long live the hokage',                     'translated'),
 		('pirate\'s achievements system',         'pirate\'s achievements system',            'translated'),
+		('pirate’s achievements system',          'pirate\'s achievements system',            'translated'),
+		('hxh: god of choice system',             'hxh: god of choice system',                'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
