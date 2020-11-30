@@ -266,6 +266,7 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 		masked_classes = self.getMaskedClasses(soup)
 
+		raw_cur = self.db_sess.connection().connection.cursor()
 
 		valid_releases = 0
 		for release in releases:
@@ -306,7 +307,7 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 					else:
 
-						changed = upsertNuItem(self.raw_cur,
+						changed = upsertNuItem(raw_cur,
 							{
 								'seriesname'       : title,
 								'releaseinfo'      : release_info,
@@ -325,7 +326,7 @@ class NUSeriesPageFilter(NUBaseFilter.NuBaseFilter):
 
 		self.log.info("Found %s releases on page!", valid_releases)
 		self.log.info("Committing!")
-		self.raw_cur.execute("COMMIT;")
+		raw_cur.execute("COMMIT;")
 		self.log.info("Committed!")
 
 		# Do not add series without 3 chapters.
