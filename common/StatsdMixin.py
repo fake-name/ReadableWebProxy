@@ -13,15 +13,20 @@ class StatsdMixin(metaclass=abc.ABCMeta):
 	def statsd_prefix(self):
 		pass
 
+	@property
+	def mon_con(self):
+		if self.__mon_con is None:
+			self.__mon_con = statsd.StatsClient(
+					host = config.C_GRAPHITE_DB_IP,
+					port = 8125,
+					prefix = self.statsd_prefix,
+					)
+		return self.__mon_con
+
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.__mon_con = None
 
-
-		self.mon_con = statsd.StatsClient(
-				host = config.C_GRAPHITE_DB_IP,
-				port = 8125,
-				prefix = self.statsd_prefix,
-				)
 
 
 class InfluxDBMixin(metaclass=abc.ABCMeta):
@@ -38,7 +43,7 @@ class InfluxDBMixin(metaclass=abc.ABCMeta):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 
-		self.influx_client = InfluxDBClient(
+		self.__influx_client = InfluxDBClient(
 				host     = config.C_INFLUX_DB_URL,
 				port     = config.C_INFLUX_DB_PORT,
 				database = config.C_INFLUX_DB_DBNAME
@@ -50,6 +55,14 @@ class InfluxDBMixin(metaclass=abc.ABCMeta):
 		else:
 			assert isinstance(extra_tags, dict)
 		assert isinstance(fields, dict)
+
+		if self.__influx_client is None:
+			self.__influx_client = InfluxDBClient(
+					host     = config.C_INFLUX_DB_URL,
+					port     = config.C_INFLUX_DB_PORT,
+					database = config.C_INFLUX_DB_DBNAME
+				)
+
 
 		points = [
 			{
@@ -66,4 +79,4 @@ class InfluxDBMixin(metaclass=abc.ABCMeta):
 				}
 			]
 
-		self.influx_client.write_points(points)
+		self.__influx_client.write_points(points)
