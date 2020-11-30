@@ -15,6 +15,7 @@ m_pool = None
 def get_redis_conn():
 	global m_pool
 	if not m_pool:
+		assert config.C_REDIS_SERVER_IP is not None
 		m_pool = redis.ConnectionPool(host=config.C_REDIS_SERVER_IP, port=6379, db=0)
 
 	return redis.StrictRedis(connection_pool=m_pool)
@@ -42,6 +43,7 @@ q_pool = None
 def get_redis_queue_conn():
 	global q_pool
 	if not q_pool:
+		assert config.C_REDIS_SERVER_IP is not None
 		q_pool = redis.ConnectionPool(host=config.C_REDIS_SERVER_IP, port=6379, db=1)
 
 	return redis.StrictRedis(connection_pool=q_pool)
@@ -71,6 +73,7 @@ a_pool = None
 def get_redis_active_conn():
 	global a_pool
 	if not a_pool:
+		assert config.C_REDIS_SERVER_IP is not None
 		a_pool = redis.ConnectionPool(host=config.C_REDIS_SERVER_IP, port=6379, db=2)
 
 	return redis.StrictRedis(connection_pool=a_pool)
@@ -137,24 +140,24 @@ def clear_processing_urls():
 ########################################################################################################################################
 
 def test():
-	put_active_url("test-1")
-	put_active_url("test-2")
-	put_active_url("test-3")
-	put_active_url("test-4")
-	put_active_url("test-1")
-	remove_active_url("test-3")
+	put_fetching_url("test-1")
+	put_fetching_url("test-2")
+	put_fetching_url("test-3")
+	put_fetching_url("test-4")
+	put_fetching_url("test-1")
+	remove_fetching_url("test-3")
 
-	urls = get_active_urls()
+	urls = get_fetching_urls()
 	print("Urls:", urls)
 
-	remove_active_url("test-1")
-	remove_active_url("test-2")
-	remove_active_url("test-3")
-	remove_active_url("test-4")
-	remove_active_url("test-1")
+	remove_fetching_url("test-1")
+	remove_fetching_url("test-2")
+	remove_fetching_url("test-3")
+	remove_fetching_url("test-4")
+	remove_fetching_url("test-1")
 
 
-	urls = get_active_urls()
+	urls = get_fetching_urls()
 	print("Urls:", urls)
 
 	# with redis_session_context() as rd:
@@ -177,7 +180,7 @@ def test():
 		print(rd.lpop("test"))
 		rd.rpush("test", "lolwat")
 		print(rd.lpop("test"))
-		rd.rpush("test", None)
+		# rd.rpush("test", None)
 		print(rd.lpop("test"))
 
 	with redis_queue_session_context() as rd:

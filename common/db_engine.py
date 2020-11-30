@@ -115,8 +115,8 @@ def get_db_session(postfix="", flask_sess_if_possible=True):
 			# print("Creating database interface:", SESSIONS[csid])
 
 			# Delete the session that's oldest.
-			if len(SESSIONS) > MAX_DB_SESSIONS:
-				log.info("WARN: More then %s active sessions! Deleting oldest session to prevent session contention." % MAX_DB_SESSIONS)
+			if len(SESSIONS) > C_MAX_DB_SESSIONS:
+				log.info("WARN: More then %s active sessions! Deleting oldest session to prevent session contention." % C_MAX_DB_SESSIONS)
 				maxsz = sys.maxsize
 				to_delete = None
 				for key, value in SESSIONS.items():
