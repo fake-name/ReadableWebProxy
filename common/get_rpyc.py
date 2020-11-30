@@ -9,7 +9,7 @@ import common.LogBase as LogBase
 import runStatus
 
 import mprpc
-import settings
+import config
 
 
 
@@ -31,7 +31,7 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 				# self.log.info("------------")
 
 				self.rpc_client = mprpc.RPCClient(
-					host         = settings.RPC_AGENT_HOST,
+					host         = config.C_RPC_AGENT_HOST,
 					port         = 4315,
 					pack_params  = {
 							"use_bin_type":True,
@@ -124,7 +124,7 @@ class RemoteFetchInterface(LogBase.LoggerMixin):
 				# self.log.info("------------")
 
 				mp_conf = {"use_bin_type" : True}
-				self.rpc_client = mprpc.RPCClient(settings.SYNC_RPC_SERVER, 4315, pack_params=mp_conf, timeout=90)
+				self.rpc_client = mprpc.RPCClient(config.C_SYNC_RPC_SERVER, 4315, pack_params=mp_conf, timeout=90)
 				self.log.info("Validating RPC connection")
 
 				self.check_ok()

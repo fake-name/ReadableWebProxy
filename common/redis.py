@@ -6,13 +6,17 @@ import time
 import hiredis
 import redis
 
-import settings
+import config
 
 
 
-m_pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=0)
+m_pool = None
 
 def get_redis_conn():
+	global m_pool
+	if not m_pool:
+		m_pool = redis.ConnectionPool(host=config.C_REDIS_SERVER_IP, port=6379, db=0)
+
 	return redis.StrictRedis(connection_pool=m_pool)
 
 def put_redis_conn(conn):
@@ -33,9 +37,13 @@ def redis_session_context():
 
 ########################################################################################################################################
 
-q_pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=1)
+q_pool = None
 
 def get_redis_queue_conn():
+	global q_pool
+	if not q_pool:
+		q_pool = redis.ConnectionPool(host=config.C_REDIS_SERVER_IP, port=6379, db=1)
+
 	return redis.StrictRedis(connection_pool=q_pool)
 
 def put_redis_queue_conn(conn):
@@ -58,13 +66,17 @@ def redis_queue_session_context():
 
 ########################################################################################################################################
 
-q_pool = redis.ConnectionPool(host=settings.REDIS_SERVER_IP, port=6379, db=2)
+a_pool = None
 
 def get_redis_active_conn():
-	return redis.StrictRedis(connection_pool=q_pool)
+	global a_pool
+	if not a_pool:
+		a_pool = redis.ConnectionPool(host=config.C_REDIS_SERVER_IP, port=6379, db=2)
+
+	return redis.StrictRedis(connection_pool=a_pool)
 
 def put_redis_active_conn(conn):
-	q_pool.release(conn)
+	a_pool.release(conn)
 
 
 
@@ -190,7 +202,6 @@ def config_redis():
 		redis.config_set("maxmemory-policy", "allkeys-lru")
 	print("redis configured")
 
-config_redis()
 
 if __name__ == '__main__':
 	test()

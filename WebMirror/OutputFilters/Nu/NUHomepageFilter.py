@@ -315,14 +315,17 @@ class NuHomepageFilter(NUBaseFilter.NuBaseFilter):
 
 							ref_pages.add(referrer)
 
-		self.high_priority_links_trigger(ref_pages)
 
-		return releases
+		return ref_pages, releases
 
 
 	def processPage(self, url, content):
 		soup = WebRequest.as_soup(self.content)
-		releases = self.extractSeriesReleases(self.pageUrl, soup)
+		ref_pages, releases = self.extractSeriesReleases(self.pageUrl, soup)
+
+		if ref_pages:
+			self.high_priority_links_trigger(ref_pages)
+
 		if releases:
 			self.__addNewLinks(url, releases)
 			# self.retrigger_pages(releases)

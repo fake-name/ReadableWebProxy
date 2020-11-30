@@ -1,11 +1,6 @@
 
 #!/usr/bin/python
 # from profilehooks import profile
-import urllib.parse
-import re
-import json
-import logging
-import settings
 import bs4
 from WebMirror.util.titleParseNew import TitleParser
 
