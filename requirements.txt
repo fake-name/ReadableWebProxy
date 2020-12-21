@@ -3,7 +3,7 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 
-requests==2.23.0
+requests==2.25.1
 webrequest==0.0.73
 setproctitle==1.1.10
 paka.cmark==2.2.0
