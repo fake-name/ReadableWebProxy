@@ -80,8 +80,8 @@ if "twoprocess" in largv or "oneprocess" in largv:
 else:
 	# MAX_IN_FLIGHT_JOBS = 10
 	# MAX_IN_FLIGHT_JOBS = 75
-	MAX_IN_FLIGHT_JOBS = 100
-	# MAX_IN_FLIGHT_JOBS = 250
+	# MAX_IN_FLIGHT_JOBS = 100
+	MAX_IN_FLIGHT_JOBS = 250
 	# MAX_IN_FLIGHT_JOBS = 500
 	# MAX_IN_FLIGHT_JOBS = 1000
 	# MAX_IN_FLIGHT_JOBS = 2500
@@ -625,8 +625,12 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 			time.sleep(2.5)
 			self.log.info("Job queue filler process. Added %s, active jobs: %s (out: %s, in: %s, pq: %s, deferred: %s). Runstate: %s",
-				newj, self.system_state['active_jobs'], self.system_state['jobs_out'], self.system_state['jobs_in'], self.system_state['qsize'],
-				self.system_state['ratelimiters'][self.mode].get_in_queues(), self.run_flag.value)
+				newj, self.system_state['active_jobs'],
+				self.system_state['jobs_out'],
+				self.system_state['jobs_in'],
+				self.system_state['qsize'],
+				self.system_state['ratelimiters'][self.mode].get_in_queues(),
+				self.run_flag.value)
 
 		self.log.info("Job queue fetcher saw exit flag. Halting.")
 		self.rpc_interface.close()
@@ -644,6 +648,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				connection_errors = 0
 
 			except RestartConnectionError:
+				self.log.error("Connection error %s! Reopening connection completely.", connection_errors)
 				connection_errors += 1
 				self.open_database_connection()
 				if connection_errors > 10:
@@ -788,7 +793,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		while self.run_flag.value == 1:
 			try:
-				cursor.execute("""SET statement_timeout = 120000;""")
+				cursor.execute("""SET statement_timeout = 240000;""")
 				if self.jq_mode == 'priority':
 					cursor.execute(raw_query_ordered)
 					rids = cursor.fetchall()

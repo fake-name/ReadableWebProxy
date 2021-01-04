@@ -16,6 +16,7 @@ def extractSteambunlightnovelCom(item):
 		('the king of hell\'s genius pampered wife',     'the king of hell\'s genius pampered wife',                    'translated'),
 		('History’s Strongest Senior Brother',           'History’s Strongest Senior Brother',                          'translated'),
 		('traveler',                                     'traveler',                                                    'translated'),
+		('trafford’s trading club',                      'trafford’s trading club',                                     'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

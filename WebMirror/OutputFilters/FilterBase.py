@@ -52,14 +52,15 @@ class FilterBase(PageProcessor):
 		links_out = []
 
 		for link in links:
-			start = urllib.parse.urlsplit(link).netloc
+			url_netloc = urllib.parse.urlsplit(link).netloc
 
 			assert link.startswith("http")
-			assert start
+			assert url_netloc
+
 			new = {
 				'url'               : link,
 				'starturl'          : self.kwargs['job'].starturl,
-				'netloc'            : start,
+				'netloc'            : url_netloc,
 				'distance'          : self.kwargs['job'].distance+1,
 				'is_text'           : True,
 				'priority'          : self.kwargs['job'].priority,
@@ -141,7 +142,32 @@ class FilterBase(PageProcessor):
 				# it as the normal new-link upsert mechanism
 				# will add it.
 				if not have:
+					if not 'job' in self.kwargs:
+						self.log.warning("Cannot upsert URL due to no job passed to filters!")
+						self.log.info("New (deferring): '%s'", release_url)
+						return
+
+					url_netloc = urllib.parse.urlsplit(release_url).netloc
+
+					assert release_url.startswith("http")
+					assert url_netloc
+
 					self.log.info("New: '%s'", release_url)
+					new = db.WebPages(
+							url      = release_url,
+							starturl          = self.kwargs['job'].starturl,
+							netloc            = url_netloc,
+							distance          = self.kwargs['job'].distance+1,
+							is_text           = True,
+							priority          = self.kwargs['job'].priority,
+							type              = self.kwargs['job'].type,
+							state             = "new",
+							addtime           = datetime.datetime.now(),
+							epoch             = WebMirror.misc.get_epoch_for_url(release_url),
+						)
+					self.db_sess.add(new)
+					self.db_sess.commit()
+
 					break
 
 				# Also, don't reset if it's in-progress
@@ -156,7 +182,7 @@ class FilterBase(PageProcessor):
 
 				self.log.info("Retriggering page '%s' (%s, %s)", release_url, have.state, have.priority)
 				have.state           = 'new'
-				have.epoch           = WebMirror.misc.get_epoch_for_url(release_url) - 1
+				have.epoch           = WebMirror.misc.get_epoch_for_url(release_url) - 2
 				have.distance        = 1
 				have.priority        = trigger_priority
 				self.db_sess.commit()

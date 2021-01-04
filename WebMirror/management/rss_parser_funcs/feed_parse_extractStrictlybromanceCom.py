@@ -11,6 +11,8 @@ def extractStrictlybromanceCom(item):
 		('grave robbers\' chronicles',        'grave robbers\' chronicles',                       'translated'),
 		('haunted houses\' chronicles',       'haunted houses\' chronicles',                      'translated'),
 		('the trial game of life',            'the trial game of life',                           'translated'),
+		('the invasion day',                  'The Invasion Day',                                 'translated'),
+		('saving unpermitted',                'saving unpermitted',                               'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

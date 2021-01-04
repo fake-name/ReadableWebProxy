@@ -18,6 +18,7 @@ def extractUntamedalleyCom(item):
 		('my family\'s idol\'s vest fell off',       'my family\'s idol\'s vest fell off',                      'translated'),
 		('i\'m raking in billions in the aristocracy',       'i\'m raking in billions in the aristocracy',                      'translated'),
 		('ttyiwftwwcoc',       'The Three Years When I Was Forced To Wear Women’s Clothing On Campus',                      'translated'),
+		('ibadaiqtei',       'I Became A Big Star After I Quit The Entertainment Industry',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

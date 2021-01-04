@@ -606,8 +606,8 @@ def load_triggered_url_list():
 		print("Need to load special-url handling ruleset (%s, %s, %s)" % (flags.TRIGGERED_URLS_CACHE == None, "debug" in sys.argv, (last_triggered_load + reload_interval) < now))
 		flags.TRIGGERED_URLS_CACHE = get_triggered_urls()
 
-		print("Triggered URLs:")
-		print(flags.TRIGGERED_URLS_CACHE)
+		# print("Triggered URLs:")
+		# print(flags.TRIGGERED_URLS_CACHE)
 
 	return flags.TRIGGERED_URLS_CACHE
 

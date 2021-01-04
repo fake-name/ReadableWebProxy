@@ -1,4 +1,3 @@
-
 def extractHidamarisoutranslationsCom(item):
 	'''
 	Parser for 'hidamarisoutranslations.com'
@@ -9,6 +8,8 @@ def extractHidamarisoutranslationsCom(item):
 		return None
 
 	tagmap = [
+		('devil wife',       'I Summoned the Devil to Grant Me a Wish, but I Married Her Instead Since She Was Adorable ~My New Devil Wife~',                      'translated'),
+		('futago no ane',       'My Twin Sister Was Taken as a Miko and I Was Thrown Away but I’m Probably the Miko ',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractHidamarisoutranslationsCom(item):
 
 
 	return False
-	

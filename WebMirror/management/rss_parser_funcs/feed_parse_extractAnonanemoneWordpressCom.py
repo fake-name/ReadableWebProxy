@@ -10,6 +10,7 @@ def extractAnonanemoneWordpressCom(item):
 	tagmap = [
 		('tmpw',       'The Man\'s Perfect Wife',                      'translated'),
 		('DS',         'Doppio Senso',                      'translated'),
+		('loy',       'Lady of YeonSung',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

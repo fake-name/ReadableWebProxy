@@ -1,4 +1,3 @@
-
 def extractTenseitranslatorBlogspotCom(item):
 	'''
 	Parser for 'tenseitranslator.blogspot.com'
@@ -9,6 +8,7 @@ def extractTenseitranslatorBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('tenseikizoku',       'Aristocrat Reborn in Another World',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTenseitranslatorBlogspotCom(item):
 
 
 	return False
-	

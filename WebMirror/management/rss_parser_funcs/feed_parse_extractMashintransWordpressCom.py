@@ -9,6 +9,7 @@ def extractMashintransWordpressCom(item):
 
 	tagmap = [
 		('Shinka no Mi',       'Shinka no Mi',                      'translated'),
+		('about my login bonus after i was transferred to another world being obviously too strong',       'about my login bonus after i was transferred to another world being obviously too strong',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

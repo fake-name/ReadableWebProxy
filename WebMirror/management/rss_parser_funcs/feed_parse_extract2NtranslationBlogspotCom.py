@@ -1,4 +1,3 @@
-
 def extract2NtranslationBlogspotCom(item):
 	'''
 	Parser for '2ntranslation.blogspot.com'
@@ -9,6 +8,7 @@ def extract2NtranslationBlogspotCom(item):
 		return None
 
 	tagmap = [
+		('get rid of the male god and marry the rich',       'get rid of the male god and marry the rich',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extract2NtranslationBlogspotCom(item):
 
 
 	return False
-	

@@ -8,7 +8,8 @@ def extractGooseberrytlWordpressCom(item):
 		return None
 
 	tagmap = [
-		('tsats',       'The Star Around The Sun',                      'translated'),
+		('tsats',        'The Star Around The Sun',                                        'translated'),
+		('dlfsee',       'Does Love at First Sight Exist in Esports',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

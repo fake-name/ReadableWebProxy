@@ -1,4 +1,3 @@
-
 def extractDreamwithoutadreamWordpressCom(item):
 	'''
 	Parser for 'dreamwithoutadream.wordpress.com'
@@ -9,6 +8,8 @@ def extractDreamwithoutadreamWordpressCom(item):
 		return None
 
 	tagmap = [
+		('lml',       'Lend Me A Lifetime',                      'translated'),
+		('sbha',       'Swapped Bodies with the Hated Alpha',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractDreamwithoutadreamWordpressCom(item):
 
 
 	return False
-	

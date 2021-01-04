@@ -183,6 +183,7 @@ def extractDanmeiMelimeliartsCom(item):
 		('it\'s a wonderful life',       'it\'s a wonderful life',                      'translated'),
 		('the emperor and his thief',       'the emperor and his thief',                      'translated'),
 		('the southern prince',       'the southern prince',                      'translated'),
+		('sweet devil',       'sweet devil',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

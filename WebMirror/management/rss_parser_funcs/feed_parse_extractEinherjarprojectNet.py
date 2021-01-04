@@ -16,6 +16,7 @@ def extractEinherjarprojectNet(item):
 		return None
 
 	tagmap = [
+		('1ldk&2jk.',               '1LDK, Soshite 2JK',                      'translated'),
 		('1ldk soshite 2jk.',       '1LDK, Soshite 2JK',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),

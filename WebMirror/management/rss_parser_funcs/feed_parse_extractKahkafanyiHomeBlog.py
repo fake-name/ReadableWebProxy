@@ -10,6 +10,7 @@ def extractKahkafanyiHomeBlog(item):
 	tagmap = [
 		('miracle doctor and demon head',        'miracle doctor and demon head',                       'translated'),
 		('rabbit gentleman and fox demon',       'rabbit gentleman and fox demon',                      'translated'),
+		('Zhao Ge',                              'Zhao Ge',                                             'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

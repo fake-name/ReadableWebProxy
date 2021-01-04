@@ -99,6 +99,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 									OR web_pages.state = 'fetching'
 									OR web_pages.state = 'error'
 									OR web_pages.state = 'skipped'
+									OR web_pages.state = 'manually_deferred'
 								)
 							AND
 								web_pages.url = %(url)s
@@ -122,9 +123,10 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		self.log.info("Triggering %s URLs from list", len(urlList))
 
-		with common.database.session_context() as sess:
+		with common.database.session_context(override_timeout_ms=60 * 1000 * 5) as sess:
 
 			raw_cur = sess.connection().connection.cursor()
+
 			commit_each = False
 			changed = 0
 			while 1:

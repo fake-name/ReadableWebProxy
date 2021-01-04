@@ -158,7 +158,10 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def get_language(self, soup):
 		rawsoupstr = str(soup)
 
-		book_info = re.search(r"g_data.book = ({.*?});", rawsoupstr)
+		book_info = re.search(r"g_data.book ?= ?({.*?})<", rawsoupstr)
+
+		if not book_info:
+			import pdb; pdb.set_trace()
 		book_info_str = book_info.group(1)
 
 		# Qidian does a bunch of escaping I don't understand, that breaks shit.
@@ -185,7 +188,7 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 	def processPage(self, url, content):
 		# Ignore 404 chapters
 
-		if '<a href="#contents" title="Table of Contents" class="j_show_contents" data-report-eid' not in content:
+		if 'data-for="#contents" title="Table of Contents" class="j_show_contents"' not in content:
 			return
 		if '<span>Table of Contents</span></a>' not in content:
 			return
@@ -199,15 +202,12 @@ class QidianSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			if lang != 'en':
 				self.log.info("Non english content (%s). Skipping", lang)
 
-			if not self.check_translated(soup):
-				self.log.info("Non-translated content! Ignoring.")
-				return
 
 			releases = self.extractSeriesReleases(self.pageUrl, soup)
 			if releases:
 				self.sendReleases(releases)
-		except Exception:
 
+		except Exception:
 			self.log.error("Error processing qidian page '%s'", url)
 			for line in traceback.format_exc().split("\n"):
 				self.log.error(line)

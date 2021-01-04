@@ -12,6 +12,7 @@ def extractTotallytranslationsCom(item):
 		('Heavenly Curse',             'Heavenly Curse',                            'translated'),
 		('Devouring The Heavens',      'Devouring The Heavens',                     'translated'),
 		('Peerless Martial God 2',     'Peerless Martial God 2',                    'translated'),
+		('The Mad Cultivator',         'The Mad Cultivator',                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

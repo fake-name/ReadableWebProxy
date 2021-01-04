@@ -12,6 +12,8 @@ def extractChichipephCom(item):
 		('villain father',       'Guide the Villain Father to Be Virtuous',                      'translated'),
 		('bhwatp',       'Become Husband and Wife According To Pleasure',                      'translated'),
 		('jiaochen',       'Jiaochen',                      'translated'),
+		('pmfbs',       'Transmigration: Petite Mother of Four Big Shots',                      'translated'),
+		('can you afford',       'Can You Afford To Raise?',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

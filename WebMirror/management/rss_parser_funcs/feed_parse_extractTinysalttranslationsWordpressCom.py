@@ -1,4 +1,3 @@
-
 def extractTinysalttranslationsWordpressCom(item):
 	'''
 	Parser for 'tinysalttranslations.wordpress.com'
@@ -9,6 +8,7 @@ def extractTinysalttranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('icdi',       'I Can Do It',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractTinysalttranslationsWordpressCom(item):
 
 
 	return False
-	

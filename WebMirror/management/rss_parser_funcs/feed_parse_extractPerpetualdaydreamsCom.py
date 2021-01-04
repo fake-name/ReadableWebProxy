@@ -11,6 +11,9 @@ def extractPerpetualdaydreamsCom(item):
 		('iwal',       'I Won a Lottery So I Moved to the Other World',                      'translated'),
 		('fpyq',       'Fei Pin Ying Qiang',                      'translated'),
 		('TYQHM',      'Those Years in Quest of Honor Mine',                      'translated'),
+		('vio',        'Violant of the Silver',                      'translated'),
+		('nhad',       'Nurturing the Hero to Avoid Death',                      'translated'),
+		('below',      'I Can’t Write Any Below-the-Neck Scenes',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

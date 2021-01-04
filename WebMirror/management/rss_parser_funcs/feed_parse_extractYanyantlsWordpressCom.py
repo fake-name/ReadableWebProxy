@@ -9,6 +9,7 @@ def extractYanyantlsWordpressCom(item):
 
 	tagmap = [
 		('the star light shines when he came',       'the star light shines when he came',                      'translated'),
+		('when two alphas meet ones an omega',       'When Two Alphas Meet, One’s an Omega',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

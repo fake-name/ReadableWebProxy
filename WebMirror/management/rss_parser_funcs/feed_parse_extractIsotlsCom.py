@@ -83,6 +83,7 @@ def extractIsotlsCom(item):
 		('somehow, the villainess who regressed in time lost her magic power, so she turned into a pure closeted maiden',   'somehow, the villainess who regressed in time lost her magic power, so she turned into a pure closeted maiden',                  'translated'),
 		('rebirth of the ultimate rich second generation',                                                                  'rebirth of the ultimate rich second generation',                                                                                 'translated'),
 		('his transmigrated cannon fodder fiancé',                                                                          'his transmigrated cannon fodder fiancé',                                                                                         'translated'),
+		('haunted duke\'s daughter',                                                                                        'haunted duke\'s daughter',                                                                                                       'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

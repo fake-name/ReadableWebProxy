@@ -51,6 +51,7 @@ class RunInstance(object):
 	def go(self):
 
 		self.log.info("RunInstance starting!")
+		hadjob = False
 		loop = 0
 		# We have to only let the child threads run for a period of time, or something
 		# somewhere in sqlalchemy appears to be leaking memory.

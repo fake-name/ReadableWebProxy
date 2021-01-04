@@ -14,6 +14,7 @@ def extractHecatesCorner(item):
 		('Meido',                        'Maid will go on through thick and thin!',     'translated'),
 		('HeroxMaou',                    'HeroxMaou',                                   'translated'),
 		('Lightning Empress Maid',       'Lightning Empress Maid',                      'translated'),
+		('unwanted epic',                'A Maiden’s Unwanted Heroic Epic',             'translated'),
 	]
 
 	for tagname, name, tl_type in tagmap:

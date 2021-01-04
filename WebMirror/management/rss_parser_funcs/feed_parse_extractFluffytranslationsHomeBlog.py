@@ -1,4 +1,3 @@
-
 def extractFluffytranslationsHomeBlog(item):
 	'''
 	Parser for 'fluffytranslations.home.blog'
@@ -9,6 +8,7 @@ def extractFluffytranslationsHomeBlog(item):
 		return None
 
 	tagmap = [
+		('film emperor\'s secret marriage',       'film emperor\'s secret marriage',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractFluffytranslationsHomeBlog(item):
 
 
 	return False
-	

@@ -82,6 +82,7 @@ class HourlyPageTrigger(PageTriggerBase):
 
 		# ScribbleHub
 		'https://www.scribblehub.com/latest-series/',
+		'https://www.scribblehub.com/latest-series/?pg=2',
 		'https://www.scribblehub.com/series-ranking/?sort=3&order=1',
 
 		# RoyalRoadL

@@ -34,6 +34,8 @@ def extractExiledrebelsscanlationsCom(item):
 		('i became rich after my pet became a refined human',           'i became rich after my pet became a refined human',                'translated'),
 		('interstellar’s first out of wedlock pregnancy',               'interstellar’s first out of wedlock pregnancy',                    'translated'),
 		('mary sue: a faithful adaptation',                             'mary sue: a faithful adaptation',                                  'translated'),
+		('home of the zerg',                                            'home of the zerg',                                                 'translated'),
+		('my junior still hasn\'t killed me',                           'my junior still hasn\'t killed me',                                'translated'),
 		('ageless seducer',                                             'ageless seducer',                                                  'translated'),
 		('A Heart of a Smith',                                          'A Heart of a Smith',                                               'translated'),
 		('beast store no. 138',                                         'Cute Beast Store No. 138',                                         'translated'),

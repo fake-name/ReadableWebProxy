@@ -1,4 +1,3 @@
-
 def extractWisteriateatranslations542098727WordpressCom(item):
 	'''
 	Parser for 'wisteriateatranslations542098727.wordpress.com'
@@ -9,6 +8,7 @@ def extractWisteriateatranslations542098727WordpressCom(item):
 		return None
 
 	tagmap = [
+		('i\'m a d-rank adventurer, for some reason i got recruited into a hero party, and now the princess is stalking me.',       'i\'m a d-rank adventurer, for some reason i got recruited into a hero party, and now the princess is stalking me.',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractWisteriateatranslations542098727WordpressCom(item):
 
 
 	return False
-	

@@ -85,7 +85,6 @@ baseUrl: [
 		'http://weletranslation.com',
 		'http://www.lesyt.xyz',
 		'http://www.zeonic-republic.net',
-		'http://lesyt.xyz',
 		'https://universalnovels.com',
 		'https://novel.babelchain.org',
 		'https://www.flying-lines.com',
@@ -122,6 +121,8 @@ baseUrl: [
 		'https://bloodcoretl.com',
 		'https://quicktransmigration.com',
 		'https://littlelatteanditstranslations.godaddysites.com',
+
+		'https://shittymtl.xyz',
 
 		# Broken cert.
 		'https://www.ibig5.net',
@@ -220,6 +221,7 @@ badwords: [
 			'www.okanegahoshii.club/search/label/',
 			'www.tigresstranslations.com/search?',
 
+			'&orderby[',   #  BabelNovel generates basically infinite search pages
 		]
 
 

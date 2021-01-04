@@ -9,7 +9,8 @@ def extract5201314TranslationWordpressCom(item):
 
 	tagmap = [
 		('guardian (bu hui xia qi)',       'guardian (bu hui xia qi)',                      'translated'),
-		('peeping woman',       'peeping woman',                      'translated'),
+		('peeping woman',                  'peeping woman',                      'translated'),
+		('the zoo in my eyes',             'The Zoo In My Eyes',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

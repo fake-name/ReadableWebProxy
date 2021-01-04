@@ -1,4 +1,3 @@
-
 def extractSugarbabiesscansWordpressCom(item):
 	'''
 	Parser for 'sugarbabiesscans.wordpress.com'
@@ -9,6 +8,9 @@ def extractSugarbabiesscansWordpressCom(item):
 		return None
 
 	tagmap = [
+		('evelyn, the red moon',                        'evelyn, the red moon',                                       'translated'),
+		('baby hostage\'s so cute',                     'baby hostage\'s so cute',                                    'translated'),
+		('surviving as an illegitimate princess',       'surviving as an illegitimate princess',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +21,3 @@ def extractSugarbabiesscansWordpressCom(item):
 
 
 	return False
-	

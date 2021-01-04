@@ -9,6 +9,7 @@ def extractRainingtlOrg(item):
 
 	tagmap = [
 		('gpah',      'Genius of a Performing Arts High',                      'translated'),
+		('kd',        'Kidnapped Dragons',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

@@ -158,6 +158,7 @@ def extractWuxiaworld(item):
 		('yama rising',                                     'yama rising',                                       'translated'),
 		('phoenix\'s requiem',                              'phoenix\'s requiem',                                'translated'),
 		('immortal soaring blade',                          'immortal soaring blade',                            'translated'),
+		('above your head',                                 'above your head',                                   'translated'),
 		('Rise',                                            'Rise',                                              'translated'),
 		('i am overlord',                                   'i am overlord',                                     'translated'),
 		('tomb raider king',                                'tomb raider king',                                  'translated'),

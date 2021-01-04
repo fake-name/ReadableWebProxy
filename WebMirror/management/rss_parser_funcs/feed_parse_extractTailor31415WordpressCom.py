@@ -12,6 +12,7 @@ def extractTailor31415WordpressCom(item):
 	tagmap = [
 		('YBPGVW',       'You Boys Play Games Very Well~',                      'translated'),
 		('Egg is Lost',       'President, Our Egg Is Lost',                      'translated'),
+		('pay attention to me',       'pay attention to me',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

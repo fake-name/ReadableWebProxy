@@ -24,6 +24,9 @@ def extractThetranslationsargeantWordpressCom(item):
 		('let\'s raise the abandoned cat heroes',       'Let’s Raise the Abandoned Cat Heroes – An Awesome Demon Hunter Became a Teacher, and Is Missed by His S-Rank Pupils',                      'translated'),
 		
 		('fun territory defense',                       'Fun Territory Defense of the Easy-Going Lord ~The Nameless Village Is Made Into the Strongest Fortified City by Production Magic~',                      'translated'),
+		('the magic division leader\'s contract marriage',       'the magic division leader\'s contract marriage',                      'translated'),
+		('the exiled count acquired the space fortress of a super advanced civilization',       'the exiled count acquired the space fortress of a super advanced civilization',                      'translated'),
+		('reincarnator sanboshi\'s struggle - called the grandson of the demon king-',       'reincarnator sanboshi\'s struggle - called the grandson of the demon king-',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

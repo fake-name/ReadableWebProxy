@@ -1,4 +1,3 @@
-
 def extractHeadpatsnovelWordpressCom(item):
 	'''
 	Parser for 'headpatsnovel.wordpress.com'
@@ -9,6 +8,7 @@ def extractHeadpatsnovelWordpressCom(item):
 		return None
 
 	tagmap = [
+		('vorpal bunny and fortress uncle',       'Vorpal Bunny and Fortress Uncle',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +19,3 @@ def extractHeadpatsnovelWordpressCom(item):
 
 
 	return False
-	

@@ -10,11 +10,13 @@ def extractAerialrainCom(item):
 	tagmap = [
 		('mwfv',                               'my whole family are villains',                      'translated'),
 		('my whole family are villains',       'my whole family are villains',                      'translated'),
-		('gnu',                                'greetings, ninth uncle',                      'translated'),
-		('greetings ninth uncle',              'greetings, ninth uncle',                      'translated'),
-		('greetings, ninth uncle',             'greetings, ninth uncle',                      'translated'),
-		('thdp',                               'the healer demands payment',                      'translated'),
-		('the healer demands payment',         'the healer demands payment',                      'translated'),
+		('gnu',                                'greetings, ninth uncle',                            'translated'),
+		('greetings ninth uncle',              'greetings, ninth uncle',                            'translated'),
+		('greetings, ninth uncle',             'greetings, ninth uncle',                            'translated'),
+		('thdp',                               'the healer demands payment',                        'translated'),
+		('the healer demands payment',         'the healer demands payment',                        'translated'),
+		('msrv',                               'my son is a reborn villain',                        'translated'),
+		('my son is a reborn villain',         'my son is a reborn villain',                        'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

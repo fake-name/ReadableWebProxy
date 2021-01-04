@@ -40,6 +40,7 @@ def extractCyborgTlCom(item):
 		('the reincarnation magician of the inferior eyes',       'the reincarnation magician of the inferior eyes',                      'translated'),
 		('king of the death in dark palace',       'king of the death in dark palace',                      'translated'),
 		('Mahouka Koukou no Rettousei',       'Mahouka Koukou no Rettousei',                      'translated'),
+		('madan no ou to seisen no carnwenhan',       'madan no ou to seisen no carnwenhan',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]

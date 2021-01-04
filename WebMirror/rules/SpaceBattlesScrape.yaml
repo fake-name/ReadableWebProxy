@@ -1,0 +1,86 @@
+
+
+FOLLOW_GOOGLE_LINKS: False
+allImages: False
+
+type: "western"
+
+baseUrl: [
+	"https://forums.spacebattles.com",
+	"http://forums.spacebattles.com",
+	"http://spacebattles.com",
+	]
+
+trigger: False
+send_raw_feed: False
+
+badwords: [
+			"/about/",
+			"/join-us/",
+			"/chat/",
+			'&format=pdf',
+			'?format=pdf',
+			'?replytocom=',
+			"/forum/",
+			"/forum",
+			"/forums/",
+			"/forums",
+			"/games/",
+			"/betareaders/",
+			"/poetry/", # Really?
+
+			"/post.php?",
+			"/author.php?",
+			"fictionpress.com/atom/u/",
+			".myspacecdn.com",
+			"static.flickr.com",
+			"/http/",
+
+			# Block user pages (they're HUGE)
+			'fictionpress.com/u/',
+
+			'/nobody_files/',
+			'/Free Verse3_files/',
+			'/free%20verse3_files/',
+			'_files/',
+
+			'/liked-writers-by/',
+			'/member/connect?',
+
+
+			'_MEDIA_IMAGE__230x230',
+			'_MEDIA_IMAGE__120x120',
+			'_USER_PROFILE__70x70',
+			]
+
+# Content Stripping needs to be determined.
+decomposeBefore: [
+
+]
+
+decompose: [
+	{'id' : "top"},
+	{'id' : "p_footer"},
+	{'id' : "profile_top"},
+	{'id' : "review"},
+	{'class' : "zmenu"},
+	{'class' : "lc-wrapper"},
+]
+
+stripTitle: []
+
+
+destyle : [
+	["div",  {}],
+	["span", {}],
+]
+
+
+preserveAttrs : [
+	["button", 'id'],
+	["button", 'onclick'],
+	["button", 'type'],
+	["button", 'btn'],
+	["select", ''],
+]
+

@@ -1,4 +1,3 @@
-
 def extractBeanylandCom(item):
 	'''
 	Parser for 'beanyland.com'
@@ -9,6 +8,10 @@ def extractBeanylandCom(item):
 		return None
 
 	tagmap = [
+		('fight for love and peace',                'Fight for Peace and Love',                               'translated'),
+		('i’m bearing my love rival’s child',       'i’m bearing my love rival’s child',                      'translated'),
+		('turn on the love system',                 'turn on the love system',                                'translated'),
+		('crossing to the primitive',               'crossing to the primitive',                              'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +22,3 @@ def extractBeanylandCom(item):
 
 
 	return False
-	

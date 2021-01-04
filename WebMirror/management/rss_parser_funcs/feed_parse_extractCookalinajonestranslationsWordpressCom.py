@@ -1,4 +1,3 @@
-
 def extractCookalinajonestranslationsWordpressCom(item):
 	'''
 	Parser for 'cookalinajonestranslations.wordpress.com'
@@ -9,6 +8,8 @@ def extractCookalinajonestranslationsWordpressCom(item):
 		return None
 
 	tagmap = [
+		('Yang Shu Mei Ying',       'Yang Shu Mei Ying',                      'translated'),
+		('i only lived for three chapters in a campus romance novel',       'i only lived for three chapters in a campus romance novel',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractCookalinajonestranslationsWordpressCom(item):
 
 
 	return False
-	

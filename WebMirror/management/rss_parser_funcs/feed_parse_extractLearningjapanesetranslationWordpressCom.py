@@ -1,4 +1,3 @@
-
 def extractLearningjapanesetranslationWordpressCom(item):
 	'''
 	Parser for 'learningjapanesetranslation.wordpress.com'
@@ -9,6 +8,8 @@ def extractLearningjapanesetranslationWordpressCom(item):
 		return None
 
 	tagmap = [
+		('kikanshita yuusha',                     'Kikanshita Yuusha no Gojitsudan',                      'translated'),
+		('kikanshita yuusha no gojitsudan',       'Kikanshita Yuusha no Gojitsudan',                      'translated'),
 		('PRC',       'PRC',                      'translated'),
 		('Loiterous', 'Loiterous',                'oel'),
 	]
@@ -19,4 +20,3 @@ def extractLearningjapanesetranslationWordpressCom(item):
 
 
 	return False
-	
