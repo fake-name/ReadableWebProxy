@@ -159,8 +159,10 @@ def run_in_subprocess():
 	print("Main runner has gone away. Committing Suicide")
 
 	# If the subprocess has gone away, die hard.
-	import ctypes;ctypes.string_at(1)
-	import os;os.kill(0,4)
+	import ctypes
+	ctypes.string_at(1)
+	import os
+	os.kill(0,4)
 
 if __name__ == "__main__":
 	import sys

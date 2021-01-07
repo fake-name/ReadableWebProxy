@@ -34,7 +34,7 @@ target_jobs = {
 
 	'scheduled_jobs.python_job.RssTriggerJob' : {
 		"name"             : 'AUTO: Rss Feeds Trigger job',
-		"interval"         : minutes(60 + 20),
+		"interval"         : minutes(45),
 		# "minute"           : '*/42',
 	},
 	'scheduled_jobs.python_job.HourlyPageTriggerJob' : {
@@ -100,16 +100,19 @@ target_jobs = {
 		"interval"         : minutes(60),
 		# "minute"           : '*/40',
 	},
-	'scheduled_jobs.python_job.WebMirrorPriorityDropper' : {
-		"name"             : 'AUTO: WebMirror Priority Dropper',
-		"interval"         : hours(4),
-		# "minute"           : '*/40',
-	},
-	'scheduled_jobs.python_job.RawMirrorPriorityDropper' : {
-		"name"             : 'AUTO: Raw WebMirror Priority Dropper',
-		"interval"         : hours(48),
-		# "minute"           : '*/40',
-	},
+
+
+	# 'scheduled_jobs.python_job.WebMirrorPriorityDropper' : {
+	# 	"name"             : 'AUTO: WebMirror Priority Dropper',
+	# 	"interval"         : hours(4),
+	# 	# "minute"           : '*/40',
+	# },
+	# 'scheduled_jobs.python_job.RawMirrorPriorityDropper' : {
+	# 	"name"             : 'AUTO: Raw WebMirror Priority Dropper',
+	# 	"interval"         : hours(48),
+	# 	# "minute"           : '*/40',
+	# },
+
 
 	'scheduled_jobs.python_job.NewUrlExtractor' : {
 		"name"             : 'AUTO: New URL Extractor',

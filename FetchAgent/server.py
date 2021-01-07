@@ -84,11 +84,11 @@ class FetchInterfaceClass(mprpc.RPCServer):
 
 
 
-	def __check_have_queue(self, queuename):
+	def __check_have_queue(self, out_basename, in_basename, queuename):
 		if not queuename in self.mdict['outq']:
 			with self.mdict['qlock']:
-				self.mdict['outq'][queuename] = queue.Queue()
-				self.mdict['inq'][queuename] = queue.Queue()
+				self.mdict[out_basename][queuename] = queue.Queue()
+				self.mdict[in_basename][queuename] = queue.Queue()
 
 	def __check_rss_queue(self, queuename):
 		if not queuename in self.mdict['feed_outq']:
@@ -96,27 +96,67 @@ class FetchInterfaceClass(mprpc.RPCServer):
 				self.mdict['feed_outq'][queuename] = queue.Queue()
 				self.mdict['feed_inq'][queuename] = queue.Queue()
 
-	def putJob(self, queuename, job):
-		self.__check_have_queue(queuename)
-		self.log.info("Putting item in queue %s with size: %s (Queue size: %s)!", queuename, len(job), self.mdict['outq'][queuename].qsize())
-		self.mdict['outq'][queuename].put(job)
+	#########################################################################################################################
 
-	def getJob(self, queuename):
-		self.__check_have_queue(queuename)
-		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
+	def _putJob(self, out_basename, in_basename, queuename, job):
+		self.__check_have_queue(out_basename, in_basename, queuename)
+		self.log.info("Putting job item in  queue (%s->%s) with size: %s (Queue size: %s)!", out_basename, queuename, len(job), self.mdict[out_basename][queuename].qsize())
+		self.mdict[out_basename][queuename].put(job)
+
+	def _getJob(self, out_basename, in_basename, queuename):
+		self.__check_have_queue(out_basename, in_basename, queuename)
+		self.log.info("Get job call for '%s' -> '%s' -> %s", in_basename, queuename, self.mdict[in_basename][queuename].qsize())
 		try:
-			tmp = self.mdict['inq'][queuename].get_nowait()
+			tmp = self.mdict[in_basename][queuename].get_nowait()
 			return tmp
 		except queue.Empty:
 			return None
 
-	def getJobNoWait(self, queuename):
-		self.__check_have_queue(queuename)
-		self.log.info("Get job call for '%s' -> %s", queuename, self.mdict['inq'][queuename].qsize())
+	def _getJobNoWait(self, out_basename, in_basename, queuename):
+		self.__check_have_queue(out_basename, in_basename, queuename)
+		self.log.info("Get job call for '%s' -> '%s' -> %s", in_basename, queuename, self.mdict[in_basename][queuename].qsize())
 		try:
-			return self.mdict['inq'][queuename].get_nowait()
+			return self.mdict[in_basename][queuename].get_nowait()
 		except queue.Empty:
 			return None
+
+
+	#########################################################################################################################
+	# Wrapper stubs with queue names
+	#########################################################################################################################
+
+	def putJob(self, queuename, job):
+		self._putJob('outq', 'inq', queuename, job)
+
+	def getJob(self, queuename):
+		return self._getJob('outq', 'inq', queuename)
+
+	def getJobNoWait(self, queuename):
+		return self._getJobNoWait('outq', 'inq', queuename)
+
+	#########################################################################################################################
+
+	def putIndependentJob(self, queuename, job):
+		self._putJob('independent_outq', 'independent_inq', queuename, job)
+
+	def getIndependentJob(self, queuename):
+		return self._getJob('independent_outq', 'independent_inq', queuename)
+
+	def getIndependentJobNoWait(self, queuename):
+		return self._getJobNoWait('independent_outq', 'independent_inq', queuename)
+
+	#########################################################################################################################
+
+	def putLowrateJob(self, queuename, job):
+		self._putJob('lowrate_outq', 'lowrate_inq', queuename, job)
+
+	def getLowrateJob(self, queuename):
+		return self._getJob('lowrate_outq', 'lowrate_inq', queuename)
+
+	def getLowrateJobNoWait(self, queuename):
+		return self._getJobNoWait('lowrate_outq', 'lowrate_inq', queuename)
+
+	#########################################################################################################################
 
 	def putRss(self, message):
 		feed_q_name = 'rss_queue'
@@ -142,6 +182,9 @@ class FetchInterfaceClass(mprpc.RPCServer):
 			return None
 
 	def checkOk(self):
+		"""
+		Check the connection is OK, and we can pass binary data
+		"""
 		return (True, b'wattt\0')
 
 
@@ -171,8 +214,8 @@ def initialize_manager(interface_dict):
 	interface_dict['feed_outq'] = {}
 	interface_dict['feed_inq'] = {}
 
-	interface_dict['independent_task'] = {}
-	interface_dict['independent_response'] = {}
+	interface_dict['independent_outq'] = {}
+	interface_dict['independent_inq'] = {}
 
 
 def run():

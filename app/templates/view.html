@@ -2,6 +2,13 @@
 {% set title = "Loading" %}
 {% extends "__base.html" %}
 
+
+{% block header %}
+
+	<script src="/static/js/render.js"></script>
+
+{% endblock %}
+
 {% block content %}
 	{% include '_block_flash.html' %}
 	<div class="well breakword">
@@ -57,6 +64,7 @@
 
 	<script>
 
+
 		function content_load_cb(data, textStatus, jqXHR)
 		{
 			console.log("Replacing content")
@@ -73,8 +81,13 @@
 			document.title = "ReadProxy - " + data['title']
 
 
+			// Clear the callback on the events so we don't set another callback every reload
+			$('#refetch_link_1').off('click');
+			$('#refetch_link_2').off('click');
+
 			$("#refetch_link_1").html('Re-Fetch');
 			$("#refetch_link_2").html('Re-Fetch');
+
 
 			$('#refetch_link_1').click(load_nocache);
 			$('#refetch_link_2').click(load_nocache);
@@ -83,6 +96,9 @@
 		};
 		function content_load_fail(jqXHR, textStatus, errorThrown)
 		{
+
+			$("#refetch_link_1").html('Re-Fetch');
+			$("#refetch_link_2").html('Re-Fetch');
 
 			$('#refetch_link_1').click(load_nocache);
 			$('#refetch_link_2').click(load_nocache);
@@ -93,8 +109,16 @@
 
 		function load_cache()
 		{
-
 			var url = "/render?{{ {"url" : req_url, "version" : version} | urlencode | safe }}";
+
+			$('#refetch_link_1').off('click');
+			$('#refetch_link_2').off('click');
+
+			$("#refetch_link_1").html('Loading...').off('click');
+			$("#refetch_link_2").html('Loading...').off('click');
+
+
+			console.log("Load cache");
 
 			$.ajax({
 				url      : url,
@@ -106,14 +130,22 @@
 			})
 
 		}
-		function load_nocache()
+
+
+		function load_nocache(event)
 		{
+			event.stopImmediatePropagation();
+
 			var url = "/render?{{ {"url" : req_url, "nocache" : "true", "version" : None} | urlencode | safe }}";
+
+			$('#refetch_link_1').off('click');
+			$('#refetch_link_2').off('click');
 
 			$("#refetch_link_1").html('Refetching').off('click');
 			$("#refetch_link_2").html('Refetching').off('click');
 
 
+			console.log("Load nocache");
 
 			$.ajax({
 				url      : url,
@@ -124,6 +156,8 @@
 			})
 		}
 
+
+
 		$( document ).ready(function() {
 			var filtst  = $(".viewport");
 			var viewportWidth = $(window).width();
@@ -132,11 +166,9 @@
 
 			load_cache();
 
-			$('#refetch_link_1').click(load_nocache);
-			$('#refetch_link_2').click(load_nocache);
+			$('#refetch_link_1').on('click', load_nocache);
+			$('#refetch_link_2').on('click', load_nocache);
 		});
-
-
 
 
 	</script>

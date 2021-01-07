@@ -72,6 +72,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 									OR raw_web_pages.state = 'fetching'
 									OR raw_web_pages.state = 'error'
 									OR raw_web_pages.state = 'skipped'
+									OR raw_web_pages.state = 'manually_deferred'
 								)
 							AND
 								raw_web_pages.url = %(url)s
@@ -110,9 +111,11 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 
 		self.log.info("Triggering %s URLs from list", len(urlList))
 
-		with common.database.session_context() as sess:
+		with common.database.session_context(override_timeout_ms=60 * 1000 * 5) as sess:
 
 			raw_cur = sess.connection().connection.cursor()
+
+
 			commit_each = False
 			changed = 0
 			while 1:
@@ -132,11 +135,12 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 					if commit_each is False:
 						self.log.warning("psycopg2.Error - Retrying with commit each.")
 					else:
-						self.log.warning("psycopg2.Error - Retrying.")
+						self.log.warning("psycopg2.Error - Retrying with per-URL commit.")
 						traceback.print_exc()
 
 					raw_cur.execute("ROLLBACK;")
 					commit_each = True
+		raw_cur.execute("""RESET statement_timeout;""")
 
 		self.log.info("Retrigger changed %s rows", changed)
 

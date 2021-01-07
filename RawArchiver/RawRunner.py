@@ -127,7 +127,7 @@ class RawRunInstance(object):
 	@classmethod
 	def run(cls, num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig=True):
 		logSetup.resetLoggingLocks()
-		common.process.name_process("raw fetcher processing worker")
+		common.process.name_process("raw raw fetcher processing worker")
 
 		try:
 			run = cls(num, total_worker_count, worker_num, response_queue, new_job_queue, cookie_lock, nosig)

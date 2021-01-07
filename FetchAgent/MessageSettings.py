@@ -76,8 +76,8 @@ LOWRATE_RPC_AMQP_SETTINGS = {
 		'heartbeat'                              :  45,
 		'socket_timeout'                         :  90,
 
-		'taskq_name'                             : 'outq',
-		'respq_name'                             : 'inq',
+		'taskq_name'                             : 'lowrate_outq',
+		'respq_name'                             : 'lowrate_inq',
 
 		'task_exchange'                          : 'tasks.e',
 		'response_exchange'                      : 'resps.e',
@@ -106,8 +106,8 @@ INDEPENDENT_RPC_AMQP_SETTINGS = {
 		'heartbeat'                              :  45,
 		'socket_timeout'                         :  90,
 
-		'taskq_name'                             : 'independent_task',
-		'respq_name'                             : 'independent_response',
+		'taskq_name'                             : 'independent_outq',
+		'respq_name'                             : 'independent_inq',
 
 		'task_exchange'                          : 'independent_tasks.e',
 		'response_exchange'                      : 'independent_resps.e',

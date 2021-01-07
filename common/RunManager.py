@@ -143,7 +143,6 @@ class Crawler(object):
 		self.log = logging.getLogger("Main.Text.Manager")
 		WebMirror.rules.load_rules()
 
-
 		self.log.info("Scraper executing with %s main processes, %s raw scraper threads.", main_thread_count, raw_thread_count)
 		self.main_thread_count = main_thread_count
 		self.raw_thread_count = raw_thread_count
