@@ -36,7 +36,7 @@ sqlalchemy-citext==1.7.0
 PySocks==1.7.1
 python-dateutil==2.8.1
 bbcode==1.1.0
-pympler==0.8
+pympler==0.9
 
 colorama==0.4.3
 pyyaml==5.3.1
