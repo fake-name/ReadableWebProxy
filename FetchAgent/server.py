@@ -85,7 +85,7 @@ class FetchInterfaceClass(mprpc.RPCServer):
 
 
 	def __check_have_queue(self, out_basename, in_basename, queuename):
-		if not queuename in self.mdict['outq']:
+		if not queuename in self.mdict[out_basename]:
 			with self.mdict['qlock']:
 				self.mdict[out_basename][queuename] = queue.Queue()
 				self.mdict[in_basename][queuename] = queue.Queue()
@@ -126,35 +126,74 @@ class FetchInterfaceClass(mprpc.RPCServer):
 	#########################################################################################################################
 
 	def putJob(self, queuename, job):
-		self._putJob('outq', 'inq', queuename, job)
+		self._putJob(
+				out_basename = 'outq',
+				in_basename  = 'inq',
+				queuename    = queuename,
+				job          = job
+			)
 
 	def getJob(self, queuename):
-		return self._getJob('outq', 'inq', queuename)
+		return self._getJob(
+				out_basename = 'outq',
+				in_basename  = 'inq',
+				queuename    = queuename
+			)
 
 	def getJobNoWait(self, queuename):
-		return self._getJobNoWait('outq', 'inq', queuename)
+		return self._getJobNoWait(
+				out_basename = 'outq',
+				in_basename  = 'inq',
+				queuename    = queuename
+			)
 
 	#########################################################################################################################
 
 	def putIndependentJob(self, queuename, job):
-		self._putJob('independent_outq', 'independent_inq', queuename, job)
+		self._putJob(
+				out_basename = 'independent_outq',
+				in_basename  = 'independent_inq',
+				queuename    = queuename,
+				job          = job
+			)
 
 	def getIndependentJob(self, queuename):
-		return self._getJob('independent_outq', 'independent_inq', queuename)
+		return self._getJob(
+				out_basename = 'independent_outq',
+				in_basename  = 'independent_inq',
+				queuename    = queuename
+			)
 
 	def getIndependentJobNoWait(self, queuename):
-		return self._getJobNoWait('independent_outq', 'independent_inq', queuename)
+		return self._getJobNoWait(
+				out_basename = 'independent_outq',
+				in_basename  = 'independent_inq',
+				queuename    = queuename
+			)
 
 	#########################################################################################################################
 
 	def putLowrateJob(self, queuename, job):
-		self._putJob('lowrate_outq', 'lowrate_inq', queuename, job)
+		self._putJob(
+				out_basename = 'lowrate_outq',
+				in_basename  = 'lowrate_inq',
+				queuename    = queuename,
+				job          = job
+			)
 
 	def getLowrateJob(self, queuename):
-		return self._getJob('lowrate_outq', 'lowrate_inq', queuename)
+		return self._getJob(
+				out_basename = 'lowrate_outq',
+				in_basename  = 'lowrate_inq',
+				queuename    = queuename
+			)
 
 	def getLowrateJobNoWait(self, queuename):
-		return self._getJobNoWait('lowrate_outq', 'lowrate_inq', queuename)
+		return self._getJobNoWait(
+				out_basename = 'lowrate_outq',
+				in_basename  = 'lowrate_inq',
+				queuename    = queuename
+			)
 
 	#########################################################################################################################
 
@@ -216,6 +255,9 @@ def initialize_manager(interface_dict):
 
 	interface_dict['independent_outq'] = {}
 	interface_dict['independent_inq'] = {}
+
+	interface_dict['lowrate_outq'] = {}
+	interface_dict['lowrate_inq'] = {}
 
 
 def run():

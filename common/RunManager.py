@@ -136,8 +136,13 @@ class MultiJobManager(object):
 				break
 
 class Crawler(object):
-	def __init__(self, main_thread_count, raw_thread_count):
+	def __init__(self,
+			main_thread_count,
+			raw_thread_count,
+			lowrate,
+		):
 
+		self.lowrate = lowrate
 		self.process_lookup = {}
 
 		self.log = logging.getLogger("Main.Text.Manager")
@@ -169,7 +174,7 @@ class Crawler(object):
 		self.log.info("Aggregator joined.")
 
 	def start_main_job_fetcher(self):
-		self.main_job_fetcher = WebMirror.JobDispatcher.RpcJobManagerWrapper()
+		self.main_job_fetcher = WebMirror.JobDispatcher.RpcJobManagerWrapper(lowrate=self.lowrate)
 		return self.main_job_fetcher.get_queues()
 
 	def start_raw_job_fetcher(self):

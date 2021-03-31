@@ -2,8 +2,6 @@ type: eastern
 
 send_raw_feed: True
 
-rewalk_interval_days: 30
-
 baseUrl: [
 
 	'https://creativenovels.com',

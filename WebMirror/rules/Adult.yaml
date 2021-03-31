@@ -688,6 +688,9 @@ badwords: [
 			"https://www.literotica.com/stories/memberpage.php?uid=1063149&page=favorites",
 			"https://www.literotica.com/stories/memberpage.php?uid=1283436&page=favorites",
 
+			# These seem to nest infinitely on tgstorytime
+			"&let=",
+
 			]
 
 

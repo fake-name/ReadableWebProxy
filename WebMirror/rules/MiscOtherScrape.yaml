@@ -1,8 +1,5 @@
 type: unknown
 
-
-rewalk_interval_days: 45
-
 send_raw_feed: True
 
 baseUrl: [

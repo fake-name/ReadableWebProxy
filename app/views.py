@@ -33,7 +33,8 @@ import app.sub_views.scrape_targets_view as scrape_targets_view
 def before_request():
 	g.locale = 'en'
 	g.session = database.get_db_session(flask_sess_if_possible=False)
-	print("Checked out session")
+	g.session.execute("SET statement_timeout TO 10000;")
+	print("Checked out session with timeout: 10000")
 
 
 @app.teardown_request
@@ -43,8 +44,11 @@ def teardown_request(response):
 			g.session.commit()
 		except Exception:
 			g.session.rollback()
+			traceback.print_exc()
 
-		print("Returned session")
+		g.session.execute("RESET statement_timeout;")
+
+		print("Returned session with timeout")
 
 		database.delete_db_session(flask_sess_if_possible=False)
 	except Exception:

@@ -19,6 +19,7 @@ class BinaryResourceProcessor(ProcessorBase.PageProcessor):
 						"image/svg+xml",
 						"image/vnd.djvu",
 						"image/webp",
+						"application/zip",
 						"application/octet-stream",
 						"text/css",
 						"text/javascript",

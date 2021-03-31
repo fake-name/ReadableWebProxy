@@ -138,7 +138,7 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin, Rpc
 	influxdb_type             = "fetch_responses"
 	influxdb_measurement_name = "rpc_job_consumer"
 
-	def __init__(self, job_queue, run_flag, system_state, state_lock, test_mode):
+	def __init__(self, job_queue, run_flag, system_state, state_lock, test_mode, lowrate=False, independent=False):
 		# print("Job __init__()")
 		super().__init__()
 
@@ -149,11 +149,15 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin, Rpc
 		self.state_lock       = state_lock
 		self.test_mode        = test_mode
 
+		self.lowrate          = lowrate
+		self.independent      = independent
+
 
 		self.last_rx = datetime.datetime.now()
 
 		self.print_mod = 0
 
+		self.log.info("RPC Job Consumer mode - lowrate: %s, independent: %s", lowrate, independent)
 
 	def blocking_put_response(self, item):
 		assert 'mode' in item, "Response items must have a mode key!"
@@ -184,7 +188,12 @@ class RpcJobConsumerInternal(LogBase.LoggerMixin, StatsdMixin.InfluxDBMixin, Rpc
 			# Something in the RPC stuff is resulting in a typeerror I don't quite
 			# understand the source of. anyways, if that happens, just reset the RPC interface.
 			try:
-				tmp = self.rpc_interface.get_job()
+				if self.independent:
+					tmp = self.rpc_interface.get_independent_job()
+				elif self.lowrate:
+					tmp = self.rpc_interface.get_lowrate_job()
+				else:
+					tmp = self.rpc_interface.get_job()
 			except queue.Empty:
 				return
 
@@ -938,15 +947,18 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 	statsd_prefix = 'ReadableWebProxy.Proc.DispatcherManager'
 
 
-	def __init__(self, job_queue, run_flag, test_mode):
+	def __init__(self, job_queue, run_flag, test_mode, lowrate):
 		super().__init__()
 
 		self.log.info("MultiRpcRunner creating RPC feeder/consumer threads")
 		self.job_queue = job_queue
 		self.run_flag  = run_flag
 		self.test_mode = test_mode
+		self.lowrate = lowrate
 
 		self.state_lock = threading.Lock()
+
+		self.log.info("Lowrate mode: %s", lowrate)
 
 	def update_stats(self, statedict, threads):
 		with self.mon_con.pipeline() as pipe:
@@ -986,13 +998,56 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		}
 
 
-
-		threads = [
-			threading.Thread(target=RpcJobDispatcherInternal('priority',   self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
-			threading.Thread(target=RpcJobDispatcherInternal('new_fetch',  self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
-			threading.Thread(target=RpcJobDispatcherInternal('random',     self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
-			threading.Thread(target=RpcJobConsumerInternal(                self.job_queue, self.run_flag, system_state, state_lock=self.state_lock, test_mode=self.test_mode).run),
-		]
+		if self.lowrate:
+			threads = [
+				threading.Thread(target=RpcJobConsumerInternal(
+						self.job_queue,
+						self.run_flag,
+						system_state,
+						state_lock = self.state_lock,
+						test_mode  = self.test_mode,
+						lowrate    = True
+					).run),
+				threading.Thread(target=RpcJobConsumerInternal(
+						self.job_queue,
+						self.run_flag,
+						system_state,
+						state_lock  = self.state_lock,
+						test_mode   = self.test_mode,
+						independent = True
+					).run),
+			]
+		else:
+			threads = [
+				threading.Thread(target=RpcJobDispatcherInternal('priority',
+						self.job_queue,
+						self.run_flag,
+						system_state,
+						state_lock=self.state_lock,
+						test_mode=self.test_mode,
+					).run),
+				threading.Thread(target=RpcJobDispatcherInternal('new_fetch',
+						self.job_queue,
+						self.run_flag,
+						system_state,
+						state_lock=self.state_lock,
+						test_mode=self.test_mode,
+					).run),
+				threading.Thread(target=RpcJobDispatcherInternal('random',
+						self.job_queue,
+						self.run_flag,
+						system_state,
+						state_lock=self.state_lock,
+						test_mode=self.test_mode,
+					).run),
+				threading.Thread(target=RpcJobConsumerInternal(
+						self.job_queue,
+						self.run_flag,
+						system_state,
+						state_lock=self.state_lock,
+						test_mode=self.test_mode,
+					).run),
+			]
 
 		self.log.info("MultiRpcRunner starting RPC feeder/consumer threads")
 		for thread in threads:
@@ -1042,10 +1097,10 @@ class MultiRpcRunner(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 
 	@classmethod
-	def run_shim(cls, job_queue, run_flag, test_mode):
+	def run_shim(cls, job_queue, run_flag, test_mode, lowrate):
 
 		try:
-			instance = cls(job_queue, run_flag, test_mode=test_mode)
+			instance = cls(job_queue, run_flag, test_mode=test_mode, lowrate=lowrate)
 			instance.run()
 
 		except KeyboardInterrupt:
@@ -1069,10 +1124,15 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 	loggerPath = "Main.RpcInterfaceManager"
 
 
-	def __init__(self, start_worker=True, test_mode=False):
+	def __init__(self,
+			start_worker = True,
+			test_mode    = False,
+			lowrate      = False,
+			):
 		super().__init__()
 
 		self.log.info("Launching job-dispatching RPC system")
+		self.log.info("Lowrate setting: %s", lowrate)
 
 		# This queue has to be a multiprocessing queue, because it's shared across multiple processes.
 		self.normal_out_queue  = multiprocessing.Queue(maxsize=MAX_IN_FLIGHT_JOBS * 2)
@@ -1080,7 +1140,7 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 		self.run_flag = multiprocessing.Value("i", 1, lock=False)
 
 		if start_worker:
-			self.main_job_agg = multiprocessing.Process(target=MultiRpcRunner.run_shim, args=(self.normal_out_queue, self.run_flag), kwargs={"test_mode" : test_mode})
+			self.main_job_agg = multiprocessing.Process(target=MultiRpcRunner.run_shim, args=(self.normal_out_queue, self.run_flag), kwargs={"test_mode" : test_mode, "lowrate" : lowrate})
 			self.main_job_agg.start()
 		else:
 			self.main_job_agg = None
@@ -1143,8 +1203,6 @@ class RpcJobManagerWrapper(LogBase.LoggerMixin):
 def test():
 	print("Wat?")
 
-	import logSetup
-	logSetup.initLogging()
 
 
 	tester = RpcJobManagerWrapper(test_mode=True)
@@ -1153,7 +1211,37 @@ def test():
 		time.sleep(1)
 
 
+def test2():
+	intf = RpcJobConsumerInternal(
+			job_queue    = None,
+			run_flag     = None,
+			system_state = None,
+			state_lock   = None,
+			test_mode    = None,
+			lowrate      = True,
+		)
+	intf.check_open_rpc_interface()
+	j1 = intf.rpc_interface.check_ok()
+	print("Job 1:", j1)
+	try:
+		j2 = intf.rpc_interface.get_lowrate_job()
+	except Exception as err:
+		print("Hit exception: ", err)
+		import pdb
+		pdb.set_trace()
+		print("What?: ", err)
+
+	print("Job 2:", j2)
+
+	print("Running IPython")
+	import IPython
+	IPython.embed()
+
+
 
 if __name__ == "__main__":
-	test()
+	import logSetup
+	logSetup.initLogging()
+	# test()
+	test2()
 

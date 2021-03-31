@@ -1,8 +1,5 @@
 type: western
 
-
-rewalk_interval_days: 30
-
 send_raw_feed: False
 
 baseUrl: [
@@ -50,6 +47,7 @@ baseUrl: [
 		'https://fiction.live',
 
 		'http://www.meejee.net',
+		'https://qntm.org',
 
 		# Needs more checking.
 		# 'https://www.eviscerati.org'

@@ -1,8 +1,5 @@
 type: eastern
 
-
-rewalk_interval_days: 30
-
 send_raw_feed: True
 
 baseUrl: [
@@ -40,6 +37,7 @@ baseUrl: [
 		'https://www.huntresstranslations.xyz',
 		'https://www.yhittranslations.xyz',
 		'https://www.lipstickwritings.xyz',
+		'https://www.amjtranslationbymioki.com',
 
 		# Dreamwidth seems OK with the default rules
 		"https://duelnoir.dreamwidth.org",
@@ -57,6 +55,8 @@ baseUrl: [
 		'https://chiisai-hime.dreamwidth.org',
 		'https://theysayivemetaghost.dreamwidth.org',
 		'https://simplypink.dreamwidth.org',
+		'https://lazypanda.dreamwidth.org',
+
 # 		'https://meigui-hua.dreamwidth.org',
 
 		'http://lilith-art.de.tl',
@@ -67,10 +67,17 @@ baseUrl: [
 
 		'http://www.wiseclock.ca',
 		'http://girlyboysalliance.mozello.com',
+		'https://tsurugakj.completely',
 
 
 		'https://www.fuyuneko.org',
 		'http://lyzo.eu',
+		'https://humiku.com',
+		'https://www.redmoonscan.com',
+		'http://www.eviltranslator.xyz',
+		'https://oracledutchess.com',
+		'http://www.tinytranslation.xyz',
+		'https://www.ganmaz.com',
 
 		'https://wuxiaworld.com',
 		'https://www.wuxiaworld.com',
@@ -123,10 +130,13 @@ baseUrl: [
 		'https://littlelatteanditstranslations.godaddysites.com',
 
 		'https://shittymtl.xyz',
+		'http://twosisters.rf.gd',
+		'https://myformerfiancee.my.id',
 
 		# Broken cert.
 		'https://www.ibig5.net',
 		'http://ibig5.net',   # redirects to https www
+		'http://hornrabbit.rf.gd',
 
 		# I /think/ these are aggregators, but I'm not totally sure.
 		'https://www.novelmultiverse.com',

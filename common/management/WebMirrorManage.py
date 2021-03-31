@@ -1244,13 +1244,6 @@ def exposed_load_feed_names_from_file(json_file):
 			print("Wat?")
 			print(e)
 
-
-def exposed_reset_in_progress():
-	'''
-	Reset processed downloads that are in progress.
-	'''
-	WebMirror.UrlUpserter.resetInProgress()
-
 def exposed_unfuck_dropped_feed_name_lut():
 	'''
 	Remove derp

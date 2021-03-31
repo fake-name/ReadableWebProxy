@@ -1,7 +1,5 @@
 type: eastern
 
-rewalk_interval_days: 30
-
 send_raw_feed: True
 
 baseUrl: [
@@ -45,10 +43,19 @@ baseUrl: [
 		'https://dimsumdimsum.wixsite.com/cocofujoshi/',
 		'https://jiyangtranslations.wixsite.com/novels/',
 		'https://justforsearchingth.wixsite.com/website/',
+		'https://stylescheryl80.wixsite.com/soppianne/',
+		'https://annescorner.wixsite.com/annes-corner/',
+		'https://diiange.wixsite.com/littlebeeswriting/',
+
+		'https://aerinne145.wixsite.com/whenautumncomes/',
+		'https://dojak0596.wixsite.com/yellowfragrance/',
+		'https://ladybug1307.wixsite.com/novelbug/',
+		'https://pinkmuffin09.wixsite.com/my-site-1/',
 
 		# On wix.com. I think this is wixsite?
 		'https://www.arwastranslation.com',
-
+		'https://www.beautycomehither.com',
+		'https://www.happygoluckyfools.xyz',
 	]
 
 feeds: [

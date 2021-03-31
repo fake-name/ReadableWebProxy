@@ -668,7 +668,11 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 		for link in resource:
 			items.append((link, False))
 
-		if items:
+
+		enable_redis = True
+		# enable_redis = False
+
+		if items and enable_redis:
 			with self.db.redis_session_context() as redis:
 
 				# Lookup all the URLs in redis
@@ -1013,6 +1017,13 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					elif '<FetchFailureError 403 -> ' in content:
 						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 2
 						job.errno           = 403
+
+					# Rate limited. Retry later.
+					elif '<FetchFailureError 429 -> ' in content:
+						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) - 1
+						job.errno           = 429
+						job.state           = "new"
+
 					elif '<FetchFailureError 500 -> ' in content:
 						job.epoch           = WebMirror.misc.get_epoch_for_url(job.url) + 2
 						job.errno           = 500

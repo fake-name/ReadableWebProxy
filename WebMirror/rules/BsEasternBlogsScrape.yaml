@@ -8,7 +8,6 @@ FOLLOW_GOOGLE_LINKS: True
 
 send_raw_feed: True
 
-rewalk_interval_days: 30
 
 baseUrl: [
 
@@ -457,7 +456,46 @@ baseUrl: [
 	'https://mercurytranslations7.blogspot.com',
 	'https://thalesmatic.blogspot.com',
 	'https://todstl.blogspot.com',
+
 	'https://white-cherrybl.blogspot.com',
+	'https://cayuruyu.blogspot.com',
+	'https://cultureasiatl.blogspot.com',
+	'https://dramantics.blogspot.com',
+	'https://eugenewoodbury.blogspot.com',
+	'https://fanswebnovel.blogspot.com',
+	'https://hirsustranslations.blogspot.com',
+	'https://lonelytreetranslation.blogspot.com',
+	'https://nottegram.blogspot.com',
+	'https://soppianned.blogspot.com',
+	'https://whale-translations.blogspot.com',
+	"https://alcachoo-translations.blogspot.com",
+	"https://nittohtranslations.blogspot.com",
+	"https://rodtranslation.blogspot.com",
+	"https://seireitranslations.blogspot.com",
+
+	"https://notatranslator.blogspot.com",
+	'https://endeavormtl.blogspot.com',
+	'https://fttranslations18.blogspot.com',
+	'https://hayatotranslation.blogspot.com',
+	'https://ironnotsteel.blogspot.com',
+	'https://lilacflowergarden.blogspot.com',
+
+	'http://7sinstranslation.blogspot.com',
+	'https://aidoru-apple.blogspot.com',
+	'https://dreamnovelslover.blogspot.com',
+	'https://fromtheangeltranslations.blogspot.com',
+	'https://lapinetl.blogspot.com',
+	'https://lososmtledits.blogspot.com',
+	'https://mtldump.blogspot.com',
+	'https://neophytetl.blogspot.com',
+	'https://notacolortl.blogspot.com',
+	'https://randomness-shelf.blogspot.com',
+	'https://sinhearthstrans.blogspot.com',
+	'https://terriblyedited.blogspot.com',
+	'https://trialtranslations.blogspot.com',
+	'https://wuchangjie.blogspot.com',
+	'https://zhuwangsqc.blogspot.com',
+
 
 ]
 

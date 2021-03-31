@@ -2,8 +2,6 @@ type: eastern
 
 send_raw_feed: True
 
-rewalk_interval_days: 30
-
 baseUrl: [
 	'https://tenshihonyakusha.wordpress.com',
 	'https://12superlatives.wordpress.com',
@@ -1463,7 +1461,6 @@ baseUrl: [
 	'http://volaretranslations.com',
 	'http://walkthejianghu.com',
 	'http://whatevertl.com',
-	'http://worldofwatermelons.com',
 	'http://wuxianation.com',
 	'http://www.aihristdreamtranslations.com',
 	'http://www.ainushi.com',
@@ -1510,7 +1507,6 @@ baseUrl: [
 	'http://www.translationnations.com',
 	'http://www.wolfiehonyaku.com',
 	'http://www.world-three.org',
-	'http://www.worldofwatermelons.com',
 	'http://xaiomoge.com',
 	'http://yellawtwl.com',
 	'http://youjinsite.com',

@@ -30,6 +30,7 @@ import WebMirror.management.RssManage
 import WebMirror.management.Testing
 
 # Moar
+import WebMirror.management.DbManage
 import WebMirror.management.FeedDbManage
 import WebMirror.management.UrlManage
 import WebMirror.OfflineFilters.NewNetlocTracker
@@ -55,6 +56,7 @@ SCANNED_MODULES = [
 	WebMirror.management.SpcnetTvManage,
 
 	WebMirror.management.FeedDbManage,
+	WebMirror.management.DbManage,
 	WebMirror.management.RssManage,
 	WebMirror.management.UrlManage,
 	WebMirror.management.Testing,

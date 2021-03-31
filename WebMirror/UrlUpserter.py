@@ -95,9 +95,7 @@ def resetRedisQueues():
 
 
 def resetInProgress():
-
-
-	commit_interval =   50000
+	commit_interval =   10000
 	step            =  150000
 	commit_every    =      30
 	last_commit     = time.time()
@@ -133,83 +131,6 @@ def resetInProgress():
 												state = 'new'
 											WHERE
 												(state = 'fetching' OR state = 'processing')
-											AND
-												id > {}
-											AND
-												id <= {}
-												;""".format(idx, idx+step))
-
-					# processed  = idx - start
-					# total_todo = stop - start
-					# print('\r%10i, %10i, %7.4f, %6i, %8i\r' % (idx, stop, processed/total_todo * 100, have.rowcount, tot_changed), end="", flush=True)
-					changed += have.rowcount
-					tot_changed += have.rowcount
-					if changed > commit_interval:
-						print("Committing (%s changed rows)...." % changed, end=' ')
-						sess.commit()
-						print("done")
-						changed = 0
-						last_commit     = time.time()
-
-					if time.time() > last_commit + commit_every:
-						last_commit     = time.time()
-						print("Committing (%s changed rows, timed out)...." % changed, end=' ')
-						sess.commit()
-						print("done")
-						changed = 0
-
-
-				except sqlalchemy.exc.OperationalError:
-					sess.rollback()
-				except sqlalchemy.exc.InvalidRequestError:
-					sess.rollback()
-
-
-			sess.commit()
-		finally:
-			pass
-			# sess.execute('''SET enable_bitmapscan TO on;''')
-
-def disableAvailable():
-
-
-	commit_interval =   50000
-	step            =  150000
-	commit_every    =      30
-	last_commit     = time.time()
-
-	with db.session_context(override_timeout_ms=60 * 1000 * 15) as sess:
-		try:
-			# sess.execute('''SET enable_bitmapscan TO off;''')
-			print("Disabling available links!")
-			print("Getting minimum row in need or update..")
-			start = sess.execute("""SELECT min(id),  max(id) FROM web_pages WHERE (state = 'new' OR state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred')""")
-			# start = sess.execute("""SELECT min(id) FROM web_pages WHERE (state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred') OR state = 'specialty_deferred' OR state = 'specialty_ready'""")
-			start, stop = list(start)[0]
-			if start is None:
-				print("No rows to reset!")
-				return
-			print("Minimum row ID: ", start, "Maximum row ID: ", stop)
-
-
-			print("Need to fix rows from %s to %s" % (start, stop))
-			start = start - (start % step)
-
-			changed = 0
-			tot_changed = 0
-			# for idx in range(start, stop, step):
-			for idx in tqdm.tqdm(range(start, stop, step), desc="Resetting DlStates"):
-				try:
-					# SQL String munging! I'm a bad person!
-					# Only done because I can't easily find how to make sqlalchemy
-					# bind parameters ignore the postgres specific cast
-					# The id range forces the query planner to use a much smarter approach which is much more performant for small numbers of updates
-					have = sess.execute("""UPDATE
-												web_pages
-											SET
-												state = 'manually_deferred'
-											WHERE
-												(state = 'new' OR state = 'fetching' OR state = 'processing' OR state = 'specialty_deferred')
 											AND
 												id > {}
 											AND
@@ -353,6 +274,8 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 			raise
 		# print("item:", item)
 
+	# import pdb
+	# pdb.set_trace()
 
 	logger.info("Inserting %s items into DB in batch.", len(link_batch))
 	# This is kind of horrible.
@@ -641,7 +564,7 @@ class UpdateAggregator(object):
 			self.link_count += 1
 
 			# Fucking huzzah for ON CONFLICT!
-			# self.batched_links.append(linkdict)
+			self.batched_links.append(linkdict)
 
 			# Kick item up to the top of the LRU list
 			self.seen[url] = True
@@ -674,7 +597,7 @@ class UpdateAggregator(object):
 			self.link_count += 1
 
 			# Fucking huzzah for ON CONFLICT!
-			# self.batched_links.append(linkdict)
+			self.batched_links.append(linkdict)
 
 			# Kick item up to the top of the LRU list
 			self.seen[url] = True
@@ -696,12 +619,12 @@ class UpdateAggregator(object):
 			if config.C_DO_RABBIT:
 				self.do_amqp(value)
 		elif target == "new_link":
-			pass
-			# self.do_link(value)
+			# pass
+			self.do_link(value)
 		elif target == "high_priority_link_trigger":
 			# print("Trigger immediate if new", value)
-			pass
-			# self.do_immediate_link(value)
+			# pass
+			self.do_immediate_link(value)
 		else:
 			print("Todo", target, value)
 
@@ -766,14 +689,3 @@ def test():
 	with db.session_context() as sess:
 		agg = UpdateAggregator(None, sess)
 		print(agg)
-
-def disable_availabile():
-
-	disableAvailable()
-
-if __name__ == "__main__":
-
-	import logSetup
-	logSetup.initLogging()
-	# test()
-	disableAvailable()

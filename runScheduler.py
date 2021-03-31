@@ -2,6 +2,7 @@
 
 import sys
 import os.path
+import logging
 
 os.environ['NDSCHEDULER_SETTINGS_MODULE'] = 'settings_sched'
 addpath = os.path.abspath("./ndscheduler")
@@ -12,6 +13,7 @@ import traceback
 import datetime
 import threading
 import time
+import apscheduler.events
 import apscheduler.triggers.interval
 import apscheduler.triggers.cron
 
@@ -27,11 +29,53 @@ import common.stuck
 import activeScheduledTasks
 
 
+JOB_MAP = {
+		apscheduler.events.EVENT_SCHEDULER_STARTED  : "EVENT_SCHEDULER_STARTED",
+		apscheduler.events.EVENT_SCHEDULER_SHUTDOWN : "EVENT_SCHEDULER_SHUTDOWN",
+		apscheduler.events.EVENT_SCHEDULER_PAUSED   : "EVENT_SCHEDULER_PAUSED",
+		apscheduler.events.EVENT_SCHEDULER_RESUMED  : "EVENT_SCHEDULER_RESUMED",
+		apscheduler.events.EVENT_EXECUTOR_ADDED     : "EVENT_EXECUTOR_ADDED",
+		apscheduler.events.EVENT_EXECUTOR_REMOVED   : "EVENT_EXECUTOR_REMOVED",
+		apscheduler.events.EVENT_JOBSTORE_ADDED     : "EVENT_JOBSTORE_ADDED",
+		apscheduler.events.EVENT_JOBSTORE_REMOVED   : "EVENT_JOBSTORE_REMOVED",
+		apscheduler.events.EVENT_ALL_JOBS_REMOVED   : "EVENT_ALL_JOBS_REMOVED",
+		apscheduler.events.EVENT_JOB_ADDED          : "EVENT_JOB_ADDED",
+		apscheduler.events.EVENT_JOB_REMOVED        : "EVENT_JOB_REMOVED",
+		apscheduler.events.EVENT_JOB_MODIFIED       : "EVENT_JOB_MODIFIED",
+		apscheduler.events.EVENT_JOB_SUBMITTED      : "EVENT_JOB_SUBMITTED",
+		apscheduler.events.EVENT_JOB_MAX_INSTANCES  : "EVENT_JOB_MAX_INSTANCES",
+		apscheduler.events.EVENT_JOB_EXECUTED       : "EVENT_JOB_EXECUTED",
+		apscheduler.events.EVENT_JOB_ERROR          : "EVENT_JOB_ERROR",
+		apscheduler.events.EVENT_JOB_MISSED         : "EVENT_JOB_MISSED",
+		apscheduler.events.EVENT_ALL                : "EVENT_ALL",
+	}
+
+
+log = logging.getLogger("Main.Runtime")
+
+def job_evt_listener(event):
+	if hasattr(event, "exception") and event.exception:
+		log.info('Job crashed: %s', event.job_id)
+		log.info('Traceback: %s', event.traceback)
+	else:
+		log.info('Job event code: %s, job: %s', JOB_MAP[event.code], event.job_id)
+	if event.code == apscheduler.events.EVENT_JOB_MAX_INSTANCES:
+
+		log.info('Job event code: %s, job: %s', JOB_MAP[event.code], event.job_id)
+		log.error("Missed job execution! Killing job executor to unstick jobs")
+
+
+		print('Job event code: %s, job: %s' % (JOB_MAP[event.code], event.job_id))
+		print("Missed job execution! Killing job executor to unstick jobs")
+
+		import ctypes
+		ctypes.string_at(1)
+		import os
+		os.kill(0,4)
+
 class SimpleServer(ndscheduler.server.server.SchedulerServer):
 
 	def post_scheduler_start(self):
-		# New user experience! Make sure we have at least 1 job to demo!
-
 		active_jobs = set()
 		current_jobs = self.scheduler_manager.get_jobs()
 
@@ -108,6 +152,13 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 						name             = params['name'],
 						trigger          = trig,
 					)
+
+		self.scheduler_manager.sched.add_listener(job_evt_listener,
+				apscheduler.events.EVENT_JOB_EXECUTED |
+				apscheduler.events.EVENT_JOB_ERROR    |
+				apscheduler.events.EVENT_JOB_MISSED   |
+				apscheduler.events.EVENT_JOB_MAX_INSTANCES
+			)
 
 
 def run_scheduler():

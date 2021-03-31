@@ -89,7 +89,13 @@ def go(args):
 	common.redis.config_redis()
 	rules = WebMirror.rules.load_rules()
 
-	runner = common.RunManager.Crawler(main_thread_count=NO_PROCESSES, raw_thread_count=RAW_NO_PROCESSES)
+	lowrate = "lowrate" in largv
+
+	runner = common.RunManager.Crawler(
+		main_thread_count = NO_PROCESSES,
+		raw_thread_count  = RAW_NO_PROCESSES,
+		lowrate           = lowrate,
+		)
 
 	if "raw" in largv:
 		common.process.name_process("raw fetcher management thread")
@@ -107,7 +113,10 @@ def go(args):
 	else:
 
 		common.process.name_process("fetcher management thread")
-		if not "noreset" in largv:
+
+
+
+		if "noreset" not in largv and not lowrate:
 			print("Resetting any in-progress downloads.")
 			WebMirror.UrlUpserter.resetInProgress()
 			WebMirror.UrlUpserter.resetRedisQueues()

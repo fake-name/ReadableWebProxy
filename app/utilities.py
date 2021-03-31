@@ -48,4 +48,13 @@ def replace_links(content):
 	return content
 
 
+def replace_links_history(content):
+	rsc_key = "RESOURCE:{}".format(config.relink_secret).lower()
+	ctnt_key = "CONTENT:{}".format(config.relink_secret).lower()
+
+	content = content.replace(ctnt_key, "/history?url=")
+	# content = content.replace(rsc_key, "/render_rsc?url=")
+	return content
+
+
 

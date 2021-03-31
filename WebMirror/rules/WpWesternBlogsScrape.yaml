@@ -3,8 +3,6 @@ type: "western"
 
 send_raw_feed: True
 
-rewalk_interval_days: 30
-
 baseUrl: [
 
 		'http://atl.quinlancircle.com',

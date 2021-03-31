@@ -76,6 +76,20 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 		except Exception as e:
 			raise e
 
+	def get_independent_job(self):
+		try:
+			j = self.rpc_client.call('getIndependentJob', self.interfacename)
+			return j
+		except Exception as e:
+			raise e
+
+	def get_lowrate_job(self):
+		try:
+			j = self.rpc_client.call('getLowrateJob', self.interfacename)
+			return j
+		except Exception as e:
+			raise e
+
 	def get_job_nowait(self):
 		try:
 			j = self.rpc_client.call('getJobNoWait', self.interfacename)

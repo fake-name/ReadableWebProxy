@@ -107,8 +107,9 @@ def view_rendered():
 		if rows:
 			row = rows.pop()
 			title, content = row
-			content = utilities.replace_links(content)
+			content = utilities.replace_links_history(content)
 			cachestate = "Historical version: %s" % (version, )
+			print("Rendering historical version!")
 	else:
 		title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache, version=version)
 
@@ -272,8 +273,9 @@ def render():
 		if rows:
 			row = rows.pop()
 			title, content = row
-			content = utilities.replace_links(content)
+			content = utilities.replace_links_history(content)
 			cachestate = "Historical version: %s" % (version, )
+			print("Rendering historical version!")
 	else:
 		title, content, cachestate = WebMirror.API.getPage(req_url, ignore_cache=ignore_cache, version=version)
 
@@ -287,6 +289,7 @@ def render():
 		filterstate = filterstate,
 		req_url     = req_url,
 		)
+
 	return set_cache_control_headers(response)
 
 
