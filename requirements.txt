@@ -22,7 +22,7 @@ fontTools==4.24.3
 fdict==0.8.1
 cachetools==4.2.2
 bleach==3.3.0
-Jinja2==2.11.2
+Jinja2==3.0.1
 xmljson==0.2.1 
 pystuck==0.8.5
 cherrypy==18.6.0
