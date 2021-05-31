@@ -162,7 +162,7 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 
 
 def run_scheduler():
-	common.stuck.install_pystuck()
+	# common.stuck.install_pystuck()
 	SimpleServer.run()
 
 

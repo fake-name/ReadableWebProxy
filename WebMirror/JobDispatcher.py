@@ -547,6 +547,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 
 	def outbound_job_wanted(self, netloc, joburl):
+		'''
+		Return of the
+		'''
+
 		if netloc == "archiveofourown.org":
 			return False
 
@@ -574,11 +578,30 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		return False
 
+
+	def outbound_job_walk_disabled(self, netloc, joburl):
+		'''
+		Return if the netloc fot the joburl should not be re-walked.
+		'''
+		for ruleset in self.ruleset:
+			if ruleset['netlocs'] and netloc in ruleset['netlocs']:
+				if ruleset['rewalk_disabled']:
+					return True
+
+		return False
+
+
 	def delete_job(self, rid, joburl):
 		self.log.warning("Deleting job for url: '%s'", joburl)
 		cursor = self.db_interface.cursor()
 		cursor.execute("""DELETE FROM web_pages         WHERE web_pages.id = %s         AND web_pages.url = %s;""", (rid, joburl))
 		cursor.execute("""DELETE FROM web_pages_version WHERE web_pages_version.id = %s AND web_pages_version.url = %s;""", (rid, joburl))
+		self.db_interface.commit()
+
+	def disable_job(self, rid, joburl):
+		self.log.warning("Disabling job for url: '%s'", joburl)
+		cursor = self.db_interface.cursor()
+		cursor.execute("""UPDATE web_pages SET state='disabled' WHERE web_pages.id = %s         AND web_pages.url = %s;""", (rid, joburl))
 		self.db_interface.commit()
 
 	def set_special_case_blocked(self, rid, joburl):
@@ -868,6 +891,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		special_case = 0
 		booksie = 0
 		defer_count = 0
+		disable_count = 0
 		del_count = 0
 		immediate = 0
 		defer = []
@@ -887,6 +911,10 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			if not self.outbound_job_wanted(netloc, joburl):
 				del_count += 1
 				self.delete_job(rid, joburl)
+
+			elif self.outbound_job_walk_disabled(netloc, joburl):
+				disable_count += 1
+				self.disable_job(rid, joburl)
 
 			elif WebMirror.SpecialCase.haveSpecialCase(self.specialcase, joburl, netloc):
 				special_case += 1
@@ -908,8 +936,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 					defer_count += 1
 					defer.append((rid, joburl, netloc))
 
-		self.log.info("Of %s job IDs, %s were special-case, %s were rate-limited, %s were immediately dispatched, %s deleted, %s booksie (%s proc).",
-				len(rids), special_case, defer_count, immediate, del_count, booksie, processed)
+		self.log.info("Of %s job IDs, %s were special-case, %s were rate-limited, %s were immediately dispatched, %s deleted, %s disabled, %s booksie (%s proc).",
+				len(rids), special_case, defer_count, immediate, del_count, disable_count, booksie, processed)
 
 
 		with acquire_timeout(self.state_lock, 10) as acquired:
@@ -925,7 +953,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 
 		# Deleted and defered jobs don't count towards the active jobs number.
-		return len(rids) - (del_count + defer_count)
+		return len(rids) - (del_count + disable_count + defer_count + booksie)
 
 
 	def run(self):

@@ -35,6 +35,7 @@ try:
 	from settings import REDIS_SERVER_IP        as C_REDIS_SERVER_IP
 
 	from settings import GRAPHITE_DB_IP         as C_GRAPHITE_DB_IP
+	from settings import INFLUX_DB_EN           as C_INFLUX_DB_EN
 	from settings import INFLUX_DB_URL          as C_INFLUX_DB_URL
 	from settings import INFLUX_DB_PORT         as C_INFLUX_DB_PORT
 	from settings import INFLUX_DB_DBNAME       as C_INFLUX_DB_DBNAME
@@ -62,6 +63,7 @@ except ImportError:
 	C_REDIS_SERVER_IP  = None
 
 	C_GRAPHITE_DB_IP   = None
+	C_INFLUX_DB_EN     = False
 	C_INFLUX_DB_URL    = None
 	C_INFLUX_DB_PORT   = None
 	C_INFLUX_DB_DBNAME = None

@@ -1,0 +1,42 @@
+
+type: unknown
+
+send_raw_feed: False
+rewalk_disabled: True
+
+rewalk_interval_days: 50000
+
+baseUrl: [
+
+	'http://worldofwatermelons.com',
+	'http://www.worldofwatermelons.com',
+	'https://worldofwatermelons.com',
+	'https://www.worldofwatermelons.com',
+
+	]
+
+# select count(*) from web_pages where netloc = 'www.asstr.com';
+# select count(*) from web_pages where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+# delete from web_pages where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+
+# select count(*) from web_pages_version where netloc = 'www.asstr.com';
+# select count(*) from web_pages_version where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+# delete from web_pages_version where netloc = 'www.asstr.com' and url LIKE '%www.asstr.com/?ga=%';
+
+
+badwords: [
+		'?',
+		'.xml',
+	]
+
+decompose: [
+
+	]
+
+decomposeBefore: [
+
+	]
+
+stripTitle: [
+
+	]

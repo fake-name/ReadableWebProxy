@@ -3,6 +3,7 @@ import time
 import abc
 
 import statsd
+import requests.exceptions
 from influxdb import InfluxDBClient
 
 import config
@@ -43,13 +44,9 @@ class InfluxDBMixin(metaclass=abc.ABCMeta):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 
-		self.__influx_client = InfluxDBClient(
-				host     = config.C_INFLUX_DB_URL,
-				port     = config.C_INFLUX_DB_PORT,
-				database = config.C_INFLUX_DB_DBNAME
-			)
+		self.__influx_client = None
 
-	def put_measurement(self, measurement_name, measurement, fields, extra_tags=None):
+	def __put_measurement(self, measurement_name, measurement, fields, extra_tags=None):
 		if extra_tags is None:
 			extra_tags = {}
 		else:
@@ -80,3 +77,13 @@ class InfluxDBMixin(metaclass=abc.ABCMeta):
 			]
 
 		self.__influx_client.write_points(points)
+
+	def put_measurement(self, measurement_name, measurement, fields, extra_tags=None):
+		if not config.C_INFLUX_DB_EN:
+			return
+
+
+		try:
+			self.__put_measurement(measurement_name, measurement, fields, extra_tags)
+		except requests.exceptions.ConnectionError:
+			self.log.warning("Failed to send stats measurement. Ignoring.")

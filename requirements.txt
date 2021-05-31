@@ -3,73 +3,73 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 
-requests==2.23.0
-webrequest==0.0.73
-setproctitle==1.1.10
-paka.cmark==2.2.0
-json2html==1.3.0
+requests==2.25.1
+webrequest==0.0.78
+setproctitle==1.2.2
 mprpc==0.1.17
-tqdm==4.46.1
-chardet==3.0.4
-pymysql==0.9.3
+tqdm==4.61.0
+chardet==4.0.0
+pymysql==1.0.2
 statsd==3.3.0
-xxhash==1.4.3
-objgraph==3.4.1
+xxhash==2.0.2
+objgraph==3.5.0
 zerorpc==0.6.3
-cssutils==1.0.2
-tinycss2==1.0.2
-fontTools==4.11.0
+cssutils==2.3.0
+tinycss2==1.1.0
+fontTools==4.24.4
 fdict==0.8.1
-cachetools==4.1.0
-bleach==3.1.5
-Jinja2==2.11.2
+cachetools==4.2.2
+bleach==3.3.0
+Jinja2==3.0.1
 xmljson==0.2.1 
 pystuck==0.8.5
 cherrypy==18.6.0
 
-psycopg2cffi==2.8.1; platform.python_implementation == 'PyPy'
-psycopg2==2.8.5; platform.python_implementation == 'CPython'
+psycopg2cffi==2.9.0; platform.python_implementation == 'PyPy'
+psycopg2==2.8.6; platform.python_implementation == 'CPython'
 
-SQLAlchemy==1.3.17
-sqlalchemy-citext==1.6.3
+SQLAlchemy<1.4.0
+sqlalchemy-citext==1.7.0; platform.python_implementation == 'PyPy'
+sqlalchemy-citext==1.8.0; platform.python_implementation == 'CPython'
 
 PySocks==1.7.1
 python-dateutil==2.8.1
 bbcode==1.1.0
-pympler==0.8
+pympler==0.9
 
-colorama==0.4.3
-pyyaml==5.3.1
-natsort==7.0.1
-mdx_linkify==1.4
-ftfy==5.7
-lxml==4.5.1
-Flask==1.1.2
+colorama==0.4.4
+pyyaml==5.4.1
+natsort==7.1.1
+mdx_linkify==2.1
+ftfy==6.0.3
+lxml==4.6.3
+Flask==2.0.1
 Flask-DebugToolbar==0.11.0
 Flask-Login==0.5.0
-Flask-Babel==1.0.0
-selenium==3.141.0
+Flask-Babel==2.0.0
 webcolors==1.11.1
 pyparsing==2.4.7
-feedparser==5.2.1
+feedparser==6.0.2
+gevent==21.1.2
 
-Flask-SQLAlchemy==2.4.3
-flask-paginate==0.7.0
-Flask-WTF==0.14.3
-apscheduler==3.6.3
-sqlalchemy_searchable==1.1.0
+Flask-SQLAlchemy==2.5.1
+flask-paginate==0.8.1
+Flask-WTF==0.15.1
+apscheduler==3.7.0
+sqlalchemy_searchable==1.2.0
+sqlalchemy-utils==0.37.4
 
 ## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
 git+https://github.com/kvesteri/sqlalchemy-continuum.git
 
 # Probably requires
 # sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev
-pillow==7.1.2
+pillow==8.2.0
 
 # probably requires `sudo apt install libxml2-dev libxslt1-dev`
-BeautifulSoup4==4.9.1
+BeautifulSoup4==4.9.3
 
-alembic==1.4.2
+alembic==1.6.5
 
 redis==3.5.3
 
@@ -78,7 +78,7 @@ redis==3.5.3
 vmprof==0.4.15
 
 parsedatetime==2.6
-psutil==5.7.0
+psutil==5.8.0
 
 ## For ndscheduler
 tornado<6
@@ -114,10 +114,10 @@ tornado<6
 ## WTForms
 ## WTForms-JSON
 
-influxdb==5.3.0
-setproctitle==1.1.10
-flask_httpauth==4.1.0
-hiredis==1.0.1
+influxdb==5.3.1
+setproctitle==1.2.2
+flask_httpauth==4.4.0
+hiredis==2.0.0
 guess_language-spirit==0.5.3
-PyEnchant==3.1.1
-dill==0.3.1.1
+PyEnchant==3.2.0
+dill==0.3.3

@@ -198,6 +198,8 @@ badwords: [
 			'/~BE_Games/',
 
 			'tag[]=',
+			'chyoa.com/tag/',
+			'chyoa.com/search/',
 			'chyoa.com/search?',
 			'chyoa.com/index.php/search?',
 

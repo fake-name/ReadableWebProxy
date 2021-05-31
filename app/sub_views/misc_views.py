@@ -96,6 +96,9 @@ def active_urls():
 	fetching_urls = common.redis.get_fetching_urls()
 	processing_urls = common.redis.get_processing_urls()
 
+	fetching_urls.sort()
+	processing_urls.sort()
+
 	return render_template('misc/active-urls.html',
 		header    = "Random URL Subset",
 						   fetching   = fetching_urls,

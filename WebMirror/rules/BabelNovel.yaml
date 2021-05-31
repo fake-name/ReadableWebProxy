@@ -1,10 +1,9 @@
 type: eastern
 
-
 send_raw_feed: True
 
 baseUrl: [
-		'https://sofanovel.com',
+		'https://babelnovel.com',
 
 
 	]
@@ -17,6 +16,7 @@ extraStartUrls: [
 	]
 
 badwords: [
+			'chargetype=paid&',
 			'Wu-White.svg',
 
 			"/about/",
@@ -72,6 +72,9 @@ badwords: [
 			'www.okanegahoshii.club/search/label/',
 			'www.tigresstranslations.com/search?',
 
+			'babelnovel.com/browse/',   #  BabelNovel generates basically infinite search pages
+			'&orderby[',   #  BabelNovel generates basically infinite search pages
+			'&grouptype[',   #  BabelNovel generates basically infinite search pages
 		]
 
 
@@ -100,7 +103,12 @@ stripTitle: [
 
 
 special_case_filters : {
-	"sofanovel.com"     : ["chrome_render_fetch", ],
+	"babelnovel.com"     : ["local_fetch", ],
+	'wuxiaworld.com'     : ["local_fetch", ],
+	'www.wuxiaworld.com' : ["local_fetch", ],
+	"babelnovel.com"     : ["local_fetch", ],
+	'wuxiaworld.com'     : ["local_fetch", ],
+	'www.wuxiaworld.com' : ["local_fetch", ],
 }
 
 

@@ -105,7 +105,6 @@ baseUrl: [
 		'https://trashlation.tk',
 		'http://hbnhtranslations.com',
 		'https://bluedreamsblog.jimdofree.com',
-		'https://babelnovel.com',
 		'https://www.pemudatunawisata.my.id',
 		'https://isotls.com',
 		'https://ritsu.dev',
@@ -231,7 +230,6 @@ badwords: [
 			'www.okanegahoshii.club/search/label/',
 			'www.tigresstranslations.com/search?',
 
-			'&orderby[',   #  BabelNovel generates basically infinite search pages
 		]
 
 
@@ -260,10 +258,8 @@ stripTitle: [
 
 
 special_case_filters : {
-	"babelnovel.com"     : ["local_fetch", ],
 	'wuxiaworld.com'     : ["local_fetch", ],
 	'www.wuxiaworld.com' : ["local_fetch", ],
-	"babelnovel.com"     : ["local_fetch", ],
 	'wuxiaworld.com'     : ["local_fetch", ],
 	'www.wuxiaworld.com' : ["local_fetch", ],
 }
