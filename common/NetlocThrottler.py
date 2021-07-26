@@ -9,6 +9,8 @@ import msgpack
 import common.LogBase
 import common.redis
 
+from common.db_constants import DB_IDLE_PRIORITY
+
 
 
 class NetlockThrottler(common.LogBase.LoggerMixin):
@@ -38,8 +40,8 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		# keep connections forever in each.
 		self.redis = common.redis.get_redis_queue_conn()
 
-	def __netloc_to_key(self, netloc):
-		return self.key_prefix + "_" + netloc
+	def __netloc_to_key(self, netloc, priority):
+		return "{}_{}_{}".format(self.key_prefix, netloc, priority)
 
 
 	def __check_init_nl(self, netloc):
@@ -50,11 +52,11 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 				'status_accumulator' : 10,
 			}
 
-	def put_job(self, row_id, job_url, job_netloc):
+	def put_job(self, row_id, job_url, job_netloc, job_priority):
 		self.__check_init_nl(job_netloc)
 		self.log.info("Putting limited job for netloc %s (%s items, score: %s, active: %s)",
 			job_netloc,
-			self.redis.llen(self.__netloc_to_key(job_netloc)),
+			self.redis.llen(self.__netloc_to_key(job_netloc, job_priority)),
 			self.url_throttler[job_netloc]['status_accumulator'],
 			self.url_throttler[job_netloc]['active_fetches'])
 
@@ -62,7 +64,7 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 		# 	self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
 
 		item_b = msgpack.packb((row_id, job_url, job_netloc), use_bin_type=True)
-		self.redis.rpush(self.__netloc_to_key(job_netloc), item_b)
+		self.redis.rpush(self.__netloc_to_key(job_netloc, job_priority), item_b)
 		# self.url_throttler[job_netloc]['job_queue'].put((row_id, job_url, job_netloc))
 
 		self.total_queued += 1
@@ -107,14 +109,14 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 	def get_in_queues(self):
 		return self.total_queued
 
-	def get_available_jobs(self):
+	def get_available_jobs(self, priority):
 		ret = []
 		for job_netloc, key_dict in self.url_throttler.items():
 			try:
 				# Allow unlimited fetching if the site isn't erroring at all
 				while key_dict['active_fetches'] <= key_dict['status_accumulator']:
 					# ret.append(item['job_queue'].get(block=False))
-					item_b = self.redis.lpop(self.__netloc_to_key(job_netloc))
+					item_b = self.redis.lpop(self.__netloc_to_key(job_netloc, priority))
 					if not item_b:  # Nothing in queue
 						break
 					item = msgpack.unpackb(item_b, use_list=False, raw=False)

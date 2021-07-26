@@ -84,7 +84,7 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		metas = soup.find_all("script", type="application/ld+json")
 		agg_meta = {}
 		for meta in metas:
-			loaded = json.loads(meta.get_text())
+			loaded = json.loads(meta.string)
 			for k, v in loaded.items():
 				agg_meta[k] = v
 

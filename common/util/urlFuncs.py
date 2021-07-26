@@ -219,6 +219,7 @@ gilegati_squatter_re    = re.compile(r'novel\.gilegati\.com/[a-zA-Z0-9_]+\.(html
 silversrise_squatter_re = re.compile(r'www\.silversrise\.com/[a-zA-Z0-9]+/([a-zA-Z0-9]+/|[a-z0-9]+\.html)')
 unknown_squatter_1_re   = re.compile(r'\?fp=[a-zA-Z0-9\+\/]{30,}')
 
+thousandsilentstars_re  = re.compile(r'/[a-zA-Z]{3,}/[a-zA-Z]{3,}(?:\.xml|\.html)?|/[a-zA-Z0-9]{3,}(?:\.xml|\.html)?')
 
 
 is_rrl_slug_chap_re = re.compile(r'^https?://(?:www\.)?royalroadl?\.com/fiction/\d+/[a-z0-9\-]+/chapter/(\d+)/[a-z0-9\-]+$', flags=re.IGNORECASE)
@@ -266,6 +267,10 @@ def cleanUrl(urlin):
 
 	if  parsed.netloc.endswith('.cloudfront.net'):
 		if fuyukai_squatter_re.search(urlin):
+			return None
+
+	if  parsed.netloc.endswith('thousandsilentstars.com'):
+		if thousandsilentstars_re.search(parsed.path):
 			return None
 
 	if  parsed.netloc.endswith('.flying-lines.com'):

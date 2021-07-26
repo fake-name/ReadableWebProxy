@@ -45,6 +45,10 @@ import common.memory
 import common.LogBase as LogBase
 import common.StatsdMixin as StatsdMixin
 
+
+from common.db_constants import DB_MAX_PRIORITY
+from common.db_constants import DB_IDLE_PRIORITY
+
 # import mem_top
 # from pympler.tracker import SummaryTracker
 
@@ -459,7 +463,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 
 
-	def put_job(self, raw_job):
+	def send_job_rpc(self, raw_job):
 		if self.test_mode:
 			return
 
@@ -506,7 +510,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			postDelay      = 0
 		)
 
-		self.put_job(raw_job)
+		self.send_job_rpc(raw_job)
 
 	def generalLinkClean(self, link, badwords, badcompounds):
 		if link.startswith("data:"):
@@ -714,15 +718,20 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 			rid, joburl, dummy_netloc = WebMirror.SpecialCase.getSpecialCase(self.specialcase)
 
 		new_j_l = []
-		with acquire_timeout(self.state_lock, 2) as acquired:
-			if acquired:
-				new_j_l =self.system_state['ratelimiters'][self.mode].get_available_jobs()
-			else:
-				self.log.error("Failure when extracting jobs from rate-limiting system!")
 
-		for rid, joburl, netloc in new_j_l:
-			self.put_fetch_job(rid, joburl, netloc)
-			newcnt += 1
+		# We consume from high priority queues preferentially.
+		# Ideally, this should make the filtered triggered fetch
+		# commands much more reliable.
+		for priority in range(DB_MAX_PRIORITY, DB_IDLE_PRIORITY+1):
+			with acquire_timeout(self.state_lock, 2) as acquired:
+				if acquired:
+					new_j_l =self.system_state['ratelimiters'][self.mode].get_available_jobs(priority=priority)
+				else:
+					self.log.error("Failure when extracting jobs from rate-limiting system!")
+
+			for rid, joburl, netloc in new_j_l:
+				self.put_fetch_job(rid, joburl, netloc)
+				newcnt += 1
 
 		return newcnt
 
@@ -757,7 +766,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				AND
 					web_pages.state = 'new'::dlstate_enum
 				RETURNING
-					web_pages.id, web_pages.netloc, web_pages.url;
+					web_pages.id, web_pages.netloc, web_pages.url, web_pages.priority;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 		raw_query_any = '''
@@ -780,7 +789,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				AND
 					web_pages.state = 'new'::dlstate_enum
 				RETURNING
-					web_pages.id, web_pages.netloc, web_pages.url;
+					web_pages.id, web_pages.netloc, web_pages.url, web_pages.priority;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 		raw_query_ordered = '''
@@ -817,7 +826,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 				AND
 					web_pages.state = 'new'::dlstate_enum
 				RETURNING
-					web_pages.id, web_pages.netloc, web_pages.url;
+					web_pages.id, web_pages.netloc, web_pages.url, web_pages.priority;
 			'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, JOB_QUERY_CHUNK_SIZE)))
 
 
@@ -895,7 +904,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		del_count = 0
 		immediate = 0
 		defer = []
-		for rid, netloc, joburl in rids:
+		for rid, netloc, joburl, priority in rids:
 
 			if netloc == "archiveofourown.org":
 				# Do nothing, these are being handled by an out-of-process deletion interface
@@ -934,7 +943,7 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 					self.put_fetch_job(rid, joburl, netloc)
 				else:
 					defer_count += 1
-					defer.append((rid, joburl, netloc))
+					defer.append((rid, joburl, netloc, priority))
 
 		self.log.info("Of %s job IDs, %s were special-case, %s were rate-limited, %s were immediately dispatched, %s deleted, %s disabled, %s booksie (%s proc).",
 				len(rids), special_case, defer_count, immediate, del_count, disable_count, booksie, processed)
@@ -942,8 +951,8 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 
 		with acquire_timeout(self.state_lock, 10) as acquired:
 			if acquired:
-				for rid_d, joburl_d, netloc_d in defer:
-					self.system_state['ratelimiters'][self.mode].put_job(rid_d, joburl_d, netloc_d)
+				for rid_d, joburl_d, netloc_d, priority_d in defer:
+					self.system_state['ratelimiters'][self.mode].put_job(row_id=rid_d, job_url=joburl_d, job_netloc=netloc_d, job_priority=priority_d)
 			else:
 				self.log.error("Failed to acquire rate-limiter synchronization lock!")
 		cursor.close()

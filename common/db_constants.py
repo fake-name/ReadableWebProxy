@@ -1,5 +1,5 @@
 
-
+DB_MAX_PRIORITY      =    1
 DB_REALTIME_PRIORITY =    2
 DB_HIGH_PRIORITY     =    3
 DB_MED_PRIORITY      =    5
