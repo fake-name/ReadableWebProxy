@@ -46,8 +46,6 @@ import common.LogBase as LogBase
 import common.StatsdMixin as StatsdMixin
 
 
-from common.db_constants import DB_MAX_PRIORITY
-from common.db_constants import DB_IDLE_PRIORITY
 
 # import mem_top
 # from pympler.tracker import SummaryTracker
@@ -722,16 +720,15 @@ class RpcJobDispatcherInternal(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, Rpc
 		# We consume from high priority queues preferentially.
 		# Ideally, this should make the filtered triggered fetch
 		# commands much more reliable.
-		for priority in range(DB_MAX_PRIORITY, DB_IDLE_PRIORITY+1):
-			with acquire_timeout(self.state_lock, 2) as acquired:
-				if acquired:
-					new_j_l =self.system_state['ratelimiters'][self.mode].get_available_jobs(priority=priority)
-				else:
-					self.log.error("Failure when extracting jobs from rate-limiting system!")
+		with acquire_timeout(self.state_lock, 2) as acquired:
+			if acquired:
+				new_j_l =self.system_state['ratelimiters'][self.mode].get_available_jobs()
+			else:
+				self.log.error("Failure when extracting jobs from rate-limiting system!")
 
-			for rid, joburl, netloc in new_j_l:
-				self.put_fetch_job(rid, joburl, netloc)
-				newcnt += 1
+		for rid, joburl, netloc in new_j_l:
+			self.put_fetch_job(rid, joburl, netloc)
+			newcnt += 1
 
 		return newcnt
 

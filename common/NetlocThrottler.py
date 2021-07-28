@@ -10,7 +10,7 @@ import common.LogBase
 import common.redis
 
 from common.db_constants import DB_IDLE_PRIORITY
-
+from common.db_constants import DB_MAX_PRIORITY
 
 
 class NetlockThrottler(common.LogBase.LoggerMixin):
@@ -50,10 +50,15 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 			self.url_throttler[netloc] = {
 				'active_fetches'     : 0,
 				'status_accumulator' : 10,
+				'active_priorities'  : set(),
 			}
 
 	def put_job(self, row_id, job_url, job_netloc, job_priority):
+
 		self.__check_init_nl(job_netloc)
+
+		self.url_throttler[job_netloc]['active_priorities'].add(job_priority)
+
 		self.log.info("Putting limited job for netloc %s (%s items, score: %s, active: %s)",
 			job_netloc,
 			self.redis.llen(self.__netloc_to_key(job_netloc, job_priority)),
@@ -109,22 +114,35 @@ class NetlockThrottler(common.LogBase.LoggerMixin):
 	def get_in_queues(self):
 		return self.total_queued
 
-	def get_available_jobs(self, priority):
+
+	def _extract_for_netloc(self, job_netloc, key_dict):
 		ret = []
-		for job_netloc, key_dict in self.url_throttler.items():
-			try:
+		for priority in [x for x in range(DB_MAX_PRIORITY, DB_IDLE_PRIORITY+1) if x in self.url_throttler[job_netloc]['active_priorities']]:
+			while True:
+
 				# Allow unlimited fetching if the site isn't erroring at all
-				while key_dict['active_fetches'] <= key_dict['status_accumulator']:
-					# ret.append(item['job_queue'].get(block=False))
-					item_b = self.redis.lpop(self.__netloc_to_key(job_netloc, priority))
-					if not item_b:  # Nothing in queue
-						break
-					item = msgpack.unpackb(item_b, use_list=False, raw=False)
-					ret.append(item)
-					key_dict['active_fetches'] += 1
-					self.total_queued -= 1
-			except queue.Empty:
-				pass
+				if key_dict['active_fetches'] > key_dict['status_accumulator']:
+					return ret
+
+				# ret.append(item['job_queue'].get(block=False))
+				item_b = self.redis.lpop(self.__netloc_to_key(job_netloc, priority))
+				if not item_b:  # Nothing in queue
+					break
+
+				item = msgpack.unpackb(item_b, use_list=False, raw=False)
+				ret.append(item)
+				key_dict['active_fetches'] += 1
+				self.total_queued -= 1
+
+		return ret
+
+
+	def get_available_jobs(self):
+
+		ret = []
+
+		for job_netloc, key_dict in self.url_throttler.items():
+			ret += self._extract_for_netloc(job_netloc, key_dict)
 
 		self.log.info("Extracted %s jobs from rate-limiting queues.", len(ret))
 

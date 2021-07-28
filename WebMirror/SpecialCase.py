@@ -69,7 +69,7 @@ def handleRemoteRenderFetch(params, rid, joburl, netloc, job_aggregator_instance
 		# serialize      = True,
 	)
 
-	job_aggregator_instance.put_job(raw_job)
+	job_aggregator_instance.send_job_rpc(raw_job)
 
 def handleRemoteChromeFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
@@ -86,7 +86,7 @@ def handleRemoteChromeFetch(params, rid, joburl, netloc, job_aggregator_instance
 		# serialize      = True,
 	)
 
-	job_aggregator_instance.put_job(raw_job)
+	job_aggregator_instance.send_job_rpc(raw_job)
 
 def cWebRequestFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	print('handleRemoteRenderFetch', params, rid, joburl, netloc)
@@ -103,7 +103,7 @@ def cWebRequestFetch(params, rid, joburl, netloc, job_aggregator_instance):
 		# serialize      = True,
 	)
 
-	job_aggregator_instance.put_job(raw_job)
+	job_aggregator_instance.send_job_rpc(raw_job)
 
 def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	print('qidianSmartFeedFetch', params, rid, joburl, netloc)
@@ -137,7 +137,7 @@ def qidianSmartFeedFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	# print(raw_job)
 	# return raw_job
 
-	job_aggregator_instance.put_job(raw_job)
+	job_aggregator_instance.send_job_rpc(raw_job)
 
 def localContentFetch(params, rid, joburl, netloc, job_aggregator_instance):
 	log.info("Special case handler for locally fetched content: %s!", joburl)
