@@ -5,6 +5,8 @@ import traceback
 import urllib.parse
 import pprint
 import ast
+import sys
+import sqlalchemy.exc
 
 from PIL import Image
 
@@ -301,7 +303,17 @@ def render_resource():
 
 	ignore_cache = request.args.get("nocache")
 
-	mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url, ignore_cache=ignore_cache)
+	try:
+
+		mimetype, fname, content, cachestate = WebMirror.API.getResource(req_url, ignore_cache=ignore_cache)
+
+	except sqlalchemy.exc.InvalidRequestError:
+		# sqlalchemy_continuum has some broken behaviour in rollback when a session has gone invalid.
+		# Basically, rollback causes continuum to try to execute some DML before the rollback, which errors,
+		# preventing the rollback from succeeding.
+		# Just die entirely if that happens.
+		sys.exit(1)
+
 
 	# Deal with internet explorer being garbage.
 	if mimetype == 'image/webp':

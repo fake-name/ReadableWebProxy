@@ -43,6 +43,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 
 	wanted_mimetypes = [
 							'application/atom+xml',
+							'application/xhtml+xml',
 							'application/rdf+xml',
 							'application/rss+xml',
 							'application/xml',
@@ -129,7 +130,7 @@ class RssProcessor(WebMirror.OutputFilters.rss.FeedDataParser.DataParser):
 		scraper = WebMirror.processor.HtmlProcessor.HtmlPageProcessor(extra_msg="for rss filter", extra_logger="-RSS", **params)
 
 		extracted = scraper.extractContent()
-		assert contentDat['type'] == 'text/html', "Content is not html? Type: %s" % contentDat['type']
+		assert contentDat['type'] in ['text/html', "application/xhtml+xml"], "Content is not html? Type: %s" % contentDat['type']
 		content = extracted['contents']
 
 		# Use a parser that doesn't try to generate a well-formed output (and therefore doesn't insert

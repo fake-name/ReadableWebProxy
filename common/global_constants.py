@@ -187,6 +187,8 @@ GLOBAL_BAD_URLS = [
 
 			'automattic.com',
 			'avatars.jurko.net',
+
+			'veryfast.litimgs.com/streams/',
 	]
 
 
