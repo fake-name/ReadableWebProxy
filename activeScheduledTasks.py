@@ -56,9 +56,14 @@ target_jobs = {
 		# "minute"           : '30',
 		# "hour"             : '15',
 	},
-	'scheduled_jobs.python_job.HourlyLocalFetchTriggerJob' : {
-		"name"             : 'AUTO: Hourly local fetch trigger job',
-		"interval"         : hours(1),
+	'scheduled_jobs.python_job.ScribbleHubPageTriggerJob' : {
+		"name"             : 'AUTO: ScribbleHub fetch trigger job',
+		"interval"         : minutes(20),
+		# "minute"           : '0',
+	},
+	'scheduled_jobs.python_job.RRLLocalFetchTriggerJob' : {
+		"name"             : 'AUTO: RoyalRoadL local fetch trigger job',
+		"interval"         : minutes(21),
 		# "minute"           : '0',
 	},
 	'scheduled_jobs.python_job.DbFlattenerJob' : {

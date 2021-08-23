@@ -496,7 +496,7 @@ class UpdateAggregator(object):
 							AND
 								web_pages.url = EXCLUDED.url
 							AND
-								(web_pages.state = 'complete' OR web_pages.state = 'error' OR web_pages.state = 'skipped')
+								(web_pages.state = 'complete' OR web_pages.state = 'error' OR web_pages.state = 'skipped' OR web_pages.state = 'single_step_deferred')
 						)
 					;
 

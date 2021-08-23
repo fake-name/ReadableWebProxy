@@ -171,6 +171,18 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			self.log.error("Missing key(s) %s from series %s. Cannot continue", [tmp for tmp in expected_keys if not tmp in series], series)
 			return
 
+		kv_db_key = "last-seen-rrl-{}".format(series['id'])
+		last_seen = db.get_from_db_key_value_store(kv_db_key)
+		last_update_ts = series['lastUpdate'].timestamp()
+		if 'date' in last_seen:
+			if last_seen['date'] >= last_update_ts:
+				self.log.info("Fetched series %s after it's last update (%s, %s). Nothing to do.", series['id'], last_seen['date'], last_update_ts)
+				return
+
+		# Immediately set the last-seen date, so
+		# if we bail early here (like for series wih insufficent chapters/rating), we'll still skip
+		# them next time unless they've released more chapters
+		db.set_in_db_key_value_store(kv_db_key, {'date': last_update_ts})
 
 		# {
 		# 	'topCover': None,
@@ -193,7 +205,6 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 		#  }
 
 		sinfo = get_json(self.wg, "https://www.royalroad.com/api/fiction/info/{sid}?apikey={key}"    .format(sid=series['id'], key=settings.RRL_API_KEY))
-
 		if not self.validate_sdata(sinfo):
 			self.log.warning("Series data for sid %s failed validation" % series['id'])
 			return
@@ -290,7 +301,10 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			raw_retval.append(raw_msg)
 
 
-		raw_retval = SeriesPageCommon.check_fix_numbering(self.log, raw_retval, series['id'], rrl=True)
+		# series ID here is used as a string in the DB (the storage schema just treats it as a unconstrained UTF-8 byte array)
+		# so there's checkin in the chapter numbering fixer to verify we're not accidentally using some other
+		# data as the input.
+		raw_retval = SeriesPageCommon.check_fix_numbering(self.log, raw_retval, str(series['id']), rrl=True)
 
 
 		self.amqp_put_item(meta_pkt)

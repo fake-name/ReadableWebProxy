@@ -77,13 +77,19 @@ class PageTriggerBase(UrlTrigger):
 		self.retriggerPages()
 
 
-class HourlyPageTrigger(PageTriggerBase):
+class ScribbleHubPageTrigger(PageTriggerBase):
 	pages = [
 
 		# ScribbleHub
 		'https://www.scribblehub.com/latest-series/',
 		'https://www.scribblehub.com/latest-series/?pg=2',
 		'https://www.scribblehub.com/series-ranking/?sort=3&order=1',
+
+	]
+
+class HourlyPageTrigger(PageTriggerBase):
+	pages = [
+
 
 		# RoyalRoadL
 		'https://www.royalroad.com/fictions/new-releases',

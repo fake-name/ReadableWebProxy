@@ -24,6 +24,11 @@ import sqlalchemy.exc
 import sqlalchemy.orm.exc
 from sqlalchemy_continuum_vendored.utils import version_table
 
+if '__pypy__' in sys.builtin_module_names:
+	import psycopg2cffi as psycopg2
+else:
+	import psycopg2
+
 from WebMirror.processor.RssProcessor import RssProcessor
 
 
@@ -376,9 +381,12 @@ def delete_internal(sess, ids, netloc, badwords, show_badword=True, chunk_size=1
 			except sqlalchemy.exc.InternalError:
 				pbar.write("Transaction error (sqlalchemy.exc.InternalError). Retrying.")
 				sess.rollback()
-			except sqlalchemy.exc.OperationalError:
-				pbar.write("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
-				traceback.print_exc()
+			except sqlalchemy.exc.OperationalError as e:
+				if e.orig == psycopg2.errors.QueryCanceled:
+					pbar.write("Timeout. Retrying.")
+				else:
+					pbar.write("Transaction error (sqlalchemy.exc.OperationalError). Retrying.")
+					traceback.print_exc()
 				sess.rollback()
 			except sqlalchemy.exc.IntegrityError:
 				pbar.write("Transaction error (sqlalchemy.exc.IntegrityError). Retrying.")
@@ -831,7 +839,7 @@ def exposed_streaming_incremental_delete_invalid_urls():
 	out_sampler = 1
 
 	try:
-		with db.session_context(name="query_sess", override_timeout_ms=1000 * 60 * 60 * 12) as sess:
+		with db.session_context(name="query_sess", override_timeout_ms=1000 * 60 * 60 * 15) as sess:
 			print("Counting items in table")
 			# total_items = 1156178620
 
@@ -885,7 +893,7 @@ def exposed_streaming_incremental_delete_invalid_urls():
 					delete_internal_urls(
 							sess         = sess,
 							urls         = bad_urls,
-							chunk_size   = 100,
+							chunk_size   = 10,
 						)
 					sess.commit()
 

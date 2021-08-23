@@ -84,7 +84,7 @@ class NewUrlExtractorRunner():
 
 		nnt.filter_get_have_urls()
 
-class NewUrlTitleLoader():
+class NewUrlTitleLoaderBase():
 	def go(self):
 		mapdict = nnt.get_nu_head_urls()
 		nnt.update_missing_new_with_title()
@@ -105,11 +105,14 @@ class EverySixHoursPageTriggerJob(PythonJob, job.JobBase):
 class EveryOtherDayPageTriggerJob(PythonJob, job.JobBase):
 	invokable = WebMirror.TimedTriggers.UrlTriggers.EveryOtherDayPageTrigger
 
+class ScribbleHubPageTriggerJob(PythonJob, job.JobBase):
+	invokable = WebMirror.TimedTriggers.UrlTriggers.ScribbleHubPageTrigger
+
 class NuQueueTriggerJob(PythonJob, job.JobBase):
 	invokable = WebMirror.TimedTriggers.QueueTriggers.NuQueueTrigger
 
-class HourlyLocalFetchTriggerJob(PythonJob, job.JobBase):
-	invokable = WebMirror.TimedTriggers.LocalFetchTriggers.HourlyLocalFetchTrigger
+class RRLLocalFetchTriggerJob(PythonJob, job.JobBase):
+	invokable = WebMirror.TimedTriggers.LocalFetchTriggers.RRLLocalFetchTrigger
 
 class DbFlattenerJob(PythonJob, job.JobBase):
 	invokable = Misc.HistoryAggregator.Consolidate.DbFlattener
@@ -144,5 +147,5 @@ class NewUrlExtractor(PythonJob, job.JobBase):
 	invokable = NewUrlExtractorRunner
 
 class NewUrlTitleLoader(PythonJob, job.JobBase):
-	invokable = NewUrlTitleLoader
+	invokable = NewUrlTitleLoaderBase
 

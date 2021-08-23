@@ -533,7 +533,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					AND
 					    raw_web_pages.state = 'new'
 					RETURNING
-					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
+					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url, raw_web_pages.priority;
 				'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
 
 		elif mode == 'new_fetch':
@@ -557,7 +557,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					AND
 					    raw_web_pages.state = 'new'
 					RETURNING
-					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
+					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url, raw_web_pages.priority;
 				'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
 
 		elif mode == 'random':
@@ -579,7 +579,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 					AND
 					    raw_web_pages.state = 'new'
 					RETURNING
-					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url;
+					    raw_web_pages.id, raw_web_pages.netloc, raw_web_pages.url, raw_web_pages.priority;
 				'''.format(in_flight=min((MAX_IN_FLIGHT_JOBS, 150)))
 		else:
 			self.log.error("Unknown dispatch mode: '%s'" % mode)
@@ -631,7 +631,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 			self.log.info("Query execution time: %s ms. Fetched job IDs = %s", xqtim * 1000, len(rids))
 
 		dispatched = 0
-		for rid, netloc, joburl in rids:
+		for rid, netloc, joburl, jobpriority in rids:
 			try:
 
 				# If we don't have a thread affinity, do distributed fetch.
@@ -650,7 +650,7 @@ class RawJobFetcher(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				threadn = RawArchiver.misc.thread_affinity(joburl, 1)
 				if threadn is True:
 					with self.limiter_lock:
-						self.ratelimiter.put_job(rid, joburl, netloc)
+						self.ratelimiter.put_job(rid, joburl, netloc, jobpriority)
 					# self.put_outbound_job(rid, joburl, netloc=netloc)
 				else:
 					self.blocking_put_response(("unfetched", rid))

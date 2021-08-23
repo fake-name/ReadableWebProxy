@@ -155,7 +155,8 @@ def dump_active_items():
 	common.redis.clear_processing_urls()
 
 def run_in_subprocess():
-	dump_active_items()
+	if 'raw' not in sys.argv:
+		dump_active_items()
 
 	# mon = MemoryTracker()
 	proc = multiprocessing.Process(target=go, args=(sys.argv, ))

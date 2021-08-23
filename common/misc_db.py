@@ -42,10 +42,11 @@ class KeyValueStore(common.db_base.Base):
 
 def get_from_db_key_value_store(key):
 	global KV_META_CACHE
-	kv_log.info("Getting '%s' from kv store", key)
 	if key in KV_META_CACHE:
+		kv_log.info("Getting '%s' from kv store in RAM", key)
 		return KV_META_CACHE[key]
 
+	kv_log.info("Getting '%s' from kv store in DB", key)
 	thread_id = "kv_store_{}".format(threading.get_ident())
 	with session_context(thread_id) as sess:
 		have = sess.query(KeyValueStore).filter(KeyValueStore.key == key).scalar()

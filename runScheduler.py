@@ -76,11 +76,10 @@ def job_evt_listener(event):
 class SimpleServer(ndscheduler.server.server.SchedulerServer):
 
 	def post_scheduler_start(self):
+
+
 		active_jobs = set()
 		current_jobs = self.scheduler_manager.get_jobs()
-
-		# import pdb
-		# pdb.set_trace()
 
 		start_date = datetime.datetime.now()
 
@@ -120,11 +119,14 @@ class SimpleServer(ndscheduler.server.server.SchedulerServer):
 				# So the apscheduler CronTrigger class doesn't provide the equality
 				# operator, so we compare the stringified version. Gah.
 				elif str(job.trigger) != str(trig):
-					print("Removing trigger:", str(job.trigger), str(trig))
+
+					print("Removing due to trigger mismatch:", str(job.trigger), str(trig))
+					print("Job name: ", job.name, job)
 					self.scheduler_manager.remove_job(job_id)
 
 
 		start_date = datetime.datetime.now()
+
 
 		current_jobs = self.scheduler_manager.get_jobs()
 		for job_name, params in activeScheduledTasks.target_jobs.items():

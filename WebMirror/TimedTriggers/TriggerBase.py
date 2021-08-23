@@ -100,6 +100,7 @@ class TriggerBaseClass(common.LogBase.LoggerMixin, metaclass=abc.ABCMeta):
 									OR web_pages.state = 'error'
 									OR web_pages.state = 'skipped'
 									OR web_pages.state = 'manually_deferred'
+									OR web_pages.state = 'single_step_deferred'
 								)
 							AND
 								web_pages.url = %(url)s
