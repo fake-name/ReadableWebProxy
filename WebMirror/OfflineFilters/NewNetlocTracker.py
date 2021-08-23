@@ -1,5 +1,6 @@
 
 import sys
+import os.path
 import time
 import datetime
 import traceback
@@ -7,6 +8,7 @@ import urllib.parse
 
 import tqdm
 
+import sqlalchemy.exc
 from sqlalchemy.orm import joinedload
 from sqlalchemy import desc
 
@@ -216,12 +218,12 @@ def filter_get_have_urls():
 def update_missing_new_with_title():
 
 	wg = WebRequest.WebGetRobust()
-
-	with db.session_context() as sess:
+	with db.session_context(override_timeout_ms=1000 * 60 * 5) as sess:
 		rows = sess.query(db.NewNetlocTracker)  \
 			.filter(db.NewNetlocTracker.ignore == False) \
 			.filter(db.NewNetlocTracker.have == False) \
 			.all()
+		sess.commit()
 
 		print("Missing items:", len(rows))
 
@@ -232,7 +234,24 @@ def update_missing_new_with_title():
 				titledict = common.management.util.get_page_title(wg, row.example_url)
 				for key, value in titledict.items():
 					row.extra[key] = value
-				sess.commit()
+				try:
+					sess.commit()
+
+
+				except sqlalchemy.exc.InternalError:
+					print("(session_context) -> Transaction error (sqlalchemy.exc.InternalError).")
+					sess.rollback()
+				except sqlalchemy.exc.OperationalError:
+					print("(session_context) -> Transaction error (sqlalchemy.exc.OperationalError).")
+					sess.rollback()
+				except sqlalchemy.exc.IntegrityError:
+					print("(session_context) -> Transaction error (sqlalchemy.exc.IntegrityError).")
+					sess.rollback()
+				except sqlalchemy.exc.InvalidRequestError:
+					print("(session_context) -> Transaction error (sqlalchemy.exc.InvalidRequestError).")
+					traceback.print_exc()
+					sess.rollback()
+
 
 
 def get_high_priority_urls(filter_before=None):
@@ -379,7 +398,32 @@ def exposed_new_from_all_feeds():
 
 	push_urls_into_table(mapdict)
 
-def exposed_process_urls_from_netloc_tracker(fetch_title=False):
+def exposed_new_from_autotreiver_db(db_path:str):
+	'''
+	Given a autotreiver generated sqlite db, fetch
+	all new URLs from that file
+
+	'''
+	assert os.path.exists(db_path), "File specified by db_path must exist!"
+
+	import sqlite3
+	sdb = sqlite3.connect(db_path)
+	res = sdb.execute("SELECT actual_target FROM nu_release_item")
+	urls = res.fetchall()
+
+	mapdict = {}
+	print("Found %s rows in database." % (len(urls), ))
+	for url, in tqdm.tqdm(urls):
+		if url:
+			itemnl = WebMirror.OutputFilters.util.feedNameLut.patch_blogspot(urllib.parse.urlsplit(url).netloc)
+			mapdict.setdefault(itemnl, set())
+			mapdict[itemnl].add(url)
+
+
+	push_urls_into_table(mapdict)
+
+
+def exposed_process_urls_from_netloc_tracker(fetch_title: bool=False):
 	'''
 	Process items from the netloc tracker table.
 	'''

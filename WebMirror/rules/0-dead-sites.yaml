@@ -360,6 +360,8 @@ baseUrl: [
 	# NFI what this ever was.
 	'http://www.egloos.com',
 
+	# Entirely not-english (thai, I think?)
+	'https://9novel.club',
 
 	'http://www.asstr.org',
 	'http://eunsetee.com',
