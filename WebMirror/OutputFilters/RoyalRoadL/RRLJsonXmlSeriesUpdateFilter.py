@@ -171,7 +171,7 @@ class RRLJsonXmlSeriesUpdateFilter(WebMirror.OutputFilters.FilterBase.FilterBase
 			self.log.error("Missing key(s) %s from series %s. Cannot continue", [tmp for tmp in expected_keys if not tmp in series], series)
 			return
 
-		kv_db_key = "last-seen-rrl-{}".format(series['id'])
+		kv_db_key = "last-seen-rrl-{}-t{}".format(series['id'], series['chapters'][0]['title'])
 		last_seen = db.get_from_db_key_value_store(kv_db_key)
 		last_update_ts = series['lastUpdate'].timestamp()
 		if 'date' in last_seen:

@@ -180,7 +180,7 @@ class FilterBase(PageProcessor):
 					self.log.info("Skipping: '%s' (%s, %s)", release_url, have.state, have.priority)
 					break
 
-				self.log.info("Retriggering page '%s' (%s, %s)", release_url, have.state, have.priority)
+				self.log.info("Retriggering page '%s' (%s, %s) as priority %s", release_url, have.state, have.priority, trigger_priority)
 				have.state           = 'new'
 				have.epoch           = WebMirror.misc.get_epoch_for_url(release_url) - 2
 				have.distance        = 1
