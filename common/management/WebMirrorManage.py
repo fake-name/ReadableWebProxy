@@ -2011,3 +2011,23 @@ def exposed_reset_incremental_fetch():
 	reset_root_skipped_to_new()
 
 
+def exposed_consolidate_db_pks():
+	'''
+	Aggregate the primary keys in the DB so they have fewer/smaller gaps in their sequence
+
+	'''
+
+	with db.session_context(override_timeout_ms=60 * 1000 * 45) as sess:
+		print("Counting rows...")
+		rows = sess.execute("""SELECT COUNT(*)
+						FROM
+							web_pages""")
+		print("DB Contains %s rows" % (list(rows), ))
+		print("Selecting all IDs from DB")
+		ids = sess.execute("""SELECT id
+						FROM
+							web_pages""")
+
+		print("Have %s IDs" % len(ids))
+
+

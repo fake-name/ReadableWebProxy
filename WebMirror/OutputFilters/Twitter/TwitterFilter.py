@@ -226,6 +226,14 @@ class TwitterFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		self.log.info("Found %s releases from Twitter Feed", len(releases))
 		if releases:
+
+			self.put_measurement(
+					measurement_name = 'chapter_releases',
+					measurement      = len(releases),
+					fields           = {"site" : "Twitter"},
+					extra_tags       = {},
+			)
+
 			self.sendReleases(releases)
 
 

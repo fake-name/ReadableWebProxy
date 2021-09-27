@@ -34,7 +34,6 @@ class RoyalRoadLChapterPageProcessor(HtmlProcessor.HtmlPageProcessor):
 
 	loggerPath = "Main.Text.RRLProc"
 
-
 	@staticmethod
 	def wantsUrl(url):
 		if "royalroadl.com/fiction/chapter/" in url:

@@ -159,6 +159,14 @@ class FoxTellerSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 					traceback.print_exc()
 
 			if releases:
+
+				self.put_measurement(
+						measurement_name = 'chapter_releases',
+						measurement      = len(releases),
+						fields           = {"site" : "FoxTeller"},
+						extra_tags       = {},
+					)
+
 				self.sendReleases(releases)
 
 

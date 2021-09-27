@@ -197,6 +197,16 @@ class BooksieSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			print("No releases?")
 			return []
 		self.amqp_put_item(pkt)
+
+
+		self.put_measurement(
+				measurement_name = 'chapter_releases',
+				measurement      = len(retval),
+				fields           = {"site" : "Booksie"},
+				extra_tags       = {},
+			)
+
+
 		return retval
 
 

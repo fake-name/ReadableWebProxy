@@ -230,6 +230,16 @@ class SHSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval] + [meta_pkt]
 
 		self.log.info("Found %s chapter releases on series page!", len(retval))
+
+
+		self.put_measurement(
+				measurement_name = 'chapter_releases',
+				measurement      = len(retval),
+				fields           = {"site" : "ScribbleHub"},
+				extra_tags       = {},
+			)
+
+
 		return retval
 
 

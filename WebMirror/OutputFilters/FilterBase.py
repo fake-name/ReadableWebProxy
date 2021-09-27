@@ -12,14 +12,20 @@ import common.database as db
 import WebMirror.UrlUpserter
 from WebMirror.processor.ProcessorBase import PageProcessor
 import WebMirror.misc
+import common.StatsdMixin as StatsdMixin
 
-class FilterBase(PageProcessor):
+class FilterBase(PageProcessor, StatsdMixin.InfluxDBMixin):
 
 	# Filters don't return anything, so turn off that checking.
-	_no_ret = True
+	_no_ret     = True
 	_needs_amqp = True
 
+	influxdb_type             = "release_message"
+	influxdb_measurement_name = "page_filter"
+
+
 	def __init__(self, **kwargs):
+
 		super().__init__()
 
 		self._no_ret = True

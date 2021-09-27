@@ -329,6 +329,14 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if tx_parse:
 			if new:
 				self.log.info("Sending parsed release!")
+
+				self.put_measurement(
+						measurement_name = 'chapter_releases',
+						measurement      = 1,
+						fields           = {"site" : "RSS"},
+						extra_tags       = {},
+					)
+
 				self.amqp_put_item(new)
 
 		# A bunch of crap is aggregated through the "feedproxy.google.com" netloc.

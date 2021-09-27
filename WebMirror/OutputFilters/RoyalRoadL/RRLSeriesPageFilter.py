@@ -33,6 +33,8 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 	match_re = re.compile(r"^https?://(?:www\.)?royalroadl?\.com/fiction/(\d+)(?:/?$|/[a-zA-Z0-9\-]+/?$)", flags=re.IGNORECASE)
 
+
+
 	@classmethod
 	def wantsUrl(cls, url):
 		if cls.match_re.search(url):
@@ -220,7 +222,12 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 
 		retval = [msgpackers.createReleasePacket(raw_msg) for raw_msg in raw_retval] + [meta_pkt]
 
-
+		self.put_measurement(
+				measurement_name = 'chapter_releases',
+				measurement      = len(retval),
+				fields           = {"site" : "RoyalRoadL"},
+				extra_tags       = {},
+			)
 
 		self.log.info("Found %s chapter releases on series page for %s (with rating %s)!", len(retval), msgpackers.fix_string(title), rating)
 		return retval

@@ -192,6 +192,15 @@ class JapTemSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		if not retval:
 			return []
 
+
+		self.put_measurement(
+				measurement_name = 'chapter_releases',
+				measurement      = len(retval),
+				fields           = {"site" : "Japtem"},
+				extra_tags       = {},
+			)
+
+
 		self.amqp_put_item(meta_pkt)
 		return retval
 
