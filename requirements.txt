@@ -57,7 +57,7 @@ flask-paginate==0.8.1
 Flask-WTF==0.15.1
 apscheduler==3.8.0
 sqlalchemy_searchable==1.4.1
-sqlalchemy-utils==0.37.4
+sqlalchemy-utils==0.37.8
 
 ## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
 git+https://github.com/kvesteri/sqlalchemy-continuum.git
