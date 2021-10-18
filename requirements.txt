@@ -123,5 +123,5 @@ PyEnchant==3.2.2
 dill==0.3.4
 
 
-paka.cmark==1.14.5
+paka.cmark==2.2.0
 json2html==1.3.0
