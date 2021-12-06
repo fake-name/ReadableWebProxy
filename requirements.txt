@@ -53,7 +53,7 @@ feedparser==6.0.8
 gevent==21.8.0
 
 Flask-SQLAlchemy==2.5.1
-flask-paginate==0.8.1
+flask-paginate==2021.10.29
 Flask-WTF==0.15.1
 apscheduler==3.7.0
 sqlalchemy_searchable==1.2.0
