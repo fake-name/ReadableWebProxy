@@ -333,8 +333,8 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 				self.put_measurement(
 						measurement_name = 'chapter_releases',
 						measurement      = 1,
-						fields           = {"site" : "RSS"},
-						extra_tags       = {},
+						fields           = {},
+						extra_tags       = {"site" : "RSS"},
 					)
 
 				self.amqp_put_item(new)

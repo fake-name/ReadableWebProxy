@@ -163,8 +163,8 @@ class FoxTellerSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 				self.put_measurement(
 						measurement_name = 'chapter_releases',
 						measurement      = len(releases),
-						fields           = {"site" : "FoxTeller"},
-						extra_tags       = {},
+						fields           = {},
+						extra_tags       = {"site" : "FoxTeller"},
 					)
 
 				self.sendReleases(releases)

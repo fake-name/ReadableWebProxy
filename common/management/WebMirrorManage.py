@@ -2010,6 +2010,33 @@ def exposed_reset_incremental_fetch():
 	set_new_to_skipped()
 	reset_root_skipped_to_new()
 
+def renumber_webarchive_row(old_id, new_id):
+
+	print("Moveing %s to %s" % (old_id, new_id))
+
+	with db.session_context() as sess:
+		sess.execute('''BEGIN''')
+
+		sess.execute('''
+			UPDATE
+				web_pages
+			SET
+				id = %s
+			WHERE
+				id = %s
+			''', (old_id, new_id))
+
+		sess.execute('''
+			UPDATE
+				web_pages_version
+			SET
+				id = %s
+			WHERE
+				id = %s
+			''', (old_id, new_id))
+
+		sess.execute("COMMIT;")
+
 
 def exposed_consolidate_db_pks():
 	'''
@@ -2017,17 +2044,31 @@ def exposed_consolidate_db_pks():
 
 	'''
 
-	with db.session_context(override_timeout_ms=60 * 1000 * 45) as sess:
-		print("Counting rows...")
-		rows = sess.execute("""SELECT COUNT(*)
-						FROM
-							web_pages""")
-		print("DB Contains %s rows" % (list(rows), ))
+	with db.session_context(override_timeout_ms=60 * 1000 * 120) as sess:
 		print("Selecting all IDs from DB")
 		ids = sess.execute("""SELECT id
 						FROM
 							web_pages""")
-
+		sess.commit()
+		print("Loading Results...")
+		ids = [tmp[0] for tmp in ids]
 		print("Have %s IDs" % len(ids))
+
+	print("Sorting IDs")
+	ids.sort()
+	try:
+		print("Consolidating IDs.")
+		for new_id in tqdm.trange(max(ids), min(ids), -1):
+			if new_id not in ids:
+				old_id = ids.pop(0)
+
+				if old_id > new_id:
+					return
+
+				renumber_webarchive_row(old_id, new_id)
+
+	except Exception as e:
+		import IPython
+		IPython.embed()
 
 

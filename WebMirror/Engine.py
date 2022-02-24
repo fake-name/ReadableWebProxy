@@ -144,10 +144,14 @@ def build_rewalk_time_lut(rules):
 # LRU Cache with a maxsize of 1 million, and a TTL of 6 hours
 SEEN_CACHE = cachetools.TTLCache(maxsize=100 * 1000, ttl=60 * 60 * 6)
 
-class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
+class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin, StatsdMixin.InfluxDBMixin):
 
 	statsd_prefix = 'ReadableWebProxy.Proc.SiteArchiver'
 	loggerPath = "Main.SiteArchiver"
+
+
+	influxdb_type             = "fetch_errors"
+	influxdb_measurement_name = "rpc_job_consumer"
 
 	# Fetch items up to 1,000,000 (1 million) links away from the root source
 	# This (functionally) equates to no limit.
@@ -992,6 +996,14 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 				preretrieved = rpcresp['ret']
 				self.dispatchRequest(job, preretrieved)
 				common.redis.remove_processing_url(job.url)
+
+				self.put_measurement(
+						measurement_name = 'fetch_success',
+						measurement      = 1,
+						fields           = {},
+						extra_tags       = {"netloc" : job.netloc},
+					)
+
 			else:
 				job.epoch           = WebMirror.misc.get_epoch_for_url(job.url)
 				job.state = 'error'
@@ -1032,6 +1044,14 @@ class SiteArchiver(LogBase.LoggerMixin, StatsdMixin.StatsdMixin):
 
 					max_len_trunc = 450
 
+					self.put_measurement(
+							measurement_name = 'fetch_failure',
+							measurement      = 1,
+							fields           = {},
+							extra_tags       = {"netloc" : job.netloc, "code" : job.errno},
+						)
+
+					log_func("Error for job with URL '%s'", job.url)
 					for line in rpcresp['traceback']:
 						if len(line) > max_len_trunc:
 							log_func("Remote traceback: %s [...snip...]", line[:max_len_trunc])

@@ -230,8 +230,8 @@ class TwitterFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			self.put_measurement(
 					measurement_name = 'chapter_releases',
 					measurement      = len(releases),
-					fields           = {"site" : "Twitter"},
-					extra_tags       = {},
+					fields           = {},
+					extra_tags       = {"site" : "Twitter"},
 			)
 
 			self.sendReleases(releases)

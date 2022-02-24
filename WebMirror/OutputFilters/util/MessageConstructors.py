@@ -1,6 +1,8 @@
 
 
 import pprint
+import traceback
+import time
 import unicodedata
 import sys
 import re
@@ -82,6 +84,7 @@ def fix_string(val):
 	val = fixCase(val)
 	val = fixHtmlEntities(val)
 	val = ftfy.fix_text(val)
+	val.strip()
 	return val
 
 def fix_dict(inRelease):
@@ -283,12 +286,23 @@ def fixReleasePacket(data):
 		'prefix_match',
 	]
 
+
 	assert len(expect) <= len(data), "Invalid number of items in release packet! Expected: '%s', received '%s'" % (expect, list(data.keys()))
 	assert all([key in data for key in expect]), "Missing key in release message! Expect: '%s', received '%s'" % (expect, list(data.keys()))
 
 	data['series']  = fix_string(data['series'])
 	data['postfix'] = fix_string(data['postfix'])
 	data['author']  = fix_string(data['author'])
+
+
+	if 'scribblehub' in data['itemurl'] and data['postfix'] == '':
+		with open("no_desc_sh_release_%s.txt" % time.time(), "w") as fp:
+			fp.write("Stack:\n")
+			for line in traceback.format_stack():
+				fp.write(line)
+			fp.write("\n\n")
+			fp.write("Message:\n")
+			fp.write(pprint.pformat(data))
 
 	return data
 

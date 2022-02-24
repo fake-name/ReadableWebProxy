@@ -28,6 +28,8 @@ class RRLLocalFetchTrigger(WebMirror.TimedTriggers.TriggerBase.TriggerBaseClass)
 		'https://www.scribblehub.com/latest-series/?pg=3',
 		'https://www.scribblehub.com/series-ranking/?sort=3&order=1',
 
+		"https://www.scribblehub.com/rssfeed.php?type=main",
+
 		'https://royalroad.com/api/fiction/updates?apiKey='     + settings.RRL_API_KEY,
 		'https://royalroad.com/api/fiction/newreleases?apiKey=' + settings.RRL_API_KEY,
 	]

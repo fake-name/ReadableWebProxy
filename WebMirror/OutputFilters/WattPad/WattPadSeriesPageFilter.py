@@ -199,8 +199,8 @@ class WattPadSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.put_measurement(
 				measurement_name = 'chapter_releases',
 				measurement      = len(retval),
-				fields           = {"site" : "WattPad"},
-				extra_tags       = {},
+				fields           = {},
+				extra_tags       = {"site" : "WattPad"},
 			)
 
 

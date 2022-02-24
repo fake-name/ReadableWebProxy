@@ -225,8 +225,8 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.put_measurement(
 				measurement_name = 'chapter_releases',
 				measurement      = len(retval),
-				fields           = {"site" : "RoyalRoadL"},
-				extra_tags       = {},
+				fields           = {},
+				extra_tags       = {"site" : "RoyalRoadL"},
 			)
 
 		self.log.info("Found %s chapter releases on series page for %s (with rating %s)!", len(retval), msgpackers.fix_string(title), rating)

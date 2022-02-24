@@ -196,8 +196,8 @@ class JapTemSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 		self.put_measurement(
 				measurement_name = 'chapter_releases',
 				measurement      = len(retval),
-				fields           = {"site" : "Japtem"},
-				extra_tags       = {},
+				fields           = {},
+				extra_tags       = {"site" : "Japtem"},
 			)
 
 

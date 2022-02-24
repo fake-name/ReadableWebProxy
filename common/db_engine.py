@@ -188,6 +188,8 @@ def session_context(name="", override_timeout_ms=False, quiet_override=False):
 	finally:
 		if override_timeout_ms:
 			sess.execute("""RESET statement_timeout;""")
+		sess.execute("""COMMIT;""")
+
 		delete_db_session(postfix=postfix_name)
 
 
