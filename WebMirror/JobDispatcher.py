@@ -78,7 +78,7 @@ JOB_QUERY_CHUNK_SIZE = 250
 
 largv = [tmp.lower() for tmp in sys.argv]
 if "twoprocess" in largv or "oneprocess" in largv:
-	MAX_IN_FLIGHT_JOBS = 10
+	MAX_IN_FLIGHT_JOBS = 3
 else:
 	# MAX_IN_FLIGHT_JOBS = 10
 	# MAX_IN_FLIGHT_JOBS = 75

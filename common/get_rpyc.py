@@ -11,6 +11,19 @@ import runStatus
 import mprpc
 import config
 
+PACK_PARAMS =  {
+							"use_bin_type":True,
+						}
+
+UNPACK_PARAMS = {
+							'raw'             : True,
+							'max_buffer_size' : 2**31-1,
+							'max_str_len'     : 2**31-1,
+							'max_bin_len'     : 2**31-1,
+							'max_array_len'   : 2**31-1,
+							'max_map_len'     : 2**31-1,
+							'max_ext_len'     : 2**31-1,
+						}
 
 
 
@@ -33,18 +46,10 @@ class RemoteJobInterface(LogBase.LoggerMixin):
 				self.rpc_client = mprpc.RPCClient(
 					host         = config.C_RPC_AGENT_HOST,
 					port         = 4315,
-					pack_params  = {
-							"use_bin_type":True,
-						},
-					unpack_params = {
-							'raw'             : True,
-							'max_buffer_size' : 2**31-1,
-							'max_str_len'     : 2**31-1,
-							'max_bin_len'     : 2**31-1,
-							'max_array_len'   : 2**31-1,
-							'max_map_len'     : 2**31-1,
-							'max_ext_len'     : 2**31-1,
-						},
+					unpack_encoding  = 'utf-8',
+					pack_encoding    = 'utf-8',
+					pack_params      = PACK_PARAMS,
+					unpack_params    = UNPACK_PARAMS,
 					)
 
 
@@ -132,13 +137,16 @@ class RemoteFetchInterface(LogBase.LoggerMixin):
 		for x in range(99999):
 			try:
 				self.log.info("Creating rpc_client")
-				# self.log.info("Current stack:")
-				# for line in "\n".join(traceback.format_stack()).strip().split("\n"):
-				# 	self.log.info("%s", line.rstrip())
-				# self.log.info("------------")
 
-				mp_conf = {"use_bin_type" : True}
-				self.rpc_client = mprpc.RPCClient(config.C_SYNC_RPC_SERVER, 4315, pack_params=mp_conf, timeout=90)
+				self.rpc_client = mprpc.RPCClient(
+						host             = config.C_SYNC_RPC_SERVER,
+						port             = 4315,
+						unpack_encoding  = 'utf-8',
+						pack_encoding    = 'utf-8',
+						pack_params      = PACK_PARAMS,
+						unpack_params    = UNPACK_PARAMS,
+						timeout          = 90,
+					)
 				self.log.info("Validating RPC connection")
 
 				self.check_ok()
