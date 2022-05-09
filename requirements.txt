@@ -51,7 +51,7 @@ Flask-DebugToolbar==0.13.1
 Flask-Login==0.6.1
 Flask-Babel==2.0.0
 webcolors==1.11.1
-pyparsing==3.0.7
+pyparsing==3.0.8
 feedparser==6.0.8
 gevent==21.12.0
 
