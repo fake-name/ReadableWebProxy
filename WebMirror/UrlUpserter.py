@@ -222,16 +222,16 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 
 	for item in link_batch:
 		try:
-			assert 'url'              in item
-			assert 'starturl'         in item
-			assert 'netloc'           in item
-			assert 'distance'         in item
-			assert 'is_text'          in item
-			assert 'priority'         in item
-			assert 'type'             in item
-			assert 'addtime'          in item
-			assert 'state'            in item
-			assert 'epoch'            in item
+			assert 'url'              in item, "Missing key 'url'"
+			assert 'starturl'         in item, "Missing key 'starturl'"
+			assert 'netloc'           in item, "Missing key 'netloc'"
+			assert 'distance'         in item, "Missing key 'distance'"
+			assert 'is_text'          in item, "Missing key 'is_text'"
+			assert 'priority'         in item, "Missing key 'priority'"
+			assert 'type'             in item, "Missing key 'type'"
+			assert 'addtime'          in item, "Missing key 'addtime'"
+			assert 'state'            in item, "Missing key 'state'"
+			assert 'epoch'            in item, "Missing key 'epoch'"
 
 			if not 'maximum_priority' in item:
 				item['maximum_priority'] = item['priority']
@@ -239,7 +239,7 @@ def do_link_batch_update_sess(logger, interface, link_batch, max_pri=None, show_
 			if item['distance'] < item['maximum_priority']:
 				item['distance'] = item['maximum_priority']
 
-			assert 'maximum_priority' in item
+			assert 'maximum_priority' in item, "Missing key 'maximum_priority'"
 
 			# psycopg2cffi._impl.exceptions.OperationalError: index row size 3192 exceeds maximum 2712 for index "ix_web_pages_url"
 			assert len(item['url']) < 2712, "URL Too long for postgres. Length %s for url '%s'" % (

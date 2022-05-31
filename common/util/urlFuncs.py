@@ -327,6 +327,13 @@ def cleanUrl(urlin):
 			if 'z' in qs:
 				urlin = qs['z'][0]
 
+	if urlin.startswith("https://href.li/?"):
+		# Seems to just blob the url after the '?'
+		urlin = urlin.split("?", 1)[-1]
+
+
+	assert urlin != None
+
 	# RSS garbage
 	if '#utm_source=' in urlin:
 		urlin = urlin.split("#utm_source=")[0]
@@ -335,6 +342,9 @@ def cleanUrl(urlin):
 
 
 	ret = unwrap_redirect(urlin, resolve_redirects)
+
+	if ret is None:
+		return ret
 
 	# I hate feedburner
 	if '?utm_source=' in ret:
@@ -551,6 +561,10 @@ def urlClean(url):
 	# Google docs can be accessed with or without the '/preview' postfix
 	# We want to remove this if it's present, so we don't duplicate content.
 	url = trimGDocUrl(url)
+
+
+	assert url != None
+
 	url = cleanUrl(url)
 
 	if url is None:
@@ -579,7 +593,8 @@ if __name__ == "__main__":
 	# print(isGFileUrl('https://drive.google.com/folderview?id=0B_mXfd95yvDfQWQ1ajNWZTJFRkk&usp=drive_web'))
 	# print(urlClean('http://inmydaydreams.com/?p=6128&share=tumblr'))
 	# print(urlClean('http://inmydaydreams.com/?p=6091&share=tumblr'))
-	print(urlClean('https://www.tumblr.com/privacy/consent?redirect=https%3a%2f%2ffoxghost.tumblr.com%2fpost%2f190325087867'))
+	print(urlClean('https://href.li/?https://woopread.com/series/your-meaning/'))
+	# print(urlClean('https://www.tumblr.com/privacy/consent?redirect=https%3a%2f%2ffoxghost.tumblr.com%2fpost%2f190325087867'))
 
 	# print(hasDuplicateSegments('http://www.spcnet.tv/forums/showthread.php/23450-i-ve-decided-to-learn-chinese/index/images/misc/image.php?s=1129386e978631b0771a226dba5a82e5&u=65&dateline=1358455669'))
 	# print(hasDuplicateSegments('http://inmydaydreams.com/?p=6091&share=tumblr'))
