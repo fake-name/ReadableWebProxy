@@ -1,7 +1,11 @@
 stages:
   - build
 
+services:
+  - docker:dind
+
 docker_build:
+  image: docker:latest
   stage: build
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
