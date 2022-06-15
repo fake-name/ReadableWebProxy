@@ -196,7 +196,12 @@ class DataParser(WebMirror.OutputFilters.FilterBase.FilterBase):
 			.filter(db.RssFeedEntry.feed_name == item['srcname']) \
 			.scalar()
 		if not processor_row:
-			raise RuntimeError("No feed filter system found for {} from url {}.".format(item['srcname'], item['linkUrl']))
+			self.log.error("No feed filter system found for {} from url {}.".format(item['srcname'], item['linkUrl']))
+
+			def null_func(item):
+				return False
+
+			return null_func
 
 		# Pull the function from the database
 		func = processor_row.get_func()

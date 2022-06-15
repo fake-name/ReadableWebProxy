@@ -217,7 +217,10 @@ def filter_get_have_urls():
 
 def update_missing_new_with_title():
 
-	wg = WebRequest.WebGetRobust()
+	wg = WebRequest.WebGetRobust(
+			cloudflare = False,
+			auto_waf   = False,
+		)
 	with db.session_context(override_timeout_ms=1000 * 60 * 5) as sess:
 		rows = sess.query(db.NewNetlocTracker)  \
 			.filter(db.NewNetlocTracker.ignore == False) \
