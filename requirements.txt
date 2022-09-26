@@ -16,7 +16,7 @@ objgraph==3.5.0
 zerorpc==0.6.3
 cssutils==2.6.0
 tinycss2==1.1.1
-fontTools==4.27.1
+fontTools==4.37.3
 fdict==0.8.1
 cachetools==4.2.4
 bleach==4.1.0
