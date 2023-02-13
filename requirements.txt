@@ -50,7 +50,7 @@ Flask==2.2.2
 Flask-DebugToolbar==0.13.1
 Flask-Login==0.6.2
 Flask-Babel==3.0.1
-webcolors==1.11.1
+webcolors==1.12
 pyparsing==3.0.7
 feedparser==6.0.8
 gevent==21.12.0
