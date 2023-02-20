@@ -55,7 +55,7 @@ pyparsing==3.0.9
 feedparser==6.0.10
 gevent==22.10.2
 
-Flask-SQLAlchemy==2.5.1
+Flask-SQLAlchemy==3.0.3
 flask-paginate==2022.1.8
 Flask-WTF==1.0.0
 apscheduler==3.8.1
