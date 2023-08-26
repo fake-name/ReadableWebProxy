@@ -237,7 +237,7 @@ def run_rpc(interface_dict):
 	server_instance = FetchInterfaceClass(interface_dict, "MpRPC")
 	mprpc_server = StreamServer(('0.0.0.0', 4315), server_instance)
 
-	gevent.signal(signal.SIGINT, build_mprpc_handler(mprpc_server))
+	gevent.signal_handler(signal.SIGINT, build_mprpc_handler(mprpc_server))
 	mprpc_server.serve_forever()
 
 

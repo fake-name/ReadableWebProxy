@@ -11,7 +11,7 @@ baseUrl: [
 	]
 
 feeds: [
-	'https://www.scribblehub.com/rssfeed.php?type=main',
+	'https://www.scribblehub.com/feed/',
 
 ]
 

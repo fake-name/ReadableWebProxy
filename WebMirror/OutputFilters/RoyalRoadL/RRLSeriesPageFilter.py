@@ -167,6 +167,7 @@ class RRLSeriesPageFilter(WebMirror.OutputFilters.FilterBase.FilterBase):
 			if len(chapter.find_all("td")) != 2:
 				self.log.warning("Row with invalid number of entries?")
 				continue
+
 			cname, cdate = chapter.find_all("td")
 
 			if not cdate.time:

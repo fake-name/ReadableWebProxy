@@ -2,7 +2,7 @@
 
 # source venv/bin/activate
 
-until pypy3 runFetchAgent.py; do
+until python3 runFetchAgent.py; do
     echo "Server 'pypy3 runFetchAgent.py' crashed with exit code $?.  Respawning.." >&2
     sleep 1
 done

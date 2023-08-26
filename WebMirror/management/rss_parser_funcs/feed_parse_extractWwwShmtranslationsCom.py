@@ -1,7 +1,7 @@
 
 def extractWwwShmtranslationsCom(item):
 	'''
-	Parser for 'www.shmtranslations.com'
+	Parser for 'www.SHMTranslations.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
