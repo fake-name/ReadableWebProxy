@@ -49,7 +49,7 @@ lxml==4.9.3
 Flask==2.3.3
 Flask-DebugToolbar==0.13.1
 Flask-Login==0.6.2
-Flask-Babel==2.0.0
+Flask-Babel==3.1.0
 webcolors==1.11.1
 pyparsing==3.0.7
 feedparser==6.0.8
