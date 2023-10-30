@@ -85,7 +85,7 @@ parsedatetime==2.6
 psutil==5.9.6
 
 ## For ndscheduler
-tornado<6
+tornado==6.3.3
 
 ## alembic
 ## Babel
