@@ -12,7 +12,7 @@ chardet==5.2.0
 pymysql==1.1.0
 statsd==4.0.1
 xxhash==3.4.1
-objgraph==3.5.0
+objgraph==3.6.0
 zerorpc==0.6.3
 cssutils==2.3.1
 tinycss2==1.1.1
