@@ -71,7 +71,7 @@ git+https://github.com/kvesteri/sqlalchemy-continuum.git
 pillow==10.1.0
 
 # probably requires `sudo apt install libxml2-dev libxslt1-dev`
-BeautifulSoup4==4.10.0
+BeautifulSoup4==4.12.2
 
 alembic==1.7.6
 
