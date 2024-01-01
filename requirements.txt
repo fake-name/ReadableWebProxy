@@ -124,7 +124,7 @@ flask_httpauth==4.8.0
 hiredis==2.3.2
 ## guess_language-spirit==0.5.3
 PyEnchant==3.2.2
-dill==0.3.4
+dill==0.3.7
 
 
 paka.cmark==2.3.0
