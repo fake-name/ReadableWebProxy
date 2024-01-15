@@ -73,7 +73,7 @@ pillow==10.2.0
 # probably requires `sudo apt install libxml2-dev libxslt1-dev`
 BeautifulSoup4==4.12.2
 
-alembic==1.7.6
+alembic==1.13.1
 
 redis==4.1.4
 
