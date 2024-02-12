@@ -10,7 +10,7 @@ mprpc==0.1.17
 tqdm==4.66.2
 chardet==5.2.0
 pymysql==1.1.0
-statsd==3.3.0
+statsd==4.0.1
 xxhash==2.0.2
 objgraph==3.5.0
 zerorpc==0.6.3
