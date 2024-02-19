@@ -3,7 +3,7 @@ git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 
-requests==2.27.1
+requests==2.31.0
 webrequest==0.0.78
 setproctitle==1.2.2
 mprpc==0.1.17
