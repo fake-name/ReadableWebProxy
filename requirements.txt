@@ -57,7 +57,7 @@ gevent==24.2.1
 
 Flask-SQLAlchemy==3.1.1
 flask-paginate==2024.3.28
-Flask-WTF==1.0.0
+Flask-WTF==1.2.1
 apscheduler==3.8.1
 sqlalchemy_searchable==1.4.1
 sqlalchemy-utils==0.38.2
