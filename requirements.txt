@@ -26,7 +26,7 @@ pystuck==0.8.5
 cherrypy==18.9.0
 
 # Pin to 0.6.2 since 1.0.0 is broken in mprpc
-msgpack==0.6.2
+msgpack==1.0.8
 
 psycopg2cffi==2.9.0; platform.python_implementation == 'PyPy'
 psycopg2-binary==2.9.3; platform.python_implementation == 'CPython'
