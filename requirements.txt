@@ -5,7 +5,7 @@ git+https://github.com/fake-name/semantic.git
 
 requests==2.31.0
 webrequest==0.0.78
-setproctitle==1.2.2
+setproctitle==1.3.3
 mprpc==0.1.17
 tqdm==4.62.3
 chardet==4.0.0
@@ -119,7 +119,7 @@ tornado<6
 ## WTForms-JSON
 
 influxdb==5.3.1
-setproctitle==1.2.2
+setproctitle==1.3.3
 flask_httpauth==4.5.0
 hiredis==2.0.0
 ## guess_language-spirit==0.5.3
