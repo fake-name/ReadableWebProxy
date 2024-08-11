@@ -2,11 +2,11 @@ git+https://github.com/fake-name/AmqpConnector.git
 git+https://github.com/fake-name/unshortenit.git
 git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
+git+https://github.com/fake-name/mprpc.git
 
 requests==2.27.1
 webrequest==0.0.78
 setproctitle==1.2.2
-mprpc==0.1.17
 tqdm==4.62.3
 chardet==4.0.0
 pymysql==1.0.2
@@ -60,10 +60,10 @@ flask-paginate==2022.1.8
 Flask-WTF==1.0.0
 apscheduler==3.8.1
 sqlalchemy_searchable==1.4.1
-sqlalchemy-utils==0.38.2
+sqlalchemy-utils==0.41.2
 
 ## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
-git+https://github.com/kvesteri/sqlalchemy-continuum.git
+#git+https://github.com/kvesteri/sqlalchemy-continuum.git
 
 # Probably requires
 # sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev
@@ -79,7 +79,7 @@ redis==4.1.4
 
 ## hiredis==1.0.0
 
-vmprof==0.4.15
+# vmprof==0.4.15
 
 parsedatetime==2.6
 psutil==5.9.0
@@ -122,9 +122,10 @@ influxdb==5.3.1
 setproctitle==1.2.2
 flask_httpauth==4.5.0
 hiredis==2.0.0
-## guess_language-spirit==0.5.3
+guess_language-spirit==0.5.3
 PyEnchant==3.2.2
 dill==0.3.4
+Werkzeug==2.2.2
 
 
 paka.cmark==2.3.0

@@ -1,7 +1,7 @@
 
-def extractForumWuxiaworldCom(item):
+def extractKitakamiooihqWordpressCom(item):
 	'''
-	Parser for 'forum.wuxiaworld.com'
+	Parser for 'kitakamiooihq.wordpress.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])

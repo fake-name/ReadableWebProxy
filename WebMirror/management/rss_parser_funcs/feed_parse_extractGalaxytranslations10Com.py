@@ -1,7 +1,7 @@
 
-def extractForumWuxiaworldCom(item):
+def extractGalaxytranslations10Com(item):
 	'''
-	Parser for 'forum.wuxiaworld.com'
+	Parser for 'galaxytranslations10.com'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])

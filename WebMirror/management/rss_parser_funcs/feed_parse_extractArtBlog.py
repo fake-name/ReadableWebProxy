@@ -1,7 +1,7 @@
 
-def extractForumWuxiaworldCom(item):
+def extractArtBlog(item):
 	'''
-	Parser for 'forum.wuxiaworld.com'
+	Parser for 'art.blog'
 	'''
 
 	vol, chp, frag, postfix = extractVolChapterFragmentPostfix(item['title'])
