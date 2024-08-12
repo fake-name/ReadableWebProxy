@@ -14,7 +14,7 @@ statsd==4.0.1
 xxhash==3.4.1
 objgraph==3.6.1
 zerorpc==0.6.3
-cssutils==2.3.1
+cssutils==2.11.1
 tinycss2==1.1.1
 fontTools==4.27.1
 fdict==0.8.1
