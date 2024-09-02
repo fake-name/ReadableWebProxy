@@ -4,7 +4,7 @@ git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 git+https://github.com/fake-name/mprpc.git
 
-requests==2.27.1
+requests==2.32.3
 webrequest==0.0.78
 setproctitle==1.2.2
 tqdm==4.62.3
