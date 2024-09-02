@@ -68,7 +68,7 @@ sqlalchemy-utils==0.41.2
 # Probably requires
 # sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev
 
-pillow==8.4.0
+pillow==10.4.0
 
 # probably requires `sudo apt install libxml2-dev libxslt1-dev`
 BeautifulSoup4==4.10.0
