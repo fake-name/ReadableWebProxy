@@ -125,7 +125,7 @@ hiredis==3.0.0
 guess_language-spirit==0.5.3
 PyEnchant==3.2.2
 dill==0.3.9
-Werkzeug==2.2.2
+Werkzeug==3.0.4
 
 
 paka.cmark==2.3.0
