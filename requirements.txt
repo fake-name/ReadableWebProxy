@@ -52,7 +52,7 @@ Flask-Login==0.6.3
 Flask-Babel==4.0.0
 webcolors==24.8.0
 pyparsing==3.2.0
-feedparser==6.0.8
+feedparser==6.0.11
 gevent==21.12.0
 
 Flask-SQLAlchemy==2.5.1
