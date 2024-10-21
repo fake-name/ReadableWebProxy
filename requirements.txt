@@ -71,7 +71,7 @@ sqlalchemy-utils==0.41.2
 pillow==11.0.0
 
 # probably requires `sudo apt install libxml2-dev libxslt1-dev`
-BeautifulSoup4==4.10.0
+BeautifulSoup4==4.12.3
 
 alembic==1.7.6
 
