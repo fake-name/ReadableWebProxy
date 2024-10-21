@@ -4,62 +4,62 @@ git+https://github.com/fake-name/ChromeController.git
 git+https://github.com/fake-name/semantic.git
 git+https://github.com/fake-name/mprpc.git
 
-requests==2.27.1
+requests==2.32.3
 webrequest==0.0.78
-setproctitle==1.2.2
-tqdm==4.62.3
-chardet==4.0.0
-pymysql==1.0.2
-statsd==3.3.0
-xxhash==2.0.2
-objgraph==3.5.0
+setproctitle==1.3.3
+tqdm==4.66.5
+chardet==5.2.0
+pymysql==1.1.1
+statsd==4.0.1
+xxhash==3.5.0
+objgraph==3.6.2
 zerorpc==0.6.3
-cssutils==2.3.1
-tinycss2==1.1.1
-fontTools==4.27.1
+cssutils==2.11.1
+tinycss2==1.3.0
+fontTools==4.54.1
 fdict==0.8.1
-cachetools==4.2.4
-bleach==4.1.0
-Jinja2==3.0.3
+cachetools==5.5.0
+bleach==6.1.0
+Jinja2==3.1.4
 xmljson==0.2.1
 pystuck==0.8.5
-cherrypy==18.6.1
+cherrypy==18.10.0
 
 # Pin to 0.6.2 since 1.0.0 is broken in mprpc
-msgpack==0.6.2
+msgpack==1.1.0
 
 psycopg2cffi==2.9.0; platform.python_implementation == 'PyPy'
-psycopg2-binary==2.9.3; platform.python_implementation == 'CPython'
+psycopg2-binary==2.9.10; platform.python_implementation == 'CPython'
 
-SQLAlchemy<1.4.0
-sqlalchemy-citext<1.8.0; platform.python_implementation == 'PyPy'
+SQLAlchemy==2.0.36
+sqlalchemy-citext==1.8.0; platform.python_implementation == 'PyPy'
 sqlalchemy-citext==1.8.0; platform.python_implementation == 'CPython'
 
 PySocks==1.7.1
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
 bbcode==1.1.0
-pympler==1.0.1
+pympler==1.1
 
-colorama==0.4.4
-pyyaml==6.0
-natsort==8.1.0
+colorama==0.4.6
+pyyaml==6.0.2
+natsort==8.4.0
 mdx_linkify==2.1
-ftfy==6.0.3
-lxml==4.8.0
-Flask==2.0.3
-Flask-DebugToolbar==0.11.0
-Flask-Login==0.5.0
-Flask-Babel==2.0.0
-webcolors==1.11.1
-pyparsing==3.0.7
-feedparser==6.0.8
-gevent==21.12.0
+ftfy==6.3.0
+lxml==5.3.0
+Flask==3.0.3
+Flask-DebugToolbar==0.16.0
+Flask-Login==0.6.3
+Flask-Babel==4.0.0
+webcolors==24.8.0
+pyparsing==3.2.0
+feedparser==6.0.11
+gevent==24.10.3
 
-Flask-SQLAlchemy==2.5.1
-flask-paginate==2022.1.8
-Flask-WTF==1.0.0
-apscheduler==3.8.1
-sqlalchemy_searchable==1.4.1
+Flask-SQLAlchemy==3.1.1
+flask-paginate==2024.4.12
+Flask-WTF==1.2.1
+apscheduler==3.10.4
+sqlalchemy_searchable==2.1.0
 sqlalchemy-utils==0.41.2
 
 ## A BUNCH of memory leaks in sqlalchemy-continuum have been fixed in git, but never released.
@@ -68,24 +68,24 @@ sqlalchemy-utils==0.41.2
 # Probably requires
 # sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev
 
-pillow==8.4.0
+pillow==11.0.0
 
 # probably requires `sudo apt install libxml2-dev libxslt1-dev`
-BeautifulSoup4==4.10.0
+BeautifulSoup4==4.12.3
 
-alembic==1.7.6
+alembic==1.13.3
 
-redis==4.1.4
+redis==5.1.1
 
 ## hiredis==1.0.0
 
 # vmprof==0.4.15
 
 parsedatetime==2.6
-psutil==5.9.0
+psutil==6.1.0
 
 ## For ndscheduler
-tornado<6
+tornado==6.4.1
 
 ## alembic
 ## Babel
@@ -118,14 +118,14 @@ tornado<6
 ## WTForms
 ## WTForms-JSON
 
-influxdb==5.3.1
-setproctitle==1.2.2
-flask_httpauth==4.5.0
-hiredis==2.0.0
+influxdb==5.3.2
+setproctitle==1.3.3
+flask_httpauth==4.8.0
+hiredis==3.0.0
 guess_language-spirit==0.5.3
 PyEnchant==3.2.2
-dill==0.3.4
-Werkzeug==2.2.2
+dill==0.3.9
+Werkzeug==3.0.4
 
 
 paka.cmark==2.3.0
