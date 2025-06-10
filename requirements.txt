@@ -82,7 +82,7 @@ redis==6.2.0
 # vmprof==0.4.15
 
 parsedatetime==2.6
-psutil==5.9.0
+psutil==7.0.0
 
 ## For ndscheduler
 tornado<6
