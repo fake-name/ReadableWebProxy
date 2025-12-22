@@ -19,7 +19,7 @@ tinycss2==1.5.1
 fontTools==4.61.1
 fdict==0.8.1
 cachetools==6.2.4
-bleach==4.1.0
+bleach==6.3.0
 Jinja2==3.0.3
 xmljson==0.2.1
 pystuck==0.8.5
