@@ -123,7 +123,7 @@ setproctitle==1.2.2
 flask_httpauth==4.5.0
 hiredis==2.0.0
 guess_language-spirit==0.5.3
-PyEnchant==3.2.2
+PyEnchant==3.3.0
 dill==0.3.4
 Werkzeug==2.2.2
 
