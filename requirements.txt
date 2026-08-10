@@ -124,7 +124,7 @@ flask_httpauth==4.8.1
 hiredis==3.4.1
 guess_language-spirit==0.5.4
 PyEnchant==3.3.0
-dill==0.3.4
+dill==0.4.1
 Werkzeug==2.2.2
 
 
