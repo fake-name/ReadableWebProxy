@@ -40,7 +40,7 @@ python-dateutil==2.9.0.post0
 bbcode==1.1.0
 pympler==1.1
 
-colorama==0.4.4
+colorama==0.4.6
 pyyaml==6.0
 natsort==8.1.0
 mdx_linkify==2.1
