@@ -36,7 +36,7 @@ sqlalchemy-citext==1.8.0; platform.python_implementation == 'PyPy'
 sqlalchemy-citext==1.8.0; platform.python_implementation == 'CPython'
 
 PySocks==1.7.1
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
 bbcode==1.1.0
 pympler==1.0.1
 
